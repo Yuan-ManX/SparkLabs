@@ -1,14 +1,24 @@
+<div align="center">
+
+<img src="./assets/SparkLabs-Logo.png" alt="SparkLabs Logo" width="75%"/>
+
 # Spark Labs
 
-**AI原生游戏引擎**
+### AI 原生游戏引擎
 
 ![版本](https://img.shields.io/badge/version-1.0.0-blue)
 ![C++](https://img.shields.io/badge/C%2B%2B-17-orange)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 
+
+### [English](./README.md) | [中文文档](./README_CN.md)
+
+</div>
+
+
 ## 概述
 
-SparkLabs 是一款新一代的AI原生游戏引擎，将人工智能能力深度融入游戏开发的核心架构中。传统游戏引擎依赖手工编码的游戏逻辑和预定义的资源管道，而 SparkLabs 通过AI驱动的程序化内容生成、智能NPC行为系统、自适应渲染和动态难度调整，彻底革新游戏开发范式。
+**SparkLabs** 是一款新一代的AI原生游戏引擎，将人工智能能力深度融入游戏开发的核心架构中。传统游戏引擎依赖手工编码的游戏逻辑和预定义的资源管道，而 SparkLabs 通过AI驱动的程序化内容生成、智能NPC行为系统、自适应渲染和动态难度调整，彻底革新游戏开发范式。
 
 ## 核心特性
 
