@@ -5,7 +5,8 @@
 
 # Spark Labs
 
-### AI-Native Game Engine, Ignite Your Infinite Play! 💥🎮
+### The First AI-Native Game Engine. 💥 
+### Ignite Your Infinite Play! 🎮
 
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![C++](https://img.shields.io/badge/C%2B%2B-17-orange)
