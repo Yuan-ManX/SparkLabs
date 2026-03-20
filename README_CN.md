@@ -131,15 +131,123 @@ int main() {
 }
 ```
 
+### Python API
+
+SparkLabs提供Python绑定层，方便快速原型开发和脚本编写：
+
+```python
+import sparklabs
+
+# 创建工作流图
+graph = sparklabs.WorkflowGraph()
+graph.set_name("我的AI工作流")
+
+# 创建并配置节点
+prompt = sparklabs.create_text_prompt_node()
+prompt.set_id("prompt_1")
+prompt.set_prompt("美丽的日落山景")
+prompt.set_position(100.0, 100.0)
+
+image_gen = sparklabs.create_image_generation_node()
+image_gen.set_id("image_gen_1")
+image_gen.set_model("models/sd_xl.safetensors")
+image_gen.set_width(1024)
+image_gen.set_height(1024)
+image_gen.set_steps(30)
+image_gen.set_position(400.0, 100.0)
+
+save_image = sparklabs.create_save_image_node()
+save_image.set_id("save_1")
+save_image.set_output_path("output/landscape.png")
+save_image.set_position(700.0, 100.0)
+
+# 连接节点并执行
+graph.add_node(prompt)
+graph.add_node(image_gen)
+graph.add_node(save_image)
+graph.connect("prompt_1", 0, "image_gen_1", 0)
+graph.connect("image_gen_1", 0, "save_1", 0)
+result = graph.execute()
+```
+
+### 使用AI工作流画布
+
+```cpp
+auto canvas = new WorkflowCanvas();
+auto graph = new WorkflowGraph();
+
+canvas->SetGraph(graph);
+
+auto textPrompt = new TextPromptNode();
+textPrompt->SetPrompt("A beautiful landscape at sunset");
+canvas->AddNode(textPrompt, 100.0f, 100.0f);
+
+auto imageGen = new ImageGenerationNode();
+imageGen->SetModel("models/sd_xl.safetensors");
+imageGen->SetSteps(30);
+imageGen->SetWidth(1024);
+imageGen->SetHeight(1024);
+canvas->AddNode(imageGen, 400.0f, 100.0f);
+
+auto saveImage = new SaveImageNode();
+canvas->AddNode(saveImage, 700.0f, 100.0f);
+
+canvas->Connect(textPrompt->GetId(), 0, imageGen->GetId(), 0);
+canvas->Connect(imageGen->GetId(), 0, saveImage->GetId(), 0);
+
+canvas->Execute();
+```
+
+## AI工作流画布界面
+
+### 节点类别
+
+| 类别 | 节点 | 描述 |
+|------|------|------|
+| **AI/Image** | Image Generation, Inpaint, Upscale | 图像创建和修改 |
+| **AI/Text** | Text Generation, Prompt Templates | 文本和对话创建 |
+| **AI/Video** | Video Generation, Video Edit | 视频内容创建 |
+| **AI/Audio** | Audio Generation, TTS | 声音和音乐创建 |
+| **Input** | Load Image, Load Audio, Load Video | 资源加载 |
+| **Output** | Save Image, Save Video, Save Audio | 资源保存 |
+| **Model** | Load Model, Load Checkpoint, Load VAE | 模型管理 |
+| **Prompt** | Text Prompt, Negative Prompt, Wildcards | 提示词工程 |
+| **Sampling** | KSampler, KSampler Advanced | 扩散采样 |
+| **Latent** | Empty Latent, VAE Encode, VAE Decode | 潜空间操作 |
+| **ControlNet** | ControlNet Apply, ControlNet Loader | ControlNet集成 |
+
+### 键盘快捷键
+
+| 快捷键 | 功能 |
+|--------|------|
+| Ctrl+Enter | 将工作流加入生成队列 |
+| Ctrl+Shift+Enter | 优先队列生成 |
+| Ctrl+Z | 撤销 |
+| Ctrl+Y | 重做 |
+| Ctrl+C | 复制节点 |
+| Ctrl+V | 粘贴节点 |
+| Ctrl+A | 全选节点 |
+| Delete | 删除所选 |
+| Space+拖动 | 平移画布 |
+| Alt+滚轮 | 缩放 |
+
 ## 架构概览
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     SparkLabs Engine                        │
 ├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────┐│
+│  │                   AI工作流画布                            ││
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     ││
+│  │  │   文本   │→│    图像   │→│   VAE    │→│   保存   │     ││
+│  │  │   提示   │  │  生成   │  │   解码   │  │   图像   │     ││
+│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘     ││
+│  └─────────────────────────────────────────────────────────┘│
+├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
 │  │   sparkai   │  │   Neural    │  │      Adaptive       │  │
-│  │    Core     │  │   Renderer  │  │      Gameplay       │  │
+│  │   Core      │  │   Renderer  │  │      Gameplay       │  │
 │  └─────────────┘  └─────────────┘  └─────────────────────┘  │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
 │  │    Smart    │  │   Neural    │  │   AI Narrative      │  │
@@ -173,6 +281,11 @@ int main() {
 
 ### sparkai (`sparkai/`)
 AI原生模块 - SparkLabs的核心AI组件：
+- **Workflow**: AI工作流画布系统
+  - `workflow/WorkflowGraph.h`: 图、节点、引脚、边定义
+  - `workflow/WorkflowFactory.h`: 节点注册、序列化、执行器
+  - `workflow/nodes/AIGenerationNodes.h`: 图像、文本、视频、音频生成节点
+  - `ui/WorkflowCanvas.h`: 画布、调色板、属性面板、队列
 - **AI Core**: AIBrain、Blackboard、EventBus、NeuralNetwork
 - **Behavior**: 行为树（组合节点、装饰器节点、动作节点）
 - **ONNX**: ONNX Runtime集成
@@ -215,6 +328,12 @@ SparkLabs/
 ├── engine/              # 引擎核心（场景、资源）
 ├── sparkai/             # AI原生模块
 │   ├── ai/              # AI运行时（行为、大脑、onnx）
+│   ├── workflow/        # AI工作流画布系统
+│   │   ├── WorkflowGraph.h
+│   │   ├── WorkflowFactory.h
+│   │   └── nodes/
+│   │       └── AIGenerationNodes.h
+│   ├── ui/              # AI工作流UI组件
 │   ├── npc/            # 智能NPC系统
 │   ├── gameplay/       # 自适应游戏玩法
 │   ├── narrative/      # AI叙事引擎
