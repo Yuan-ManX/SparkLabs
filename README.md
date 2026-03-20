@@ -132,11 +132,119 @@ int main() {
 }
 ```
 
+### Python API
+
+SparkLabs provides a Python bindings layer for rapid prototyping and scripting:
+
+```python
+import sparklabs
+
+# Create workflow graph
+graph = sparklabs.WorkflowGraph()
+graph.set_name("My AI Workflow")
+
+# Create and configure nodes
+prompt = sparklabs.create_text_prompt_node()
+prompt.set_id("prompt_1")
+prompt.set_prompt("A beautiful landscape at sunset")
+prompt.set_position(100.0, 100.0)
+
+image_gen = sparklabs.create_image_generation_node()
+image_gen.set_id("image_gen_1")
+image_gen.set_model("models/sd_xl.safetensors")
+image_gen.set_width(1024)
+image_gen.set_height(1024)
+image_gen.set_steps(30)
+image_gen.set_position(400.0, 100.0)
+
+save_image = sparklabs.create_save_image_node()
+save_image.set_id("save_1")
+save_image.set_output_path("output/landscape.png")
+save_image.set_position(700.0, 100.0)
+
+# Connect nodes and execute
+graph.add_node(prompt)
+graph.add_node(image_gen)
+graph.add_node(save_image)
+graph.connect("prompt_1", 0, "image_gen_1", 0)
+graph.connect("image_gen_1", 0, "save_1", 0)
+result = graph.execute()
+```
+
+### Using the AI Workflow Canvas
+
+```cpp
+auto canvas = new WorkflowCanvas();
+auto graph = new WorkflowGraph();
+
+canvas->SetGraph(graph);
+
+auto textPrompt = new TextPromptNode();
+textPrompt->SetPrompt("A beautiful landscape at sunset");
+canvas->AddNode(textPrompt, 100.0f, 100.0f);
+
+auto imageGen = new ImageGenerationNode();
+imageGen->SetModel("models/sd_xl.safetensors");
+imageGen->SetSteps(30);
+imageGen->SetWidth(1024);
+imageGen->SetHeight(1024);
+canvas->AddNode(imageGen, 400.0f, 100.0f);
+
+auto saveImage = new SaveImageNode();
+canvas->AddNode(saveImage, 700.0f, 100.0f);
+
+canvas->Connect(textPrompt->GetId(), 0, imageGen->GetId(), 0);
+canvas->Connect(imageGen->GetId(), 0, saveImage->GetId(), 0);
+
+canvas->Execute();
+```
+
+## AI Workflow Canvas Interface
+
+### Node Categories
+
+| Category | Nodes | Description |
+|----------|-------|-------------|
+| **AI/Image** | Image Generation, Inpaint, Upscale | Image creation and modification |
+| **AI/Text** | Text Generation, Prompt Templates | Text and dialogue creation |
+| **AI/Video** | Video Generation, Video Edit | Video content creation |
+| **AI/Audio** | Audio Generation, TTS | Sound and music creation |
+| **Input** | Load Image, Load Audio, Load Video | Asset loading |
+| **Output** | Save Image, Save Video, Save Audio | Asset saving |
+| **Model** | Load Model, Load Checkpoint, Load VAE | Model management |
+| **Prompt** | Text Prompt, Negative Prompt, Wildcards | Prompt engineering |
+| **Sampling** | KSampler, KSampler Advanced | Diffusion sampling |
+| **Latent** | Empty Latent, VAE Encode, VAE Decode | Latent space operations |
+| **ControlNet** | ControlNet Apply, ControlNet Loader | ControlNet integration |
+
+### Keyboard Shortcuts
+
+| Shortcut | Action |
+|----------|--------|
+| Ctrl+Enter | Queue workflow for generation |
+| Ctrl+Shift+Enter | Queue as first priority |
+| Ctrl+Z | Undo |
+| Ctrl+Y | Redo |
+| Ctrl+C | Copy nodes |
+| Ctrl+V | Paste nodes |
+| Ctrl+A | Select all nodes |
+| Delete | Delete selected |
+| Space+Drag | Pan canvas |
+| Alt+Scroll | Zoom in/out |
+
 ## Architecture Overview
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
 │                     SparkLabs Engine                        │
+├─────────────────────────────────────────────────────────────┤
+│  ┌─────────────────────────────────────────────────────────┐│
+│  │                   AI Workflow Canvas                    ││
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     ││
+│  │  │  Text   │→ │  Image  │→ │  VAE    │→ │  Save   │     ││
+│  │  │ Prompt  │  │   Gen   │  │ Decode  │  │  Image  │     ││
+│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘     ││
+│  └─────────────────────────────────────────────────────────┘│
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
 │  │   sparkai   │  │   Neural    │  │      Adaptive       │  │
@@ -174,6 +282,11 @@ Core game engine functionality:
 
 ### sparkai (`sparkai/`)
 AI-native modules - the core AI components of SparkLabs:
+- **Workflow**: AI Workflow Canvas system
+  - `workflow/WorkflowGraph.h`: Graph, Node, Pin, Edge definitions
+  - `workflow/WorkflowFactory.h`: Node registry, serializer, executor
+  - `workflow/nodes/AIGenerationNodes.h`: Image, Text, Video, Audio generation nodes
+  - `ui/WorkflowCanvas.h`: Canvas, Palette, Properties panel, Queue
 - **AI Core**: AIBrain, Blackboard, EventBus, NeuralNetwork
 - **Behavior**: Behavior Tree with Composite, Decorator, Action nodes
 - **ONNX**: ONNX Runtime integration for neural network inference
@@ -216,6 +329,12 @@ SparkLabs/
 ├── engine/              # Engine core (scene, resource)
 ├── sparkai/             # AI-native modules
 │   ├── ai/              # AI runtime (behavior, brain, onnx)
+│   ├── workflow/        # AI Workflow Canvas system
+│   │   ├── WorkflowGraph.h
+│   │   ├── WorkflowFactory.h
+│   │   └── nodes/
+│   │       └── AIGenerationNodes.h
+│   ├── ui/              # AI workflow UI components
 │   ├── npc/            # Intelligent NPC system
 │   ├── gameplay/       # Adaptive gameplay
 │   ├── narrative/      # AI narrative engine
