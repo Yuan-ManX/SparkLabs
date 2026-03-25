@@ -9,7 +9,9 @@
 
 ![版本](https://img.shields.io/badge/version-1.0.0-blue)
 ![C++](https://img.shields.io/badge/C%2B%2B-17-orange)
+![Python Version](https://img.shields.io/badge/Python-3.8+-blue.svg)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
+![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 
 
 ### [English](./README.md) | [中文文档](./README_CN.md)
