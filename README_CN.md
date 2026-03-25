@@ -361,6 +361,16 @@ SparkLabs Engine 基于MIT许可证授权。详见 [LICENSE](./LICENSE)。
 
 特别感谢所有贡献者和开源社区，让游戏开发对每个人都可以触及。
 
----
 
-**SparkLabs Engine** - 用AI原生技术赋能游戏开发者。
+## ⭐ 星标历史
+
+如果您喜欢这个项目，请 ⭐ 给仓库加星。您的支持帮助我们成长！
+
+<p align="center">
+  <a href="https://star-history.com/#Yuan-ManX/SparkLabs&Date">
+    <img src="https://api.star-history.com/svg?repos=Yuan-ManX/SparkLabs&type=Date" />
+  </a>
+</p>
+
+
+**SparkLabs** - 用AI原生技术赋能游戏开发者。
