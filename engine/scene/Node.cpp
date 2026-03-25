@@ -164,9 +164,9 @@ void Node::AddChild(Node* child) {
 }
 
 void Node::RemoveChild(Node* child) {
-    for (auto it = m_Children.Begin(); it != m_Children.End(); ++it) {
-        if (it->Get() == child) {
-            m_Children.Erase(it);
+    for (size_t i = 0; i < m_Children.Size(); ++i) {
+        if (m_Children[i].Get() == child) {
+            m_Children.Erase(i);
             return;
         }
     }
