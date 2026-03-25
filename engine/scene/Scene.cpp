@@ -43,9 +43,9 @@ void Scene::AddEntity(GameObject* entity) {
 void Scene::RemoveEntity(GameObject* entity) {
     if (!entity) return;
     entity->RemoveFromParent();
-    for (auto it = m_Entities.Begin(); it != m_Entities.End(); ++it) {
-        if (it->Get() == entity) {
-            m_Entities.Erase(it);
+    for (size_t i = 0; i < m_Entities.Size(); ++i) {
+        if (m_Entities[i].Get() == entity) {
+            m_Entities.Erase(i);
             return;
         }
     }
