@@ -1,10 +1,10 @@
 cmake_minimum_required(VERSION 3.15)
 
-option(SPARKLABS_PYTHONBindings "Build Python bindings" ON)
+option(SPARKLABS_PYTHON_BINDINGS "Build Python bindings" ON)
 option(SPARKLABS_PYTHON_VERSION "Python version to use" "3.8")
 
-if(SPARKLABS_PYTHONBindings)
-    find_package(Python COMPONENTS Interpreter Development REQUIRED)
+if(SPARKLABS_PYTHON_BINDINGS)
+    find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 
     if(NOT TARGET sparklabs_bindings)
         add_library(sparklabs_bindings SHARED)
@@ -13,13 +13,13 @@ if(SPARKLABS_PYTHONBindings)
         )
         target_include_directories(sparklabs_bindings PRIVATE
             ${CMAKE_CURRENT_SOURCE_DIR}/bindings
-            ${Python_INCLUDE_DIRS}
+            ${Python3_INCLUDE_DIRS}
         )
         target_link_libraries(sparklabs_bindings PRIVATE
             SparkLabs::Core
             SparkLabs::Engine
             SparkLabs::sparkai
-            ${Python_LIBRARIES}
+            Python3::Python
         )
         target_compile_definitions(sparklabs_bindings PRIVATE
             SPARKLABS_PYTHON_BINDINGS
