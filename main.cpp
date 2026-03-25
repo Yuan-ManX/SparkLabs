@@ -1,29 +1,12 @@
 #include <iostream>
-#include <Vector3.h>
-#include <Quaternion.h>
-#include <Matrix4x4.h>
-#include <SmartPtr.h>
-#include <String.h>
-
-#ifdef SPARKLABS_PLATFORM_WINDOWS
-    #include <Windows.h>
-#endif
-
-namespace SparkLabs {
-
-void Initialize() {
-    #ifdef SPARKLABS_PLATFORM_WINDOWS
-        std::cout << "Initializing SparkLabs Engine on Windows..." << std::endl;
-    #else
-        std::cout << "Initializing SparkLabs Engine on Unix..." << std::endl;
-    #endif
-}
-
-void Shutdown() {
-    std::cout << "Shutting down SparkLabs Engine..." << std::endl;
-}
-
-}
+#include "core/math/Vector3.h"
+#include "core/math/Quaternion.h"
+#include "core/math/Matrix4x4.h"
+#include "core/memory/SmartPtr.h"
+#include "core/string/String.h"
+#include "engine/Engine.h"
+#include "engine/scene/Scene.h"
+#include "engine/scene/GameObject.h"
 
 int main(int argc, char** argv) {
     std::cout << "========================================" << std::endl;
@@ -33,7 +16,8 @@ int main(int argc, char** argv) {
     std::cout << "========================================" << std::endl;
     std::cout << std::endl;
 
-    SparkLabs::Initialize();
+    SparkLabs::Engine* engine = SparkLabs::Engine::GetInstance();
+    engine->Initialize();
 
     std::cout << "SparkLabs Engine initialized successfully!" << std::endl;
     std::cout << std::endl;
@@ -46,7 +30,20 @@ int main(int argc, char** argv) {
     std::cout << "  - Neural Rendering: Ready" << std::endl;
     std::cout << std::endl;
 
-    SparkLabs::Shutdown();
+    SparkLabs::Scene* scene = new SparkLabs::Scene();
+    scene->SetName("DemoScene");
+    engine->SetScene(scene);
+
+    SparkLabs::GameObject* player = scene->CreateEntity("Player");
+    player->SetPosition(SparkLabs::Vector3(0.0f, 1.0f, 0.0f));
+    player->SetTag("Player");
+
+    std::cout << "Created scene: " << scene->GetName().C_str() << std::endl;
+    std::cout << "Created player entity at: " << player->GetPosition().x << ", "
+              << player->GetPosition().y << ", " << player->GetPosition().z << std::endl;
+    std::cout << std::endl;
+
+    engine->Shutdown();
 
     return 0;
 }
