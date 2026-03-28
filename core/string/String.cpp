@@ -2,6 +2,7 @@
 #include <cstring>
 #include <algorithm>
 #include <stdexcept>
+#include <cstdio>
 
 namespace SparkLabs {
 
@@ -309,6 +310,18 @@ void String::CopyFrom(const char* str, int32 length) {
     }
     m_Data[length] = '\0';
     m_Length = length;
+}
+
+String String::FromInt(int32 value) {
+    char buffer[32];
+    std::snprintf(buffer, sizeof(buffer), "%d", value);
+    return String(buffer);
+}
+
+String String::FromFloat(float32 value) {
+    char buffer[64];
+    std::snprintf(buffer, sizeof(buffer), "%.2f", value);
+    return String(buffer);
 }
 
 }
