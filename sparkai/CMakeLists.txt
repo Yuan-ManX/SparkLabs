@@ -40,6 +40,13 @@ add_library(sparkai STATIC
     editor/AssetGeneratorPanel.cpp
     editor/BehaviorTreeEditor.cpp
     editor/SceneEditor.cpp
+    team/TeamAgent.cpp
+    team/TeamDirector.cpp
+    team/TeamLead.cpp
+    team/TeamSpecialist.cpp
+    team/TeamOrchestrator.cpp
+    team/QualityGate.cpp
+    team/WorkflowManager.cpp
 )
 
 target_link_libraries(sparkai PUBLIC
