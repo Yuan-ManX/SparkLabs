@@ -414,5 +414,3 @@ If you like this project, please ⭐ star the repo. Your support helps us grow!
   </a>
 </p>
 
-
-**SparkLabs** - Empowering game developers with AI-native technology.
