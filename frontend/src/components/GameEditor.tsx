@@ -19,7 +19,10 @@ import {
   Grid3X3,
   Camera,
   Sparkles as ParticleIcon,
-  RotateCcw
+  RotateCcw,
+  Music,
+  Info,
+  Maximize2
 } from 'lucide-react';
 
 // Types for our game engine
@@ -35,7 +38,7 @@ interface GameObject {
 }
 
 interface Component {
-  type: 'Physics' | 'Animation' | 'Sprite' | 'Script' | 'Input' | 'Tilemap' | 'Particle';
+  type: 'Physics' | 'Animation' | 'Sprite' | 'Script' | 'Input' | 'Tilemap' | 'Particle' | 'Audio';
   config: any;
 }
 
@@ -54,6 +57,15 @@ interface Tile {
   y: number;
   color: string;
 }
+
+// Tile definitions for our system
+const TILE_DEFINITIONS = [
+  { type: 0, name: 'Eraser', color: 'transparent', description: 'Remove tiles' },
+  { type: 1, name: 'Solid', color: '#0f3460', description: 'Solid collidable tile' },
+  { type: 2, name: 'Platform', color: '#16213e', description: 'Platform tile' },
+  { type: 3, name: 'Grass', color: '#1a3a1a', description: 'Grass tile' },
+  { type: 4, name: 'Lava', color: '#3a1a1a', description: 'Lava/danger tile' }
+];
 
 // Enhanced game engine with tilemap, camera, and particles
 const GameEditor: React.FC = () => {
@@ -123,7 +135,7 @@ const GameEditor: React.FC = () => {
   const [selectedObject, setSelectedObject] = useState<string | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [logs, setLogs] = useState<string[]>(['[INFO] SparkLab Game Studio initialized']);
+  const [logs, setLogs] = useState<string[]>(['[INFO] SparkLab Game Studio initialized', '[INFO] Select a tile and paint on canvas']);
   
   // Tilemap system
   const [tilemap, setTilemap] = useState<Tile[]>(() => {
@@ -131,7 +143,7 @@ const GameEditor: React.FC = () => {
     for (let y = 0; y < 20; y++) {
       for (let x = 0; x < 27; x++) {
         if (y === 18 || y === 19) {
-          tiles.push({ type: 1, x, y, color: '#1a3a1a' });
+          tiles.push({ type: 3, x, y, color: '#1a3a1a' });
         }
       }
     }
@@ -139,6 +151,7 @@ const GameEditor: React.FC = () => {
   });
   const [selectedTileType, setSelectedTileType] = useState(1);
   const [tileSize, setTileSize] = useState(60);
+  const [isPainting, setIsPainting] = useState(false);
   
   // Camera system
   const [camera, setCamera] = useState({
@@ -151,7 +164,7 @@ const GameEditor: React.FC = () => {
   // Add log with timestamp
   const addLog = useCallback((message: string, type: 'INFO' | 'WARN' | 'ERROR' | 'SUCCESS' = 'INFO') => {
     const ts = new Date().toLocaleTimeString();
-    setLogs(prev => [...prev, `[${ts}] [${type}] ${message}`]);
+    setLogs(prev => [...prev.slice(-50), `[${ts}] [${type}] ${message}`]);
   }, []);
 
   // Helper: Get current scene
@@ -182,7 +195,8 @@ const GameEditor: React.FC = () => {
     let animationId: number;
     
     const gameLoop = () => {
-      // Update
+      if (!running) return;
+      
       for (let i = 0; i < gameObjects.length; i++) {
         const obj = gameObjects[i];
         
@@ -207,7 +221,6 @@ const GameEditor: React.FC = () => {
           obj.y += obj.velocityY;
           obj.grounded = false;
           
-          // Collision with other objects
           for (let j = 0; j < gameObjects.length; j++) {
             if (i === j) continue;
             const other = gameObjects[j];
@@ -236,11 +249,28 @@ const GameEditor: React.FC = () => {
             }
           }
           
-          // World bounds
+          for (const tile of tilemap) {
+            if (tile.type >= 1 && tile.type <= 3) {
+              const tx = tile.x * tileSize;
+              const ty = tile.y * tileSize;
+              if (
+                obj.x < tx + tileSize &&
+                obj.x + obj.width > tx &&
+                obj.y < ty + tileSize &&
+                obj.y + obj.height > ty
+              ) {
+                if (obj.velocityY > 0 && obj.y + obj.height - obj.velocityY <= ty) {
+                  obj.y = ty - obj.height;
+                  obj.velocityY = 0;
+                  obj.grounded = true;
+                }
+              }
+            }
+          }
+          
           obj.x = Math.max(0, Math.min(scene.width - obj.width, obj.x));
         }
         
-        // Particle emission
         if (particleComp && particleComp.config.active && Math.random() > 0.7) {
           particles.push({
             x: obj.x + obj.width / 2,
@@ -254,7 +284,6 @@ const GameEditor: React.FC = () => {
         }
       }
       
-      // Update particles
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx;
@@ -263,7 +292,6 @@ const GameEditor: React.FC = () => {
         if (p.life <= 0) particles.splice(i, 1);
       }
       
-      // Camera follow player
       let camX = camera.x;
       let camY = camera.y;
       if (camera.followPlayer) {
@@ -278,25 +306,22 @@ const GameEditor: React.FC = () => {
         }
       }
       
-      // Render
       ctx.fillStyle = scene.background;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
       
       ctx.save();
       ctx.translate(-camX, -camY);
       
-      // Draw tilemap
       for (const tile of tilemap) {
         if (tile.type > 0) {
           ctx.fillStyle = tile.color;
           ctx.fillRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
-          ctx.strokeStyle = '#00000011';
+          ctx.strokeStyle = 'rgba(255,255,255,0.1)';
           ctx.lineWidth = 1;
           ctx.strokeRect(tile.x * tileSize, tile.y * tileSize, tileSize, tileSize);
         }
       }
       
-      // Draw game objects
       for (const obj of gameObjects) {
         ctx.fillStyle = obj.color;
         ctx.shadowColor = obj.color;
@@ -305,7 +330,6 @@ const GameEditor: React.FC = () => {
         ctx.shadowBlur = 0;
       }
       
-      // Draw particles
       for (const p of particles) {
         ctx.globalAlpha = p.life;
         ctx.fillStyle = p.color;
@@ -317,10 +341,10 @@ const GameEditor: React.FC = () => {
       
       ctx.restore();
       
-      if (running) animationId = requestAnimationFrame(gameLoop);
+      animationId = requestAnimationFrame(gameLoop);
     };
     
-    addLog('[SUCCESS] Game started!');
+    addLog('[SUCCESS] Game started! Use Arrow Keys or WASD to move');
     animationId = requestAnimationFrame(gameLoop);
     
     return () => {
@@ -332,8 +356,7 @@ const GameEditor: React.FC = () => {
     };
   }, [isPlaying, currentScene, scenes, camera, tilemap, tileSize, addLog]);
 
-  // Tile painting
-  const handleCanvasClick = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
+  const paintTile = useCallback((e: React.MouseEvent<HTMLCanvasElement>) => {
     if (isPlaying || !canvasRef.current || !scene) return;
     
     const rect = canvasRef.current.getBoundingClientRect();
@@ -345,8 +368,13 @@ const GameEditor: React.FC = () => {
       if (selectedTileType === 0) {
         return prev.filter(t => !(t.x === x && t.y === y));
       } else {
-        const colors = ['#00000000', '#0f3460', '#16213e', '#1a3a1a', '#3a1a1a'];
-        const newTile = { type: selectedTileType, x, y, color: colors[selectedTileType] };
+        const tileDef = TILE_DEFINITIONS.find(t => t.type === selectedTileType);
+        const newTile = { 
+          type: selectedTileType, 
+          x, 
+          y, 
+          color: tileDef?.color || '#0f3460' 
+        };
         if (existing) {
           return prev.map(t => t.x === x && t.y === y ? newTile : t);
         } else {
@@ -356,13 +384,26 @@ const GameEditor: React.FC = () => {
     });
   }, [isPlaying, tileSize, camera, selectedTileType, scene]);
 
+  const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    setIsPainting(true);
+    paintTile(e);
+  };
+  
+  const handleMouseMove = (e: React.MouseEvent<HTMLCanvasElement>) => {
+    if (isPainting && !isPlaying) paintTile(e);
+  };
+  
+  const handleMouseUp = () => {
+    setIsPainting(false);
+  };
+
   const addGameObject = () => {
     const scene = scenes.find(s => s.id === currentScene);
     if (!scene) return;
     
     const newObj: GameObject = {
       id: `obj_${Date.now()}`,
-      name: 'New Object',
+      name: `New Object ${scene.objects.length + 1}`,
       x: 150 + Math.random() * 200,
       y: 150 + Math.random() * 200,
       width: 50,
@@ -377,7 +418,7 @@ const GameEditor: React.FC = () => {
       s.id === currentScene ?
         { ...s, objects: [...s.objects, newObj] } : s
     ));
-    addLog('[INFO] Added new game object');
+    addLog(`[INFO] Added ${newObj.name}`);
   };
 
   const deleteSelectedObject = () => {
@@ -415,8 +456,8 @@ const GameEditor: React.FC = () => {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SparkLab Game</title>
     <style>
-        body { margin: 0; padding: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: system-ui, sans-serif; }
-        canvas { border: 2px solid #0f3460; border-radius: 4px; box-shadow: 0 0 30px #0f346044; }
+        body { margin: 0; padding: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: system-ui, -apple-system, sans-serif; }
+        canvas { border: 2px solid #0f3460; border-radius: 4px; box-shadow: 0 0 30px rgba(15, 52, 96, 0.3); }
     </style>
 </head>
 <body>
@@ -488,7 +529,7 @@ const GameEditor: React.FC = () => {
                 }
                 
                 for (const tile of tilemap) {
-                  if (tile.type === 1) {
+                  if (tile.type >= 1 && tile.type <= 3) {
                     const tx = tile.x * tileSize;
                     const ty = tile.y * tileSize;
                     if (
@@ -575,6 +616,10 @@ const GameEditor: React.FC = () => {
             requestAnimationFrame(gameLoop);
         }
         
+        console.log('%c✨ SparkLab Game Loaded!', 'color: #e94560; font-size: 16px; font-weight: bold;');
+        console.log('%cBuilt with SparkLab Game Studio', 'color: #f9c74f; font-size: 12px;');
+        console.log('Controls: Arrow Keys / WASD, Space to jump');
+        
         gameLoop();
     </script>
 </body>
@@ -587,7 +632,7 @@ const GameEditor: React.FC = () => {
     a.download = 'sparklab-game.html';
     a.click();
     URL.revokeObjectURL(url);
-    addLog('[SUCCESS] Game exported successfully!');
+    addLog('[SUCCESS] Game exported successfully! Open sparklab-game.html to play!');
   };
 
   const clearTilemap = () => {
@@ -601,8 +646,8 @@ const GameEditor: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-slate-900 text-slate-100">
-      <header className="h-16 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-4">
-        <div className="flex items-center gap-3">
+      <header className="h-16 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-6 shadow-lg">
+        <div className="flex items-center gap-4">
           <div className="p-2 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-lg">
             <PlayCircle className="w-7 h-7" />
           </div>
@@ -610,13 +655,13 @@ const GameEditor: React.FC = () => {
             <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               SparkLab Game Studio
             </h1>
-            <p className="text-xs text-slate-400">AI-Native Game Development</p>
+            <p className="text-xs text-slate-400">AI-Native Game Development Platform</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
           <button
             onClick={() => setIsPlaying(!isPlaying)}
-            className={`flex items-center gap-2 px-5 py-2 rounded-xl font-semibold transition-all shadow-lg hover:scale-105 ${
+            className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-semibold transition-all shadow-lg hover:scale-105 active:scale-95 ${
               isPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'
             }`}
           >
@@ -625,21 +670,21 @@ const GameEditor: React.FC = () => {
           </button>
           <button
             onClick={exportGame}
-            className="flex items-center gap-2 px-5 py-2 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-all shadow-lg hover:scale-105"
+            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-all shadow-lg hover:scale-105 active:scale-95"
           >
             <Download className="w-5 h-5" />
             Export
           </button>
-          <button className="p-3 hover:bg-slate-700 rounded-xl transition-colors">
+          <button className="p-3 bg-slate-700 hover:bg-slate-600 rounded-xl transition-colors">
             <Save className="w-5 h-5" />
           </button>
         </div>
       </header>
       
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-72 bg-slate-800 border-r border-slate-700 p-4 overflow-y-auto">
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+        <aside className="w-80 bg-slate-800 border-r border-slate-700 p-5 overflow-y-auto">
+          <div className="mb-7">
+            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Layers className="w-4 h-4" />
               Scenes
             </h3>
@@ -647,52 +692,57 @@ const GameEditor: React.FC = () => {
               <button
                 key={s.id}
                 onClick={() => setCurrentScene(s.id)}
-                className={`w-full text-left px-4 py-3 rounded-xl transition-all mb-1 text-sm ${
+                className={`w-full text-left px-5 py-3 rounded-xl transition-all mb-2 text-sm flex items-center gap-3 ${
                   currentScene === s.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-slate-700 text-slate-300'
                 }`}
               >
+                <Box className="w-4 h-4" />
                 {s.name}
               </button>
             ))}
           </div>
           
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <div className="mb-7">
+            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Grid3X3 className="w-4 h-4" />
-              Tilemap Brush
+              Tile Palette
             </h3>
-            <div className="grid grid-cols-5 gap-2 mb-3">
-              {[0, 1, 2, 3, 4].map(type => {
-                const colors = ['transparent', '#0f3460', '#16213e', '#1a3a1a', '#3a1a1a'];
-                return (
-                  <button
-                    key={type}
-                    onClick={() => setSelectedTileType(type)}
-                    className={`aspect-square rounded-lg border-2 transition-all ${
-                      selectedTileType === type ? 'border-purple-400 scale-110 shadow-lg' : 'border-slate-600 hover:border-slate-400'
-                    }`}
-                    style={{ backgroundColor: type === 0 ? 'transparent' : colors[type], borderStyle: type === 0 ? 'dashed' : 'solid' }}
-                  >
-                    {type === 0 && <Trash2 className="w-4 h-4 mx-auto text-slate-400" />}
-                  </button>
-                );
-              })}
+            <div className="grid grid-cols-5 gap-2 mb-4">
+              {TILE_DEFINITIONS.map(tileDef => (
+                <button
+                  key={tileDef.type}
+                  onClick={() => setSelectedTileType(tileDef.type)}
+                  className={`aspect-square rounded-xl border-3 transition-all duration-200 flex items-center justify-center ${
+                    selectedTileType === tileDef.type ? 'border-purple-400 scale-110 shadow-xl' : 'border-slate-600 hover:border-slate-400'
+                  }`}
+                  style={{ 
+                    backgroundColor: tileDef.type === 0 ? '#0f172a' : tileDef.color,
+                    borderStyle: tileDef.type === 0 ? 'dashed' : 'solid'
+                  }}
+                  title={`${tileDef.name}: ${tileDef.description}`}
+                >
+                  {tileDef.type === 0 && <Trash2 className="w-4 h-4 text-slate-400" />}
+                </button>
+              ))}
+            </div>
+            <div className="text-xs text-slate-400 mb-3">
+              Selected: <span className="text-purple-400 font-semibold">{TILE_DEFINITIONS.find(t => t.type === selectedTileType)?.name}</span>
             </div>
             <button
               onClick={clearTilemap}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-slate-700 hover:bg-slate-600 rounded-lg text-sm transition-all"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm transition-all"
             >
               <RotateCcw className="w-4 h-4" />
               Clear Tilemap
             </button>
           </div>
           
-          <div className="mb-6">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <div className="mb-7">
+            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
               <Box className="w-4 h-4" />
               Game Objects
             </h3>
-            <div className="space-y-2 mb-3">
+            <div className="space-y-2 mb-4">
               {scene?.objects.map(obj => (
                 <button
                   key={obj.id}
@@ -702,7 +752,7 @@ const GameEditor: React.FC = () => {
                   }`}
                 >
                   <div
-                    className="w-5 h-5 rounded"
+                    className="w-5 h-5 rounded shadow"
                     style={{ backgroundColor: obj.color }}
                   />
                   {obj.name}
@@ -711,37 +761,61 @@ const GameEditor: React.FC = () => {
             </div>
             <button
               onClick={addGameObject}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl text-sm font-semibold transition-all shadow-lg hover:scale-105"
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 rounded-xl text-sm font-semibold transition-all shadow-lg hover:scale-105 active:scale-95"
             >
               <Plus className="w-5 h-5" />
               Add Object
             </button>
           </div>
+          
+          <div className="border-t border-slate-700 pt-4">
+            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <Info className="w-4 h-4" />
+              Quick Tips
+            </h3>
+            <ul className="text-xs text-slate-400 space-y-2">
+              <li>• Click canvas to paint tiles</li>
+              <li>• Hold and drag to paint quickly</li>
+              <li>• Press Play to test your game</li>
+              <li>• Select objects to edit properties</li>
+            </ul>
+          </div>
         </aside>
         
-        <main className="flex-1 flex flex-col">
-          <div className="flex-1 flex items-center justify-center bg-slate-950 p-6 overflow-auto">
-            <div className="bg-slate-800 rounded-xl p-4 shadow-2xl">
+        <main className="flex-1 flex flex-col bg-slate-950">
+          <div className="flex-1 flex items-center justify-center p-8 overflow-auto">
+            <div className="bg-slate-800 rounded-xl p-6 shadow-2xl border border-slate-700">
               <canvas
                 ref={canvasRef}
                 width={800}
                 height={600}
                 style={{
                   background: scene?.background,
-                  borderRadius: '12px'
+                  borderRadius: '12px',
+                  cursor: isPlaying ? 'default' : 'crosshair'
                 }}
-                onClick={handleCanvasClick}
-                className="cursor-crosshair"
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
               />
             </div>
           </div>
           
-          <div className="h-40 bg-slate-800 border-t border-slate-700 p-4">
-            <div className="flex items-center gap-2 mb-3">
-              <Terminal className="w-5 h-5" />
-              <span className="text-sm font-semibold text-slate-300">Console</span>
+          <div className="h-44 bg-slate-800 border-t border-slate-700 p-5">
+            <div className="flex items-center justify-between mb-3">
+              <div className="flex items-center gap-2">
+                <Terminal className="w-5 h-5" />
+                <span className="text-sm font-semibold text-slate-300">Console</span>
+              </div>
+              <button
+                onClick={() => setLogs([])}
+                className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+              >
+                Clear
+              </button>
             </div>
-            <div className="h-24 overflow-y-auto font-mono text-xs text-slate-400 bg-slate-900 rounded-lg p-3">
+            <div className="h-24 overflow-y-auto font-mono text-xs text-slate-400 bg-slate-900 rounded-xl p-4">
               {logs.map((log, i) => (
                 <div key={i} className="py-0.5">{log}</div>
               ))}
@@ -749,12 +823,12 @@ const GameEditor: React.FC = () => {
           </div>
         </main>
         
-        <aside className="w-80 bg-slate-800 border-l border-slate-700 p-5 overflow-y-auto">
+        <aside className="w-96 bg-slate-800 border-l border-slate-700 p-6 overflow-y-auto">
           {selectedObj ? (
             <div>
-              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-5 flex items-center gap-2">
                 <Settings2 className="w-4 h-4" />
-                Properties
+                Object Properties
               </h3>
               
               <div className="space-y-4">
@@ -764,27 +838,27 @@ const GameEditor: React.FC = () => {
                     type="text"
                     value={selectedObj.name}
                     onChange={(e) => updateObjectProperty('name', e.target.value)}
-                    className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm focus:outline-none focus:border-purple-500"
+                    className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500 transition-all"
                   />
                 </div>
                 
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-slate-400 mb-1 block">X</label>
+                    <label className="text-xs text-slate-400 mb-1 block">X Position</label>
                     <input
                       type="number"
                       value={selectedObj.x}
                       onChange={(e) => updateObjectProperty('x', Number(e.target.value))}
-                      className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm focus:outline-none focus:border-purple-500"
+                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
                     />
                   </div>
                   <div>
-                    <label className="text-xs text-slate-400 mb-1 block">Y</label>
+                    <label className="text-xs text-slate-400 mb-1 block">Y Position</label>
                     <input
                       type="number"
                       value={selectedObj.y}
                       onChange={(e) => updateObjectProperty('y', Number(e.target.value))}
-                      className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm focus:outline-none focus:border-purple-500"
+                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
                     />
                   </div>
                 </div>
@@ -796,7 +870,7 @@ const GameEditor: React.FC = () => {
                       type="number"
                       value={selectedObj.width}
                       onChange={(e) => updateObjectProperty('width', Number(e.target.value))}
-                      className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm focus:outline-none focus:border-purple-500"
+                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
                     />
                   </div>
                   <div>
@@ -805,25 +879,28 @@ const GameEditor: React.FC = () => {
                       type="number"
                       value={selectedObj.height}
                       onChange={(e) => updateObjectProperty('height', Number(e.target.value))}
-                      className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm focus:outline-none focus:border-purple-500"
+                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
                     />
                   </div>
                 </div>
                 
                 <div>
                   <label className="text-xs text-slate-400 mb-1 block">Color</label>
-                  <input
-                    type="color"
-                    value={selectedObj.color}
-                    onChange={(e) => updateObjectProperty('color', e.target.value)}
-                    className="w-full h-12 bg-slate-700 border border-slate-600 rounded-lg"
-                  />
+                  <div className="flex gap-3 items-center">
+                    <input
+                      type="color"
+                      value={selectedObj.color}
+                      onChange={(e) => updateObjectProperty('color', e.target.value)}
+                      className="w-16 h-12 bg-slate-700 border border-slate-600 rounded-xl"
+                    />
+                    <span className="text-xs font-mono text-slate-400">{selectedObj.color}</span>
+                  </div>
                 </div>
                 
-                <div className="pt-4 border-t border-slate-700">
+                <div className="pt-5 border-t border-slate-700">
                   <h4 className="text-xs font-semibold text-slate-300 mb-3">Components</h4>
                   {selectedObj.components?.map((comp, i) => (
-                    <div key={i} className="p-3 bg-slate-700 rounded-xl mb-2 text-xs">
+                    <div key={i} className="p-3 bg-slate-700 rounded-xl mb-2 text-xs border border-slate-600">
                       <span className="font-semibold text-purple-300">{comp.type}</span>
                     </div>
                   ))}
@@ -831,7 +908,7 @@ const GameEditor: React.FC = () => {
                 
                 <button
                   onClick={deleteSelectedObject}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-xl text-sm font-semibold transition-all shadow-lg hover:scale-105 mt-4"
+                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-xl text-sm font-semibold transition-all shadow-lg hover:scale-105 active:scale-95 mt-4"
                 >
                   <Trash2 className="w-5 h-5" />
                   Delete Object
@@ -840,23 +917,23 @@ const GameEditor: React.FC = () => {
             </div>
           ) : (
             <div className="h-full flex flex-col items-center justify-center text-slate-500 text-sm">
-              <Box className="w-16 h-16 mb-4 opacity-30" />
-              <p className="text-center">Select an object to edit<br />its properties</p>
+              <Box className="w-20 h-20 mb-4 opacity-30" />
+              <p className="text-center">Select an object from the left sidebar<br />to edit its properties</p>
             </div>
           )}
           
           <div className="mt-8 pt-6 border-t border-slate-700">
-            <h4 className="text-xs font-semibold text-slate-300 mb-3 flex items-center gap-2">
+            <h4 className="text-xs font-semibold text-slate-300 mb-4 flex items-center gap-2">
               <Camera className="w-4 h-4" />
               Camera Settings
             </h4>
             <div className="space-y-3">
-              <label className="flex items-center gap-2 text-sm text-slate-300 cursor-pointer">
+              <label className="flex items-center gap-3 text-sm text-slate-300 cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={camera.followPlayer}
                   onChange={(e) => setCamera(prev => ({ ...prev, followPlayer: e.target.checked }))}
-                  className="w-4 h-4 accent-purple-500"
+                  className="w-5 h-5 accent-purple-500"
                 />
                 Follow Player
               </label>
