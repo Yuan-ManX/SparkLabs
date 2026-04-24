@@ -19,7 +19,11 @@ import {
   Mail,
   Github,
   Twitter,
-  MessageCircle
+  MessageCircle,
+  MessageSquare,
+  Bot,
+  Mountain,
+  Network
 } from 'lucide-react';
 
 // SparkLabs AI-Native Game Engine Homepage
@@ -57,35 +61,35 @@ const SparkLabsHome: React.FC = () => {
     },
     {
       icon: Zap,
-      title: 'Real-Time Visual Generation',
+      title: 'Real-Time Generation',
       description: 'Neural rendering produces living worlds on demand. Every frame is synthesized instantly, creating infinite visual possibilities without asset constraints.'
     }
   ];
 
   const engineCapabilities = [
     {
-      title: 'Neural Asset Synthesis',
-      description: 'Generate textures, sprites, and 3D models from text descriptions',
-      icon: Image,
-      stat: '10K+ / min'
+      title: 'AI-Native Interaction',
+      description: 'Natural language drives every interaction. Players communicate with worlds that understand context, emotion, and intent.',
+      icon: MessageSquare,
+      stat: 'Natural'
     },
     {
-      title: 'Intelligent Code Assistant',
-      description: 'Context-aware scripting that understands game logic patterns',
-      icon: Terminal,
-      stat: '95% accuracy'
+      title: 'AI Agent System',
+      description: 'Autonomous intelligent agents populate worlds with life. Each agent possesses memory, goals, and emergent behaviors.',
+      icon: Bot,
+      stat: 'Emergent'
     },
     {
-      title: 'Procedural World Builder',
-      description: 'Create infinite terrains and levels with AI-driven generation',
-      icon: Globe,
+      title: 'AI Open World Exploration',
+      description: 'Infinite landscapes generated through world models. Every horizon reveals procedurally crafted environments shaped by player journey.',
+      icon: Mountain,
       stat: 'Infinite'
     },
     {
-      title: 'Adaptive NPC Engine',
-      description: 'Characters that learn and evolve based on player behavior',
-      icon: Cpu,
-      stat: 'Real-time'
+      title: 'World Model Architecture',
+      description: 'Neural world models predict and simulate reality. Physics, causality, and narrative coherence emerge from learned patterns.',
+      icon: Network,
+      stat: 'Coherent'
     }
   ];
 
@@ -157,9 +161,9 @@ const SparkLabsHome: React.FC = () => {
               ))}
             </div>
             <div className="flex items-center gap-4">
-              <button className="hidden sm:block text-white/40 hover:text-white transition-colors font-medium text-sm">
+              <a href="#signin" className="hidden sm:block text-white/40 hover:text-white transition-colors font-medium text-sm">
                 Sign In
-              </button>
+              </a>
               <button className="px-5 py-2 bg-gradient-to-r from-orange-500 to-red-600 rounded-full font-semibold text-sm hover:from-orange-600 hover:to-red-700 transition-all">
                 Join Today
               </button>
@@ -169,16 +173,16 @@ const SparkLabsHome: React.FC = () => {
       </nav>
 
       {/* Hero Section */}
-      <section ref={heroRef} className="relative py-32 lg:py-40 z-10">
+      <section id="about" ref={heroRef} className="relative pt-20 pb-24 lg:pt-24 lg:pb-32 z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div className="text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-6 animate-slide-up">
                 <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-                <span className="text-orange-300 text-sm font-medium">AI-Native Game Engine Now Available</span>
+                <span className="text-orange-300 text-sm font-medium">AI Engine Now Available</span>
               </div>
-
-              <h1 className="text-6xl lg:text-8xl font-black mb-8 leading-[0.95] tracking-tight">
+              
+              <h1 className="text-6xl lg:text-8xl font-black mb-4 leading-[0.95] tracking-tight animate-slide-up">
                 AI-Native
                 <br />
                 <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent"
@@ -186,13 +190,17 @@ const SparkLabsHome: React.FC = () => {
                   Game Engine
                 </span>
               </h1>
+
+              <p className="text-2xl lg:text-3xl font-bold text-white/60 mb-6 animate-slide-up">
+                Ignite Your Infinite Play
+              </p>
               
-              <p className="text-xl text-white/40 mb-10 max-w-lg leading-relaxed">
+              <p className="text-xl text-white/40 mb-10 max-w-lg leading-relaxed animate-slide-up">
                 SparkLabs transforms imagination into interactive experiences. 
                 Describe your vision, and watch AI construct entire worlds in real-time.
               </p>
               
-              <div className="flex flex-col sm:flex-row gap-4 mb-12">
+              <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-slide-up">
                 <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 rounded-full font-bold text-lg hover:from-orange-600 hover:to-red-700 transition-all shadow-2xl shadow-orange-500/20 flex items-center justify-center gap-3">
                   <Rocket className="w-5 h-5" />
                   Start Creating
@@ -204,7 +212,7 @@ const SparkLabsHome: React.FC = () => {
               </div>
 
               {/* Waitlist Form */}
-              <div>
+              <div className="animate-slide-up">
                 <p className="text-sm text-white/30 mb-3">Join the community of creators on the waitlist</p>
                 <form onSubmit={handleJoinWaitlist} className="flex gap-3 max-w-md">
                   <input
@@ -225,7 +233,7 @@ const SparkLabsHome: React.FC = () => {
             </div>
 
             {/* Interactive Preview */}
-            <div className="relative">
+            <div className="relative animate-slide-up">
               <div className="absolute -inset-8 bg-gradient-to-r from-orange-600/10 to-red-600/10 rounded-[3rem] blur-3xl animate-pulse" style={{ animationDuration: '4s' }} />
               <div className="relative rounded-[2rem] p-2 overflow-hidden" 
                 style={{ 
@@ -313,7 +321,7 @@ const SparkLabsHome: React.FC = () => {
                         <div className="flex items-center gap-3">
                           <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
                             <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                            <span className="text-xs text-white/50 font-mono">Neural Engine Active</span>
+                            <span className="text-xs text-white/50 font-mono">AI Engine</span>
                           </div>
                           <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
                             <Zap className="w-3 h-3 text-orange-400" />
@@ -369,21 +377,21 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Neural Capabilities */}
-      <section id="about" className="py-24 relative z-10">
+      <section id="games" className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
                 <Cpu className="w-4 h-4 text-orange-400" />
-                <span className="text-orange-300 text-sm font-medium">Neural Engine</span>
+                <span className="text-orange-300 text-sm font-medium">AI Engine</span>
               </div>
               <h2 className="text-5xl lg:text-6xl font-bold mb-8 leading-tight">
                 Intelligence Built Into
-                <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent"> Every Pixel</span>
+                <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent"> Every Experience</span>
               </h2>
               <p className="text-xl text-white/30 mb-10 leading-relaxed">
-                SparkLabs embeds machine learning directly into the rendering pipeline. 
-                From texture synthesis to behavioral NPCs, AI accelerates every aspect of game creation.
+                SparkLabs embeds neural networks at the core of every system. 
+                From world models to intelligent agents, AI shapes living worlds that evolve with each player.
               </p>
               <button className="px-8 py-4 bg-white/5 border border-white/10 rounded-full font-semibold hover:bg-white/10 transition-all flex items-center gap-3">
                 Explore Neural Features
@@ -427,7 +435,7 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Game Showcase */}
-      <section id="games" className="py-24 relative z-10">
+      <section id="community" className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">Built With SparkLabs</h2>
@@ -480,7 +488,7 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Testimonials */}
-      <section id="community" className="py-24 relative z-10">
+      <section id="signin" className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">Trusted by Creators</h2>
@@ -535,7 +543,7 @@ const SparkLabsHome: React.FC = () => {
             <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent">The Future</span>
           </h2>
           <p className="text-xl text-white/30 mb-12 max-w-2xl mx-auto leading-relaxed">
-            A growing community of developers uses SparkLabs to craft intelligent, adaptive gaming experiences.
+            A growing community of developers uses SparkLabs to craft intelligent, adaptive gaming experiences. 
             Early access unlocks exclusive capabilities and dedicated support.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
