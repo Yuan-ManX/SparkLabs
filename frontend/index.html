@@ -641,11 +641,15 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<SparkLabsHome />);
 
-    // Three.js AI-Native Game Visualization
-    (function() {
+    // SparkLabs Neural Visualization Engine
+    setTimeout(function() {
       const container = document.getElementById('three-canvas-container');
-      if (!container || typeof THREE === 'undefined') return;
+      if (!container || typeof THREE === 'undefined') {
+        console.log('SparkLabs Neural Engine: Container or THREE not ready');
+        return;
+      }
 
+      // Scene Setup
       const scene = new THREE.Scene();
       const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
@@ -654,15 +658,17 @@
       renderer.setClearColor(0x000000, 0);
       container.appendChild(renderer.domElement);
 
-      // Neural Network Nodes
+      // SparkLabs Color Palette
+      const sparkColors = [0xf97316, 0xef4444, 0xfbbf24, 0xfb923c];
+
+      // Neural Node Network
       const nodeCount = 40;
       const nodes = [];
       const nodeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
-      const nodeColors = [0xf97316, 0xef4444, 0xfbbf24, 0xfb923c];
 
       for (let i = 0; i < nodeCount; i++) {
         const material = new THREE.MeshBasicMaterial({
-          color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
+          color: sparkColors[Math.floor(Math.random() * sparkColors.length)],
           transparent: true,
           opacity: 0.6 + Math.random() * 0.4
         });
@@ -685,7 +691,7 @@
         nodes.push(node);
       }
 
-      // Connection Lines
+      // Synaptic Connections
       const lineMaterial = new THREE.LineBasicMaterial({
         color: 0xf97316,
         transparent: true,
@@ -699,14 +705,14 @@
           if (dist < 2.5) {
             const geometry = new THREE.BufferGeometry().setFromPoints([nodes[i].position, nodes[j].position]);
             const line = new THREE.Line(geometry, lineMaterial.clone());
-            line.userData = { nodeA: i, nodeB: j, baseOpacity: 0.15 };
+            line.userData = { nodeA: i, nodeB: j };
             scene.add(line);
             connections.push(line);
           }
         }
       }
 
-      // Particle System - Data Flow
+      // Data Stream Particles
       const particleCount = 100;
       const particleGeometry = new THREE.BufferGeometry();
       const positions = new Float32Array(particleCount * 3);
@@ -734,7 +740,7 @@
       const particles = new THREE.Points(particleGeometry, particleMaterial);
       scene.add(particles);
 
-      // Central AI Core
+      // Core Intelligence Sphere
       const coreGeometry = new THREE.IcosahedronGeometry(0.4, 2);
       const coreMaterial = new THREE.MeshBasicMaterial({
         color: 0xf97316,
@@ -745,22 +751,22 @@
       const core = new THREE.Mesh(coreGeometry, coreMaterial);
       scene.add(core);
 
-      // Core Glow
-      const glowGeometry = new THREE.SphereGeometry(0.6, 32, 32);
-      const glowMaterial = new THREE.MeshBasicMaterial({
+      // Core Aura
+      const auraGeometry = new THREE.SphereGeometry(0.6, 32, 32);
+      const auraMaterial = new THREE.MeshBasicMaterial({
         color: 0xf97316,
         transparent: true,
         opacity: 0.1
       });
-      const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-      scene.add(glow);
+      const aura = new THREE.Mesh(auraGeometry, auraMaterial);
+      scene.add(aura);
 
-      // Floating Game World Fragments
+      // World Fragments
       const fragmentGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
       const fragments = [];
       for (let i = 0; i < 8; i++) {
         const mat = new THREE.MeshBasicMaterial({
-          color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
+          color: sparkColors[Math.floor(Math.random() * sparkColors.length)],
           transparent: true,
           opacity: 0.3,
           wireframe: true
@@ -786,7 +792,7 @@
 
       camera.position.z = 5;
 
-      // Mouse interaction
+      // Interactive Parallax
       let mouseX = 0, mouseY = 0;
       container.addEventListener('mousemove', (e) => {
         const rect = container.getBoundingClientRect();
@@ -794,67 +800,63 @@
         mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
       });
 
-      // Animation Loop
+      // Render Loop
       let time = 0;
       function animate() {
         requestAnimationFrame(animate);
         time += 0.016;
 
-        // Rotate core
+        // Core Animation
         core.rotation.x += 0.01;
         core.rotation.y += 0.015;
-        glow.scale.setScalar(1 + Math.sin(time * 2) * 0.2);
-        glowMaterial.opacity = 0.1 + Math.sin(time * 2) * 0.05;
+        aura.scale.setScalar(1 + Math.sin(time * 2) * 0.2);
+        auraMaterial.opacity = 0.1 + Math.sin(time * 2) * 0.05;
 
-        // Animate nodes
-        nodes.forEach((node, i) => {
+        // Node Dynamics
+        nodes.forEach((node) => {
           const data = node.userData;
           node.position.add(data.velocity);
           node.position.y += Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.002;
 
-          // Boundary check
           if (Math.abs(node.position.x) > 4) data.velocity.x *= -1;
           if (Math.abs(node.position.y) > 3) data.velocity.y *= -1;
           if (Math.abs(node.position.z) > 2) data.velocity.z *= -1;
 
-          // Pulse scale
           const scale = 1 + Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.3;
           node.scale.setScalar(scale);
         });
 
-        // Update connections
+        // Connection Dynamics
         connections.forEach(line => {
           const nodeA = nodes[line.userData.nodeA];
           const nodeB = nodes[line.userData.nodeB];
-          const positions = line.geometry.attributes.position.array;
-          positions[0] = nodeA.position.x;
-          positions[1] = nodeA.position.y;
-          positions[2] = nodeA.position.z;
-          positions[3] = nodeB.position.x;
-          positions[4] = nodeB.position.y;
-          positions[5] = nodeB.position.z;
+          const pos = line.geometry.attributes.position.array;
+          pos[0] = nodeA.position.x;
+          pos[1] = nodeA.position.y;
+          pos[2] = nodeA.position.z;
+          pos[3] = nodeB.position.x;
+          pos[4] = nodeB.position.y;
+          pos[5] = nodeB.position.z;
           line.geometry.attributes.position.needsUpdate = true;
 
-          // Dynamic opacity based on distance
           const dist = nodeA.position.distanceTo(nodeB.position);
           line.material.opacity = Math.max(0, 0.3 - dist * 0.1) * (0.5 + Math.sin(time * 2) * 0.5);
         });
 
-        // Animate particles
+        // Particle Flow
         const posArray = particles.geometry.attributes.position.array;
         for (let i = 0; i < particleCount; i++) {
           posArray[i * 3] += velocities[i].x;
           posArray[i * 3 + 1] += velocities[i].y;
           posArray[i * 3 + 2] += velocities[i].z;
 
-          // Reset particles that go too far
           if (Math.abs(posArray[i * 3]) > 5) velocities[i].x *= -1;
           if (Math.abs(posArray[i * 3 + 1]) > 3) velocities[i].y *= -1;
           if (Math.abs(posArray[i * 3 + 2]) > 2.5) velocities[i].z *= -1;
         }
         particles.geometry.attributes.position.needsUpdate = true;
 
-        // Animate fragments
+        // Fragment Motion
         fragments.forEach(fragment => {
           fragment.rotation.x += fragment.userData.rotationSpeed.x;
           fragment.rotation.y += fragment.userData.rotationSpeed.y;
@@ -862,7 +864,7 @@
           fragment.position.y += Math.sin(time * fragment.userData.floatSpeed + fragment.userData.floatPhase) * 0.003;
         });
 
-        // Camera parallax
+        // Camera Motion
         camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
         camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.05;
         camera.lookAt(0, 0, 0);
@@ -872,7 +874,7 @@
 
       animate();
 
-      // Handle resize
+      // Responsive Resize
       const resizeObserver = new ResizeObserver(() => {
         const width = container.clientWidth;
         const height = container.clientHeight;
@@ -881,7 +883,7 @@
         renderer.setSize(width, height);
       });
       resizeObserver.observe(container);
-    })();
+    }, 1000);
   </script>
 </body>
 </html>

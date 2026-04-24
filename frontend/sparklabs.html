@@ -84,6 +84,84 @@
       border-color: rgba(249, 115, 22, 0.2);
       transform: translateY(-4px);
     }
+    /* SparkLabs Neural Core CSS Animation */
+    .neural-core-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: radial-gradient(ellipse at center, rgba(249,115,22,0.05) 0%, transparent 70%);
+    }
+    .neural-node {
+      position: absolute;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249,115,22,0.8) 0%, rgba(249,115,22,0) 70%);
+      animation: neuralPulse 3s ease-in-out infinite;
+    }
+    @keyframes neuralPulse {
+      0%, 100% { transform: scale(1); opacity: 0.6; }
+      50% { transform: scale(1.5); opacity: 1; }
+    }
+    .neural-line {
+      position: absolute;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, rgba(249,115,22,0.3), transparent);
+      transform-origin: left center;
+      animation: linePulse 4s ease-in-out infinite;
+    }
+    @keyframes linePulse {
+      0%, 100% { opacity: 0.2; }
+      50% { opacity: 0.6; }
+    }
+    .core-orb {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid rgba(249,115,22,0.4);
+      animation: coreSpin 8s linear infinite;
+    }
+    .core-orb::before {
+      content: '';
+      position: absolute;
+      inset: -10px;
+      border-radius: 50%;
+      border: 1px solid rgba(249,115,22,0.15);
+      animation: coreSpin 12s linear infinite reverse;
+    }
+    .core-orb::after {
+      content: '';
+      position: absolute;
+      inset: 8px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(249,115,22,0.3) 0%, transparent 70%);
+      animation: corePulse 2s ease-in-out infinite;
+    }
+    @keyframes coreSpin {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    @keyframes corePulse {
+      0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+      50% { transform: translate(-50%, -50%) scale(1.2); opacity: 0.9; }
+    }
+    .data-particle {
+      position: absolute;
+      width: 3px;
+      height: 3px;
+      border-radius: 50%;
+      background: rgba(251,191,36,0.8);
+      animation: particleFloat 5s linear infinite;
+    }
+    @keyframes particleFloat {
+      0% { transform: translate(0, 0); opacity: 0; }
+      10% { opacity: 1; }
+      90% { opacity: 1; }
+      100% { transform: translate(var(--tx), var(--ty)); opacity: 0; }
+    }
   </style>
 </head>
 <body class="text-white min-h-screen">
@@ -305,8 +383,41 @@
                           Live
                         </div>
                       </div>
-                      <div id="three-canvas-container" className="aspect-video bg-gradient-to-br from-neutral-900 to-black relative overflow-hidden">
-                        {/* Three.js Canvas will be injected here */}
+                      <div id="three-canvas-container" className="aspect-video bg-gradient-to-br from-neutral-900 to-black relative overflow-hidden" style={{minHeight: '300px'}}>
+                        {/* SparkLabs Neural Core Visualization - Pure CSS fallback always visible */}
+                        <div className="neural-core-container" id="neural-fallback">
+                          {/* Central Core Orb */}
+                          <div className="core-orb"></div>
+                          {/* Neural Nodes */}
+                          <div className="neural-node" style={{width:'8px',height:'8px',top:'20%',left:'15%',animationDelay:'0s'}}></div>
+                          <div className="neural-node" style={{width:'6px',height:'6px',top:'35%',left:'25%',animationDelay:'0.5s'}}></div>
+                          <div className="neural-node" style={{width:'10px',height:'10px',top:'15%',left:'45%',animationDelay:'1s'}}></div>
+                          <div className="neural-node" style={{width:'7px',height:'7px',top:'55%',left:'20%',animationDelay:'1.5s'}}></div>
+                          <div className="neural-node" style={{width:'9px',height:'9px',top:'70%',left:'40%',animationDelay:'2s'}}></div>
+                          <div className="neural-node" style={{width:'6px',height:'6px',top:'25%',left:'65%',animationDelay:'0.3s'}}></div>
+                          <div className="neural-node" style={{width:'8px',height:'8px',top:'60%',left:'70%',animationDelay:'0.8s'}}></div>
+                          <div className="neural-node" style={{width:'7px',height:'7px',top:'45%',left:'85%',animationDelay:'1.2s'}}></div>
+                          <div className="neural-node" style={{width:'5px',height:'5px',top:'80%',left:'60%',animationDelay:'1.7s'}}></div>
+                          <div className="neural-node" style={{width:'6px',height:'6px',top:'10%',left:'75%',animationDelay:'2.2s'}}></div>
+                          {/* Connection Lines */}
+                          <div className="neural-line" style={{width:'120px',top:'22%',left:'15%',transform:'rotate(25deg)',animationDelay:'0s'}}></div>
+                          <div className="neural-line" style={{width:'100px',top:'30%',left:'25%',transform:'rotate(-15deg)',animationDelay:'0.5s'}}></div>
+                          <div className="neural-line" style={{width:'140px',top:'45%',left:'20%',transform:'rotate(40deg)',animationDelay:'1s'}}></div>
+                          <div className="neural-line" style={{width:'90px',top:'35%',left:'45%',transform:'rotate(60deg)',animationDelay:'1.5s'}}></div>
+                          <div className="neural-line" style={{width:'110px',top:'65%',left:'40%',transform:'rotate(-30deg)',animationDelay:'0.3s'}}></div>
+                          <div className="neural-line" style={{width:'130px',top:'40%',left:'65%',transform:'rotate(15deg)',animationDelay:'0.8s'}}></div>
+                          <div className="neural-line" style={{width:'80px',top:'55%',left:'70%',transform:'rotate(-45deg)',animationDelay:'1.2s'}}></div>
+                          {/* Data Particles */}
+                          <div className="data-particle" style={{top:'20%',left:'15%',animationDelay:'0s','--tx':'80px','--ty':'40px'}}></div>
+                          <div className="data-particle" style={{top:'35%',left:'25%',animationDelay:'1s','--tx':'60px','--ty':'-30px'}}></div>
+                          <div className="data-particle" style={{top:'55%',left:'20%',animationDelay:'2s','--tx':'100px','--ty':'20px'}}></div>
+                          <div className="data-particle" style={{top:'45%',left:'45%',animationDelay:'0.5s','--tx':'70px','--ty':'50px'}}></div>
+                          <div className="data-particle" style={{top:'60%',left:'70%',animationDelay:'1.5s','--tx':'-50px','--ty':'-40px'}}></div>
+                          <div className="data-particle" style={{top:'25%',left:'65%',animationDelay:'2.5s','--tx':'40px','--ty':'60px'}}></div>
+                        </div>
+                        <div className="absolute inset-0 flex items-center justify-center text-white/10 text-sm font-mono pointer-events-none z-10" id="canvas-loading" style={{display:'none'}}>
+                          Initializing Neural Core...
+                        </div>
                       </div>
                       {/* Bottom Status Bar */}
                       <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
@@ -610,246 +721,277 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<SparkLabsHome />);
 
-    // Three.js AI-Native Game Visualization
+    // SparkLabs Neural Core Visualization
     (function() {
       const container = document.getElementById('three-canvas-container');
-      if (!container || typeof THREE === 'undefined') return;
-
-      const scene = new THREE.Scene();
-      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
-      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-      renderer.setSize(container.clientWidth, container.clientHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.setClearColor(0x000000, 0);
-      container.appendChild(renderer.domElement);
-
-      // Neural Network Nodes
-      const nodeCount = 40;
-      const nodes = [];
-      const nodeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
-      const nodeColors = [0xf97316, 0xef4444, 0xfbbf24, 0xfb923c];
-
-      for (let i = 0; i < nodeCount; i++) {
-        const material = new THREE.MeshBasicMaterial({
-          color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
-          transparent: true,
-          opacity: 0.6 + Math.random() * 0.4
-        });
-        const node = new THREE.Mesh(nodeGeometry, material);
-        node.position.set(
-          (Math.random() - 0.5) * 8,
-          (Math.random() - 0.5) * 5,
-          (Math.random() - 0.5) * 4
-        );
-        node.userData = {
-          velocity: new THREE.Vector3(
-            (Math.random() - 0.5) * 0.01,
-            (Math.random() - 0.5) * 0.01,
-            (Math.random() - 0.5) * 0.01
-          ),
-          pulsePhase: Math.random() * Math.PI * 2,
-          pulseSpeed: 0.5 + Math.random() * 1.5
-        };
-        scene.add(node);
-        nodes.push(node);
+      const fallbackEl = document.getElementById('neural-fallback');
+      if (!container || typeof THREE === 'undefined') {
+        return;
       }
 
-      // Connection Lines
-      const lineMaterial = new THREE.LineBasicMaterial({
-        color: 0xf97316,
-        transparent: true,
-        opacity: 0.15
-      });
-      const connections = [];
+      function initVisualization() {
+        const width = container.clientWidth || container.offsetWidth || 600;
+        const height = container.clientHeight || container.offsetHeight || 340;
+        if (width === 0 || height === 0) {
+          setTimeout(initVisualization, 100);
+          return;
+        }
 
-      for (let i = 0; i < nodes.length; i++) {
-        for (let j = i + 1; j < nodes.length; j++) {
-          const dist = nodes[i].position.distanceTo(nodes[j].position);
-          if (dist < 2.5) {
-            const geometry = new THREE.BufferGeometry().setFromPoints([nodes[i].position, nodes[j].position]);
-            const line = new THREE.Line(geometry, lineMaterial.clone());
-            line.userData = { nodeA: i, nodeB: j, baseOpacity: 0.15 };
-            scene.add(line);
-            connections.push(line);
+        // Hide CSS fallback when Three.js renders successfully
+        if (fallbackEl) fallbackEl.style.display = 'none';
+
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+        const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.setClearColor(0x000000, 0);
+        renderer.domElement.style.display = 'block';
+        renderer.domElement.style.width = '100%';
+        renderer.domElement.style.height = '100%';
+        renderer.domElement.style.position = 'absolute';
+        renderer.domElement.style.top = '0';
+        renderer.domElement.style.left = '0';
+        renderer.domElement.style.zIndex = '5';
+        container.appendChild(renderer.domElement);
+
+        // Neural Network Nodes
+        const nodeCount = 40;
+        const nodes = [];
+        const nodeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+        const nodeColors = [0xf97316, 0xef4444, 0xfbbf24, 0xfb923c];
+
+        for (let i = 0; i < nodeCount; i++) {
+          const material = new THREE.MeshBasicMaterial({
+            color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
+            transparent: true,
+            opacity: 0.6 + Math.random() * 0.4
+          });
+          const node = new THREE.Mesh(nodeGeometry, material);
+          node.position.set(
+            (Math.random() - 0.5) * 8,
+            (Math.random() - 0.5) * 5,
+            (Math.random() - 0.5) * 4
+          );
+          node.userData = {
+            velocity: new THREE.Vector3(
+              (Math.random() - 0.5) * 0.01,
+              (Math.random() - 0.5) * 0.01,
+              (Math.random() - 0.5) * 0.01
+            ),
+            pulsePhase: Math.random() * Math.PI * 2,
+            pulseSpeed: 0.5 + Math.random() * 1.5
+          };
+          scene.add(node);
+          nodes.push(node);
+        }
+
+        // Connection Lines
+        const lineMaterial = new THREE.LineBasicMaterial({
+          color: 0xf97316,
+          transparent: true,
+          opacity: 0.15
+        });
+        const connections = [];
+
+        for (let i = 0; i < nodes.length; i++) {
+          for (let j = i + 1; j < nodes.length; j++) {
+            const dist = nodes[i].position.distanceTo(nodes[j].position);
+            if (dist < 2.5) {
+              const geometry = new THREE.BufferGeometry().setFromPoints([nodes[i].position, nodes[j].position]);
+              const line = new THREE.Line(geometry, lineMaterial.clone());
+              line.userData = { nodeA: i, nodeB: j, baseOpacity: 0.15 };
+              scene.add(line);
+              connections.push(line);
+            }
           }
         }
-      }
 
-      // Particle System - Data Flow
-      const particleCount = 100;
-      const particleGeometry = new THREE.BufferGeometry();
-      const positions = new Float32Array(particleCount * 3);
-      const velocities = [];
+        // Particle System - Data Flow
+        const particleCount = 100;
+        const particleGeometry = new THREE.BufferGeometry();
+        const positions = new Float32Array(particleCount * 3);
+        const velocities = [];
 
-      for (let i = 0; i < particleCount; i++) {
-        positions[i * 3] = (Math.random() - 0.5) * 10;
-        positions[i * 3 + 1] = (Math.random() - 0.5) * 6;
-        positions[i * 3 + 2] = (Math.random() - 0.5) * 5;
-        velocities.push({
-          x: (Math.random() - 0.5) * 0.02,
-          y: (Math.random() - 0.5) * 0.02,
-          z: (Math.random() - 0.5) * 0.02
-        });
-      }
-
-      particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
-      const particleMaterial = new THREE.PointsMaterial({
-        color: 0xfbbf24,
-        size: 0.05,
-        transparent: true,
-        opacity: 0.6,
-        blending: THREE.AdditiveBlending
-      });
-      const particles = new THREE.Points(particleGeometry, particleMaterial);
-      scene.add(particles);
-
-      // Central AI Core
-      const coreGeometry = new THREE.IcosahedronGeometry(0.4, 2);
-      const coreMaterial = new THREE.MeshBasicMaterial({
-        color: 0xf97316,
-        wireframe: true,
-        transparent: true,
-        opacity: 0.8
-      });
-      const core = new THREE.Mesh(coreGeometry, coreMaterial);
-      scene.add(core);
-
-      // Core Glow
-      const glowGeometry = new THREE.SphereGeometry(0.6, 32, 32);
-      const glowMaterial = new THREE.MeshBasicMaterial({
-        color: 0xf97316,
-        transparent: true,
-        opacity: 0.1
-      });
-      const glow = new THREE.Mesh(glowGeometry, glowMaterial);
-      scene.add(glow);
-
-      // Floating Game World Fragments
-      const fragmentGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
-      const fragments = [];
-      for (let i = 0; i < 8; i++) {
-        const mat = new THREE.MeshBasicMaterial({
-          color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
-          transparent: true,
-          opacity: 0.3,
-          wireframe: true
-        });
-        const fragment = new THREE.Mesh(fragmentGeometry, mat);
-        fragment.position.set(
-          (Math.random() - 0.5) * 6,
-          (Math.random() - 0.5) * 4,
-          (Math.random() - 0.5) * 3
-        );
-        fragment.userData = {
-          rotationSpeed: {
+        for (let i = 0; i < particleCount; i++) {
+          positions[i * 3] = (Math.random() - 0.5) * 10;
+          positions[i * 3 + 1] = (Math.random() - 0.5) * 6;
+          positions[i * 3 + 2] = (Math.random() - 0.5) * 5;
+          velocities.push({
             x: (Math.random() - 0.5) * 0.02,
             y: (Math.random() - 0.5) * 0.02,
             z: (Math.random() - 0.5) * 0.02
-          },
-          floatSpeed: 0.005 + Math.random() * 0.01,
-          floatPhase: Math.random() * Math.PI * 2
-        };
-        scene.add(fragment);
-        fragments.push(fragment);
-      }
-
-      camera.position.z = 5;
-
-      // Mouse interaction
-      let mouseX = 0, mouseY = 0;
-      container.addEventListener('mousemove', (e) => {
-        const rect = container.getBoundingClientRect();
-        mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
-        mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
-      });
-
-      // Animation Loop
-      let time = 0;
-      function animate() {
-        requestAnimationFrame(animate);
-        time += 0.016;
-
-        // Rotate core
-        core.rotation.x += 0.01;
-        core.rotation.y += 0.015;
-        glow.scale.setScalar(1 + Math.sin(time * 2) * 0.2);
-        glowMaterial.opacity = 0.1 + Math.sin(time * 2) * 0.05;
-
-        // Animate nodes
-        nodes.forEach((node, i) => {
-          const data = node.userData;
-          node.position.add(data.velocity);
-          node.position.y += Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.002;
-
-          // Boundary check
-          if (Math.abs(node.position.x) > 4) data.velocity.x *= -1;
-          if (Math.abs(node.position.y) > 3) data.velocity.y *= -1;
-          if (Math.abs(node.position.z) > 2) data.velocity.z *= -1;
-
-          // Pulse scale
-          const scale = 1 + Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.3;
-          node.scale.setScalar(scale);
-        });
-
-        // Update connections
-        connections.forEach(line => {
-          const nodeA = nodes[line.userData.nodeA];
-          const nodeB = nodes[line.userData.nodeB];
-          const positions = line.geometry.attributes.position.array;
-          positions[0] = nodeA.position.x;
-          positions[1] = nodeA.position.y;
-          positions[2] = nodeA.position.z;
-          positions[3] = nodeB.position.x;
-          positions[4] = nodeB.position.y;
-          positions[5] = nodeB.position.z;
-          line.geometry.attributes.position.needsUpdate = true;
-
-          // Dynamic opacity based on distance
-          const dist = nodeA.position.distanceTo(nodeB.position);
-          line.material.opacity = Math.max(0, 0.3 - dist * 0.1) * (0.5 + Math.sin(time * 2) * 0.5);
-        });
-
-        // Animate particles
-        const posArray = particles.geometry.attributes.position.array;
-        for (let i = 0; i < particleCount; i++) {
-          posArray[i * 3] += velocities[i].x;
-          posArray[i * 3 + 1] += velocities[i].y;
-          posArray[i * 3 + 2] += velocities[i].z;
-
-          // Reset particles that go too far
-          if (Math.abs(posArray[i * 3]) > 5) velocities[i].x *= -1;
-          if (Math.abs(posArray[i * 3 + 1]) > 3) velocities[i].y *= -1;
-          if (Math.abs(posArray[i * 3 + 2]) > 2.5) velocities[i].z *= -1;
+          });
         }
-        particles.geometry.attributes.position.needsUpdate = true;
 
-        // Animate fragments
-        fragments.forEach(fragment => {
-          fragment.rotation.x += fragment.userData.rotationSpeed.x;
-          fragment.rotation.y += fragment.userData.rotationSpeed.y;
-          fragment.rotation.z += fragment.userData.rotationSpeed.z;
-          fragment.position.y += Math.sin(time * fragment.userData.floatSpeed + fragment.userData.floatPhase) * 0.003;
+        particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+        const particleMaterial = new THREE.PointsMaterial({
+          color: 0xfbbf24,
+          size: 0.05,
+          transparent: true,
+          opacity: 0.6,
+          blending: THREE.AdditiveBlending
+        });
+        const particles = new THREE.Points(particleGeometry, particleMaterial);
+        scene.add(particles);
+
+        // Central AI Core
+        const coreGeometry = new THREE.IcosahedronGeometry(0.4, 2);
+        const coreMaterial = new THREE.MeshBasicMaterial({
+          color: 0xf97316,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.8
+        });
+        const core = new THREE.Mesh(coreGeometry, coreMaterial);
+        scene.add(core);
+
+        // Core Glow
+        const glowGeometry = new THREE.SphereGeometry(0.6, 32, 32);
+        const glowMaterial = new THREE.MeshBasicMaterial({
+          color: 0xf97316,
+          transparent: true,
+          opacity: 0.1
+        });
+        const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+        scene.add(glow);
+
+        // Floating Game World Fragments
+        const fragmentGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+        const fragments = [];
+        for (let i = 0; i < 8; i++) {
+          const mat = new THREE.MeshBasicMaterial({
+            color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
+            transparent: true,
+            opacity: 0.3,
+            wireframe: true
+          });
+          const fragment = new THREE.Mesh(fragmentGeometry, mat);
+          fragment.position.set(
+            (Math.random() - 0.5) * 6,
+            (Math.random() - 0.5) * 4,
+            (Math.random() - 0.5) * 3
+          );
+          fragment.userData = {
+            rotationSpeed: {
+              x: (Math.random() - 0.5) * 0.02,
+              y: (Math.random() - 0.5) * 0.02,
+              z: (Math.random() - 0.5) * 0.02
+            },
+            floatSpeed: 0.005 + Math.random() * 0.01,
+            floatPhase: Math.random() * Math.PI * 2
+          };
+          scene.add(fragment);
+          fragments.push(fragment);
+        }
+
+        camera.position.z = 5;
+
+        // Mouse interaction
+        let mouseX = 0, mouseY = 0;
+        container.addEventListener('mousemove', (e) => {
+          const rect = container.getBoundingClientRect();
+          mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+          mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
         });
 
-        // Camera parallax
-        camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
-        camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.05;
-        camera.lookAt(0, 0, 0);
+        // Animation Loop
+        let time = 0;
+        function animate() {
+          requestAnimationFrame(animate);
+          time += 0.016;
 
-        renderer.render(scene, camera);
+          // Rotate core
+          core.rotation.x += 0.01;
+          core.rotation.y += 0.015;
+          glow.scale.setScalar(1 + Math.sin(time * 2) * 0.2);
+          glowMaterial.opacity = 0.1 + Math.sin(time * 2) * 0.05;
+
+          // Animate nodes
+          nodes.forEach((node) => {
+            const data = node.userData;
+            node.position.add(data.velocity);
+            node.position.y += Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.002;
+
+            // Boundary check
+            if (Math.abs(node.position.x) > 4) data.velocity.x *= -1;
+            if (Math.abs(node.position.y) > 3) data.velocity.y *= -1;
+            if (Math.abs(node.position.z) > 2) data.velocity.z *= -1;
+
+            // Pulse scale
+            const scale = 1 + Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.3;
+            node.scale.setScalar(scale);
+          });
+
+          // Update connections
+          connections.forEach(line => {
+            const nodeA = nodes[line.userData.nodeA];
+            const nodeB = nodes[line.userData.nodeB];
+            const posArr = line.geometry.attributes.position.array;
+            posArr[0] = nodeA.position.x;
+            posArr[1] = nodeA.position.y;
+            posArr[2] = nodeA.position.z;
+            posArr[3] = nodeB.position.x;
+            posArr[4] = nodeB.position.y;
+            posArr[5] = nodeB.position.z;
+            line.geometry.attributes.position.needsUpdate = true;
+
+            // Dynamic opacity based on distance
+            const dist = nodeA.position.distanceTo(nodeB.position);
+            line.material.opacity = Math.max(0, 0.3 - dist * 0.1) * (0.5 + Math.sin(time * 2) * 0.5);
+          });
+
+          // Animate particles
+          const posArray = particles.geometry.attributes.position.array;
+          for (let i = 0; i < particleCount; i++) {
+            posArray[i * 3] += velocities[i].x;
+            posArray[i * 3 + 1] += velocities[i].y;
+            posArray[i * 3 + 2] += velocities[i].z;
+
+            // Reset particles that go too far
+            if (Math.abs(posArray[i * 3]) > 5) velocities[i].x *= -1;
+            if (Math.abs(posArray[i * 3 + 1]) > 3) velocities[i].y *= -1;
+            if (Math.abs(posArray[i * 3 + 2]) > 2.5) velocities[i].z *= -1;
+          }
+          particles.geometry.attributes.position.needsUpdate = true;
+
+          // Animate fragments
+          fragments.forEach(fragment => {
+            fragment.rotation.x += fragment.userData.rotationSpeed.x;
+            fragment.rotation.y += fragment.userData.rotationSpeed.y;
+            fragment.rotation.z += fragment.userData.rotationSpeed.z;
+            fragment.position.y += Math.sin(time * fragment.userData.floatSpeed + fragment.userData.floatPhase) * 0.003;
+          });
+
+          // Camera parallax
+          camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+          camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.05;
+          camera.lookAt(0, 0, 0);
+
+          renderer.render(scene, camera);
+        }
+
+        animate();
+
+        // Handle resize
+        const resizeObserver = new ResizeObserver(() => {
+          const w = container.clientWidth;
+          const h = container.clientHeight;
+          if (w > 0 && h > 0) {
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+          }
+        });
+        resizeObserver.observe(container);
       }
 
-      animate();
-
-      // Handle resize
-      const resizeObserver = new ResizeObserver(() => {
-        const width = container.clientWidth;
-        const height = container.clientHeight;
-        camera.aspect = width / height;
-        camera.updateProjectionMatrix();
-        renderer.setSize(width, height);
-      });
-      resizeObserver.observe(container);
+      // Delay initialization to ensure React has rendered and container has size
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(initVisualization, 500));
+      } else {
+        setTimeout(initVisualization, 500);
+      }
     })();
   </script>
 </body>
