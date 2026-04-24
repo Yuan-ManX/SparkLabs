@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/SparkLabs-Logo.png" alt="SparkLabs Logo" width="65%"/>
+<img src="./assets/SparkLabs-Logo.png" alt="SparkLabs Logo"/>
 
 # Spark Labs
 
