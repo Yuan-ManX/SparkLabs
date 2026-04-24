@@ -8,6 +8,7 @@
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
   <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
   <style>
@@ -287,7 +288,7 @@
                   </div>
                 </div>
 
-                {/* Interactive Preview */}
+                {/* Interactive Preview - Three.js AI-Native Game Visualization */}
                 <div className="relative animate-slide-up delay-300">
                   <div className="absolute -inset-8 bg-gradient-to-r from-orange-600/10 to-red-600/10 rounded-[3rem] blur-3xl animate-pulse-glow" />
                   <div className="relative glass-card rounded-[2rem] p-2 glow-orange">
@@ -304,86 +305,26 @@
                           Live
                         </div>
                       </div>
-                      <div className="aspect-video bg-gradient-to-br from-neutral-900 to-black relative overflow-hidden">
-                        {/* Neural Network Visualization */}
-                        <div className="absolute inset-0">
-                          <svg className="absolute inset-0 w-full h-full" style={{opacity: 0.3}}>
-                            <defs>
-                              <linearGradient id="nodeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stopColor="#f97316" stopOpacity="0.6" />
-                                <stop offset="100%" stopColor="#ef4444" stopOpacity="0.2" />
-                              </linearGradient>
-                            </defs>
-                            {/* Connection Lines */}
-                            <line x1="20%" y1="30%" x2="50%" y2="50%" stroke="url(#nodeGrad)" strokeWidth="1" opacity="0.4">
-                              <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" />
-                            </line>
-                            <line x1="50%" y1="50%" x2="80%" y2="30%" stroke="url(#nodeGrad)" strokeWidth="1" opacity="0.4">
-                              <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" delay="1s" />
-                            </line>
-                            <line x1="30%" y1="70%" x2="50%" y2="50%" stroke="url(#nodeGrad)" strokeWidth="1" opacity="0.4">
-                              <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" delay="0.5s" />
-                            </line>
-                            <line x1="50%" y1="50%" x2="70%" y2="70%" stroke="url(#nodeGrad)" strokeWidth="1" opacity="0.4">
-                              <animate attributeName="opacity" values="0.4;0.8;0.4" dur="3s" repeatCount="indefinite" delay="1.5s" />
-                            </line>
-                            {/* Neural Nodes */}
-                            <circle cx="20%" cy="30%" r="6" fill="#f97316" opacity="0.8">
-                              <animate attributeName="r" values="6;8;6" dur="2s" repeatCount="indefinite" />
-                            </circle>
-                            <circle cx="50%" cy="50%" r="8" fill="#ef4444" opacity="0.9">
-                              <animate attributeName="r" values="8;10;8" dur="2s" repeatCount="indefinite" delay="0.3s" />
-                            </circle>
-                            <circle cx="80%" cy="30%" r="6" fill="#f97316" opacity="0.8">
-                              <animate attributeName="r" values="6;8;6" dur="2s" repeatCount="indefinite" delay="0.6s" />
-                            </circle>
-                            <circle cx="30%" cy="70%" r="5" fill="#fbbf24" opacity="0.7">
-                              <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite" delay="0.9s" />
-                            </circle>
-                            <circle cx="70%" cy="70%" r="5" fill="#fbbf24" opacity="0.7">
-                              <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite" delay="1.2s" />
-                            </circle>
-                          </svg>
-
-                          {/* Floating Data Particles */}
-                          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-orange-400 rounded-full animate-pulse shadow-lg shadow-orange-400/50" />
-                          <div className="absolute top-1/3 right-1/4 w-3 h-3 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.3s'}} />
-                          <div className="absolute bottom-1/3 left-2/3 w-2 h-2 bg-amber-400 rounded-full animate-pulse" style={{animationDelay: '0.6s'}} />
-
-                          {/* Central Processing Core */}
-                          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                            <div className="w-24 h-24 bg-gradient-to-br from-orange-500/20 to-red-600/20 rounded-full blur-2xl animate-pulse" />
-                            <div className="absolute inset-0 flex items-center justify-center">
-                              <i className="fa-solid fa-brain text-orange-400 text-3xl animate-pulse" />
+                      <div id="three-canvas-container" className="aspect-video bg-gradient-to-br from-neutral-900 to-black relative overflow-hidden">
+                        {/* Three.js Canvas will be injected here */}
+                      </div>
+                      {/* Bottom Status Bar */}
+                      <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
+                              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                              <span className="text-xs text-white/50 font-mono">AI Engine</span>
+                            </div>
+                            <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
+                              <i className="fa-solid fa-bolt text-orange-400 text-xs"></i>
+                              <span className="text-xs text-white/50 font-mono">60 FPS</span>
                             </div>
                           </div>
-
-                          {/* Code Stream Effect */}
-                          <div className="absolute top-4 left-4 font-mono text-xs text-orange-500/30">
-                            <div className="animate-pulse">{'>'} neural.generate(world)</div>
-                            <div className="animate-pulse" style={{animationDelay: '0.5s'}}>{'>'} asset.create(texture)</div>
-                            <div className="animate-pulse" style={{animationDelay: '1s'}}>{'>'} physics.simulate()</div>
-                          </div>
-                        </div>
-
-                        {/* Bottom Status Bar */}
-                        <div className="absolute bottom-0 left-0 right-0 p-4 bg-gradient-to-t from-black/80 to-transparent">
-                          <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-3">
-                              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
-                                <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
-                                <span className="text-xs text-white/50 font-mono">AI Engine</span>
-                              </div>
-                              <div className="flex items-center gap-2 px-3 py-1.5 bg-white/5 rounded-full border border-white/10">
-                                <i className="fa-solid fa-bolt text-orange-400 text-xs"></i>
-                                <span className="text-xs text-white/50 font-mono">60 FPS</span>
-                              </div>
-                            </div>
-                            <div className="flex gap-1">
-                              <div className="w-6 h-1 bg-orange-500 rounded-full" />
-                              <div className="w-4 h-1 bg-orange-500/60 rounded-full" />
-                              <div className="w-3 h-1 bg-orange-500/30 rounded-full" />
-                            </div>
+                          <div className="flex gap-1">
+                            <div className="w-6 h-1 bg-orange-500 rounded-full" />
+                            <div className="w-4 h-1 bg-orange-500/60 rounded-full" />
+                            <div className="w-3 h-1 bg-orange-500/30 rounded-full" />
                           </div>
                         </div>
                       </div>
@@ -668,6 +609,248 @@
 
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<SparkLabsHome />);
+
+    // Three.js AI-Native Game Visualization
+    (function() {
+      const container = document.getElementById('three-canvas-container');
+      if (!container || typeof THREE === 'undefined') return;
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+      renderer.setSize(container.clientWidth, container.clientHeight);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.setClearColor(0x000000, 0);
+      container.appendChild(renderer.domElement);
+
+      // Neural Network Nodes
+      const nodeCount = 40;
+      const nodes = [];
+      const nodeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
+      const nodeColors = [0xf97316, 0xef4444, 0xfbbf24, 0xfb923c];
+
+      for (let i = 0; i < nodeCount; i++) {
+        const material = new THREE.MeshBasicMaterial({
+          color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
+          transparent: true,
+          opacity: 0.6 + Math.random() * 0.4
+        });
+        const node = new THREE.Mesh(nodeGeometry, material);
+        node.position.set(
+          (Math.random() - 0.5) * 8,
+          (Math.random() - 0.5) * 5,
+          (Math.random() - 0.5) * 4
+        );
+        node.userData = {
+          velocity: new THREE.Vector3(
+            (Math.random() - 0.5) * 0.01,
+            (Math.random() - 0.5) * 0.01,
+            (Math.random() - 0.5) * 0.01
+          ),
+          pulsePhase: Math.random() * Math.PI * 2,
+          pulseSpeed: 0.5 + Math.random() * 1.5
+        };
+        scene.add(node);
+        nodes.push(node);
+      }
+
+      // Connection Lines
+      const lineMaterial = new THREE.LineBasicMaterial({
+        color: 0xf97316,
+        transparent: true,
+        opacity: 0.15
+      });
+      const connections = [];
+
+      for (let i = 0; i < nodes.length; i++) {
+        for (let j = i + 1; j < nodes.length; j++) {
+          const dist = nodes[i].position.distanceTo(nodes[j].position);
+          if (dist < 2.5) {
+            const geometry = new THREE.BufferGeometry().setFromPoints([nodes[i].position, nodes[j].position]);
+            const line = new THREE.Line(geometry, lineMaterial.clone());
+            line.userData = { nodeA: i, nodeB: j, baseOpacity: 0.15 };
+            scene.add(line);
+            connections.push(line);
+          }
+        }
+      }
+
+      // Particle System - Data Flow
+      const particleCount = 100;
+      const particleGeometry = new THREE.BufferGeometry();
+      const positions = new Float32Array(particleCount * 3);
+      const velocities = [];
+
+      for (let i = 0; i < particleCount; i++) {
+        positions[i * 3] = (Math.random() - 0.5) * 10;
+        positions[i * 3 + 1] = (Math.random() - 0.5) * 6;
+        positions[i * 3 + 2] = (Math.random() - 0.5) * 5;
+        velocities.push({
+          x: (Math.random() - 0.5) * 0.02,
+          y: (Math.random() - 0.5) * 0.02,
+          z: (Math.random() - 0.5) * 0.02
+        });
+      }
+
+      particleGeometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+      const particleMaterial = new THREE.PointsMaterial({
+        color: 0xfbbf24,
+        size: 0.05,
+        transparent: true,
+        opacity: 0.6,
+        blending: THREE.AdditiveBlending
+      });
+      const particles = new THREE.Points(particleGeometry, particleMaterial);
+      scene.add(particles);
+
+      // Central AI Core
+      const coreGeometry = new THREE.IcosahedronGeometry(0.4, 2);
+      const coreMaterial = new THREE.MeshBasicMaterial({
+        color: 0xf97316,
+        wireframe: true,
+        transparent: true,
+        opacity: 0.8
+      });
+      const core = new THREE.Mesh(coreGeometry, coreMaterial);
+      scene.add(core);
+
+      // Core Glow
+      const glowGeometry = new THREE.SphereGeometry(0.6, 32, 32);
+      const glowMaterial = new THREE.MeshBasicMaterial({
+        color: 0xf97316,
+        transparent: true,
+        opacity: 0.1
+      });
+      const glow = new THREE.Mesh(glowGeometry, glowMaterial);
+      scene.add(glow);
+
+      // Floating Game World Fragments
+      const fragmentGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
+      const fragments = [];
+      for (let i = 0; i < 8; i++) {
+        const mat = new THREE.MeshBasicMaterial({
+          color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
+          transparent: true,
+          opacity: 0.3,
+          wireframe: true
+        });
+        const fragment = new THREE.Mesh(fragmentGeometry, mat);
+        fragment.position.set(
+          (Math.random() - 0.5) * 6,
+          (Math.random() - 0.5) * 4,
+          (Math.random() - 0.5) * 3
+        );
+        fragment.userData = {
+          rotationSpeed: {
+            x: (Math.random() - 0.5) * 0.02,
+            y: (Math.random() - 0.5) * 0.02,
+            z: (Math.random() - 0.5) * 0.02
+          },
+          floatSpeed: 0.005 + Math.random() * 0.01,
+          floatPhase: Math.random() * Math.PI * 2
+        };
+        scene.add(fragment);
+        fragments.push(fragment);
+      }
+
+      camera.position.z = 5;
+
+      // Mouse interaction
+      let mouseX = 0, mouseY = 0;
+      container.addEventListener('mousemove', (e) => {
+        const rect = container.getBoundingClientRect();
+        mouseX = ((e.clientX - rect.left) / rect.width - 0.5) * 2;
+        mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
+      });
+
+      // Animation Loop
+      let time = 0;
+      function animate() {
+        requestAnimationFrame(animate);
+        time += 0.016;
+
+        // Rotate core
+        core.rotation.x += 0.01;
+        core.rotation.y += 0.015;
+        glow.scale.setScalar(1 + Math.sin(time * 2) * 0.2);
+        glowMaterial.opacity = 0.1 + Math.sin(time * 2) * 0.05;
+
+        // Animate nodes
+        nodes.forEach((node, i) => {
+          const data = node.userData;
+          node.position.add(data.velocity);
+          node.position.y += Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.002;
+
+          // Boundary check
+          if (Math.abs(node.position.x) > 4) data.velocity.x *= -1;
+          if (Math.abs(node.position.y) > 3) data.velocity.y *= -1;
+          if (Math.abs(node.position.z) > 2) data.velocity.z *= -1;
+
+          // Pulse scale
+          const scale = 1 + Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.3;
+          node.scale.setScalar(scale);
+        });
+
+        // Update connections
+        connections.forEach(line => {
+          const nodeA = nodes[line.userData.nodeA];
+          const nodeB = nodes[line.userData.nodeB];
+          const positions = line.geometry.attributes.position.array;
+          positions[0] = nodeA.position.x;
+          positions[1] = nodeA.position.y;
+          positions[2] = nodeA.position.z;
+          positions[3] = nodeB.position.x;
+          positions[4] = nodeB.position.y;
+          positions[5] = nodeB.position.z;
+          line.geometry.attributes.position.needsUpdate = true;
+
+          // Dynamic opacity based on distance
+          const dist = nodeA.position.distanceTo(nodeB.position);
+          line.material.opacity = Math.max(0, 0.3 - dist * 0.1) * (0.5 + Math.sin(time * 2) * 0.5);
+        });
+
+        // Animate particles
+        const posArray = particles.geometry.attributes.position.array;
+        for (let i = 0; i < particleCount; i++) {
+          posArray[i * 3] += velocities[i].x;
+          posArray[i * 3 + 1] += velocities[i].y;
+          posArray[i * 3 + 2] += velocities[i].z;
+
+          // Reset particles that go too far
+          if (Math.abs(posArray[i * 3]) > 5) velocities[i].x *= -1;
+          if (Math.abs(posArray[i * 3 + 1]) > 3) velocities[i].y *= -1;
+          if (Math.abs(posArray[i * 3 + 2]) > 2.5) velocities[i].z *= -1;
+        }
+        particles.geometry.attributes.position.needsUpdate = true;
+
+        // Animate fragments
+        fragments.forEach(fragment => {
+          fragment.rotation.x += fragment.userData.rotationSpeed.x;
+          fragment.rotation.y += fragment.userData.rotationSpeed.y;
+          fragment.rotation.z += fragment.userData.rotationSpeed.z;
+          fragment.position.y += Math.sin(time * fragment.userData.floatSpeed + fragment.userData.floatPhase) * 0.003;
+        });
+
+        // Camera parallax
+        camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
+        camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.05;
+        camera.lookAt(0, 0, 0);
+
+        renderer.render(scene, camera);
+      }
+
+      animate();
+
+      // Handle resize
+      const resizeObserver = new ResizeObserver(() => {
+        const width = container.clientWidth;
+        const height = container.clientHeight;
+        camera.aspect = width / height;
+        camera.updateProjectionMatrix();
+        renderer.setSize(width, height);
+      });
+      resizeObserver.observe(container);
+    })();
   </script>
 </body>
 </html>
