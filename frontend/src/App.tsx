@@ -14,7 +14,8 @@ import {
   Bot,
   Workflow,
   Gamepad2,
-  Layers
+  Layers,
+  Home
 } from 'lucide-react';
 import StoryEditor from './components/StoryEditor';
 import AssetGenerator from './components/AssetGenerator';
@@ -23,15 +24,17 @@ import StoryboardEditor from './components/StoryboardEditor';
 import VideoRenderer from './components/VideoRenderer';
 import GameGenerator from './components/GameGenerator';
 import GameEditor from './components/GameEditor';
+import WelcomeDashboard from './components/WelcomeDashboard';
 
-type ViewMode = 'editor' | 'games' | 'story' | 'asset' | 'voice' | 'storyboard' | 'video';
+type ViewMode = 'welcome' | 'editor' | 'games' | 'story' | 'asset' | 'voice' | 'storyboard' | 'video';
 
 function App() {
-  const [activeMode, setActiveMode] = useState<ViewMode>('editor');
+  const [activeMode, setActiveMode] = useState<ViewMode>('welcome');
   const [projectName, setProjectName] = useState('SparkLab Project');
   const [isPlaying, setIsPlaying] = useState(false);
 
   const navItems = [
+    { id: 'welcome' as ViewMode, icon: Home, label: 'Dashboard', color: 'text-yellow-400' },
     { id: 'editor' as ViewMode, icon: Layers, label: 'Game Studio', color: 'text-purple-400' },
     { id: 'games' as ViewMode, icon: Gamepad2, label: 'Templates', color: 'text-pink-400' },
     { id: 'story' as ViewMode, icon: FileText, label: 'Story Editor', color: 'text-blue-400' },
@@ -43,6 +46,8 @@ function App() {
 
   const renderActivePanel = () => {
     switch (activeMode) {
+      case 'welcome':
+        return <WelcomeDashboard />;
       case 'editor':
         return <GameEditor />;
       case 'games':
@@ -58,7 +63,7 @@ function App() {
       case 'video':
         return <VideoRenderer />;
       default:
-        return <GameEditor />;
+        return <WelcomeDashboard />;
     }
   };
 
