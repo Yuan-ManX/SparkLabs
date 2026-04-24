@@ -344,12 +344,12 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Core Features - Three Column Layout */}
-      <section id="features" className="py-24 relative z-10">
+      <section id="games" className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">AI-Native Creation</h2>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">AI-Native Game Creation</h2>
             <p className="text-xl text-white/30 max-w-2xl mx-auto">
-              Every aspect of game development powered by neural networks. From concept to playable experience.
+              Neural networks power every stage of game creation. From initial concept to fully playable worlds shaped by AI.
             </p>
           </div>
 
@@ -377,7 +377,7 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Neural Capabilities */}
-      <section id="games" className="py-24 relative z-10">
+      <section id="features" className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
@@ -390,11 +390,11 @@ const SparkLabsHome: React.FC = () => {
                 <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent"> Every Experience</span>
               </h2>
               <p className="text-xl text-white/30 mb-10 leading-relaxed">
-                SparkLabs embeds neural networks at the core of every system. 
+                SparkLabs embeds neural networks at the core of every system.
                 From world models to intelligent agents, AI shapes living worlds that evolve with each player.
               </p>
               <button className="px-8 py-4 bg-white/5 border border-white/10 rounded-full font-semibold hover:bg-white/10 transition-all flex items-center gap-3">
-                Explore Neural Features
+                Explore AI Game Creation
                 <ArrowRight className="w-4 h-4" />
               </button>
             </div>
@@ -440,7 +440,7 @@ const SparkLabsHome: React.FC = () => {
           <div className="text-center mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">Built With SparkLabs</h2>
             <p className="text-xl text-white/30 max-w-2xl mx-auto">
-              Games created by our community using neural-powered development tools
+              AI-native worlds crafted through neural exploration. Each game emerges from infinite generative possibilities.
             </p>
           </div>
 
