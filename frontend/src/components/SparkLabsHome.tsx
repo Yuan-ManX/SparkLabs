@@ -119,44 +119,44 @@ const SparkLabsHome: React.FC = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white overflow-x-hidden">
+    <div className="min-h-screen bg-neutral-950 text-white overflow-x-hidden">
       {/* Animated Background */}
       <div className="fixed inset-0 z-0 pointer-events-none">
         <div 
-          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1500px] h-[1500px] bg-gradient-to-br from-purple-900/20 via-transparent to-pink-900/20 rounded-full blur-3xl"
+          className="absolute top-0 left-1/2 -translate-x-1/2 w-[1500px] h-[1500px] bg-gradient-to-br from-orange-900/20 via-transparent to-red-900/20 rounded-full blur-3xl"
           style={{ transform: `translate(-50%, ${scrollY * 0.3}px)` }}
         />
         <div 
-          className="absolute bottom-0 right-0 w-[1000px] h-[1000px] bg-gradient-to-tl from-blue-900/20 via-transparent to-cyan-900/20 rounded-full blur-3xl"
+          className="absolute bottom-0 right-0 w-[1000px] h-[1000px] bg-gradient-to-tl from-amber-900/20 via-transparent to-orange-900/20 rounded-full blur-3xl"
           style={{ transform: `translate(30%, ${-scrollY * 0.2}px)` }}
         />
       </div>
 
       {/* Navigation */}
-      <nav className="sticky top-0 z-50 bg-slate-950/80 backdrop-blur-xl border-b border-slate-800/50">
+      <nav className="sticky top-0 z-50 bg-neutral-950/80 backdrop-blur-xl border-b border-orange-900/20">
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-lg shadow-purple-500/20">
-                <Sparkles className="w-7 h-7 text-white" />
+              <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl shadow-lg shadow-orange-500/20">
+                <Zap className="w-7 h-7 text-white" />
               </div>
               <span className="text-2xl font-black tracking-tight">
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Spark</span>
+                <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent">Spark</span>
                 <span className="text-white">Labs</span>
               </span>
             </div>
             <div className="hidden lg:flex items-center gap-8">
               {['Products', 'Solutions', 'Documentation', 'Community'].map((item) => (
-                <button key={item} className="text-slate-400 hover:text-white transition-colors font-medium text-sm">
+                <button key={item} className="text-neutral-400 hover:text-white transition-colors font-medium text-sm">
                   {item}
                 </button>
               ))}
             </div>
             <div className="flex items-center gap-4">
-              <button className="hidden sm:block text-slate-400 hover:text-white transition-colors font-medium text-sm">
+              <button className="hidden sm:block text-neutral-400 hover:text-white transition-colors font-medium text-sm">
                 Sign In
               </button>
-              <button className="px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl font-semibold text-sm hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg shadow-purple-500/25">
+              <button className="px-5 py-2.5 bg-gradient-to-r from-orange-500 to-red-600 rounded-xl font-semibold text-sm hover:from-orange-600 hover:to-red-700 transition-all shadow-lg shadow-orange-500/25">
                 Start Creating
               </button>
             </div>
@@ -169,37 +169,37 @@ const SparkLabsHome: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-12 items-center">
             <div className="text-left">
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-6">
-                <Zap className="w-4 h-4 text-purple-400" />
-                <span className="text-purple-300 text-sm font-semibold">Now with Neural Engine 2.0</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-500/20 rounded-full mb-6">
+                <Zap className="w-4 h-4 text-orange-400" />
+                <span className="text-orange-300 text-sm font-semibold">Now with Neural Engine 2.0</span>
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-[1.1]">
                 The{' '}
-                <span className="bg-gradient-to-r from-purple-400 via-pink-400 to-purple-400 bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent">
                   AI-Native
                 </span>
                 <br />
                 Game Engine
               </h1>
               
-              <p className="text-xl text-slate-400 mb-8 max-w-xl leading-relaxed">
+              <p className="text-xl text-neutral-400 mb-8 max-w-xl leading-relaxed">
                 SparkLabs reimagines game development with integrated neural networks. 
                 Create, build, and deploy intelligent games that adapt to every player.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-12">
-                <button className="px-8 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-xl shadow-purple-500/25 flex items-center justify-center gap-2">
+                <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl font-bold text-lg hover:from-orange-600 hover:to-red-700 transition-all shadow-xl shadow-orange-500/25 flex items-center justify-center gap-2">
                   <Download className="w-5 h-5" />
                   Download Free
                 </button>
-                <button className="px-8 py-4 bg-slate-800 border border-slate-700 rounded-2xl font-bold text-lg hover:bg-slate-700 transition-all flex items-center justify-center gap-2">
+                <button className="px-8 py-4 bg-neutral-800 border border-neutral-700 rounded-2xl font-bold text-lg hover:bg-neutral-700 transition-all flex items-center justify-center gap-2">
                   <Play className="w-5 h-5" />
                   Watch Demo
                 </button>
               </div>
 
-              <div className="flex items-center gap-6 text-sm text-slate-500">
+              <div className="flex items-center gap-6 text-sm text-neutral-500">
                 <div className="flex items-center gap-2">
                   <CheckCircle className="w-4 h-4 text-green-400" />
                   <span>Free forever</span>
@@ -216,28 +216,28 @@ const SparkLabsHome: React.FC = () => {
             </div>
 
             <div className="relative">
-              <div className="absolute -inset-4 bg-gradient-to-r from-purple-600/20 to-pink-600/20 rounded-3xl blur-2xl" />
-              <div className="relative glass-card rounded-3xl p-1 border border-slate-700/50">
-                <div className="bg-slate-900 rounded-2xl overflow-hidden">
-                  <div className="flex items-center gap-2 px-4 py-3 border-b border-slate-800">
+              <div className="absolute -inset-4 bg-gradient-to-r from-orange-600/20 to-red-600/20 rounded-3xl blur-2xl" />
+              <div className="relative glass-card rounded-3xl p-1 border border-orange-700/30">
+                <div className="bg-neutral-900 rounded-2xl overflow-hidden">
+                  <div className="flex items-center gap-2 px-4 py-3 border-b border-neutral-800">
                     <div className="flex gap-1.5">
                       <div className="w-3 h-3 rounded-full bg-red-500/80" />
                       <div className="w-3 h-3 rounded-full bg-yellow-500/80" />
                       <div className="w-3 h-3 rounded-full bg-green-500/80" />
                     </div>
-                    <div className="flex-1 text-center text-xs text-slate-500 font-mono">SparkLabs Editor</div>
+                    <div className="flex-1 text-center text-xs text-neutral-500 font-mono">SparkLabs Editor</div>
                   </div>
-                  <div className="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 flex items-center justify-center relative overflow-hidden">
+                  <div className="aspect-video bg-gradient-to-br from-neutral-800 to-neutral-900 flex items-center justify-center relative overflow-hidden">
                     <div className="absolute inset-0 opacity-30">
-                      <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-purple-500/30 rounded-full blur-2xl" />
-                      <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-pink-500/30 rounded-full blur-2xl" />
+                      <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/30 rounded-full blur-2xl" />
+                      <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-red-500/30 rounded-full blur-2xl" />
                     </div>
                     <div className="text-center relative z-10">
-                      <div className="inline-flex p-4 bg-gradient-to-br from-purple-600/20 to-pink-600/20 rounded-2xl mb-4">
-                        <Gamepad2 className="w-16 h-16 text-purple-400" />
+                      <div className="inline-flex p-4 bg-gradient-to-br from-orange-600/20 to-red-600/20 rounded-2xl mb-4">
+                        <Gamepad2 className="w-16 h-16 text-orange-400" />
                       </div>
-                      <p className="text-slate-400 text-lg">Interactive Preview</p>
-                      <p className="text-slate-600 text-sm mt-1">AI-powered real-time rendering</p>
+                      <p className="text-neutral-400 text-lg">Interactive Preview</p>
+                      <p className="text-neutral-600 text-sm mt-1">AI-powered real-time rendering</p>
                     </div>
                   </div>
                 </div>
@@ -248,14 +248,14 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Platform Targets */}
-      <section className="py-12 border-y border-slate-800/50 relative z-10">
+      <section className="py-12 border-y border-neutral-800/50 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16">
-            <span className="text-sm text-slate-500 font-medium uppercase tracking-wider">Deploy to</span>
+            <span className="text-sm text-neutral-500 font-medium uppercase tracking-wider">Deploy to</span>
             {platformTargets.map((platform) => {
               const Icon = platform.icon;
               return (
-                <div key={platform.label} className="flex items-center gap-2 text-slate-400">
+                <div key={platform.label} className="flex items-center gap-2 text-neutral-400">
                   <Icon className="w-5 h-5" />
                   <span className="text-sm font-medium">{platform.label}</span>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
@@ -275,7 +275,7 @@ const SparkLabsHome: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">Build Smarter, Not Harder</h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+            <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
               Our three-stage pipeline integrates AI at every step of development
             </p>
           </div>
@@ -290,24 +290,24 @@ const SparkLabsHome: React.FC = () => {
                   onClick={() => setActiveTab(feature.id)}
                   className={`text-left p-8 rounded-3xl border-2 transition-all duration-300 ${
                     isActive 
-                      ? 'border-purple-500/50 bg-purple-500/5' 
-                      : 'border-slate-800 bg-slate-900/50 hover:border-slate-700'
+                      ? 'border-orange-500/50 bg-orange-500/5' 
+                      : 'border-neutral-800 bg-neutral-900/50 hover:border-neutral-700'
                   }`}
                 >
                   <div className={`inline-flex p-3 rounded-2xl mb-6 ${
-                    isActive ? 'bg-purple-600' : 'bg-slate-800'
+                    isActive ? 'bg-gradient-to-r from-orange-500 to-red-600' : 'bg-neutral-800'
                   }`}>
                     <Icon className="w-8 h-8 text-white" />
                   </div>
                   <div className="flex items-center gap-3 mb-3">
-                    <span className="text-sm text-slate-500 font-mono">0{index + 1}</span>
+                    <span className="text-sm text-neutral-500 font-mono">0{index + 1}</span>
                     <h3 className="text-2xl font-bold">{feature.title}</h3>
                   </div>
-                  <p className="text-slate-400 mb-6">{feature.description}</p>
+                  <p className="text-neutral-400 mb-6">{feature.description}</p>
                   <ul className="space-y-3">
                     {feature.highlights.map((highlight, i) => (
-                      <li key={i} className="flex items-center gap-2 text-sm text-slate-300">
-                        <CheckCircle className="w-4 h-4 text-purple-400 flex-shrink-0" />
+                      <li key={i} className="flex items-center gap-2 text-sm text-neutral-300">
+                        <CheckCircle className="w-4 h-4 text-orange-400 flex-shrink-0" />
                         {highlight}
                       </li>
                     ))}
@@ -320,23 +320,23 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* AI Capabilities */}
-      <section className="py-24 bg-gradient-to-b from-slate-900 to-slate-950 relative z-10">
+      <section className="py-24 bg-gradient-to-b from-neutral-900 to-neutral-950 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <div className="inline-flex items-center gap-2 px-4 py-2 bg-purple-500/10 border border-purple-500/20 rounded-full mb-6">
-                <Cpu className="w-4 h-4 text-purple-400" />
-                <span className="text-purple-300 text-sm font-semibold">Neural Engine</span>
+              <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-500/20 rounded-full mb-6">
+                <Cpu className="w-4 h-4 text-orange-400" />
+                <span className="text-orange-300 text-sm font-semibold">Neural Engine</span>
               </div>
               <h2 className="text-4xl lg:text-5xl font-bold mb-6">
                 Intelligence Built Into
-                <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Every Pixel</span>
+                <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent"> Every Pixel</span>
               </h2>
-              <p className="text-xl text-slate-400 mb-8 leading-relaxed">
+              <p className="text-xl text-neutral-400 mb-8 leading-relaxed">
                 SparkLabs embeds machine learning directly into the rendering pipeline. 
                 From texture synthesis to behavioral NPCs, AI accelerates every aspect of game creation.
               </p>
-              <button className="px-6 py-3 bg-slate-800 border border-slate-700 rounded-xl font-semibold hover:bg-slate-700 transition-all flex items-center gap-2">
+              <button className="px-6 py-3 bg-neutral-800 border border-neutral-700 rounded-xl font-semibold hover:bg-neutral-700 transition-all flex items-center gap-2">
                 Explore Neural Features
                 <ArrowRight className="w-4 h-4" />
               </button>
@@ -348,20 +348,20 @@ const SparkLabsHome: React.FC = () => {
                 return (
                   <div 
                     key={index} 
-                    className="glass-card rounded-2xl p-6 hover:border-purple-500/30 transition-all group"
+                    className="glass-card rounded-2xl p-6 hover:border-orange-500/30 transition-all group"
                   >
                     <div className="flex items-start gap-4">
-                      <div className="p-3 bg-purple-600/10 rounded-xl group-hover:bg-purple-600/20 transition-colors">
-                        <Icon className="w-6 h-6 text-purple-400" />
+                      <div className="p-3 bg-orange-600/10 rounded-xl group-hover:bg-orange-600/20 transition-colors">
+                        <Icon className="w-6 h-6 text-orange-400" />
                       </div>
                       <div className="flex-1">
                         <div className="flex items-center justify-between mb-2">
                           <h3 className="font-bold text-lg">{capability.title}</h3>
-                          <span className="text-xs font-mono text-purple-400 bg-purple-500/10 px-2 py-1 rounded">
+                          <span className="text-xs font-mono text-orange-400 bg-orange-500/10 px-2 py-1 rounded">
                             {capability.stat}
                           </span>
                         </div>
-                        <p className="text-slate-400 text-sm leading-relaxed">{capability.description}</p>
+                        <p className="text-neutral-400 text-sm leading-relaxed">{capability.description}</p>
                       </div>
                     </div>
                   </div>
@@ -377,21 +377,21 @@ const SparkLabsHome: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">Built With SparkLabs</h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+            <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
               Games created by our community using AI-powered development tools
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {[
-              { title: 'Neon Drift', genre: 'Racing', color: 'from-cyan-600 to-blue-600', players: '2.4M' },
-              { title: 'Void Walker', genre: 'Action RPG', color: 'from-purple-600 to-pink-600', players: '1.8M' },
-              { title: 'Echoes of AI', genre: 'Puzzle', color: 'from-emerald-600 to-teal-600', players: '3.1M' },
-              { title: 'Stellar Command', genre: 'Strategy', color: 'from-orange-600 to-red-600', players: '890K' },
-              { title: 'Dreamscape', genre: 'Adventure', color: 'from-violet-600 to-purple-600', players: '1.2M' },
-              { title: 'Quantum Leap', genre: 'Platformer', color: 'from-pink-600 to-rose-600', players: '2.7M' }
+              { title: 'Neon Drift', genre: 'Racing', color: 'from-orange-600 to-red-600', players: '2.4M' },
+              { title: 'Void Walker', genre: 'Action RPG', color: 'from-red-600 to-orange-600', players: '1.8M' },
+              { title: 'Echoes of AI', genre: 'Puzzle', color: 'from-amber-600 to-orange-600', players: '3.1M' },
+              { title: 'Stellar Command', genre: 'Strategy', color: 'from-orange-500 to-red-500', players: '890K' },
+              { title: 'Dreamscape', genre: 'Adventure', color: 'from-red-500 to-amber-500', players: '1.2M' },
+              { title: 'Quantum Leap', genre: 'Platformer', color: 'from-amber-500 to-orange-600', players: '2.7M' }
             ].map((game, index) => (
-              <div key={index} className="glass-card rounded-3xl overflow-hidden group hover:border-purple-500/30 transition-all">
+              <div key={index} className="glass-card rounded-3xl overflow-hidden group hover:border-orange-500/30 transition-all">
                 <div className={`h-48 bg-gradient-to-br ${game.color} relative overflow-hidden`}>
                   <div className="absolute inset-0 bg-black/20" />
                   <div className="absolute bottom-4 left-4">
@@ -407,8 +407,8 @@ const SparkLabsHome: React.FC = () => {
                 </div>
                 <div className="p-6">
                   <h3 className="text-xl font-bold mb-2">{game.title}</h3>
-                  <p className="text-slate-400 text-sm mb-4">Created with AI-generated assets and procedural level design</p>
-                  <button className="text-sm text-purple-400 font-semibold flex items-center gap-1 hover:text-purple-300 transition-colors">
+                  <p className="text-neutral-400 text-sm mb-4">Created with AI-generated assets and procedural level design</p>
+                  <button className="text-sm text-orange-400 font-semibold flex items-center gap-1 hover:text-orange-300 transition-colors">
                     View Case Study <ChevronRight className="w-4 h-4" />
                   </button>
                 </div>
@@ -419,11 +419,11 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 bg-gradient-to-b from-slate-950 to-slate-900 relative z-10">
+      <section className="py-24 bg-gradient-to-b from-neutral-950 to-neutral-900 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-16">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">Trusted by Creators</h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
+            <p className="text-xl text-neutral-400 max-w-2xl mx-auto">
               Join thousands of developers building the future of gaming
             </p>
           </div>
@@ -436,93 +436,17 @@ const SparkLabsHome: React.FC = () => {
                     <Star key={i} className="w-5 h-5 text-yellow-400 fill-yellow-400" />
                   ))}
                 </div>
-                <p className="text-lg text-slate-300 mb-6 leading-relaxed">"{testimonial.quote}"</p>
+                <p className="text-lg text-neutral-300 mb-6 leading-relaxed">"{testimonial.quote}"</p>
                 <div className="flex items-center gap-4">
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-purple-600 to-pink-600 flex items-center justify-center font-bold text-lg">
+                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center font-bold text-lg">
                     {testimonial.name.split(' ').map(n => n[0]).join('')}
                   </div>
                   <div>
                     <div className="font-semibold">{testimonial.name}</div>
-                    <div className="text-sm text-slate-500">{testimonial.role}</div>
-                    <div className="text-xs text-slate-600">{testimonial.company}</div>
+                    <div className="text-sm text-neutral-500">{testimonial.role}</div>
+                    <div className="text-xs text-neutral-600">{testimonial.company}</div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className="py-24 relative z-10">
-        <div className="max-w-7xl mx-auto px-6">
-          <div className="text-center mb-16">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">Start Free, Scale Forever</h2>
-            <p className="text-xl text-slate-400 max-w-2xl mx-auto">
-              Choose the plan that fits your creative journey
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-8 max-w-5xl mx-auto">
-            {[
-              {
-                name: 'Creator',
-                price: 'Free',
-                description: 'Perfect for learning and prototyping',
-                features: ['Neural asset generation', '3 active projects', 'Web export', 'Community support'],
-                cta: 'Download Now'
-              },
-              {
-                name: 'Studio',
-                price: '$29',
-                period: '/month',
-                description: 'For serious indie developers',
-                features: ['Everything in Creator', 'Unlimited projects', 'All platform exports', 'Priority neural queue', 'Team collaboration'],
-                cta: 'Start Free Trial',
-                popular: true
-              },
-              {
-                name: 'Enterprise',
-                price: 'Custom',
-                description: 'For large studios and publishers',
-                features: ['Custom AI models', 'Dedicated infrastructure', 'SLA guarantee', 'White-label options', 'Direct engineering support'],
-                cta: 'Contact Sales'
-              }
-            ].map((plan, index) => (
-              <div 
-                key={index} 
-                className={`glass-card rounded-3xl p-8 relative ${
-                  plan.popular ? 'border-purple-500/50 shadow-xl shadow-purple-500/10' : ''
-                }`}
-              >
-                {plan.popular && (
-                  <div className="absolute -top-4 left-1/2 -translate-x-1/2 px-4 py-1 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full text-sm font-semibold">
-                    Most Popular
-                  </div>
-                )}
-                <div className="mb-6">
-                  <h3 className="text-xl font-bold mb-2">{plan.name}</h3>
-                  <div className="flex items-baseline gap-1">
-                    <span className="text-4xl font-black">{plan.price}</span>
-                    {plan.period && <span className="text-slate-500">{plan.period}</span>}
-                  </div>
-                  <p className="text-slate-400 text-sm mt-2">{plan.description}</p>
-                </div>
-                <ul className="space-y-3 mb-8">
-                  {plan.features.map((feature, i) => (
-                    <li key={i} className="flex items-center gap-3 text-sm">
-                      <CheckCircle className="w-4 h-4 text-purple-400 flex-shrink-0" />
-                      <span className="text-slate-300">{feature}</span>
-                    </li>
-                  ))}
-                </ul>
-                <button className={`w-full py-3.5 rounded-xl font-semibold transition-all ${
-                  plan.popular
-                    ? 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 shadow-lg shadow-purple-500/25'
-                    : 'bg-slate-800 hover:bg-slate-700 border border-slate-700'
-                }`}>
-                  {plan.cta}
-                </button>
               </div>
             ))}
           </div>
@@ -531,21 +455,21 @@ const SparkLabsHome: React.FC = () => {
 
       {/* Final CTA */}
       <section className="py-24 relative z-10 overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-b from-slate-900 to-purple-950/20" />
+        <div className="absolute inset-0 bg-gradient-to-b from-neutral-900 to-orange-950/20" />
         <div className="max-w-4xl mx-auto px-6 text-center relative">
           <h2 className="text-4xl lg:text-6xl font-black mb-6">
             Your Next Game Starts
-            <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent"> Here</span>
+            <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent"> Here</span>
           </h2>
-          <p className="text-xl text-slate-400 mb-10 max-w-2xl mx-auto">
+          <p className="text-xl text-neutral-400 mb-10 max-w-2xl mx-auto">
             Join 50,000+ developers using SparkLabs to build intelligent, adaptive gaming experiences
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-            <button className="px-10 py-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-2xl font-bold text-lg hover:from-purple-700 hover:to-pink-700 transition-all shadow-xl shadow-purple-500/25 flex items-center gap-2">
+            <button className="px-10 py-4 bg-gradient-to-r from-orange-500 to-red-600 rounded-2xl font-bold text-lg hover:from-orange-600 hover:to-red-700 transition-all shadow-xl shadow-orange-500/25 flex items-center gap-2">
               <Download className="w-5 h-5" />
               Download SparkLabs
             </button>
-            <button className="px-10 py-4 bg-slate-800 border border-slate-700 rounded-2xl font-bold text-lg hover:bg-slate-700 transition-all">
+            <button className="px-10 py-4 bg-neutral-800 border border-neutral-700 rounded-2xl font-bold text-lg hover:bg-neutral-700 transition-all">
               View Documentation
             </button>
           </div>
@@ -553,20 +477,20 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-slate-800 py-16 relative z-10">
+      <footer className="border-t border-neutral-800 py-16 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid md:grid-cols-5 gap-12 mb-12">
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl">
-                  <Sparkles className="w-6 h-6 text-white" />
+                <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
+                  <Zap className="w-6 h-6 text-white" />
                 </div>
                 <span className="text-xl font-black">
-                  <span className="bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">Spark</span>
+                  <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent">Spark</span>
                   <span className="text-white">Labs</span>
                 </span>
               </div>
-              <p className="text-slate-500 text-sm max-w-xs leading-relaxed">
+              <p className="text-neutral-500 text-sm max-w-xs leading-relaxed">
                 The AI-native game engine that empowers creators to build intelligent, adaptive gaming experiences.
               </p>
             </div>
@@ -585,11 +509,11 @@ const SparkLabsHome: React.FC = () => {
               }
             ].map((column, index) => (
               <div key={index}>
-                <h4 className="font-semibold text-slate-300 mb-4">{column.title}</h4>
+                <h4 className="font-semibold text-neutral-300 mb-4">{column.title}</h4>
                 <ul className="space-y-3">
                   {column.links.map((link, i) => (
                     <li key={i}>
-                      <a href="#" className="text-slate-500 hover:text-slate-300 text-sm transition-colors">
+                      <a href="#" className="text-neutral-500 hover:text-neutral-300 text-sm transition-colors">
                         {link}
                       </a>
                     </li>
@@ -598,12 +522,12 @@ const SparkLabsHome: React.FC = () => {
               </div>
             ))}
           </div>
-          <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-            <p className="text-slate-600 text-sm">© 2026 SparkLabs. All rights reserved.</p>
+          <div className="border-t border-neutral-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
+            <p className="text-neutral-600 text-sm">© 2026 SparkLabs. All rights reserved.</p>
             <div className="flex items-center gap-6">
-              <a href="#" className="text-slate-500 hover:text-slate-300 text-sm transition-colors">Privacy</a>
-              <a href="#" className="text-slate-500 hover:text-slate-300 text-sm transition-colors">Terms</a>
-              <a href="#" className="text-slate-500 hover:text-slate-300 text-sm transition-colors">Cookies</a>
+              <a href="#" className="text-neutral-500 hover:text-neutral-300 text-sm transition-colors">Privacy</a>
+              <a href="#" className="text-neutral-500 hover:text-neutral-300 text-sm transition-colors">Terms</a>
+              <a href="#" className="text-neutral-500 hover:text-neutral-300 text-sm transition-colors">Cookies</a>
             </div>
           </div>
         </div>
