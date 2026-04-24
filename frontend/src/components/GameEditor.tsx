@@ -22,10 +22,23 @@ import {
   RotateCcw,
   Music,
   Info,
-  Maximize2
+  Maximize2,
+  Eye,
+  EyeOff,
+  Square,
+  Activity,
+  Volume2,
+  Move3d
 } from 'lucide-react';
 
 // Types for our game engine
+type ComponentType = 'Physics' | 'Animation' | 'Sprite' | 'Script' | 'Input' | 'Tilemap' | 'Particle' | 'Audio';
+
+interface Component {
+  type: ComponentType;
+  config: any;
+}
+
 interface GameObject {
   id: string;
   name: string;
@@ -34,12 +47,8 @@ interface GameObject {
   width: number;
   height: number;
   color: string;
+  visible: boolean;
   components: Component[];
-}
-
-interface Component {
-  type: 'Physics' | 'Animation' | 'Sprite' | 'Script' | 'Input' | 'Tilemap' | 'Particle' | 'Audio';
-  config: any;
 }
 
 interface Scene {
@@ -58,7 +67,7 @@ interface Tile {
   color: string;
 }
 
-// Tile definitions for our system
+// Tile definitions
 const TILE_DEFINITIONS = [
   { type: 0, name: 'Eraser', color: 'transparent', description: 'Remove tiles' },
   { type: 1, name: 'Solid', color: '#0f3460', description: 'Solid collidable tile' },
@@ -67,7 +76,17 @@ const TILE_DEFINITIONS = [
   { type: 4, name: 'Lava', color: '#3a1a1a', description: 'Lava/danger tile' }
 ];
 
-// Enhanced game engine with tilemap, camera, and particles
+// Component definitions available
+const COMPONENT_TYPES: { type: ComponentType; icon: any; color: string }[] = [
+  { type: 'Physics', icon: Move3d, color: 'text-blue-400' },
+  { type: 'Input', icon: MousePointer2, color: 'text-green-400' },
+  { type: 'Particle', icon: ParticleIcon, color: 'text-purple-400' },
+  { type: 'Audio', icon: Volume2, color: 'text-yellow-400' },
+  { type: 'Animation', icon: Activity, color: 'text-pink-400' },
+  { type: 'Sprite', icon: Palette, color: 'text-cyan-400' }
+];
+
+// Enhanced game engine
 const GameEditor: React.FC = () => {
   const [scenes, setScenes] = useState<Scene[]>([
     {
@@ -85,6 +104,7 @@ const GameEditor: React.FC = () => {
           width: 40,
           height: 40,
           color: '#e94560',
+          visible: true,
           components: [
             { type: 'Physics', config: { gravity: 0.6, velocityX: 0, velocityY: 0 } },
             { type: 'Input', config: { speed: 6, jumpPower: 16 } },
@@ -99,6 +119,7 @@ const GameEditor: React.FC = () => {
           width: 300,
           height: 30,
           color: '#0f3460',
+          visible: true,
           components: [
             { type: 'Physics', config: { static: true } }
           ]
@@ -111,6 +132,7 @@ const GameEditor: React.FC = () => {
           width: 200,
           height: 30,
           color: '#16213e',
+          visible: true,
           components: [
             { type: 'Physics', config: { static: true } }
           ]
@@ -123,6 +145,7 @@ const GameEditor: React.FC = () => {
           width: 1600,
           height: 50,
           color: '#1a3a1a',
+          visible: true,
           components: [
             { type: 'Physics', config: { static: true } }
           ]
@@ -323,6 +346,7 @@ const GameEditor: React.FC = () => {
       }
       
       for (const obj of gameObjects) {
+        if (!obj.visible) continue;
         ctx.fillStyle = obj.color;
         ctx.shadowColor = obj.color;
         ctx.shadowBlur = 15;
@@ -409,6 +433,7 @@ const GameEditor: React.FC = () => {
       width: 50,
       height: 50,
       color: '#4ecdc4',
+      visible: true,
       components: [
         { type: 'Physics', config: { gravity: 0.5 } }
       ]
@@ -432,7 +457,7 @@ const GameEditor: React.FC = () => {
     addLog(`[INFO] Deleted ${name}`);
   };
 
-  const updateObjectProperty = (key: string, value: any) => {
+  const updateObjectProperty = (key: keyof GameObject, value: any) => {
     if (!selectedObject) return;
     setScenes(prev => prev.map(s => 
       s.id === currentScene ?
@@ -441,6 +466,57 @@ const GameEditor: React.FC = () => {
           objects: s.objects.map(obj =>
             obj.id === selectedObject ? { ...obj, [key]: value } : obj
           )
+        } : s
+    ));
+  };
+
+  const addComponentToSelected = (type: ComponentType) => {
+    if (!selectedObject) return;
+    
+    const defaultConfigs = {
+      Physics: { gravity: 0.5, static: false },
+      Input: { speed: 5, jumpPower: 14 },
+      Particle: { active: true, color: '#ffffff', count: 8 },
+      Audio: { volume: 1.0, loop: false },
+      Animation: { animType: 'idle', speed: 1.0 },
+      Sprite: { texture: null }
+    };
+    
+    setScenes(prev => prev.map(s => 
+      s.id === currentScene ?
+        {
+          ...s,
+          objects: s.objects.map(obj => {
+            if (obj.id === selectedObject) {
+              const existing = obj.components.find(c => c.type === type);
+              if (existing) {
+                addLog(`[WARN] ${type} already exists!`, 'WARN');
+                return obj;
+              }
+              addLog(`[INFO] Added ${type} component`);
+              return { ...obj, components: [...obj.components, { type, config: defaultConfigs[type] }] };
+            }
+            return obj;
+          })
+        } : s
+    ));
+  };
+
+  const removeComponentFromSelected = (index: number) => {
+    if (!selectedObject) return;
+    
+    setScenes(prev => prev.map(s => 
+      s.id === currentScene ?
+        {
+          ...s,
+          objects: s.objects.map(obj => {
+            if (obj.id === selectedObject) {
+              const removedType = obj.components[index].type;
+              addLog(`[INFO] Removed ${removedType} component`);
+              return { ...obj, components: obj.components.filter((_, i) => i !== index) };
+            }
+            return obj;
+          })
         } : s
     ));
   };
@@ -595,6 +671,7 @@ const GameEditor: React.FC = () => {
             }
             
             for (const obj of gameObjects) {
+              if (!obj.visible) continue;
               ctx.fillStyle = obj.color;
               ctx.shadowColor = obj.color;
               ctx.shadowBlur = 15;
@@ -742,7 +819,7 @@ const GameEditor: React.FC = () => {
               <Box className="w-4 h-4" />
               Game Objects
             </h3>
-            <div className="space-y-2 mb-4">
+            <div className="space-y-2 mb-4 max-h-64 overflow-y-auto">
               {scene?.objects.map(obj => (
                 <button
                   key={obj.id}
@@ -755,7 +832,15 @@ const GameEditor: React.FC = () => {
                     className="w-5 h-5 rounded shadow"
                     style={{ backgroundColor: obj.color }}
                   />
-                  {obj.name}
+                  <div className="flex-1 overflow-hidden">
+                    <div className="truncate">{obj.name}</div>
+                  </div>
+                  <button onClick={(e) => {
+                    e.stopPropagation();
+                    updateObjectProperty('visible', !obj.visible);
+                  }} className="opacity-70 hover:opacity-100">
+                    {obj.visible ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
+                  </button>
                 </button>
               ))}
             </div>
@@ -825,94 +910,140 @@ const GameEditor: React.FC = () => {
         
         <aside className="w-96 bg-slate-800 border-l border-slate-700 p-6 overflow-y-auto">
           {selectedObj ? (
-            <div>
-              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-5 flex items-center gap-2">
-                <Settings2 className="w-4 h-4" />
-                Object Properties
-              </h3>
-              
-              <div className="space-y-4">
-                <div>
-                  <label className="text-xs text-slate-400 mb-1 block">Name</label>
-                  <input
-                    type="text"
-                    value={selectedObj.name}
-                    onChange={(e) => updateObjectProperty('name', e.target.value)}
-                    className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500 transition-all"
-                  />
-                </div>
+            <div className="space-y-6">
+              <div>
+                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                  <Settings2 className="w-4 h-4" />
+                  Object Properties
+                </h3>
                 
-                <div className="grid grid-cols-2 gap-3">
+                <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-slate-400 mb-1 block">X Position</label>
+                    <label className="text-xs text-slate-400 mb-1 block">Name</label>
                     <input
-                      type="number"
-                      value={selectedObj.x}
-                      onChange={(e) => updateObjectProperty('x', Number(e.target.value))}
-                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                      type="text"
+                      value={selectedObj.name}
+                      onChange={(e) => updateObjectProperty('name', e.target.value)}
+                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500 transition-all"
                     />
                   </div>
-                  <div>
-                    <label className="text-xs text-slate-400 mb-1 block">Y Position</label>
-                    <input
-                      type="number"
-                      value={selectedObj.y}
-                      onChange={(e) => updateObjectProperty('y', Number(e.target.value))}
-                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="text-xs text-slate-400 mb-1 block">Width</label>
-                    <input
-                      type="number"
-                      value={selectedObj.width}
-                      onChange={(e) => updateObjectProperty('width', Number(e.target.value))}
-                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-                  <div>
-                    <label className="text-xs text-slate-400 mb-1 block">Height</label>
-                    <input
-                      type="number"
-                      value={selectedObj.height}
-                      onChange={(e) => updateObjectProperty('height', Number(e.target.value))}
-                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
-                    />
-                  </div>
-                </div>
-                
-                <div>
-                  <label className="text-xs text-slate-400 mb-1 block">Color</label>
-                  <div className="flex gap-3 items-center">
-                    <input
-                      type="color"
-                      value={selectedObj.color}
-                      onChange={(e) => updateObjectProperty('color', e.target.value)}
-                      className="w-16 h-12 bg-slate-700 border border-slate-600 rounded-xl"
-                    />
-                    <span className="text-xs font-mono text-slate-400">{selectedObj.color}</span>
-                  </div>
-                </div>
-                
-                <div className="pt-5 border-t border-slate-700">
-                  <h4 className="text-xs font-semibold text-slate-300 mb-3">Components</h4>
-                  {selectedObj.components?.map((comp, i) => (
-                    <div key={i} className="p-3 bg-slate-700 rounded-xl mb-2 text-xs border border-slate-600">
-                      <span className="font-semibold text-purple-300">{comp.type}</span>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">X Position</label>
+                      <input
+                        type="number"
+                        value={selectedObj.x}
+                        onChange={(e) => updateObjectProperty('x', Number(e.target.value))}
+                        className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                      />
                     </div>
-                  ))}
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Y Position</label>
+                      <input
+                        type="number"
+                        value={selectedObj.y}
+                        onChange={(e) => updateObjectProperty('y', Number(e.target.value))}
+                        className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Width</label>
+                      <input
+                        type="number"
+                        value={selectedObj.width}
+                        onChange={(e) => updateObjectProperty('width', Number(e.target.value))}
+                        className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs text-slate-400 mb-1 block">Height</label>
+                      <input
+                        type="number"
+                        value={selectedObj.height}
+                        onChange={(e) => updateObjectProperty('height', Number(e.target.value))}
+                        className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                      />
+                    </div>
+                  </div>
+                  
+                  <div>
+                    <label className="text-xs text-slate-400 mb-1 block">Color</label>
+                    <div className="flex gap-3 items-center">
+                      <input
+                        type="color"
+                        value={selectedObj.color}
+                        onChange={(e) => updateObjectProperty('color', e.target.value)}
+                        className="w-16 h-12 bg-slate-700 border border-slate-600 rounded-xl"
+                      />
+                      <span className="text-xs font-mono text-slate-400">{selectedObj.color}</span>
+                    </div>
+                  </div>
+                  
+                  <div className="pt-4 border-t border-slate-700">
+                    <div className="flex items-center justify-between mb-3">
+                      <h4 className="text-xs font-semibold text-slate-300">Components</h4>
+                      <span className="text-xs text-slate-400">
+                        {selectedObj.components.length} attached
+                      </span>
+                    </div>
+                    
+                    <div className="space-y-2 mb-4">
+                      {selectedObj.components.map((comp, i) => {
+                        const compInfo = COMPONENT_TYPES.find(c => c.type === comp.type);
+                        const Icon = compInfo?.icon || Square;
+                        return (
+                          <div key={i} className="p-3 bg-slate-700 rounded-xl text-xs border border-slate-600 flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                              <Icon className={`w-4 h-4 ${compInfo?.color}`} />
+                              <span className="font-semibold">{comp.type}</span>
+                            </div>
+                            <button
+                              onClick={() => removeComponentFromSelected(i)}
+                              className="text-red-400 hover:text-red-300 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                    
+                    <h4 className="text-xs font-semibold text-slate-300 mb-3 mt-4">Add Components</h4>
+                    <div className="grid grid-cols-2 gap-2">
+                      {COMPONENT_TYPES.map(compType => {
+                        const Icon = compType.icon;
+                        const hasComponent = selectedObj.components.some(c => c.type === compType.type);
+                        return (
+                          <button
+                            key={compType.type}
+                            onClick={() => addComponentToSelected(compType.type)}
+                            disabled={hasComponent}
+                            className={`p-2 rounded-xl border-2 flex flex-col items-center gap-1 transition-all text-xs ${
+                              hasComponent
+                                ? 'border-slate-700 bg-slate-800 text-slate-500 cursor-not-allowed'
+                                : 'border-slate-600 hover:border-purple-400 bg-slate-700 text-slate-200 hover:scale-105'
+                            }`}
+                          >
+                            <Icon className={`w-4 h-4 ${compType.color}`} />
+                            <span>{compType.type}</span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                  
+                  <button
+                    onClick={deleteSelectedObject}
+                    className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-xl text-sm font-semibold transition-all shadow-lg hover:scale-105 active:scale-95 mt-4"
+                  >
+                    <Trash2 className="w-5 h-5" />
+                    Delete Object
+                  </button>
                 </div>
-                
-                <button
-                  onClick={deleteSelectedObject}
-                  className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-red-600 to-pink-600 hover:from-red-700 hover:to-pink-700 rounded-xl text-sm font-semibold transition-all shadow-lg hover:scale-105 active:scale-95 mt-4"
-                >
-                  <Trash2 className="w-5 h-5" />
-                  Delete Object
-                </button>
               </div>
             </div>
           ) : (
@@ -922,7 +1053,7 @@ const GameEditor: React.FC = () => {
             </div>
           )}
           
-          <div className="mt-8 pt-6 border-t border-slate-700">
+          <div className="mt-6 pt-4 border-t border-slate-700">
             <h4 className="text-xs font-semibold text-slate-300 mb-4 flex items-center gap-2">
               <Camera className="w-4 h-4" />
               Camera Settings
