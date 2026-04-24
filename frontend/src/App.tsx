@@ -15,7 +15,8 @@ import {
   Workflow,
   Gamepad2,
   Layers,
-  Home
+  Home,
+  ArrowLeft
 } from 'lucide-react';
 import StoryEditor from './components/StoryEditor';
 import AssetGenerator from './components/AssetGenerator';
@@ -25,10 +26,12 @@ import VideoRenderer from './components/VideoRenderer';
 import GameGenerator from './components/GameGenerator';
 import GameEditor from './components/GameEditor';
 import WelcomeDashboard from './components/WelcomeDashboard';
+import LandingPage from './components/LandingPage';
 
 type ViewMode = 'welcome' | 'editor' | 'games' | 'story' | 'asset' | 'voice' | 'storyboard' | 'video';
 
 function App() {
+  const [isOnLandingPage, setIsOnLandingPage] = useState(true);
   const [activeMode, setActiveMode] = useState<ViewMode>('welcome');
   const [projectName, setProjectName] = useState('SparkLab Project');
   const [isPlaying, setIsPlaying] = useState(false);
@@ -67,10 +70,32 @@ function App() {
     }
   };
 
+  if (isOnLandingPage) {
+    return (
+      <div className="min-h-screen">
+        <button
+          onClick={() => setIsOnLandingPage(false)}
+          className="fixed bottom-8 right-8 z-50 flex items-center gap-2 px-6 py-3 bg-slate-800/90 backdrop-blur border border-slate-700 rounded-full text-sm font-semibold text-slate-300 hover:bg-slate-700 transition-all shadow-lg"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          Go to Editor
+        </button>
+        <LandingPage />
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col h-full bg-slate-900">
       <header className="h-14 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsOnLandingPage(true)}
+            className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-md text-sm transition-all"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back
+          </button>
           <div className="flex items-center gap-2">
             <Sparkles className="w-8 h-8 text-purple-500" />
             <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
