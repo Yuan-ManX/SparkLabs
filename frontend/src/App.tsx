@@ -26,7 +26,7 @@ import VideoRenderer from './components/VideoRenderer';
 import GameGenerator from './components/GameGenerator';
 import GameEditor from './components/GameEditor';
 import WelcomeDashboard from './components/WelcomeDashboard';
-import LandingPage from './components/LandingPage';
+import SparkLabsHome from './components/SparkLabsHome';
 
 type ViewMode = 'welcome' | 'editor' | 'games' | 'story' | 'asset' | 'voice' | 'storyboard' | 'video';
 
@@ -80,7 +80,7 @@ function App() {
           <ArrowLeft className="w-4 h-4" />
           Go to Editor
         </button>
-        <LandingPage />
+        <SparkLabsHome />
       </div>
     );
   }
