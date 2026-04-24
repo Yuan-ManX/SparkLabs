@@ -137,9 +137,9 @@ const SparkLabsHome: React.FC = () => {
         <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl shadow-lg shadow-orange-500/20">
-                <Zap className="w-7 h-7 text-white" />
-              </div>
+                  <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-600 rounded-full shadow-lg shadow-orange-500/20 flex items-center justify-center">
+                    <Zap className="w-5 h-5 text-white" />
+                  </div>
               <span className="text-2xl font-black tracking-tight">
                 <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent">Spark</span>
                 <span className="text-white">Labs</span>
@@ -171,7 +171,7 @@ const SparkLabsHome: React.FC = () => {
             <div className="text-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-500/20 rounded-full mb-6">
                 <Zap className="w-4 h-4 text-orange-400" />
-                <span className="text-orange-300 text-sm font-semibold">AI 引擎 1.0</span>
+                <span className="text-orange-300 text-sm font-semibold">AI Engine 1.0</span>
               </div>
               
               <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-[1.1]">
@@ -489,9 +489,9 @@ const SparkLabsHome: React.FC = () => {
           <div className="grid md:grid-cols-5 gap-12 mb-12">
             <div className="md:col-span-2">
               <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl">
-                  <Zap className="w-6 h-6 text-white" />
-                </div>
+                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+                    <Zap className="w-4 h-4 text-white" />
+                  </div>
                 <span className="text-xl font-black">
                   <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent">Spark</span>
                   <span className="text-white">Labs</span>
