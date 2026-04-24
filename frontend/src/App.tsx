@@ -1,19 +1,20 @@
 import React, { useState } from 'react';
-import { 
-  Layout, 
-  FileText, 
-  Image, 
-  Music, 
-  Film, 
-  Settings, 
-  Play, 
-  Save, 
-  Plus, 
+import {
+  Layout,
+  FileText,
+  Image,
+  Music,
+  Film,
+  Settings,
+  Play,
+  Save,
+  Plus,
   Trash2,
   Sparkles,
   Bot,
   Workflow,
-  Gamepad2
+  Gamepad2,
+  Layers
 } from 'lucide-react';
 import StoryEditor from './components/StoryEditor';
 import AssetGenerator from './components/AssetGenerator';
@@ -21,16 +22,18 @@ import VoiceSynthesizer from './components/VoiceSynthesizer';
 import StoryboardEditor from './components/StoryboardEditor';
 import VideoRenderer from './components/VideoRenderer';
 import GameGenerator from './components/GameGenerator';
+import GameEditor from './components/GameEditor';
 
-type ViewMode = 'games' | 'story' | 'asset' | 'voice' | 'storyboard' | 'video';
+type ViewMode = 'editor' | 'games' | 'story' | 'asset' | 'voice' | 'storyboard' | 'video';
 
 function App() {
-  const [activeMode, setActiveMode] = useState<ViewMode>('games');
-  const [projectName, setProjectName] = useState('SparkLabs Project');
+  const [activeMode, setActiveMode] = useState<ViewMode>('editor');
+  const [projectName, setProjectName] = useState('SparkLab Project');
   const [isPlaying, setIsPlaying] = useState(false);
 
   const navItems = [
-    { id: 'games' as ViewMode, icon: Gamepad2, label: 'Game Generator', color: 'text-purple-400' },
+    { id: 'editor' as ViewMode, icon: Layers, label: 'Game Studio', color: 'text-purple-400' },
+    { id: 'games' as ViewMode, icon: Gamepad2, label: 'Templates', color: 'text-pink-400' },
     { id: 'story' as ViewMode, icon: FileText, label: 'Story Editor', color: 'text-blue-400' },
     { id: 'asset' as ViewMode, icon: Image, label: 'Asset Generator', color: 'text-purple-400' },
     { id: 'voice' as ViewMode, icon: Music, label: 'Voice Synthesizer', color: 'text-green-400' },
@@ -40,6 +43,8 @@ function App() {
 
   const renderActivePanel = () => {
     switch (activeMode) {
+      case 'editor':
+        return <GameEditor />;
       case 'games':
         return <GameGenerator />;
       case 'story':
@@ -53,18 +58,18 @@ function App() {
       case 'video':
         return <VideoRenderer />;
       default:
-        return <GameGenerator />;
+        return <GameEditor />;
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-slate-900">
+    <div className="flex flex-col h-full bg-slate-900">
       <header className="h-14 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <div className="flex items-center gap-2">
             <Sparkles className="w-8 h-8 text-purple-500" />
             <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              SparkLabs
+              SparkLab
             </span>
           </div>
           <div className="h-6 w-px bg-slate-600" />
@@ -80,7 +85,7 @@ function App() {
         <div className="flex items-center gap-2">
           <button
             onClick={() => {}}
-            className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-md text-sm transition-colors"
+            className="flex items-center gap-2 px-3 py-1.5 bg-slate-700 hover:bg-slate-600 rounded-md text-sm transition-all"
           >
             <Save className="w-4 h-4" />
             Save
@@ -88,9 +93,7 @@ function App() {
           <button
             onClick={() => setIsPlaying(!isPlaying)}
             className={`flex items-center gap-2 px-4 py-1.5 rounded-md text-sm font-medium transition-all ${
-              isPlaying 
-                ? 'bg-red-600 hover:bg-red-700' 
-                : 'bg-emerald-600 hover:bg-emerald-700'
+              isPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-emerald-600 hover:bg-emerald-700'
             }`}
           >
             <Play className="w-4 h-4" />
@@ -112,9 +115,7 @@ function App() {
                 key={item.id}
                 onClick={() => setActiveMode(item.id)}
                 className={`flex flex-col items-center justify-center py-3 mx-2 rounded-lg transition-all ${
-                  isActive 
-                    ? 'bg-slate-700 ring-1 ring-slate-600' 
-                    : 'hover:bg-slate-700/50'
+                  isActive ? 'bg-slate-700 ring-1 ring-slate-600' : 'hover:bg-slate-700/50'
                 }`}
                 title={item.label}
               >
