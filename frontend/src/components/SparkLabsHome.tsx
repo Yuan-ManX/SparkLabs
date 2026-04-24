@@ -47,18 +47,18 @@ const SparkLabsHome: React.FC = () => {
   const coreFeatures = [
     {
       icon: Sparkles,
-      title: 'Prompt-Powered Creation',
-      description: 'Transform text descriptions into interactive game worlds. Our neural networks handle the complexity while you focus on creativity.'
+      title: 'AI-Native Content Generation',
+      description: 'Transform imagination into game assets through neural synthesis. Characters, environments, and narratives emerge from natural language.'
     },
     {
       icon: Brain,
-      title: 'Personalized Gameplay',
-      description: 'Every player experiences a unique journey. AI adapts storylines, characters, and challenges based on individual play styles.'
+      title: 'AI Gameplay Generation',
+      description: 'Every session adapts to the player. AI constructs dynamic mechanics, evolving challenges, and personalized progression paths in real-time.'
     },
     {
       icon: Zap,
-      title: 'Real-Time Generation',
-      description: 'Watch your game world come alive instantly. Neural rendering creates visuals on-demand, eliminating traditional asset pipelines.'
+      title: 'Real-Time Visual Generation',
+      description: 'Neural rendering produces living worlds on demand. Every frame is synthesized instantly, creating infinite visual possibilities without asset constraints.'
     }
   ];
 
@@ -145,10 +145,15 @@ const SparkLabsHome: React.FC = () => {
               </span>
             </div>
             <div className="hidden lg:flex items-center gap-8">
-              {['Product', 'Features', 'Documentation', 'Community'].map((item) => (
-                <button key={item} className="text-white/40 hover:text-white transition-colors font-medium text-sm">
-                  {item}
-                </button>
+              {[
+                { label: 'About', href: '#about' },
+                { label: 'Games', href: '#games' },
+                { label: 'Features', href: '#features' },
+                { label: 'Community', href: '#community' }
+              ].map((item) => (
+                <a key={item.label} href={item.href} className="text-white/40 hover:text-white transition-colors font-medium text-sm">
+                  {item.label}
+                </a>
               ))}
             </div>
             <div className="flex items-center gap-4">
@@ -170,15 +175,15 @@ const SparkLabsHome: React.FC = () => {
             <div className="text-left">
               <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-8">
                 <div className="w-2 h-2 bg-orange-500 rounded-full animate-pulse" />
-                <span className="text-orange-300 text-sm font-medium">AI Engine 1.0 Now Available</span>
+                <span className="text-orange-300 text-sm font-medium">AI-Native Game Engine Now Available</span>
               </div>
-              
+
               <h1 className="text-6xl lg:text-8xl font-black mb-8 leading-[0.95] tracking-tight">
-                Build Games
+                AI-Native
                 <br />
                 <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent"
                   style={{ textShadow: '0 0 40px rgba(249,115,22,0.3)' }}>
-                  With Your Mind
+                  Game Engine
                 </span>
               </h1>
               
@@ -200,7 +205,7 @@ const SparkLabsHome: React.FC = () => {
 
               {/* Waitlist Form */}
               <div>
-                <p className="text-sm text-white/30 mb-3">Join 12,000+ creators on the waitlist</p>
+                <p className="text-sm text-white/30 mb-3">Join the community of creators on the waitlist</p>
                 <form onSubmit={handleJoinWaitlist} className="flex gap-3 max-w-md">
                   <input
                     type="email"
@@ -331,12 +336,12 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Core Features - Three Column Layout */}
-      <section className="py-24 relative z-10">
+      <section id="features" className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
-            <h2 className="text-4xl lg:text-5xl font-bold mb-4">Engine-Free Development</h2>
+            <h2 className="text-4xl lg:text-5xl font-bold mb-4">AI-Native Creation</h2>
             <p className="text-xl text-white/30 max-w-2xl mx-auto">
-              Skip traditional game engines. Build worlds, characters, and gameplay using natural language.
+              Every aspect of game development powered by neural networks. From concept to playable experience.
             </p>
           </div>
 
@@ -364,7 +369,7 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Neural Capabilities */}
-      <section className="py-24 relative z-10">
+      <section id="about" className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="grid lg:grid-cols-2 gap-20 items-center">
             <div>
@@ -422,7 +427,7 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Game Showcase */}
-      <section className="py-24 relative z-10">
+      <section id="games" className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">Built With SparkLabs</h2>
@@ -475,7 +480,7 @@ const SparkLabsHome: React.FC = () => {
       </section>
 
       {/* Testimonials */}
-      <section className="py-24 relative z-10">
+      <section id="community" className="py-24 relative z-10">
         <div className="max-w-7xl mx-auto px-6">
           <div className="text-center mb-20">
             <h2 className="text-4xl lg:text-5xl font-bold mb-4">Trusted by Creators</h2>
@@ -530,8 +535,8 @@ const SparkLabsHome: React.FC = () => {
             <span className="bg-gradient-to-r from-orange-400 via-red-500 to-amber-400 bg-clip-text text-transparent">The Future</span>
           </h2>
           <p className="text-xl text-white/30 mb-12 max-w-2xl mx-auto leading-relaxed">
-            Join 50,000+ developers using SparkLabs to build intelligent, adaptive gaming experiences. 
-            Early access members receive exclusive features and priority support.
+            A growing community of developers uses SparkLabs to craft intelligent, adaptive gaming experiences.
+            Early access unlocks exclusive capabilities and dedicated support.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-12">
             <button className="px-10 py-5 bg-gradient-to-r from-orange-500 to-red-600 rounded-full font-bold text-lg hover:from-orange-600 hover:to-red-700 transition-all shadow-2xl shadow-orange-500/20 flex items-center gap-3">
