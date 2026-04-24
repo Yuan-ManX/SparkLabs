@@ -45,6 +45,13 @@
     .flame-glow {
       box-shadow: 0 0 60px rgba(249, 115, 22, 0.3);
     }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    .animate-pulse {
+      animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    }
   </style>
 </head>
 <body class="text-white min-h-screen">
@@ -112,14 +119,6 @@
           icon: 'fa-microchip',
           stat: 'Real-time learning'
         }
-      ];
-
-      const platformTargets = [
-        { icon: 'fa-desktop', label: 'Desktop', status: 'Ready' },
-        { icon: 'fa-mobile-screen', label: 'Mobile', status: 'Ready' },
-        { icon: 'fa-tablet-screen-button', label: 'Tablet', status: 'Ready' },
-        { icon: 'fa-globe', label: 'WebGL', status: 'Ready' },
-        { icon: 'fa-gamepad', label: 'Console', status: 'Beta' }
       ];
 
       const testimonials = [
@@ -196,7 +195,7 @@
                 <div className="text-left">
                   <div className="inline-flex items-center gap-2 px-4 py-2 bg-orange-500/10 border border-orange-500/20 rounded-full mb-6">
                     <i className="fa-solid fa-bolt text-orange-400"></i>
-                    <span className="text-orange-300 text-sm font-semibold">Now with Neural Engine 2.0</span>
+                    <span className="text-orange-300 text-sm font-semibold">AI 引擎 1.0</span>
                   </div>
                   
                   <h1 className="text-5xl lg:text-7xl font-black mb-6 leading-[1.1]">
@@ -221,21 +220,6 @@
                       Watch Demo
                     </button>
                   </div>
-
-                  <div className="flex items-center gap-6 text-sm text-neutral-500">
-                    <div className="flex items-center gap-2">
-                      <i className="fa-solid fa-check-circle text-green-400"></i>
-                      <span>Free forever</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <i className="fa-solid fa-check-circle text-green-400"></i>
-                      <span>No credit card</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <i className="fa-solid fa-check-circle text-green-400"></i>
-                      <span>Open source core</span>
-                    </div>
-                  </div>
                 </div>
 
                 <div className="relative">
@@ -250,42 +234,65 @@
                         </div>
                         <div className="flex-1 text-center text-xs text-neutral-500 font-mono">SparkLabs Editor</div>
                       </div>
-                      <div className="aspect-video bg-gradient-to-br from-neutral-800 to-neutral-900 flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute inset-0 opacity-30">
-                          <div className="absolute top-1/4 left-1/4 w-32 h-32 bg-orange-500/30 rounded-full blur-2xl" />
-                          <div className="absolute bottom-1/4 right-1/4 w-40 h-40 bg-red-500/30 rounded-full blur-2xl" />
-                        </div>
-                        <div className="text-center relative z-10">
-                          <div className="inline-flex p-4 bg-gradient-to-br from-orange-600/20 to-red-600/20 rounded-2xl mb-4">
-                            <i className="fa-solid fa-gamepad text-orange-400 text-6xl"></i>
+                      <div className="aspect-video bg-gradient-to-br from-neutral-800 to-neutral-900 relative overflow-hidden">
+                        {/* Abstract Game World Visualization */}
+                        <div className="absolute inset-0">
+                          {/* Grid Floor */}
+                          <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-gradient-to-t from-orange-900/20 to-transparent" 
+                               style={{
+                                 backgroundImage: 'linear-gradient(rgba(249,115,22,0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(249,115,22,0.1) 1px, transparent 1px)',
+                                 backgroundSize: '40px 40px',
+                                 transform: 'perspective(500px) rotateX(60deg)',
+                                 transformOrigin: 'bottom'
+                               }} 
+                          />
+                          
+                          {/* Floating Particles */}
+                          <div className="absolute top-1/4 left-1/4 w-2 h-2 bg-orange-400 rounded-full animate-pulse" />
+                          <div className="absolute top-1/3 right-1/3 w-3 h-3 bg-red-400 rounded-full animate-pulse" style={{animationDelay: '0.5s'}} />
+                          <div className="absolute bottom-1/3 left-1/2 w-2 h-2 bg-amber-400 rounded-full animate-pulse" style={{animationDelay: '1s'}} />
+                          <div className="absolute top-1/2 right-1/4 w-2 h-2 bg-orange-300 rounded-full animate-pulse" style={{animationDelay: '1.5s'}} />
+                          
+                          {/* Glowing Orbs */}
+                          <div className="absolute top-1/4 left-1/3 w-16 h-16 bg-orange-500/20 rounded-full blur-xl animate-pulse" />
+                          <div className="absolute bottom-1/3 right-1/3 w-20 h-20 bg-red-500/20 rounded-full blur-xl animate-pulse" style={{animationDelay: '0.7s'}} />
+                          <div className="absolute top-1/2 left-1/2 w-12 h-12 bg-amber-500/20 rounded-full blur-xl animate-pulse" style={{animationDelay: '1.2s'}} />
+                          
+                          {/* Character Silhouette */}
+                          <div className="absolute bottom-1/4 left-1/2 -translate-x-1/2">
+                            <div className="w-8 h-16 bg-gradient-to-t from-orange-500 to-orange-300 rounded-t-full opacity-80" 
+                                 style={{
+                                   clipPath: 'polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%)',
+                                   filter: 'drop-shadow(0 0 10px rgba(249,115,22,0.5))'
+                                 }}
+                            />
+                            {/* Character Glow */}
+                            <div className="absolute -inset-4 bg-orange-500/30 rounded-full blur-xl" />
                           </div>
-                          <p className="text-neutral-400 text-lg">Interactive Preview</p>
-                          <p className="text-neutral-600 text-sm mt-1">AI-powered real-time rendering</p>
+                          
+                          {/* Floating Platforms */}
+                          <div className="absolute top-1/3 left-1/4 w-20 h-2 bg-gradient-to-r from-orange-500/60 to-red-500/60 rounded-full" 
+                               style={{filter: 'drop-shadow(0 4px 6px rgba(249,115,22,0.3))'}}
+                          />
+                          <div className="absolute top-1/2 right-1/4 w-16 h-2 bg-gradient-to-r from-red-500/60 to-orange-500/60 rounded-full" 
+                               style={{filter: 'drop-shadow(0 4px 6px rgba(239,68,68,0.3))'}}
+                          />
+                          <div className="absolute bottom-1/3 left-1/3 w-24 h-2 bg-gradient-to-r from-amber-500/60 to-orange-500/60 rounded-full" 
+                               style={{filter: 'drop-shadow(0 4px 6px rgba(245,158,11,0.3))'}}
+                          />
+                        </div>
+                        
+                        {/* Overlay Text */}
+                        <div className="absolute bottom-4 left-4 right-4">
+                          <div className="flex items-center gap-2 text-xs text-neutral-500">
+                            <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse" />
+                            <span>Live Preview - AI Generated Scene</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-          </section>
-
-          {/* Platform Targets */}
-          <section className="py-12 border-y border-neutral-800/50 relative z-10">
-            <div className="max-w-7xl mx-auto px-6">
-              <div className="flex flex-wrap items-center justify-center gap-8 lg:gap-16">
-                <span className="text-sm text-neutral-500 font-medium uppercase tracking-wider">Deploy to</span>
-                {platformTargets.map((platform) => (
-                  <div key={platform.label} className="flex items-center gap-2 text-neutral-400">
-                    <i className={`fa-solid ${platform.icon} w-5 h-5 flex items-center justify-center`}></i>
-                    <span className="text-sm font-medium">{platform.label}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${
-                      platform.status === 'Ready' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                    }`}>
-                      {platform.status}
-                    </span>
-                  </div>
-                ))}
               </div>
             </div>
           </section>
