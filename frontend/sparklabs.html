@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SparkLab - AI-Native Game Engine</title>
+  <title>SparkLabs - AI-Native Game Engine</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://unpkg.com/react@18/umd/react.development.js" crossorigin></script>
   <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js" crossorigin></script>
@@ -84,7 +84,7 @@
       border-color: rgba(249, 115, 22, 0.2);
       transform: translateY(-4px);
     }
-    /* SparkLabs Neural Core CSS Animation */
+    /* SparkLabs Neural Core CSS Animation Fallback */
     .neural-core-container {
       position: relative;
       width: 100%;
@@ -366,7 +366,7 @@
                   </div>
                 </div>
 
-                {/* Interactive Preview - Three.js AI-Native Game Visualization */}
+                {/* SparkLabs AI Game Visualization */}
                 <div className="relative animate-slide-up delay-300">
                   <div className="absolute -inset-8 bg-gradient-to-r from-orange-600/10 to-red-600/10 rounded-[3rem] blur-3xl animate-pulse-glow" />
                   <div className="relative glass-card rounded-[2rem] p-2 glow-orange">
@@ -705,7 +705,7 @@
                 ))}
               </div>
               <div className="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-                <p className="text-white/10 text-sm">© 2026 SparkLabs. All rights reserved.</p>
+                <p className="text-white/10 text-sm"> 2026 SparkLabs. All rights reserved.</p>
                 <div className="flex items-center gap-8">
                   <a href="#" className="text-white/20 hover:text-white/40 text-sm transition-colors">Privacy</a>
                   <a href="#" className="text-white/20 hover:text-white/40 text-sm transition-colors">Terms</a>
@@ -721,7 +721,7 @@
     const root = ReactDOM.createRoot(document.getElementById('root'));
     root.render(<SparkLabsHome />);
 
-    // SparkLabs Neural Core Visualization
+    // SparkLabs Neural Core Visualization Engine
     (function() {
       const container = document.getElementById('three-canvas-container');
       const fallbackEl = document.getElementById('neural-fallback');
@@ -737,7 +737,7 @@
           return;
         }
 
-        // Hide CSS fallback when Three.js renders successfully
+        // Hide CSS fallback when SparkLabs Neural Core renders successfully
         if (fallbackEl) fallbackEl.style.display = 'none';
 
         const scene = new THREE.Scene();
@@ -755,7 +755,7 @@
         renderer.domElement.style.zIndex = '5';
         container.appendChild(renderer.domElement);
 
-        // Neural Network Nodes
+        // SparkLabs Neural Network Nodes
         const nodeCount = 40;
         const nodes = [];
         const nodeGeometry = new THREE.SphereGeometry(0.08, 16, 16);
@@ -786,7 +786,7 @@
           nodes.push(node);
         }
 
-        // Connection Lines
+        // SparkLabs Neural Connection Lines
         const lineMaterial = new THREE.LineBasicMaterial({
           color: 0xf97316,
           transparent: true,
@@ -807,7 +807,7 @@
           }
         }
 
-        // Particle System - Data Flow
+        // SparkLabs Data Flow Particle System
         const particleCount = 100;
         const particleGeometry = new THREE.BufferGeometry();
         const positions = new Float32Array(particleCount * 3);
@@ -835,7 +835,7 @@
         const particles = new THREE.Points(particleGeometry, particleMaterial);
         scene.add(particles);
 
-        // Central AI Core
+        // SparkLabs Central AI Core
         const coreGeometry = new THREE.IcosahedronGeometry(0.4, 2);
         const coreMaterial = new THREE.MeshBasicMaterial({
           color: 0xf97316,
@@ -846,7 +846,7 @@
         const core = new THREE.Mesh(coreGeometry, coreMaterial);
         scene.add(core);
 
-        // Core Glow
+        // SparkLabs Core Glow Effect
         const glowGeometry = new THREE.SphereGeometry(0.6, 32, 32);
         const glowMaterial = new THREE.MeshBasicMaterial({
           color: 0xf97316,
@@ -856,7 +856,7 @@
         const glow = new THREE.Mesh(glowGeometry, glowMaterial);
         scene.add(glow);
 
-        // Floating Game World Fragments
+        // SparkLabs Floating World Fragments
         const fragmentGeometry = new THREE.BoxGeometry(0.3, 0.3, 0.3);
         const fragments = [];
         for (let i = 0; i < 8; i++) {
@@ -887,7 +887,7 @@
 
         camera.position.z = 5;
 
-        // Mouse interaction
+        // Mouse interaction for SparkLabs Neural Core
         let mouseX = 0, mouseY = 0;
         container.addEventListener('mousemove', (e) => {
           const rect = container.getBoundingClientRect();
@@ -895,35 +895,35 @@
           mouseY = ((e.clientY - rect.top) / rect.height - 0.5) * 2;
         });
 
-        // Animation Loop
+        // SparkLabs Neural Core Animation Loop
         let time = 0;
         function animate() {
           requestAnimationFrame(animate);
           time += 0.016;
 
-          // Rotate core
+          // Rotate SparkLabs AI Core
           core.rotation.x += 0.01;
           core.rotation.y += 0.015;
           glow.scale.setScalar(1 + Math.sin(time * 2) * 0.2);
           glowMaterial.opacity = 0.1 + Math.sin(time * 2) * 0.05;
 
-          // Animate nodes
+          // Animate SparkLabs Neural Nodes
           nodes.forEach((node) => {
             const data = node.userData;
             node.position.add(data.velocity);
             node.position.y += Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.002;
 
-            // Boundary check
+            // Boundary check for SparkLabs Neural Network
             if (Math.abs(node.position.x) > 4) data.velocity.x *= -1;
             if (Math.abs(node.position.y) > 3) data.velocity.y *= -1;
             if (Math.abs(node.position.z) > 2) data.velocity.z *= -1;
 
-            // Pulse scale
+            // Pulse scale for SparkLabs Nodes
             const scale = 1 + Math.sin(time * data.pulseSpeed + data.pulsePhase) * 0.3;
             node.scale.setScalar(scale);
           });
 
-          // Update connections
+          // Update SparkLabs Neural Connections
           connections.forEach(line => {
             const nodeA = nodes[line.userData.nodeA];
             const nodeB = nodes[line.userData.nodeB];
@@ -936,26 +936,26 @@
             posArr[5] = nodeB.position.z;
             line.geometry.attributes.position.needsUpdate = true;
 
-            // Dynamic opacity based on distance
+            // Dynamic opacity based on distance for SparkLabs Connections
             const dist = nodeA.position.distanceTo(nodeB.position);
             line.material.opacity = Math.max(0, 0.3 - dist * 0.1) * (0.5 + Math.sin(time * 2) * 0.5);
           });
 
-          // Animate particles
+          // Animate SparkLabs Data Particles
           const posArray = particles.geometry.attributes.position.array;
           for (let i = 0; i < particleCount; i++) {
             posArray[i * 3] += velocities[i].x;
             posArray[i * 3 + 1] += velocities[i].y;
             posArray[i * 3 + 2] += velocities[i].z;
 
-            // Reset particles that go too far
+            // Reset particles that go too far in SparkLabs Engine
             if (Math.abs(posArray[i * 3]) > 5) velocities[i].x *= -1;
             if (Math.abs(posArray[i * 3 + 1]) > 3) velocities[i].y *= -1;
             if (Math.abs(posArray[i * 3 + 2]) > 2.5) velocities[i].z *= -1;
           }
           particles.geometry.attributes.position.needsUpdate = true;
 
-          // Animate fragments
+          // Animate SparkLabs World Fragments
           fragments.forEach(fragment => {
             fragment.rotation.x += fragment.userData.rotationSpeed.x;
             fragment.rotation.y += fragment.userData.rotationSpeed.y;
@@ -963,7 +963,7 @@
             fragment.position.y += Math.sin(time * fragment.userData.floatSpeed + fragment.userData.floatPhase) * 0.003;
           });
 
-          // Camera parallax
+          // Camera parallax for SparkLabs Neural View
           camera.position.x += (mouseX * 0.5 - camera.position.x) * 0.05;
           camera.position.y += (-mouseY * 0.3 - camera.position.y) * 0.05;
           camera.lookAt(0, 0, 0);
@@ -973,7 +973,7 @@
 
         animate();
 
-        // Handle resize
+        // Handle resize for SparkLabs Neural Core
         const resizeObserver = new ResizeObserver(() => {
           const w = container.clientWidth;
           const h = container.clientHeight;
