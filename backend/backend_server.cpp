@@ -11,7 +11,7 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 
-#define PORT 8081
+#define PORT 8090
 #define BUFFER_SIZE 4096
 
 // SparkLabs Engine Status
@@ -32,14 +32,18 @@ SparkLabsStatus g_status = {
 };
 
 // Generate SparkLabs API response
+std::string boolToString(bool value) {
+    return value ? "true" : "false";
+}
+
 std::string generateStatusJSON() {
     return "{"
            "\"status\":\"ok\","
            "\"engine\":\"SparkLabs AI-Native Game Engine\","
            "\"version\":\"" + g_status.version + "\","
-           "\"engineReady\":" + std::string(g_status.engineReady ? "true" : "false") + ","
-           "\"aiRuntimeReady\":" + std::string(g_status.aiRuntimeReady ? "true" : "false") + ","
-           "\"neuralRendererReady\":" + std::string(g_status.neuralRendererReady ? "true" : "false") + ","
+           "\"engineReady\":" + boolToString(g_status.engineReady) + ","
+           "\"aiRuntimeReady\":" + boolToString(g_status.aiRuntimeReady) + ","
+           "\"neuralRendererReady\":" + boolToString(g_status.neuralRendererReady) + ","
            "\"activeSessions\":" + std::to_string(g_status.activeSessions) +
            "}";
 }
