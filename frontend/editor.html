@@ -1,0 +1,1137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SparkLabs Editor - AI-Native Game Engine</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: #0a0a0a;
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      overflow: hidden;
+      height: 100vh;
+      color: #e0e0e0;
+    }
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .gradient-text {
+      background: linear-gradient(135deg, #f97316 0%, #ef4444 50%, #fbbf24 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .editor-panel {
+      background: #111111;
+      border: 1px solid #1e1e1e;
+    }
+    .editor-panel-header {
+      background: #161616;
+      border-bottom: 1px solid #1e1e1e;
+      padding: 8px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .toolbar-btn {
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      color: #999;
+      padding: 6px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+    .toolbar-btn:hover {
+      background: #222;
+      color: #ddd;
+      border-color: #3a3a3a;
+    }
+    .toolbar-btn.active {
+      background: rgba(249, 115, 22, 0.15);
+      border-color: rgba(249, 115, 22, 0.4);
+      color: #f97316;
+    }
+    .ai-input {
+      background: #0d0d0d;
+      border: 1px solid #1e1e1e;
+      color: #e0e0e0;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      width: 100%;
+      resize: none;
+      transition: border-color 0.2s;
+    }
+    .ai-input:focus {
+      outline: none;
+      border-color: rgba(249, 115, 22, 0.5);
+    }
+    .ai-input::placeholder {
+      color: #444;
+    }
+    .scene-item {
+      padding: 6px 10px;
+      font-size: 12px;
+      cursor: pointer;
+      border-left: 2px solid transparent;
+      transition: all 0.15s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .scene-item:hover {
+      background: #1a1a1a;
+    }
+    .scene-item.selected {
+      background: rgba(249, 115, 22, 0.08);
+      border-left-color: #f97316;
+      color: #f97316;
+    }
+    .property-row {
+      display: flex;
+      align-items: center;
+      padding: 5px 12px;
+      font-size: 12px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .property-label {
+      color: #666;
+      width: 80px;
+      flex-shrink: 0;
+      font-size: 11px;
+    }
+    .property-value {
+      flex: 1;
+      color: #ccc;
+    }
+    .property-input {
+      background: #0d0d0d;
+      border: 1px solid #222;
+      color: #ddd;
+      padding: 3px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+      width: 100%;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .property-input:focus {
+      outline: none;
+      border-color: rgba(249, 115, 22, 0.4);
+    }
+    .asset-card {
+      background: #161616;
+      border: 1px solid #222;
+      border-radius: 8px;
+      padding: 8px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .asset-card:hover {
+      border-color: rgba(249, 115, 22, 0.3);
+      background: #1a1a1a;
+    }
+    .console-line {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 2px 8px;
+      line-height: 1.6;
+    }
+    .console-line.info { color: #888; }
+    .console-line.success { color: #4ade80; }
+    .console-line.warn { color: #fbbf24; }
+    .console-line.error { color: #f87171; }
+    .tab-btn {
+      padding: 6px 14px;
+      font-size: 11px;
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      color: #666;
+      transition: all 0.15s;
+    }
+    .tab-btn:hover { color: #aaa; }
+    .tab-btn.active {
+      color: #f97316;
+      border-bottom-color: #f97316;
+    }
+    .viewport-overlay {
+      position: absolute;
+      pointer-events: none;
+      z-index: 10;
+    }
+    .viewport-gizmo {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      width: 60px;
+      height: 60px;
+      pointer-events: auto;
+    }
+    .viewport-stats {
+      position: absolute;
+      top: 8px;
+      left: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: #555;
+    }
+    .viewport-camera {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      font-size: 10px;
+      color: #555;
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .spark-btn {
+      background: linear-gradient(135deg, #f97316, #ef4444);
+      color: white;
+      border: none;
+      padding: 8px 16px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .spark-btn:hover {
+      opacity: 0.9;
+      transform: translateY(-1px);
+    }
+    .spark-btn-outline {
+      background: transparent;
+      color: #f97316;
+      border: 1px solid rgba(249, 115, 22, 0.3);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .spark-btn-outline:hover {
+      background: rgba(249, 115, 22, 0.1);
+      border-color: rgba(249, 115, 22, 0.5);
+    }
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #333; border-radius: 2px; }
+    ::-webkit-scrollbar-thumb:hover { background: #444; }
+    @keyframes pulse-dot {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.4; }
+    }
+    .pulse-dot { animation: pulse-dot 2s ease-in-out infinite; }
+    @keyframes typing-cursor {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+    .typing-cursor::after {
+      content: '|';
+      animation: typing-cursor 1s step-end infinite;
+      color: #f97316;
+    }
+  </style>
+</head>
+<body>
+  <!-- SparkLabs Editor Layout -->
+  <div style="display: grid; grid-template-rows: 40px 1fr 24px; height: 100vh;">
+
+    <!-- Top Toolbar -->
+    <div style="background: #111; border-bottom: 1px solid #1e1e1e; display: flex; align-items: center; padding: 0 12px; gap: 8px;">
+      <!-- Logo -->
+      <div style="display: flex; align-items: center; gap: 8px; margin-right: 16px;">
+        <div style="width: 22px; height: 22px; background: linear-gradient(135deg, #f97316, #ef4444); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <i class="fa-solid fa-fire" style="color: white; font-size: 10px;"></i>
+        </div>
+        <span style="font-weight: 700; font-size: 13px;">
+          <span class="gradient-text">Spark</span><span style="color: #e0e0e0;">Labs</span>
+        </span>
+        <span style="color: #444; font-size: 10px; font-family: 'JetBrains Mono', monospace;">EDITOR</span>
+      </div>
+
+      <!-- Divider -->
+      <div style="width: 1px; height: 20px; background: #2a2a2a;"></div>
+
+      <!-- File Menu -->
+      <div class="toolbar-btn" style="border: none; background: none; padding: 4px 8px; font-size: 11px;">File</div>
+      <div class="toolbar-btn" style="border: none; background: none; padding: 4px 8px; font-size: 11px;">Edit</div>
+      <div class="toolbar-btn" style="border: none; background: none; padding: 4px 8px; font-size: 11px;">View</div>
+      <div class="toolbar-btn" style="border: none; background: none; padding: 4px 8px; font-size: 11px;">Game</div>
+
+      <!-- Divider -->
+      <div style="width: 1px; height: 20px; background: #2a2a2a;"></div>
+
+      <!-- Transform Tools -->
+      <div class="toolbar-btn active" id="tool-move" onclick="setTool('move')">
+        <i class="fa-solid fa-arrows-up-down-left-right" style="font-size: 10px;"></i> Move
+      </div>
+      <div class="toolbar-btn" id="tool-rotate" onclick="setTool('rotate')">
+        <i class="fa-solid fa-rotate" style="font-size: 10px;"></i> Rotate
+      </div>
+      <div class="toolbar-btn" id="tool-scale" onclick="setTool('scale')">
+        <i class="fa-solid fa-expand" style="font-size: 10px;"></i> Scale
+      </div>
+
+      <!-- Spacer -->
+      <div style="flex: 1;"></div>
+
+      <!-- AI Generate Button -->
+      <button class="spark-btn" onclick="toggleAIPanel()">
+        <i class="fa-solid fa-wand-magic-sparkles"></i> AI Generate
+      </button>
+
+      <!-- Play Button -->
+      <button class="spark-btn" style="background: linear-gradient(135deg, #22c55e, #16a34a);" onclick="togglePlayMode()">
+        <i class="fa-solid fa-play" id="play-icon"></i> <span id="play-text">Play</span>
+      </button>
+
+      <!-- Divider -->
+      <div style="width: 1px; height: 20px; background: #2a2a2a;"></div>
+
+      <!-- User -->
+      <div style="display: flex; align-items: center; gap: 8px;">
+        <div style="width: 24px; height: 24px; background: linear-gradient(135deg, #f97316, #ef4444); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: white;">S</div>
+      </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div style="display: grid; grid-template-columns: 220px 1fr 280px; overflow: hidden;">
+
+      <!-- Left Panel: Scene Hierarchy -->
+      <div class="editor-panel" style="display: flex; flex-direction: column; overflow: hidden;">
+        <div class="editor-panel-header">
+          <i class="fa-solid fa-sitemap" style="color: #f97316; font-size: 10px;"></i>
+          Scene Hierarchy
+        </div>
+
+        <!-- Scene Tabs -->
+        <div style="display: flex; border-bottom: 1px solid #1e1e1e;">
+          <div class="tab-btn active">Scene</div>
+          <div class="tab-btn">Assets</div>
+        </div>
+
+        <!-- Scene Tree -->
+        <div style="flex: 1; overflow-y: auto; padding: 4px 0;">
+          <div class="scene-item selected" onclick="selectSceneItem(this, 'Main Camera')">
+            <i class="fa-solid fa-video" style="color: #4ade80; font-size: 10px;"></i>
+            <span>Main Camera</span>
+          </div>
+          <div class="scene-item" onclick="selectSceneItem(this, 'Directional Light')">
+            <i class="fa-solid fa-sun" style="color: #fbbf24; font-size: 10px;"></i>
+            <span>Directional Light</span>
+          </div>
+          <div class="scene-item" onclick="selectSceneItem(this, 'AI Core')">
+            <i class="fa-solid fa-microchip" style="color: #f97316; font-size: 10px;"></i>
+            <span>AI Core</span>
+          </div>
+          <div class="scene-item" onclick="selectSceneItem(this, 'Neural Network')">
+            <i class="fa-solid fa-circle-nodes" style="color: #f97316; font-size: 10px;"></i>
+            <span>Neural Network</span>
+          </div>
+          <div class="scene-item" onclick="selectSceneItem(this, 'Terrain')">
+            <i class="fa-solid fa-mountain" style="color: #4ade80; font-size: 10px;"></i>
+            <span>Terrain</span>
+          </div>
+          <div class="scene-item" onclick="selectSceneItem(this, 'Player Spawn')">
+            <i class="fa-solid fa-location-dot" style="color: #60a5fa; font-size: 10px;"></i>
+            <span>Player Spawn</span>
+          </div>
+          <div class="scene-item" onclick="selectSceneItem(this, 'AI Agent - NPC')">
+            <i class="fa-solid fa-robot" style="color: #c084fc; font-size: 10px;"></i>
+            <span>AI Agent - NPC</span>
+          </div>
+          <div class="scene-item" onclick="selectSceneItem(this, 'Environment')">
+            <i class="fa-solid fa-tree" style="color: #4ade80; font-size: 10px;"></i>
+            <span>Environment</span>
+          </div>
+        </div>
+
+        <!-- Add Entity Button -->
+        <div style="padding: 8px; border-top: 1px solid #1e1e1e;">
+          <button class="spark-btn-outline" style="width: 100%; justify-content: center; display: flex; align-items: center; gap: 4px;" onclick="addEntity()">
+            <i class="fa-solid fa-plus"></i> Add Entity
+          </button>
+        </div>
+      </div>
+
+      <!-- Center: Viewport + Bottom Console -->
+      <div style="display: grid; grid-template-rows: 1fr 180px; overflow: hidden;">
+
+        <!-- Viewport -->
+        <div style="position: relative; background: #0d0d0d; overflow: hidden;">
+          <div id="editor-viewport" style="width: 100%; height: 100%;"></div>
+
+          <!-- Viewport Overlays -->
+          <div class="viewport-stats">
+            <div>FPS: <span id="fps-counter">60</span></div>
+            <div>Tris: <span id="tri-counter">2,450</span></div>
+            <div>Calls: <span id="draw-calls">12</span></div>
+          </div>
+
+          <div class="viewport-camera">
+            <span>Perspective</span> | <span id="cam-pos">0, 5, 10</span>
+          </div>
+
+          <!-- Viewport Gizmo -->
+          <div class="viewport-gizmo" id="viewport-gizmo">
+            <canvas id="gizmo-canvas" width="60" height="60" style="width: 60px; height: 60px;"></canvas>
+          </div>
+
+          <!-- AI Generation Overlay -->
+          <div id="ai-generating-overlay" style="display: none; position: absolute; inset: 0; background: rgba(0,0,0,0.7); z-index: 30; align-items: center; justify-content: center; flex-direction: column; gap: 16px;">
+            <div style="width: 48px; height: 48px; border: 3px solid rgba(249,115,22,0.3); border-top-color: #f97316; border-radius: 50%; animation: spin 1s linear infinite;"></div>
+            <div style="color: #f97316; font-size: 14px; font-weight: 600;" class="typing-cursor" id="ai-status-text">Generating world</div>
+            <div style="color: #555; font-size: 11px;" class="mono">SparkLabs Neural Core Processing</div>
+          </div>
+          <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
+        </div>
+
+        <!-- Bottom Panel: Console / AI -->
+        <div class="editor-panel" style="display: flex; flex-direction: column; overflow: hidden;">
+          <div style="display: flex; border-bottom: 1px solid #1e1e1e;">
+            <div class="tab-btn active" onclick="switchBottomTab('console', event)">Console</div>
+            <div class="tab-btn" onclick="switchBottomTab('ai', event)">AI Assistant</div>
+            <div class="tab-btn" onclick="switchBottomTab('timeline', event)">Timeline</div>
+          </div>
+
+          <!-- Console Content -->
+          <div id="tab-console" style="flex: 1; overflow-y: auto; padding: 4px 0;">
+            <div class="console-line info">[SparkLabs] Editor initialized</div>
+            <div class="console-line success">[SparkLabs] Neural Core loaded</div>
+            <div class="console-line info">[SparkLabs] Scene "Main World" ready</div>
+            <div class="console-line info">[SparkLabs] AI Agent system online</div>
+            <div class="console-line success">[SparkLabs] 7 entities in scene</div>
+            <div class="console-line info">[SparkLabs] Viewport renderer: WebGL 2.0</div>
+          </div>
+
+          <!-- AI Assistant Content -->
+          <div id="tab-ai" style="flex: 1; overflow-y: auto; padding: 8px; display: none;">
+            <div style="margin-bottom: 8px;">
+              <div style="background: #161616; border: 1px solid #222; border-radius: 8px; padding: 10px; margin-bottom: 8px;">
+                <div style="font-size: 11px; color: #f97316; font-weight: 600; margin-bottom: 4px;">
+                  <i class="fa-solid fa-microchip"></i> SparkLabs AI
+                </div>
+                <div style="font-size: 12px; color: #aaa; line-height: 1.5;">
+                  I can help you create game worlds, characters, and mechanics. Describe what you want to build.
+                </div>
+              </div>
+            </div>
+            <div style="display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap;">
+              <button class="spark-btn-outline" style="font-size: 10px; padding: 4px 8px;" onclick="aiPrompt('Create a fantasy forest with magical creatures')">Fantasy Forest</button>
+              <button class="spark-btn-outline" style="font-size: 10px; padding: 4px 8px;" onclick="aiPrompt('Generate a sci-fi space station interior')">Space Station</button>
+              <button class="spark-btn-outline" style="font-size: 10px; padding: 4px 8px;" onclick="aiPrompt('Build a medieval castle with AI guards')">Medieval Castle</button>
+              <button class="spark-btn-outline" style="font-size: 10px; padding: 4px 8px;" onclick="aiPrompt('Create an underwater ocean world')">Ocean World</button>
+            </div>
+            <div style="display: flex; gap: 6px;">
+              <textarea class="ai-input" rows="2" placeholder="Describe your game world..." id="ai-prompt-input"></textarea>
+              <button class="spark-btn" style="align-self: flex-end; padding: 8px 12px;" onclick="sendAIPrompt()">
+                <i class="fa-solid fa-paper-plane"></i>
+              </button>
+            </div>
+          </div>
+
+          <!-- Timeline Content -->
+          <div id="tab-timeline" style="flex: 1; overflow-y: auto; padding: 8px; display: none;">
+            <div style="color: #555; font-size: 11px; text-align: center; padding: 20px;">
+              <i class="fa-solid fa-film" style="font-size: 24px; margin-bottom: 8px; display: block; color: #333;"></i>
+              Timeline editor will appear when animations are added
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Panel: Inspector -->
+      <div class="editor-panel" style="display: flex; flex-direction: column; overflow: hidden;">
+        <div class="editor-panel-header">
+          <i class="fa-solid fa-sliders" style="color: #f97316; font-size: 10px;"></i>
+          Inspector
+        </div>
+
+        <!-- Inspector Tabs -->
+        <div style="display: flex; border-bottom: 1px solid #1e1e1e;">
+          <div class="tab-btn active" onclick="switchInspectorTab('properties', event)">Properties</div>
+          <div class="tab-btn" onclick="switchInspectorTab('ai-config', event)">AI Config</div>
+        </div>
+
+        <!-- Properties Content -->
+        <div id="inspector-properties" style="flex: 1; overflow-y: auto;">
+          <!-- Entity Name -->
+          <div style="padding: 10px 12px; border-bottom: 1px solid #1e1e1e;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+              <i class="fa-solid fa-microchip" style="color: #f97316;"></i>
+              <span style="font-weight: 600; font-size: 13px;" id="inspector-entity-name">AI Core</span>
+            </div>
+            <div style="display: flex; gap: 4px;">
+              <button class="toolbar-btn" style="font-size: 10px; padding: 3px 6px;"><i class="fa-solid fa-eye"></i></button>
+              <button class="toolbar-btn" style="font-size: 10px; padding: 3px 6px;"><i class="fa-solid fa-lock"></i></button>
+              <button class="toolbar-btn" style="font-size: 10px; padding: 3px 6px;"><i class="fa-solid fa-link"></i></button>
+            </div>
+          </div>
+
+          <!-- Transform -->
+          <div style="padding: 8px 0;">
+            <div style="padding: 4px 12px; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px;">Transform</div>
+            <div class="property-row">
+              <span class="property-label">Position</span>
+              <div style="display: flex; gap: 4px; flex: 1;">
+                <input class="property-input" value="0.00" style="width: 33%; text-align: center;" />
+                <input class="property-input" value="1.50" style="width: 33%; text-align: center;" />
+                <input class="property-input" value="0.00" style="width: 33%; text-align: center;" />
+              </div>
+            </div>
+            <div class="property-row">
+              <span class="property-label">Rotation</span>
+              <div style="display: flex; gap: 4px; flex: 1;">
+                <input class="property-input" value="0.00" style="width: 33%; text-align: center;" />
+                <input class="property-input" value="0.00" style="width: 33%; text-align: center;" />
+                <input class="property-input" value="0.00" style="width: 33%; text-align: center;" />
+              </div>
+            </div>
+            <div class="property-row">
+              <span class="property-label">Scale</span>
+              <div style="display: flex; gap: 4px; flex: 1;">
+                <input class="property-input" value="1.00" style="width: 33%; text-align: center;" />
+                <input class="property-input" value="1.00" style="width: 33%; text-align: center;" />
+                <input class="property-input" value="1.00" style="width: 33%; text-align: center;" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Neural Component -->
+          <div style="padding: 8px 0;">
+            <div style="padding: 4px 12px; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-brain" style="color: #f97316;"></i> Neural Component
+            </div>
+            <div class="property-row">
+              <span class="property-label">AI Model</span>
+              <div class="property-value">
+                <select class="property-input" style="padding: 3px 6px;">
+                  <option>SparkLabs Neural v2</option>
+                  <option>SparkLabs Core v1</option>
+                  <option>Custom Model</option>
+                </select>
+              </div>
+            </div>
+            <div class="property-row">
+              <span class="property-label">Behavior</span>
+              <div class="property-value">
+                <select class="property-input" style="padding: 3px 6px;">
+                  <option>Autonomous Agent</option>
+                  <option>Scripted Path</option>
+                  <option>Reactive AI</option>
+                  <option>Neural Driven</option>
+                </select>
+              </div>
+            </div>
+            <div class="property-row">
+              <span class="property-label">Awareness</span>
+              <div class="property-value">
+                <input type="range" min="0" max="100" value="75" style="width: 100%; accent-color: #f97316;" />
+              </div>
+            </div>
+            <div class="property-row">
+              <span class="property-label">Memory</span>
+              <div class="property-value">
+                <input type="range" min="0" max="100" value="60" style="width: 100%; accent-color: #f97316;" />
+              </div>
+            </div>
+          </div>
+
+          <!-- Rendering -->
+          <div style="padding: 8px 0;">
+            <div style="padding: 4px 12px; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-cube" style="color: #60a5fa;"></i> Rendering
+            </div>
+            <div class="property-row">
+              <span class="property-label">Material</span>
+              <div class="property-value">
+                <input class="property-input" value="spark_neural_mat" readonly />
+              </div>
+            </div>
+            <div class="property-row">
+              <span class="property-label">Shader</span>
+              <div class="property-value">
+                <select class="property-input" style="padding: 3px 6px;">
+                  <option>Neural Glow</option>
+                  <option>Standard PBR</option>
+                  <option>Holographic</option>
+                  <option>Wireframe</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          <!-- Physics -->
+          <div style="padding: 8px 0;">
+            <div style="padding: 4px 12px; font-size: 10px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.5px; display: flex; align-items: center; gap: 6px;">
+              <i class="fa-solid fa-atom" style="color: #4ade80;"></i> Physics
+            </div>
+            <div class="property-row">
+              <span class="property-label">Body Type</span>
+              <div class="property-value">
+                <select class="property-input" style="padding: 3px 6px;">
+                  <option>Dynamic</option>
+                  <option>Static</option>
+                  <option>Kinematic</option>
+                </select>
+              </div>
+            </div>
+            <div class="property-row">
+              <span class="property-label">Mass</span>
+              <div class="property-value">
+                <input class="property-input" value="1.0" type="number" step="0.1" />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- AI Config Content -->
+        <div id="inspector-ai-config" style="flex: 1; overflow-y: auto; display: none; padding: 12px;">
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 11px; color: #888; margin-bottom: 6px;">AI Generation Mode</div>
+            <div style="display: flex; gap: 4px;">
+              <button class="toolbar-btn active" style="flex: 1; justify-content: center; font-size: 10px;">World</button>
+              <button class="toolbar-btn" style="flex: 1; justify-content: center; font-size: 10px;">Character</button>
+              <button class="toolbar-btn" style="flex: 1; justify-content: center; font-size: 10px;">Mechanic</button>
+            </div>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 11px; color: #888; margin-bottom: 6px;">Neural Parameters</div>
+            <div class="property-row" style="border: none; padding: 4px 0;">
+              <span class="property-label">Creativity</span>
+              <input type="range" min="0" max="100" value="70" style="flex: 1; accent-color: #f97316;" />
+            </div>
+            <div class="property-row" style="border: none; padding: 4px 0;">
+              <span class="property-label">Coherence</span>
+              <input type="range" min="0" max="100" value="85" style="flex: 1; accent-color: #f97316;" />
+            </div>
+            <div class="property-row" style="border: none; padding: 4px 0;">
+              <span class="property-label">Detail</span>
+              <input type="range" min="0" max="100" value="80" style="flex: 1; accent-color: #f97316;" />
+            </div>
+          </div>
+
+          <div style="margin-bottom: 12px;">
+            <div style="font-size: 11px; color: #888; margin-bottom: 6px;">World Model</div>
+            <textarea class="ai-input" rows="4" placeholder="Describe the rules and physics of your world...">A fantasy realm where magic flows through neural pathways. AI creatures evolve based on player interactions. The world adapts and reshapes itself in response to collective player choices.</textarea>
+          </div>
+
+          <button class="spark-btn" style="width: 100%; justify-content: center;" onclick="generateWithAI()">
+            <i class="fa-solid fa-wand-magic-sparkles"></i> Generate with AI
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status Bar -->
+    <div style="background: #111; border-top: 1px solid #1e1e1e; display: flex; align-items: center; padding: 0 12px; font-size: 10px; color: #555; font-family: 'JetBrains Mono', monospace;">
+      <div style="display: flex; align-items: center; gap: 6px;">
+        <div style="width: 6px; height: 6px; background: #22c55e; border-radius: 50%;" class="pulse-dot"></div>
+        <span>SparkLabs Engine v1.0.0</span>
+      </div>
+      <div style="width: 1px; height: 12px; background: #2a2a2a; margin: 0 8px;"></div>
+      <span>Scene: Main World</span>
+      <div style="width: 1px; height: 12px; background: #2a2a2a; margin: 0 8px;"></div>
+      <span>Entities: 7</span>
+      <div style="flex: 1;"></div>
+      <span>WebGL 2.0</span>
+      <div style="width: 1px; height: 12px; background: #2a2a2a; margin: 0 8px;"></div>
+      <span>60 FPS</span>
+      <div style="width: 1px; height: 12px; background: #2a2a2a; margin: 0 8px;"></div>
+      <span style="color: #f97316;">AI Ready</span>
+    </div>
+  </div>
+
+  <script>
+    // SparkLabs Editor - Tool State Management
+    let currentTool = 'move';
+    let isPlaying = false;
+    let selectedEntity = 'AI Core';
+
+    function setTool(tool) {
+      currentTool = tool;
+      document.querySelectorAll('#tool-move, #tool-rotate, #tool-scale').forEach(btn => btn.classList.remove('active'));
+      document.getElementById('tool-' + tool).classList.add('active');
+      addConsoleLine('info', '[Editor] Tool changed to: ' + tool);
+    }
+
+    function selectSceneItem(element, name) {
+      document.querySelectorAll('.scene-item').forEach(item => item.classList.remove('selected'));
+      element.classList.add('selected');
+      selectedEntity = name;
+      document.getElementById('inspector-entity-name').textContent = name;
+      addConsoleLine('info', '[Editor] Selected: ' + name);
+    }
+
+    function addEntity() {
+      const sceneList = document.querySelector('.scene-item').parentElement;
+      const newItem = document.createElement('div');
+      newItem.className = 'scene-item';
+      newItem.onclick = function() { selectSceneItem(this, 'New Entity'); };
+      newItem.innerHTML = '<i class="fa-solid fa-cube" style="color: #60a5fa; font-size: 10px;"></i><span>New Entity</span>';
+      sceneList.appendChild(newItem);
+      addConsoleLine('success', '[Editor] Entity added to scene');
+    }
+
+    function togglePlayMode() {
+      isPlaying = !isPlaying;
+      const icon = document.getElementById('play-icon');
+      const text = document.getElementById('play-text');
+      if (isPlaying) {
+        icon.className = 'fa-solid fa-stop';
+        text.textContent = 'Stop';
+        addConsoleLine('success', '[Engine] Play mode started');
+      } else {
+        icon.className = 'fa-solid fa-play';
+        text.textContent = 'Play';
+        addConsoleLine('info', '[Engine] Play mode stopped');
+      }
+    }
+
+    function toggleAIPanel() {
+      switchBottomTab('ai');
+    }
+
+    function switchBottomTab(tab, evt) {
+      document.querySelectorAll('#tab-console, #tab-ai, #tab-timeline').forEach(el => el.style.display = 'none');
+      document.getElementById('tab-' + tab).style.display = 'block';
+      if (evt && evt.target) evt.target.classList.add('active');
+    }
+
+    function switchInspectorTab(tab, evt) {
+      document.getElementById('inspector-properties').style.display = tab === 'properties' ? 'block' : 'none';
+      document.getElementById('inspector-ai-config').style.display = tab === 'ai-config' ? 'block' : 'none';
+      if (evt && evt.target) evt.target.classList.add('active');
+    }
+
+    function aiPrompt(text) {
+      document.getElementById('ai-prompt-input').value = text;
+    }
+
+    function sendAIPrompt() {
+      const input = document.getElementById('ai-prompt-input');
+      const prompt = input.value.trim();
+      if (!prompt) return;
+
+      addConsoleLine('info', '[AI] Processing prompt: "' + prompt.substring(0, 50) + '..."');
+      input.value = '';
+
+      // Show generating overlay
+      const overlay = document.getElementById('ai-generating-overlay');
+      overlay.style.display = 'flex';
+
+      // Simulate AI generation process
+      const statusText = document.getElementById('ai-status-text');
+      const phases = [
+        'Analyzing prompt',
+        'Building neural graph',
+        'Generating world geometry',
+        'Placing AI agents',
+        'Configuring behaviors',
+        'Rendering scene'
+      ];
+
+      let phase = 0;
+      const interval = setInterval(() => {
+        if (phase < phases.length) {
+          statusText.textContent = phases[phase];
+          addConsoleLine('info', '[AI] ' + phases[phase] + '...');
+          phase++;
+        } else {
+          clearInterval(interval);
+          overlay.style.display = 'none';
+          addConsoleLine('success', '[AI] World generated successfully');
+          addConsoleLine('success', '[AI] 3 new entities added to scene');
+        }
+      }, 800);
+    }
+
+    function generateWithAI() {
+      addConsoleLine('info', '[AI] Starting neural generation...');
+      const overlay = document.getElementById('ai-generating-overlay');
+      overlay.style.display = 'flex';
+
+      const statusText = document.getElementById('ai-status-text');
+      const phases = [
+        'Initializing neural core',
+        'Building world model',
+        'Generating terrain',
+        'Spawning AI agents',
+        'Configuring interactions',
+        'Finalizing scene'
+      ];
+
+      let phase = 0;
+      const interval = setInterval(() => {
+        if (phase < phases.length) {
+          statusText.textContent = phases[phase];
+          addConsoleLine('info', '[AI] ' + phases[phase] + '...');
+          phase++;
+        } else {
+          clearInterval(interval);
+          overlay.style.display = 'none';
+          addConsoleLine('success', '[AI] Scene generated successfully');
+        }
+      }, 600);
+    }
+
+    function addConsoleLine(type, message) {
+      const consoleEl = document.getElementById('tab-console');
+      const line = document.createElement('div');
+      line.className = 'console-line ' + type;
+      line.textContent = message;
+      consoleEl.appendChild(line);
+      consoleEl.scrollTop = consoleEl.scrollHeight;
+    }
+
+    // SparkLabs Editor - Three.js Viewport Initialization
+    (function() {
+      const container = document.getElementById('editor-viewport');
+      if (!container || typeof THREE === 'undefined') return;
+
+      function initViewport() {
+        const width = container.clientWidth || 800;
+        const height = container.clientHeight || 500;
+        if (width === 0 || height === 0) {
+          setTimeout(initViewport, 100);
+          return;
+        }
+
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0x0d0d0d);
+
+        // SparkLabs Editor Grid
+        const gridHelper = new THREE.GridHelper(20, 20, 0x222222, 0x181818);
+        scene.add(gridHelper);
+
+        // SparkLabs Editor Camera
+        const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 1000);
+        camera.position.set(5, 5, 8);
+        camera.lookAt(0, 0, 0);
+
+        const renderer = new THREE.WebGLRenderer({ antialias: true });
+        renderer.setSize(width, height);
+        renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+        renderer.shadowMap.enabled = true;
+        container.appendChild(renderer.domElement);
+
+        // SparkLabs Editor Lighting
+        const ambientLight = new THREE.AmbientLight(0x404040, 0.5);
+        scene.add(ambientLight);
+
+        const directionalLight = new THREE.DirectionalLight(0xffffff, 0.8);
+        directionalLight.position.set(5, 10, 5);
+        directionalLight.castShadow = true;
+        scene.add(directionalLight);
+
+        const pointLight = new THREE.PointLight(0xf97316, 1, 10);
+        pointLight.position.set(0, 2, 0);
+        scene.add(pointLight);
+
+        // SparkLabs AI Core Object
+        const coreGeometry = new THREE.IcosahedronGeometry(0.6, 2);
+        const coreMaterial = new THREE.MeshStandardMaterial({
+          color: 0xf97316,
+          emissive: 0xf97316,
+          emissiveIntensity: 0.3,
+          wireframe: false,
+          metalness: 0.8,
+          roughness: 0.2
+        });
+        const core = new THREE.Mesh(coreGeometry, coreMaterial);
+        core.position.set(0, 1.5, 0);
+        core.castShadow = true;
+        scene.add(core);
+
+        // SparkLabs Core Wireframe Overlay
+        const wireframeGeometry = new THREE.IcosahedronGeometry(0.65, 2);
+        const wireframeMaterial = new THREE.MeshBasicMaterial({
+          color: 0xf97316,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.3
+        });
+        const wireframe = new THREE.Mesh(wireframeGeometry, wireframeMaterial);
+        wireframe.position.copy(core.position);
+        scene.add(wireframe);
+
+        // SparkLabs Neural Nodes
+        const nodeCount = 20;
+        const nodes = [];
+        const nodeGeometry = new THREE.SphereGeometry(0.06, 12, 12);
+        const nodeColors = [0xf97316, 0xef4444, 0xfbbf24];
+
+        for (let i = 0; i < nodeCount; i++) {
+          const material = new THREE.MeshStandardMaterial({
+            color: nodeColors[Math.floor(Math.random() * nodeColors.length)],
+            emissive: nodeColors[Math.floor(Math.random() * nodeColors.length)],
+            emissiveIntensity: 0.5,
+            metalness: 0.6,
+            roughness: 0.3
+          });
+          const node = new THREE.Mesh(nodeGeometry, material);
+          const angle = (i / nodeCount) * Math.PI * 2;
+          const radius = 1.5 + Math.random() * 1.5;
+          node.position.set(
+            Math.cos(angle) * radius,
+            1 + Math.random() * 2,
+            Math.sin(angle) * radius
+          );
+          node.userData = {
+            angle: angle,
+            radius: radius,
+            speed: 0.2 + Math.random() * 0.3,
+            yOffset: node.position.y,
+            pulsePhase: Math.random() * Math.PI * 2
+          };
+          scene.add(node);
+          nodes.push(node);
+        }
+
+        // SparkLabs Neural Connection Lines
+        const lineMaterial = new THREE.LineBasicMaterial({
+          color: 0xf97316,
+          transparent: true,
+          opacity: 0.15
+        });
+
+        const connections = [];
+        for (let i = 0; i < nodes.length; i++) {
+          const target = Math.floor(Math.random() * nodes.length);
+          if (target !== i) {
+            const geometry = new THREE.BufferGeometry().setFromPoints([nodes[i].position, nodes[target].position]);
+            const line = new THREE.Line(geometry, lineMaterial.clone());
+            line.userData = { from: i, to: target };
+            scene.add(line);
+            connections.push(line);
+          }
+        }
+
+        // SparkLabs Terrain Plane
+        const terrainGeometry = new THREE.PlaneGeometry(20, 20, 40, 40);
+        const terrainMaterial = new THREE.MeshStandardMaterial({
+          color: 0x1a1a1a,
+          wireframe: false,
+          metalness: 0.5,
+          roughness: 0.8
+        });
+        const terrain = new THREE.Mesh(terrainGeometry, terrainMaterial);
+        terrain.rotation.x = -Math.PI / 2;
+        terrain.receiveShadow = true;
+        scene.add(terrain);
+
+        // SparkLabs Terrain Wireframe Overlay
+        const terrainWireframe = new THREE.Mesh(
+          new THREE.PlaneGeometry(20, 20, 40, 40),
+          new THREE.MeshBasicMaterial({ color: 0x222222, wireframe: true, transparent: true, opacity: 0.3 })
+        );
+        terrainWireframe.rotation.x = -Math.PI / 2;
+        terrainWireframe.position.y = 0.01;
+        scene.add(terrainWireframe);
+
+        // SparkLabs Editor Camera Controls
+        let isDragging = false;
+        let isRightDragging = false;
+        let previousMouse = { x: 0, y: 0 };
+        let cameraAngle = { theta: Math.atan2(camera.position.x, camera.position.z), phi: Math.acos(camera.position.y / camera.position.length()) };
+        let cameraDistance = camera.position.length();
+
+        container.addEventListener('mousedown', (e) => {
+          if (e.button === 0) isDragging = true;
+          if (e.button === 2) isRightDragging = true;
+          previousMouse = { x: e.clientX, y: e.clientY };
+        });
+
+        container.addEventListener('mousemove', (e) => {
+          const deltaX = e.clientX - previousMouse.x;
+          const deltaY = e.clientY - previousMouse.y;
+
+          if (isRightDragging || (isDragging && e.altKey)) {
+            cameraAngle.theta -= deltaX * 0.005;
+            cameraAngle.phi = Math.max(0.1, Math.min(Math.PI - 0.1, cameraAngle.phi - deltaY * 0.005));
+            updateCamera();
+          } else if (isDragging && e.shiftKey) {
+            const panSpeed = 0.02;
+            const right = new THREE.Vector3();
+            const up = new THREE.Vector3();
+            camera.getWorldDirection(new THREE.Vector3());
+            right.crossVectors(camera.up, new THREE.Vector3().subVectors(camera.position, new THREE.Vector3(0, 0, 0)).normalize()).normalize();
+            up.copy(camera.up);
+            camera.position.add(right.multiplyScalar(-deltaX * panSpeed));
+            camera.position.add(up.multiplyScalar(deltaY * panSpeed));
+            camera.lookAt(0, 0, 0);
+          }
+
+          previousMouse = { x: e.clientX, y: e.clientY };
+        });
+
+        container.addEventListener('mouseup', () => {
+          isDragging = false;
+          isRightDragging = false;
+        });
+
+        container.addEventListener('wheel', (e) => {
+          cameraDistance += e.deltaY * 0.01;
+          cameraDistance = Math.max(2, Math.min(30, cameraDistance));
+          updateCamera();
+        });
+
+        container.addEventListener('contextmenu', (e) => e.preventDefault());
+
+        function updateCamera() {
+          camera.position.x = cameraDistance * Math.sin(cameraAngle.phi) * Math.sin(cameraAngle.theta);
+          camera.position.y = cameraDistance * Math.cos(cameraAngle.phi);
+          camera.position.z = cameraDistance * Math.sin(cameraAngle.phi) * Math.cos(cameraAngle.theta);
+          camera.lookAt(0, 0, 0);
+          document.getElementById('cam-pos').textContent =
+            camera.position.x.toFixed(1) + ', ' +
+            camera.position.y.toFixed(1) + ', ' +
+            camera.position.z.toFixed(1);
+        }
+
+        // SparkLabs Editor Animation Loop
+        let time = 0;
+        let frameCount = 0;
+        let lastFpsTime = Date.now();
+
+        function animate() {
+          requestAnimationFrame(animate);
+          time += 0.016;
+
+          // Rotate AI Core
+          core.rotation.y += 0.005;
+          wireframe.rotation.y -= 0.003;
+          wireframe.rotation.x += 0.002;
+
+          // Pulse core glow
+          coreMaterial.emissiveIntensity = 0.3 + Math.sin(time * 2) * 0.15;
+
+          // Animate neural nodes
+          nodes.forEach((node) => {
+            const data = node.userData;
+            data.angle += data.speed * 0.01;
+            node.position.x = Math.cos(data.angle) * data.radius;
+            node.position.z = Math.sin(data.angle) * data.radius;
+            node.position.y = data.yOffset + Math.sin(time * data.speed + data.pulsePhase) * 0.3;
+          });
+
+          // Update connection lines
+          connections.forEach(line => {
+            const fromNode = nodes[line.userData.from];
+            const toNode = nodes[line.userData.to];
+            if (fromNode && toNode) {
+              const posArr = line.geometry.attributes.position.array;
+              posArr[0] = fromNode.position.x;
+              posArr[1] = fromNode.position.y;
+              posArr[2] = fromNode.position.z;
+              posArr[3] = toNode.position.x;
+              posArr[4] = toNode.position.y;
+              posArr[5] = toNode.position.z;
+              line.geometry.attributes.position.needsUpdate = true;
+              line.material.opacity = 0.1 + Math.sin(time * 2) * 0.05;
+            }
+          });
+
+          // Pulse point light
+          pointLight.intensity = 1 + Math.sin(time * 3) * 0.3;
+
+          renderer.render(scene, camera);
+
+          // FPS counter
+          frameCount++;
+          const now = Date.now();
+          if (now - lastFpsTime >= 1000) {
+            document.getElementById('fps-counter').textContent = frameCount;
+            frameCount = 0;
+            lastFpsTime = now;
+          }
+        }
+
+        animate();
+
+        // SparkLabs Editor Viewport Resize Handler
+        const resizeObserver = new ResizeObserver(() => {
+          const w = container.clientWidth;
+          const h = container.clientHeight;
+          if (w > 0 && h > 0) {
+            camera.aspect = w / h;
+            camera.updateProjectionMatrix();
+            renderer.setSize(w, h);
+          }
+        });
+        resizeObserver.observe(container);
+
+        // SparkLabs Editor Gizmo Renderer
+        const gizmoCanvas = document.getElementById('gizmo-canvas');
+        const gizmoCtx = gizmoCanvas.getContext('2d');
+
+        function drawGizmo() {
+          gizmoCtx.clearRect(0, 0, 60, 60);
+          const cx = 30, cy = 30, len = 20;
+
+          // X axis (red)
+          gizmoCtx.beginPath();
+          gizmoCtx.moveTo(cx, cy);
+          gizmoCtx.lineTo(cx + len * Math.sin(cameraAngle.theta), cy - len * Math.cos(cameraAngle.theta));
+          gizmoCtx.strokeStyle = '#ef4444';
+          gizmoCtx.lineWidth = 2;
+          gizmoCtx.stroke();
+
+          // Y axis (green)
+          gizmoCtx.beginPath();
+          gizmoCtx.moveTo(cx, cy);
+          gizmoCtx.lineTo(cx, cy - len);
+          gizmoCtx.strokeStyle = '#22c55e';
+          gizmoCtx.lineWidth = 2;
+          gizmoCtx.stroke();
+
+          // Z axis (blue)
+          gizmoCtx.beginPath();
+          gizmoCtx.moveTo(cx, cy);
+          gizmoCtx.lineTo(cx + len * Math.cos(cameraAngle.theta), cy + len * Math.sin(cameraAngle.theta));
+          gizmoCtx.strokeStyle = '#3b82f6';
+          gizmoCtx.lineWidth = 2;
+          gizmoCtx.stroke();
+
+          // Labels
+          gizmoCtx.font = '9px JetBrains Mono';
+          gizmoCtx.fillStyle = '#ef4444';
+          gizmoCtx.fillText('X', cx + len * Math.sin(cameraAngle.theta) + 2, cy - len * Math.cos(cameraAngle.theta) + 3);
+          gizmoCtx.fillStyle = '#22c55e';
+          gizmoCtx.fillText('Y', cx + 2, cy - len + 3);
+          gizmoCtx.fillStyle = '#3b82f6';
+          gizmoCtx.fillText('Z', cx + len * Math.cos(cameraAngle.theta) + 2, cy + len * Math.sin(cameraAngle.theta) + 3);
+
+          requestAnimationFrame(drawGizmo);
+        }
+        drawGizmo();
+      }
+
+      // Delay initialization to ensure DOM is ready
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', () => setTimeout(initViewport, 300));
+      } else {
+        setTimeout(initViewport, 300);
+      }
+    })();
+  </script>
+</body>
+</html>
