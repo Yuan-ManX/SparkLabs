@@ -161,11 +161,8 @@ cd frontend/web
 # Install dependencies
 npm install
 
-# Start development server (http://localhost:3000)
+# Start development server
 npm run dev
-
-# For standalone editor mode, open:
-# http://localhost:3000?mode=editor
 
 # Build for production
 npm run build
