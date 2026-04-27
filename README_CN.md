@@ -8,7 +8,6 @@
 ### 点燃你的无限游戏 🎮
 
 ![版本](https://img.shields.io/badge/version-2.0.0-blue)
-![C++](https://img.shields.io/badge/C%2B%2B-17-orange)
 ![Python Version](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-3178C6)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
@@ -429,27 +428,6 @@ SparkLabs/
 └── tests/                   # 单元测试
 ```
 
-## API端点
-
-| 端点 | 方法 | 描述 |
-|------|------|------|
-| `/api/health` | GET | 健康检查 |
-| `/api/status` | GET | 引擎状态 |
-| `/api/engine/status` | GET | 引擎运行时状态 |
-| `/api/engine/start` | POST | 启动引擎 |
-| `/api/engine/stop` | POST | 停止引擎 |
-| `/api/engine/scenes/create` | POST | 创建场景 |
-| `/api/agent/create` | POST | 创建AI Agent |
-| `/api/agent/think` | POST | Agent推理 |
-| `/api/agent/act` | POST | Agent动作 |
-| `/api/workflow/create` | POST | 创建工作流 |
-| `/api/workflow/node-types` | GET | 列出节点类型 |
-| `/api/workflow/execute` | POST | 执行工作流 |
-| `/api/narrative/story/create` | POST | 创建故事 |
-| `/api/narrative/quest/generate` | POST | 生成任务 |
-| `/api/npc/create` | POST | 创建NPC |
-| `/api/npc/dialogue` | POST | NPC对话 |
-| `/ws/connect` | WebSocket | 实时连接 |
 
 ## 文档
 
