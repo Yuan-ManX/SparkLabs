@@ -143,7 +143,7 @@ cd frontend/website
 # Install dependencies
 npm install
 
-# Start website server (http://localhost:8080)
+# Start website server
 npm run dev
 ```
 
