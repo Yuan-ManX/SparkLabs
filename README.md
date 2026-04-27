@@ -290,7 +290,7 @@ executor = WorkflowExecutor()
 result = await executor.execute(graph)
 ```
 
-### Python NPC System
+### NPC System
 
 ```python
 from sparkai import NPCBrain, NPCPersonality, PersonalityTraits, BehaviorTree, BehaviorNode
