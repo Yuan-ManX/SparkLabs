@@ -2,7 +2,7 @@
 SparkAI - AI-Native Game Engine Agent Foundation
 """
 
-from sparkai.agent.base import SparkAgent, AgentCapability, AgentState
+from sparkai.agent.base import SparkAgent, AgentCapability, AgentState, AgentRole, ExecutionPlan
 from sparkai.agent.llm import LLMProvider, LLMConfig
 from sparkai.agent.memory import AgentMemory, MemoryType
 from sparkai.agent.toolkit import ToolRegistry, Tool, create_engine_tools
