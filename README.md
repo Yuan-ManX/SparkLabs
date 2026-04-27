@@ -79,7 +79,7 @@ The engine features an AI Agent foundation (`sparkai`) that provides a comprehen
 - 20+ built-in node types across 11 categories
 - Typed pin connections with type safety
 - Topological execution engine
-- Categories: Prompt, Image, Text, AI/Video, AI/Audio, Input, Output, Sampling, Latent, ControlNet, Logic, Game
+- Categories: Prompt, Image, Text, Video, AI/Audio, Input, Output, Sampling, Latent, ControlNet, Logic, Game
 
 ### Intelligent Team Collaboration System
 - Three-tiered agent architecture matching real studio hierarchy
