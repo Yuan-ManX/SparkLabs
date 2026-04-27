@@ -135,6 +135,42 @@ cmake ..
 cmake --build . --config Release
 ```
 
+### Setting Up the Official Website
+
+```bash
+# Navigate to website directory
+cd frontend/website
+
+# Install dependencies
+npm install
+
+# Start website server (http://localhost:8080)
+npm run dev
+```
+
+### Setting Up the AI-Native Game Engine Editor
+
+The web editor can run in two modes:
+1. **Standalone mode**: Directly open the editor for game development
+2. **From website**: Click "Start Creating" on the official website to enter the editor
+
+```bash
+# Navigate to web editor directory
+cd frontend/web
+
+# Install dependencies
+npm install
+
+# Start development server (http://localhost:3000)
+npm run dev
+
+# For standalone editor mode, open:
+# http://localhost:3000?mode=editor
+
+# Build for production
+npm run build
+```
+
 ### Setting Up the AI Backend
 
 ```bash
@@ -142,20 +178,7 @@ cmake --build . --config Release
 pip install -r backend/requirements.txt
 
 # Start the backend server
-python -m uvicorn backend.app:app --host 0.0.0.0 --port 8090 --reload
-```
-
-### Setting Up the Web Editor
-
-```bash
-# Navigate to frontend directory
-cd frontend
-
-# Install dependencies
-npm install
-
-# Start development server
-npm run dev
+python -m uvicorn backend.app:app --host 0.0.0.0 --port 8091 --reload
 ```
 
 ### CMake Options
@@ -398,27 +421,41 @@ SparkLabs/
 │       ├── workflow.py      # Workflow endpoints
 │       ├── narrative.py     # Story/quest endpoints
 │       └── npc.py           # NPC management endpoints
-├── frontend/                # SparkLabs Web Editor
-│   ├── App.tsx              # Main application
-│   ├── main.tsx             # Entry point
-│   ├── index.html           # HTML template
-│   ├── index.css            # Global styles
-│   ├── components/          # UI components
-│   │   ├── SparkLabsHome.tsx      # Landing page
-│   │   ├── WelcomeDashboard.tsx   # Editor dashboard
-│   │   ├── GameEditor.tsx         # Game studio
-│   │   ├── GameGenerator.tsx      # Template generator
-│   │   ├── StoryEditor.tsx        # Story editor
-│   │   ├── AssetGenerator.tsx     # Asset generator
-│   │   ├── VoiceSynthesizer.tsx   # Voice synthesis
-│   │   ├── StoryboardEditor.tsx   # Storyboard editor
-│   │   ├── VideoRenderer.tsx      # Video renderer
-│   │   ├── WorkflowEditor.tsx     # Workflow canvas
-│   │   ├── NPCDesigner.tsx        # NPC designer
-│   │   └── AgentPanel.tsx         # Agent chat panel
-│   ├── hooks/               # Custom React hooks
-│   ├── utils/               # API client and utilities
-│   └── types/               # TypeScript type definitions
+├── frontend/                # SparkLabs Frontend
+│   ├── website/             # Official Website (Static HTML)
+│   │   ├── index.html       # Main homepage
+│   │   ├── sparklabs.html   # SparkLabs homepage
+│   │   ├── editor.html      # Original editor page
+│   │   └── package.json     # Website server config
+│   └── web/                 # AI-Native Game Engine Editor (React)
+│       ├── index.html       # Vite entry
+│       ├── App.tsx          # Main application
+│       ├── main.tsx         # Entry point
+│       ├── index.css        # Global styles
+│       ├── package.json     # Editor dependencies
+│       ├── vite.config.ts   # Vite configuration
+│       ├── components/      # UI components
+│       │   ├── SparkLabsEditor.tsx  # Editor main layout
+│       │   ├── EditorToolbar.tsx    # Top toolbar
+│       │   ├── SceneHierarchy.tsx   # Left panel - scene tree
+│       │   ├── Viewport3D.tsx       # Center - Three.js viewport
+│       │   ├── InspectorPanel.tsx   # Right panel - properties
+│       │   ├── ConsolePanel.tsx     # Bottom - console/AI assistant
+│       │   ├── SparkLabsHome.tsx    # Landing page
+│       │   ├── WelcomeDashboard.tsx # Editor dashboard
+│       │   ├── GameEditor.tsx       # Game studio
+│       │   ├── GameGenerator.tsx    # Template generator
+│       │   ├── StoryEditor.tsx      # Story editor
+│       │   ├── AssetGenerator.tsx   # Asset generator
+│       │   ├── VoiceSynthesizer.tsx # Voice synthesis
+│       │   ├── StoryboardEditor.tsx # Storyboard editor
+│       │   ├── VideoRenderer.tsx    # Video renderer
+│       │   ├── WorkflowEditor.tsx   # Workflow canvas
+│       │   ├── NPCDesigner.tsx      # NPC designer
+│       │   └── AgentPanel.tsx       # Agent chat panel
+│       ├── hooks/           # Custom React hooks
+│       ├── utils/           # API client and utilities
+│       └── types/           # TypeScript type definitions
 ├── core/                    # Core C++ utilities
 ├── engine/                  # C++ Engine core
 ├── render/                  # Rendering system

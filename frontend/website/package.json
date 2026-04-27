@@ -1,0 +1,12 @@
+{
+  "name": "sparklabs-website",
+  "version": "1.0.0",
+  "description": "SparkLabs Official Website",
+  "scripts": {
+    "dev": "npx serve . -l 8080 -s",
+    "start": "npx serve . -l 8080 -s"
+  },
+  "devDependencies": {
+    "serve": "^14.2.0"
+  }
+}

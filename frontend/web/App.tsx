@@ -1,9 +1,19 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import SparkLabsHome from './components/SparkLabsHome';
 import SparkLabsEditor from './components/SparkLabsEditor';
 
 function App() {
-  const [isOnLandingPage, setIsOnLandingPage] = useState(true);
+  const [isOnLandingPage, setIsOnLandingPage] = useState(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get('mode') !== 'editor';
+  });
+
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('mode') === 'editor') {
+      setIsOnLandingPage(false);
+    }
+  }, []);
 
   if (isOnLandingPage) {
     return (
