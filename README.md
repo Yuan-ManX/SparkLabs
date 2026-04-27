@@ -150,10 +150,6 @@ npm run dev
 
 ### Setting Up the AI-Native Game Engine Editor
 
-The web editor can run in two modes:
-1. **Standalone mode**: Directly open the editor for game development
-2. **From website**: Click "Start Creating" on the official website to enter the editor
-
 ```bash
 # Navigate to web editor directory
 cd frontend/web
