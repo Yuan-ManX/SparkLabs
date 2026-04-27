@@ -25,12 +25,12 @@
 
 **SparkLabs** is a next-generation AI-native game engine that deeply integrates artificial intelligence capabilities into the core architecture of game development. Unlike traditional game engines that rely on manually coded game logic and predefined pipelines, SparkLabs revolutionizes game development by enabling procedural content generation, intelligent NPC behavior systems, adaptive rendering, and dynamic difficulty adjustment through AI.
 
-The engine features a Python-based AI Agent foundation (`sparkai`) that provides a comprehensive multi-agent orchestration system, hierarchical memory, tool registry, and LLM provider integration — all designed from the ground up for AI-native game development. The web-based visual editor (`frontend`) provides an intuitive interface for scene design, workflow composition, NPC creation, and narrative editing.
+The engine features an AI Agent foundation (`sparkai`) that provides a comprehensive multi-agent orchestration system, hierarchical memory, tool registry, and LLM provider integration — all designed from the ground up for AI-native game development. The web editor provides an intuitive interface for scene design, workflow composition, NPC creation, and narrative editing.
 
 ## Key Features
 
 ### AI-Native Agent Foundation
-- Python-based SparkAgent with observe-think-act loop
+- SparkAgent with observe-think-act loop
 - Multi-provider LLM integration (OpenAI, Anthropic, DeepSeek, Ollama, local models)
 - Hierarchical memory system (short-term, long-term, episodic, semantic, working)
 - Tool registry with built-in engine tools for game development
