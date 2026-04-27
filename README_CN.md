@@ -7,9 +7,10 @@
 ### AI 原生游戏引擎 💥
 ### 点燃你的无限游戏 🎮
 
-![版本](https://img.shields.io/badge/version-1.0.0-blue)
+![版本](https://img.shields.io/badge/version-2.0.0-blue)
 ![C++](https://img.shields.io/badge/C%2B%2B-17-orange)
-![Python Version](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![Python Version](https://img.shields.io/badge/Python-3.10+-blue.svg)
+![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-3178C6)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 
@@ -23,93 +24,102 @@
 
 **SparkLabs** 是一款新一代的AI原生游戏引擎，将人工智能能力深度融入游戏开发的核心架构中。传统游戏引擎依赖手工编码的游戏逻辑和预定义的资源管道，而 SparkLabs 通过AI驱动的程序化内容生成、智能NPC行为系统、自适应渲染和动态难度调整，彻底革新游戏开发范式。
 
+引擎采用三层架构设计：C++高性能游戏引擎核心、Python AI Agent基础层（sparkai）、TypeScript Web可视化编辑器——从引擎到编辑器打造无缝的AI原生开发体验。
+
+Python AI Agent基础层（sparkai）提供了完整的多Agent编排系统、分层记忆、工具注册表和LLM提供商集成——所有功能均从零开始为AI原生游戏开发而设计。Web可视化编辑器（frontend）提供了直观的场景设计、工作流编排、NPC创建和叙事编辑界面。
+
 ## 核心特性
+
+### AI原生Agent基础层
+- 基于Python的SparkAgent，支持观察-思考-行动循环
+- 多提供商LLM集成（OpenAI、Anthropic、DeepSeek、Ollama、本地模型）
+- 分层记忆系统（短期、长期、情景、语义、工作记忆）
+- 工具注册表，内置游戏开发引擎工具
+- 多Agent编排，自动能力匹配
 
 ### AI原生架构
 - AI推理能力深度集成到核心引擎架构
 - AI驱动的对象系统和事件处理机制
-- 神经网络模型支持（ONNX Runtime集成）
+- 支持神经网络模型（ONNX Runtime集成）
+- C++17核心引擎与Python AI层通过PyBind11桥接
 
 ### 神经渲染管线
 - 实时AI超分辨率（神经上采样）
 - AI环境光遮蔽（N/AO）
-- 智能抗锯齿（神经AA）
+- 智能抗锯齿（Neural AA）
 - 基于场景理解的自适应渲染
 
 ### 智能NPC系统
-- 神经网络驱动的NPC决策系统
-- 记忆系统（短时记忆、长时记忆、情景记忆、语义记忆）
-- 注意力机制用于焦点管理
-- 基于PAD模型的情感状态机
+- 神经网络驱动的NPC决策，双网络架构
+- 10维人格特质系统
+- 7种情感类型的情绪状态机
+- 短期、长期、情景、语义四层记忆系统
+- 注意力机制，焦点管理
+- 行为树系统，支持选择器、序列、装饰器、并行节点
 - 上下文感知的对话生成
 
 ### 自适应游戏玩法
-- 玩家技能追踪与建模
+- 玩家技能追踪和建模
 - 实时动态难度调整
 - 参与度指标监控
 - 个性化玩家体验优化
 
 ### AI叙事引擎
-- 分支叙事的程序化故事生成
-- 动态任务生成
-- 上下文感知的对话和叙事元素
-- 基于玩家偏好的自适应奖励系统
+- 分支故事图，支持变量追踪和条件逻辑
+- 程序化任务生成，6+模板类型
+- 动态任务定制，上下文感知文本
+- 故事节点类型：开端、情节点、选择、高潮、结局、分支
 
-### 智能资源管理
+### 智能资产管理
 - AI驱动的纹理合成
 - 程序化几何体生成
-- 提示词转资产系统
-- 智能资源缓存
+- 提示词到资产的转换系统
+- 智能资产缓存
+
+### AI工作流画布
+- 节点图可视化编程，构建AI管线
+- 20+内置节点类型，覆盖11个类别
+- 类型化引脚连接，类型安全
+- 拓扑执行引擎
+- 类别：提示词、AI/图像、AI/文本、AI/视频、AI/音频、输入、输出、采样、潜空间、ControlNet、逻辑、游戏
 
 ### 智能团队协作系统
-- 三层架构的代理体系，匹配真实工作室层级
+- 三层Agent架构，匹配真实工作室层级
   - 第一层：总监（创意总监、技术总监、制作人）
   - 第二层：部门主管（游戏设计师、主程序员、美术总监等）
-  - 第三层：专家（游戏玩法程序员、关卡设计师、音效设计师等）
-- 全面的任务管理和分配系统
-- 实时进度跟踪和报告
-- 设计评审和批准工作流
-- 代码评审和质量验证流程
+  - 第三层：专家（19个专家角色）
+- 设计评审和审批工作流
+- 代码审查和质量验证流程
+- 质量门系统，4个标准5个指标
 
-### 高级工作流管理
-- 25+个预定义工作流模板，用于常见开发任务
-  - 头脑风暴会议、冲刺规划、设计评审、代码评审
-  - 平衡性检查、资源审计、范围检查、性能分析
-  - 里程碑评审、估算、回顾、bug报告
-  - 发布清单、启动清单、变更日志、补丁说明
-  - 团队协作工作流（战斗、叙事、UI、音频、关卡设计）
-- 自定义工作流创建和注册
-- 逐步工作流执行和跟踪
-- 工作流历史和审计追踪
-
-### 质量保证与验证
-- 多级质量标准（低、中、高、生产级）
-- 全面的质量指标跟踪
-  - 代码质量评估
-  - 性能基准测试
-  - 文档覆盖度验证
-  - 测试覆盖度监控
-  - 无障碍合规性检查
-- 自动化质量关卡验证
-- 质量报告生成
+### Web可视化编辑器（SparkLabs Editor）
+- React + TypeScript + Vite + Tailwind CSS
+- 11个编辑器面板：仪表盘、游戏工作室、模板、故事、资产、语音、分镜、视频、工作流、NPC设计器、Agent面板
+- 实时WebSocket连接引擎后端
+- AI Agent聊天界面，内容生成
+- 可视化工作流画布，拖拽节点
+- NPC人格设计器，特质可视化
+- 故事编辑器，分支叙事支持
 
 ## 系统要求
 
 ### 最低要求
-- **操作系统**: Windows 10, macOS 10.14, Linux (Ubuntu 18.04+)
-- **编译器**: GCC 9+, Clang 10+, MSVC 2019+
-- **内存**: 8 GB
-- **硬盘**: 2 GB 可用空间
+- **操作系统**：Windows 10、macOS 10.14、Linux（Ubuntu 18.04+）
+- **编译器**：GCC 9+、Clang 10+、MSVC 2019+
+- **Python**：3.10+
+- **Node.js**：18+
+- **内存**：8 GB
+- **磁盘**：2 GB 可用空间
 
-### 推荐要求
-- **操作系统**: Windows 11, macOS 12+, Linux (Ubuntu 20.04+)
-- **编译器**: GCC 11+, Clang 14+, MSVC 2022+
-- **内存**: 16 GB 或更多
-- **显卡**: NVIDIA 显卡，支持CUDA（用于GPU加速）
+### 推荐配置
+- **操作系统**：Windows 11、macOS 12+、Linux（Ubuntu 20.04+）
+- **编译器**：GCC 11+、Clang 14+、MSVC 2022+
+- **内存**：16 GB 或更多
+- **GPU**：支持CUDA的NVIDIA GPU（用于GPU加速）
 
 ## 安装
 
-### 从源码构建
+### 从源码构建C++引擎
 
 ```bash
 # 克隆仓库
@@ -119,26 +129,48 @@ cd SparkLabs
 # 创建构建目录
 mkdir build && cd build
 
-# CMake配置
+# 使用CMake配置
 cmake ..
 
-# 编译
+# 构建
 cmake --build . --config Release
+```
 
-# 运行
-./SparkLabs
+### 设置AI后端
+
+```bash
+# 安装Python依赖
+pip install -r backend/requirements.txt
+
+# 启动后端服务器
+python -m uvicorn backend.app:app --host 0.0.0.0 --port 8090 --reload
+```
+
+### 设置Web编辑器
+
+```bash
+# 进入前端目录
+cd frontend
+
+# 安装依赖
+npm install
+
+# 启动开发服务器
+npm run dev
 ```
 
 ### CMake选项
 
-- `SPARKLABS_ORT_ENABLED`: 启用ONNX Runtime支持（默认: ON）
-- `SPARKLABS_GPU_SUPPORT`: 启用GPU加速（默认: ON）
+- `SPARKLABS_ORT_ENABLED`：启用ONNX Runtime支持（默认：ON）
+- `SPARKLABS_GPU_SUPPORT`：启用GPU加速（默认：ON）
 
 ```bash
 cmake .. -DSPARKLABS_ORT_ENABLED=ON -DSPARKLABS_GPU_SUPPORT=ON
 ```
 
 ## 快速开始
+
+### C++引擎
 
 ```cpp
 #include <SparkLabs.h>
@@ -166,253 +198,281 @@ int main() {
 }
 ```
 
-### Python API
-
-SparkLabs提供Python绑定层，方便快速原型开发和脚本编写：
+### Python AI Agent
 
 ```python
-import sparklabs
+import asyncio
+from sparkai import SparkAgent, LLMProvider, LLMConfig, AgentCapability, create_engine_tools
+
+async def main():
+    # 创建AI Agent
+    agent = SparkAgent(
+        name="GameDesigner",
+        role="game_designer",
+        capabilities=[
+            AgentCapability.REASONING,
+            AgentCapability.GAMEPLAY_DESIGN,
+            AgentCapability.WORLD_BUILDING,
+        ],
+    )
+
+    # 配置LLM提供商
+    llm = LLMProvider(LLMConfig(
+        provider="openai",
+        model="gpt-4",
+        api_key="your-api-key",
+    ))
+    await llm.initialize()
+    agent.set_llm_provider(llm)
+
+    # 注册引擎工具
+    for tool in create_engine_tools():
+        agent.register_tool(tool)
+
+    # 使用Agent
+    response = await agent.think("为奇幻RPG设计一个Boss战斗")
+    print(response)
+
+    # 执行动作
+    result = await agent.act("create_scene", {"name": "Boss竞技场"})
+    print(result)
+
+asyncio.run(main())
+```
+
+### Python工作流系统
+
+```python
+from sparkai import WorkflowGraph, WorkflowNode, WorkflowExecutor, NodeRegistry
 
 # 创建工作流图
-graph = sparklabs.WorkflowGraph()
-graph.set_name("我的AI工作流")
+graph = WorkflowGraph(name="图像生成管线")
 
-# 创建并配置节点
-prompt = sparklabs.create_text_prompt_node()
-prompt.set_id("prompt_1")
-prompt.set_prompt("美丽的日落山景")
-prompt.set_position(100.0, 100.0)
+# 使用节点注册表创建类型化节点
+registry = NodeRegistry.get_instance()
 
-image_gen = sparklabs.create_image_generation_node()
-image_gen.set_id("image_gen_1")
-image_gen.set_model("models/sd_xl.safetensors")
-image_gen.set_width(1024)
-image_gen.set_height(1024)
-image_gen.set_steps(30)
-image_gen.set_position(400.0, 100.0)
+prompt = registry.create_node("text_prompt", name="风景提示词")
+prompt.set_property("prompt", "日落时分的美丽风景")
+prompt.position = [100.0, 100.0]
 
-save_image = sparklabs.create_save_image_node()
-save_image.set_id("save_1")
-save_image.set_output_path("output/landscape.png")
-save_image.set_position(700.0, 100.0)
+image_gen = registry.create_node("image_generation", name="生成图像")
+image_gen.set_property("width", 1024)
+image_gen.set_property("height", 1024)
+image_gen.position = [400.0, 100.0]
 
-# 连接节点并执行
+save = registry.create_node("save_image", name="保存结果")
+save.set_property("output_path", "output/landscape.png")
+save.position = [700.0, 100.0]
+
+# 添加节点并连接
 graph.add_node(prompt)
 graph.add_node(image_gen)
-graph.add_node(save_image)
-graph.connect("prompt_1", 0, "image_gen_1", 0)
-graph.connect("image_gen_1", 0, "save_1", 0)
-result = graph.execute()
+graph.add_node(save)
+graph.connect(prompt.id, 0, image_gen.id, 0)
+graph.connect(image_gen.id, 0, save.id, 0)
+
+# 执行
+executor = WorkflowExecutor()
+result = await executor.execute(graph)
 ```
 
-### 使用AI工作流画布
+### Python NPC系统
 
-```cpp
-auto canvas = new WorkflowCanvas();
-auto graph = new WorkflowGraph();
+```python
+from sparkai import NPCBrain, NPCPersonality, PersonalityTraits, BehaviorTree, BehaviorNode
 
-canvas->SetGraph(graph);
+# 创建带人格的NPC
+personality = NPCPersonality(
+    name="贤者长老",
+    traits=PersonalityTraits(
+        courage=0.3, curiosity=0.8, aggression=0.1,
+        friendliness=0.9, honesty=0.9, intelligence=0.95,
+    ),
+    background="一位古老的知识守护者",
+    speech_style="wise",
+)
 
-auto textPrompt = new TextPromptNode();
-textPrompt->SetPrompt("A beautiful landscape at sunset");
-canvas->AddNode(textPrompt, 100.0f, 100.0f);
+brain = NPCBrain(personality=personality)
 
-auto imageGen = new ImageGenerationNode();
-imageGen->SetModel("models/sd_xl.safetensors");
-imageGen->SetSteps(30);
-imageGen->SetWidth(1024);
-imageGen->SetHeight(1024);
-canvas->AddNode(imageGen, 400.0f, 100.0f);
+# 添加目标
+brain.add_goal("分享智慧", priority=0.8)
+brain.add_goal("保护图书馆", priority=0.9)
 
-auto saveImage = new SaveImageNode();
-canvas->AddNode(saveImage, 700.0f, 100.0f);
+# 创建行为树
+tree = BehaviorTree()
+root = BehaviorNode(name="Root", node_type="selector")
+tree.set_root(root)
+brain.set_behavior_tree(tree)
 
-canvas->Connect(textPrompt->GetId(), 0, imageGen->GetId(), 0);
-canvas->Connect(imageGen->GetId(), 0, saveImage->GetId(), 0);
-
-canvas->Execute();
+# 做出决策
+decision = await brain.decide({"player_action": "询问古代神器"})
+dialogue = await brain.generate_dialogue("告诉我关于古代神器的事")
 ```
-
-## AI工作流画布界面
-
-### 节点类别
-
-| 类别 | 节点 | 描述 |
-|------|------|------|
-| **AI/Image** | Image Generation, Inpaint, Upscale | 图像创建和修改 |
-| **AI/Text** | Text Generation, Prompt Templates | 文本和对话创建 |
-| **AI/Video** | Video Generation, Video Edit | 视频内容创建 |
-| **AI/Audio** | Audio Generation, TTS | 声音和音乐创建 |
-| **Input** | Load Image, Load Audio, Load Video | 资源加载 |
-| **Output** | Save Image, Save Video, Save Audio | 资源保存 |
-| **Model** | Load Model, Load Checkpoint, Load VAE | 模型管理 |
-| **Prompt** | Text Prompt, Negative Prompt, Wildcards | 提示词工程 |
-| **Sampling** | KSampler, KSampler Advanced | 扩散采样 |
-| **Latent** | Empty Latent, VAE Encode, VAE Decode | 潜空间操作 |
-| **ControlNet** | ControlNet Apply, ControlNet Loader | ControlNet集成 |
-
-### 键盘快捷键
-
-| 快捷键 | 功能 |
-|--------|------|
-| Ctrl+Enter | 将工作流加入生成队列 |
-| Ctrl+Shift+Enter | 优先队列生成 |
-| Ctrl+Z | 撤销 |
-| Ctrl+Y | 重做 |
-| Ctrl+C | 复制节点 |
-| Ctrl+V | 粘贴节点 |
-| Ctrl+A | 全选节点 |
-| Delete | 删除所选 |
-| Space+拖动 | 平移画布 |
-| Alt+滚轮 | 缩放 |
 
 ## 架构概览
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     SparkLabs Engine                        │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────────────┐│
-│  │                   AI工作流画布                            ││
-│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     ││
-│  │  │   文本   │→│    图像   │→│   VAE    │→│   保存   │     ││
-│  │  │   提示   │  │  生成   │  │   解码   │  │   图像   │     ││
-│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘     ││
-│  └─────────────────────────────────────────────────────────┘│
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │   sparkai   │  │   Neural    │  │      Adaptive       │  │
-│  │   Core      │  │   Renderer  │  │      Gameplay       │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │    Smart    │  │   Neural    │  │   AI Narrative      │  │
-│  │    Asset    │  │   NPC Brain │  │      Engine         │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-├─────────────────────────────────────────────────────────────┤
-│                    Core Engine Layer                        │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐    │
-│  │  Scene   │ │ Resource │ │ Physics  │ │  Scripting   │    │
-│  │ Manager  │ │ Manager  │ │  Engine  │ │    System    │    │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────────┘    │
-├─────────────────────────────────────────────────────────────┤
-│                    Platform Layer                           │
-│         Windows | macOS | Linux | Web | Mobile              │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    SparkLabs Web 编辑器                          │
+│  React + TypeScript + Vite + Tailwind CSS                      │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
+│  │  游戏    │ │ 工作流   │ │   NPC    │ │     Agent        │   │
+│  │  工作室  │ │   画布   │ │  设计器  │ │     面板         │   │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│                    后端 API (FastAPI)                            │
+│  WebSocket │ REST API │ Agent路由 │ Engine路由                  │
+├─────────────────────────────────────────────────────────────────┤
+│                    sparkai (Python AI层)                         │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐   │
+│  │   Agent     │ │  工作流     │ │      NPC系统            │   │
+│  │  基础层     │ │   引擎     │ │  大脑│记忆│情绪         │   │
+│  │ LLM│记忆    │ │ 图│执行器  │ │  行为│人格               │   │
+│  │ 工具│编排   │ │ 注册表     │ │  对话│目标               │   │
+│  └─────────────┘ └─────────────┘ └─────────────────────────┘   │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐   │
+│  │  叙事引擎   │ │   团队     │ │      引擎               │   │
+│  │ 故事│任务   │ │ 总监│主管  │ │  场景│实体               │   │
+│  │ 分支│变量   │ │ 专家│质量  │ │  组件系统               │   │
+│  └─────────────┘ └─────────────┘ └─────────────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│                    C++ 核心引擎层                                │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
+│  │  场景    │ │  资源    │ │  物理    │ │   AI运行时       │   │
+│  │  管理器  │ │  管理器  │ │   引擎  │ │ ONNX│神经        │   │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│                    神经渲染管线                                  │
+│  经典渲染 → 神经AA → 神经AO → 神经上采样                      │
+├─────────────────────────────────────────────────────────────────┤
+│                    平台层                                       │
+│         Windows | macOS | Linux | Web | 移动端                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
-
-## 模块说明
-
-### Core (`core/`)
-引擎核心工具和类型：
-- **Math**: Vector2, Vector3, Vector4, Matrix4x4, Quaternion
-- **Memory**: SmartPtr, WeakPtr 引用计数智能指针
-- **Object**: 基类对象，RTTI系统
-- **String**: UTF-8字符串，带哈希支持
-
-### Engine (`engine/`)
-核心游戏引擎功能：
-- **Scene**: 场景图、GameObject、组件系统
-- **Resource**: 异步资源加载、缓存、热重载
-
-### sparkai (`sparkai/`)
-AI原生模块 - SparkLabs的核心AI组件：
-- **Workflow**: AI工作流画布系统
-  - `workflow/WorkflowGraph.h`: 图、节点、引脚、边定义
-  - `workflow/WorkflowFactory.h`: 节点注册、序列化、执行器
-  - `workflow/nodes/AIGenerationNodes.h`: 图像、文本、视频、音频生成节点
-  - `ui/WorkflowCanvas.h`: 画布、调色板、属性面板、队列
-- **AI Core**: AIBrain、Blackboard、EventBus、NeuralNetwork
-- **Behavior**: 行为树（组合节点、装饰器节点、动作节点）
-- **ONNX**: ONNX Runtime集成
-- **NPC**: 神经NPC大脑、记忆、注意力、情感状态
-- **Gameplay**: 玩家模型、难度控制器、参与度指标
-- **Narrative**: 故事图、任务生成器、对话系统
-- **Asset**: AI资源生成、纹理合成
-- **Render/Neural**: 神经上采样、环境光遮蔽、抗锯齿
-- **Editor**: AI集成编辑器面板
-
-### Render (`render/`)
-渲染系统：
-- **GPU**: GPU资源管理
-- **Shader**: Shader和ShaderProgram管理
-- **Mesh**: 3D网格加载和管理
-- **Material**: 材质系统
-- **Texture**: 纹理加载和管理
-- **Neural**: AI增强渲染效果
-
-### Platform (`platform/`)
-平台抽象：
-- **FileSystem**: 跨平台文件操作
-- **Input**: 键盘、鼠标、手柄输入
-- **Timer**: 高精度计时
-- **Window**: 窗口管理
-
-## 文档
-
-更多文档请参阅 [docs](./docs/) 目录：
-- [API参考](./docs/API_REFERENCE.md)
-- [架构](./docs/ARCHITECTURE.md)
-- [AI系统](./docs/AI_SYSTEM.md)
-- [构建指南](./docs/BUILD_INSTRUCTIONS.md)
 
 ## 项目结构
 
 ```
 SparkLabs/
-├── core/                 # 核心工具（数学、内存、对象、字符串）
-├── engine/              # 引擎核心（场景、资源）
-├── sparkai/             # AI原生模块
-│   ├── ai/              # AI运行时（行为、大脑、onnx）
-│   ├── team/            # 团队协作系统
-│   │   ├── TeamAgent.h/cpp
-│   │   ├── TeamDirector.h/cpp
-│   │   ├── TeamLead.h/cpp
-│   │   ├── TeamSpecialist.h/cpp
-│   │   ├── TeamOrchestrator.h/cpp
-│   │   ├── QualityGate.h/cpp
-│   │   └── WorkflowManager.h/cpp
-│   ├── workflow/        # AI工作流画布系统
-│   │   ├── WorkflowGraph.h
-│   │   ├── WorkflowFactory.h
-│   │   └── nodes/
-│   │       └── AIGenerationNodes.h
-│   ├── ui/              # AI工作流UI组件
-│   ├── npc/            # 智能NPC系统
-│   ├── gameplay/       # 自适应游戏玩法
-│   ├── narrative/      # AI叙事引擎
-│   ├── asset/          # 智能资源管理
-│   ├── render/neural/  # 神经渲染
-│   └── editor/         # AI编辑器工具
-├── render/              # 渲染系统
-├── platform/            # 平台抽象
-├── docs/                # 文档
-├── scripts/             # 构建脚本
-├── tests/               # 单元测试
-└── main.cpp            # 入口点
+├── sparkai/                 # Python AI Agent基础层
+│   ├── __init__.py          # 包导出
+│   ├── config.py            # 配置系统
+│   ├── agent/               # Agent核心
+│   │   ├── base.py          # SparkAgent，观察-思考-行动循环
+│   │   ├── llm.py           # 多提供商LLM集成
+│   │   ├── memory.py        # 分层记忆系统
+│   │   ├── toolkit.py       # 工具注册表和执行
+│   │   └── orchestrator.py  # 多Agent编排
+│   ├── engine/              # Python引擎接口
+│   │   ├── engine.py        # SparkEngine、Scene、Entity
+│   │   └── scene.py         # 场景管理
+│   ├── workflow/            # AI工作流系统
+│   │   ├── graph.py         # WorkflowGraph、WorkflowNode、PinType
+│   │   ├── executor.py      # 拓扑执行引擎
+│   │   └── registry.py      # 节点类型注册表，20+类型
+│   ├── npc/                 # 智能NPC系统
+│   │   ├── brain.py         # NPCBrain，双网络架构
+│   │   ├── personality.py   # 10维人格特质
+│   │   └── behavior.py      # 行为树系统
+│   ├── narrative/           # AI叙事引擎
+│   │   ├── story.py         # 分支故事图
+│   │   └── quest.py         # 程序化任务生成
+│   ├── team/                # 团队协作
+│   │   ├── director.py      # 总监Agent（第一层）
+│   │   ├── lead.py          # 主管Agent（第二层）
+│   │   ├── specialist.py    # 专家Agent（第三层）
+│   │   └── quality.py       # 质量门系统
+│   ├── ai/                  # C++ AI运行时（头文件）
+│   ├── asset/               # 智能资产管理（C++）
+│   ├── audio/               # 音频系统（C++）
+│   ├── gameplay/            # 自适应游戏玩法（C++）
+│   ├── neural/              # 神经渲染（C++）
+│   └── editor/              # 编辑器集成（C++）
+├── backend/                 # FastAPI后端
+│   ├── app.py               # 应用入口
+│   ├── websocket.py         # WebSocket处理器
+│   ├── requirements.txt     # Python依赖
+│   └── routes/              # API路由
+│       ├── engine.py        # 引擎控制端点
+│       ├── agent.py         # Agent管理端点
+│       ├── scene.py         # 场景/实体端点
+│       ├── workflow.py      # 工作流端点
+│       ├── narrative.py     # 故事/任务端点
+│       └── npc.py           # NPC管理端点
+├── frontend/                # SparkLabs Web编辑器
+│   ├── App.tsx              # 主应用
+│   ├── main.tsx             # 入口点
+│   ├── index.html           # HTML模板
+│   ├── index.css            # 全局样式
+│   ├── components/          # UI组件
+│   │   ├── SparkLabsHome.tsx      # 着陆页
+│   │   ├── WelcomeDashboard.tsx   # 编辑器仪表盘
+│   │   ├── GameEditor.tsx         # 游戏工作室
+│   │   ├── GameGenerator.tsx      # 模板生成器
+│   │   ├── StoryEditor.tsx        # 故事编辑器
+│   │   ├── AssetGenerator.tsx     # 资产生成器
+│   │   ├── VoiceSynthesizer.tsx   # 语音合成
+│   │   ├── StoryboardEditor.tsx   # 分镜编辑器
+│   │   ├── VideoRenderer.tsx      # 视频渲染器
+│   │   ├── WorkflowEditor.tsx     # 工作流画布
+│   │   ├── NPCDesigner.tsx        # NPC设计器
+│   │   └── AgentPanel.tsx         # Agent聊天面板
+│   ├── hooks/               # 自定义React钩子
+│   ├── utils/               # API客户端和工具
+│   └── types/               # TypeScript类型定义
+├── core/                    # 核心C++工具
+├── engine/                  # C++引擎核心
+├── render/                  # 渲染系统
+├── platform/                # 平台抽象
+├── docs/                    # 文档
+├── scripts/                 # 构建脚本
+└── tests/                   # 单元测试
 ```
+
+## API端点
+
+| 端点 | 方法 | 描述 |
+|------|------|------|
+| `/api/health` | GET | 健康检查 |
+| `/api/status` | GET | 引擎状态 |
+| `/api/engine/status` | GET | 引擎运行时状态 |
+| `/api/engine/start` | POST | 启动引擎 |
+| `/api/engine/stop` | POST | 停止引擎 |
+| `/api/engine/scenes/create` | POST | 创建场景 |
+| `/api/agent/create` | POST | 创建AI Agent |
+| `/api/agent/think` | POST | Agent推理 |
+| `/api/agent/act` | POST | Agent动作 |
+| `/api/workflow/create` | POST | 创建工作流 |
+| `/api/workflow/node-types` | GET | 列出节点类型 |
+| `/api/workflow/execute` | POST | 执行工作流 |
+| `/api/narrative/story/create` | POST | 创建故事 |
+| `/api/narrative/quest/generate` | POST | 生成任务 |
+| `/api/npc/create` | POST | 创建NPC |
+| `/api/npc/dialogue` | POST | NPC对话 |
+| `/ws/connect` | WebSocket | 实时连接 |
+
+## 文档
+
+完整文档请参阅 [docs](./docs/) 目录：
+- [API参考](./docs/API_REFERENCE.md)
+- [架构](./docs/ARCHITECTURE.md)
+- [AI系统](./docs/AI_SYSTEM.md)
+- [构建说明](./docs/BUILD_INSTRUCTIONS.md)
 
 ## 贡献
 
-欢迎贡献！请在提交拉取请求之前阅读我们的贡献指南。
+欢迎贡献！请在提交Pull Request之前阅读贡献指南。
 
 ## 许可证
 
-SparkLabs Engine 基于MIT许可证授权。详见 [LICENSE](./LICENSE)。
+SparkLabs引擎采用MIT许可证。详见 [LICENSE](./LICENSE)。
 
-## 致谢
+## ⭐ Star历史
 
-特别感谢所有贡献者和开源社区，让游戏开发对每个人都可以触及。
-
-
-## ⭐ 星标历史
-
-如果您喜欢这个项目，请 ⭐ 给仓库加星。您的支持帮助我们成长！
+如果你喜欢这个项目，请⭐给仓库加星。你的支持帮助我们成长！
 
 <p align="center">
   <a href="https://star-history.com/#Yuan-ManX/SparkLabs&Date">
     <img src="https://api.star-history.com/svg?repos=Yuan-ManX/SparkLabs&type=Date" />
   </a>
 </p>
-
-
-**SparkLabs** - 用AI原生技术赋能游戏开发者。

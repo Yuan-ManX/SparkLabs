@@ -41,3 +41,45 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #64748b;
 }
+
+.workflow-node {
+  position: absolute;
+  min-width: 180px;
+  background: #1e293b;
+  border: 1px solid #334155;
+  border-radius: 8px;
+  cursor: grab;
+  user-select: none;
+}
+
+.workflow-node.selected {
+  border-color: #8b5cf6;
+  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+}
+
+.workflow-node-header {
+  padding: 8px 12px;
+  border-bottom: 1px solid #334155;
+  border-radius: 8px 8px 0 0;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.workflow-node-body {
+  padding: 8px 12px;
+  font-size: 11px;
+}
+
+.workflow-pin {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  border: 2px solid #475569;
+  background: #1e293b;
+  cursor: crosshair;
+}
+
+.workflow-pin:hover {
+  border-color: #8b5cf6;
+  background: #2d1b69;
+}

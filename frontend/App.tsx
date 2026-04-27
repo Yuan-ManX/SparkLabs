@@ -8,52 +8,57 @@ import {
   Settings,
   Play,
   Save,
-  Plus,
-  Trash2,
   Sparkles,
   Bot,
   Workflow,
   Gamepad2,
   Layers,
   Home,
-  ArrowLeft
+  ArrowLeft,
+  Users,
+  Network,
 } from 'lucide-react';
+import WelcomeDashboard from './components/WelcomeDashboard';
+import GameEditor from './components/GameEditor';
+import GameGenerator from './components/GameGenerator';
 import StoryEditor from './components/StoryEditor';
 import AssetGenerator from './components/AssetGenerator';
 import VoiceSynthesizer from './components/VoiceSynthesizer';
 import StoryboardEditor from './components/StoryboardEditor';
 import VideoRenderer from './components/VideoRenderer';
-import GameGenerator from './components/GameGenerator';
-import GameEditor from './components/GameEditor';
-import WelcomeDashboard from './components/WelcomeDashboard';
+import WorkflowEditor from './components/WorkflowEditor';
+import NPCDesigner from './components/NPCDesigner';
+import AgentPanel from './components/AgentPanel';
 import SparkLabsHome from './components/SparkLabsHome';
-
-type ViewMode = 'welcome' | 'editor' | 'games' | 'story' | 'asset' | 'voice' | 'storyboard' | 'video';
+import type { ViewMode } from './types';
 
 function App() {
   const [isOnLandingPage, setIsOnLandingPage] = useState(true);
-  const [activeMode, setActiveMode] = useState<ViewMode>('welcome');
-  const [projectName, setProjectName] = useState('SparkLab Project');
+  const [activeMode, setActiveMode] = useState<ViewMode>('dashboard');
+  const [projectName, setProjectName] = useState('SparkLabs Project');
   const [isPlaying, setIsPlaying] = useState(false);
 
   const navItems = [
-    { id: 'welcome' as ViewMode, icon: Home, label: 'Dashboard', color: 'text-yellow-400' },
-    { id: 'editor' as ViewMode, icon: Layers, label: 'Game Studio', color: 'text-purple-400' },
-    { id: 'games' as ViewMode, icon: Gamepad2, label: 'Templates', color: 'text-pink-400' },
-    { id: 'story' as ViewMode, icon: FileText, label: 'Story Editor', color: 'text-blue-400' },
-    { id: 'asset' as ViewMode, icon: Image, label: 'Asset Generator', color: 'text-purple-400' },
-    { id: 'voice' as ViewMode, icon: Music, label: 'Voice Synthesizer', color: 'text-green-400' },
+    { id: 'dashboard' as ViewMode, icon: Home, label: 'Dashboard', color: 'text-yellow-400' },
+    { id: 'game-studio' as ViewMode, icon: Layers, label: 'Game Studio', color: 'text-purple-400' },
+    { id: 'templates' as ViewMode, icon: Gamepad2, label: 'Templates', color: 'text-pink-400' },
+    { id: 'story' as ViewMode, icon: FileText, label: 'Story', color: 'text-blue-400' },
+    { id: 'asset' as ViewMode, icon: Image, label: 'Assets', color: 'text-purple-400' },
+    { id: 'voice' as ViewMode, icon: Music, label: 'Voice', color: 'text-green-400' },
     { id: 'storyboard' as ViewMode, icon: Layout, label: 'Storyboard', color: 'text-orange-400' },
-    { id: 'video' as ViewMode, icon: Film, label: 'Video Renderer', color: 'text-pink-400' },
+    { id: 'video' as ViewMode, icon: Film, label: 'Video', color: 'text-pink-400' },
+    { id: 'workflow' as ViewMode, icon: Workflow, label: 'Workflow', color: 'text-cyan-400' },
+    { id: 'npc' as ViewMode, icon: Users, label: 'NPC', color: 'text-emerald-400' },
+    { id: 'agent' as ViewMode, icon: Bot, label: 'Agent', color: 'text-violet-400' },
   ];
 
   const renderActivePanel = () => {
     switch (activeMode) {
-      case 'welcome':
+      case 'dashboard':
         return <WelcomeDashboard />;
-      case 'editor':
+      case 'game-studio':
         return <GameEditor />;
-      case 'games':
+      case 'templates':
         return <GameGenerator />;
       case 'story':
         return <StoryEditor />;
@@ -65,6 +70,12 @@ function App() {
         return <StoryboardEditor />;
       case 'video':
         return <VideoRenderer />;
+      case 'workflow':
+        return <WorkflowEditor />;
+      case 'npc':
+        return <NPCDesigner />;
+      case 'agent':
+        return <AgentPanel />;
       default:
         return <WelcomeDashboard />;
     }
@@ -99,7 +110,7 @@ function App() {
           <div className="flex items-center gap-2">
             <Sparkles className="w-8 h-8 text-purple-500" />
             <span className="text-xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
-              SparkLab
+              SparkLabs
             </span>
           </div>
           <div className="h-6 w-px bg-slate-600" />
@@ -111,7 +122,7 @@ function App() {
             placeholder="Project Name"
           />
         </div>
-        
+
         <div className="flex items-center gap-2">
           <button
             onClick={() => {}}
@@ -136,7 +147,7 @@ function App() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        <nav className="w-24 bg-slate-800 border-r border-slate-700 flex flex-col py-4 gap-2">
+        <nav className="w-20 bg-slate-800 border-r border-slate-700 flex flex-col py-3 gap-1 overflow-y-auto">
           {navItems.map((item) => {
             const Icon = item.icon;
             const isActive = activeMode === item.id;
@@ -144,27 +155,18 @@ function App() {
               <button
                 key={item.id}
                 onClick={() => setActiveMode(item.id)}
-                className={`flex flex-col items-center justify-center py-3 mx-2 rounded-lg transition-all ${
+                className={`flex flex-col items-center justify-center py-2 mx-1 rounded-lg transition-all ${
                   isActive ? 'bg-slate-700 ring-1 ring-slate-600' : 'hover:bg-slate-700/50'
                 }`}
                 title={item.label}
               >
-                <Icon className={`w-6 h-6 mb-1 ${isActive ? item.color : 'text-slate-400'}`} />
-                <span className={`text-xs ${isActive ? 'text-slate-200' : 'text-slate-500'}`}>
+                <Icon className={`w-5 h-5 mb-0.5 ${isActive ? item.color : 'text-slate-400'}`} />
+                <span className={`text-[10px] leading-tight ${isActive ? 'text-slate-200' : 'text-slate-500'}`}>
                   {item.label}
                 </span>
               </button>
             );
           })}
-          <div className="flex-1" />
-          <div className="flex flex-col items-center gap-2 pb-4">
-            <div className="p-2 bg-slate-700 rounded-lg">
-              <Bot className="w-5 h-5 text-purple-400" />
-            </div>
-            <div className="p-2 bg-slate-700 rounded-lg">
-              <Workflow className="w-5 h-5 text-blue-400" />
-            </div>
-          </div>
         </nav>
 
         <main className="flex-1 overflow-hidden bg-slate-900">

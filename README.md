@@ -8,9 +8,9 @@
 ### The First AI-Native Game Engine. 💥 
 ### Ignite Your Infinite Play! 🎮
 
-![Version](https://img.shields.io/badge/version-1.0.0-blue)
+![Version](https://img.shields.io/badge/version-2.0.0-blue)
 ![C++](https://img.shields.io/badge/C%2B%2B-17-orange)
-![Python Version](https://img.shields.io/badge/Python-3.8+-blue.svg)
+![Python Version](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 
@@ -26,12 +26,22 @@
 
 **SparkLabs** is a next-generation AI-native game engine that deeply integrates artificial intelligence capabilities into the core architecture of game development. Unlike traditional game engines that rely on manually coded game logic and predefined pipelines, SparkLabs revolutionizes game development by enabling procedural content generation, intelligent NPC behavior systems, adaptive rendering, and dynamic difficulty adjustment through AI.
 
+The engine features a Python-based AI Agent foundation (`sparkai`) that provides a comprehensive multi-agent orchestration system, hierarchical memory, tool registry, and LLM provider integration — all designed from the ground up for AI-native game development. The web-based visual editor (`frontend`) provides an intuitive interface for scene design, workflow composition, NPC creation, and narrative editing.
+
 ## Key Features
+
+### AI-Native Agent Foundation
+- Python-based SparkAgent with observe-think-act loop
+- Multi-provider LLM integration (OpenAI, Anthropic, DeepSeek, Ollama, local models)
+- Hierarchical memory system (short-term, long-term, episodic, semantic, working)
+- Tool registry with built-in engine tools for game development
+- Multi-agent orchestration with automatic capability matching
 
 ### AI-Native Architecture
 - Deep integration of AI inference capabilities into core engine architecture
 - AI-driven object system and event handling mechanisms
 - Support for neural network models (ONNX Runtime integration)
+- C++17 core engine with Python AI layer bridged via PyBind11
 
 ### Neural Rendering Pipeline
 - Real-time AI super-resolution (Neural Upscaling)
@@ -40,10 +50,12 @@
 - Adaptive rendering based on scene understanding
 
 ### Intelligent NPC System
-- Neural network-driven NPC decision making
+- Neural network-driven NPC decision making with dual-network architecture
+- 10-dimensional personality trait system
+- Emotional state machine with 7 emotion types
 - Memory system with short-term, long-term, episodic, and semantic memory
 - Attention mechanism for focus management
-- Emotional state machine with PAD model
+- Behavior tree system with selector, sequence, decorator, and parallel nodes
 - Context-aware dialogue generation
 
 ### Adaptive Gameplay
@@ -53,10 +65,10 @@
 - Personalized player experience optimization
 
 ### AI Narrative Engine
-- Procedural story generation with branching narratives
-- Dynamic quest generation
-- Context-aware dialogue and narrative elements
-- Adaptive reward system based on player preferences
+- Branching story graph with variable tracking and conditional logic
+- Procedural quest generation with 6+ template types
+- Dynamic quest customization with context-aware text
+- Story node types: Beginning, Plot Point, Choice, Climax, Resolution, Branch
 
 ### Smart Asset Management
 - AI-powered texture synthesis
@@ -64,43 +76,38 @@
 - Prompt-to-asset conversion system
 - Intelligent asset caching
 
+### AI Workflow Canvas
+- Node-graph visual programming for AI pipelines
+- 20+ built-in node types across 11 categories
+- Typed pin connections with type safety
+- Topological execution engine
+- Categories: Prompt, AI/Image, AI/Text, AI/Video, AI/Audio, Input, Output, Sampling, Latent, ControlNet, Logic, Game
+
 ### Intelligent Team Collaboration System
 - Three-tiered agent architecture matching real studio hierarchy
   - Tier 1: Directors (Creative Director, Technical Director, Producer)
   - Tier 2: Department Leads (Game Designer, Lead Programmer, Art Director, etc.)
-  - Tier 3: Specialists (Gameplay Programmers, Level Designers, Sound Designers, etc.)
-- Comprehensive task management and assignment system
-- Real-time progress tracking and reporting
+  - Tier 3: Specialists (19 specialist roles)
 - Design review and approval workflows
 - Code review and quality validation processes
+- Quality gate system with 4 standards and 5 metrics
 
-### Advanced Workflow Management
-- 25+ predefined workflow templates for common development tasks
-  - Brainstorming sessions, Sprint planning, Design reviews, Code reviews
-  - Balance checks, Asset audits, Scope checks, Performance profiling
-  - Milestone reviews, Estimations, Retrospectives, Bug reports
-  - Release checklists, Launch checklists, Changelogs, Patch notes
-  - Team collaboration workflows (combat, narrative, UI, audio, level design)
-- Custom workflow creation and registration
-- Step-by-step workflow execution and tracking
-- Workflow history and audit trails
-
-### Quality Assurance & Validation
-- Multi-level quality standards (Low, Medium, High, Production)
-- Comprehensive quality metrics tracking
-  - Code quality assessment
-  - Performance benchmarking
-  - Documentation coverage verification
-  - Test coverage monitoring
-  - Accessibility compliance checks
-- Automated quality gate validation
-- Quality report generation
+### Web Visual Editor (SparkLabs Editor)
+- React + TypeScript + Vite + Tailwind CSS
+- 11 editor panels: Dashboard, Game Studio, Templates, Story, Assets, Voice, Storyboard, Video, Workflow, NPC Designer, Agent Panel
+- Real-time WebSocket connection to engine backend
+- AI Agent chat interface for content generation
+- Visual workflow canvas with drag-and-drop nodes
+- NPC personality designer with trait visualization
+- Story editor with branching narrative support
 
 ## System Requirements
 
 ### Minimum Requirements
 - **OS**: Windows 10, macOS 10.14, Linux (Ubuntu 18.04+)
 - **Compiler**: GCC 9+, Clang 10+, MSVC 2019+
+- **Python**: 3.10+
+- **Node.js**: 18+
 - **RAM**: 8 GB
 - **Disk**: 2 GB free space
 
@@ -112,7 +119,7 @@
 
 ## Installation
 
-### Building from Source
+### Building C++ Engine from Source
 
 ```bash
 # Clone the repository
@@ -127,9 +134,29 @@ cmake ..
 
 # Build
 cmake --build . --config Release
+```
 
-# Run
-./SparkLabs
+### Setting Up the AI Backend
+
+```bash
+# Install Python dependencies
+pip install -r backend/requirements.txt
+
+# Start the backend server
+python -m uvicorn backend.app:app --host 0.0.0.0 --port 8090 --reload
+```
+
+### Setting Up the Web Editor
+
+```bash
+# Navigate to frontend directory
+cd frontend
+
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
 ### CMake Options
@@ -142,6 +169,8 @@ cmake .. -DSPARKLABS_ORT_ENABLED=ON -DSPARKLABS_GPU_SUPPORT=ON
 ```
 
 ## Quick Start
+
+### C++ Engine
 
 ```cpp
 #include <SparkLabs.h>
@@ -169,186 +198,258 @@ int main() {
 }
 ```
 
-### Python API
-
-SparkLabs provides a Python bindings layer for rapid prototyping and scripting:
+### Python AI Agent
 
 ```python
-import sparklabs
+import asyncio
+from sparkai import SparkAgent, LLMProvider, LLMConfig, AgentCapability, create_engine_tools
+
+async def main():
+    # Create an AI agent
+    agent = SparkAgent(
+        name="GameDesigner",
+        role="game_designer",
+        capabilities=[
+            AgentCapability.REASONING,
+            AgentCapability.GAMEPLAY_DESIGN,
+            AgentCapability.WORLD_BUILDING,
+        ],
+    )
+
+    # Configure LLM provider
+    llm = LLMProvider(LLMConfig(
+        provider="openai",
+        model="gpt-4",
+        api_key="your-api-key",
+    ))
+    await llm.initialize()
+    agent.set_llm_provider(llm)
+
+    # Register engine tools
+    for tool in create_engine_tools():
+        agent.register_tool(tool)
+
+    # Use the agent
+    response = await agent.think("Design a boss encounter for a fantasy RPG")
+    print(response)
+
+    # Execute an action
+    result = await agent.act("create_scene", {"name": "Boss Arena"})
+    print(result)
+
+asyncio.run(main())
+```
+
+### Python Workflow System
+
+```python
+from sparkai import WorkflowGraph, WorkflowNode, WorkflowExecutor, NodeRegistry
 
 # Create workflow graph
-graph = sparklabs.WorkflowGraph()
-graph.set_name("My AI Workflow")
+graph = WorkflowGraph(name="Image Generation Pipeline")
 
-# Create and configure nodes
-prompt = sparklabs.create_text_prompt_node()
-prompt.set_id("prompt_1")
-prompt.set_prompt("A beautiful landscape at sunset")
-prompt.set_position(100.0, 100.0)
+# Use the node registry to create typed nodes
+registry = NodeRegistry.get_instance()
 
-image_gen = sparklabs.create_image_generation_node()
-image_gen.set_id("image_gen_1")
-image_gen.set_model("models/sd_xl.safetensors")
-image_gen.set_width(1024)
-image_gen.set_height(1024)
-image_gen.set_steps(30)
-image_gen.set_position(400.0, 100.0)
+prompt = registry.create_node("text_prompt", name="Landscape Prompt")
+prompt.set_property("prompt", "A beautiful landscape at sunset")
+prompt.position = [100.0, 100.0]
 
-save_image = sparklabs.create_save_image_node()
-save_image.set_id("save_1")
-save_image.set_output_path("output/landscape.png")
-save_image.set_position(700.0, 100.0)
+image_gen = registry.create_node("image_generation", name="Generate Image")
+image_gen.set_property("width", 1024)
+image_gen.set_property("height", 1024)
+image_gen.position = [400.0, 100.0]
 
-# Connect nodes and execute
+save = registry.create_node("save_image", name="Save Result")
+save.set_property("output_path", "output/landscape.png")
+save.position = [700.0, 100.0]
+
+# Add nodes and connect
 graph.add_node(prompt)
 graph.add_node(image_gen)
-graph.add_node(save_image)
-graph.connect("prompt_1", 0, "image_gen_1", 0)
-graph.connect("image_gen_1", 0, "save_1", 0)
-result = graph.execute()
+graph.add_node(save)
+graph.connect(prompt.id, 0, image_gen.id, 0)
+graph.connect(image_gen.id, 0, save.id, 0)
+
+# Execute
+executor = WorkflowExecutor()
+result = await executor.execute(graph)
 ```
 
-### Using the AI Workflow Canvas
+### Python NPC System
 
-```cpp
-auto canvas = new WorkflowCanvas();
-auto graph = new WorkflowGraph();
+```python
+from sparkai import NPCBrain, NPCPersonality, PersonalityTraits, BehaviorTree, BehaviorNode
 
-canvas->SetGraph(graph);
+# Create NPC with personality
+personality = NPCPersonality(
+    name="Elder Sage",
+    traits=PersonalityTraits(
+        courage=0.3, curiosity=0.8, aggression=0.1,
+        friendliness=0.9, honesty=0.9, intelligence=0.95,
+    ),
+    background="An ancient keeper of knowledge",
+    speech_style="wise",
+)
 
-auto textPrompt = new TextPromptNode();
-textPrompt->SetPrompt("A beautiful landscape at sunset");
-canvas->AddNode(textPrompt, 100.0f, 100.0f);
+brain = NPCBrain(personality=personality)
 
-auto imageGen = new ImageGenerationNode();
-imageGen->SetModel("models/sd_xl.safetensors");
-imageGen->SetSteps(30);
-imageGen->SetWidth(1024);
-imageGen->SetHeight(1024);
-canvas->AddNode(imageGen, 400.0f, 100.0f);
+# Add goals
+brain.add_goal("Share wisdom", priority=0.8)
+brain.add_goal("Protect library", priority=0.9)
 
-auto saveImage = new SaveImageNode();
-canvas->AddNode(saveImage, 700.0f, 100.0f);
+# Create behavior tree
+tree = BehaviorTree()
+root = BehaviorNode(name="Root", node_type="selector")
+tree.set_root(root)
+brain.set_behavior_tree(tree)
 
-canvas->Connect(textPrompt->GetId(), 0, imageGen->GetId(), 0);
-canvas->Connect(imageGen->GetId(), 0, saveImage->GetId(), 0);
-
-canvas->Execute();
+# Make decisions
+decision = await brain.decide({"player_action": "asks about ancient artifact"})
+dialogue = await brain.generate_dialogue("Tell me about the ancient artifact")
 ```
-
-## AI Workflow Canvas Interface
-
-### Node Categories
-
-| Category | Nodes | Description |
-|----------|-------|-------------|
-| **AI/Image** | Image Generation, Inpaint, Upscale | Image creation and modification |
-| **AI/Text** | Text Generation, Prompt Templates | Text and dialogue creation |
-| **AI/Video** | Video Generation, Video Edit | Video content creation |
-| **AI/Audio** | Audio Generation, TTS | Sound and music creation |
-| **Input** | Load Image, Load Audio, Load Video | Asset loading |
-| **Output** | Save Image, Save Video, Save Audio | Asset saving |
-| **Model** | Load Model, Load Checkpoint, Load VAE | Model management |
-| **Prompt** | Text Prompt, Negative Prompt, Wildcards | Prompt engineering |
-| **Sampling** | KSampler, KSampler Advanced | Diffusion sampling |
-| **Latent** | Empty Latent, VAE Encode, VAE Decode | Latent space operations |
-| **ControlNet** | ControlNet Apply, ControlNet Loader | ControlNet integration |
-
-### Keyboard Shortcuts
-
-| Shortcut | Action |
-|----------|--------|
-| Ctrl+Enter | Queue workflow for generation |
-| Ctrl+Shift+Enter | Queue as first priority |
-| Ctrl+Z | Undo |
-| Ctrl+Y | Redo |
-| Ctrl+C | Copy nodes |
-| Ctrl+V | Paste nodes |
-| Ctrl+A | Select all nodes |
-| Delete | Delete selected |
-| Space+Drag | Pan canvas |
-| Alt+Scroll | Zoom in/out |
 
 ## Architecture Overview
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     SparkLabs Engine                        │
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────────────────────────────────────────────────┐│
-│  │                   AI Workflow Canvas                    ││
-│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐     ││
-│  │  │  Text   │→ │  Image  │→ │  VAE    │→ │  Save   │     ││
-│  │  │ Prompt  │  │   Gen   │  │ Decode  │  │  Image  │     ││
-│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘     ││
-│  └─────────────────────────────────────────────────────────┘│
-├─────────────────────────────────────────────────────────────┤
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │   sparkai   │  │   Neural    │  │      Adaptive       │  │
-│  │    Core     │  │   Renderer  │  │      Gameplay       │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-│  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────┐  │
-│  │    Smart    │  │   Neural    │  │   AI Narrative      │  │
-│  │    Asset    │  │   NPC Brain │  │      Engine         │  │
-│  └─────────────┘  └─────────────┘  └─────────────────────┘  │
-├─────────────────────────────────────────────────────────────┤
-│                    Core Engine Layer                        │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────┐    │
-│  │  Scene   │ │ Resource │ │ Physics  │ │  Scripting   │    │
-│  │ Manager  │ │ Manager  │ │  Engine  │ │    System    │    │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────────┘    │
-├─────────────────────────────────────────────────────────────┤
-│                    Platform Layer                           │
-│         Windows | macOS | Linux | Web | Mobile              │
-└─────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────┐
+│                    SparkLabs Web Editor                         │
+│  React + TypeScript + Vite + Tailwind CSS                      │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
+│  │  Game    │ │ Workflow │ │   NPC    │ │     Agent        │   │
+│  │  Studio  │ │  Canvas  │ │ Designer │ │     Panel        │   │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│                    Backend API (FastAPI)                         │
+│  WebSocket │ REST API │ Agent Routes │ Engine Routes            │
+├─────────────────────────────────────────────────────────────────┤
+│                    sparkai (Python AI Layer)                     │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐   │
+│  │   Agent     │ │  Workflow   │ │       NPC System        │   │
+│  │  Foundation │ │   Engine    │ │  Brain │ Memory │ Emotion│   │
+│  │ LLM│Memory  │ │ Graph│Exec  │ │  Behavior │ Personality │   │
+│  │ Tools│Orch.  │ │ Registry   │ │  Dialogue │ Goals      │   │
+│  └─────────────┘ └─────────────┘ └─────────────────────────┘   │
+│  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐   │
+│  │ Narrative   │ │   Team      │ │       Engine            │   │
+│  │ Story│Quest │ │ Dir│Lead    │ │  Scene │ Entity         │   │
+│  │ Branch│Var  │ │ Spec│Quality│ │  Component System       │   │
+│  └─────────────┘ └─────────────┘ └─────────────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│                    C++ Core Engine Layer                         │
+│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
+│  │  Scene   │ │ Resource │ │ Physics  │ │   AI Runtime     │   │
+│  │ Manager  │ │ Manager  │ │  Engine  │ │ ONNX │ Neural    │   │
+│  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
+├─────────────────────────────────────────────────────────────────┤
+│                    Neural Rendering Pipeline                     │
+│  Classical Render → Neural AA → Neural AO → Neural Upscale     │
+├─────────────────────────────────────────────────────────────────┤
+│                    Platform Layer                                │
+│         Windows | macOS | Linux | Web | Mobile                  │
+└─────────────────────────────────────────────────────────────────┘
 ```
 
-## Module Descriptions
+## Project Structure
 
-### Core (`core/`)
-Essential utilities and types used throughout the engine:
-- **Math**: Vector2, Vector3, Vector4, Matrix4x4, Quaternion
-- **Memory**: SmartPtr, WeakPtr with reference counting
-- **Object**: Base Object class with RTTI system
-- **String**: UTF-8 string with hashing support
+```
+SparkLabs/
+├── sparkai/                 # Python AI Agent Foundation
+│   ├── __init__.py          # Package exports
+│   ├── config.py            # Configuration system
+│   ├── agent/               # Agent core
+│   │   ├── base.py          # SparkAgent with observe-think-act loop
+│   │   ├── llm.py           # Multi-provider LLM integration
+│   │   ├── memory.py        # Hierarchical memory system
+│   │   ├── toolkit.py       # Tool registry and execution
+│   │   └── orchestrator.py  # Multi-agent orchestration
+│   ├── engine/              # Python engine interface
+│   │   ├── engine.py        # SparkEngine, Scene, Entity
+│   │   └── scene.py         # Scene management
+│   ├── workflow/            # AI Workflow system
+│   │   ├── graph.py         # WorkflowGraph, WorkflowNode, PinType
+│   │   ├── executor.py      # Topological execution engine
+│   │   └── registry.py      # Node type registry with 20+ types
+│   ├── npc/                 # Intelligent NPC system
+│   │   ├── brain.py         # NPCBrain with dual-network
+│   │   ├── personality.py   # 10-dimensional personality traits
+│   │   └── behavior.py      # Behavior tree system
+│   ├── narrative/           # AI Narrative engine
+│   │   ├── story.py         # Branching story graph
+│   │   └── quest.py         # Procedural quest generation
+│   ├── team/                # Team collaboration
+│   │   ├── director.py      # Director agents (Tier 1)
+│   │   ├── lead.py          # Lead agents (Tier 2)
+│   │   ├── specialist.py    # Specialist agents (Tier 3)
+│   │   └── quality.py       # Quality gate system
+│   ├── ai/                  # C++ AI runtime (headers)
+│   ├── asset/               # Smart asset management (C++)
+│   ├── audio/               # Audio system (C++)
+│   ├── gameplay/            # Adaptive gameplay (C++)
+│   ├── neural/              # Neural rendering (C++)
+│   └── editor/              # Editor integration (C++)
+├── backend/                 # FastAPI Backend
+│   ├── app.py               # Application entry point
+│   ├── websocket.py         # WebSocket handler
+│   ├── requirements.txt     # Python dependencies
+│   └── routes/              # API routes
+│       ├── engine.py        # Engine control endpoints
+│       ├── agent.py         # Agent management endpoints
+│       ├── scene.py         # Scene/entity endpoints
+│       ├── workflow.py      # Workflow endpoints
+│       ├── narrative.py     # Story/quest endpoints
+│       └── npc.py           # NPC management endpoints
+├── frontend/                # SparkLabs Web Editor
+│   ├── App.tsx              # Main application
+│   ├── main.tsx             # Entry point
+│   ├── index.html           # HTML template
+│   ├── index.css            # Global styles
+│   ├── components/          # UI components
+│   │   ├── SparkLabsHome.tsx      # Landing page
+│   │   ├── WelcomeDashboard.tsx   # Editor dashboard
+│   │   ├── GameEditor.tsx         # Game studio
+│   │   ├── GameGenerator.tsx      # Template generator
+│   │   ├── StoryEditor.tsx        # Story editor
+│   │   ├── AssetGenerator.tsx     # Asset generator
+│   │   ├── VoiceSynthesizer.tsx   # Voice synthesis
+│   │   ├── StoryboardEditor.tsx   # Storyboard editor
+│   │   ├── VideoRenderer.tsx      # Video renderer
+│   │   ├── WorkflowEditor.tsx     # Workflow canvas
+│   │   ├── NPCDesigner.tsx        # NPC designer
+│   │   └── AgentPanel.tsx         # Agent chat panel
+│   ├── hooks/               # Custom React hooks
+│   ├── utils/               # API client and utilities
+│   └── types/               # TypeScript type definitions
+├── core/                    # Core C++ utilities
+├── engine/                  # C++ Engine core
+├── render/                  # Rendering system
+├── platform/                # Platform abstraction
+├── docs/                    # Documentation
+├── scripts/                 # Build scripts
+└── tests/                   # Unit tests
+```
 
-### Engine (`engine/`)
-Core game engine functionality:
-- **Scene**: Scene graph, GameObject, Component system
-- **Resource**: Async resource loading, caching, hot reload
+## API Endpoints
 
-### sparkai (`sparkai/`)
-AI-native modules - the core AI components of SparkLabs:
-- **Workflow**: AI Workflow Canvas system
-  - `workflow/WorkflowGraph.h`: Graph, Node, Pin, Edge definitions
-  - `workflow/WorkflowFactory.h`: Node registry, serializer, executor
-  - `workflow/nodes/AIGenerationNodes.h`: Image, Text, Video, Audio generation nodes
-  - `ui/WorkflowCanvas.h`: Canvas, Palette, Properties panel, Queue
-- **AI Core**: AIBrain, Blackboard, EventBus, NeuralNetwork
-- **Behavior**: Behavior Tree with Composite, Decorator, Action nodes
-- **ONNX**: ONNX Runtime integration for neural network inference
-- **NPC**: Neural NPC brain, memory, attention, emotional state
-- **Gameplay**: Player model, difficulty controller, engagement metrics
-- **Narrative**: Story graph, quest generator, dialogue system
-- **Asset**: AI-powered asset generation, texture synthesis
-- **Render/Neural**: Neural upscaling, ambient occlusion, anti-aliasing
-- **Editor**: AI-integrated editor panels
-
-### Render (`render/`)
-Rendering system:
-- **GPU**: GPU resource management
-- **Shader**: Shader and ShaderProgram management
-- **Mesh**: 3D mesh loading and management
-- **Material**: Material system
-- **Texture**: Texture loading and management
-- **Neural**: AI-enhanced rendering effects
-
-### Platform (`platform/`)
-Platform abstraction:
-- **FileSystem**: Cross-platform file operations
-- **Input**: Keyboard, mouse, gamepad input
-- **Timer**: High-precision timing
-- **Window**: Window management
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/health` | GET | Health check |
+| `/api/status` | GET | Engine status |
+| `/api/engine/status` | GET | Engine runtime status |
+| `/api/engine/start` | POST | Start engine |
+| `/api/engine/stop` | POST | Stop engine |
+| `/api/engine/scenes/create` | POST | Create scene |
+| `/api/agent/create` | POST | Create AI agent |
+| `/api/agent/think` | POST | Agent reasoning |
+| `/api/agent/act` | POST | Agent action |
+| `/api/workflow/create` | POST | Create workflow |
+| `/api/workflow/node-types` | GET | List node types |
+| `/api/workflow/execute` | POST | Execute workflow |
+| `/api/narrative/story/create` | POST | Create story |
+| `/api/narrative/quest/generate` | POST | Generate quest |
+| `/api/npc/create` | POST | Create NPC |
+| `/api/npc/dialogue` | POST | NPC dialogue |
+| `/ws/connect` | WebSocket | Real-time connection |
 
 ## Documentation
 
@@ -358,42 +459,6 @@ For full documentation, see the [docs](./docs/) directory:
 - [AI System](./docs/AI_SYSTEM.md)
 - [Building Instructions](./docs/BUILD_INSTRUCTIONS.md)
 
-## Project Structure
-
-```
-SparkLabs/
-├── core/                 # Core utilities (math, memory, object, string)
-├── engine/              # Engine core (scene, resource)
-├── sparkai/             # AI-native modules
-│   ├── ai/              # AI runtime (behavior, brain, onnx)
-│   ├── team/            # Team collaboration system
-│   │   ├── TeamAgent.h/cpp
-│   │   ├── TeamDirector.h/cpp
-│   │   ├── TeamLead.h/cpp
-│   │   ├── TeamSpecialist.h/cpp
-│   │   ├── TeamOrchestrator.h/cpp
-│   │   ├── QualityGate.h/cpp
-│   │   └── WorkflowManager.h/cpp
-│   ├── workflow/        # AI Workflow Canvas system
-│   │   ├── WorkflowGraph.h
-│   │   ├── WorkflowFactory.h
-│   │   └── nodes/
-│   │       └── AIGenerationNodes.h
-│   ├── ui/              # AI workflow UI components
-│   ├── npc/            # Intelligent NPC system
-│   ├── gameplay/       # Adaptive gameplay
-│   ├── narrative/      # AI narrative engine
-│   ├── asset/          # Smart asset management
-│   ├── render/neural/  # Neural rendering
-│   └── editor/         # AI editor tools
-├── render/              # Rendering system
-├── platform/            # Platform abstraction
-├── docs/                # Documentation
-├── scripts/             # Build scripts
-├── tests/               # Unit tests
-└── main.cpp            # Entry point
-```
-
 ## Contributing
 
 Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
@@ -401,10 +466,6 @@ Contributions are welcome! Please read our contributing guidelines before submit
 ## License
 
 SparkLabs Engine is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
-
-## Acknowledgments
-
-Special thanks to all contributors and the open-source community for making game development accessible to everyone.
 
 ## ⭐ Star History
 
@@ -415,4 +476,3 @@ If you like this project, please ⭐ star the repo. Your support helps us grow!
     <img src="https://api.star-history.com/svg?repos=Yuan-ManX/SparkLabs&type=Date" />
   </a>
 </p>
-
