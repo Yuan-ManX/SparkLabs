@@ -14,7 +14,7 @@
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 
 
-### [Website](https://yuan-manx.github.io/SparkLabs/) | [SparkLabs AI-Native Game Engine](https://yuan-manx.github.io/SparkLabs/)
+### [Website](https://yuan-manx.github.io/SparkLabs/) | [SparkLabs](https://yuan-manx.github.io/SparkLabs/)
 
 ### [English](./README.md) | [中文文档](./README_CN.md)
 
