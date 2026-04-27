@@ -184,7 +184,7 @@ cmake .. -DSPARKLABS_ORT_ENABLED=ON -DSPARKLABS_GPU_SUPPORT=ON
 
 ## Quick Start
 
-### C++ Engine
+### AI Game Engine
 
 ```cpp
 #include <SparkLabs.h>
