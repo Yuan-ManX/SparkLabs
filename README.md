@@ -212,7 +212,7 @@ int main() {
 }
 ```
 
-### AI Agent
+### AI Agent System
 
 ```python
 import asyncio
@@ -254,7 +254,7 @@ async def main():
 asyncio.run(main())
 ```
 
-### Workflow System
+### AI Workflow System
 
 ```python
 from sparkai import WorkflowGraph, WorkflowNode, WorkflowExecutor, NodeRegistry
@@ -290,7 +290,7 @@ executor = WorkflowExecutor()
 result = await executor.execute(graph)
 ```
 
-### NPC System
+### AI NPC System
 
 ```python
 from sparkai import NPCBrain, NPCPersonality, PersonalityTraits, BehaviorTree, BehaviorNode
