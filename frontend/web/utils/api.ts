@@ -2,8 +2,8 @@
  * SparkLabs Editor - API Client
  */
 
-const API_BASE = 'http://localhost:8090/api';
-const WS_BASE = 'ws://localhost:8090/ws';
+const API_BASE = 'http://localhost:8091/api';
+const WS_BASE = 'ws://localhost:8091/ws';
 
 class ApiClient {
   private baseUrl: string;
@@ -64,6 +64,32 @@ export const engineApi = {
   listScenes: () => api.get('/engine/scenes'),
   getScene: (id: string) => api.get(`/engine/scenes/${id}`),
   deleteScene: (id: string) => api.delete(`/engine/scenes/${id}`),
+  listComponentTypes: () => api.get('/engine/ecs/component-types'),
+  getComponentSchema: (typeName: string) => api.get(`/engine/ecs/component-types/${typeName}/schema`),
+  listSystemTypes: () => api.get('/engine/ecs/system-types'),
+  createWorld: (name: string) => api.post('/engine/worlds/create', { name }),
+  listWorlds: () => api.get('/engine/worlds'),
+  getWorld: (id: string) => api.get(`/engine/worlds/${id}`),
+  getWorldStatus: (id: string) => api.get(`/engine/worlds/${id}/status`),
+  startWorld: (id: string) => api.post(`/engine/worlds/${id}/start`),
+  stopWorld: (id: string) => api.post(`/engine/worlds/${id}/stop`),
+  pauseWorld: (id: string) => api.post(`/engine/worlds/${id}/pause`),
+  resumeWorld: (id: string) => api.post(`/engine/worlds/${id}/resume`),
+  deleteWorld: (id: string) => api.delete(`/engine/worlds/${id}`),
+  createWorldEntity: (worldId: string, name: string, components?: { type: string; data?: Record<string, unknown> }[], tags?: string[]) =>
+    api.post(`/engine/worlds/${worldId}/entities/create`, { name, components, tags }),
+  listWorldEntities: (worldId: string) => api.get(`/engine/worlds/${worldId}/entities`),
+  getWorldEntity: (worldId: string, entityId: string) => api.get(`/engine/worlds/${worldId}/entities/${entityId}`),
+  deleteWorldEntity: (worldId: string, entityId: string) => api.delete(`/engine/worlds/${worldId}/entities/${entityId}`),
+  addEntityComponent: (worldId: string, entityId: string, componentType: string, data?: Record<string, unknown>) =>
+    api.post(`/engine/worlds/${worldId}/entities/${entityId}/components`, { component_type: componentType, data }),
+  removeEntityComponent: (worldId: string, entityId: string, componentType: string) =>
+    api.delete(`/engine/worlds/${worldId}/entities/${entityId}/components/${componentType}`),
+  addWorldSystem: (worldId: string, systemType: string) =>
+    api.post(`/engine/worlds/${worldId}/systems/add`, { system_type: systemType }),
+  listWorldSystems: (worldId: string) => api.get(`/engine/worlds/${worldId}/systems`),
+  removeWorldSystem: (worldId: string, systemType: string) =>
+    api.delete(`/engine/worlds/${worldId}/systems/${systemType}`),
 };
 
 export const agentApi = {

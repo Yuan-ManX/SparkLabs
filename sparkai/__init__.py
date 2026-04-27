@@ -7,8 +7,50 @@ from sparkai.agent.llm import LLMProvider, LLMConfig
 from sparkai.agent.memory import AgentMemory, MemoryType
 from sparkai.agent.toolkit import ToolRegistry, Tool, create_engine_tools
 from sparkai.agent.orchestrator import AgentOrchestrator
-from sparkai.engine.engine import SparkEngine
-from sparkai.engine.scene import Scene, Entity
+from sparkai.engine.engine import SparkEngine, Scene, SceneEntity
+from sparkai.engine.ecs import (
+    Component,
+    ComponentRegistry,
+    Entity,
+    EntityManager,
+    System,
+    SystemPriority,
+    SystemRegistry,
+    SystemScheduler,
+    World,
+)
+from sparkai.engine.ecs.components import (
+    Transform,
+    Renderable,
+    SpriteRenderer,
+    TextRenderer,
+    PhysicsBody,
+    Collider,
+    Camera,
+    AudioSource,
+    Animator,
+    InputReceiver,
+    AIBrain,
+    Script,
+    Tween,
+)
+from sparkai.engine.ecs.systems import (
+    TransformSystem,
+    PhysicsSystem,
+    RenderSystem,
+    AnimationSystem,
+    AudioSystem,
+    InputSystem,
+    AISystem,
+    TweenSystem,
+    ScriptSystem,
+    CollisionSystem,
+)
+from sparkai.engine.ecs.resource import (
+    Resource,
+    ResourceManager,
+    ResourceType,
+)
 from sparkai.workflow.graph import WorkflowGraph, WorkflowNode
 from sparkai.workflow.executor import WorkflowExecutor
 from sparkai.workflow.registry import NodeRegistry
@@ -38,7 +80,42 @@ __all__ = [
     "AgentOrchestrator",
     "SparkEngine",
     "Scene",
+    "SceneEntity",
+    "Component",
+    "ComponentRegistry",
     "Entity",
+    "EntityManager",
+    "System",
+    "SystemPriority",
+    "SystemRegistry",
+    "SystemScheduler",
+    "World",
+    "Transform",
+    "Renderable",
+    "SpriteRenderer",
+    "TextRenderer",
+    "PhysicsBody",
+    "Collider",
+    "Camera",
+    "AudioSource",
+    "Animator",
+    "InputReceiver",
+    "AIBrain",
+    "Script",
+    "Tween",
+    "TransformSystem",
+    "PhysicsSystem",
+    "RenderSystem",
+    "AnimationSystem",
+    "AudioSystem",
+    "InputSystem",
+    "AISystem",
+    "TweenSystem",
+    "ScriptSystem",
+    "CollisionSystem",
+    "Resource",
+    "ResourceManager",
+    "ResourceType",
     "WorkflowGraph",
     "WorkflowNode",
     "WorkflowExecutor",

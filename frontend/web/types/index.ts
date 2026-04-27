@@ -5,9 +5,55 @@
 export interface EngineStatus {
   running: boolean;
   frame_count: number;
+  world_count: number;
   scene_count: number;
+  active_world: string | null;
   active_scene: string | null;
   delta_time: number;
+  component_types: string[];
+  system_types: string[];
+  resource_count: number;
+}
+
+export interface WorldStatus {
+  id: string;
+  name: string;
+  running: boolean;
+  paused: boolean;
+  frame_count: number;
+  delta_time: number;
+  total_time: number;
+  target_fps: number;
+  entity_count: number;
+  system_count: number;
+  component_types: string[];
+  system_types: string[];
+}
+
+export interface ECSEntityData {
+  id: string;
+  name: string;
+  enabled: boolean;
+  tags: string[];
+  parent: string | null;
+  children: string[];
+  components: Record<string, ComponentData>;
+}
+
+export interface ComponentData {
+  component_type: string;
+  id: string;
+  entity_id: string | null;
+  enabled: boolean;
+  [key: string]: unknown;
+}
+
+export interface SystemData {
+  system_type: string;
+  id: string;
+  enabled: boolean;
+  priority: number;
+  required_components: string[];
 }
 
 export interface SceneData {

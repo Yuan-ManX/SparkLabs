@@ -1,5 +1,10 @@
 """
 SparkAI Engine - Python Engine Interface
+
+The SparkEngine integrates the ECS World with scene management,
+providing a unified game engine API. AI agents interact with
+the engine through this interface to create worlds, spawn entities,
+and control the simulation loop.
 """
 
 from __future__ import annotations
@@ -8,27 +13,75 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional
 
+from sparkai.engine.ecs.world import World
+from sparkai.engine.ecs.entity import Entity
+from sparkai.engine.ecs.component import Component, ComponentRegistry
+from sparkai.engine.ecs.system import System, SystemRegistry
+from sparkai.engine.ecs.resource import ResourceManager
+
 
 class SparkEngine:
     """
-    Python interface to the SparkLabs C++ game engine.
-    Provides scene management, entity creation, and engine control.
+    Core game engine for SparkLabs.
+
+    Manages ECS worlds, scenes, and the game loop.
+    Provides the primary API for AI agents to interact with
+    the game simulation.
     """
 
     _instance: Optional["SparkEngine"] = None
 
     def __init__(self):
+        self._worlds: Dict[str, World] = {}
+        self._active_world_id: Optional[str] = None
+        self._resource_manager: ResourceManager = ResourceManager()
+        self._running: bool = False
+        self._delta_time: float = 0.016
+        self._frame_count: int = 0
         self._scenes: Dict[str, "Scene"] = {}
         self._active_scene_id: Optional[str] = None
-        self._running = False
-        self._delta_time = 0.016
-        self._frame_count = 0
 
     @classmethod
     def get_instance(cls) -> "SparkEngine":
         if cls._instance is None:
             cls._instance = cls()
         return cls._instance
+
+    def create_world(self, name: str = "World") -> World:
+        world = World(name=name)
+        self._worlds[world.id] = world
+        if not self._active_world_id:
+            self._active_world_id = world.id
+        return world
+
+    def get_world(self, world_id: str) -> Optional[World]:
+        return self._worlds.get(world_id)
+
+    def get_active_world(self) -> Optional[World]:
+        if self._active_world_id:
+            return self._worlds.get(self._active_world_id)
+        return None
+
+    def set_active_world(self, world_id: str) -> bool:
+        if world_id in self._worlds:
+            self._active_world_id = world_id
+            return True
+        return False
+
+    def list_worlds(self) -> List[Dict[str, Any]]:
+        return [w.get_status() for w in self._worlds.values()]
+
+    def delete_world(self, world_id: str) -> bool:
+        if world_id in self._worlds:
+            del self._worlds[world_id]
+            if self._active_world_id == world_id:
+                self._active_world_id = next(iter(self._worlds), None)
+            return True
+        return False
+
+    @property
+    def resources(self) -> ResourceManager:
+        return self._resource_manager
 
     def create_scene(self, name: str = "Untitled Scene") -> "Scene":
         scene = Scene(name=name)
@@ -64,15 +117,21 @@ class SparkEngine:
 
     def start(self) -> None:
         self._running = True
+        for world in self._worlds.values():
+            world.start()
 
     def stop(self) -> None:
         self._running = False
+        for world in self._worlds.values():
+            world.stop()
 
     def update(self, delta_time: Optional[float] = None) -> None:
         if not self._running:
             return
         self._delta_time = delta_time or self._delta_time
         self._frame_count += 1
+        for world in self._worlds.values():
+            world.tick(self._delta_time)
         scene = self.get_active_scene()
         if scene:
             scene.update(self._delta_time)
@@ -81,9 +140,14 @@ class SparkEngine:
         return {
             "running": self._running,
             "frame_count": self._frame_count,
+            "world_count": len(self._worlds),
             "scene_count": len(self._scenes),
+            "active_world": self._active_world_id,
             "active_scene": self._active_scene_id,
             "delta_time": self._delta_time,
+            "component_types": ComponentRegistry.list_types(),
+            "system_types": SystemRegistry.list_types(),
+            "resource_count": self._resource_manager.count,
         }
 
 
@@ -91,23 +155,23 @@ class SparkEngine:
 class Scene:
     name: str = "Untitled Scene"
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    entities: Dict[str, "Entity"] = field(default_factory=dict)
+    entities: Dict[str, "SceneEntity"] = field(default_factory=dict)
 
-    def create_entity(self, name: str = "Entity", **kwargs) -> "Entity":
-        entity = Entity(name=name, scene_id=self.id, **kwargs)
+    def create_entity(self, name: str = "Entity", **kwargs) -> "SceneEntity":
+        entity = SceneEntity(name=name, scene_id=self.id, **kwargs)
         self.entities[entity.id] = entity
         return entity
 
-    def get_entity(self, entity_id: str) -> Optional["Entity"]:
+    def get_entity(self, entity_id: str) -> Optional["SceneEntity"]:
         return self.entities.get(entity_id)
 
-    def find_entity_by_name(self, name: str) -> Optional["Entity"]:
+    def find_entity_by_name(self, name: str) -> Optional["SceneEntity"]:
         for entity in self.entities.values():
             if entity.name == name:
                 return entity
         return None
 
-    def find_entities_by_tag(self, tag: str) -> List["Entity"]:
+    def find_entities_by_tag(self, tag: str) -> List["SceneEntity"]:
         return [e for e in self.entities.values() if tag in e.tags]
 
     def remove_entity(self, entity_id: str) -> bool:
@@ -130,7 +194,7 @@ class Scene:
 
 
 @dataclass
-class Entity:
+class SceneEntity:
     name: str = "Entity"
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
     scene_id: str = ""
