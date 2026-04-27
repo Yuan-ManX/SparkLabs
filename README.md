@@ -9,13 +9,12 @@
 ### Ignite Your Infinite Play! 🎮
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue)
-![C++](https://img.shields.io/badge/C%2B%2B-17-orange)
 ![Python Version](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 
 
-### [Website](https://yuan-manx.github.io/SparkLabs/) | [官方网站](https://yuan-manx.github.io/SparkLabs/)
+### [Website](https://yuan-manx.github.io/SparkLabs/) | [SparkLabs AI-Native Game Engine](https://yuan-manx.github.io/SparkLabs/)
 
 ### [English](./README.md) | [中文文档](./README_CN.md)
 
@@ -429,27 +428,6 @@ SparkLabs/
 └── tests/                   # Unit tests
 ```
 
-## API Endpoints
-
-| Endpoint | Method | Description |
-|----------|--------|-------------|
-| `/api/health` | GET | Health check |
-| `/api/status` | GET | Engine status |
-| `/api/engine/status` | GET | Engine runtime status |
-| `/api/engine/start` | POST | Start engine |
-| `/api/engine/stop` | POST | Stop engine |
-| `/api/engine/scenes/create` | POST | Create scene |
-| `/api/agent/create` | POST | Create AI agent |
-| `/api/agent/think` | POST | Agent reasoning |
-| `/api/agent/act` | POST | Agent action |
-| `/api/workflow/create` | POST | Create workflow |
-| `/api/workflow/node-types` | GET | List node types |
-| `/api/workflow/execute` | POST | Execute workflow |
-| `/api/narrative/story/create` | POST | Create story |
-| `/api/narrative/quest/generate` | POST | Generate quest |
-| `/api/npc/create` | POST | Create NPC |
-| `/api/npc/dialogue` | POST | NPC dialogue |
-| `/ws/connect` | WebSocket | Real-time connection |
 
 ## Documentation
 
