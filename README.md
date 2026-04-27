@@ -40,7 +40,6 @@ The engine features an AI Agent foundation (`sparkai`) that provides a comprehen
 - Deep integration of AI inference capabilities into core engine architecture
 - AI-driven object system and event handling mechanisms
 - Support for neural network models (ONNX Runtime integration)
-- C++17 core engine with Python AI layer bridged via PyBind11
 
 ### Neural Rendering Pipeline
 - Real-time AI super-resolution (Neural Upscaling)
