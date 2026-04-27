@@ -27,7 +27,11 @@ import {
 } from 'lucide-react';
 
 // SparkLabs AI-Native Game Engine Homepage
-const SparkLabsHome: React.FC = () => {
+interface SparkLabsHomeProps {
+  onEnterEditor?: () => void;
+}
+
+const SparkLabsHome: React.FC<SparkLabsHomeProps> = ({ onEnterEditor }) => {
   const [scrollY, setScrollY] = useState(0);
   const [email, setEmail] = useState('');
   const [isSubmitted, setIsSubmitted] = useState(false);
@@ -201,7 +205,7 @@ const SparkLabsHome: React.FC = () => {
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 mb-12 animate-slide-up">
-                <button className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 rounded-full font-bold text-lg hover:from-orange-600 hover:to-red-700 transition-all shadow-2xl shadow-orange-500/20 flex items-center justify-center gap-3">
+                <button onClick={onEnterEditor} className="px-8 py-4 bg-gradient-to-r from-orange-500 to-red-600 rounded-full font-bold text-lg hover:from-orange-600 hover:to-red-700 transition-all shadow-2xl shadow-orange-500/20 flex items-center justify-center gap-3">
                   <Rocket className="w-5 h-5" />
                   Start Creating
                 </button>
