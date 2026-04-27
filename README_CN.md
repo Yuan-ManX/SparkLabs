@@ -30,7 +30,7 @@ AI Agent基础层（sparkai）提供了完整的多Agent编排系统、分层记
 ## 核心特性
 
 ### AI原生Agent基础层
-- 基于Python的SparkAgent，支持观察-思考-行动循环
+- SparkAgent，支持观察-思考-行动循环
 - 多提供商LLM集成（OpenAI、Anthropic、DeepSeek、Ollama、本地模型）
 - 分层记忆系统（短期、长期、情景、语义、工作记忆）
 - 工具注册表，内置游戏开发引擎工具
@@ -40,7 +40,6 @@ AI Agent基础层（sparkai）提供了完整的多Agent编排系统、分层记
 - AI推理能力深度集成到核心引擎架构
 - AI驱动的对象系统和事件处理机制
 - 支持神经网络模型（ONNX Runtime集成）
-- C++17核心引擎与Python AI层通过PyBind11桥接
 
 ### 神经渲染管线
 - 实时AI超分辨率（神经上采样）
