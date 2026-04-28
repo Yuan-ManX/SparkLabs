@@ -162,6 +162,72 @@ export interface ScaffoldResult {
   engine_config: Record<string, unknown>;
 }
 
+export interface HookData {
+  name: string;
+  event: string;
+  priority: number;
+  enabled: boolean;
+  fire_count: number;
+}
+
+export interface RuleData {
+  name: string;
+  description: string;
+  scope: string;
+  severity: string;
+  suggestion: string;
+  enabled: boolean;
+}
+
+export interface RuleViolationData {
+  rule_name: string;
+  scope: string;
+  severity: string;
+  message: string;
+  context: string;
+  suggestion: string;
+}
+
+export interface TeamData {
+  id: string;
+  team_type: string;
+  name: string;
+  active: boolean;
+  task_count: number;
+  result_count: number;
+  quality_gates: string[];
+  max_concurrent: number;
+}
+
+export interface TeamTypeData {
+  type: string;
+  name: string;
+  description: string;
+  quality_gates: string[];
+  max_concurrent: number;
+}
+
+export interface BenchResultData {
+  id: string;
+  prompt: string;
+  dimensions: { dimension: string; score: number; max_score: number; normalized: number; details: string; checks: { name: string; passed: boolean; detail: string }[] }[];
+  total_score: number;
+  passed: boolean;
+  timestamp: number;
+}
+
+export interface SessionData {
+  id: string;
+  agent_id: string;
+  agent_name: string;
+  state: string;
+  message_count: number;
+  created_at: number;
+  last_active: number;
+  context_keys: string[];
+  metadata: Record<string, unknown>;
+}
+
 export interface WorkflowNodeData {
   id: string;
   name: string;

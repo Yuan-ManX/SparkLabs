@@ -4,26 +4,36 @@ import SparkLabsEditor from './components/SparkLabsEditor';
 
 function App() {
   const [isOnLandingPage, setIsOnLandingPage] = useState(() => {
-    const params = new URLSearchParams(window.location.search);
-    return params.get('mode') !== 'editor';
+    return !window.location.pathname.endsWith('/editor');
   });
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get('mode') === 'editor') {
-      setIsOnLandingPage(false);
-    }
+    const handlePopState = () => {
+      setIsOnLandingPage(!window.location.pathname.endsWith('/editor'));
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
   }, []);
+
+  const enterEditor = () => {
+    window.history.pushState({}, '', '/sparklabs/editor');
+    setIsOnLandingPage(false);
+  };
+
+  const goHome = () => {
+    window.history.pushState({}, '', '/sparklabs');
+    setIsOnLandingPage(true);
+  };
 
   if (isOnLandingPage) {
     return (
       <div className="min-h-screen">
-        <SparkLabsHome onEnterEditor={() => setIsOnLandingPage(false)} />
+        <SparkLabsHome onEnterEditor={enterEditor} />
       </div>
     );
   }
 
-  return <SparkLabsEditor />;
+  return <SparkLabsEditor onGoHome={goHome} />;
 }
 
 export default App;

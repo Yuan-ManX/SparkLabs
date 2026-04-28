@@ -10,6 +10,7 @@ interface EditorToolbarProps {
   onTogglePlay: () => void;
   onModeSwitch: (mode: string) => void;
   activeMode: string;
+  onGoHome?: () => void;
 }
 
 const modes = [
@@ -31,12 +32,13 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   onTogglePlay,
   onModeSwitch,
   activeMode,
+  onGoHome,
 }) => {
   const [showModeMenu, setShowModeMenu] = useState(false);
 
   return (
     <div className="h-10 bg-[#111] border-b border-[#1e1e1e] flex items-center px-3 gap-2 shrink-0">
-      <div className="flex items-center gap-2 mr-4">
+      <div className="flex items-center gap-2 mr-4 cursor-pointer" onClick={onGoHome}>
         <div className="w-[22px] h-[22px] bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
           <i className="fa-solid fa-fire text-white text-[10px]" />
         </div>

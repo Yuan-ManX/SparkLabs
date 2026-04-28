@@ -19,6 +19,11 @@ from sparkai.agent.studio.specialists import (
     GameplayProgrammer, EngineProgrammer, AIProgrammer,
     LevelDesigner, WorldBuilder, SoundDesigner, Writer, QATester,
 )
+from sparkai.agent.hooks import HookManager, Hook, HookEvent, HookResult
+from sparkai.agent.rules import RuleEngine, Rule, RuleScope, RuleSeverity, RuleViolation
+from sparkai.agent.team_orch import TeamOrchestrator, Team, TeamType, TeamConfig
+from sparkai.agent.bench import GameBench, BenchResult, BenchDimension
+from sparkai.agent.session import SessionManager, AgentSession, SessionState
 from sparkai.engine.engine import SparkEngine, Scene, SceneEntity
 from sparkai.engine.ecs import (
     Component,
@@ -77,7 +82,7 @@ from sparkai.team.specialist import TeamSpecialist
 from sparkai.team.quality import QualityGate, QualityStandard
 from sparkai.config import SparkAIConfig
 
-__version__ = "3.0.0"
+__version__ = "4.0.0"
 __all__ = [
     "SparkAgent",
     "AgentCapability",
@@ -120,6 +125,25 @@ __all__ = [
     "SoundDesigner",
     "Writer",
     "QATester",
+    "HookManager",
+    "Hook",
+    "HookEvent",
+    "HookResult",
+    "RuleEngine",
+    "Rule",
+    "RuleScope",
+    "RuleSeverity",
+    "RuleViolation",
+    "TeamOrchestrator",
+    "Team",
+    "TeamType",
+    "TeamConfig",
+    "GameBench",
+    "BenchResult",
+    "BenchDimension",
+    "SessionManager",
+    "AgentSession",
+    "SessionState",
     "SparkEngine",
     "Scene",
     "SceneEntity",

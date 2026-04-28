@@ -2,7 +2,8 @@
 SparkLabs Backend - Agent Routes
 
 API endpoints for agent creation, management, skills,
-studio hierarchy, and toolset operations.
+studio hierarchy, toolsets, hooks, rules, teams,
+bench evaluation, and session management.
 """
 
 from fastapi import APIRouter
@@ -24,10 +25,20 @@ from sparkai.agent.studio.specialists import (
     GameplayProgrammer, EngineProgrammer, AIProgrammer,
     LevelDesigner, WorldBuilder, SoundDesigner, Writer, QATester,
 )
+from sparkai.agent.hooks import HookManager, HookEvent
+from sparkai.agent.rules import RuleEngine, RuleScope
+from sparkai.agent.team_orch import TeamOrchestrator, TeamType
+from sparkai.agent.bench import GameBench
+from sparkai.agent.session import SessionManager
 
 router = APIRouter()
 
 _orchestrator = AgentOrchestrator()
+_hook_manager = HookManager()
+_rule_engine = RuleEngine()
+_team_orchestrator = TeamOrchestrator(_orchestrator)
+_game_bench = GameBench()
+_session_manager = SessionManager()
 
 _STUDIO_AGENTS = {
     "creative_director": CreativeDirector,
@@ -87,6 +98,35 @@ class TemplateScaffoldRequest(BaseModel):
 class ToolsetLoadRequest(BaseModel):
     agent_id: str
     toolset_name: str
+
+
+class RuleCheckRequest(BaseModel):
+    content: str
+    scope: Optional[str] = None
+
+
+class TeamCreateRequest(BaseModel):
+    team_type: str
+
+
+class TeamRunRequest(BaseModel):
+    team_type: str
+    title: str
+    description: str
+
+
+class BenchEvaluateRequest(BaseModel):
+    code: str
+    prompt: str
+
+
+class SessionCreateRequest(BaseModel):
+    agent_id: str
+    agent_name: Optional[str] = None
+
+
+class SessionMessageRequest(BaseModel):
+    content: str
 
 
 # === Agent CRUD ===
@@ -259,6 +299,193 @@ async def get_role_toolsets(role: str):
         "tool_count": len(toolsets),
         "tools": [t.get_schema() for t in toolsets],
     }
+
+
+# === Hooks ===
+
+@router.get("/hooks/list")
+async def list_hooks(event: Optional[str] = None):
+    hook_event = None
+    if event:
+        try:
+            hook_event = HookEvent(event)
+        except ValueError:
+            pass
+    return {"hooks": _hook_manager.list_hooks(hook_event)}
+
+
+@router.post("/hooks/{name}/enable")
+async def enable_hook(name: str):
+    success = _hook_manager.enable_hook(name)
+    return {"success": success, "hook": name}
+
+
+@router.post("/hooks/{name}/disable")
+async def disable_hook(name: str):
+    success = _hook_manager.disable_hook(name)
+    return {"success": success, "hook": name}
+
+
+# === Rules ===
+
+@router.get("/rules/list")
+async def list_rules(scope: Optional[str] = None):
+    rule_scope = None
+    if scope:
+        try:
+            rule_scope = RuleScope(scope)
+        except ValueError:
+            pass
+    return {"rules": _rule_engine.list_rules(rule_scope)}
+
+
+@router.get("/rules/scopes")
+async def list_rule_scopes():
+    return {"scopes": _rule_engine.list_scopes()}
+
+
+@router.post("/rules/check")
+async def check_rules(request: RuleCheckRequest):
+    scope = None
+    if request.scope:
+        try:
+            scope = RuleScope(request.scope)
+        except ValueError:
+            pass
+    if scope:
+        violations = _rule_engine.check_scope(request.content, scope)
+    else:
+        violations = _rule_engine.check_all(request.content)
+    return {
+        "violations": [
+            {
+                "rule_name": v.rule_name,
+                "scope": v.scope,
+                "severity": v.severity,
+                "message": v.message,
+                "context": v.context,
+                "suggestion": v.suggestion,
+            }
+            for v in violations
+        ],
+        "violation_count": len(violations),
+    }
+
+
+# === Teams ===
+
+@router.get("/teams/types")
+async def list_team_types():
+    return {"team_types": _team_orchestrator.get_team_types()}
+
+
+@router.get("/teams/list")
+async def list_teams():
+    return {"teams": _team_orchestrator.list_teams()}
+
+
+@router.post("/teams/create")
+async def create_team(request: TeamCreateRequest):
+    try:
+        team_type = TeamType(request.team_type)
+    except ValueError:
+        return {"error": f"Unknown team type: {request.team_type}"}
+    team = _team_orchestrator.create_team(team_type)
+    return team.get_status()
+
+
+@router.post("/teams/run")
+async def run_team(request: TeamRunRequest):
+    try:
+        team_type = TeamType(request.team_type)
+    except ValueError:
+        return {"error": f"Unknown team type: {request.team_type}"}
+    results = await _team_orchestrator.run_team(team_type, request.title, request.description)
+    return {
+        "team_type": request.team_type,
+        "title": request.title,
+        "result_count": len(results),
+        "results": [
+            {
+                "task_id": r.task_id,
+                "agent_name": r.agent_name,
+                "status": r.status,
+                "duration": r.duration,
+            }
+            for r in results
+        ],
+    }
+
+
+# === Bench ===
+
+@router.post("/bench/evaluate")
+async def bench_evaluate(request: BenchEvaluateRequest):
+    result = _game_bench.evaluate(request.code, request.prompt)
+    return result.to_dict()
+
+
+@router.get("/bench/stats")
+async def bench_stats():
+    return _game_bench.get_stats()
+
+
+@router.get("/bench/history")
+async def bench_history():
+    return {"history": _game_bench.get_history()}
+
+
+# === Sessions ===
+
+@router.get("/sessions/list")
+async def list_sessions(agent_id: Optional[str] = None):
+    return {"sessions": _session_manager.list_sessions(agent_id)}
+
+
+@router.post("/sessions/create")
+async def create_session(request: SessionCreateRequest):
+    session = _session_manager.create_session(
+        agent_id=request.agent_id,
+        agent_name=request.agent_name or "",
+    )
+    return session.to_dict()
+
+
+@router.get("/sessions/stats")
+async def session_stats():
+    return _session_manager.get_stats()
+
+
+@router.get("/sessions/{session_id}")
+async def get_session(session_id: str):
+    session = _session_manager.get_session(session_id)
+    if session:
+        return session.to_dict()
+    return {"error": "Session not found"}
+
+
+@router.post("/sessions/{session_id}/end")
+async def end_session(session_id: str):
+    success = _session_manager.end_session(session_id)
+    return {"success": success}
+
+
+@router.post("/sessions/{session_id}/message")
+async def send_session_message(session_id: str, request: SessionMessageRequest):
+    session = _session_manager.get_session(session_id)
+    if not session:
+        return {"error": "Session not found"}
+    msg = session.add_message("user", request.content)
+    agent = _orchestrator.get_agent(session.agent_id)
+    if agent:
+        response = await agent.think(request.content)
+        agent_msg = session.add_message("agent", response)
+        return {
+            "user_message": {"role": msg.role, "content": msg.content},
+            "agent_message": {"role": agent_msg.role, "content": agent_msg.content},
+        }
+    session.add_message("agent", "[Agent not found in orchestrator]")
+    return {"error": "Agent not found"}
 
 
 # === Agent Skills/Toolsets ===

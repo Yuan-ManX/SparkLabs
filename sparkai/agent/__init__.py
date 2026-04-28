@@ -23,6 +23,11 @@ from sparkai.agent.studio.specialists import (
     GameplayProgrammer, EngineProgrammer, AIProgrammer,
     LevelDesigner, WorldBuilder, SoundDesigner, Writer, QATester,
 )
+from sparkai.agent.hooks import HookManager, Hook, HookEvent, HookResult
+from sparkai.agent.rules import RuleEngine, Rule, RuleScope, RuleSeverity, RuleViolation
+from sparkai.agent.team_orch import TeamOrchestrator, Team, TeamType, TeamConfig
+from sparkai.agent.bench import GameBench, BenchResult, BenchDimension
+from sparkai.agent.session import SessionManager, AgentSession, SessionState
 
 __all__ = [
     "SparkAgent",
@@ -81,4 +86,23 @@ __all__ = [
     "SoundDesigner",
     "Writer",
     "QATester",
+    "HookManager",
+    "Hook",
+    "HookEvent",
+    "HookResult",
+    "RuleEngine",
+    "Rule",
+    "RuleScope",
+    "RuleSeverity",
+    "RuleViolation",
+    "TeamOrchestrator",
+    "Team",
+    "TeamType",
+    "TeamConfig",
+    "GameBench",
+    "BenchResult",
+    "BenchDimension",
+    "SessionManager",
+    "AgentSession",
+    "SessionState",
 ]

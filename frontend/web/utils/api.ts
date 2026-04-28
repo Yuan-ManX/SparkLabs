@@ -130,6 +130,45 @@ export const toolsetsApi = {
   getForRole: (role: string) => api.get(`/agent/toolsets/role/${role}`),
 };
 
+export const hooksApi = {
+  list: (event?: string) => api.get(`/agent/hooks/list${event ? `?event=${event}` : ''}`),
+  enable: (name: string) => api.post(`/agent/hooks/${name}/enable`),
+  disable: (name: string) => api.post(`/agent/hooks/${name}/disable`),
+};
+
+export const rulesApi = {
+  list: (scope?: string) => api.get(`/agent/rules/list${scope ? `?scope=${scope}` : ''}`),
+  listScopes: () => api.get('/agent/rules/scopes'),
+  check: (content: string, scope?: string) =>
+    api.post('/agent/rules/check', { content, scope }),
+};
+
+export const teamsApi = {
+  listTypes: () => api.get('/agent/teams/types'),
+  list: () => api.get('/agent/teams/list'),
+  create: (teamType: string) => api.post('/agent/teams/create', { team_type: teamType }),
+  run: (teamType: string, title: string, description: string) =>
+    api.post('/agent/teams/run', { team_type: teamType, title, description }),
+};
+
+export const benchApi = {
+  evaluate: (code: string, prompt: string) =>
+    api.post('/agent/bench/evaluate', { code, prompt }),
+  stats: () => api.get('/agent/bench/stats'),
+  history: () => api.get('/agent/bench/history'),
+};
+
+export const sessionsApi = {
+  list: (agentId?: string) => api.get(`/agent/sessions/list${agentId ? `?agent_id=${agentId}` : ''}`),
+  create: (agentId: string, agentName?: string) =>
+    api.post('/agent/sessions/create', { agent_id: agentId, agent_name: agentName }),
+  get: (sessionId: string) => api.get(`/agent/sessions/${sessionId}`),
+  end: (sessionId: string) => api.post(`/agent/sessions/${sessionId}/end`),
+  sendMessage: (sessionId: string, content: string) =>
+    api.post(`/agent/sessions/${sessionId}/message`, { content }),
+  stats: () => api.get('/agent/sessions/stats'),
+};
+
 export const sceneApi = {
   createEntity: (sceneId: string, data: { name?: string; position?: number[]; tags?: string[] }) =>
     api.post('/scene/entity/create', { scene_id: sceneId, ...data }),

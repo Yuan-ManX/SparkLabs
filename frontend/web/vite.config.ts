@@ -4,6 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
+  base: '/sparklabs/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
@@ -24,6 +25,12 @@ export default defineConfig({
         target: 'ws://localhost:8091',
         ws: true,
       },
+    },
+    historyApiFallback: {
+      rewrites: [
+        { from: /^\/sparklabs\/editor$/, to: '/sparklabs/index.html' },
+        { from: /^\/sparklabs$/, to: '/sparklabs/index.html' },
+      ],
     },
   },
 });
