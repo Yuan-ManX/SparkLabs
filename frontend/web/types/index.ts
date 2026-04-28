@@ -83,6 +83,83 @@ export interface AgentData {
   current_task: string | null;
   task_count: number;
   memory_size: number;
+  skills: string[];
+  toolsets: string[];
+  tool_count: number;
+}
+
+export interface StudioAgentType {
+  type: string;
+  name: string;
+  role: string;
+}
+
+export interface SkillData {
+  id: string;
+  name: string;
+  description: string;
+  category: string;
+  instructions: string;
+  steps: string[];
+  parameters: Record<string, unknown>;
+  verification: string[];
+  version: string;
+}
+
+export interface TemplateData {
+  id: string;
+  name: string;
+  genre: string;
+  description: string;
+  file_structure: Record<string, string>;
+  default_systems: string[];
+  default_components: string[];
+  reliability: number;
+  success_count: number;
+  fail_count: number;
+}
+
+export interface ToolsetData {
+  name: string;
+  description: string;
+  tool_count: number;
+  tools: string[];
+}
+
+export interface ToolData {
+  name: string;
+  description: string;
+  category: string;
+  parameters: ToolParameterData[];
+  return_type: string;
+}
+
+export interface ToolParameterData {
+  name: string;
+  type: string;
+  description: string;
+  required: boolean;
+  default: unknown;
+}
+
+export interface DiagnoseResult {
+  error_message: string;
+  matched_pattern: string | null;
+  root_cause: string;
+  solution: string;
+  verification: string;
+  reliability?: number;
+}
+
+export interface ScaffoldResult {
+  project_name: string;
+  template: string;
+  genre: string;
+  file_structure: Record<string, string>;
+  systems: string[];
+  components: string[];
+  scene_layout: Record<string, unknown>;
+  engine_config: Record<string, unknown>;
 }
 
 export interface WorkflowNodeData {

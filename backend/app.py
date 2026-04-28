@@ -14,7 +14,7 @@ config = SparkAIConfig()
 app = FastAPI(
     title="SparkLabs API",
     description="SparkLabs AI-Native Game Engine API",
-    version="2.0.0",
+    version="3.0.0",
 )
 
 app.add_middleware(
@@ -36,7 +36,7 @@ app.include_router(ws_router, prefix="/ws", tags=["WebSocket"])
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "version": "2.0.0", "engine": "SparkLabs"}
+    return {"status": "ok", "version": "3.0.0", "engine": "SparkLabs"}
 
 
 @app.get("/api/status")
@@ -45,5 +45,5 @@ async def get_status():
     engine_instance = SparkEngine.get_instance()
     return {
         "engine": engine_instance.get_status(),
-        "version": "2.0.0",
+        "version": "3.0.0",
     }

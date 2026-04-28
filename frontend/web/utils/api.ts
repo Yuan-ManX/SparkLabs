@@ -103,6 +103,31 @@ export const agentApi = {
     api.post('/agent/act', { agent_id: agentId, action, params }),
   delete: (id: string) => api.delete(`/agent/${id}`),
   orchestratorStatus: () => api.get('/agent/orchestrator/status'),
+  getSkills: (agentId: string) => api.get(`/agent/${agentId}/skills`),
+  getToolsets: (agentId: string) => api.get(`/agent/${agentId}/toolsets`),
+};
+
+export const studioApi = {
+  listTypes: () => api.get('/agent/studio/types'),
+  create: (agentType: string, agentId?: string) =>
+    api.post('/agent/studio/create', { agent_type: agentType, agent_id: agentId }),
+};
+
+export const skillsApi = {
+  list: () => api.get('/agent/skills/list'),
+  listCategories: () => api.get('/agent/skills/categories'),
+  diagnose: (errorMessage: string) =>
+    api.post('/agent/skills/diagnose', { error_message: errorMessage }),
+  scaffold: (genre: string, projectName: string) =>
+    api.post('/agent/skills/template/scaffold', { genre, project_name: projectName }),
+  listTemplates: () => api.get('/agent/skills/templates'),
+};
+
+export const toolsetsApi = {
+  list: () => api.get('/agent/toolsets/list'),
+  load: (agentId: string, toolsetName: string) =>
+    api.post('/agent/toolsets/load', { agent_id: agentId, toolset_name: toolsetName }),
+  getForRole: (role: string) => api.get(`/agent/toolsets/role/${role}`),
 };
 
 export const sceneApi = {

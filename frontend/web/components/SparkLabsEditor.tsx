@@ -199,7 +199,7 @@ const SparkLabsEditor: React.FC = () => {
       <div className="bg-[#111] border-t border-[#1e1e1e] flex items-center px-3 text-[10px] text-[#555] font-mono">
         <div className="flex items-center gap-1.5">
           <div className="w-1.5 h-1.5 bg-green-500 rounded-full animate-pulse" />
-          <span>SparkLabs Engine v1.0.0</span>
+          <span>SparkLabs Engine v3.0.0</span>
         </div>
         <div className="w-px h-3 bg-[#2a2a2a] mx-2" />
         <span>Scene: Main World</span>

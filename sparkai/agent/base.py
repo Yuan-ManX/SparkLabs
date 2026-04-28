@@ -24,8 +24,9 @@ from typing import Any, Dict, List, Optional, Callable
 from dataclasses import dataclass, field
 
 from sparkai.agent.memory import AgentMemory, MemoryType
-from sparkai.agent.toolkit import ToolRegistry, Tool
+from sparkai.agent.toolkit import ToolRegistry, Tool, Toolset, ToolsetRegistry, get_tools_for_role
 from sparkai.agent.llm import LLMProvider, LLMConfig
+from sparkai.agent.skills.base import Skill, SkillRegistry
 
 
 class AgentCapability(Enum):
@@ -150,6 +151,11 @@ class SparkAgent:
         self._iteration_count: int = 0
         self._consecutive_failures: int = 0
         self._max_consecutive_failures: int = 5
+        self._skills: Dict[str, Skill] = {}
+        self._loaded_toolsets: List[str] = []
+
+        self._load_role_toolsets()
+        self._load_role_skills()
 
     @property
     def memory(self) -> AgentMemory:
@@ -473,6 +479,9 @@ class SparkAgent:
             "memory_size": self._memory.size(),
             "iteration_count": self._iteration_count,
             "consecutive_failures": self._consecutive_failures,
+            "skills": list(self._skills.keys()),
+            "toolsets": self._loaded_toolsets,
+            "tool_count": len(self._tools.list_tools()),
         }
 
     # === Internal Methods ===
@@ -541,3 +550,70 @@ class SparkAgent:
                 if clean:
                     gates.append(clean)
         return gates[:5] if gates else ["Task completed successfully"]
+
+    # === Skill Management ===
+
+    def load_skill(self, skill: Skill) -> None:
+        self._skills[skill.name] = skill
+        self.emit("skill_loaded", {"skill": skill.name})
+
+    def unload_skill(self, name: str) -> bool:
+        if name in self._skills:
+            del self._skills[name]
+            self.emit("skill_unloaded", {"skill": name})
+            return True
+        return False
+
+    def get_skill(self, name: str) -> Optional[Skill]:
+        return self._skills.get(name)
+
+    def list_skills(self) -> List[str]:
+        return list(self._skills.keys())
+
+    def _load_role_skills(self) -> None:
+        all_skills = SkillRegistry.list_skills()
+        for skill in all_skills:
+            if self._is_skill_relevant(skill):
+                self._skills[skill.name] = skill
+
+    def _is_skill_relevant(self, skill: Skill) -> bool:
+        if skill.category == "game_creation":
+            return self.role in (AgentRole.DIRECTOR, AgentRole.LEAD)
+        if skill.category == "debugging":
+            return True
+        return self.role in (AgentRole.DIRECTOR, AgentRole.LEAD, AgentRole.SPECIALIST)
+
+    # === Toolset Management ===
+
+    def load_toolset_by_name(self, name: str) -> bool:
+        toolset = ToolsetRegistry.get(name)
+        if toolset:
+            self._tools.load_toolset(toolset.tools())
+            if name not in self._loaded_toolsets:
+                self._loaded_toolsets.append(name)
+            self.emit("toolset_loaded", {"toolset": name})
+            return True
+        return False
+
+    def unload_toolset_by_name(self, name: str) -> bool:
+        toolset = ToolsetRegistry.get(name)
+        if toolset:
+            self._tools.unload_toolset(toolset.tool_names())
+            if name in self._loaded_toolsets:
+                self._loaded_toolsets.remove(name)
+            self.emit("toolset_unloaded", {"toolset": name})
+            return True
+        return False
+
+    def list_toolsets(self) -> List[str]:
+        return list(self._loaded_toolsets)
+
+    def _load_role_toolsets(self) -> None:
+        role_tools = get_tools_for_role(self.role.value)
+        self._tools.load_toolset(role_tools)
+        role_toolsets = ToolsetRegistry.list_toolsets()
+        for ts in role_toolsets:
+            ts_tools = ts.tools()
+            if any(t.name in [rt.name for rt in role_tools] for t in ts_tools):
+                if ts.name not in self._loaded_toolsets:
+                    self._loaded_toolsets.append(ts.name)
