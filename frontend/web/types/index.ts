@@ -422,7 +422,9 @@ export type ViewMode =
   | 'validator'
   | 'orchestrator'
   | 'skill-evolution'
-  | 'evaluator';
+  | 'evaluator'
+  | 'script-editor'
+  | 'settings';
 
 // Runtime types
 

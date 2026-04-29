@@ -38,6 +38,10 @@ import ValidationPanel from './ValidationPanel';
 import OrchestratorPanel from './OrchestratorPanel';
 import SkillEvolution from './SkillEvolution';
 import GameEvaluator from './GameEvaluator';
+import ScriptEditor from './ScriptEditor';
+import SettingsPanel from './SettingsPanel';
+import NotificationToast, { Toast } from './NotificationToast';
+import KeyboardShortcuts, { ShortcutDef } from './KeyboardShortcuts';
 
 type TransformTool = 'move' | 'rotate' | 'scale';
 type LeftPanelTab = 'scene' | 'assets' | 'nodes';
@@ -157,11 +161,21 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
   const [rightTab, setRightTab] = useState<RightPanelTab>('inspector');
   const [bottomTab, setBottomTab] = useState<BottomPanelTab>('console');
   const [fps, setFps] = useState(60);
+  const [toasts, setToasts] = useState<Toast[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const resizingRef = useRef<{ type: 'left' | 'right' | 'bottom'; startX: number; startSize: number } | null>(null);
 
   const addLog = useCallback((type: ConsoleLine['type'], message: string) => {
     setLogs((prev) => [...prev, { type, message }]);
+  }, []);
+
+  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
+    const id = `toast_${Date.now()}`;
+    setToasts((prev) => [...prev, { ...toast, id }]);
+  }, []);
+
+  const dismissToast = useCallback((id: string) => {
+    setToasts((prev) => prev.filter((t) => t.id !== id));
   }, []);
 
   useEffect(() => {
@@ -343,7 +357,9 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'orchestrator': return <OrchestratorPanel />;
       case 'skill-evolution': return <SkillEvolution />;
       case 'evaluator': return <GameEvaluator />;
-      default: return <WelcomeDashboard />;
+      case 'script-editor': return <ScriptEditor />;
+      case 'settings': return <SettingsPanel />;
+      default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
 
@@ -351,8 +367,21 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
 
   const entityCount = sceneNodes.reduce((acc, n) => acc + 1 + n.children.length, 0);
 
+  const shortcuts: ShortcutDef[] = [
+    { key: '1', ctrl: true, label: 'Move Tool', category: 'Tools', action: () => handleToolChange('move') },
+    { key: '2', ctrl: true, label: 'Rotate Tool', category: 'Tools', action: () => handleToolChange('rotate') },
+    { key: '3', ctrl: true, label: 'Scale Tool', category: 'Tools', action: () => handleToolChange('scale') },
+    { key: 'p', ctrl: true, label: 'Toggle Play', category: 'Game', action: handleTogglePlay },
+    { key: 'e', ctrl: true, label: 'Script Editor', category: 'View', action: () => handleModeSwitch('script-editor') },
+    { key: ',', ctrl: true, label: 'Settings', category: 'View', action: () => handleModeSwitch('settings') },
+    { key: 'd', ctrl: true, label: 'Dashboard', category: 'View', action: () => handleModeSwitch('dashboard') },
+  ];
+
   return (
-    <div className="grid h-screen" style={{ gridTemplateRows: '40px 1fr 24px' }}>
+    <div className="relative h-screen">
+      <KeyboardShortcuts shortcuts={shortcuts} />
+      <NotificationToast toasts={toasts} onDismiss={dismissToast} />
+      <div className="grid h-full" style={{ gridTemplateRows: '40px 1fr 24px' }}>
       <EditorToolbar
         currentTool={currentTool}
         onToolChange={handleToolChange}
@@ -558,6 +587,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
         <span className={fps >= 55 ? 'text-green-600' : 'text-yellow-600'}>{fps} FPS</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span className="text-orange-500">AI Ready</span>
+      </div>
       </div>
     </div>
   );
