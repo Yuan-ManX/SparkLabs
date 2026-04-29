@@ -164,6 +164,23 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
   const [toasts, setToasts] = useState<Toast[]>([]);
   const containerRef = useRef<HTMLDivElement>(null);
   const resizingRef = useRef<{ type: 'left' | 'right' | 'bottom'; startX: number; startSize: number } | null>(null);
+  const fpsFrameRef = useRef<number>(0);
+  const fpsLastTimeRef = useRef<number>(performance.now());
+  const fpsCountRef = useRef<number>(0);
+
+  useEffect(() => {
+    const measureFps = (now: number) => {
+      fpsCountRef.current++;
+      if (now - fpsLastTimeRef.current >= 1000) {
+        setFps(fpsCountRef.current);
+        fpsCountRef.current = 0;
+        fpsLastTimeRef.current = now;
+      }
+      fpsFrameRef.current = requestAnimationFrame(measureFps);
+    };
+    fpsFrameRef.current = requestAnimationFrame(measureFps);
+    return () => cancelAnimationFrame(fpsFrameRef.current);
+  }, []);
 
   const addLog = useCallback((type: ConsoleLine['type'], message: string) => {
     setLogs((prev) => [...prev, { type, message }]);

@@ -2,8 +2,8 @@
  * SparkLabs Editor - API Client
  */
 
-const API_BASE = 'http://localhost:8091/api';
-const WS_BASE = 'ws://localhost:8091/ws';
+const API_BASE = 'http://localhost:8000/api';
+const WS_BASE = 'ws://localhost:8000/ws';
 
 class ApiClient {
   private baseUrl: string;

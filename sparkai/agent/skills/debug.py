@@ -116,7 +116,7 @@ class DebugProtocol:
                 error_type="network",
                 root_cause="Cross-origin request blocked by browser",
                 solution="Add CORS middleware to the backend server",
-                verification_command="curl -H 'Origin: http://localhost:3000' http://localhost:8091/api/health",
+                verification_command="curl -H 'Origin: http://localhost:3000' http://localhost:8000/api/health",
                 category="network",
             ),
             DebugEntry(
@@ -124,7 +124,7 @@ class DebugProtocol:
                 error_type="network",
                 root_cause="WebSocket server not running or wrong port",
                 solution="Start the WebSocket server and verify the port",
-                verification_command="curl http://localhost:8091/api/health",
+                verification_command="curl http://localhost:8000/api/health",
                 category="network",
             ),
             DebugEntry(

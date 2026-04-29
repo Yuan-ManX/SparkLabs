@@ -38,6 +38,7 @@ const SceneOutliner: React.FC<SceneOutlinerProps> = ({
   const [dragOverId, setDragOverId] = useState<string | null>(null);
   const [dragOverPos, setDragOverPos] = useState<'before' | 'after' | 'inside'>('inside');
   const [contextMenuId, setContextMenuId] = useState<string | null>(null);
+  const [contextMenuPos, setContextMenuPos] = useState({ x: 0, y: 0 });
   const dragIdRef = useRef<string | null>(null);
 
   const toggleExpand = useCallback((id: string) => {
@@ -112,7 +113,7 @@ const SceneOutliner: React.FC<SceneOutlinerProps> = ({
           className={`sl-tree-item ${isSelected ? 'selected' : ''} ${dropClass}`}
           style={{ paddingLeft: `${8 + depth * 16}px` }}
           onClick={() => onSelect(node.id, node.name)}
-          onContextMenu={(e) => { e.preventDefault(); setContextMenuId(node.id); }}
+          onContextMenu={(e) => { e.preventDefault(); setContextMenuPos({ x: e.clientX, y: e.clientY }); setContextMenuId(node.id); }}
           draggable
           onDragStart={(e) => handleDragStart(e, node.id)}
           onDragOver={(e) => handleDragOver(e, node.id)}
@@ -151,10 +152,10 @@ const SceneOutliner: React.FC<SceneOutlinerProps> = ({
         )}
         {contextMenuId === node.id && (
           <div
-            className="fixed bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg py-1 z-50 min-w-[120px]"
+            className="fixed bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg py-1 z-50 min-w-[120px] shadow-xl"
             style={{
-              top: '50%',
-              left: '50%',
+              top: contextMenuPos.y,
+              left: contextMenuPos.x,
             }}
             onClick={() => setContextMenuId(null)}
           >
