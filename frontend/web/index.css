@@ -25,8 +25,8 @@ body {
 }
 
 ::-webkit-scrollbar {
-  width: 4px;
-  height: 4px;
+  width: 5px;
+  height: 5px;
 }
 
 ::-webkit-scrollbar-track {
@@ -35,11 +35,11 @@ body {
 
 ::-webkit-scrollbar-thumb {
   background: #333;
-  border-radius: 2px;
+  border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #444;
+  background: #555;
 }
 
 @keyframes pulse-dot {
@@ -55,6 +55,31 @@ body {
   to { transform: rotate(360deg); }
 }
 
+@keyframes glow-pulse {
+  0%, 100% { box-shadow: 0 0 4px rgba(249, 115, 22, 0.3); }
+  50% { box-shadow: 0 0 12px rgba(249, 115, 22, 0.6); }
+}
+
+@keyframes slide-in-right {
+  from { transform: translateX(10px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes node-appear {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes connection-draw {
+  from { stroke-dashoffset: 200; }
+  to { stroke-dashoffset: 0; }
+}
+
 .workflow-node {
   position: absolute;
   min-width: 180px;
@@ -63,6 +88,7 @@ body {
   border-radius: 8px;
   cursor: grab;
   user-select: none;
+  animation: node-appear 0.2s ease-out;
 }
 
 .workflow-node.selected {
@@ -95,4 +121,295 @@ body {
 .workflow-pin:hover {
   border-color: #8b5cf6;
   background: #2d1b69;
+}
+
+.sl-panel {
+  background: #111111;
+  border: 1px solid #1e1e1e;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.sl-panel-header {
+  height: 28px;
+  min-height: 28px;
+  background: #0d0d0d;
+  border-bottom: 1px solid #1e1e1e;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  gap: 6px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+.sl-panel-header-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sl-panel-header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.sl-panel-header-btn {
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 3px;
+  color: #555;
+  cursor: pointer;
+  transition: all 0.15s;
+  border: none;
+  background: none;
+  font-size: 10px;
+}
+
+.sl-panel-header-btn:hover {
+  background: #222;
+  color: #aaa;
+}
+
+.sl-tab-bar {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  height: 28px;
+  min-height: 28px;
+  background: #0d0d0d;
+  border-bottom: 1px solid #1e1e1e;
+  padding: 0 4px;
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.sl-tab {
+  padding: 0 10px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  color: #666;
+  cursor: pointer;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.15s;
+  white-space: nowrap;
+  border: none;
+  background: none;
+}
+
+.sl-tab:hover {
+  color: #aaa;
+  background: #1a1a1a;
+}
+
+.sl-tab.active {
+  color: #e2e8f0;
+  background: #1a1a1a;
+  border-bottom: 2px solid #f97316;
+}
+
+.sl-tree-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  transition: background 0.1s;
+  font-size: 11px;
+  color: #999;
+  border-radius: 3px;
+  margin: 1px 4px;
+}
+
+.sl-tree-item:hover {
+  background: #1a1a1a;
+  color: #ddd;
+}
+
+.sl-tree-item.selected {
+  background: rgba(249, 115, 22, 0.12);
+  color: #f97316;
+}
+
+.sl-tree-item-drop-before {
+  border-top: 2px solid #f97316;
+}
+
+.sl-tree-item-drop-after {
+  border-bottom: 2px solid #f97316;
+}
+
+.sl-property-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 8px;
+  font-size: 11px;
+}
+
+.sl-property-label {
+  width: 90px;
+  min-width: 90px;
+  color: #777;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+.sl-property-input {
+  flex: 1;
+  background: #0d0d0d;
+  border: 1px solid #2a2a2a;
+  border-radius: 3px;
+  padding: 3px 6px;
+  color: #ddd;
+  font-size: 11px;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.sl-property-input:focus {
+  border-color: #f97316;
+}
+
+.sl-property-input:hover {
+  border-color: #3a3a3a;
+}
+
+.sl-property-section {
+  border-bottom: 1px solid #1a1a1a;
+  padding: 6px 0;
+}
+
+.sl-property-section-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  cursor: pointer;
+  user-select: none;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sl-property-section-header:hover {
+  color: #bbb;
+}
+
+.sl-node-graph {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at center, #111 0%, #0a0a0a 100%);
+}
+
+.sl-node-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px);
+  background-size: 20px 20px;
+  pointer-events: none;
+}
+
+.sl-node {
+  position: absolute;
+  min-width: 200px;
+  background: #161616;
+  border: 1px solid #2a2a2a;
+  border-radius: 8px;
+  cursor: grab;
+  user-select: none;
+  animation: node-appear 0.2s ease-out;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+}
+
+.sl-node:hover {
+  border-color: #3a3a3a;
+}
+
+.sl-node.selected {
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.2), 0 2px 12px rgba(0,0,0,0.4);
+}
+
+.sl-node-header {
+  padding: 8px 12px;
+  border-radius: 7px 7px 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.sl-node-body {
+  padding: 6px 0;
+  font-size: 11px;
+}
+
+.sl-node-port {
+  display: flex;
+  align-items: center;
+  padding: 3px 12px;
+  gap: 6px;
+  cursor: crosshair;
+}
+
+.sl-node-port-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  background: #161616;
+  flex-shrink: 0;
+}
+
+.sl-node-port-dot.connected {
+  background: currentColor;
+}
+
+.sl-node-port:hover .sl-node-port-dot {
+  transform: scale(1.3);
+}
+
+.sl-resize-handle {
+  transition: background 0.15s;
+}
+
+.sl-resize-handle:hover {
+  background: rgba(249, 115, 22, 0.2) !important;
+}
+
+.sl-resize-handle:active {
+  background: rgba(249, 115, 22, 0.4) !important;
+}
+
+.sl-ai-prompt {
+  animation: slide-in-right 0.3s ease-out;
+}
+
+.sl-badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 1px 6px;
+  border-radius: 3px;
+  font-size: 10px;
+  font-weight: 500;
 }

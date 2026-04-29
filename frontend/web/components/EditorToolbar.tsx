@@ -13,15 +13,75 @@ interface EditorToolbarProps {
   onGoHome?: () => void;
 }
 
-const modes = [
-  { id: 'dashboard', label: 'Dashboard' },
-  { id: 'game-studio', label: 'Game Studio' },
-  { id: 'templates', label: 'Templates' },
-  { id: 'story', label: 'Story' },
-  { id: 'asset', label: 'Assets' },
-  { id: 'npc', label: 'NPC' },
-  { id: 'workflow', label: 'Workflow' },
-  { id: 'agent', label: 'Agent' },
+const modeGroups = [
+  {
+    label: 'Core',
+    items: [
+      { id: 'dashboard', label: 'Editor', icon: 'fa-gamepad' },
+      { id: 'game-preview', label: 'Preview', icon: 'fa-eye' },
+      { id: 'game-studio', label: 'Studio', icon: 'fa-code' },
+    ],
+  },
+  {
+    label: 'Design',
+    items: [
+      { id: 'blueprint', label: 'Blueprint', icon: 'fa-drafting-compass' },
+      { id: 'story', label: 'Story', icon: 'fa-book' },
+      { id: 'storyboard', label: 'Storyboard', icon: 'fa-film' },
+      { id: 'npc', label: 'NPC', icon: 'fa-robot' },
+      { id: 'dialogue', label: 'Dialogue', icon: 'fa-comments' },
+    ],
+  },
+  {
+    label: 'Create',
+    items: [
+      { id: 'templates', label: 'Templates', icon: 'fa-puzzle-piece' },
+      { id: 'asset', label: 'Asset Gen', icon: 'fa-image' },
+      { id: 'voice', label: 'Voice', icon: 'fa-microphone' },
+      { id: 'video', label: 'Video', icon: 'fa-video' },
+    ],
+  },
+  {
+    label: 'Visual',
+    items: [
+      { id: 'node-canvas', label: 'Nodes', icon: 'fa-diagram-project' },
+      { id: 'workflow', label: 'Workflow', icon: 'fa-share-nodes' },
+      { id: 'timeline', label: 'Timeline', icon: 'fa-clock' },
+    ],
+  },
+  {
+    label: 'AI',
+    items: [
+      { id: 'agent', label: 'Agent', icon: 'fa-brain' },
+      { id: 'orchestrator', label: 'Orchestrate', icon: 'fa-sitemap' },
+      { id: 'skill-evolution', label: 'Skills', icon: 'fa-chart-line' },
+      { id: 'studio', label: 'Studio AI', icon: 'fa-users-gear' },
+    ],
+  },
+  {
+    label: 'Pipeline',
+    items: [
+      { id: 'pipeline', label: 'Pipeline', icon: 'fa-arrows-spin' },
+      { id: 'assets', label: 'Assets', icon: 'fa-folder-open' },
+      { id: 'asset-browser', label: 'Library', icon: 'fa-box-open' },
+      { id: 'playtest', label: 'Playtest', icon: 'fa-gamepad' },
+    ],
+  },
+  {
+    label: 'Quality',
+    items: [
+      { id: 'validator', label: 'Validator', icon: 'fa-check-double' },
+      { id: 'evaluator', label: 'Evaluator', icon: 'fa-star' },
+      { id: 'performance', label: 'Perf', icon: 'fa-gauge-high' },
+    ],
+  },
+  {
+    label: 'System',
+    items: [
+      { id: 'composition-graph', label: 'Graph', icon: 'fa-project-diagram' },
+      { id: 'knowledge', label: 'Knowledge', icon: 'fa-lightbulb' },
+    ],
+  },
 ];
 
 const EditorToolbar: React.FC<EditorToolbarProps> = ({
@@ -35,11 +95,21 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   onGoHome,
 }) => {
   const [showModeMenu, setShowModeMenu] = useState(false);
+  const [showFileMenu, setShowFileMenu] = useState(false);
+  const [showViewMenu, setShowViewMenu] = useState(false);
+
+  const closeAllMenus = () => {
+    setShowModeMenu(false);
+    setShowFileMenu(false);
+    setShowViewMenu(false);
+  };
+
+  const activeModeItem = modeGroups.flatMap((g) => g.items).find((i) => i.id === activeMode);
 
   return (
-    <div className="h-10 bg-[#111] border-b border-[#1e1e1e] flex items-center px-3 gap-2 shrink-0">
-      <div className="flex items-center gap-2 mr-4 cursor-pointer" onClick={onGoHome}>
-        <div className="w-[22px] h-[22px] bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center">
+    <div className="h-10 bg-[#0d0d0d] border-b border-[#1e1e1e] flex items-center px-2 gap-1 shrink-0">
+      <div className="flex items-center gap-2 mr-2 cursor-pointer" onClick={onGoHome}>
+        <div className="w-[22px] h-[22px] bg-gradient-to-br from-orange-500 to-red-600 rounded-md flex items-center justify-center">
           <i className="fa-solid fa-fire text-white text-[10px]" />
         </div>
         <span className="font-bold text-[13px]">
@@ -48,90 +118,152 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
         </span>
       </div>
 
-      <div className="w-px h-5 bg-[#2a2a2a]" />
+      <div className="w-px h-5 bg-[#1e1e1e]" />
 
       <div className="relative">
         <button
-          onClick={() => setShowModeMenu(!showModeMenu)}
-          className="px-2 py-1 text-[11px] text-[#999] hover:text-[#ddd] hover:bg-[#222] rounded transition-colors"
+          onClick={() => { closeAllMenus(); setShowFileMenu(!showFileMenu); }}
+          className="px-2 py-1 text-[11px] text-[#777] hover:text-[#ccc] hover:bg-[#1a1a1a] rounded transition-colors"
         >
-          Mode ▾
+          File
         </button>
-        {showModeMenu && (
-          <div className="absolute top-full left-0 mt-1 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg py-1 z-50 min-w-[140px]">
-            {modes.map((mode) => (
-              <button
-                key={mode.id}
-                onClick={() => { onModeSwitch(mode.id); setShowModeMenu(false); }}
-                className={`w-full text-left px-3 py-1.5 text-[11px] hover:bg-[#222] transition-colors ${
-                  activeMode === mode.id ? 'text-orange-500' : 'text-[#999]'
-                }`}
-              >
-                {mode.label}
-              </button>
-            ))}
+        {showFileMenu && (
+          <div className="absolute top-full left-0 mt-1 bg-[#161616] border border-[#2a2a2a] rounded-lg py-1 z-50 min-w-[160px] shadow-xl">
+            <button className="w-full text-left px-3 py-1.5 text-[11px] text-[#999] hover:bg-[#222] flex items-center gap-2">
+              <i className="fa-solid fa-file-circle-plus text-[9px] text-[#555] w-4" /> New Project
+            </button>
+            <button className="w-full text-left px-3 py-1.5 text-[11px] text-[#999] hover:bg-[#222] flex items-center gap-2">
+              <i className="fa-solid fa-folder-open text-[9px] text-[#555] w-4" /> Open Project
+            </button>
+            <button className="w-full text-left px-3 py-1.5 text-[11px] text-[#999] hover:bg-[#222] flex items-center gap-2">
+              <i className="fa-solid fa-floppy-disk text-[9px] text-[#555] w-4" /> Save
+            </button>
+            <div className="border-t border-[#2a2a2a] my-1" />
+            <button className="w-full text-left px-3 py-1.5 text-[11px] text-[#999] hover:bg-[#222] flex items-center gap-2">
+              <i className="fa-solid fa-file-export text-[9px] text-[#555] w-4" /> Export Game
+            </button>
           </div>
         )}
       </div>
 
-      <button className="px-2 py-1 text-[11px] text-[#999] hover:text-[#ddd] hover:bg-[#222] rounded transition-colors">
-        File
-      </button>
-      <button className="px-2 py-1 text-[11px] text-[#999] hover:text-[#ddd] hover:bg-[#222] rounded transition-colors">
+      <button className="px-2 py-1 text-[11px] text-[#777] hover:text-[#ccc] hover:bg-[#1a1a1a] rounded transition-colors">
         Edit
       </button>
-      <button className="px-2 py-1 text-[11px] text-[#999] hover:text-[#ddd] hover:bg-[#222] rounded transition-colors">
-        View
-      </button>
-      <button className="px-2 py-1 text-[11px] text-[#999] hover:text-[#ddd] hover:bg-[#222] rounded transition-colors">
-        Game
-      </button>
 
-      <div className="w-px h-5 bg-[#2a2a2a]" />
+      <div className="relative">
+        <button
+          onClick={() => { closeAllMenus(); setShowViewMenu(!showViewMenu); }}
+          className="px-2 py-1 text-[11px] text-[#777] hover:text-[#ccc] hover:bg-[#1a1a1a] rounded transition-colors"
+        >
+          View
+        </button>
+        {showViewMenu && (
+          <div className="absolute top-full left-0 mt-1 bg-[#161616] border border-[#2a2a2a] rounded-lg py-1 z-50 min-w-[160px] shadow-xl">
+            <button className="w-full text-left px-3 py-1.5 text-[11px] text-[#999] hover:bg-[#222] flex items-center gap-2">
+              <i className="fa-solid fa-sitemap text-[9px] text-[#555] w-4" /> Scene Hierarchy
+            </button>
+            <button className="w-full text-left px-3 py-1.5 text-[11px] text-[#999] hover:bg-[#222] flex items-center gap-2">
+              <i className="fa-solid fa-sliders text-[9px] text-[#555] w-4" /> Inspector
+            </button>
+            <button className="w-full text-left px-3 py-1.5 text-[11px] text-[#999] hover:bg-[#222] flex items-center gap-2">
+              <i className="fa-solid fa-terminal text-[9px] text-[#555] w-4" /> Console
+            </button>
+            <button className="w-full text-left px-3 py-1.5 text-[11px] text-[#999] hover:bg-[#222] flex items-center gap-2">
+              <i className="fa-solid fa-diagram-project text-[9px] text-[#555] w-4" /> Node Graph
+            </button>
+          </div>
+        )}
+      </div>
+
+      <div className="w-px h-5 bg-[#1e1e1e]" />
 
       {(['move', 'rotate', 'scale'] as TransformTool[]).map((tool) => (
         <button
           key={tool}
           onClick={() => onToolChange(tool)}
-          className={`flex items-center gap-1 px-2.5 py-1.5 rounded text-[12px] transition-all ${
+          className={`flex items-center gap-1 px-2 py-1 rounded text-[11px] transition-all ${
             currentTool === tool
-              ? 'bg-orange-500/15 border border-orange-500/40 text-orange-500'
-              : 'bg-[#1a1a1a] border border-[#2a2a2a] text-[#999] hover:bg-[#222] hover:text-[#ddd] hover:border-[#3a3a3a]'
+              ? 'bg-orange-500/12 border border-orange-500/30 text-orange-500'
+              : 'border border-transparent text-[#666] hover:bg-[#1a1a1a] hover:text-[#aaa]'
           }`}
         >
           <i className={`fa-solid ${
             tool === 'move' ? 'fa-arrows-up-down-left-right' :
             tool === 'rotate' ? 'fa-rotate' : 'fa-expand'
-          } text-[10px]`} />
-          {tool.charAt(0).toUpperCase() + tool.slice(1)}
+          } text-[9px]`} />
+          <span className="hidden lg:inline">{tool.charAt(0).toUpperCase() + tool.slice(1)}</span>
         </button>
       ))}
+
+      <div className="w-px h-5 bg-[#1e1e1e]" />
+
+      <div className="relative">
+        <button
+          onClick={() => { closeAllMenus(); setShowModeMenu(!showModeMenu); }}
+          className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-[#999] hover:text-[#ddd] hover:bg-[#1a1a1a] rounded transition-colors"
+        >
+          {activeModeItem ? (
+            <>
+              <i className={`fa-solid ${activeModeItem.icon} text-[9px] text-orange-500`} />
+              <span>{activeModeItem.label}</span>
+            </>
+          ) : (
+            <>
+              <i className="fa-solid fa-layer-group text-[9px]" />
+              <span>Mode</span>
+            </>
+          )}
+          <i className="fa-solid fa-chevron-down text-[7px] text-[#555]" />
+        </button>
+        {showModeMenu && (
+          <div className="absolute top-full left-0 mt-1 bg-[#161616] border border-[#2a2a2a] rounded-lg py-1 z-50 min-w-[180px] shadow-xl max-h-[70vh] overflow-y-auto">
+            {modeGroups.map((group) => (
+              <div key={group.label}>
+                <div className="px-3 py-1 text-[9px] font-bold text-[#444] uppercase tracking-wider">{group.label}</div>
+                {group.items.map((item) => (
+                  <button
+                    key={item.id}
+                    onClick={() => { onModeSwitch(item.id); closeAllMenus(); }}
+                    className={`w-full text-left px-3 py-1.5 text-[11px] hover:bg-[#222] transition-colors flex items-center gap-2 ${
+                      activeMode === item.id ? 'text-orange-500 bg-orange-500/5' : 'text-[#888]'
+                    }`}
+                  >
+                    <i className={`fa-solid ${item.icon} text-[9px] w-4 text-center ${activeMode === item.id ? 'text-orange-500' : 'text-[#555]'}`} />
+                    {item.label}
+                  </button>
+                ))}
+                <div className="border-t border-[#1e1e1e] my-0.5" />
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
 
       <div className="flex-1" />
 
       <button
         onClick={onAIGenerate}
-        className="flex items-center gap-1.5 px-4 py-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg text-[12px] font-semibold hover:opacity-90 hover:-translate-y-px transition-all"
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-md text-[11px] font-semibold hover:opacity-90 hover:-translate-y-px transition-all"
       >
-        <i className="fa-solid fa-wand-magic-sparkles" />
-        AI Generate
+        <i className="fa-solid fa-wand-magic-sparkles text-[9px]" />
+        <span className="hidden md:inline">AI Generate</span>
       </button>
 
       <button
         onClick={onTogglePlay}
-        className={`flex items-center gap-1.5 px-4 py-1.5 rounded-lg text-[12px] font-semibold text-white hover:opacity-90 hover:-translate-y-px transition-all ${
+        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold text-white hover:opacity-90 hover:-translate-y-px transition-all ${
           isPlaying
             ? 'bg-gradient-to-r from-red-600 to-red-700'
             : 'bg-gradient-to-r from-green-500 to-green-600'
         }`}
       >
-        <i className={`fa-solid ${isPlaying ? 'fa-stop' : 'fa-play'}`} />
+        <i className={`fa-solid ${isPlaying ? 'fa-stop' : 'fa-play'} text-[9px]`} />
         {isPlaying ? 'Stop' : 'Play'}
       </button>
 
-      <div className="w-px h-5 bg-[#2a2a2a]" />
+      <div className="w-px h-5 bg-[#1e1e1e]" />
 
-      <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-[10px] font-bold text-white">
+      <div className="w-7 h-7 bg-gradient-to-br from-orange-500 to-red-600 rounded-md flex items-center justify-center text-[10px] font-bold text-white cursor-pointer">
         S
       </div>
     </div>

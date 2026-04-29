@@ -1,409 +1,499 @@
-import React, { useState, useCallback } from 'react';
-import type { AgentData, StudioAgentType, SkillData, TemplateData, ToolsetData } from '../types';
-import { agentApi, studioApi, skillsApi, toolsetsApi } from '../utils/api';
+import React, { useState, useEffect, useCallback } from 'react';
+import { agentApi, studioApi, commandsApi, loopApi, meshApi, forgeApi, healthApi, protocolApi } from '../utils/api';
 
-type AgentTab = 'agents' | 'studio' | 'skills' | 'toolsets';
+type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health';
 
-const STUDIO_TIERS: Record<string, { label: string; color: string; agents: { type: string; name: string; icon: string }[] }> = {
-  directors: {
-    label: 'Directors',
-    color: '#f97316',
+const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
+  { id: 'commands', label: 'Commands', icon: '⌨' },
+  { id: 'agents', label: 'Agents', icon: '🤖' },
+  { id: 'studio', label: 'Studio', icon: '🎬' },
+  { id: 'pipeline', label: 'Pipeline', icon: '🔄' },
+  { id: 'mesh', label: 'Mesh', icon: '🕸' },
+  { id: 'forge', label: 'Forge', icon: '⚒' },
+  { id: 'health', label: 'Health', icon: '💓' },
+];
+
+const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
+  {
+    tier: 'Directors',
     agents: [
-      { type: 'creative_director', name: 'Creative Director', icon: 'fa-palette' },
-      { type: 'technical_director', name: 'Technical Director', icon: 'fa-code' },
-      { type: 'producer', name: 'Producer', icon: 'fa-clipboard-list' },
+      { type: 'CreativeDirector', label: 'Creative Director' },
+      { type: 'TechnicalDirector', label: 'Technical Director' },
+      { type: 'Producer', label: 'Producer' },
     ],
   },
-  leads: {
-    label: 'Leads',
-    color: '#60a5fa',
+  {
+    tier: 'Leads',
     agents: [
-      { type: 'game_designer', name: 'Game Designer', icon: 'fa-gamepad' },
-      { type: 'lead_programmer', name: 'Lead Programmer', icon: 'fa-laptop-code' },
-      { type: 'art_director', name: 'Art Director', icon: 'fa-paint-brush' },
-      { type: 'narrative_director', name: 'Narrative Director', icon: 'fa-book' },
-      { type: 'qa_lead', name: 'QA Lead', icon: 'fa-bug' },
+      { type: 'GameDesigner', label: 'Game Designer' },
+      { type: 'LeadProgrammer', label: 'Lead Programmer' },
+      { type: 'ArtDirector', label: 'Art Director' },
+      { type: 'NarrativeDirector', label: 'Narrative Director' },
+      { type: 'QALead', label: 'QA Lead' },
     ],
   },
-  specialists: {
-    label: 'Specialists',
-    color: '#4ade80',
+  {
+    tier: 'Specialists',
     agents: [
-      { type: 'gameplay_programmer', name: 'Gameplay Programmer', icon: 'fa-dice-d20' },
-      { type: 'engine_programmer', name: 'Engine Programmer', icon: 'fa-cogs' },
-      { type: 'ai_programmer', name: 'AI Programmer', icon: 'fa-robot' },
-      { type: 'level_designer', name: 'Level Designer', icon: 'fa-map' },
-      { type: 'world_builder', name: 'World Builder', icon: 'fa-globe' },
-      { type: 'sound_designer', name: 'Sound Designer', icon: 'fa-volume-up' },
-      { type: 'writer', name: 'Writer', icon: 'fa-feather-alt' },
-      { type: 'qa_tester', name: 'QA Tester', icon: 'fa-check-double' },
+      { type: 'GameplayProgrammer', label: 'Gameplay Programmer' },
+      { type: 'EngineProgrammer', label: 'Engine Programmer' },
+      { type: 'AIProgrammer', label: 'AI Programmer' },
+      { type: 'LevelDesigner', label: 'Level Designer' },
+      { type: 'WorldBuilder', label: 'World Builder' },
+      { type: 'SoundDesigner', label: 'Sound Designer' },
+      { type: 'Writer', label: 'Writer' },
+      { type: 'QATester', label: 'QA Tester' },
     ],
   },
-};
+];
+
+const PIPELINE_STAGES = ['Analyze', 'Design', 'Scaffold', 'Implement', 'Integrate', 'Validate'];
 
 const AgentPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<AgentTab>('agents');
-  const [agents, setAgents] = useState<AgentData[]>([]);
-  const [selectedAgent, setSelectedAgent] = useState<string | null>(null);
-  const [prompt, setPrompt] = useState('');
-  const [messages, setMessages] = useState<{ role: string; content: string }[]>([]);
-  const [newAgentName, setNewAgentName] = useState('');
-  const [newAgentRole, setNewAgentRole] = useState('specialist');
-  const [templates, setTemplates] = useState<TemplateData[]>([]);
-  const [toolsets, setToolsets] = useState<ToolsetData[]>([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabId>('commands');
+  const [agents, setAgents] = useState<any[]>([]);
+  const [commands, setCommands] = useState<any[]>([]);
+  const [commandCategories, setCommandCategories] = useState<string[]>([]);
+  const [pipelinePrompt, setPipelinePrompt] = useState('');
+  const [pipelineRunning, setPipelineRunning] = useState(false);
+  const [pipelineResult, setPipelineResult] = useState<any>(null);
+  const [meshNodes, setMeshNodes] = useState<any[]>([]);
+  const [meshClusters, setMeshClusters] = useState<any[]>([]);
+  const [meshTopology, setMeshTopology] = useState<any>(null);
+  const [forgeStats, setForgeStats] = useState<any>(null);
+  const [forgeEvolutions, setForgeEvolutions] = useState<any[]>([]);
+  const [healthReport, setHealthReport] = useState<any>(null);
+  const [inputValue, setInputValue] = useState('');
+  const [chatMessages, setChatMessages] = useState<{ role: string; content: string }[]>([]);
+  const [selectedAgentId, setSelectedAgentId] = useState<string | null>(null);
 
-  const handleCreateAgent = useCallback(async () => {
-    if (!newAgentName.trim()) return;
-    setIsLoading(true);
-    try {
-      const result = await agentApi.create({
-        name: newAgentName,
-        role: newAgentRole,
-        capabilities: ['reasoning'],
-      });
-      setAgents((prev) => [...prev, result as AgentData]);
-      setNewAgentName('');
-    } catch {
-      const agent: AgentData = {
-        id: `agent_${Date.now()}`,
-        name: newAgentName,
-        role: newAgentRole,
-        state: 'idle',
-        capabilities: ['reasoning'],
-        current_task: null,
-        task_count: 0,
-        memory_size: 0,
-        skills: [],
-        toolsets: [],
-        tool_count: 0,
-      };
-      setAgents((prev) => [...prev, agent]);
-      setNewAgentName('');
-    }
-    setIsLoading(false);
-  }, [newAgentName, newAgentRole]);
-
-  const handleCreateStudioAgent = useCallback(async (agentType: string) => {
-    setIsLoading(true);
-    try {
-      const result = await studioApi.create(agentType);
-      setAgents((prev) => [...prev, result as AgentData]);
-    } catch {
-      const agent: AgentData = {
-        id: `studio_${Date.now()}`,
-        name: agentType.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase()),
-        role: 'specialist',
-        state: 'idle',
-        capabilities: ['reasoning'],
-        current_task: null,
-        task_count: 0,
-        memory_size: 0,
-        skills: [],
-        toolsets: [],
-        tool_count: 0,
-      };
-      setAgents((prev) => [...prev, agent]);
-    }
-    setIsLoading(false);
+  useEffect(() => {
+    loadCommands();
+    loadAgents();
+    loadMeshData();
+    loadForgeData();
+    loadHealthData();
   }, []);
 
-  const handleSendPrompt = useCallback(() => {
-    if (!prompt.trim()) return;
-    setMessages((prev) => [...prev, { role: 'user', content: prompt }]);
-    setMessages((prev) => [...prev, { role: 'agent', content: `[Agent] Processing: "${prompt}" — LLM connection required for full response.` }]);
-    setPrompt('');
-  }, [prompt]);
-
-  const handleDeleteAgent = useCallback((id: string) => {
-    setAgents((prev) => prev.filter((a) => a.id !== id));
-    if (selectedAgent === id) setSelectedAgent(null);
-  }, [selectedAgent]);
-
-  const handleLoadTemplates = useCallback(async () => {
+  const loadCommands = async () => {
     try {
-      const result = await skillsApi.listTemplates() as { templates: TemplateData[] };
-      setTemplates(result.templates);
-    } catch {
-      setTemplates([]);
-    }
-  }, []);
+      const res: any = await commandsApi.list();
+      setCommands(res.commands || []);
+      const cats = [...new Set((res.commands || []).map((c: any) => c.category))] as string[];
+      setCommandCategories(cats);
+    } catch {}
+  };
 
-  const handleLoadToolsets = useCallback(async () => {
+  const loadAgents = async () => {
     try {
-      const result = await toolsetsApi.list() as { toolsets: ToolsetData[] };
-      setToolsets(result.toolsets);
-    } catch {
-      setToolsets([]);
+      const res: any = await agentApi.list();
+      setAgents(res.agents || res || []);
+    } catch {}
+  };
+
+  const loadMeshData = async () => {
+    try {
+      const [topoRes, nodesRes, clustersRes]: any[] = await Promise.all([
+        meshApi.topology(),
+        meshApi.nodes(),
+        meshApi.clusters(),
+      ]);
+      setMeshTopology(topoRes);
+      setMeshNodes(nodesRes.nodes || []);
+      setMeshClusters(clustersRes.clusters || []);
+    } catch {}
+  };
+
+  const loadForgeData = async () => {
+    try {
+      const [statsRes, evoRes]: any[] = await Promise.all([
+        forgeApi.stats(),
+        forgeApi.evolutions(),
+      ]);
+      setForgeStats(statsRes);
+      setForgeEvolutions(evoRes.evolutions || []);
+    } catch {}
+  };
+
+  const loadHealthData = async () => {
+    try {
+      const res: any = await healthApi.check();
+      setHealthReport(res);
+    } catch {}
+  };
+
+  const handleCreateStudioAgent = async (type: string) => {
+    try {
+      await studioApi.create(type);
+      loadAgents();
+      loadMeshData();
+    } catch {}
+  };
+
+  const handleDeleteAgent = async (agentId: string) => {
+    try {
+      await agentApi.delete(agentId);
+      loadAgents();
+      loadMeshData();
+    } catch {}
+  };
+
+  const handleRunPipeline = async () => {
+    if (!pipelinePrompt.trim()) return;
+    setPipelineRunning(true);
+    try {
+      const res: any = await loopApi.pipelineRun(pipelinePrompt);
+      setPipelineResult(res);
+    } catch (e: any) {
+      setPipelineResult({ error: e.message });
     }
-  }, []);
+    setPipelineRunning(false);
+  };
 
-  const selected = agents.find((a) => a.id === selectedAgent);
+  const handleRegisterMeshNode = async () => {
+    const id = `agent_${Date.now()}`;
+    try {
+      await meshApi.register(id, `Agent ${meshNodes.length + 1}`, 'specialist', ['reasoning']);
+      loadMeshData();
+    } catch {}
+  };
 
-  const tabs: { id: AgentTab; label: string; icon: string }[] = [
-    { id: 'agents', label: 'Agents', icon: 'fa-robot' },
-    { id: 'studio', label: 'Studio', icon: 'fa-building' },
-    { id: 'skills', label: 'Skills', icon: 'fa-brain' },
-    { id: 'toolsets', label: 'Toolsets', icon: 'fa-toolbox' },
-  ];
+  const handleForgeSkill = async () => {
+    const name = `skill_${Date.now()}`;
+    try {
+      await forgeApi.forgeSkill(name, 'general', `Auto-generated skill`, 'Execute task');
+      loadForgeData();
+    } catch {}
+  };
 
-  return (
-    <div className="flex h-full bg-[#0d0d0d]">
-      <div className="w-72 bg-[#111] border-r border-[#1e1e1e] flex flex-col">
-        <div className="flex border-b border-[#1e1e1e]">
-          {tabs.map((tab) => (
+  const handleSendMessage = async () => {
+    if (!inputValue.trim()) return;
+    const msg = inputValue;
+    setChatMessages(prev => [...prev, { role: 'user', content: msg }]);
+    setInputValue('');
+
+    if (msg.startsWith('/')) {
+      try {
+        const res: any = await commandsApi.parse(msg);
+        setChatMessages(prev => [...prev, { role: 'agent', content: JSON.stringify(res, null, 2) }]);
+      } catch {
+        setChatMessages(prev => [...prev, { role: 'agent', content: 'Command execution failed' }]);
+      }
+    } else {
+      setChatMessages(prev => [...prev, { role: 'agent', content: 'LLM connection required for free-form prompts. Use /commands for available actions.' }]);
+    }
+  };
+
+  const renderCommandsTab = () => (
+    <div className="p-3 space-y-3 overflow-y-auto h-full">
+      {commandCategories.map(cat => (
+        <div key={cat}>
+          <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-wider mb-1">{cat}</h4>
+          <div className="flex flex-wrap gap-1">
+            {commands.filter((c: any) => c.category === cat).map((c: any) => (
+              <button
+                key={c.name}
+                onClick={() => setInputValue(`/${c.name} `)}
+                className="text-[10px] px-2 py-0.5 bg-[#1e1e1e] hover:bg-[#2a2a2a] text-[#ccc] rounded border border-[#333] transition-colors"
+              >
+                /{c.name}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderAgentsTab = () => (
+    <div className="p-3 space-y-2 overflow-y-auto h-full">
+      {agents.length === 0 ? (
+        <div className="text-[11px] text-[#666] text-center py-4">No agents created yet. Use Studio tab to create agents.</div>
+      ) : (
+        agents.map((agent: any) => (
+          <div
+            key={agent.id}
+            onClick={() => setSelectedAgentId(agent.id)}
+            className={`flex items-center justify-between p-2 rounded border cursor-pointer transition-colors ${
+              selectedAgentId === agent.id ? 'border-blue-500 bg-blue-500/10' : 'border-[#333] bg-[#1a1a1a] hover:bg-[#222]'
+            }`}
+          >
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400">{agent.state || 'idle'}</span>
+              <span className="text-[11px] text-[#ccc]">{agent.name}</span>
+            </div>
             <button
-              key={tab.id}
-              onClick={() => setActiveTab(tab.id)}
-              className={`flex-1 px-2 py-2 text-[10px] cursor-pointer border-b-2 transition-colors ${
-                activeTab === tab.id ? 'text-orange-500 border-orange-500' : 'text-[#666] border-transparent hover:text-[#aaa]'
-              }`}
+              onClick={(e) => { e.stopPropagation(); handleDeleteAgent(agent.id); }}
+              className="text-[10px] text-red-400 hover:text-red-300 px-1"
             >
-              <i className={`fa-solid ${tab.icon} text-[10px] block mb-0.5`} />
-              {tab.label}
+              ✕
             </button>
+          </div>
+        ))
+      )}
+    </div>
+  );
+
+  const renderStudioTab = () => (
+    <div className="p-3 space-y-3 overflow-y-auto h-full">
+      {STUDIO_TIERS.map(({ tier, agents: tierAgents }) => (
+        <div key={tier}>
+          <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-wider mb-1">{tier}</h4>
+          <div className="grid grid-cols-2 gap-1">
+            {tierAgents.map(({ type, label }) => (
+              <button
+                key={type}
+                onClick={() => handleCreateStudioAgent(type)}
+                className="text-[10px] px-2 py-1.5 bg-[#1e1e1e] hover:bg-[#2a2a2a] text-[#ccc] rounded border border-[#333] transition-colors text-left"
+              >
+                {label}
+              </button>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+
+  const renderPipelineTab = () => (
+    <div className="p-3 space-y-3 overflow-y-auto h-full">
+      <div>
+        <textarea
+          value={pipelinePrompt}
+          onChange={(e) => setPipelinePrompt(e.target.value)}
+          placeholder="Describe the game you want to create..."
+          className="w-full h-20 bg-[#1a1a1a] border border-[#333] rounded p-2 text-[11px] text-[#ccc] resize-none focus:border-blue-500 outline-none"
+        />
+        <button
+          onClick={handleRunPipeline}
+          disabled={pipelineRunning || !pipelinePrompt.trim()}
+          className="w-full mt-1 py-1.5 bg-gradient-to-r from-orange-600 to-orange-500 text-white text-[11px] rounded font-medium disabled:opacity-50"
+        >
+          {pipelineRunning ? 'Running Pipeline...' : 'Run Pipeline'}
+        </button>
+      </div>
+      <div className="space-y-1">
+        {PIPELINE_STAGES.map((stage, i) => (
+          <div key={stage} className="flex items-center gap-2 text-[10px]">
+            <span className="w-4 h-4 rounded-full bg-[#333] flex items-center justify-center text-[8px]">{i + 1}</span>
+            <span className="text-[#aaa]">{stage}</span>
+          </div>
+        ))}
+      </div>
+      {pipelineResult && (
+        <div className="bg-[#1a1a1a] border border-[#333] rounded p-2">
+          <h4 className="text-[10px] font-bold text-[#888] mb-1">Result</h4>
+          <pre className="text-[9px] text-[#aaa] overflow-auto max-h-40 whitespace-pre-wrap">
+            {JSON.stringify(pipelineResult, null, 2)}
+          </pre>
+        </div>
+      )}
+    </div>
+  );
+
+  const renderMeshTab = () => (
+    <div className="p-3 space-y-3 overflow-y-auto h-full">
+      <div className="flex items-center justify-between">
+        <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-wider">Network Topology</h4>
+        <button onClick={handleRegisterMeshNode} className="text-[9px] px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded">
+          + Register Node
+        </button>
+      </div>
+      {meshTopology && (
+        <div className="grid grid-cols-2 gap-1">
+          <div className="bg-[#1a1a1a] border border-[#333] rounded p-2 text-center">
+            <div className="text-[14px] font-bold text-blue-400">{meshTopology.node_count || 0}</div>
+            <div className="text-[9px] text-[#666]">Nodes</div>
+          </div>
+          <div className="bg-[#1a1a1a] border border-[#333] rounded p-2 text-center">
+            <div className="text-[14px] font-bold text-green-400">{meshTopology.available_nodes || 0}</div>
+            <div className="text-[9px] text-[#666]">Available</div>
+          </div>
+          <div className="bg-[#1a1a1a] border border-[#333] rounded p-2 text-center">
+            <div className="text-[14px] font-bold text-orange-400">{meshTopology.connection_count || 0}</div>
+            <div className="text-[9px] text-[#666]">Connections</div>
+          </div>
+          <div className="bg-[#1a1a1a] border border-[#333] rounded p-2 text-center">
+            <div className="text-[14px] font-bold text-purple-400">{meshTopology.active_clusters || 0}</div>
+            <div className="text-[9px] text-[#666]">Clusters</div>
+          </div>
+        </div>
+      )}
+      <div>
+        <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-wider mb-1">Nodes</h4>
+        {meshNodes.map((node: any) => (
+          <div key={node.agent_id} className="flex items-center justify-between p-1.5 bg-[#1a1a1a] border border-[#333] rounded mb-1">
+            <div className="flex items-center gap-2">
+              <span className={`w-2 h-2 rounded-full ${node.is_available ? 'bg-green-500' : 'bg-red-500'}`} />
+              <span className="text-[10px] text-[#ccc]">{node.name}</span>
+            </div>
+            <span className="text-[9px] text-[#666]">{node.role}</span>
+          </div>
+        ))}
+      </div>
+      {meshClusters.length > 0 && (
+        <div>
+          <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-wider mb-1">Clusters</h4>
+          {meshClusters.map((cluster: any) => (
+            <div key={cluster.id} className="p-2 bg-[#1a1a1a] border border-[#333] rounded mb-1">
+              <div className="text-[10px] text-[#ccc] font-medium">{cluster.name}</div>
+              <div className="text-[9px] text-[#666]">{cluster.goal}</div>
+              <div className="text-[9px] text-[#888] mt-1">{cluster.member_count} members</div>
+            </div>
           ))}
         </div>
+      )}
+    </div>
+  );
 
-        <div className="flex-1 overflow-y-auto">
-          {activeTab === 'agents' && (
-            <>
-              <div className="p-3 border-b border-[#1e1e1e]">
-                <input
-                  type="text"
-                  value={newAgentName}
-                  onChange={(e) => setNewAgentName(e.target.value)}
-                  placeholder="Agent name..."
-                  className="w-full px-2.5 py-1.5 bg-[#0d0d0d] border border-[#222] rounded text-[12px] text-[#ddd] mb-2 focus:outline-none focus:border-orange-500/40"
-                />
-                <select
-                  value={newAgentRole}
-                  onChange={(e) => setNewAgentRole(e.target.value)}
-                  className="w-full px-2.5 py-1.5 bg-[#0d0d0d] border border-[#222] rounded text-[12px] text-[#ddd] mb-2 focus:outline-none focus:border-orange-500/40"
-                >
-                  <option value="director">Director</option>
-                  <option value="lead">Lead</option>
-                  <option value="specialist">Specialist</option>
-                  <option value="worker">Worker</option>
-                </select>
-                <button
-                  onClick={handleCreateAgent}
-                  disabled={isLoading}
-                  className="w-full px-3 py-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded text-[11px] font-semibold hover:opacity-90 transition-all disabled:opacity-50"
-                >
-                  <i className="fa-solid fa-plus mr-1" />
-                  Create Agent
-                </button>
-              </div>
-              {agents.map((agent) => (
-                <div
-                  key={agent.id}
-                  onClick={() => setSelectedAgent(agent.id)}
-                  className={`p-2.5 border-b border-[#1a1a1a] cursor-pointer transition-colors ${
-                    selectedAgent === agent.id ? 'bg-orange-500/8 border-l-2 border-l-orange-500' : 'hover:bg-[#1a1a1a] border-l-2 border-l-transparent'
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <div className="font-medium text-[12px] text-[#ddd]">{agent.name}</div>
-                      <div className="text-[10px] text-[#666]">{agent.role} | {agent.skills?.length || 0} skills | {agent.tool_count || 0} tools</div>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <span className={`text-[9px] px-1.5 py-0.5 rounded-full ${
-                        agent.state === 'idle' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                      }`}>
-                        {agent.state}
-                      </span>
-                      <button onClick={(e) => { e.stopPropagation(); handleDeleteAgent(agent.id); }} className="p-1 hover:bg-[#222] rounded">
-                        <i className="fa-solid fa-trash text-[9px] text-[#555]" />
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-              {agents.length === 0 && (
-                <div className="p-4 text-center text-[11px] text-[#555]">No agents yet. Create one above or use Studio.</div>
-              )}
-            </>
-          )}
-
-          {activeTab === 'studio' && (
-            <div className="p-3">
-              {Object.entries(STUDIO_TIERS).map(([tierKey, tier]) => (
-                <div key={tierKey} className="mb-4">
-                  <div className="text-[10px] font-semibold uppercase tracking-wider mb-2" style={{ color: tier.color }}>
-                    <i className="fa-solid fa-circle text-[6px] mr-1" />
-                    {tier.label}
-                  </div>
-                  <div className="space-y-1">
-                    {tier.agents.map((agent) => (
-                      <button
-                        key={agent.type}
-                        onClick={() => handleCreateStudioAgent(agent.type)}
-                        disabled={isLoading}
-                        className="w-full flex items-center gap-2 px-2.5 py-1.5 bg-[#0d0d0d] border border-[#222] rounded text-[11px] text-[#ccc] hover:border-orange-500/30 hover:bg-[#1a1a1a] transition-all disabled:opacity-50"
-                      >
-                        <i className={`fa-solid ${agent.icon} text-[10px]`} style={{ color: tier.color }} />
-                        <span>{agent.name}</span>
-                        <i className="fa-solid fa-plus text-[8px] text-[#555] ml-auto" />
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-
-          {activeTab === 'skills' && (
-            <div className="p-3">
-              <button
-                onClick={handleLoadTemplates}
-                className="w-full px-3 py-1.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-[11px] text-[#999] hover:text-[#ddd] hover:bg-[#222] mb-3 transition-colors"
-              >
-                <i className="fa-solid fa-download mr-1" />
-                Load Templates
-              </button>
-              {templates.length > 0 ? (
-                templates.map((tmpl) => (
-                  <div key={tmpl.id} className="p-2.5 bg-[#0d0d0d] border border-[#222] rounded mb-2">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[11px] font-medium text-[#ddd]">{tmpl.name}</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-orange-500/15 text-orange-400">{tmpl.genre}</span>
-                    </div>
-                    <div className="text-[10px] text-[#666] mb-1">{tmpl.description}</div>
-                    <div className="flex items-center gap-2 text-[9px] text-[#555]">
-                      <span>{tmpl.default_systems.length} systems</span>
-                      <span>|</span>
-                      <span>{tmpl.default_components.length} components</span>
-                      <span>|</span>
-                      <span>{Math.round(tmpl.reliability * 100)}% reliable</span>
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center text-[11px] text-[#555] mt-4">
-                  <i className="fa-solid fa-brain text-[20px] text-[#333] block mb-2" />
-                  Click "Load Templates" to see available game templates
-                </div>
-              )}
-            </div>
-          )}
-
-          {activeTab === 'toolsets' && (
-            <div className="p-3">
-              <button
-                onClick={handleLoadToolsets}
-                className="w-full px-3 py-1.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-[11px] text-[#999] hover:text-[#ddd] hover:bg-[#222] mb-3 transition-colors"
-              >
-                <i className="fa-solid fa-download mr-1" />
-                Load Toolsets
-              </button>
-              {toolsets.length > 0 ? (
-                toolsets.map((ts) => (
-                  <div key={ts.name} className="p-2.5 bg-[#0d0d0d] border border-[#222] rounded mb-2">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-[11px] font-medium text-[#ddd]">{ts.name}</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded-full bg-blue-500/15 text-blue-400">{ts.tool_count} tools</span>
-                    </div>
-                    <div className="text-[10px] text-[#666] mb-1">{ts.description}</div>
-                    <div className="flex flex-wrap gap-1">
-                      {ts.tools.map((tool) => (
-                        <span key={tool} className="text-[8px] px-1.5 py-0.5 bg-[#1a1a1a] border border-[#222] rounded text-[#888]">
-                          {tool}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <div className="text-center text-[11px] text-[#555] mt-4">
-                  <i className="fa-solid fa-toolbox text-[20px] text-[#333] block mb-2" />
-                  Click "Load Toolsets" to see available tool bundles
-                </div>
-              )}
-            </div>
-          )}
+  const renderForgeTab = () => (
+    <div className="p-3 space-y-3 overflow-y-auto h-full">
+      <div className="flex items-center justify-between">
+        <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-wider">Skill Forge</h4>
+        <button onClick={handleForgeSkill} className="text-[9px] px-2 py-1 bg-orange-600 hover:bg-orange-500 text-white rounded">
+          + Forge Skill
+        </button>
+      </div>
+      {forgeStats && (
+        <div className="grid grid-cols-3 gap-1">
+          <div className="bg-[#1a1a1a] border border-[#333] rounded p-2 text-center">
+            <div className="text-[14px] font-bold text-orange-400">{forgeStats.total_skills || 0}</div>
+            <div className="text-[9px] text-[#666]">Skills</div>
+          </div>
+          <div className="bg-[#1a1a1a] border border-[#333] rounded p-2 text-center">
+            <div className="text-[14px] font-bold text-blue-400">{forgeStats.total_blueprints || 0}</div>
+            <div className="text-[9px] text-[#666]">Blueprints</div>
+          </div>
+          <div className="bg-[#1a1a1a] border border-[#333] rounded p-2 text-center">
+            <div className="text-[14px] font-bold text-green-400">{Math.round((forgeStats.avg_reliability || 0) * 100)}%</div>
+            <div className="text-[9px] text-[#666]">Reliability</div>
+          </div>
         </div>
+      )}
+      <div>
+        <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-wider mb-1">Evolutions</h4>
+        {forgeEvolutions.map((evo: any) => (
+          <div key={evo.skill_name} className="p-2 bg-[#1a1a1a] border border-[#333] rounded mb-1">
+            <div className="flex items-center justify-between">
+              <span className="text-[10px] text-[#ccc]">{evo.skill_name}</span>
+              <span className={`text-[9px] px-1.5 py-0.5 rounded ${
+                evo.maturity === 'core' ? 'bg-green-500/20 text-green-400' :
+                evo.maturity === 'proven' ? 'bg-blue-500/20 text-blue-400' :
+                evo.maturity === 'validated' ? 'bg-yellow-500/20 text-yellow-400' :
+                'bg-gray-500/20 text-gray-400'
+              }`}>{evo.maturity}</span>
+            </div>
+            <div className="flex items-center gap-3 mt-1">
+              <span className="text-[9px] text-[#666]">Success: {Math.round(evo.success_rate * 100)}%</span>
+              <span className="text-[9px] text-[#666]">Execs: {evo.total_executions}</span>
+              <span className="text-[9px] text-[#666]">Rel: {Math.round(evo.reliability_score * 100)}%</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+
+  const renderHealthTab = () => (
+    <div className="p-3 space-y-3 overflow-y-auto h-full">
+      <div className="flex items-center justify-between">
+        <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-wider">System Health</h4>
+        <button onClick={loadHealthData} className="text-[9px] px-2 py-1 bg-[#333] hover:bg-[#444] text-[#ccc] rounded">
+          Refresh
+        </button>
+      </div>
+      {healthReport ? (
+        <>
+          <div className={`p-2 rounded border text-center ${
+            healthReport.overall_status === 'healthy' ? 'bg-green-500/10 border-green-500/30' :
+            healthReport.overall_status === 'degraded' ? 'bg-yellow-500/10 border-yellow-500/30' :
+            'bg-red-500/10 border-red-500/30'
+          }`}>
+            <div className="text-[12px] font-bold capitalize">{healthReport.overall_status}</div>
+            <div className="text-[9px] text-[#888]">{healthReport.summary}</div>
+          </div>
+          <div className="space-y-1">
+            {(healthReport.checks || []).map((check: any) => (
+              <div key={check.name} className="flex items-center justify-between p-1.5 bg-[#1a1a1a] border border-[#333] rounded">
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${
+                    check.status === 'healthy' ? 'bg-green-500' :
+                    check.status === 'degraded' ? 'bg-yellow-500' :
+                    'bg-red-500'
+                  }`} />
+                  <span className="text-[10px] text-[#ccc]">{check.name}</span>
+                </div>
+                <span className="text-[9px] text-[#666]">{check.duration_ms?.toFixed(0)}ms</span>
+              </div>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div className="text-[11px] text-[#666] text-center py-4">Loading health data...</div>
+      )}
+    </div>
+  );
+
+  const renderTabContent = () => {
+    switch (activeTab) {
+      case 'commands': return renderCommandsTab();
+      case 'agents': return renderAgentsTab();
+      case 'studio': return renderStudioTab();
+      case 'pipeline': return renderPipelineTab();
+      case 'mesh': return renderMeshTab();
+      case 'forge': return renderForgeTab();
+      case 'health': return renderHealthTab();
+      default: return null;
+    }
+  };
+
+  return (
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
+      <div className="flex border-b border-[#1e1e1e] overflow-x-auto">
+        {TAB_CONFIG.map(tab => (
+          <button
+            key={tab.id}
+            onClick={() => setActiveTab(tab.id)}
+            className={`flex items-center gap-1 px-3 py-2 text-[10px] whitespace-nowrap transition-colors border-b-2 ${
+              activeTab === tab.id
+                ? 'text-blue-400 border-blue-500 bg-blue-500/5'
+                : 'text-[#666] border-transparent hover:text-[#999] hover:bg-[#151515]'
+            }`}
+          >
+            <span>{tab.icon}</span>
+            <span>{tab.label}</span>
+          </button>
+        ))}
       </div>
 
-      <div className="flex-1 flex flex-col">
-        {selected ? (
-          <>
-            <div className="p-3 border-b border-[#1e1e1e] flex items-center justify-between bg-[#111]">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center text-[11px] font-bold text-white">
-                  {selected.name.charAt(0)}
-                </div>
-                <div>
-                  <h3 className="font-bold text-[13px] text-[#e0e0e0]">{selected.name}</h3>
-                  <span className="text-[10px] text-[#666]">
-                    {selected.role} | {selected.capabilities.join(', ')}
-                    {selected.skills?.length > 0 && ` | Skills: ${selected.skills.join(', ')}`}
-                    {selected.toolsets?.length > 0 && ` | Toolsets: ${selected.toolsets.join(', ')}`}
-                  </span>
-                </div>
+      <div className="flex-1 overflow-hidden">
+        {renderTabContent()}
+      </div>
+
+      <div className="border-t border-[#1e1e1e] p-2">
+        <div className="flex gap-1">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
+            placeholder="Type / for commands..."
+            className="flex-1 bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-blue-500"
+          />
+          <button
+            onClick={handleSendMessage}
+            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] rounded"
+          >
+            Send
+          </button>
+        </div>
+        {chatMessages.length > 0 && (
+          <div className="mt-2 max-h-24 overflow-y-auto space-y-1">
+            {chatMessages.map((msg, i) => (
+              <div key={i} className={`text-[9px] ${msg.role === 'user' ? 'text-blue-400' : 'text-[#aaa]'}`}>
+                <span className="font-bold">{msg.role === 'user' ? '>' : 'AI'}</span> {msg.content}
               </div>
-              <div className="flex items-center gap-2">
-                <span className={`text-[9px] px-2 py-0.5 rounded-full ${
-                  selected.state === 'idle' ? 'bg-green-500/20 text-green-400' : 'bg-yellow-500/20 text-yellow-400'
-                }`}>
-                  {selected.state}
-                </span>
-              </div>
-            </div>
-            <div className="flex-1 overflow-y-auto p-4 space-y-3">
-              {messages.map((msg, i) => (
-                <div key={i} className={`flex gap-2.5 ${msg.role === 'user' ? 'justify-end' : ''}`}>
-                  {msg.role === 'agent' && (
-                    <div className="w-7 h-7 bg-gradient-to-br from-orange-500 to-red-600 rounded-full flex items-center justify-center flex-shrink-0 text-[10px] font-bold text-white">
-                      S
-                    </div>
-                  )}
-                  <div className={`max-w-[70%] px-3.5 py-2.5 rounded-xl text-[12px] ${
-                    msg.role === 'user'
-                      ? 'bg-gradient-to-r from-orange-500 to-red-600 text-white'
-                      : 'bg-[#1a1a1a] text-[#ccc] border border-[#222]'
-                  }`}>
-                    {msg.content}
-                  </div>
-                </div>
-              ))}
-              {messages.length === 0 && (
-                <div className="text-center text-[#555] mt-16">
-                  <i className="fa-solid fa-wand-magic-sparkles text-[28px] text-[#333] block mb-3" />
-                  <p className="text-[13px] font-medium text-[#888]">Chat with {selected.name}</p>
-                  <p className="text-[11px] mt-1">Ask the agent to create, modify, or reason about game content</p>
-                </div>
-              )}
-            </div>
-            <div className="p-3 border-t border-[#1e1e1e] bg-[#111]">
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={prompt}
-                  onChange={(e) => setPrompt(e.target.value)}
-                  onKeyDown={(e) => e.key === 'Enter' && handleSendPrompt()}
-                  placeholder="Send a prompt to the agent..."
-                  className="flex-1 px-3 py-2 bg-[#0d0d0d] border border-[#222] rounded-lg text-[12px] text-[#ddd] focus:outline-none focus:border-orange-500/40"
-                />
-                <button
-                  onClick={handleSendPrompt}
-                  className="px-4 py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg text-[12px] font-semibold hover:opacity-90 transition-all"
-                >
-                  <i className="fa-solid fa-paper-plane mr-1" />
-                  Send
-                </button>
-              </div>
-            </div>
-          </>
-        ) : (
-          <div className="flex-1 flex items-center justify-center text-[#555]">
-            <div className="text-center">
-              <i className="fa-solid fa-robot text-[40px] text-[#333] block mb-4" />
-              <p className="text-[14px] font-medium text-[#888]">Select or create an agent</p>
-              <p className="text-[11px] mt-1">AI agents reason, generate, and orchestrate game content</p>
-              <p className="text-[10px] mt-3 text-[#555]">Use the Studio tab to create specialized agents</p>
-            </div>
+            ))}
           </div>
         )}
       </div>

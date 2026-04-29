@@ -1,243 +1,391 @@
-import React, { useState } from 'react';
-import { Workflow, Plus, Play, Trash2, Circle, Square } from 'lucide-react';
-import type { WorkflowNodeData, WorkflowEdgeData } from '../types';
+import React, { useState, useRef, useCallback, useEffect } from 'react';
 
-const NODE_COLORS: Record<string, string> = {
-  'AI/Image': 'bg-purple-500/20 border-purple-500/50',
-  'AI/Text': 'bg-blue-500/20 border-blue-500/50',
-  'AI/Video': 'bg-pink-500/20 border-pink-500/50',
-  'AI/Audio': 'bg-green-500/20 border-green-500/50',
-  Prompt: 'bg-amber-500/20 border-amber-500/50',
-  Input: 'bg-cyan-500/20 border-cyan-500/50',
-  Output: 'bg-orange-500/20 border-orange-500/50',
-  Sampling: 'bg-red-500/20 border-red-500/50',
-  Latent: 'bg-indigo-500/20 border-indigo-500/50',
-  ControlNet: 'bg-teal-500/20 border-teal-500/50',
-  Logic: 'bg-yellow-500/20 border-yellow-500/50',
-  Game: 'bg-emerald-500/20 border-emerald-500/50',
-  general: 'bg-slate-500/20 border-slate-500/50',
+interface NodeData {
+  id: string;
+  type: string;
+  title: string;
+  x: number;
+  y: number;
+  inputs: { id: string; name: string; type: string }[];
+  outputs: { id: string; name: string; type: string }[];
+  properties: Record<string, unknown>;
+}
+
+interface EdgeData {
+  id: string;
+  fromNode: string;
+  fromOutput: string;
+  toNode: string;
+  toInput: string;
+}
+
+interface NodeType {
+  type: string;
+  title: string;
+  category: string;
+  inputs: { name: string; type: string }[];
+  outputs: { name: string; type: string }[];
+}
+
+const NODE_TYPES: NodeType[] = [
+  { type: 'game_prompt', title: 'Game Prompt', category: 'Input', inputs: [], outputs: [{ name: 'prompt', type: 'string' }] },
+  { type: 'game_design', title: 'Game Design', category: 'AI', inputs: [{ name: 'prompt', type: 'string' }], outputs: [{ name: 'design', type: 'object' }] },
+  { type: 'scaffold', title: 'Project Scaffold', category: 'Generation', inputs: [{ name: 'design', type: 'object' }], outputs: [{ name: 'project', type: 'object' }] },
+  { type: 'code_gen', title: 'Code Generation', category: 'AI', inputs: [{ name: 'project', type: 'object' }, { name: 'system', type: 'string' }], outputs: [{ name: 'code', type: 'string' }] },
+  { type: 'asset_gen', title: 'Asset Generation', category: 'AI', inputs: [{ name: 'description', type: 'string' }], outputs: [{ name: 'asset', type: 'object' }] },
+  { type: 'npc_design', title: 'NPC Designer', category: 'AI', inputs: [{ name: 'design', type: 'object' }], outputs: [{ name: 'npc', type: 'object' }] },
+  { type: 'narrative', title: 'Narrative Engine', category: 'AI', inputs: [{ name: 'design', type: 'object' }], outputs: [{ name: 'story', type: 'object' }] },
+  { type: 'integrate', title: 'Integration', category: 'Build', inputs: [{ name: 'code', type: 'string' }, { name: 'assets', type: 'object' }], outputs: [{ name: 'game', type: 'object' }] },
+  { type: 'validate', title: 'Validation', category: 'QA', inputs: [{ name: 'game', type: 'object' }], outputs: [{ name: 'report', type: 'object' }] },
+  { type: 'scene_create', title: 'Create Scene', category: 'Engine', inputs: [{ name: 'name', type: 'string' }], outputs: [{ name: 'scene', type: 'object' }] },
+  { type: 'entity_create', title: 'Create Entity', category: 'Engine', inputs: [{ name: 'scene', type: 'object' }, { name: 'name', type: 'string' }], outputs: [{ name: 'entity', type: 'object' }] },
+  { type: 'component_add', title: 'Add Component', category: 'Engine', inputs: [{ name: 'entity', type: 'object' }, { name: 'type', type: 'string' }], outputs: [{ name: 'entity', type: 'object' }] },
+];
+
+const CATEGORY_COLORS: Record<string, string> = {
+  Input: '#22c55e',
+  AI: '#f97316',
+  Generation: '#60a5fa',
+  Build: '#a78bfa',
+  QA: '#ef4444',
+  Engine: '#06b6d4',
 };
 
+let nodeIdCounter = 0;
+function nextNodeId() {
+  return `node_${++nodeIdCounter}_${Date.now()}`;
+}
+
 const WorkflowEditor: React.FC = () => {
-  const [nodes, setNodes] = useState<WorkflowNodeData[]>([]);
-  const [edges, setEdges] = useState<WorkflowEdgeData[]>([]);
+  const canvasRef = useRef<HTMLDivElement>(null);
+  const svgRef = useRef<SVGSVGElement>(null);
+  const [nodes, setNodes] = useState<NodeData[]>([]);
+  const [edges, setEdges] = useState<EdgeData[]>([]);
   const [selectedNode, setSelectedNode] = useState<string | null>(null);
-  const [dragging, setDragging] = useState<string | null>(null);
-  const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
-  const [connecting, setConnecting] = useState<{ nodeId: string; pinIndex: number; type: 'output' } | null>(null);
+  const [dragging, setDragging] = useState<{ nodeId: string; offsetX: number; offsetY: number } | null>(null);
+  const [connecting, setConnecting] = useState<{ nodeId: string; outputId: string; type: string } | null>(null);
+  const [mousePos, setMousePos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const [pan, setPan] = useState({ x: 0, y: 0 });
+  const [isPanning, setIsPanning] = useState(false);
+  const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  const [sidebarTab, setSidebarTab] = useState<'nodes' | 'properties'>('nodes');
 
-  const nodeTypes = [
-    { type: 'text_prompt', name: 'Text Prompt', category: 'Prompt' },
-    { type: 'negative_prompt', name: 'Negative Prompt', category: 'Prompt' },
-    { type: 'image_generation', name: 'Image Generation', category: 'AI/Image' },
-    { type: 'text_generation', name: 'Text Generation', category: 'AI/Text' },
-    { type: 'video_generation', name: 'Video Generation', category: 'AI/Video' },
-    { type: 'audio_generation', name: 'Audio Generation', category: 'AI/Audio' },
-    { type: 'save_image', name: 'Save Image', category: 'Output' },
-    { type: 'ksampler', name: 'KSampler', category: 'Sampling' },
-    { type: 'vae_decode', name: 'VAE Decode', category: 'Latent' },
-    { type: 'latent', name: 'Empty Latent', category: 'Latent' },
-    { type: 'upscale', name: 'Upscale', category: 'AI/Image' },
-    { type: 'condition', name: 'Condition', category: 'Logic' },
-    { type: 'scene_create', name: 'Create Scene', category: 'Game' },
-    { type: 'entity_create', name: 'Create Entity', category: 'Game' },
-    { type: 'npc_create', name: 'Create NPC', category: 'Game' },
-  ];
-
-  const addNode = (type: string, name: string, category: string) => {
-    const node: WorkflowNodeData = {
-      id: `node_${Date.now()}`,
-      name,
-      category,
-      node_type: type,
-      position: [200 + Math.random() * 200, 100 + Math.random() * 200],
+  const addNode = useCallback((nodeType: NodeType, x: number, y: number) => {
+    const node: NodeData = {
+      id: nextNodeId(),
+      type: nodeType.type,
+      title: nodeType.title,
+      x: x - pan.x,
+      y: y - pan.y,
+      inputs: nodeType.inputs.map((inp, i) => ({ id: `inp_${i}`, name: inp.name, type: inp.type })),
+      outputs: nodeType.outputs.map((out, i) => ({ id: `out_${i}`, name: out.name, type: out.type })),
       properties: {},
-      input_pins: [{ name: 'input', type: 'any' }],
-      output_pins: [{ name: 'output', type: 'any' }],
     };
-    setNodes([...nodes, node]);
-  };
+    setNodes((prev) => [...prev, node]);
+  }, [pan]);
 
-  const removeNode = (id: string) => {
-    setNodes(nodes.filter((n) => n.id !== id));
-    setEdges(edges.filter((e) => e.source !== id && e.target !== id));
-    if (selectedNode === id) setSelectedNode(null);
-  };
-
-  const handleMouseDown = (e: React.MouseEvent, nodeId: string) => {
+  const handleMouseDown = useCallback((e: React.MouseEvent, nodeId: string) => {
+    e.stopPropagation();
     const node = nodes.find((n) => n.id === nodeId);
     if (!node) return;
-    setDragging(nodeId);
-    setDragOffset({ x: e.clientX - node.position[0], y: e.clientY - node.position[1] });
-  };
+    setDragging({ nodeId, offsetX: e.clientX - node.x, offsetY: e.clientY - node.y });
+    setSelectedNode(nodeId);
+  }, [nodes]);
 
-  const handleMouseMove = (e: React.MouseEvent) => {
-    if (!dragging) return;
-    setNodes(
-      nodes.map((n) =>
-        n.id === dragging ? { ...n, position: [e.clientX - dragOffset.x, e.clientY - dragOffset.y] } : n
-      )
-    );
-  };
+  const handleMouseMove = useCallback((e: React.MouseEvent) => {
+    setMousePos({ x: e.clientX, y: e.clientY });
+    if (dragging) {
+      setNodes((prev) =>
+        prev.map((n) =>
+          n.id === dragging.nodeId
+            ? { ...n, x: e.clientX - dragging.offsetX, y: e.clientY - dragging.offsetY }
+            : n
+        )
+      );
+    }
+    if (isPanning) {
+      setPan((prev) => ({
+        x: prev.x + (e.clientX - panStart.x),
+        y: prev.y + (e.clientY - panStart.y),
+      }));
+      setPanStart({ x: e.clientX, y: e.clientY });
+    }
+  }, [dragging, isPanning, panStart]);
 
-  const handleMouseUp = () => {
+  const handleMouseUp = useCallback(() => {
     setDragging(null);
-  };
+    setIsPanning(false);
+  }, []);
 
-  const selected = nodes.find((n) => n.id === selectedNode);
+  const handleCanvasMouseDown = useCallback((e: React.MouseEvent) => {
+    if (e.button === 1 || (e.button === 0 && e.altKey)) {
+      setIsPanning(true);
+      setPanStart({ x: e.clientX, y: e.clientY });
+    } else {
+      setSelectedNode(null);
+    }
+  }, []);
+
+  const handleOutputMouseDown = useCallback((e: React.MouseEvent, nodeId: string, outputId: string, type: string) => {
+    e.stopPropagation();
+    setConnecting({ nodeId, outputId, type });
+  }, []);
+
+  const handleInputMouseUp = useCallback((e: React.MouseEvent, nodeId: string, inputId: string) => {
+    e.stopPropagation();
+    if (connecting && connecting.nodeId !== nodeId) {
+      const edge: EdgeData = {
+        id: `edge_${Date.now()}`,
+        fromNode: connecting.nodeId,
+        fromOutput: connecting.outputId,
+        toNode: nodeId,
+        toInput: inputId,
+      };
+      setEdges((prev) => [...prev.filter((ed) => !(ed.toNode === nodeId && ed.toInput === inputId)), edge]);
+    }
+    setConnecting(null);
+  }, [connecting]);
+
+  const deleteSelected = useCallback(() => {
+    if (!selectedNode) return;
+    setNodes((prev) => prev.filter((n) => n.id !== selectedNode));
+    setEdges((prev) => prev.filter((e) => e.fromNode !== selectedNode && e.toNode !== selectedNode));
+    setSelectedNode(null);
+  }, [selectedNode]);
+
+  useEffect(() => {
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedNode && document.activeElement?.tagName !== 'INPUT') {
+          deleteSelected();
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [selectedNode, deleteSelected]);
+
+  const getNodePortPos = useCallback((node: NodeData, portId: string, isOutput: boolean) => {
+    const portIndex = isOutput
+      ? node.outputs.findIndex((p) => p.id === portId)
+      : node.inputs.findIndex((p) => p.id === portId);
+    const nodeWidth = 200;
+    const headerHeight = 30;
+    const portSpacing = 22;
+    return {
+      x: node.x + (isOutput ? nodeWidth : 0) + pan.x,
+      y: node.y + headerHeight + 8 + portIndex * portSpacing + pan.y,
+    };
+  }, [pan]);
+
+  const selectedNodeData = nodes.find((n) => n.id === selectedNode);
 
   return (
-    <div className="flex h-full">
-      <div className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
-        <div className="p-4 border-b border-slate-700">
-          <h2 className="font-bold text-sm flex items-center gap-2">
-            <Workflow className="w-4 h-4 text-cyan-400" />
-            Node Palette
-          </h2>
-        </div>
-        <div className="flex-1 overflow-y-auto p-3 space-y-4">
-          {Object.entries(
-            nodeTypes.reduce((acc, nt) => {
-              if (!acc[nt.category]) acc[nt.category] = [];
-              acc[nt.category].push(nt);
-              return acc;
-            }, {} as Record<string, typeof nodeTypes>)
-          ).map(([category, items]) => (
-            <div key={category}>
-              <h3 className="text-xs font-semibold text-slate-400 mb-2 uppercase tracking-wider">{category}</h3>
-              <div className="space-y-1">
-                {items.map((nt) => (
-                  <button
-                    key={nt.type}
-                    onClick={() => addNode(nt.type, nt.name, nt.category)}
-                    className="w-full text-left px-3 py-2 bg-slate-700/50 hover:bg-slate-700 rounded text-xs flex items-center gap-2 transition-colors"
-                  >
-                    <Plus className="w-3 h-3" />
-                    {nt.name}
-                  </button>
-                ))}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      <div className="flex-1 flex flex-col">
-        <div className="h-10 bg-slate-800 border-b border-slate-700 flex items-center px-4 gap-2">
-          <button className="px-3 py-1 bg-emerald-600 hover:bg-emerald-700 rounded text-xs font-medium flex items-center gap-1">
-            <Play className="w-3 h-3" />
-            Execute
+    <div className="flex h-full bg-[#0d0d0d]">
+      {/* Left sidebar - Node palette */}
+      <div className="w-56 bg-[#111] border-r border-[#1e1e1e] flex flex-col">
+        <div className="flex border-b border-[#1e1e1e]">
+          <button
+            onClick={() => setSidebarTab('nodes')}
+            className={`flex-1 px-2 py-2 text-[10px] cursor-pointer border-b-2 transition-colors ${sidebarTab === 'nodes' ? 'text-orange-500 border-orange-500' : 'text-[#666] border-transparent hover:text-[#aaa]'}`}
+          >
+            <i className="fa-solid fa-shapes text-[10px] block mb-0.5" />
+            Nodes
           </button>
-          <button className="px-3 py-1 bg-slate-700 hover:bg-slate-600 rounded text-xs font-medium">
-            Clear
+          <button
+            onClick={() => setSidebarTab('properties')}
+            className={`flex-1 px-2 py-2 text-[10px] cursor-pointer border-b-2 transition-colors ${sidebarTab === 'properties' ? 'text-orange-500 border-orange-500' : 'text-[#666] border-transparent hover:text-[#aaa]'}`}
+          >
+            <i className="fa-solid fa-sliders text-[10px] block mb-0.5" />
+            Properties
           </button>
-          <div className="flex-1" />
-          <span className="text-xs text-slate-400">{nodes.length} nodes, {edges.length} edges</span>
         </div>
 
-        <div
-          className="flex-1 relative overflow-hidden bg-slate-900"
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          style={{
-            backgroundImage: 'radial-gradient(circle, #334155 1px, transparent 1px)',
-            backgroundSize: '24px 24px',
-          }}
-        >
-          <svg className="absolute inset-0 w-full h-full pointer-events-none">
-            {edges.map((edge) => {
-              const source = nodes.find((n) => n.id === edge.source);
-              const target = nodes.find((n) => n.id === edge.target);
-              if (!source || !target) return null;
-              return (
-                <line
-                  key={edge.id}
-                  x1={source.position[0] + 180}
-                  y1={source.position[1] + 30}
-                  x2={target.position[0]}
-                  y2={target.position[1] + 30}
-                  stroke="#6366f1"
-                  strokeWidth={2}
-                  opacity={0.6}
-                />
-              );
-            })}
-          </svg>
+        <div className="flex-1 overflow-y-auto p-2">
+          {sidebarTab === 'nodes' && (
+            <>
+              {Object.entries(
+                NODE_TYPES.reduce((acc, nt) => {
+                  if (!acc[nt.category]) acc[nt.category] = [];
+                  acc[nt.category].push(nt);
+                  return acc;
+                }, {} as Record<string, NodeType[]>)
+              ).map(([category, types]) => (
+                <div key={category} className="mb-3">
+                  <div className="text-[9px] font-semibold uppercase tracking-wider mb-1.5 text-[#555]">
+                    <i className="fa-solid fa-circle text-[5px] mr-1" style={{ color: CATEGORY_COLORS[category] || '#666' }} />
+                    {category}
+                  </div>
+                  {types.map((nt) => (
+                    <div
+                      key={nt.type}
+                      draggable
+                      onDragEnd={(e) => addNode(nt, e.clientX, e.clientY)}
+                      className="flex items-center gap-2 px-2 py-1.5 mb-1 bg-[#0d0d0d] border border-[#222] rounded cursor-grab text-[11px] text-[#ccc] hover:border-orange-500/30 hover:bg-[#1a1a1a] transition-all active:cursor-grabbing"
+                    >
+                      <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: CATEGORY_COLORS[category] || '#666' }} />
+                      <span>{nt.title}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+            </>
+          )}
 
-          {nodes.map((node) => {
-            const colorClass = NODE_COLORS[node.category] || NODE_COLORS.general;
-            const isSelected = selectedNode === node.id;
-            return (
-              <div
-                key={node.id}
-                className={`absolute min-w-[180px] rounded-lg border cursor-grab active:cursor-grabbing transition-shadow ${colorClass} ${isSelected ? 'ring-2 ring-violet-500 shadow-lg shadow-violet-500/20' : ''}`}
-                style={{ left: node.position[0], top: node.position[1] }}
-                onMouseDown={(e) => handleMouseDown(e, node.id)}
-                onClick={() => setSelectedNode(node.id)}
+          {sidebarTab === 'properties' && selectedNodeData && (
+            <div className="space-y-2">
+              <div className="text-[11px] font-medium text-[#ddd] mb-2">{selectedNodeData.title}</div>
+              <div className="text-[9px] text-[#555] uppercase tracking-wider mb-1">Type</div>
+              <div className="text-[11px] text-[#aaa] mb-2">{selectedNodeData.type}</div>
+              <div className="text-[9px] text-[#555] uppercase tracking-wider mb-1">Inputs</div>
+              {selectedNodeData.inputs.map((inp) => (
+                <div key={inp.id} className="text-[10px] text-[#888] pl-2">
+                  {inp.name} <span className="text-[#555]">({inp.type})</span>
+                </div>
+              ))}
+              <div className="text-[9px] text-[#555] uppercase tracking-wider mb-1 mt-2">Outputs</div>
+              {selectedNodeData.outputs.map((out) => (
+                <div key={out.id} className="text-[10px] text-[#888] pl-2">
+                  {out.name} <span className="text-[#555]">({out.type})</span>
+                </div>
+              ))}
+              <button
+                onClick={deleteSelected}
+                className="w-full mt-3 px-2 py-1.5 bg-red-500/10 border border-red-500/20 rounded text-[10px] text-red-400 hover:bg-red-500/20 transition-colors"
               >
-                <div className="px-3 py-2 border-b border-white/10 rounded-t-lg flex items-center justify-between">
-                  <span className="text-xs font-semibold">{node.name}</span>
-                  <button
-                    onClick={(e) => { e.stopPropagation(); removeNode(node.id); }}
-                    className="p-0.5 hover:bg-white/10 rounded"
-                  >
-                    <Trash2 className="w-3 h-3 text-slate-400" />
-                  </button>
-                </div>
-                <div className="px-3 py-2 flex items-center justify-between">
-                  <div className="flex gap-1">
-                    {node.input_pins.map((_, i) => (
-                      <div key={i} className="w-3 h-3 bg-slate-600 rounded-full border-2 border-slate-400" />
-                    ))}
-                  </div>
-                  <span className="text-[10px] text-slate-400">{node.node_type}</span>
-                  <div className="flex gap-1">
-                    {node.output_pins.map((_, i) => (
-                      <div key={i} className="w-3 h-3 bg-violet-500/50 rounded-full border-2 border-violet-400" />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
+                <i className="fa-solid fa-trash mr-1" />
+                Delete Node
+              </button>
+            </div>
+          )}
 
-          {nodes.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center text-slate-500">
-              <div className="text-center">
-                <Workflow className="w-16 h-16 mx-auto mb-4 text-slate-600" />
-                <p className="text-lg font-medium">AI Workflow Canvas</p>
-                <p className="text-sm mt-1">Add nodes from the palette to build your AI pipeline</p>
-              </div>
+          {sidebarTab === 'properties' && !selectedNodeData && (
+            <div className="text-center text-[11px] text-[#555] mt-8">
+              <i className="fa-solid fa-mouse-pointer text-[16px] text-[#333] block mb-2" />
+              Select a node to view properties
             </div>
           )}
         </div>
       </div>
 
-      {selected && (
-        <div className="w-64 bg-slate-800 border-l border-slate-700 p-4">
-          <h3 className="font-bold text-sm mb-4">Node Properties</h3>
-          <div className="space-y-3">
-            <div>
-              <label className="text-xs text-slate-400">Name</label>
-              <div className="text-sm font-medium">{selected.name}</div>
-            </div>
-            <div>
-              <label className="text-xs text-slate-400">Type</label>
-              <div className="text-sm">{selected.node_type}</div>
-            </div>
-            <div>
-              <label className="text-xs text-slate-400">Category</label>
-              <div className="text-sm">{selected.category}</div>
-            </div>
-            <div>
-              <label className="text-xs text-slate-400">Position</label>
-              <div className="text-xs text-slate-300">
-                X: {Math.round(selected.position[0])}, Y: {Math.round(selected.position[1])}
+      {/* Canvas */}
+      <div
+        ref={canvasRef}
+        className="flex-1 relative overflow-hidden"
+        onMouseDown={handleCanvasMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseUp}
+      >
+        {/* Grid background */}
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `radial-gradient(circle, #1a1a1a 1px, transparent 1px)`,
+            backgroundSize: '20px 20px',
+            backgroundPosition: `${pan.x % 20}px ${pan.y % 20}px`,
+          }}
+        />
+
+        {/* SVG for edges */}
+        <svg ref={svgRef} className="absolute inset-0 w-full h-full pointer-events-none" style={{ zIndex: 1 }}>
+          {edges.map((edge) => {
+            const fromNode = nodes.find((n) => n.id === edge.fromNode);
+            const toNode = nodes.find((n) => n.id === edge.toNode);
+            if (!fromNode || !toNode) return null;
+            const from = getNodePortPos(fromNode, edge.fromOutput, true);
+            const to = getNodePortPos(toNode, edge.toInput, false);
+            const dx = Math.abs(to.x - from.x) * 0.5;
+            return (
+              <path
+                key={edge.id}
+                d={`M ${from.x} ${from.y} C ${from.x + dx} ${from.y}, ${to.x - dx} ${to.y}, ${to.x} ${to.y}`}
+                stroke="#f97316"
+                strokeWidth={2}
+                fill="none"
+                opacity={0.7}
+              />
+            );
+          })}
+          {connecting && (() => {
+            const fromNode = nodes.find((n) => n.id === connecting.nodeId);
+            if (!fromNode) return null;
+            const from = getNodePortPos(fromNode, connecting.outputId, true);
+            const dx = Math.abs(mousePos.x - from.x) * 0.5;
+            return (
+              <path
+                d={`M ${from.x} ${from.y} C ${from.x + dx} ${from.y}, ${mousePos.x - dx} ${mousePos.y}, ${mousePos.x} ${mousePos.y}`}
+                stroke="#f97316"
+                strokeWidth={2}
+                fill="none"
+                strokeDasharray="5,5"
+                opacity={0.5}
+              />
+            );
+          })()}
+        </svg>
+
+        {/* Nodes */}
+        <div className="absolute inset-0" style={{ zIndex: 2 }}>
+          {nodes.map((node) => {
+            const cat = NODE_TYPES.find((nt) => nt.type === node.type)?.category || 'Other';
+            const color = CATEGORY_COLORS[cat] || '#666';
+            const isSelected = selectedNode === node.id;
+            return (
+              <div
+                key={node.id}
+                className="absolute select-none"
+                style={{ left: node.x + pan.x, top: node.y + pan.y, width: 200 }}
+                onMouseDown={(e) => handleMouseDown(e, node.id)}
+              >
+                {/* Header */}
+                <div
+                  className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-t text-[11px] font-semibold text-white cursor-grab active:cursor-grabbing"
+                  style={{ backgroundColor: color }}
+                >
+                  <div className="w-1.5 h-1.5 rounded-full bg-white/50" />
+                  {node.title}
+                </div>
+
+                {/* Body */}
+                <div
+                  className="bg-[#1a1a1a] border border-[#2a2a2a] border-t-0 rounded-b px-1 py-1"
+                  style={isSelected ? { borderColor: '#f97316', borderWidth: '1px' } : {}}
+                >
+                  {/* Inputs */}
+                  {node.inputs.map((inp) => (
+                    <div
+                      key={inp.id}
+                      className="flex items-center gap-1.5 py-0.5 px-1 text-[10px] text-[#aaa] cursor-crosshair"
+                      onMouseUp={(e) => handleInputMouseUp(e, node.id, inp.id)}
+                    >
+                      <div className="w-2.5 h-2.5 rounded-full border border-[#555] bg-[#0d0d0d] flex-shrink-0" />
+                      {inp.name}
+                    </div>
+                  ))}
+                  {/* Outputs */}
+                  {node.outputs.map((out) => (
+                    <div
+                      key={out.id}
+                      className="flex items-center justify-end gap-1.5 py-0.5 px-1 text-[10px] text-[#aaa] cursor-crosshair"
+                      onMouseDown={(e) => handleOutputMouseDown(e, node.id, out.id, out.type)}
+                    >
+                      {out.name}
+                      <div className="w-2.5 h-2.5 rounded-full border border-[#555] bg-[#0d0d0d] flex-shrink-0" />
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          </div>
+            );
+          })}
         </div>
-      )}
+
+        {/* Status bar */}
+        <div className="absolute bottom-0 left-0 right-0 bg-[#111] border-t border-[#1e1e1e] px-3 py-1 flex items-center justify-between text-[9px] text-[#555]" style={{ zIndex: 10 }}>
+          <span>{nodes.length} nodes | {edges.length} connections</span>
+          <span>Alt+Drag to pan | Drag to connect ports | Del to delete</span>
+        </div>
+      </div>
     </div>
   );
 };
