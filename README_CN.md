@@ -5,16 +5,18 @@
 # Spark Labs
 
 ### AI 原生游戏引擎 💥
-### 点燃你的无限游戏 🎮
+### 点燃你的无限游戏想象！ 🎮
 
 ![版本](https://img.shields.io/badge/version-2.0.0-blue)
 ![Python Version](https://img.shields.io/badge/Python-3.10+-blue.svg)
-![TypeScript](https://img.shields.io/badge/TypeScript-5.3+-3178C6)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 
+![SparkLabs-Video](./assets/SparkLabs-Video.gif)
 
-### [English](./README.md) | [中文文档](./README_CN.md)
+[官方网站](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](https://yuan-manx.github.io/SparkLabs/editor.html) · [快速开始](#快速开始) · [核心特性](#核心特性) · [文档](#文档) · [贡献](#贡献)
+
+#### [English](./README.md) | [中文文档](./README_CN.md)
 
 </div>
 
