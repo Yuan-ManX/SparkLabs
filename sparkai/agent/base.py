@@ -52,6 +52,7 @@ class AgentState(Enum):
     THINKING = "thinking"
     PLANNING = "planning"
     EXECUTING = "executing"
+    REFLECTING = "reflecting"
     VERIFYING = "verifying"
     WAITING = "waiting"
     ERROR = "error"
@@ -194,8 +195,9 @@ class SparkAgent:
             for handler in self._event_handlers[event]:
                 try:
                     handler(data)
-                except Exception:
-                    pass
+                except Exception as e:
+                    import logging
+                    logging.getLogger(__name__).warning(f"Event handler for '{event}' failed: {e}")
 
     # === Four-Phase Autonomous Loop ===
 
@@ -241,7 +243,14 @@ class SparkAgent:
             )
 
             if self._llm:
-                response = await self._llm.generate(full_prompt)
+                try:
+                    response = await asyncio.wait_for(
+                        self._llm.generate(full_prompt),
+                        timeout=60.0,
+                    )
+                except asyncio.TimeoutError:
+                    response = self._fallback_think(prompt)
+                    self.emit("thinking_timeout", {"prompt": prompt[:100]})
             else:
                 response = self._fallback_think(prompt)
 
@@ -277,7 +286,16 @@ class SparkAgent:
         try:
             tool = self._tools.get(action)
             if tool:
-                result = await tool.execute(params or {})
+                try:
+                    result = await asyncio.wait_for(
+                        tool.execute(params or {}),
+                        timeout=120.0,
+                    )
+                except asyncio.TimeoutError:
+                    self._consecutive_failures += 1
+                    self.state = AgentState.ERROR
+                    self.emit("action_timeout", {"action": action})
+                    return f"Timeout executing action: {action}"
                 self._memory.remember(
                     content=f"Executed tool '{action}' with result: {str(result)[:200]}",
                     memory_type=MemoryType.EPISODIC,
@@ -300,7 +318,7 @@ class SparkAgent:
     async def verify(self, criteria: str, evidence: Optional[str] = None) -> Dict[str, Any]:
         """
         Phase 4: Verify that the action achieved the intended result.
-        Contract-based verification ensures deterministic outcomes.
+        Contract-based verification with confidence scoring.
         """
         self.state = AgentState.VERIFYING
         self.emit("verify_start", {"criteria": criteria})
@@ -319,15 +337,11 @@ class SparkAgent:
 
             if self._llm:
                 response = await self._llm.generate(verification_prompt)
-                try:
-                    import json
-                    result = json.loads(response)
-                except (json.JSONDecodeError, ValueError):
-                    result = {
-                        "verified": "verified" in response.lower() or "pass" in response.lower(),
-                        "confidence": 0.5,
-                        "notes": response[:200],
-                    }
+                result = self._parse_json_response(response, {
+                    "verified": "verified" in response.lower() or "pass" in response.lower(),
+                    "confidence": 0.5,
+                    "notes": response[:200],
+                })
             else:
                 result = {
                     "verified": True,
@@ -335,8 +349,18 @@ class SparkAgent:
                     "notes": "LLM not configured, defaulting to verified",
                 }
 
+            confidence = result.get("confidence", 0.5)
+            if confidence >= 0.8:
+                result["confidence_level"] = "high"
+            elif confidence >= 0.5:
+                result["confidence_level"] = "medium"
+            elif result.get("verified"):
+                result["confidence_level"] = "low"
+            else:
+                result["confidence_level"] = "failed"
+
             self._memory.remember(
-                content=f"Verification: criteria='{criteria[:50]}', verified={result.get('verified')}",
+                content=f"Verification: criteria='{criteria[:50]}', verified={result.get('verified')}, confidence={confidence:.2f}",
                 memory_type=MemoryType.EPISODIC,
                 importance=0.8 if result.get("verified") else 0.9,
             )
@@ -348,7 +372,85 @@ class SparkAgent:
         except Exception as e:
             self.state = AgentState.ERROR
             self.emit("verify_error", {"error": str(e)})
-            return {"verified": False, "confidence": 0.0, "notes": str(e)}
+            return {"verified": False, "confidence": 0.0, "confidence_level": "failed", "notes": str(e)}
+
+    async def reflect(
+        self,
+        goal: str,
+        steps_completed: int,
+        total_steps: int,
+        results: List[Dict[str, Any]],
+        errors: List[str],
+    ) -> Dict[str, Any]:
+        """
+        Phase 5: Reflect on execution progress and decide whether to
+        continue, adjust, or replan.
+
+        This phase enables self-correction by evaluating whether the
+        current plan is on track and triggering replanning when needed.
+        """
+        self.state = AgentState.REFLECTING
+        self.emit("reflect_start", {"goal": goal, "progress": f"{steps_completed}/{total_steps}"})
+
+        try:
+            avg_confidence = 0.0
+            confidence_values = [r.get("confidence", 0.5) for r in results if isinstance(r, dict)]
+            if confidence_values:
+                avg_confidence = sum(confidence_values) / len(confidence_values)
+
+            reflection_prompt = (
+                f"Reflect on the following execution progress:\n"
+                f"Goal: {goal}\n"
+                f"Steps completed: {steps_completed}/{total_steps}\n"
+                f"Average confidence: {avg_confidence:.2f}\n"
+                f"Errors encountered: {len(errors)}\n"
+            )
+            if errors:
+                reflection_prompt += f"Error details: {'; '.join(errors[:5])}\n"
+            reflection_prompt += (
+                f"\nRespond with JSON: {{\"verdict\": \"on_track|needs_adjustment|needs_replan|critical_failure\", "
+                f"\"confidence\": 0.0-1.0, \"observations\": [\"...\"], "
+                f"\"adjustments\": [\"...\"], \"replan_reason\": \"...\"}}"
+            )
+
+            if self._llm:
+                response = await self._llm.generate(reflection_prompt)
+                result = self._parse_json_response(response, {
+                    "verdict": "on_track" if avg_confidence >= 0.7 else "needs_adjustment",
+                    "confidence": avg_confidence,
+                    "observations": [f"Completed {steps_completed}/{total_steps} steps"],
+                    "adjustments": [],
+                    "replan_reason": None,
+                })
+            else:
+                if avg_confidence >= 0.7:
+                    verdict = "on_track"
+                elif avg_confidence >= 0.4:
+                    verdict = "needs_adjustment"
+                else:
+                    verdict = "needs_replan"
+                result = {
+                    "verdict": verdict,
+                    "confidence": avg_confidence,
+                    "observations": [f"Completed {steps_completed}/{total_steps} steps with avg confidence {avg_confidence:.2f}"],
+                    "adjustments": [] if avg_confidence >= 0.7 else ["Review recent steps for quality"],
+                    "replan_reason": f"Low confidence ({avg_confidence:.2f})" if verdict == "needs_replan" else None,
+                }
+
+            self._memory.remember(
+                content=f"Reflection: verdict={result.get('verdict')}, confidence={result.get('confidence', 0):.2f}",
+                memory_type=MemoryType.EPISODIC,
+                importance=0.9,
+            )
+
+            self.state = AgentState.IDLE
+            self.emit("reflect_complete", result)
+            return result
+
+        except Exception as e:
+            self.state = AgentState.ERROR
+            self.emit("reflect_error", {"error": str(e)})
+            return {"verdict": "needs_adjustment", "confidence": 0.0, "observations": [str(e)], "adjustments": [], "replan_reason": None}
 
     # === Autonomous Loop ===
 
@@ -356,16 +458,20 @@ class SparkAgent:
         self,
         goal: str,
         max_iterations: Optional[int] = None,
+        reflection_interval: int = 3,
+        max_replans: int = 2,
     ) -> Any:
         """
-        Run the full autonomous loop: Plan -> Execute -> Verify.
+        Run the full autonomous loop: Plan -> Execute -> Reflect -> Verify.
 
-        The agent creates an execution plan, iterates through
-        work steps, and verifies each step against criteria.
+        The agent creates an execution plan, iterates through work steps,
+        reflects at regular intervals, and verifies each step against criteria.
+        Reflection can trigger replanning when confidence is low.
         """
         plan = ExecutionPlan(goal=goal, max_iterations=max_iterations or self.max_iterations)
         self._current_plan = plan
         self._iteration_count = 0
+        replan_count = 0
 
         self.emit("autonomous_start", {"goal": goal})
 
@@ -387,7 +493,8 @@ class SparkAgent:
             self.state = AgentState.EXECUTING
 
             results = []
-            for step in plan.work_plan:
+            errors = []
+            for i, step in enumerate(plan.work_plan):
                 if self._iteration_count >= plan.max_iterations:
                     break
                 if self._consecutive_failures >= self._max_consecutive_failures:
@@ -395,6 +502,12 @@ class SparkAgent:
 
                 self._iteration_count += 1
                 step_description = step.get("description", str(step))
+
+                await self.observe(
+                    f"Step {self._iteration_count}: {step_description}",
+                    importance=0.4,
+                )
+
                 step_result = await self.think(step_description)
 
                 action_name = step.get("action")
@@ -402,11 +515,50 @@ class SparkAgent:
                     action_result = await self.act(action_name, step.get("params", {}))
                     step_result = action_result
 
-                results.append({
+                step_entry = {
                     "step": self._iteration_count,
                     "description": step_description,
                     "result": str(step_result)[:200] if step_result else None,
-                })
+                }
+
+                if isinstance(step_result, dict) and step_result.get("error"):
+                    errors.append(str(step_result.get("error"))[:100])
+                    step_entry["confidence"] = 0.2
+                elif isinstance(step_result, dict) and step_result.get("confidence"):
+                    step_entry["confidence"] = step_result["confidence"]
+                else:
+                    step_entry["confidence"] = 0.6
+
+                results.append(step_entry)
+
+                if (i + 1) % reflection_interval == 0 and i + 1 < len(plan.work_plan):
+                    reflection = await self.reflect(
+                        goal=goal,
+                        steps_completed=i + 1,
+                        total_steps=len(plan.work_plan),
+                        results=results,
+                        errors=errors,
+                    )
+                    verdict = reflection.get("verdict", "on_track")
+                    if verdict == "needs_replan" and replan_count < max_replans:
+                        replan_count += 1
+                        self._memory.remember(
+                            content=f"Replanning (attempt {replan_count}): {reflection.get('replan_reason', 'low confidence')}",
+                            memory_type=MemoryType.EPISODIC,
+                            importance=0.9,
+                        )
+                        new_plan_response = await self.think(
+                            f"The current plan for '{goal}' needs adjustment.\n"
+                            f"Reflection: {reflection.get('observations', [])}\n"
+                            f"Adjustments needed: {reflection.get('adjustments', [])}\n"
+                            f"Create a revised execution plan."
+                        )
+                        new_steps = self._extract_steps(new_plan_response)
+                        if new_steps:
+                            plan.work_plan = plan.work_plan[:i + 1] + new_steps
+                        errors = []
+                    elif verdict == "critical_failure":
+                        break
 
             plan.phase = "verifying"
             self.state = AgentState.VERIFYING
@@ -419,7 +571,7 @@ class SparkAgent:
             self._plan_history.append(plan)
             self.state = AgentState.COMPLETED
 
-            self.emit("autonomous_complete", {"goal": goal, "iterations": self._iteration_count})
+            self.emit("autonomous_complete", {"goal": goal, "iterations": self._iteration_count, "replans": replan_count})
             return results
 
         except Exception as e:
@@ -510,15 +662,131 @@ class SparkAgent:
             parts.append(f"Your capabilities: {caps}")
         if memory_context:
             parts.append(memory_context)
+
+        game_ctx = self._get_game_context_summary()
+        if game_ctx:
+            parts.append(f"Game Context:\n{game_ctx}")
+
         if extra_context:
-            parts.append(f"Additional context: {extra_context}")
+            if isinstance(extra_context, dict):
+                ctx_parts = []
+                if "overall_goal" in extra_context:
+                    ctx_parts.append(f"Goal: {extra_context['overall_goal']}")
+                if "prior_results" in extra_context and extra_context["prior_results"]:
+                    ctx_parts.append("Prior results:")
+                    for pr in extra_context["prior_results"][-3:]:
+                        agent_name = pr.get("agent", "unknown")
+                        result_str = str(pr.get("result", ""))[:150]
+                        ctx_parts.append(f"  [{agent_name}]: {result_str}")
+                if "skill_hints" in extra_context and extra_context["skill_hints"]:
+                    ctx_parts.append(f"Relevant skills: {', '.join(extra_context['skill_hints'])}")
+                if ctx_parts:
+                    parts.append("Additional context:\n" + "\n".join(ctx_parts))
+                else:
+                    parts.append(f"Additional context: {extra_context}")
+            else:
+                parts.append(f"Additional context: {extra_context}")
+
         if self._current_task:
             parts.append(f"Current task: {self._current_task.title} - {self._current_task.description}")
         parts.append(f"\nPrompt: {prompt}")
         return "\n".join(parts)
 
+    def _get_game_context_summary(self) -> str:
+        """Build a concise summary of the current game context for prompt injection."""
+        if not hasattr(self, '_game_context') or self._game_context is None:
+            return ""
+
+        ctx = self._game_context
+        summary_parts = []
+
+        if hasattr(ctx, 'get_project_info'):
+            info = ctx.get_project_info()
+            if info:
+                summary_parts.append(f"Project: {info.get('name', 'Untitled')}")
+
+        if hasattr(ctx, 'list_entities'):
+            try:
+                entities = ctx.list_entities()
+                if entities:
+                    summary_parts.append(f"Entities: {len(entities)} objects in scene")
+            except Exception:
+                pass
+
+        if hasattr(ctx, 'list_scenes'):
+            try:
+                scenes = ctx.list_scenes()
+                if scenes:
+                    active = ctx.get_active_scene() if hasattr(ctx, 'get_active_scene') else None
+                    summary_parts.append(f"Scenes: {len(scenes)} (active: {active.name if active else 'none'})")
+            except Exception:
+                pass
+
+        if hasattr(ctx, 'list_assets'):
+            try:
+                assets = ctx.list_assets()
+                if assets:
+                    summary_parts.append(f"Assets: {len(assets)} loaded")
+            except Exception:
+                pass
+
+        if hasattr(ctx, 'get_pipeline_state'):
+            try:
+                pipeline = ctx.get_pipeline_state()
+                if pipeline and hasattr(pipeline, 'current_phase'):
+                    summary_parts.append(f"Pipeline: {pipeline.current_phase}")
+            except Exception:
+                pass
+
+        return "\n".join(summary_parts) if summary_parts else ""
+
+    def set_game_context(self, context: Any) -> None:
+        """Set the game context for automatic prompt injection."""
+        self._game_context = context
+
     def _fallback_think(self, prompt: str) -> str:
         return f"[{self.name}] Processed: {prompt[:100]}... (LLM not configured)"
+
+    def _parse_json_response(self, response: str, fallback: Dict[str, Any]) -> Dict[str, Any]:
+        """Parse JSON from LLM response with robust fallback handling."""
+        import json
+        import re
+
+        cleaned = response.strip()
+        fence_pattern = r"```(?:json)?\s*\n?(.*?)\n?\s*```"
+        fence_match = re.search(fence_pattern, cleaned, re.DOTALL)
+        if fence_match:
+            cleaned = fence_match.group(1).strip()
+
+        try:
+            return json.loads(cleaned)
+        except (json.JSONDecodeError, ValueError):
+            pass
+
+        for start_char, end_char in [("{", "}"), ("[", "]")]:
+            start_idx = cleaned.find(start_char)
+            if start_idx >= 0:
+                depth = 0
+                end_idx = start_idx
+                for idx in range(start_idx, len(cleaned)):
+                    if cleaned[idx] == start_char:
+                        depth += 1
+                    elif cleaned[idx] == end_char:
+                        depth -= 1
+                    if depth == 0:
+                        end_idx = idx + 1
+                        break
+                if end_idx > start_idx:
+                    try:
+                        parsed = json.loads(cleaned[start_idx:end_idx])
+                        if isinstance(parsed, dict):
+                            return parsed
+                        elif isinstance(parsed, list) and len(parsed) > 0 and isinstance(parsed[0], dict):
+                            return parsed[0]
+                    except (json.JSONDecodeError, ValueError):
+                        pass
+
+        return fallback
 
     def _extract_checklist(self, text: str) -> List[str]:
         items = []

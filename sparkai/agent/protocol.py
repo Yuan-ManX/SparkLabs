@@ -225,7 +225,9 @@ class MessageRouter:
                     targets.append(agent_id)
 
         if message.type in self._type_handlers:
-            pass
+            for handler_id in self._type_handlers[message.type]:
+                if handler_id not in targets:
+                    targets.append(handler_id)
 
         return targets
 
@@ -386,9 +388,22 @@ class AgentProtocol:
                 message.status = DeliveryStatus.DELIVERED
             else:
                 self._stats["total_failed"] += 1
-                if message.retry_count < message.max_retries:
-                    message.retry_count += 1
-                    message.status = DeliveryStatus.RETRYING
+
+        has_failures = any(r.status != DeliveryStatus.DELIVERED for r in receipts)
+        if has_failures and message.retry_count < message.max_retries:
+            message.retry_count += 1
+            message.status = DeliveryStatus.RETRYING
+            retry_delay = 0.5 * (2 ** (message.retry_count - 1))
+            await asyncio.sleep(retry_delay)
+            retry_receipts = await self._router.deliver(message)
+            for rr in retry_receipts:
+                if rr.status == DeliveryStatus.DELIVERED:
+                    self._stats["total_delivered"] += 1
+                    self._stats["total_failed"] -= 1
+            receipts.extend(retry_receipts)
+            message.status = DeliveryStatus.DELIVERED if any(
+                r.status == DeliveryStatus.DELIVERED for r in retry_receipts
+            ) else DeliveryStatus.FAILED
 
         return receipts
 
@@ -399,7 +414,8 @@ class AgentProtocol:
     ) -> Optional[ProtocolMessage]:
         """Send a request and wait for the response."""
         actual_timeout = timeout or message.timeout_seconds
-        future: asyncio.Future = asyncio.get_event_loop().create_future()
+        loop = asyncio.get_running_loop()
+        future: asyncio.Future = loop.create_future()
         self._pending[message.id] = future
 
         await self.send(message)

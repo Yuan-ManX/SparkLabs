@@ -1109,3 +1109,333 @@ export const evaluatorApi = {
   compare: (reportIds: string[]) =>
     api.post(`/agent/evaluator/compare?report_ids=${reportIds.join(',')}`),
 };
+
+export const lifecycleApi = {
+  blueprints: () => api.get('/agent/lifecycle/blueprints'),
+  createBlueprint: (data: { name: string; tier?: string; description?: string; system_prompt?: string; capabilities?: string[]; max_replans?: number; reflection_interval?: number }) =>
+    api.post('/agent/lifecycle/blueprints', data),
+  spawn: (blueprintName: string, overrides?: Record<string, unknown>) =>
+    api.post(`/agent/lifecycle/spawn?blueprint_name=${encodeURIComponent(blueprintName)}`, overrides),
+  createPlan: (data: { agent_id: string; goal: string; max_replans?: number }) =>
+    api.post('/agent/lifecycle/plan', data),
+  getPlan: (agentId: string) => api.get(`/agent/lifecycle/plan/${agentId}`),
+  verify: (data: { agent_id: string; criteria: Array<{ name: string; description?: string; weight?: number; threshold?: number; requires_approval?: boolean }>; results: Record<string, [boolean, number, string]> }) =>
+    api.post('/agent/lifecycle/verify', data),
+  approvals: () => api.get('/agent/lifecycle/approvals'),
+  approve: (approvalId: string, approved: boolean) =>
+    api.post(`/agent/lifecycle/approvals/${encodeURIComponent(approvalId)}?approved=${approved}`),
+  events: (agentId?: string, phase?: string, limit?: number) => {
+    const params = new URLSearchParams();
+    if (agentId) params.set('agent_id', agentId);
+    if (phase) params.set('phase', phase);
+    if (limit) params.set('limit', String(limit));
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return api.get(`/agent/lifecycle/events${query}`);
+  },
+  stats: () => api.get('/agent/lifecycle/stats'),
+};
+
+export const slashCommandApi = {
+  list: (category?: string) => {
+    const query = category ? `?category=${category}` : '';
+    return api.get(`/agent/slash-commands/list${query}`);
+  },
+  execute: (command: string, context?: Record<string, unknown>) =>
+    api.post('/agent/slash-commands/execute', { command, context }),
+  history: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/slash-commands/history${query}`);
+  },
+  stats: () => api.get('/agent/slash-commands/stats'),
+};
+
+export const validationHooksApi = {
+  rules: (category?: string, phase?: string, enabledOnly?: boolean) => {
+    const params = new URLSearchParams();
+    if (category) params.set('category', category);
+    if (phase) params.set('phase', phase);
+    if (enabledOnly) params.set('enabled_only', 'true');
+    const query = params.toString() ? `?${params.toString()}` : '';
+    return api.get(`/agent/validation-hooks/rules${query}`);
+  },
+  createRule: (data: { name: string; description?: string; phase?: string; severity?: string; action?: string; category?: string; enabled?: boolean }) =>
+    api.post('/agent/validation-hooks/rules', data),
+  toggleRule: (ruleId: string, enabled: boolean) =>
+    api.post(`/agent/validation-hooks/rules/${ruleId}/toggle?enabled=${enabled}`),
+  evaluate: (phase: string, context: Record<string, unknown>) =>
+    api.post('/agent/validation-hooks/evaluate', { phase, context }),
+  approvals: () => api.get('/agent/validation-hooks/approvals'),
+  approve: (approvalId: string, approved: boolean) =>
+    api.post(`/agent/validation-hooks/approvals/${encodeURIComponent(approvalId)}?approved=${approved}`),
+  history: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/validation-hooks/history${query}`);
+  },
+  stats: () => api.get('/agent/validation-hooks/stats'),
+};
+
+export const taskExecutorApi = {
+  submit: (data: { task_name: string; task_description: string; agent_id?: string; strategy?: string; overall_goal?: string; max_retries?: number; timeout_seconds?: number }) =>
+    api.post('/agent/task-executor/submit', data),
+  execute: (executionId: string) =>
+    api.post(`/agent/task-executor/execute/${executionId}`),
+  getExecution: (executionId: string) =>
+    api.get(`/agent/task-executor/execution/${executionId}`),
+  history: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/task-executor/history${query}`);
+  },
+  stats: () => api.get('/agent/task-executor/stats'),
+};
+
+export const compactionApi = {
+  createSession: (agentId: string, maxTokens?: number) =>
+    api.post(`/agent/compaction/sessions?agent_id=${agentId}&max_tokens=${maxTokens || 100000}`),
+  listSessions: () => api.get('/agent/compaction/sessions'),
+  addMessage: (sessionId: string, role: string, content: string, tokenCount?: number) =>
+    api.post(`/agent/compaction/sessions/${sessionId}/message?role=${role}&content=${encodeURIComponent(content)}&token_count=${tokenCount || 0}`),
+  compact: (sessionId: string, strategy?: string) =>
+    api.post(`/agent/compaction/sessions/${sessionId}/compact?strategy=${strategy || 'head_tail_preserve'}`),
+  fork: (sessionId: string, branchName?: string) =>
+    api.post(`/agent/compaction/sessions/${sessionId}/fork?branch_name=${branchName || ''}`),
+  mergeFork: (forkId: string) =>
+    api.post(`/agent/compaction/forks/${forkId}/merge`),
+  listForks: (sessionId?: string) => {
+    const query = sessionId ? `?session_id=${sessionId}` : '';
+    return api.get(`/agent/compaction/forks${query}`);
+  },
+  history: (sessionId?: string, limit?: number) => {
+    const params = [];
+    if (sessionId) params.push(`session_id=${sessionId}`);
+    if (limit) params.push(`limit=${limit}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+    return api.get(`/agent/compaction/history${query}`);
+  },
+  stats: () => api.get('/agent/compaction/stats'),
+};
+
+export const recoveryApi = {
+  detect: (errorMessage: string, source?: string, context?: Record<string, unknown>) =>
+    api.post('/agent/recovery/detect', { error_message: errorMessage, source: source || '', context }),
+  listRecipes: (failureType?: string) => {
+    const query = failureType ? `?failure_type=${failureType}` : '';
+    return api.get(`/agent/recovery/recipes${query}`);
+  },
+  history: (limit?: number, failureType?: string) => {
+    const params = [];
+    if (limit) params.push(`limit=${limit}`);
+    if (failureType) params.push(`failure_type=${failureType}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+    return api.get(`/agent/recovery/history${query}`);
+  },
+  stats: () => api.get('/agent/recovery/stats'),
+};
+
+export const permissionApi = {
+  check: (agentRole: string, toolName: string, agentId?: string) =>
+    api.post('/agent/permissions/check', { agent_role: agentRole, tool_name: toolName, agent_id: agentId || '' }),
+  getRoleTools: (role: string) => api.get(`/agent/permissions/role-tools/${role}`),
+  requestApproval: (agentId: string, agentRole: string, toolName: string, params?: Record<string, unknown>, reason?: string) =>
+    api.post('/agent/permissions/approval', { agent_id: agentId, agent_role: agentRole, tool_name: toolName, params, reason: reason || '' }),
+  approve: (approvalId: string, approvedBy?: string) =>
+    api.post(`/agent/permissions/approval/${approvalId}/approve?approved_by=${approvedBy || ''}`),
+  deny: (approvalId: string, deniedBy?: string) =>
+    api.post(`/agent/permissions/approval/${approvalId}/deny?denied_by=${deniedBy || ''}`),
+  pendingApprovals: () => api.get('/agent/permissions/pending-approvals'),
+  grantOverride: (role: string, toolName: string) =>
+    api.post(`/agent/permissions/grant-override?role=${role}&tool_name=${toolName}`),
+  registerTool: (toolName: string, requiredLevel?: string, dangerLevel?: string, requiresApproval?: boolean) =>
+    api.post(`/agent/permissions/register-tool?tool_name=${toolName}&required_level=${requiredLevel || 'read_only'}&danger_level=${dangerLevel || 'moderate'}&requires_approval=${requiresApproval || false}`),
+  auditLog: (limit?: number, agentId?: string) => {
+    const params = [];
+    if (limit) params.push(`limit=${limit}`);
+    if (agentId) params.push(`agent_id=${agentId}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+    return api.get(`/agent/permissions/audit-log${query}`);
+  },
+  stats: () => api.get('/agent/permissions/stats'),
+};
+
+export const compressionApi = {
+  stats: () => api.get('/agent/compression/stats'),
+  history: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/compression/history${query}`);
+  },
+};
+
+export const debugProtocolApi = {
+  diagnose: (errorMessage: string, gameContext?: string) =>
+    api.post('/agent/debug-protocol/diagnose', { error_message: errorMessage, game_context: gameContext || '' }),
+  verify: (traceId: string, passed: boolean) =>
+    api.post(`/agent/debug-protocol/verify/${traceId}?passed=${passed}`),
+  listEntries: (entryType?: string, category?: string) => {
+    const params = [];
+    if (entryType) params.push(`entry_type=${entryType}`);
+    if (category) params.push(`category=${category}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+    return api.get(`/agent/debug-protocol/entries${query}`);
+  },
+  proactiveRules: (enabledOnly?: boolean) =>
+    api.get(`/agent/debug-protocol/proactive-rules?enabled_only=${enabledOnly || false}`),
+  proactiveCheck: (context: Record<string, unknown>) =>
+    api.post('/agent/debug-protocol/proactive-check', context),
+  traces: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/debug-protocol/traces${query}`);
+  },
+  stats: () => api.get('/agent/debug-protocol/stats'),
+};
+
+export const autoworkApi = {
+  createPlan: (data: { goal: string; status_quo?: string; target_end_state?: string; items?: Array<{ description: string; verification_gate: string }> }) =>
+    api.post('/agent/autowork/plans', data),
+  approvePlan: (planId: string) =>
+    api.post(`/agent/autowork/plans/${planId}/approve`),
+  listPlans: (status?: string) => {
+    const query = status ? `?status=${status}` : '';
+    return api.get(`/agent/autowork/plans${query}`);
+  },
+  getPlan: (planId: string) => api.get(`/agent/autowork/plans/${planId}`),
+  getTranscript: (planId: string, phase?: string) => {
+    const query = phase ? `?phase=${phase}` : '';
+    return api.get(`/agent/autowork/plans/${planId}/transcript${query}`);
+  },
+  abort: (planId: string) =>
+    api.post(`/agent/autowork/plans/${planId}/abort`),
+  stats: () => api.get('/agent/autowork/stats'),
+};
+
+export const policyApi = {
+  evaluate: (context: { agent_id?: string; agent_role?: string; task_type?: string; complexity_score?: number; confidence?: number; agent_workload?: number; failure_count?: number; time_elapsed?: number }) =>
+    api.post('/agent/policy/evaluate', context),
+  listRules: (enabledOnly?: boolean) =>
+    api.get(`/agent/policy/rules?enabled_only=${enabledOnly || false}`),
+  history: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/policy/history${query}`);
+  },
+  stats: () => api.get('/agent/policy/stats'),
+};
+
+export const moaApi = {
+  query: (query: string, strategy?: string) =>
+    api.post('/agent/moa/query', { query, strategy: strategy || 'best_of' }),
+  listModels: () => api.get('/agent/moa/models'),
+  getResults: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/moa/results${query}`);
+  },
+  stats: () => api.get('/agent/moa/stats'),
+};
+
+export const structuredProtocolApi = {
+  send: (data: { message_type: string; sender: string; recipient: string; payload: Record<string, unknown>; priority?: number }) =>
+    api.post('/agent/structured-protocol/send', data),
+  acknowledge: (messageId: string) =>
+    api.post(`/agent/structured-protocol/acknowledge/${messageId}`),
+  listSchemas: () => api.get('/agent/structured-protocol/schemas'),
+  getDeadLetters: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/structured-protocol/dead-letters${query}`);
+  },
+  retryDeadLetter: (entryId: string) =>
+    api.post(`/agent/structured-protocol/dead-letters/${entryId}/retry`),
+  getDeliveryLog: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/structured-protocol/delivery-log${query}`);
+  },
+  stats: () => api.get('/agent/structured-protocol/stats'),
+};
+
+export const credentialApi = {
+  register: (data: { name: string; provider: string; key: string; scope?: string; priority?: number; max_rpm?: number }) =>
+    api.post('/agent/credentials/register', data),
+  list: (provider?: string, scope?: string, status?: string) => {
+    const params = [];
+    if (provider) params.push(`provider=${provider}`);
+    if (scope) params.push(`scope=${scope}`);
+    if (status) params.push(`status=${status}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+    return api.get(`/agent/credentials${query}`);
+  },
+  rotate: (credentialId: string, newKey: string) =>
+    api.post(`/agent/credentials/${credentialId}/rotate?new_key=${encodeURIComponent(newKey)}`),
+  reportFailure: (credentialId: string, error?: string) =>
+    api.post(`/agent/credentials/${credentialId}/report-failure?error=${encodeURIComponent(error || '')}`),
+  reportSuccess: (credentialId: string, latencyMs?: number) =>
+    api.post(`/agent/credentials/${credentialId}/report-success?latency_ms=${latencyMs || 0}`),
+  getAccessLog: (limit?: number, credentialId?: string) => {
+    const params = [];
+    if (limit) params.push(`limit=${limit}`);
+    if (credentialId) params.push(`credential_id=${credentialId}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+    return api.get(`/agent/credentials/access-log${query}`);
+  },
+  stats: () => api.get('/agent/credentials/stats'),
+};
+
+export const sandboxApi = {
+  createSession: (data: { agent_id?: string; workspace_root?: string; allowed_tools?: string[]; blocked_tools?: string[] }) =>
+    api.post('/agent/sandbox/sessions', data),
+  listSessions: (agentId?: string) => {
+    const query = agentId ? `?agent_id=${agentId}` : '';
+    return api.get(`/agent/sandbox/sessions${query}`);
+  },
+  getSession: (sessionId: string) => api.get(`/agent/sandbox/sessions/${sessionId}`),
+  execute: (sessionId: string, toolName: string, params?: Record<string, unknown>) =>
+    api.post(`/agent/sandbox/sessions/${sessionId}/execute?tool_name=${toolName}`, params),
+  terminate: (sessionId: string) =>
+    api.post(`/agent/sandbox/sessions/${sessionId}/terminate`),
+  getResults: (sessionId?: string, limit?: number) => {
+    const params = [];
+    if (sessionId) params.push(`session_id=${sessionId}`);
+    if (limit) params.push(`limit=${limit}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+    return api.get(`/agent/sandbox/results${query}`);
+  },
+  stats: () => api.get('/agent/sandbox/stats'),
+};
+
+export const consistencyApi = {
+  registerGeneration: (key: string, assetType: string, sourceFile?: string) =>
+    api.post('/agent/consistency/register-generation', { key, asset_type: assetType, source_file: sourceFile || '' }),
+  registerManifest: (key: string, assetType: string, sourceFile?: string) =>
+    api.post('/agent/consistency/register-manifest', { key, asset_type: assetType, source_file: sourceFile || '' }),
+  registerReference: (key: string, assetType: string, sourceFile?: string) =>
+    api.post('/agent/consistency/register-reference', { key, asset_type: assetType, source_file: sourceFile || '' }),
+  validate: () => api.post('/agent/consistency/validate'),
+  listKeys: (assetType?: string, status?: string) => {
+    const params = [];
+    if (assetType) params.push(`asset_type=${assetType}`);
+    if (status) params.push(`status=${status}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+    return api.get(`/agent/consistency/keys${query}`);
+  },
+  getReports: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/consistency/reports${query}`);
+  },
+  stats: () => api.get('/agent/consistency/stats'),
+};
+
+export const persistenceApi = {
+  save: (category: string, key: string, data: Record<string, unknown>) =>
+    api.post('/agent/persistence/save', { category, key, data }),
+  load: (category: string, key: string) =>
+    api.get(`/agent/persistence/load/${category}/${key}`),
+  delete: (category: string, key: string) =>
+    api.delete(`/agent/persistence/delete/${category}/${key}`),
+  list: (category: string) => api.get(`/agent/persistence/list/${category}`),
+  createCheckpoint: (checkpointType?: string, label?: string) => {
+    const params = [];
+    if (checkpointType) params.push(`checkpoint_type=${checkpointType}`);
+    if (label) params.push(`label=${encodeURIComponent(label)}`);
+    const query = params.length ? `?${params.join('&')}` : '';
+    return api.post(`/agent/persistence/checkpoint${query}`);
+  },
+  restore: (checkpointId: string) =>
+    api.post(`/agent/persistence/restore/${checkpointId}`),
+  listCheckpoints: () => api.get('/agent/persistence/checkpoints'),
+  stats: () => api.get('/agent/persistence/stats'),
+};

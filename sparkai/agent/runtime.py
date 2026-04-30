@@ -47,6 +47,19 @@ Runtime architecture:
     |-- Orchestrator Engine (unified agent orchestration)
     |-- Skill Evolution Engine (skill learning and adaptation)
     |-- Game Evaluator Engine (game quality evaluation)
+    |-- Session Compaction Engine (context window management)
+    |-- Recovery Engine (automatic failure recovery)
+    |-- Tool Permission System (role-based access control)
+    |-- Context Compression Engine (pluggable compression)
+    |-- Debug Protocol Engine (self-improving debug knowledge)
+    |-- Autowork Engine (three-phase plan/execute/verify enforcement)
+    |-- Policy Engine (declarative condition/action rule system)
+    |-- Mixture of Agents Engine (multi-model parallel reasoning)
+    |-- Structured Protocol Engine (schema-validated message contracts)
+    |-- Credential Manager (key pooling, rotation, access auditing)
+    |-- Sandbox Engine (isolated tool execution with resource limits)
+    |-- Asset Consistency Engine (key chain validation across generation)
+    |-- Memory Persistence Engine (disk-based state checkpointing)
 
 The runtime provides a single initialization point and unified
 API for all engine operations. It manages the lifecycle of all
@@ -104,6 +117,24 @@ from sparkai.agent.agent_validator import ValidatorEngine, get_validator_engine
 from sparkai.agent.agent_orchestrator import OrchestratorEngine, get_orchestrator_engine
 from sparkai.agent.agent_skill_evolution import SkillEvolutionEngine, get_skill_evolution_engine
 from sparkai.agent.agent_evaluator import GameEvaluatorEngine, get_game_evaluator
+from sparkai.agent.agent_lifecycle import AgentLifecycleManager
+from sparkai.agent.agent_slash_commands import SlashCommandSystem
+from sparkai.agent.agent_validation_hooks import ValidationHooksSystem
+from sparkai.agent.agent_task_executor import TaskExecutionEngine, ExecutionStrategy, TaskContext
+from sparkai.agent.agent_integration import SubsystemIntegration, IntegrationChannel, IntegrationEvent
+from sparkai.agent.agent_session_compaction import SessionCompactionEngine, get_compaction_engine
+from sparkai.agent.agent_recovery import RecoveryEngine, get_recovery_engine
+from sparkai.agent.agent_tool_permission import ToolPermissionSystem, get_tool_permission_system
+from sparkai.agent.agent_context_compression import ContextCompressionEngine, get_compression_engine
+from sparkai.agent.agent_debug_protocol import DebugProtocolEngine, get_debug_protocol
+from sparkai.agent.agent_autowork import AutoworkEngine, get_autowork_engine
+from sparkai.agent.agent_policy import PolicyEngine, get_policy_engine
+from sparkai.agent.agent_moa import MixtureOfAgentsEngine, get_moa_engine
+from sparkai.agent.agent_structured_protocol import StructuredProtocol, get_structured_protocol
+from sparkai.agent.agent_credential import CredentialManager, get_credential_manager
+from sparkai.agent.agent_sandbox import SandboxEngine, get_sandbox_engine
+from sparkai.agent.asset_consistency import AssetConsistencyEngine, get_consistency_engine
+from sparkai.agent.agent_persistence import MemoryPersistenceEngine, get_persistence_engine
 
 
 class RuntimeState(Enum):
@@ -141,7 +172,7 @@ class AgentRuntime:
     Unified execution engine for the SparkLabs AI-Native Game Engine.
 
     The runtime is the central orchestrator that initializes and manages
-    all 17 subsystems. It provides a single entry point for all engine
+    all 55 subsystems. It provides a single entry point for all engine
     operations and ensures proper lifecycle management.
 
     Usage:
@@ -197,6 +228,24 @@ class AgentRuntime:
         self._orchestrator_engine: Optional[OrchestratorEngine] = None
         self._skill_evolution_engine: Optional[SkillEvolutionEngine] = None
         self._evaluator_engine: Optional[GameEvaluatorEngine] = None
+        self._lifecycle_manager: Optional[AgentLifecycleManager] = None
+        self._slash_command_system: Optional[SlashCommandSystem] = None
+        self._validation_hooks: Optional[ValidationHooksSystem] = None
+        self._task_executor: Optional[TaskExecutionEngine] = None
+        self._integration: Optional[SubsystemIntegration] = None
+        self._compaction_engine: Optional[SessionCompactionEngine] = None
+        self._recovery_engine: Optional[RecoveryEngine] = None
+        self._permission_system: Optional[ToolPermissionSystem] = None
+        self._compression_engine: Optional[ContextCompressionEngine] = None
+        self._debug_protocol: Optional[DebugProtocolEngine] = None
+        self._autowork_engine: Optional[AutoworkEngine] = None
+        self._policy_engine: Optional[PolicyEngine] = None
+        self._moa_engine: Optional[MixtureOfAgentsEngine] = None
+        self._structured_protocol: Optional[StructuredProtocol] = None
+        self._credential_manager: Optional[CredentialManager] = None
+        self._sandbox_engine: Optional[SandboxEngine] = None
+        self._consistency_engine: Optional[AssetConsistencyEngine] = None
+        self._persistence_engine: Optional[MemoryPersistenceEngine] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -253,6 +302,36 @@ class AgentRuntime:
             self._orchestrator_engine = get_orchestrator_engine()
             self._skill_evolution_engine = get_skill_evolution_engine()
             self._evaluator_engine = get_game_evaluator()
+            self._lifecycle_manager = AgentLifecycleManager()
+            self._slash_command_system = SlashCommandSystem()
+            self._validation_hooks = ValidationHooksSystem()
+            self._task_executor = TaskExecutionEngine()
+            self._integration = SubsystemIntegration()
+            self._compaction_engine = get_compaction_engine()
+            self._recovery_engine = get_recovery_engine()
+            self._permission_system = get_tool_permission_system()
+            self._compression_engine = get_compression_engine()
+            self._debug_protocol = get_debug_protocol()
+            self._autowork_engine = get_autowork_engine()
+            self._policy_engine = get_policy_engine()
+            self._moa_engine = get_moa_engine()
+            self._structured_protocol = get_structured_protocol()
+            self._credential_manager = get_credential_manager()
+            self._sandbox_engine = get_sandbox_engine()
+            self._consistency_engine = get_consistency_engine()
+            self._persistence_engine = get_persistence_engine()
+            self._integration.register_subsystem("protocol", self._protocol)
+            self._integration.register_subsystem("orchestrator", self._orchestrator)
+            self._integration.register_subsystem("studio", self._studio_coordinator)
+            self._integration.register_subsystem("swarm", self._agent_swarm)
+            self._integration.register_subsystem("skills", self._skill_forge)
+            self._integration.register_subsystem("executor", self._task_executor)
+            self._integration.register_subsystem("evaluator", self._evaluator_engine)
+            self._integration.register_subsystem("playtest", self._playtest_engine)
+            self._integration.register_subsystem("sandbox", self._sandbox_engine)
+            self._integration.register_subsystem("consistency", self._consistency_engine)
+            self._integration.register_subsystem("persistence", self._persistence_engine)
+            self._integration.connect_all()
 
             if self._protocol and self._event_bus:
                 self._event_bus.subscribe(
@@ -268,7 +347,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 40,
+                    "subsystems": 58,
                 }},
             ))
 
@@ -792,6 +871,24 @@ class AgentRuntime:
                 "orchestrator_engine": self._orchestrator_engine is not None,
                 "skill_evolution_engine": self._skill_evolution_engine is not None,
                 "evaluator_engine": self._evaluator_engine is not None,
+                "lifecycle_manager": self._lifecycle_manager is not None,
+                "slash_command_system": self._slash_command_system is not None,
+                "validation_hooks": self._validation_hooks is not None,
+                "task_executor": self._task_executor is not None,
+                "integration": self._integration is not None,
+                "compaction_engine": self._compaction_engine is not None,
+                "recovery_engine": self._recovery_engine is not None,
+                "permission_system": self._permission_system is not None,
+                "compression_engine": self._compression_engine is not None,
+                "debug_protocol": self._debug_protocol is not None,
+                "autowork_engine": self._autowork_engine is not None,
+                "policy_engine": self._policy_engine is not None,
+                "moa_engine": self._moa_engine is not None,
+                "structured_protocol": self._structured_protocol is not None,
+                "credential_manager": self._credential_manager is not None,
+                "sandbox_engine": self._sandbox_engine is not None,
+                "consistency_engine": self._consistency_engine is not None,
+                "persistence_engine": self._persistence_engine is not None,
             },
         }
 
@@ -863,6 +960,42 @@ class AgentRuntime:
             status["skill_evolution_stats"] = self._skill_evolution_engine.get_stats()
         if self._evaluator_engine:
             status["evaluator_stats"] = self._evaluator_engine.get_stats()
+        if self._lifecycle_manager:
+            status["lifecycle_stats"] = self._lifecycle_manager.get_stats()
+        if self._slash_command_system:
+            status["slash_command_stats"] = self._slash_command_system.get_stats()
+        if self._validation_hooks:
+            status["validation_hooks_stats"] = self._validation_hooks.get_stats()
+        if self._task_executor:
+            status["task_executor_stats"] = self._task_executor.get_stats()
+        if self._integration:
+            status["integration_stats"] = self._integration.get_stats()
+        if self._compaction_engine:
+            status["compaction_stats"] = self._compaction_engine.get_stats()
+        if self._recovery_engine:
+            status["recovery_stats"] = self._recovery_engine.get_stats()
+        if self._permission_system:
+            status["permission_stats"] = self._permission_system.get_stats()
+        if self._compression_engine:
+            status["compression_stats"] = self._compression_engine.get_stats()
+        if self._debug_protocol:
+            status["debug_protocol_stats"] = self._debug_protocol.get_stats()
+        if self._autowork_engine:
+            status["autowork_stats"] = self._autowork_engine.get_stats()
+        if self._policy_engine:
+            status["policy_stats"] = self._policy_engine.get_stats()
+        if self._moa_engine:
+            status["moa_stats"] = self._moa_engine.get_stats()
+        if self._structured_protocol:
+            status["structured_protocol_stats"] = self._structured_protocol.get_stats()
+        if self._credential_manager:
+            status["credential_stats"] = self._credential_manager.get_stats()
+        if self._sandbox_engine:
+            status["sandbox_stats"] = self._sandbox_engine.get_stats()
+        if self._consistency_engine:
+            status["consistency_stats"] = self._consistency_engine.get_stats()
+        if self._persistence_engine:
+            status["persistence_stats"] = self._persistence_engine.get_stats()
         return status
 
 

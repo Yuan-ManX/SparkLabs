@@ -748,7 +748,16 @@ class SkillComposer:
         description: str,
         template_ids: List[str],
         debug_ids: Optional[List[str]] = None,
-    ) -> ComposedSkill:
+    ) -> Optional[ComposedSkill]:
+        invalid_ids = [tid for tid in template_ids if tid not in self._templates._templates]
+        if invalid_ids:
+            return None
+
+        if debug_ids:
+            invalid_debug = [did for did in debug_ids if did not in self._debugs._entries]
+            if invalid_debug:
+                return None
+
         order = list(template_ids)
         if debug_ids:
             order.extend(debug_ids)
@@ -778,6 +787,8 @@ class SkillComposer:
         composed = self._composed.get(composed_id)
         if composed:
             composed.usage_count += 1
+            total_success = composed.usage_count * composed.success_rate + (1.0 if success else 0.0)
+            composed.success_rate = total_success / composed.usage_count
             for tid in composed.template_ids:
                 self._templates.record_usage(tid, success)
 

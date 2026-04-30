@@ -172,7 +172,7 @@ class GameEvaluatorEngine:
     """
 
     def __init__(self) -> None:
-        self._reports: List[EvaluationReport] = {}
+        self._reports: Dict[str, EvaluationReport] = {}
         self._benchmarks: Dict[str, EvaluationBenchmark] = {}
         self._report_count: int = 0
         self._seed_benchmarks()

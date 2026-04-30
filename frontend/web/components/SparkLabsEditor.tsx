@@ -40,6 +40,8 @@ import SkillEvolution from './SkillEvolution';
 import GameEvaluator from './GameEvaluator';
 import ScriptEditor from './ScriptEditor';
 import SettingsPanel from './SettingsPanel';
+import { LifecyclePanel, SlashCommandsPanel, ValidationHooksPanel } from './LifecyclePanels';
+import { TaskExecutorPanel } from './TaskExecutorPanel';
 import NotificationToast, { Toast } from './NotificationToast';
 import KeyboardShortcuts, { ShortcutDef } from './KeyboardShortcuts';
 
@@ -374,6 +376,10 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'orchestrator': return <OrchestratorPanel />;
       case 'skill-evolution': return <SkillEvolution />;
       case 'evaluator': return <GameEvaluator />;
+      case 'lifecycle': return <LifecyclePanel />;
+      case 'slash-commands': return <SlashCommandsPanel />;
+      case 'validation-hooks': return <ValidationHooksPanel />;
+      case 'task-executor': return <TaskExecutorPanel />;
       case 'script-editor': return <ScriptEditor />;
       case 'settings': return <SettingsPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;

@@ -506,6 +506,87 @@ class AgentSwarm:
             return best_node.id
         return None
 
+    async def execute_swarm_task(
+        self,
+        task_id: str,
+        task_executor: Optional[Any] = None,
+        strategy: str = "direct",
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Execute a swarm task using the unified TaskExecutionEngine.
+
+        Connects the swarm's task dispatch to actual agent execution
+        with dependency-aware context passing.
+        """
+        task = self._tasks.get(task_id)
+        if not task:
+            return None
+
+        for dep_id in task.dependencies:
+            dep = self._tasks.get(dep_id)
+            if dep and dep.state != TaskState.COMPLETED:
+                return {"error": f"Dependency {dep_id} not completed"}
+
+        best_node = self._find_best_node(task)
+        if not best_node:
+            return {"error": "No available node for task"}
+
+        task.assigned_to = best_node.id
+        task.state = TaskState.ASSIGNED
+        best_node.current_load += 1
+        best_node.state = "busy"
+        self._state = SwarmState.EXECUTING
+
+        if task_executor is not None:
+            from sparkai.agent.agent_task_executor import ExecutionStrategy, TaskContext
+
+            strategy_enum = ExecutionStrategy(strategy) if strategy in [s.value for s in ExecutionStrategy] else ExecutionStrategy.DIRECT
+
+            prior_results = []
+            for dep_id in task.dependencies:
+                dep = self._tasks.get(dep_id)
+                if dep and dep.result:
+                    prior_results.append({
+                        "agent": dep.assigned_to or "unknown",
+                        "result": str(dep.result)[:200],
+                    })
+
+            context = TaskContext(
+                overall_goal=task.description,
+                prior_results=prior_results,
+                parent_task_id=task.parent_id,
+                metadata={"strategy": task.strategy.value if hasattr(task.strategy, 'value') else str(task.strategy)},
+            )
+
+            execution = task_executor.submit_execution(
+                task_name=task.description[:100],
+                task_description=task.description,
+                agent_id=best_node.id,
+                strategy=strategy_enum,
+                context=context,
+            )
+
+            result = await task_executor.execute(execution.id)
+
+            success = result.status.value == "completed"
+            self.complete_task(task_id, {"output": result.result, "confidence": result.confidence}, success)
+
+            if success:
+                best_node.reputation = min(1.0, best_node.reputation + 0.05)
+            else:
+                best_node.reputation = max(0.0, best_node.reputation - 0.1)
+
+            return {
+                "task_id": task_id,
+                "node_id": best_node.id,
+                "status": "completed" if success else "failed",
+                "result": result.result,
+                "confidence": result.confidence,
+            }
+        else:
+            self.complete_task(task_id, {"output": "Dispatched (no executor)"}, True)
+            return {"task_id": task_id, "node_id": best_node.id, "status": "dispatched"}
+
     def complete_task(self, task_id: str, result: Optional[Dict[str, Any]] = None, success: bool = True) -> bool:
         task = self._tasks.get(task_id)
         if not task:
@@ -561,13 +642,20 @@ class AgentSwarm:
 
         return True
 
-    def propose_consensus(self, proposal_id: str, voters: List[str]) -> ConsensusResult:
+    def propose_consensus(self, proposal_id: str, voters: List[str], proposal_content: Optional[str] = None) -> ConsensusResult:
         self._state = SwarmState.CONSENSUS
         self._consensus.create_proposal(proposal_id)
         for voter in voters:
             node = self._nodes.get(voter)
             if node:
-                vote = node.reputation >= 0.5
+                if proposal_content:
+                    node_capabilities = [str(c).lower() for c in node.capabilities]
+                    content_lower = proposal_content.lower()
+                    relevance = sum(1 for cap in node_capabilities if cap in content_lower)
+                    relevance_score = min(1.0, relevance / 3.0) if node_capabilities else 0.5
+                    vote = (node.reputation * 0.6 + relevance_score * 0.4) >= 0.5
+                else:
+                    vote = node.reputation >= 0.5
                 self._consensus.cast_vote(proposal_id, voter, vote)
         result = self._consensus.evaluate(proposal_id)
         self._history.append({

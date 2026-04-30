@@ -63,6 +63,7 @@ class AgentOrchestrator:
         self._delegation_results: List[DelegationResult] = []
         self._max_spawn_depth: int = max_spawn_depth
         self._event_handlers: Dict[str, List[Any]] = {}
+        self._delegation_context: Dict[str, Any] = {"overall_goal": "", "prior_results": []}
 
     def set_llm_provider(self, provider: LLMProvider) -> None:
         self._llm = provider
@@ -140,7 +141,21 @@ class AgentOrchestrator:
         agent.assign_task(task)
 
         try:
-            task_result = await agent.think(task.description)
+            context_prompt = task.description
+            if hasattr(self, '_delegation_context'):
+                prior_results = self._delegation_context.get("prior_results", [])
+                overall_goal = self._delegation_context.get("overall_goal", "")
+                if prior_results or overall_goal:
+                    context_parts = []
+                    if overall_goal:
+                        context_parts.append(f"Overall Goal: {overall_goal}")
+                    if prior_results:
+                        context_parts.append("Prior Step Results:")
+                        for pr in prior_results[-3:]:
+                            context_parts.append(f"  - {pr.get('agent', 'unknown')}: {str(pr.get('result', ''))[:200]}")
+                    context_prompt = f"{context_prompt}\n\nContext:\n{'  '.join(context_parts)}"
+
+            task_result = await agent.think(context_prompt)
 
             if verify and task.verification_criteria:
                 verification = await agent.verify(task.verification_criteria, str(task_result))
@@ -149,6 +164,12 @@ class AgentOrchestrator:
             await agent.complete_task(task_result)
             result.result = task_result
             result.status = "completed"
+
+            self._delegation_context["prior_results"].append({
+                "agent": agent.name,
+                "task": task.description[:100],
+                "result": str(task_result)[:200] if task_result else "",
+            })
 
         except Exception as e:
             result.status = "error"
@@ -239,10 +260,19 @@ class AgentOrchestrator:
         return await self.execute_plan(plan)
 
     def _on_task_completed(self, data: Any) -> None:
-        pass
+        if isinstance(data, dict):
+            task_id = data.get("task_id", "unknown")
+            result = data.get("result", "")
+            self._delegation_context["prior_results"].append({
+                "task_id": task_id,
+                "result": str(result)[:200],
+            })
 
     def _on_autonomous_complete(self, data: Any) -> None:
-        pass
+        if isinstance(data, dict):
+            goal = data.get("goal", "")
+            iterations = data.get("iterations", 0)
+            self._delegation_context["overall_goal"] = goal
 
     def get_status(self) -> Dict[str, Any]:
         return {

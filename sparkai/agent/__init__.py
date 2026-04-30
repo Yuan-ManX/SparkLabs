@@ -189,6 +189,29 @@ from sparkai.agent.agent_evaluator import (
     ReportStatus, SeverityLevel as EvalSeverityLevel,
     get_game_evaluator,
 )
+from sparkai.agent.agent_lifecycle import (
+    AgentLifecycleManager, AgentBlueprint, LifecyclePhase,
+    BlueprintTier, ReflectionVerdict, VerificationConfidence,
+    PlanStep, ExecutionPlan as LifecyclePlan, ReflectionResult,
+    VerificationResult, LifecycleEvent,
+)
+from sparkai.agent.agent_slash_commands import (
+    SlashCommandSystem, SlashCommand, CommandCategory,
+    CommandScope, CommandResult, CommandParam,
+)
+from sparkai.agent.agent_validation_hooks import (
+    ValidationHooksSystem, HookRule, HookPhase,
+    HookAction, HookSeverity, HookResult as ValidationHookResult,
+    HookCondition, HookExecution,
+)
+from sparkai.agent.agent_task_executor import (
+    TaskExecutionEngine, TaskExecution, ExecutionStrategy,
+    TaskContext, ExecutionBatch, ExecutionStatus as TaskExecutionStatus,
+)
+from sparkai.agent.agent_integration import (
+    SubsystemIntegration, IntegrationChannel, IntegrationEvent,
+    IntegrationEntry,
+)
 
 __all__ = [
     "SparkAgent",

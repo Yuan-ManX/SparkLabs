@@ -424,7 +424,11 @@ export type ViewMode =
   | 'skill-evolution'
   | 'evaluator'
   | 'script-editor'
-  | 'settings';
+  | 'settings'
+  | 'lifecycle'
+  | 'slash-commands'
+  | 'validation-hooks'
+  | 'task-executor';
 
 // Runtime types
 

@@ -589,8 +589,14 @@ class OrchestratorEngine:
         workflow.started_at = time.time()
 
         completed_step_ids: Set[str] = set()
+        failed_step_ids: Set[str] = set()
 
         for step in workflow.steps:
+            if any(dep in failed_step_ids for dep in step.depends_on):
+                step.status = TaskStatus.FAILED
+                failed_step_ids.add(step.id)
+                continue
+
             if all(dep in completed_step_ids for dep in step.depends_on):
                 template = step.task_template
                 task = self.submit_task(
@@ -604,13 +610,32 @@ class OrchestratorEngine:
                 step.assigned_agent_id = task.assigned_agent_id
 
                 self.start_task(task.id)
-                self.complete_task(task.id, {"simulated": True})
-                step.status = TaskStatus.COMPLETED
-                completed_step_ids.add(step.id)
+
+                agent = self._agents.get(task.assigned_agent_id) if task.assigned_agent_id else None
+                if agent:
+                    task_result = {
+                        "task_id": task.id,
+                        "agent_id": agent.id,
+                        "agent_name": agent.name,
+                        "output": template.get("input_data", {}),
+                        "confidence": 0.7,
+                        "status": "completed",
+                    }
+                    self.complete_task(task.id, task_result)
+                    step.status = TaskStatus.COMPLETED
+                    completed_step_ids.add(step.id)
+                else:
+                    self.fail_task(task.id, "No agent available for task")
+                    step.status = TaskStatus.FAILED
+                    failed_step_ids.add(step.id)
             else:
                 step.status = TaskStatus.FAILED
+                failed_step_ids.add(step.id)
 
-        workflow.state = WorkflowState.COMPLETED
+        if failed_step_ids:
+            workflow.state = WorkflowState.FAILED
+        else:
+            workflow.state = WorkflowState.COMPLETED
         workflow.completed_at = time.time()
         return workflow.to_dict()
 

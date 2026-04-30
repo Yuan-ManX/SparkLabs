@@ -80,6 +80,10 @@ const modeGroups = [
     items: [
       { id: 'composition-graph', label: 'Graph', icon: 'fa-project-diagram' },
       { id: 'knowledge', label: 'Knowledge', icon: 'fa-lightbulb' },
+      { id: 'lifecycle', label: 'Lifecycle', icon: 'fa-rotate' },
+      { id: 'slash-commands', label: 'Commands', icon: 'fa-terminal' },
+      { id: 'validation-hooks', label: 'Hooks', icon: 'fa-shield-halved' },
+      { id: 'task-executor', label: 'Executor', icon: 'fa-bolt' },
       { id: 'script-editor', label: 'Script Editor', icon: 'fa-code' },
       { id: 'settings', label: 'Settings', icon: 'fa-gear' },
     ],

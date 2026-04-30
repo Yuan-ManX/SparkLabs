@@ -357,6 +357,87 @@ class StudioCoordinator:
 
         return True
 
+    async def execute_task(
+        self,
+        task_id: str,
+        task_executor: Optional[Any] = None,
+        strategy: str = "direct",
+    ) -> Optional[Dict[str, Any]]:
+        """
+        Execute a studio task using the unified TaskExecutionEngine.
+
+        Connects the studio's task assignment to actual agent execution
+        with context passing and result capture.
+        """
+        task = self._tasks.get(task_id)
+        if not task:
+            return None
+
+        if task.status not in ("assigned", "unassigned"):
+            return None
+
+        task.status = "executing"
+        task.started_at = time.time()
+
+        if task_executor is not None:
+            from sparkai.agent.agent_task_executor import ExecutionStrategy, TaskContext
+
+            strategy_enum = ExecutionStrategy(strategy) if strategy in [s.value for s in ExecutionStrategy] else ExecutionStrategy.DIRECT
+
+            prior_results = []
+            if task.delegated_by:
+                delegator = self._agents.get(task.delegated_by)
+                if delegator:
+                    prior_results.append({
+                        "agent": delegator.role,
+                        "result": f"Delegated by {delegator.role}",
+                    })
+
+            context = TaskContext(
+                overall_goal=f"Studio task: {task.title}",
+                prior_results=prior_results,
+                metadata={"department": task.department.value if hasattr(task.department, 'value') else str(task.department)},
+            )
+
+            execution = task_executor.submit_execution(
+                task_name=task.title,
+                task_description=task.description or task.title,
+                agent_id=task.assigned_to,
+                strategy=strategy_enum,
+                context=context,
+            )
+
+            result = await task_executor.execute(execution.id)
+
+            if result.status.value == "completed":
+                self.complete_task(task_id, {"output": result.result, "confidence": result.confidence})
+            else:
+                task.status = "failed"
+                task.result = {"error": result.error, "confidence": result.confidence}
+                if task.assigned_to:
+                    agent = self._agents.get(task.assigned_to)
+                    if agent:
+                        agent.current_task = None
+                        agent.is_available = True
+
+            return {
+                "task_id": task_id,
+                "status": task.status,
+                "result": task.result,
+                "confidence": result.confidence,
+            }
+        else:
+            task.status = "completed"
+            task.result = {"output": "Task marked complete (no executor)", "confidence": 0.5}
+            task.completed_at = time.time()
+            if task.assigned_to:
+                agent = self._agents.get(task.assigned_to)
+                if agent:
+                    agent.completed_count += 1
+                    agent.current_task = None
+                    agent.is_available = True
+            return {"task_id": task_id, "status": "completed", "result": task.result}
+
     def delegate_task(self, from_agent_id: str, task_title: str, target_department: str, capabilities: Optional[List[str]] = None) -> Optional[str]:
         from_agent = self._agents.get(from_agent_id)
         if not from_agent:

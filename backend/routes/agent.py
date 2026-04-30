@@ -211,110 +211,8 @@ async def list_agents():
 
 
 # Static routes that must come before /{agent_id} to avoid being captured
-@router.get("/asset-stats")
-async def asset_stats_early():
-    return _asset_engine.get_stats()
-
-@router.get("/asset-collections")
-async def asset_collections_early():
-    return {"collections": _asset_engine.list_collections()}
-
-@router.post("/asset-collections")
-async def asset_create_collection_early(name: str = "", description: str = "", tags: Optional[str] = None):
-    tag_list = tags.split(",") if tags else []
-    collection = _asset_engine.create_collection(name, description, [], tag_list)
-    return collection.to_dict()
-
-@router.get("/asset-pipelines")
-async def asset_pipelines_early():
-    return {"pipelines": _asset_engine.list_pipelines()}
-
-@router.post("/asset-pipelines")
-async def asset_create_pipeline_early(name: str = "", description: str = ""):
-    pipeline = _asset_engine.create_pipeline(name, description)
-    return pipeline.to_dict()
-
-@router.get("/dialogue/stats")
-async def dialogue_stats_early():
-    return _dialogue_engine.get_stats()
-
-@router.get("/dialogue/arcs")
-async def dialogue_arcs_early(status: Optional[str] = None):
-    st = ArcStatus(status) if status else None
-    return {"arcs": _dialogue_engine.list_arcs(st)}
-
-@router.get("/validator/stats")
-async def validator_stats_early():
-    return _validator_engine.get_stats()
-
-@router.get("/validator/rules")
-async def validator_rules_early(category: Optional[str] = None, enabled_only: bool = False):
-    cat = ValidationCategory(category) if category else None
-    return {"rules": _validator_engine.list_rules(cat, enabled_only)}
-
-@router.get("/validator/rulesets")
-async def validator_rulesets_early():
-    return {"rulesets": _validator_engine.list_rule_sets()}
-
-@router.get("/validator/reports")
-async def validator_reports_early(limit: int = 20):
-    return {"reports": _validator_engine.get_reports(limit)}
-
-@router.get("/orchestrator-engine/stats")
-async def orchestrator_engine_stats_early():
-    return _orchestrator_engine.get_stats()
-
-@router.get("/orchestrator-engine/agents")
-async def orchestrator_engine_agents_early(role: Optional[str] = None, capability: Optional[str] = None):
-    role_enum = OrchAgentRole(role) if role else None
-    cap_enum = OrchAgentCapability(capability) if capability else None
-    return {"agents": _orchestrator_engine.list_agents(role_enum, cap_enum)}
-
-@router.get("/orchestrator-engine/tasks")
-async def orchestrator_engine_tasks_early(status: Optional[str] = None, priority: Optional[str] = None):
-    status_enum = TaskStatus(status) if status else None
-    return {"tasks": _orchestrator_engine.list_tasks(status_enum)}
-
-@router.get("/orchestrator-engine/workflows")
-async def orchestrator_engine_workflows_early(state: Optional[str] = None):
-    state_enum = WorkflowState(state) if state else None
-    return {"workflows": _orchestrator_engine.list_workflows(state_enum)}
-
-@router.get("/skill-evolution/stats")
-async def skill_evolution_stats_early():
-    return _skill_evolution_engine.get_stats()
-
-@router.get("/skill-evolution/skills")
-async def skill_evolution_skills_early(domain: Optional[str] = None, maturity: Optional[str] = None):
-    domain_enum = SkillDomain(domain) if domain else None
-    maturity_enum = EvolSkillMaturity(maturity) if maturity else None
-    return {"skills": _skill_evolution_engine.list_skills(domain_enum, maturity_enum)}
-
-@router.get("/skill-evolution/protocols")
-async def skill_evolution_protocols_early(status: Optional[str] = None):
-    status_enum = EvolFixStatus(status) if status else None
-    return {"protocols": _skill_evolution_engine.list_protocols(status_enum)}
-
-@router.get("/skill-evolution/evolution-history")
-async def skill_evolution_evolution_history_early(skill_id: Optional[str] = None, limit: int = 20):
-    return {"history": _skill_evolution_engine.get_evolution_history(skill_id, limit)}
-
-@router.get("/skill-evolution/execution-history")
-async def skill_evolution_execution_history_early(skill_id: Optional[str] = None, limit: int = 20):
-    return {"history": _skill_evolution_engine.get_execution_history(skill_id, limit)}
-
-@router.get("/evaluator/stats")
-async def evaluator_stats_early():
-    return _evaluator_engine.get_stats()
-
-@router.get("/evaluator/reports")
-async def evaluator_reports_early(game_id: Optional[str] = None, limit: int = 20):
-    return {"reports": _evaluator_engine.list_reports(game_id, limit)}
-
-@router.get("/evaluator/benchmarks")
-async def evaluator_benchmarks_early(dimension: Optional[str] = None):
-    dim_enum = EvalDimension(dimension) if dimension else None
-    return {"benchmarks": _evaluator_engine.list_benchmarks(dim_enum)}
+# Note: Multi-segment paths like /dialogue/stats are NOT captured by /{agent_id}
+# Only single-segment paths need to be before /{agent_id}
 
 
 @router.get("/{agent_id}")
@@ -2989,3 +2887,938 @@ async def evaluator_compare_games(report_ids: str):
     if result:
         return result
     return {"error": "Comparison failed"}
+
+
+# === Agent Lifecycle Manager ===
+
+from sparkai.agent.agent_lifecycle import AgentLifecycleManager, AgentBlueprint, LifecyclePhase, BlueprintTier
+from sparkai.agent.agent_slash_commands import SlashCommandSystem, CommandCategory
+from sparkai.agent.agent_validation_hooks import ValidationHooksSystem, HookPhase, HookSeverity
+
+_lifecycle_manager = AgentLifecycleManager()
+_slash_command_system = SlashCommandSystem()
+_validation_hooks = ValidationHooksSystem()
+
+
+class BlueprintCreateRequest(BaseModel):
+    name: str
+    tier: str = "specialist"
+    description: str = ""
+    system_prompt: str = ""
+    capabilities: Optional[List[str]] = None
+    max_replans: int = 2
+    reflection_interval: int = 3
+
+
+class SlashCommandExecuteRequest(BaseModel):
+    command: str
+    context: Optional[Dict[str, Any]] = None
+
+
+class HookRuleCreateRequest(BaseModel):
+    name: str
+    description: str = ""
+    phase: str = "pre_execute"
+    severity: str = "medium"
+    action: str = "continue"
+    category: str = "general"
+    enabled: bool = True
+
+
+class LifecyclePlanRequest(BaseModel):
+    agent_id: str
+    goal: str
+    max_replans: int = 2
+
+
+class LifecycleVerifyRequest(BaseModel):
+    agent_id: str
+    criteria: List[Dict[str, Any]]
+    results: Dict[str, List[Any]]
+
+
+class HookEvaluateRequest(BaseModel):
+    phase: str
+    context: Dict[str, Any]
+
+
+@router.get("/lifecycle/blueprints")
+async def lifecycle_list_blueprints():
+    return {"blueprints": _lifecycle_manager.list_blueprints()}
+
+@router.post("/lifecycle/blueprints")
+async def lifecycle_create_blueprint(req: BlueprintCreateRequest):
+    bp = AgentBlueprint(
+        name=req.name,
+        tier=BlueprintTier(req.tier),
+        description=req.description,
+        system_prompt=req.system_prompt,
+        capabilities=req.capabilities or [],
+        max_replans=req.max_replans,
+        reflection_interval=req.reflection_interval,
+    )
+    key = _lifecycle_manager.register_blueprint(bp)
+    return {"id": key, "name": bp.name, "tier": bp.tier.value}
+
+@router.post("/lifecycle/spawn")
+async def lifecycle_spawn_agent(blueprint_name: str, overrides: Optional[Dict[str, Any]] = None):
+    result = _lifecycle_manager.spawn_from_blueprint(blueprint_name, overrides)
+    return result
+
+@router.post("/lifecycle/plan")
+async def lifecycle_create_plan(req: LifecyclePlanRequest):
+    plan = _lifecycle_manager.create_plan(req.agent_id, req.goal, req.max_replans)
+    return {"plan_id": plan.id, "goal": plan.goal, "max_replans": plan.max_replans}
+
+@router.get("/lifecycle/plan/{agent_id}")
+async def lifecycle_get_plan(agent_id: str):
+    return _lifecycle_manager.get_plan(agent_id) or {"error": "No active plan"}
+
+@router.post("/lifecycle/verify")
+async def lifecycle_verify(req: LifecycleVerifyRequest):
+    from sparkai.agent.agent_lifecycle import VerificationCriterion
+    criteria = []
+    for c in req.criteria:
+        criteria.append(VerificationCriterion(
+            name=c.get("name", ""),
+            description=c.get("description", ""),
+            weight=c.get("weight", 1.0),
+            threshold=c.get("threshold", 0.7),
+            requires_approval=c.get("requires_approval", False),
+        ))
+    results = {}
+    for key, val in req.results.items():
+        if isinstance(val, list) and len(val) == 3:
+            results[key] = (val[0], val[1], val[2])
+        else:
+            results[key] = (False, 0.0, str(val))
+    verification_results = _lifecycle_manager.verify(req.agent_id, criteria, results)
+    return {"results": [{"criterion": vr.criterion_name, "passed": vr.passed, "confidence": vr.confidence, "level": vr.confidence_level.value} for vr in verification_results]}
+
+@router.get("/lifecycle/approvals")
+async def lifecycle_pending_approvals():
+    return {"approvals": _lifecycle_manager.get_pending_approvals()}
+
+@router.post("/lifecycle/approvals/{approval_id}")
+async def lifecycle_approve(approval_id: str, approved: bool):
+    success = _lifecycle_manager.approve_verification(approval_id.split(":")[0], approval_id.split(":")[-1], approved)
+    return {"success": success}
+
+@router.get("/lifecycle/events")
+async def lifecycle_events(agent_id: Optional[str] = None, phase: Optional[str] = None, limit: int = 50):
+    phase_enum = None
+    if phase:
+        try:
+            phase_enum = LifecyclePhase(phase)
+        except ValueError:
+            pass
+    return {"events": _lifecycle_manager.get_lifecycle_events(agent_id, phase_enum, limit)}
+
+@router.get("/lifecycle/stats")
+async def lifecycle_stats():
+    return _lifecycle_manager.get_stats()
+
+
+# === Slash Command System ===
+
+@router.get("/slash-commands/list")
+async def slash_commands_list(category: Optional[str] = None):
+    return {"commands": _slash_command_system.list_commands(category)}
+
+@router.post("/slash-commands/execute")
+async def slash_commands_execute(req: SlashCommandExecuteRequest):
+    result = _slash_command_system.execute(req.command, req.context)
+    return {"success": result.success, "output": result.output, "error": result.error, "duration_ms": result.duration_ms}
+
+@router.get("/slash-commands/history")
+async def slash_commands_history(limit: int = 50):
+    return {"history": _slash_command_system.get_execution_history(limit)}
+
+@router.get("/slash-commands/stats")
+async def slash_commands_stats():
+    return _slash_command_system.get_stats()
+
+
+# === Validation Hooks System ===
+
+@router.get("/validation-hooks/rules")
+async def validation_hooks_rules(category: Optional[str] = None, phase: Optional[str] = None, enabled_only: bool = False):
+    phase_enum = None
+    if phase:
+        try:
+            phase_enum = HookPhase(phase)
+        except ValueError:
+            pass
+    return {"rules": _validation_hooks.list_rules(category, phase_enum, enabled_only)}
+
+@router.post("/validation-hooks/rules")
+async def validation_hooks_create_rule(req: HookRuleCreateRequest):
+    from sparkai.agent.agent_validation_hooks import HookRule, HookAction
+    rule = HookRule(
+        name=req.name,
+        description=req.description,
+        phase=HookPhase(req.phase),
+        severity=HookSeverity(req.severity),
+        action=HookAction(req.action),
+        category=req.category,
+        enabled=req.enabled,
+    )
+    rule_id = _validation_hooks.register_rule(rule)
+    return {"id": rule_id, "name": rule.name}
+
+@router.post("/validation-hooks/rules/{rule_id}/toggle")
+async def validation_hooks_toggle_rule(rule_id: str, enabled: bool):
+    success = _validation_hooks.toggle_rule(rule_id, enabled)
+    return {"success": success}
+
+@router.post("/validation-hooks/evaluate")
+async def validation_hooks_evaluate(req: HookEvaluateRequest):
+    try:
+        phase_enum = HookPhase(req.phase)
+    except ValueError:
+        return {"error": f"Invalid phase: {req.phase}"}
+    results = _validation_hooks.evaluate(phase_enum, req.context)
+    return {"results": [{"rule": r.rule_name, "action": r.action.value, "passed": r.passed, "message": r.message, "severity": r.severity.value} for r in results]}
+
+@router.get("/validation-hooks/approvals")
+async def validation_hooks_approvals():
+    return {"approvals": _validation_hooks.get_pending_approvals()}
+
+@router.post("/validation-hooks/approvals/{approval_id}")
+async def validation_hooks_approve(approval_id: str, approved: bool):
+    success = _validation_hooks.approve(approval_id, approved)
+    return {"success": success}
+
+@router.get("/validation-hooks/history")
+async def validation_hooks_history(limit: int = 50):
+    return {"history": _validation_hooks.get_execution_history(limit)}
+
+@router.get("/validation-hooks/stats")
+async def validation_hooks_stats():
+    return _validation_hooks.get_stats()
+
+
+# === Task Execution Engine ===
+
+from sparkai.agent.agent_task_executor import TaskExecutionEngine, ExecutionStrategy, TaskContext
+
+_task_executor = TaskExecutionEngine()
+
+
+class TaskExecutionRequest(BaseModel):
+    task_name: str
+    task_description: str
+    agent_id: Optional[str] = None
+    strategy: str = "direct"
+    overall_goal: Optional[str] = None
+    max_retries: int = 1
+    timeout_seconds: float = 300.0
+
+
+@router.post("/task-executor/submit")
+async def task_executor_submit(req: TaskExecutionRequest):
+    strategy = ExecutionStrategy(req.strategy) if req.strategy in [s.value for s in ExecutionStrategy] else ExecutionStrategy.DIRECT
+    context = TaskContext(overall_goal=req.overall_goal or "")
+    execution = _task_executor.submit_execution(
+        task_name=req.task_name,
+        task_description=req.task_description,
+        agent_id=req.agent_id,
+        strategy=strategy,
+        context=context,
+        max_retries=req.max_retries,
+        timeout_seconds=req.timeout_seconds,
+    )
+    return {"execution_id": execution.id, "status": execution.status.value, "agent_id": execution.agent_id}
+
+@router.post("/task-executor/execute/{execution_id}")
+async def task_executor_execute(execution_id: str):
+    result = await _task_executor.execute(execution_id)
+    return {
+        "id": result.id,
+        "task_name": result.task_name,
+        "status": result.status.value,
+        "result": str(result.result)[:500] if result.result else None,
+        "error": result.error,
+        "confidence": result.confidence,
+        "retry_count": result.retry_count,
+    }
+
+@router.get("/task-executor/execution/{execution_id}")
+async def task_executor_get(execution_id: str):
+    return _task_executor.get_execution(execution_id) or {"error": "Execution not found"}
+
+@router.get("/task-executor/history")
+async def task_executor_history(limit: int = 50):
+    return {"history": _task_executor.get_history(limit)}
+
+@router.get("/task-executor/stats")
+async def task_executor_stats():
+    return _task_executor.get_stats()
+
+
+# === Subsystem Integration ===
+
+from sparkai.agent.agent_integration import SubsystemIntegration, IntegrationChannel, IntegrationEvent
+
+_integration = SubsystemIntegration()
+
+
+@router.get("/integration/stats")
+async def integration_stats():
+    return _integration.get_stats()
+
+@router.get("/integration/log")
+async def integration_log(limit: int = 50, channel: Optional[str] = None):
+    channel_enum = None
+    if channel:
+        try:
+            channel_enum = IntegrationChannel(channel)
+        except ValueError:
+            pass
+    return {"log": _integration.get_integration_log(limit, channel_enum)}
+
+@router.post("/integration/propagate")
+async def integration_propagate(channel: str, event: str, source: str, target: str, data: Dict[str, Any]):
+    try:
+        channel_enum = IntegrationChannel(channel)
+        event_enum = IntegrationEvent(event)
+    except ValueError as e:
+        return {"error": f"Invalid channel or event: {e}"}
+    success = _integration.propagate(channel_enum, event_enum, source, target, data)
+    return {"success": success}
+
+@router.post("/integration/connect-all")
+async def integration_connect_all():
+    _integration.connect_all()
+    return {"status": "connected", "stats": _integration.get_stats()}
+
+
+# === Session Compaction Engine ===
+
+from sparkai.agent.agent_session_compaction import SessionCompactionEngine, CompactionStrategy, SessionHealth, get_compaction_engine
+
+_compaction_engine = get_compaction_engine()
+
+
+@router.post("/compaction/sessions")
+async def compaction_create_session(agent_id: str = "", max_tokens: int = 100000):
+    session = _compaction_engine.create_session(agent_id, max_tokens)
+    return session.to_dict()
+
+@router.get("/compaction/sessions")
+async def compaction_list_sessions():
+    return {"sessions": _compaction_engine.list_sessions()}
+
+@router.post("/compaction/sessions/{session_id}/message")
+async def compaction_add_message(session_id: str, role: str = "user", content: str = "", token_count: int = 0):
+    msg = _compaction_engine.add_message(session_id, role, content, token_count)
+    if msg:
+        return msg.to_dict()
+    return {"error": "Session not found"}
+
+@router.post("/compaction/sessions/{session_id}/compact")
+async def compaction_compact_session(session_id: str, strategy: str = "head_tail_preserve"):
+    strat = CompactionStrategy(strategy) if strategy in [s.value for s in CompactionStrategy] else CompactionStrategy.HEAD_TAIL_PRESERVE
+    record = await _compaction_engine.compact(session_id, strat)
+    if record:
+        return record.to_dict()
+    return {"error": "Session not found or no compaction needed"}
+
+@router.post("/compaction/sessions/{session_id}/fork")
+async def compaction_fork_session(session_id: str, branch_name: str = ""):
+    fork = _compaction_engine.fork_session(session_id, branch_name)
+    if fork:
+        return fork.to_dict()
+    return {"error": "Session not found"}
+
+@router.post("/compaction/forks/{fork_id}/merge")
+async def compaction_merge_fork(fork_id: str):
+    success = _compaction_engine.merge_fork(fork_id)
+    return {"success": success}
+
+@router.get("/compaction/forks")
+async def compaction_list_forks(session_id: Optional[str] = None):
+    return {"forks": _compaction_engine.list_forks(session_id)}
+
+@router.get("/compaction/history")
+async def compaction_history(session_id: Optional[str] = None, limit: int = 50):
+    return {"history": _compaction_engine.get_compaction_history(session_id, limit)}
+
+@router.get("/compaction/stats")
+async def compaction_stats():
+    return _compaction_engine.get_stats()
+
+
+# === Recovery Engine ===
+
+from sparkai.agent.agent_recovery import RecoveryEngine, FailureType, FailureSeverity, RecoveryStatus, EscalationAction, get_recovery_engine
+
+_recovery_engine = get_recovery_engine()
+
+
+class RecoveryDetectRequest(BaseModel):
+    error_message: str
+    source: str = ""
+    context: Optional[Dict[str, Any]] = None
+
+
+@router.post("/recovery/detect")
+async def recovery_detect(req: RecoveryDetectRequest):
+    record = await _recovery_engine.detect_and_recover(req.error_message, req.source, req.context)
+    return record.to_dict()
+
+@router.get("/recovery/recipes")
+async def recovery_recipes(failure_type: Optional[str] = None):
+    ft = FailureType(failure_type) if failure_type else None
+    return {"recipes": _recovery_engine.list_recipes(ft)}
+
+@router.get("/recovery/history")
+async def recovery_history(limit: int = 50, failure_type: Optional[str] = None):
+    ft = FailureType(failure_type) if failure_type else None
+    return {"history": _recovery_engine.get_failure_history(limit, ft)}
+
+@router.get("/recovery/stats")
+async def recovery_stats():
+    return _recovery_engine.get_stats()
+
+
+# === Tool Permission System ===
+
+from sparkai.agent.agent_tool_permission import ToolPermissionSystem, PermissionLevel, ToolDangerLevel, EnforcementResult, get_tool_permission_system
+
+_permission_system = get_tool_permission_system()
+
+
+class PermissionCheckRequest(BaseModel):
+    agent_role: str
+    tool_name: str
+    agent_id: str = ""
+
+
+class ApprovalRequestModel(BaseModel):
+    agent_id: str
+    agent_role: str
+    tool_name: str
+    params: Optional[Dict[str, Any]] = None
+    reason: str = ""
+
+
+@router.post("/permissions/check")
+async def permissions_check(req: PermissionCheckRequest):
+    result = _permission_system.check(req.agent_role, req.tool_name, req.agent_id)
+    return {"result": result.value, "agent_role": req.agent_role, "tool_name": req.tool_name}
+
+@router.get("/permissions/role-tools/{role}")
+async def permissions_role_tools(role: str):
+    return _permission_system.get_role_tools(role)
+
+@router.post("/permissions/approval")
+async def permissions_request_approval(req: ApprovalRequestModel):
+    request = _permission_system.request_approval(req.agent_id, req.agent_role, req.tool_name, req.params, req.reason)
+    return request.to_dict()
+
+@router.post("/permissions/approval/{approval_id}/approve")
+async def permissions_approve(approval_id: str, approved_by: str = ""):
+    success = _permission_system.approve(approval_id, approved_by)
+    return {"success": success}
+
+@router.post("/permissions/approval/{approval_id}/deny")
+async def permissions_deny(approval_id: str, denied_by: str = ""):
+    success = _permission_system.deny(approval_id, denied_by)
+    return {"success": success}
+
+@router.get("/permissions/pending-approvals")
+async def permissions_pending_approvals():
+    return {"approvals": _permission_system.get_pending_approvals()}
+
+@router.post("/permissions/grant-override")
+async def permissions_grant_override(role: str, tool_name: str):
+    _permission_system.grant_override(role, tool_name)
+    return {"success": True}
+
+@router.post("/permissions/register-tool")
+async def permissions_register_tool(tool_name: str, required_level: str = "read_only", danger_level: str = "moderate", requires_approval: bool = False):
+    perm = _permission_system.register_tool(tool_name, required_level, danger_level, requires_approval)
+    return perm.to_dict()
+
+@router.get("/permissions/audit-log")
+async def permissions_audit_log(limit: int = 100, agent_id: Optional[str] = None):
+    return {"entries": _permission_system.get_audit_log(limit, agent_id)}
+
+@router.get("/permissions/stats")
+async def permissions_stats():
+    return _permission_system.get_stats()
+
+
+# === Context Compression Engine ===
+
+from sparkai.agent.agent_context_compression import ContextCompressionEngine, CompressionStrategy as CtxCompressionStrategy, get_compression_engine
+
+_compression_engine = get_compression_engine()
+
+
+@router.get("/compression/stats")
+async def compression_stats():
+    return _compression_engine.get_stats()
+
+@router.get("/compression/history")
+async def compression_history(limit: int = 50):
+    return {"history": _compression_engine.get_compression_history(limit)}
+
+
+# === Debug Protocol Engine ===
+
+from sparkai.agent.agent_debug_protocol import DebugProtocolEngine, ErrorCategory, EntryType, PhysicsRegime, get_debug_protocol
+
+_debug_protocol = get_debug_protocol()
+
+
+class DebugDiagnoseRequest(BaseModel):
+    error_message: str
+    game_context: str = ""
+
+
+@router.post("/debug-protocol/diagnose")
+async def debug_protocol_diagnose(req: DebugDiagnoseRequest):
+    trace = _debug_protocol.diagnose(req.error_message, req.game_context)
+    return trace.to_dict()
+
+@router.post("/debug-protocol/verify/{trace_id}")
+async def debug_protocol_verify(trace_id: str, passed: bool):
+    _debug_protocol.verify_fix(trace_id, passed)
+    return {"status": "verified" if passed else "failed"}
+
+@router.get("/debug-protocol/entries")
+async def debug_protocol_entries(entry_type: Optional[str] = None, category: Optional[str] = None):
+    et = EntryType(entry_type) if entry_type else None
+    cat = ErrorCategory(category) if category else None
+    return {"entries": _debug_protocol.list_entries(et, cat)}
+
+@router.get("/debug-protocol/proactive-rules")
+async def debug_protocol_proactive_rules(enabled_only: bool = False):
+    return {"rules": _debug_protocol.list_proactive_rules(enabled_only)}
+
+@router.post("/debug-protocol/proactive-check")
+async def debug_protocol_proactive_check(context: Dict[str, Any]):
+    results = _debug_protocol.run_proactive_checks(context)
+    return {"results": results}
+
+@router.get("/debug-protocol/traces")
+async def debug_protocol_traces(limit: int = 50):
+    return {"traces": _debug_protocol.get_traces(limit)}
+
+@router.get("/debug-protocol/stats")
+async def debug_protocol_stats():
+    return _debug_protocol.get_stats()
+
+
+# === Autowork Engine ===
+
+from sparkai.agent.agent_autowork import AutoworkEngine, AutoworkPhase, PlanStatus, get_autowork_engine
+
+_autowork_engine = get_autowork_engine()
+
+
+class AutoworkPlanRequest(BaseModel):
+    goal: str
+    status_quo: str = ""
+    target_end_state: str = ""
+    items: Optional[List[Dict[str, str]]] = None
+
+
+@router.post("/autowork/plans")
+async def autowork_create_plan(req: AutoworkPlanRequest):
+    plan = _autowork_engine.create_plan(req.goal, req.status_quo, req.target_end_state, req.items)
+    return plan.to_dict()
+
+@router.post("/autowork/plans/{plan_id}/approve")
+async def autowork_approve_plan(plan_id: str):
+    success = _autowork_engine.approve_plan(plan_id)
+    return {"success": success}
+
+@router.get("/autowork/plans")
+async def autowork_list_plans(status: Optional[str] = None):
+    ps = PlanStatus(status) if status else None
+    return {"plans": _autowork_engine.list_plans(ps)}
+
+@router.get("/autowork/plans/{plan_id}")
+async def autowork_get_plan(plan_id: str):
+    plan = _autowork_engine.get_plan(plan_id)
+    if plan:
+        return plan.to_dict()
+    return {"error": "Plan not found"}
+
+@router.get("/autowork/plans/{plan_id}/transcript")
+async def autowork_get_transcript(plan_id: str, phase: Optional[str] = None):
+    ph = AutoworkPhase(phase) if phase else None
+    return {"entries": _autowork_engine.get_transcript(plan_id, ph)}
+
+@router.post("/autowork/plans/{plan_id}/abort")
+async def autowork_abort(plan_id: str):
+    success = _autowork_engine.abort(plan_id)
+    return {"success": success}
+
+@router.get("/autowork/stats")
+async def autowork_stats():
+    return _autowork_engine.get_stats()
+
+
+# === Policy Engine ===
+
+from sparkai.agent.agent_policy import PolicyEngine, PolicyContext, PolicyCondition, ConditionType, PolicyAction, ActionType, PolicyRule, get_policy_engine
+
+_policy_engine = get_policy_engine()
+
+
+class PolicyEvaluateRequest(BaseModel):
+    agent_id: str = ""
+    agent_role: str = ""
+    task_type: str = ""
+    complexity_score: float = 0.0
+    confidence: float = 1.0
+    agent_workload: float = 0.0
+    failure_count: int = 0
+    time_elapsed: float = 0.0
+
+
+@router.post("/policy/evaluate")
+async def policy_evaluate(req: PolicyEvaluateRequest):
+    context = PolicyContext(
+        agent_id=req.agent_id,
+        agent_role=req.agent_role,
+        task_type=req.task_type,
+        complexity_score=req.complexity_score,
+        confidence=req.confidence,
+        agent_workload=req.agent_workload,
+        failure_count=req.failure_count,
+        time_elapsed=req.time_elapsed,
+    )
+    results = _policy_engine.evaluate(context)
+    return {"results": [r.to_dict() for r in results]}
+
+@router.get("/policy/rules")
+async def policy_rules(enabled_only: bool = False):
+    return {"rules": _policy_engine.list_rules(enabled_only)}
+
+@router.get("/policy/history")
+async def policy_history(limit: int = 50):
+    return {"history": _policy_engine.get_evaluation_history(limit)}
+
+@router.get("/policy/stats")
+async def policy_stats():
+    return _policy_engine.get_stats()
+
+
+# === Mixture of Agents ===
+
+from sparkai.agent.agent_moa import MixtureOfAgentsEngine, AggregationStrategy, get_moa_engine
+
+_moa_engine = get_moa_engine()
+
+
+class MoAQueryRequest(BaseModel):
+    query: str
+    strategy: str = "best_of"
+
+
+@router.post("/moa/query")
+async def moa_query(req: MoAQueryRequest):
+    strategy = AggregationStrategy(req.strategy) if req.strategy in [s.value for s in AggregationStrategy] else AggregationStrategy.BEST_OF
+    result = await _moa_engine.query(req.query, strategy)
+    return result.to_dict()
+
+@router.get("/moa/models")
+async def moa_models():
+    return {"models": _moa_engine.list_models()}
+
+@router.get("/moa/results")
+async def moa_results(limit: int = 20):
+    return {"results": _moa_engine.get_results(limit)}
+
+@router.get("/moa/stats")
+async def moa_stats():
+    return _moa_engine.get_stats()
+
+
+# === Structured Protocol ===
+
+from sparkai.agent.agent_structured_protocol import StructuredProtocol, MessageType, get_structured_protocol
+
+_structured_protocol = get_structured_protocol()
+
+
+class StructuredMessageRequest(BaseModel):
+    message_type: str
+    sender: str
+    recipient: str
+    payload: Dict[str, Any]
+    priority: int = 50
+
+
+@router.post("/structured-protocol/send")
+async def structured_protocol_send(req: StructuredMessageRequest):
+    msg = _structured_protocol.create_message(
+        message_type=MessageType(req.message_type),
+        sender=req.sender,
+        recipient=req.recipient,
+        payload=req.payload,
+        priority=req.priority,
+    )
+    result = _structured_protocol.send(msg)
+    return result
+
+@router.post("/structured-protocol/acknowledge/{message_id}")
+async def structured_protocol_acknowledge(message_id: str):
+    success = _structured_protocol.acknowledge(message_id)
+    return {"success": success}
+
+@router.get("/structured-protocol/schemas")
+async def structured_protocol_schemas():
+    return {"schemas": _structured_protocol.list_schemas()}
+
+@router.get("/structured-protocol/dead-letters")
+async def structured_protocol_dead_letters(limit: int = 50):
+    return {"dead_letters": _structured_protocol.get_dead_letters(limit)}
+
+@router.post("/structured-protocol/dead-letters/{entry_id}/retry")
+async def structured_protocol_retry_dead_letter(entry_id: str):
+    result = _structured_protocol.retry_dead_letter(entry_id)
+    return result
+
+@router.get("/structured-protocol/delivery-log")
+async def structured_protocol_delivery_log(limit: int = 100):
+    return {"log": _structured_protocol.get_delivery_log(limit)}
+
+@router.get("/structured-protocol/stats")
+async def structured_protocol_stats():
+    return _structured_protocol.get_stats()
+
+
+# === Credential Manager ===
+
+from sparkai.agent.agent_credential import CredentialManager, KeyScope, get_credential_manager
+
+_credential_manager = get_credential_manager()
+
+
+class CredentialRegisterRequest(BaseModel):
+    name: str
+    provider: str
+    key: str
+    scope: str = "llm_provider"
+    priority: int = 50
+    max_rpm: int = 60
+
+
+@router.post("/credentials/register")
+async def credentials_register(req: CredentialRegisterRequest):
+    entry = _credential_manager.register_key(
+        name=req.name,
+        provider=req.provider,
+        key=req.key,
+        scope=KeyScope(req.scope),
+        priority=req.priority,
+        max_rpm=req.max_rpm,
+    )
+    return entry.to_dict()
+
+@router.get("/credentials")
+async def credentials_list(provider: Optional[str] = None, scope: Optional[str] = None, status: Optional[str] = None):
+    scope_enum = KeyScope(scope) if scope else None
+    from sparkai.agent.agent_credential import KeyStatus
+    status_enum = KeyStatus(status) if status else None
+    return {"credentials": _credential_manager.list_credentials(provider, scope_enum, status_enum)}
+
+@router.post("/credentials/{credential_id}/rotate")
+async def credentials_rotate(credential_id: str, new_key: str = ""):
+    entry = _credential_manager.rotate_key(credential_id, new_key)
+    if entry:
+        return entry.to_dict()
+    return {"error": "Credential not found"}
+
+@router.post("/credentials/{credential_id}/report-failure")
+async def credentials_report_failure(credential_id: str, error: str = ""):
+    _credential_manager.report_failure(credential_id, error)
+    return {"status": "reported"}
+
+@router.post("/credentials/{credential_id}/report-success")
+async def credentials_report_success(credential_id: str, latency_ms: float = 0.0):
+    _credential_manager.report_success(credential_id, latency_ms)
+    return {"status": "reported"}
+
+@router.get("/credentials/access-log")
+async def credentials_access_log(limit: int = 100, credential_id: Optional[str] = None):
+    return {"log": _credential_manager.get_access_log(limit, credential_id)}
+
+@router.get("/credentials/stats")
+async def credentials_stats():
+    return _credential_manager.get_stats()
+
+
+# === Sandbox Engine ===
+
+from sparkai.agent.agent_sandbox import SandboxEngine, ResourceLimits, AccessLevel, SandboxStatus, get_sandbox_engine
+
+_sandbox_engine = get_sandbox_engine()
+
+
+class SandboxSessionRequest(BaseModel):
+    agent_id: str = ""
+    workspace_root: str = ""
+    allowed_tools: Optional[List[str]] = None
+    blocked_tools: Optional[List[str]] = None
+
+
+@router.post("/sandbox/sessions")
+async def sandbox_create_session(req: SandboxSessionRequest):
+    session = _sandbox_engine.create_session(
+        agent_id=req.agent_id,
+        workspace_root=req.workspace_root,
+        allowed_tools=set(req.allowed_tools) if req.allowed_tools else None,
+        blocked_tools=set(req.blocked_tools) if req.blocked_tools else None,
+    )
+    return session.to_dict()
+
+@router.get("/sandbox/sessions")
+async def sandbox_list_sessions(agent_id: Optional[str] = None):
+    return {"sessions": _sandbox_engine.list_sessions(agent_id)}
+
+@router.get("/sandbox/sessions/{session_id}")
+async def sandbox_get_session(session_id: str):
+    session = _sandbox_engine.get_session(session_id)
+    if session:
+        return session.to_dict()
+    return {"error": "Session not found"}
+
+@router.post("/sandbox/sessions/{session_id}/execute")
+async def sandbox_execute(session_id: str, tool_name: str, params: Optional[Dict[str, Any]] = None):
+    result = await _sandbox_engine.execute(session_id, tool_name, params)
+    return result.to_dict()
+
+@router.post("/sandbox/sessions/{session_id}/terminate")
+async def sandbox_terminate(session_id: str):
+    success = _sandbox_engine.terminate_session(session_id)
+    return {"success": success}
+
+@router.get("/sandbox/results")
+async def sandbox_results(session_id: Optional[str] = None, limit: int = 50):
+    return {"results": _sandbox_engine.get_results(session_id, limit)}
+
+@router.get("/sandbox/stats")
+async def sandbox_stats():
+    return _sandbox_engine.get_stats()
+
+
+# === Asset Consistency Engine ===
+
+from sparkai.agent.asset_consistency import AssetConsistencyEngine, AssetType, KeyStatus, get_consistency_engine
+
+_consistency_engine = get_consistency_engine()
+
+
+class AssetKeyRegistration(BaseModel):
+    key: str
+    asset_type: str
+    source_file: str = ""
+
+
+@router.post("/consistency/register-generation")
+async def consistency_register_generation(req: AssetKeyRegistration):
+    try:
+        asset_type = AssetType(req.asset_type)
+    except ValueError:
+        valid_types = [t.value for t in AssetType]
+        return {"error": f"Invalid asset_type '{req.asset_type}'. Valid types: {valid_types}"}
+    entry = _consistency_engine.register_generation(req.key, asset_type, req.source_file)
+    return entry.to_dict()
+
+@router.post("/consistency/register-manifest")
+async def consistency_register_manifest(req: AssetKeyRegistration):
+    try:
+        asset_type = AssetType(req.asset_type)
+    except ValueError:
+        valid_types = [t.value for t in AssetType]
+        return {"error": f"Invalid asset_type '{req.asset_type}'. Valid types: {valid_types}"}
+    entry = _consistency_engine.register_manifest(req.key, asset_type, req.source_file)
+    return entry.to_dict()
+
+@router.post("/consistency/register-reference")
+async def consistency_register_reference(req: AssetKeyRegistration):
+    try:
+        asset_type = AssetType(req.asset_type)
+    except ValueError:
+        valid_types = [t.value for t in AssetType]
+        return {"error": f"Invalid asset_type '{req.asset_type}'. Valid types: {valid_types}"}
+    entry = _consistency_engine.register_reference(req.key, asset_type, req.source_file)
+    return entry.to_dict()
+
+@router.post("/consistency/validate")
+async def consistency_validate():
+    report = _consistency_engine.validate()
+    return report.to_dict()
+
+@router.get("/consistency/keys")
+async def consistency_keys(asset_type: Optional[str] = None, status: Optional[str] = None):
+    at = AssetType(asset_type) if asset_type else None
+    st = KeyStatus(status) if status else None
+    return {"keys": _consistency_engine.list_keys(at, st)}
+
+@router.get("/consistency/reports")
+async def consistency_reports(limit: int = 20):
+    return {"reports": _consistency_engine.get_reports(limit)}
+
+@router.get("/consistency/stats")
+async def consistency_stats():
+    return _consistency_engine.get_stats()
+
+
+# === Memory Persistence Engine ===
+
+from sparkai.agent.agent_persistence import MemoryPersistenceEngine, CheckpointType, get_persistence_engine
+
+_persistence_engine = get_persistence_engine()
+
+
+class PersistenceSaveRequest(BaseModel):
+    category: str
+    key: str
+    data: Dict[str, Any]
+
+
+@router.post("/persistence/save")
+async def persistence_save(req: PersistenceSaveRequest):
+    status = _persistence_engine.save(req.category, req.key, req.data)
+    return {"status": status.value}
+
+@router.get("/persistence/load/{category}/{key}")
+async def persistence_load(category: str, key: str):
+    data, status = _persistence_engine.load(category, key)
+    return {"status": status.value, "data": data}
+
+@router.delete("/persistence/delete/{category}/{key}")
+async def persistence_delete(category: str, key: str):
+    status = _persistence_engine.delete(category, key)
+    return {"status": status.value}
+
+@router.get("/persistence/list/{category}")
+async def persistence_list(category: str):
+    return {"keys": _persistence_engine.list_keys(category)}
+
+@router.post("/persistence/checkpoint")
+async def persistence_checkpoint(checkpoint_type: str = "manual", label: str = ""):
+    ct = CheckpointType(checkpoint_type) if checkpoint_type in [t.value for t in CheckpointType] else CheckpointType.MANUAL
+    checkpoint = _persistence_engine.create_checkpoint(ct, label)
+    return checkpoint.to_dict()
+
+@router.post("/persistence/restore/{checkpoint_id}")
+async def persistence_restore(checkpoint_id: str):
+    success = _persistence_engine.restore_checkpoint(checkpoint_id)
+    return {"success": success}
+
+@router.get("/persistence/checkpoints")
+async def persistence_list_checkpoints():
+    return {"checkpoints": _persistence_engine.list_checkpoints()}
+
+@router.get("/persistence/stats")
+async def persistence_stats():
+    return _persistence_engine.get_stats()

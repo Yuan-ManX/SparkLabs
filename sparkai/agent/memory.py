@@ -217,17 +217,41 @@ class AgentMemory:
 
     def _compute_relevance(self, entry: MemoryEntry, query: str) -> float:
         content_lower = entry.content.lower()
+        query_lower = query.lower()
+
         keyword_score = 0.0
-        query_words = query.split()
+        query_words = [w for w in query_lower.split() if len(w) > 2]
         for word in query_words:
             if word in content_lower:
                 keyword_score += 0.3
+
+        bigram_score = 0.0
+        if len(query_words) >= 2:
+            query_bigrams = [f"{query_words[i]} {query_words[i+1]}" for i in range(len(query_words) - 1)]
+            for bigram in query_bigrams:
+                if bigram in content_lower:
+                    bigram_score += 0.4
+
+        tag_score = 0.0
+        if entry.metadata and "tags" in entry.metadata:
+            entry_tags = [str(t).lower() for t in entry.metadata["tags"]]
+            for word in query_words:
+                if word in entry_tags:
+                    tag_score += 0.3
+
+        type_weight = {
+            MemoryType.WORKING: 1.2,
+            MemoryType.SHORT_TERM: 1.0,
+            MemoryType.EPISODIC: 0.8,
+            MemoryType.LONG_TERM: 0.9,
+            MemoryType.SEMANTIC: 1.1,
+        }.get(entry.memory_type, 1.0)
 
         current_importance = entry.decay_importance()
         recency_score = max(0.0, 1.0 - (time.time() - entry.timestamp) / 86400.0)
         access_score = min(entry.access_count * 0.1, 0.3)
 
-        return keyword_score + current_importance * 0.3 + recency_score * 0.2 + access_score
+        return (keyword_score + bigram_score + tag_score + current_importance * 0.3 + recency_score * 0.2 + access_score) * type_weight
 
     def _enforce_capacity(self, memory_type: MemoryType) -> None:
         memories = self._memories.get(memory_type, [])

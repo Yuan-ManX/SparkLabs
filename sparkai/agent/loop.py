@@ -151,14 +151,17 @@ class AgentLoop:
         max_iterations: int = 25,
         stop_condition: Optional[Callable[[str], bool]] = None,
         on_iteration: Optional[Callable[[LoopIteration], None]] = None,
+        max_consecutive_errors: int = 3,
     ):
         self.agent = agent
         self.max_iterations = max_iterations
         self.stop_condition = stop_condition
         self.on_iteration = on_iteration
+        self.max_consecutive_errors = max_consecutive_errors
         self.state = LoopState.IDLE
         self._chain: Optional[ReasoningChain] = None
         self._cancelled = False
+        self._paused = False
 
     async def run(self, goal: str) -> ReasoningChain:
         """
@@ -171,17 +174,39 @@ class AgentLoop:
 
         try:
             current_input = goal
+            consecutive_errors = 0
 
             for i in range(self.max_iterations):
                 if self._cancelled:
                     self.state = LoopState.CANCELLED
                     break
 
+                while self._paused:
+                    self.state = LoopState.PAUSED
+                    await asyncio.sleep(0.5)
+                    if self._cancelled:
+                        self.state = LoopState.CANCELLED
+                        return self._chain or ReasoningChain(goal=goal)
+
+                self.state = LoopState.RUNNING
+
                 iteration = LoopIteration(iteration=i + 1)
 
                 # Phase 1: Think
                 thought = await self._think(current_input, i + 1)
                 iteration.thought = thought
+
+                # Error recovery: if thinking failed, try to recover
+                if thought.metadata.get("error"):
+                    consecutive_errors += 1
+                    if consecutive_errors >= self.max_consecutive_errors:
+                        self._chain.final_result = f"Loop terminated: {consecutive_errors} consecutive errors"
+                        break
+                    current_input = f"Previous thinking failed. Retry with simpler approach. Original goal: {goal}"
+                    self._chain.add_iteration(iteration)
+                    continue
+                else:
+                    consecutive_errors = 0
 
                 # Check stop condition on thought
                 if self.stop_condition and self.stop_condition(thought.content):
@@ -218,6 +243,7 @@ class AgentLoop:
                 )
 
             self.state = LoopState.COMPLETED
+            self.save_chain()
             return self._chain
 
         except Exception as e:
@@ -225,10 +251,35 @@ class AgentLoop:
             if self._chain:
                 self._chain.end_time = time.time()
                 self._chain.final_result = f"Loop failed: {str(e)}"
+            self.save_chain()
             return self._chain or ReasoningChain(goal=goal, final_result=str(e))
 
     def cancel(self) -> None:
         self._cancelled = True
+
+    def pause(self) -> None:
+        self._paused = True
+
+    def resume(self) -> None:
+        self._paused = False
+        self.state = LoopState.RUNNING
+
+    def is_paused(self) -> bool:
+        return self._paused
+
+    def save_chain(self, filepath: str = "") -> bool:
+        if not self._chain:
+            return False
+        try:
+            import json
+            from pathlib import Path
+            path = Path(filepath or f".sparkai/chains/{self._chain.goal[:50].replace(' ', '_')}.json")
+            path.parent.mkdir(parents=True, exist_ok=True)
+            with open(path, "w") as f:
+                json.dump(self._chain.to_dict(), f, indent=2, default=str)
+            return True
+        except Exception:
+            return False
 
     def get_chain(self) -> Optional[ReasoningChain]:
         return self._chain
@@ -241,32 +292,45 @@ class AgentLoop:
                 )
                 return ThoughtStep(content=response)
             except Exception as e:
-                return ThoughtStep(content=f"Thinking error: {str(e)}")
-        return ThoughtStep(content=f"[No agent] Input: {input_text[:200]}")
+                return ThoughtStep(
+                    content=f"Thinking error: {str(e)}",
+                    metadata={"error": True, "retry_eligible": True},
+                )
+        return ThoughtStep(content=f"[No agent] Input: {input_text[:500]}")
 
     def _decide_action(self, thought: str) -> ActionStep:
         thought_lower = thought.lower()
 
         tool_keywords = {
-            "create_world": ["create world", "new world", "make world"],
-            "create_entity": ["create entity", "add entity", "new entity", "spawn"],
-            "add_component": ["add component", "attach component"],
-            "create_scene": ["create scene", "new scene"],
-            "generate_asset": ["generate asset", "create asset", "make asset"],
-            "generate_code": ["write code", "generate code", "implement"],
-            "generate_narrative": ["write story", "generate narrative", "create story"],
-            "configure_npc": ["configure npc", "setup npc", "create npc"],
-            "create_quest": ["create quest", "add quest"],
-            "diagnose_error": ["diagnose", "debug", "fix error"],
-            "scaffold_project": ["scaffold", "create project", "new project"],
+            "create_world": ["create world", "new world", "make world", "build world", "generate world"],
+            "create_entity": ["create entity", "add entity", "new entity", "spawn", "create object"],
+            "add_component": ["add component", "attach component", "component"],
+            "create_scene": ["create scene", "new scene", "build scene"],
+            "generate_asset": ["generate asset", "create asset", "make asset", "asset"],
+            "generate_code": ["write code", "generate code", "implement", "code gen", "program"],
+            "generate_narrative": ["write story", "generate narrative", "create story", "narrative", "dialogue"],
+            "configure_npc": ["configure npc", "setup npc", "create npc", "npc behavior"],
+            "create_quest": ["create quest", "add quest", "quest design"],
+            "diagnose_error": ["diagnose", "debug", "fix error", "troubleshoot", "resolve error"],
+            "scaffold_project": ["scaffold", "create project", "new project", "initialize project"],
+            "evaluate_game": ["evaluate", "assess", "quality check", "review game"],
+            "run_playtest": ["playtest", "test game", "run test", "play test"],
         }
 
+        best_match = None
+        best_score = 0
         for tool_name, keywords in tool_keywords.items():
             for kw in keywords:
                 if kw in thought_lower:
-                    return ActionStep(tool_name=tool_name, parameters={"prompt": thought})
+                    score = len(kw)
+                    if score > best_score:
+                        best_score = score
+                        best_match = tool_name
 
-        if any(kw in thought_lower for kw in ["done", "complete", "finished", "task complete"]):
+        if best_match:
+            return ActionStep(tool_name=best_match, parameters={"prompt": thought})
+
+        if any(kw in thought_lower for kw in ["done", "complete", "finished", "task complete", "goal achieved"]):
             return ActionStep(tool_name="done", parameters={})
 
         return ActionStep(tool_name="reason", parameters={"thought": thought})
@@ -287,7 +351,7 @@ class AgentLoop:
             if self.agent and hasattr(self.agent, 'act'):
                 result = await self.agent.act(action.tool_name, action.parameters)
                 return ObservationStep(
-                    content=str(result)[:500] if result else "Action completed with no output",
+                    content=str(result)[:2000] if result else "Action completed with no output",
                     success=True,
                     duration=time.time() - start,
                 )
@@ -347,23 +411,31 @@ class Pipeline:
 
         for i, stage in enumerate(self._stages):
             stage_start = time.time()
-            try:
-                stage_result = await self._execute_stage(stage, context)
-                context.update(stage_result.get("context_update", {}))
-                self._results.append({
-                    "stage": stage["name"],
-                    "status": "completed",
-                    "duration": time.time() - stage_start,
-                    "result": stage_result,
-                })
-            except Exception as e:
-                self._results.append({
-                    "stage": stage["name"],
-                    "status": "failed",
-                    "duration": time.time() - stage_start,
-                    "error": str(e),
-                })
-                break
+            max_retries = 2
+            for attempt in range(max_retries + 1):
+                try:
+                    stage_result = await self._execute_stage(stage, context)
+                    context.update(stage_result.get("context_update", {}))
+                    self._results.append({
+                        "stage": stage["name"],
+                        "status": "completed",
+                        "duration": time.time() - stage_start,
+                        "result": stage_result,
+                        "attempt": attempt + 1,
+                    })
+                    break
+                except Exception as e:
+                    if attempt < max_retries:
+                        await asyncio.sleep(1.0 * (2 ** attempt))
+                        continue
+                    self._results.append({
+                        "stage": stage["name"],
+                        "status": "failed",
+                        "duration": time.time() - stage_start,
+                        "error": str(e),
+                        "attempts": attempt + 1,
+                    })
+                    break
 
         return {
             "prompt": prompt,
@@ -389,16 +461,20 @@ class Pipeline:
                 "context_update": {f"stage_{stage_name}": response[:500]},
             }
 
+        prompt = context.get("prompt", "")
+        genre = context.get("genre", "unspecified")
+        systems = context.get("systems", [])
+
         stage_outputs = {
-            "analyze": f"Analyzed prompt: genre=platformer, systems=[physics, input, rendering]",
-            "design": f"Game design: 2D platformer with 3 levels, player movement, enemy AI",
-            "scaffold": f"Project scaffolded: index.html, game.js, style.css, assets/",
-            "implement": f"Implemented: PhysicsEngine, PlayerController, EnemyAI, LevelManager",
-            "integrate": f"Integrated: All systems wired, game loop running at 60fps",
-            "validate": f"Validated: Build health 100%, visual usability 80%, intent alignment 90%",
+            "analyze": f"Analyzed prompt: genre={genre}, systems={systems or ['core']}, prompt_summary='{prompt[:100]}'",
+            "design": f"Game design generated from prompt: '{prompt[:80]}' (no agent connected for detailed design)",
+            "scaffold": f"Project structure prepared for {genre} game (awaiting agent for code generation)",
+            "implement": f"Implementation pending - no agent connected to generate code for {genre} game",
+            "integrate": f"Integration pending - no agent connected to wire systems for {genre} game",
+            "validate": f"Validation pending - no agent connected to verify {genre} game build",
         }
 
         return {
-            "output": stage_outputs.get(stage_name, f"Stage {stage_name} completed"),
-            "context_update": {f"stage_{stage_name}": stage_outputs.get(stage_name, "")},
+            "output": stage_outputs.get(stage_name, f"Stage {stage_name} pending (no agent)"),
+            "context_update": {f"stage_{stage_name}": stage_outputs.get(stage_name, ""), "agent_connected": False},
         }

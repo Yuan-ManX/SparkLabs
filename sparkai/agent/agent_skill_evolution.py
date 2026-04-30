@@ -400,15 +400,20 @@ class SkillEvolutionEngine:
 
     def _check_evolution(self, skill: SkillTemplate) -> None:
         maturity_thresholds = {
-            SkillMaturity.SEED: 5,
-            SkillMaturity.SPROUT: 15,
-            SkillMaturity.GROWING: 30,
-            SkillMaturity.MATURE: 60,
-            SkillMaturity.EXPERT: 100,
+            SkillMaturity.SEED: {"usage": 5, "success_rate": 0.3},
+            SkillMaturity.SPROUT: {"usage": 15, "success_rate": 0.4},
+            SkillMaturity.GROWING: {"usage": 30, "success_rate": 0.5},
+            SkillMaturity.MATURE: {"usage": 60, "success_rate": 0.6},
+            SkillMaturity.EXPERT: {"usage": 100, "success_rate": 0.7},
         }
 
-        current_threshold = maturity_thresholds.get(skill.maturity, 999)
-        if skill.usage_count >= current_threshold:
+        current_threshold = maturity_thresholds.get(skill.maturity, {"usage": 999, "success_rate": 1.0})
+        usage_met = skill.usage_count >= current_threshold["usage"]
+
+        success_rate = skill.success_rate if skill.success_rate > 0 else 0.5
+        rate_met = success_rate >= current_threshold["success_rate"]
+
+        if usage_met and rate_met:
             old_maturity = skill.maturity
             if skill.maturity == SkillMaturity.SEED:
                 skill.maturity = SkillMaturity.SPROUT
@@ -425,12 +430,24 @@ class SkillEvolutionEngine:
                 evolution = EvolutionCycle(
                     skill_id=skill.id,
                     evolution_type=EvolutionType.PATTERN_REFINEMENT,
-                    before_state={"maturity": old_maturity.value, "usage_count": skill.usage_count},
-                    after_state={"maturity": skill.maturity.value, "usage_count": skill.usage_count},
-                    trigger=f"Usage threshold reached: {skill.usage_count} >= {current_threshold}",
+                    before_state={"maturity": old_maturity.value, "usage_count": skill.usage_count, "success_rate": success_rate},
+                    after_state={"maturity": skill.maturity.value, "usage_count": skill.usage_count, "success_rate": success_rate},
+                    trigger=f"Usage threshold ({skill.usage_count}/{current_threshold['usage']}) and success rate ({success_rate:.2f}/{current_threshold['success_rate']:.2f}) met",
                     improvement_score=skill.maturity.value - old_maturity.value,
                 )
                 self._evolutions.append(evolution)
+        elif usage_met and not rate_met:
+            if skill.maturity in (SkillMaturity.SEED, SkillMaturity.SPROUT):
+                pass
+            else:
+                self._evolutions.append(EvolutionCycle(
+                    skill_id=skill.id,
+                    evolution_type=EvolutionType.PARAMETER_TUNING,
+                    before_state={"maturity": skill.maturity.value, "success_rate": success_rate},
+                    after_state={"maturity": skill.maturity.value, "success_rate": success_rate},
+                    trigger=f"Usage met but success rate ({success_rate:.2f}) below threshold ({current_threshold['success_rate']:.2f})",
+                    improvement_score=0,
+                ))
 
     def create_protocol(
         self,
