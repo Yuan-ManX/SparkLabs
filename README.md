@@ -13,6 +13,7 @@
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 
+![SparkLabs-Video](./assets/SparkLabs-Video.gif)
 
 [Website](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](https://yuan-manx.github.io/SparkLabs/editor.html) · [Quickstart](#quick-start) · [Key Features](#key-features) · [Docs](#documentation) · [Contributing](#contributing)
 
