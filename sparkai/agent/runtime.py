@@ -135,6 +135,10 @@ from sparkai.agent.agent_credential import CredentialManager, get_credential_man
 from sparkai.agent.agent_sandbox import SandboxEngine, get_sandbox_engine
 from sparkai.agent.asset_consistency import AssetConsistencyEngine, get_consistency_engine
 from sparkai.agent.agent_persistence import MemoryPersistenceEngine, get_persistence_engine
+from sparkai.agent.agent_error_classifier import ErrorClassifier, get_error_classifier
+from sparkai.agent.agent_file_state import FileStateEngine, get_file_state_engine
+from sparkai.agent.agent_subagent_spawner import SubagentSpawner, get_subagent_spawner
+from sparkai.agent.agent_tool_pruner import ToolOutputPruner, get_tool_output_pruner
 
 
 class RuntimeState(Enum):
@@ -246,6 +250,10 @@ class AgentRuntime:
         self._sandbox_engine: Optional[SandboxEngine] = None
         self._consistency_engine: Optional[AssetConsistencyEngine] = None
         self._persistence_engine: Optional[MemoryPersistenceEngine] = None
+        self._error_classifier: Optional[ErrorClassifier] = None
+        self._file_state_engine: Optional[FileStateEngine] = None
+        self._subagent_spawner: Optional[SubagentSpawner] = None
+        self._tool_pruner: Optional[ToolOutputPruner] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -320,6 +328,10 @@ class AgentRuntime:
             self._sandbox_engine = get_sandbox_engine()
             self._consistency_engine = get_consistency_engine()
             self._persistence_engine = get_persistence_engine()
+            self._error_classifier = get_error_classifier()
+            self._file_state_engine = get_file_state_engine()
+            self._subagent_spawner = get_subagent_spawner()
+            self._tool_pruner = get_tool_output_pruner()
             self._integration.register_subsystem("protocol", self._protocol)
             self._integration.register_subsystem("orchestrator", self._orchestrator)
             self._integration.register_subsystem("studio", self._studio_coordinator)
@@ -331,7 +343,14 @@ class AgentRuntime:
             self._integration.register_subsystem("sandbox", self._sandbox_engine)
             self._integration.register_subsystem("consistency", self._consistency_engine)
             self._integration.register_subsystem("persistence", self._persistence_engine)
+            self._integration.register_subsystem("error_classifier", self._error_classifier)
+            self._integration.register_subsystem("file_state", self._file_state_engine)
+            self._integration.register_subsystem("subagent_spawner", self._subagent_spawner)
+            self._integration.register_subsystem("tool_pruner", self._tool_pruner)
             self._integration.connect_all()
+
+            self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
+            self._recovery_engine.register_action_handler("compress_context", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
 
             if self._protocol and self._event_bus:
                 self._event_bus.subscribe(
@@ -347,7 +366,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 58,
+                    "subsystems": 62,
                 }},
             ))
 
@@ -889,6 +908,10 @@ class AgentRuntime:
                 "sandbox_engine": self._sandbox_engine is not None,
                 "consistency_engine": self._consistency_engine is not None,
                 "persistence_engine": self._persistence_engine is not None,
+                "error_classifier": self._error_classifier is not None,
+                "file_state_engine": self._file_state_engine is not None,
+                "subagent_spawner": self._subagent_spawner is not None,
+                "tool_pruner": self._tool_pruner is not None,
             },
         }
 
@@ -996,6 +1019,14 @@ class AgentRuntime:
             status["consistency_stats"] = self._consistency_engine.get_stats()
         if self._persistence_engine:
             status["persistence_stats"] = self._persistence_engine.get_stats()
+        if self._error_classifier:
+            status["error_classifier_stats"] = self._error_classifier.get_stats()
+        if self._file_state_engine:
+            status["file_state_stats"] = self._file_state_engine.get_stats()
+        if self._subagent_spawner:
+            status["subagent_spawner_stats"] = self._subagent_spawner.get_stats()
+        if self._tool_pruner:
+            status["tool_pruner_stats"] = self._tool_pruner.get_stats()
         return status
 
 

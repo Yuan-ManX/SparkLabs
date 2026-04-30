@@ -25,6 +25,7 @@ Recovery Flow:
 from __future__ import annotations
 
 import asyncio
+import random
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -397,8 +398,9 @@ class RecoveryEngine:
                 return
 
             if attempt < recipe.max_attempts:
-                backoff = recipe.backoff_base_seconds * (2 ** (attempt - 1))
-                await asyncio.sleep(min(backoff, 30.0))
+                base = recipe.backoff_base_seconds * (2 ** (attempt - 1))
+                jitter = random.uniform(0, base * 0.5)
+                await asyncio.sleep(min(base + jitter, 30.0))
 
         self._escalate(record, recipe)
 

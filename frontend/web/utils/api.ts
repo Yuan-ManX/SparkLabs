@@ -1439,3 +1439,91 @@ export const persistenceApi = {
   listCheckpoints: () => api.get('/agent/persistence/checkpoints'),
   stats: () => api.get('/agent/persistence/stats'),
 };
+
+export const errorClassifierApi = {
+  classify: (errorMessage: string, httpStatus?: number, contextTokens?: number, contextMessages?: number, provider?: string) => {
+    const params = new URLSearchParams();
+    params.set('error_message', errorMessage);
+    if (httpStatus !== undefined) params.set('http_status', String(httpStatus));
+    if (contextTokens !== undefined) params.set('context_tokens', String(contextTokens));
+    if (contextMessages !== undefined) params.set('context_messages', String(contextMessages));
+    if (provider) params.set('provider', provider);
+    return api.post(`/agent/error-classifier/classify?${params.toString()}`);
+  },
+  stats: () => api.get('/agent/error-classifier/stats'),
+};
+
+export const fileStateApi = {
+  registerRead: (agentId: string, filePath: string) => {
+    const params = new URLSearchParams();
+    params.set('agent_id', agentId);
+    params.set('file_path', filePath);
+    return api.post(`/agent/file-state/register-read?${params.toString()}`);
+  },
+  registerWrite: (agentId: string, filePath: string, content?: string) => {
+    const params = new URLSearchParams();
+    params.set('agent_id', agentId);
+    params.set('file_path', filePath);
+    if (content) params.set('content', content);
+    return api.post(`/agent/file-state/register-write?${params.toString()}`);
+  },
+  registerCreate: (agentId: string, filePath: string, content?: string) => {
+    const params = new URLSearchParams();
+    params.set('agent_id', agentId);
+    params.set('file_path', filePath);
+    if (content) params.set('content', content);
+    return api.post(`/agent/file-state/register-create?${params.toString()}`);
+  },
+  checkStale: (agentId: string, filePath: string) => {
+    const params = new URLSearchParams();
+    params.set('agent_id', agentId);
+    params.set('file_path', filePath);
+    return api.get(`/agent/file-state/check-stale?${params.toString()}`);
+  },
+  staleAlerts: (agentId: string) => api.get(`/agent/file-state/stale-alerts/${agentId}`),
+  acquireLock: (agentId: string, filePath: string, timeout?: number) => {
+    const params = new URLSearchParams();
+    params.set('agent_id', agentId);
+    params.set('file_path', filePath);
+    if (timeout !== undefined) params.set('timeout', String(timeout));
+    return api.post(`/agent/file-state/acquire-lock?${params.toString()}`);
+  },
+  releaseLock: (agentId: string, filePath: string) => {
+    const params = new URLSearchParams();
+    params.set('agent_id', agentId);
+    params.set('file_path', filePath);
+    return api.post(`/agent/file-state/release-lock?${params.toString()}`);
+  },
+  getVersion: (filePath: string) => api.get(`/agent/file-state/version/${filePath}`),
+  stats: () => api.get('/agent/file-state/stats'),
+};
+
+export const subagentApi = {
+  spawn: (parentId: string, taskDescription: string, role?: string, maxSpawnDepth?: number, timeoutSeconds?: number, currentDepth?: number) =>
+    api.post('/agent/subagent/spawn', {
+      parent_id: parentId,
+      task_description: taskDescription,
+      role: role || 'worker',
+      max_spawn_depth: maxSpawnDepth || 2,
+      timeout_seconds: timeoutSeconds || 600,
+      current_depth: currentDepth || 0,
+    }),
+  start: (subagentId: string) => api.post(`/agent/subagent/${subagentId}/start`),
+  complete: (subagentId: string, output?: string) => api.post(`/agent/subagent/${subagentId}/complete`, output ? { output } : undefined),
+  fail: (subagentId: string, error: string) => api.post(`/agent/subagent/${subagentId}/fail`, { error }),
+  get: (subagentId: string) => api.get(`/agent/subagent/${subagentId}`),
+  active: (parentId?: string) => api.get(`/agent/subagent/active${parentId ? `?parent_id=${encodeURIComponent(parentId)}` : ''}`),
+  children: (parentId: string) => api.get(`/agent/subagent/children/${parentId}`),
+  stats: () => api.get('/agent/subagent/stats'),
+};
+
+export const toolPrunerApi = {
+  prune: (toolName: string, output: string) => {
+    const params = new URLSearchParams();
+    params.set('tool_name', toolName);
+    params.set('output', output);
+    return api.post(`/agent/tool-pruner/prune?${params.toString()}`);
+  },
+  rules: () => api.get('/agent/tool-pruner/rules'),
+  stats: () => api.get('/agent/tool-pruner/stats'),
+};

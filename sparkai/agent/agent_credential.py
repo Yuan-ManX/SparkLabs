@@ -61,6 +61,8 @@ class CredentialEntry:
     max_requests_per_minute: int = 60
     request_count: int = 0
     failure_count: int = 0
+    _window_start: float = field(default_factory=time.time)
+    _window_request_count: int = 0
     last_used_at: Optional[float] = None
     last_rotated_at: Optional[float] = None
     rotation_interval_hours: float = 720.0
@@ -96,10 +98,20 @@ class CredentialEntry:
         return 1.0 - (self.failure_count / total)
 
     def is_rate_limited(self) -> bool:
-        if self.last_used_at and self.request_count > 0:
-            window_start = time.time() - 60.0
-            return self.request_count >= self.max_requests_per_minute
-        return False
+        now = time.time()
+        if now - self._window_start >= 60.0:
+            self._window_start = now
+            self._window_request_count = 0
+        return self._window_request_count >= self.max_requests_per_minute
+
+    def record_request(self) -> None:
+        now = time.time()
+        if now - self._window_start >= 60.0:
+            self._window_start = now
+            self._window_request_count = 0
+        self._window_request_count += 1
+        self.request_count += 1
+        self.last_used_at = now
 
     def needs_rotation(self) -> bool:
         if self.last_rotated_at:
@@ -163,7 +175,7 @@ class KeyPool:
     def remove(self, credential_id: str) -> None:
         self._entries = [e for e in self._entries if e.id != credential_id]
 
-    def select(self, provider: Optional[str] = None, scope: Optional[KeyScope] = None) -> Optional[CredentialEntry]:
+    def select(self, provider: Optional[str] = None, scope: Optional[KeyScope] = None, strategy: str = "scored") -> Optional[CredentialEntry]:
         candidates = self._entries
         if provider:
             candidates = [e for e in candidates if e.provider == provider]
@@ -176,10 +188,16 @@ class KeyPool:
         if not available:
             return None
 
-        available.sort(key=lambda e: (e.reliability * 0.5 + e.priority / 100.0 * 0.3 + (1.0 if not e.is_rate_limited() else 0.0) * 0.2), reverse=True)
+        if strategy == "least_used":
+            available.sort(key=lambda e: e.request_count)
+            return available[0]
+
+        available.sort(key=lambda e: (e.reliability * 0.4 + e.priority / 100.0 * 0.3 + (1.0 if not e.is_rate_limited() else 0.0) * 0.15 + (1.0 - min(e.request_count / max(sum(x.request_count for x in available), 1), 1.0)) * 0.15), reverse=True)
 
         self._index = (self._index + 1) % len(available)
-        return available[self._index]
+        selected = available[self._index]
+        selected.record_request()
+        return selected
 
     def get_all(self) -> List[CredentialEntry]:
         return list(self._entries)

@@ -99,6 +99,8 @@ class AgentDescriptor:
     avg_latency_ms: float = 0.0
     success_rate: float = 1.0
     specializations: List[str] = field(default_factory=list)
+    blocked_tools: Set[str] = field(default_factory=set)
+    allowed_tools: Optional[Set[str]] = None
     metadata: Dict[str, Any] = field(default_factory=dict)
     registered_at: float = field(default_factory=time.time)
     last_active: float = field(default_factory=time.time)
@@ -116,6 +118,7 @@ class AgentDescriptor:
             "avg_latency_ms": self.avg_latency_ms,
             "success_rate": self.success_rate,
             "specializations": self.specializations,
+            "blocked_tools": list(self.blocked_tools),
             "available": self.current_tasks < self.max_concurrent_tasks,
             "registered_at": self.registered_at,
             "last_active": self.last_active,
@@ -155,6 +158,8 @@ class OrchestratedTask:
     assigned_agent_id: Optional[str] = None
     parent_task_id: Optional[str] = None
     sub_tasks: List[str] = field(default_factory=list)
+    spawn_depth: int = 0
+    max_spawn_depth: int = 3
     input_data: Dict[str, Any] = field(default_factory=dict)
     output_data: Dict[str, Any] = field(default_factory=dict)
     error: Optional[str] = None

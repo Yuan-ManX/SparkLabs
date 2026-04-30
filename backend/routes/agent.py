@@ -3822,3 +3822,197 @@ async def persistence_list_checkpoints():
 @router.get("/persistence/stats")
 async def persistence_stats():
     return _persistence_engine.get_stats()
+
+
+# === Error Classification Engine ===
+
+from sparkai.agent.agent_error_classifier import ErrorClassifier, get_error_classifier
+
+_error_classifier = get_error_classifier()
+
+
+@router.post("/error-classifier/classify")
+async def error_classifier_classify(
+    error_message: str = "",
+    http_status: Optional[int] = None,
+    context_tokens: int = 0,
+    context_messages: int = 0,
+    provider: str = "",
+):
+    try:
+        exc = Exception(error_message)
+        classified = _error_classifier.classify(
+            exc,
+            context_tokens=context_tokens,
+            context_messages=context_messages,
+            provider=provider,
+            http_status=http_status,
+        )
+        return classified.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/error-classifier/stats")
+async def error_classifier_stats():
+    return _error_classifier.get_stats()
+
+
+# === File State Coordination Engine ===
+
+from sparkai.agent.agent_file_state import FileStateEngine, get_file_state_engine
+
+_file_state_engine = get_file_state_engine()
+
+
+@router.post("/file-state/register-read")
+async def file_state_register_read(agent_id: str, file_path: str):
+    version = _file_state_engine.register_read(agent_id, file_path)
+    return version.to_dict()
+
+
+@router.post("/file-state/register-write")
+async def file_state_register_write(agent_id: str, file_path: str, content: str = ""):
+    version = _file_state_engine.register_write(agent_id, file_path, content)
+    return version.to_dict()
+
+
+@router.post("/file-state/register-create")
+async def file_state_register_create(agent_id: str, file_path: str, content: str = ""):
+    version = _file_state_engine.register_create(agent_id, file_path, content)
+    return version.to_dict()
+
+
+@router.get("/file-state/check-stale")
+async def file_state_check_stale(agent_id: str, file_path: str):
+    alert = _file_state_engine.check_stale(agent_id, file_path)
+    return alert.to_dict() if alert else {"stale": False}
+
+
+@router.get("/file-state/stale-alerts/{agent_id}")
+async def file_state_stale_alerts(agent_id: str):
+    return {"alerts": [a.to_dict() for a in _file_state_engine.get_stale_alerts(agent_id)]}
+
+
+@router.post("/file-state/acquire-lock")
+async def file_state_acquire_lock(agent_id: str, file_path: str, timeout: float = 300.0):
+    success, error = _file_state_engine.acquire_write_lock(agent_id, file_path, timeout)
+    return {"success": success, "error": error}
+
+
+@router.post("/file-state/release-lock")
+async def file_state_release_lock(agent_id: str, file_path: str):
+    success = _file_state_engine.release_write_lock(agent_id, file_path)
+    return {"success": success}
+
+
+@router.get("/file-state/version/{file_path:path}")
+async def file_state_get_version(file_path: str):
+    version = _file_state_engine.get_file_version(file_path)
+    return version.to_dict() if version else {"version": 0}
+
+
+@router.get("/file-state/stats")
+async def file_state_stats():
+    return _file_state_engine.get_stats()
+
+
+# === Subagent Spawner Engine ===
+
+from sparkai.agent.agent_subagent_spawner import (
+    SubagentSpawner, SubagentConfig, SubagentRole, SpawnRequest,
+    get_subagent_spawner,
+)
+
+_subagent_spawner = get_subagent_spawner()
+
+
+class SubagentSpawnRequest(BaseModel):
+    parent_id: str
+    task_description: str
+    role: str = "worker"
+    max_spawn_depth: int = 2
+    timeout_seconds: float = 600.0
+    current_depth: int = 0
+
+
+@router.post("/subagent/spawn")
+async def subagent_spawn(req: SubagentSpawnRequest):
+    role = SubagentRole(req.role) if req.role in [r.value for r in SubagentRole] else SubagentRole.WORKER
+    config = SubagentConfig(
+        role=role,
+        max_spawn_depth=req.max_spawn_depth,
+        timeout_seconds=req.timeout_seconds,
+    )
+    request = SpawnRequest(
+        parent_id=req.parent_id,
+        task_description=req.task_description,
+        config=config,
+        current_depth=req.current_depth,
+    )
+    result = _subagent_spawner.create_subagent(request)
+    return result.to_dict()
+
+
+@router.post("/subagent/{subagent_id}/start")
+async def subagent_start(subagent_id: str):
+    _subagent_spawner.start_subagent(subagent_id)
+    return {"status": "started"}
+
+
+@router.post("/subagent/{subagent_id}/complete")
+async def subagent_complete(subagent_id: str, output: Optional[str] = None):
+    _subagent_spawner.complete_subagent(subagent_id, output)
+    return {"status": "completed"}
+
+
+@router.post("/subagent/{subagent_id}/fail")
+async def subagent_fail(subagent_id: str, error: str = "Unknown error"):
+    _subagent_spawner.fail_subagent(subagent_id, error)
+    return {"status": "failed"}
+
+
+@router.get("/subagent/{subagent_id}")
+async def subagent_get(subagent_id: str):
+    result = _subagent_spawner.get_subagent(subagent_id)
+    return result.to_dict() if result else {"error": "Subagent not found"}
+
+
+@router.get("/subagent/active")
+async def subagent_active(parent_id: Optional[str] = None):
+    results = _subagent_spawner.get_active_subagents(parent_id)
+    return {"subagents": [r.to_dict() for r in results]}
+
+
+@router.get("/subagent/children/{parent_id}")
+async def subagent_children(parent_id: str):
+    children = _subagent_spawner.get_children(parent_id)
+    return {"children": [c.to_dict() for c in children]}
+
+
+@router.get("/subagent/stats")
+async def subagent_stats():
+    return _subagent_spawner.get_stats()
+
+
+# === Tool Output Pruner Engine ===
+
+from sparkai.agent.agent_tool_pruner import ToolOutputPruner, get_tool_output_pruner
+
+_tool_pruner = get_tool_output_pruner()
+
+
+@router.post("/tool-pruner/prune")
+async def tool_pruner_prune(tool_name: str, output: str = ""):
+    pruned_output, result = _tool_pruner.prune(tool_name, output)
+    return {"pruned_output": pruned_output[:500], "prune_result": result.to_dict()}
+
+
+@router.get("/tool-pruner/rules")
+async def tool_pruner_rules():
+    return {"rules": {name: rule.to_dict() for name, rule in _tool_pruner._rules.items()}}
+
+
+@router.get("/tool-pruner/stats")
+async def tool_pruner_stats():
+    return _tool_pruner.get_stats()

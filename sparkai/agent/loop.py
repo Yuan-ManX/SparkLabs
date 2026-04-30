@@ -17,6 +17,7 @@ thought-action-observation triple for transparency and debugging.
 from __future__ import annotations
 
 import asyncio
+import random
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -426,7 +427,9 @@ class Pipeline:
                     break
                 except Exception as e:
                     if attempt < max_retries:
-                        await asyncio.sleep(1.0 * (2 ** attempt))
+                        base = 1.0 * (2 ** attempt)
+                        jitter = random.uniform(0, base * 0.5)
+                        await asyncio.sleep(base + jitter)
                         continue
                     self._results.append({
                         "stage": stage["name"],
