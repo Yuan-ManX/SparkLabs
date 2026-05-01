@@ -471,7 +471,7 @@ class ErrorClassifier:
             value = float(match.group(1))
             unit = (match.group(2) or "s").lower()
             if unit.startswith("m") and not unit.startswith("mi"):
-                pass
+                value *= 60.0
             elif unit.startswith("min"):
                 value *= 60.0
             elif unit.startswith("h"):

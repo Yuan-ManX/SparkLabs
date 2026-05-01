@@ -6,7 +6,6 @@ stale-cache bugs in multi-agent workflows. Provides write-lock
 coordination, stale-cache detection, and file versioning.
 """
 
-import asyncio
 import hashlib
 import os
 import time
@@ -116,7 +115,6 @@ class FileStateEngine:
         self._write_locks: Dict[str, WriteLock] = {}
         self._agent_reads: Dict[str, Dict[str, int]] = {}
         self._stale_alerts: List[StaleCacheAlert] = []
-        self._lock = asyncio.Lock() if asyncio.get_event_loop().is_running() else None
         self._stats = {
             "reads": 0,
             "writes": 0,

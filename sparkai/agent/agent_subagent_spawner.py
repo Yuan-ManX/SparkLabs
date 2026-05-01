@@ -268,15 +268,19 @@ class SubagentSpawner:
         parent_files_read = set()
         child_files_written = set()
 
+        from sparkai.agent.agent_file_state import get_file_state_engine
+        file_state = get_file_state_engine()
+        for access in file_state._access_log.get(parent_id, []):
+            parent_files_read.add(access.file_path)
+
         for child in children:
             child_files_written.update(child.files_written)
 
-        if stale:
-            for f in parent_files_read & child_files_written:
-                stale.append({
-                    "file": f,
-                    "reason": "Child subagent modified a file the parent previously read",
-                })
+        for f in parent_files_read & child_files_written:
+            stale.append({
+                "file": f,
+                "reason": "Child subagent modified a file the parent previously read",
+            })
         return stale
 
     def get_stats(self) -> Dict[str, Any]:

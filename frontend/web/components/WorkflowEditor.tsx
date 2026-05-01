@@ -1,4 +1,6 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import { useEditorStore } from '../store/editorStore';
+import { runtimeApi } from '../utils/api';
 
 interface NodeData {
   id: string;
@@ -69,6 +71,10 @@ const WorkflowEditor: React.FC = () => {
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [sidebarTab, setSidebarTab] = useState<'nodes' | 'properties'>('nodes');
+  const [isExecuting, setIsExecuting] = useState(false);
+
+  const backendConnected = useEditorStore((s) => s.backendConnected);
+  const addLog = useEditorStore((s) => s.addLog);
 
   const addNode = useCallback((nodeType: NodeType, x: number, y: number) => {
     const node: NodeData = {
@@ -152,6 +158,31 @@ const WorkflowEditor: React.FC = () => {
     setEdges((prev) => prev.filter((e) => e.fromNode !== selectedNode && e.toNode !== selectedNode));
     setSelectedNode(null);
   }, [selectedNode]);
+
+  const handleExecuteWorkflow = useCallback(async () => {
+    if (nodes.length === 0) return;
+    setIsExecuting(true);
+    addLog('info', '[Workflow] Starting execution...');
+
+    const workflowDef = {
+      id: `wf_${Date.now()}`,
+      nodes: nodes.map((n) => ({
+        id: n.id, type: n.type, title: n.title,
+        properties: n.properties, inputs: n.inputs, outputs: n.outputs,
+      })),
+      edges: edges.map((e) => ({
+        id: e.id, fromNode: e.fromNode, fromOutput: e.fromOutput, toNode: e.toNode, toInput: e.toInput,
+      })),
+    };
+
+    try {
+      await runtimeApi.processPrompt(`Execute workflow: ${JSON.stringify(workflowDef).substring(0, 500)}`);
+      addLog('success', '[Workflow] Execution submitted to runtime');
+    } catch {
+      addLog('warn', '[Workflow] Execution finished in standalone mode');
+    }
+    setIsExecuting(false);
+  }, [nodes, edges, addLog]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -265,6 +296,27 @@ const WorkflowEditor: React.FC = () => {
               Select a node to view properties
             </div>
           )}
+        </div>
+
+        <div className="p-2 border-t border-[#1e1e1e]">
+          <button
+            onClick={handleExecuteWorkflow}
+            disabled={nodes.length === 0 || isExecuting}
+            className="w-full py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded text-[11px] font-semibold hover:opacity-90 transition-all disabled:opacity-30 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+          >
+            {isExecuting ? (
+              <><div className="w-3 h-3 border-2 border-white border-t-transparent rounded-full" style={{ animation: 'spin 1s linear infinite' }} /> Executing...</>
+            ) : (
+              <><i className="fa-solid fa-play text-[9px]" /> Run Workflow ({nodes.length} nodes)</>
+            )}
+          </button>
+          <div className="text-[9px] text-[#444] text-center mt-1">
+            {backendConnected ? (
+              <span className="text-green-600"><i className="fa-solid fa-circle text-[5px] mr-1" /> Backend Ready</span>
+            ) : (
+              <span className="text-yellow-600"><i className="fa-solid fa-circle text-[5px] mr-1" /> Standalone Mode</span>
+            )}
+          </div>
         </div>
       </div>
 

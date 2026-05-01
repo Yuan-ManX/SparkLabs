@@ -4048,3 +4048,349 @@ async def trajectory_recommendation(goal: str = ""):
 @router.get("/trajectory/stats")
 async def trajectory_stats():
     return _trajectory_learner.get_stats()
+
+
+# === Intent Classifier Engine ===
+
+from sparkai.agent.agent_intent_classifier import IntentClassifier, get_intent_classifier, PromptIntent
+
+_intent_classifier = get_intent_classifier()
+
+
+class IntentClassifyRequest(BaseModel):
+    prompt: str
+
+
+class IntentBatchClassifyRequest(BaseModel):
+    prompts: List[str]
+
+
+@router.post("/intent/classify")
+async def intent_classify(request: IntentClassifyRequest):
+    result = _intent_classifier.classify(request.prompt)
+    return result.to_dict()
+
+
+@router.post("/intent/classify-batch")
+async def intent_classify_batch(request: IntentBatchClassifyRequest):
+    results = _intent_classifier.classify_batch(request.prompts)
+    summary = _intent_classifier.get_intent_summary(results)
+    return {
+        "results": [r.to_dict() for r in results],
+        "summary": summary,
+    }
+
+
+@router.get("/intent/intents")
+async def intent_list_intents():
+    return {"intents": [i.value for i in PromptIntent]}
+
+
+# === Skill Curator Engine ===
+
+from sparkai.agent.agent_skill_curator import SkillCurator, get_skill_curator
+
+_skill_curator = get_skill_curator()
+
+
+class SkillRegisterRequest(BaseModel):
+    name: str
+    description: str
+    category: str
+    source_agent: str = ""
+    tags: Optional[List[str]] = None
+
+
+class SkillConsolidateRequest(BaseModel):
+    parent_id: str
+    child_ids: List[str]
+    strategy: str = "merge"
+
+
+class SkillUsageRequest(BaseModel):
+    skill_id: str
+    success: bool = True
+
+
+@router.get("/curator/health")
+async def curator_health():
+    return _skill_curator.get_ecosystem_health()
+
+
+@router.get("/curator/skills")
+async def curator_list_skills(
+    category: Optional[str] = None,
+    lifecycle: Optional[str] = None,
+    min_success_rate: float = 0.0,
+):
+    lc = None
+    if lifecycle:
+        try:
+            from sparkai.agent.agent_skill_curator import SkillLifecycle
+            lc = SkillLifecycle(lifecycle)
+        except ValueError:
+            pass
+    skills = _skill_curator.list_skills(category=category, lifecycle=lc, min_success_rate=min_success_rate)
+    return {"skills": [s.to_dict() for s in skills], "count": len(skills)}
+
+
+@router.get("/curator/categories")
+async def curator_categories():
+    return {"categories": _skill_curator.get_categories()}
+
+
+@router.post("/curator/register")
+async def curator_register(request: SkillRegisterRequest):
+    skill = _skill_curator.register_skill(
+        name=request.name,
+        description=request.description,
+        category=request.category,
+        source_agent=request.source_agent,
+        tags=request.tags,
+    )
+    return skill.to_dict()
+
+
+@router.post("/curator/record-usage")
+async def curator_record_usage(request: SkillUsageRequest):
+    _skill_curator.record_usage(request.skill_id, request.success)
+    return {"status": "recorded"}
+
+
+@router.post("/curator/review")
+async def curator_review():
+    result = await _skill_curator.review()
+    return result
+
+
+@router.post("/curator/consolidate")
+async def curator_consolidate(request: SkillConsolidateRequest):
+    from sparkai.agent.agent_skill_curator import ConsolidationStrategy
+    try:
+        strategy = ConsolidationStrategy(request.strategy)
+    except ValueError:
+        strategy = ConsolidationStrategy.MERGE
+    result = _skill_curator.consolidate(request.parent_id, request.child_ids, strategy)
+    if result:
+        return result.to_dict()
+    return {"error": "Consolidation failed"}
+
+
+@router.get("/curator/review-history")
+async def curator_review_history(limit: int = 20):
+    return {"history": _skill_curator.get_review_history(limit)}
+
+
+@router.get("/curator/consolidation-log")
+async def curator_consolidation_log(limit: int = 20):
+    return {"log": _skill_curator.get_consolidation_log(limit)}
+
+
+@router.get("/curator/skill/{skill_id}")
+async def curator_get_skill(skill_id: str):
+    skill = _skill_curator.get_skill(skill_id)
+    if skill:
+        return skill.to_dict()
+    return {"error": "Skill not found"}
+
+
+# === Prompt Builder Engine ===
+
+from sparkai.agent.agent_prompt_builder import PromptBuilder, get_prompt_builder
+
+_prompt_builder = get_prompt_builder()
+
+
+class PromptBuildRequest(BaseModel):
+    task: str = ""
+    game_context: Optional[Dict[str, Any]] = None
+    skills_list: Optional[List[Dict[str, Any]]] = None
+    memory_entries: Optional[List[Dict[str, Any]]] = None
+    extra_instructions: str = ""
+
+
+@router.post("/prompt-builder/build")
+async def prompt_builder_build(request: PromptBuildRequest):
+    artifact = _prompt_builder.build(
+        game_context=request.game_context,
+        current_task=request.task,
+        skills_list=request.skills_list,
+        memory_entries=request.memory_entries,
+        extra_instructions=request.extra_instructions,
+    )
+    return artifact.to_dict()
+
+
+@router.get("/prompt-builder/preview")
+async def prompt_builder_preview(task: str = ""):
+    artifact = _prompt_builder.build(current_task=task)
+    return {
+        "sections_summary": artifact.to_dict(),
+        "prompt_preview": artifact.full_text[:500],
+    }
+
+
+@router.post("/prompt-builder/invalidate-cache")
+async def prompt_builder_invalidate_cache():
+    _prompt_builder.invalidate_cache()
+    return {"status": "cache_invalidated"}
+
+
+# === Execution Budget Engine ===
+
+from sparkai.agent.agent_execution_budget import ExecutionBudget, get_execution_budget
+
+_execution_budget = get_execution_budget()
+
+
+class BudgetRecordRequest(BaseModel):
+    session_id: str
+    prompt_tokens: int = 0
+    completion_tokens: int = 0
+    total_tokens: int = 0
+
+
+@router.get("/budget/stats")
+async def budget_stats():
+    return _execution_budget.get_overall_stats()
+
+
+@router.get("/budget/daily")
+async def budget_daily():
+    return _execution_budget.get_daily_stats()
+
+
+@router.get("/budget/session/{session_id}")
+async def budget_session(session_id: str):
+    return _execution_budget.get_session_stats(session_id)
+
+
+@router.post("/budget/start-session")
+async def budget_start_session(session_id: str, model: str = "unknown"):
+    budget = _execution_budget.start_session(session_id, model)
+    return budget.to_dict()
+
+
+@router.post("/budget/end-session")
+async def budget_end_session(session_id: str):
+    budget = _execution_budget.end_session(session_id)
+    if budget:
+        return budget.to_dict()
+    return {"error": "Session not found"}
+
+
+@router.post("/budget/record")
+async def budget_record(request: BudgetRecordRequest):
+    from sparkai.agent.agent_execution_budget import TokenUsage
+    tokens = TokenUsage(
+        prompt_tokens=request.prompt_tokens,
+        completion_tokens=request.completion_tokens,
+        total_tokens=request.total_tokens,
+    )
+    _execution_budget.record_usage(request.session_id, tokens)
+    tier = _execution_budget.check_tier(request.session_id)
+    return {"status": "recorded", "tier": tier.value}
+
+
+@router.get("/budget/check/{session_id}")
+async def budget_check(session_id: str):
+    tier = _execution_budget.check_tier(session_id)
+    can_continue = _execution_budget.can_continue(session_id)
+    return {"tier": tier.value, "can_continue": can_continue}
+
+
+@router.get("/budget/history")
+async def budget_history(limit: int = 50):
+    return {"history": _execution_budget.get_usage_history(limit)}
+
+
+# === Game Generation Pipeline ===
+
+class GameGenerateRequest(BaseModel):
+    prompt: str
+    genre: Optional[str] = None
+    project_name: Optional[str] = None
+    phases: Optional[List[str]] = None
+
+
+@router.post("/generate/game")
+async def generate_game(request: GameGenerateRequest):
+    intent = _intent_classifier.classify(request.prompt)
+
+    if _event_bus:
+        _event_bus.emit(Event(
+            channel=EventChannel.AGENT,
+            topic="game_generation_started",
+            source="AgentRoutes",
+            data={"prompt": request.prompt[:100], "intent": intent.to_dict()},
+        ))
+
+    try:
+        pipeline_result = await _runtime.run_pipeline(request.prompt)
+    except Exception as e:
+        pipeline_result = {"error": str(e)}
+
+    stats = {
+        "intent": intent.to_dict(),
+        "runtime_state": _runtime.state.value,
+        "budget_daily": _execution_budget.get_daily_stats(),
+    }
+
+    if _event_bus:
+        _event_bus.emit(Event(
+            channel=EventChannel.AGENT,
+            topic="game_generation_completed",
+            source="AgentRoutes",
+            data={"prompt": request.prompt[:100], "stats": stats},
+        ))
+
+    return {
+        "pipeline_result": pipeline_result,
+        "generation_stats": stats,
+    }
+
+
+class AgentStatusResponse(BaseModel):
+    state: str
+    initialized: bool
+    subsystems_ready: int
+    total_subsystems: int
+    skill_count: int
+    session_count: int
+    budget_tier: str
+    daily_cost: float
+
+
+@router.get("/agent/status")
+async def agent_status():
+    runtime_status = _runtime.get_status()
+    health = _skill_curator.get_ecosystem_health()
+    budget = _execution_budget.get_overall_stats()
+
+    return {
+        "state": _runtime.state.value,
+        "initialized": _runtime.state.value == "running",
+        "subsystems_ready": sum(1 for v in runtime_status.get("subsystems_ready", {}).values() if v),
+        "total_subsystems": len(runtime_status.get("subsystems_ready", {})),
+        "skill_count": health.get("total_skills", 0),
+        "active_sessions": budget.get("active_sessions", 0),
+        "budget_tier": "normal",
+        "daily_cost": budget.get("daily", {}).get("cost_usd", 0),
+        "health": health,
+    }
+
+
+@router.post("/agent/command")
+async def agent_command(command: str, args: Optional[str] = None):
+    import subprocess
+    try:
+        result = subprocess.run(
+            ["python", "-m", "sparkai.agent.runtime", command, *(args.split() if args else [])],
+            capture_output=True, text=True, timeout=30,
+            cwd=os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+        )
+        return {"command": command, "stdout": result.stdout, "stderr": result.stderr, "code": result.returncode}
+    except subprocess.TimeoutExpired:
+        return {"error": "Command timed out"}
+    except Exception as e:
+        return {"error": str(e)}

@@ -60,6 +60,10 @@ Runtime architecture:
     |-- Sandbox Engine (isolated tool execution with resource limits)
     |-- Asset Consistency Engine (key chain validation across generation)
     |-- Memory Persistence Engine (disk-based state checkpointing)
+    |-- Skill Curator (autonomous skill lifecycle management)
+    |-- Prompt Builder (layered system prompt construction)
+    |-- Intent Classifier (prompt intent detection and routing)
+    |-- Execution Budget (token/cost tracking and enforcement)
 
 The runtime provides a single initialization point and unified
 API for all engine operations. It manages the lifecycle of all
@@ -140,6 +144,10 @@ from sparkai.agent.agent_file_state import FileStateEngine, get_file_state_engin
 from sparkai.agent.agent_subagent_spawner import SubagentSpawner, get_subagent_spawner
 from sparkai.agent.agent_tool_pruner import ToolOutputPruner, get_tool_output_pruner
 from sparkai.agent.agent_trajectory_learner import TrajectoryLearner, get_trajectory_learner
+from sparkai.agent.agent_skill_curator import SkillCurator, get_skill_curator
+from sparkai.agent.agent_prompt_builder import PromptBuilder, get_prompt_builder
+from sparkai.agent.agent_intent_classifier import IntentClassifier, get_intent_classifier
+from sparkai.agent.agent_execution_budget import ExecutionBudget, get_execution_budget
 
 
 class RuntimeState(Enum):
@@ -177,7 +185,7 @@ class AgentRuntime:
     Unified execution engine for the SparkLabs AI-Native Game Engine.
 
     The runtime is the central orchestrator that initializes and manages
-    all 55 subsystems. It provides a single entry point for all engine
+    all 67 subsystems. It provides a single entry point for all engine
     operations and ensures proper lifecycle management.
 
     Usage:
@@ -256,6 +264,10 @@ class AgentRuntime:
         self._subagent_spawner: Optional[SubagentSpawner] = None
         self._tool_pruner: Optional[ToolOutputPruner] = None
         self._trajectory_learner: Optional[TrajectoryLearner] = None
+        self._skill_curator: Optional[SkillCurator] = None
+        self._prompt_builder: Optional[PromptBuilder] = None
+        self._intent_classifier: Optional[IntentClassifier] = None
+        self._execution_budget: Optional[ExecutionBudget] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -335,6 +347,32 @@ class AgentRuntime:
             self._subagent_spawner = get_subagent_spawner()
             self._tool_pruner = get_tool_output_pruner()
             self._trajectory_learner = get_trajectory_learner()
+            self._skill_curator = get_skill_curator()
+            self._prompt_builder = get_prompt_builder()
+            self._intent_classifier = get_intent_classifier()
+            self._execution_budget = get_execution_budget()
+
+            # Wire credential manager into LLM router for key rotation on API failures
+            if self._llm_router and self._credential_manager:
+                self._llm_router.set_credential_manager(self._credential_manager)
+
+            # Register remaining recovery action handlers
+            if self._recovery_engine:
+                def _rotate_credential(ctx):
+                    if self._credential_manager:
+                        provider = ctx.get("provider", "default")
+                        self._credential_manager.rotate_key(provider)
+                    return True
+
+                def _escalate(ctx):
+                    reason = ctx.get("reason", "recovery_limit_exceeded")
+                    import logging
+                    logging.getLogger(__name__).error("Recovery escalation triggered: %s", reason)
+                    self.emit("agent.escalated", {"reason": reason, "context": ctx})
+                    return False
+
+                self._recovery_engine.register_action_handler("rotate_credential", _rotate_credential)
+                self._recovery_engine.register_action_handler("escalate", _escalate)
             self._integration.register_subsystem("protocol", self._protocol)
             self._integration.register_subsystem("orchestrator", self._orchestrator)
             self._integration.register_subsystem("studio", self._studio_coordinator)
@@ -351,10 +389,17 @@ class AgentRuntime:
             self._integration.register_subsystem("subagent_spawner", self._subagent_spawner)
             self._integration.register_subsystem("tool_pruner", self._tool_pruner)
             self._integration.register_subsystem("trajectory_learner", self._trajectory_learner)
+            self._integration.register_subsystem("skill_curator", self._skill_curator)
+            self._integration.register_subsystem("prompt_builder", self._prompt_builder)
+            self._integration.register_subsystem("intent_classifier", self._intent_classifier)
+            self._integration.register_subsystem("execution_budget", self._execution_budget)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
             self._recovery_engine.register_action_handler("compress_context", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
+            self._recovery_engine.register_action_handler("review_skills", lambda params: self._skill_curator and self._skill_curator.review() is not None)
+            self._recovery_engine.register_action_handler("check_budget", lambda params: self._execution_budget and self._execution_budget.check_tier(params.get("session_id", "default")) is not None)
+            self._recovery_engine.register_action_handler("classify_intent", lambda params: self._intent_classifier and self._intent_classifier.classify(params.get("prompt", "")) is not None)
 
             if self._protocol and self._event_bus:
                 self._event_bus.subscribe(
@@ -370,7 +415,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 63,
+                    "subsystems": 67,
                 }},
             ))
 
@@ -840,6 +885,22 @@ class AgentRuntime:
     def health_checker(self) -> Optional[HealthChecker]:
         return self._health_checker
 
+    @property
+    def skill_curator(self) -> Optional[SkillCurator]:
+        return self._skill_curator
+
+    @property
+    def prompt_builder(self) -> Optional[PromptBuilder]:
+        return self._prompt_builder
+
+    @property
+    def intent_classifier(self) -> Optional[IntentClassifier]:
+        return self._intent_classifier
+
+    @property
+    def execution_budget(self) -> Optional[ExecutionBudget]:
+        return self._execution_budget
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -917,6 +978,10 @@ class AgentRuntime:
                 "subagent_spawner": self._subagent_spawner is not None,
                 "tool_pruner": self._tool_pruner is not None,
                 "trajectory_learner": self._trajectory_learner is not None,
+                "skill_curator": self._skill_curator is not None,
+                "prompt_builder": self._prompt_builder is not None,
+                "intent_classifier": self._intent_classifier is not None,
+                "execution_budget": self._execution_budget is not None,
             },
         }
 
@@ -1034,6 +1099,14 @@ class AgentRuntime:
             status["tool_pruner_stats"] = self._tool_pruner.get_stats()
         if self._trajectory_learner:
             status["trajectory_learner_stats"] = self._trajectory_learner.get_stats()
+        if self._skill_curator:
+            status["skill_curator_stats"] = self._skill_curator.get_ecosystem_health()
+        if self._prompt_builder:
+            status["prompt_builder_stats"] = {"ready": True}
+        if self._intent_classifier:
+            status["intent_classifier_stats"] = {"ready": True}
+        if self._execution_budget:
+            status["execution_budget_stats"] = self._execution_budget.get_overall_stats()
         return status
 
 

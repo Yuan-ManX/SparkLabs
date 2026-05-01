@@ -1,15 +1,12 @@
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useCallback, useRef, useEffect } from 'react';
 import EditorToolbar from './EditorToolbar';
-import SceneOutliner, { SceneNode } from './SceneOutliner';
+import SceneOutliner from './SceneOutliner';
 import GameViewport from './GameViewport';
-import PropertyEditor, { PropertySection } from './PropertyEditor';
+import PropertyEditor from './PropertyEditor';
 import NodeGraphEditor from './NodeGraphEditor';
 import AssetLibrary from './AssetLibrary';
 import AIPromptBar from './AIPromptBar';
 import ConsolePanel from './ConsolePanel';
-import type { ConsoleLine } from './ConsolePanel';
-import type { ViewMode } from '../types';
-
 import WelcomeDashboard from './WelcomeDashboard';
 import GameEditor from './GameEditor';
 import GameGenerator from './GameGenerator';
@@ -42,79 +39,18 @@ import ScriptEditor from './ScriptEditor';
 import SettingsPanel from './SettingsPanel';
 import { LifecyclePanel, SlashCommandsPanel, ValidationHooksPanel } from './LifecyclePanels';
 import { TaskExecutorPanel } from './TaskExecutorPanel';
-import NotificationToast, { Toast } from './NotificationToast';
-import KeyboardShortcuts, { ShortcutDef } from './KeyboardShortcuts';
+import NotificationToast from './NotificationToast';
+import KeyboardShortcuts from './KeyboardShortcuts';
+import { useEditorStore } from '../store/editorStore';
+import { processAIPrompt, initializeEditorBackend, startWorldInBackend, stopWorldInBackend } from '../services/aiService';
+import { sceneBridge } from '../services/sceneBridge';
+import { useWebSocket } from '../hooks/useWebSocket';
+import type { ViewMode } from '../types';
+import type { ShortcutDef } from './KeyboardShortcuts';
 
 type TransformTool = 'move' | 'rotate' | 'scale';
-type LeftPanelTab = 'scene' | 'assets' | 'nodes';
-type RightPanelTab = 'inspector' | 'ai-config';
-type BottomPanelTab = 'console' | 'timeline' | 'ai-assistant';
 
-const defaultSceneNodes: SceneNode[] = [
-  {
-    id: 'root', name: 'Main World', icon: 'fa-globe', iconColor: '#f97316', type: 'group', visible: true, locked: false, parentId: null,
-    children: [
-      { id: 'camera', name: 'Main Camera', icon: 'fa-video', iconColor: '#4ade80', type: 'entity', visible: true, locked: false, parentId: 'root', children: [] },
-      { id: 'light', name: 'Directional Light', icon: 'fa-sun', iconColor: '#fbbf24', type: 'entity', visible: true, locked: false, parentId: 'root', children: [] },
-      { id: 'ai-core', name: 'AI Core', icon: 'fa-microchip', iconColor: '#f97316', type: 'entity', visible: true, locked: false, parentId: 'root', children: [] },
-      { id: 'neural-net', name: 'Neural Network', icon: 'fa-circle-nodes', iconColor: '#f97316', type: 'entity', visible: true, locked: false, parentId: 'root', children: [] },
-      { id: 'terrain', name: 'Terrain', icon: 'fa-mountain', iconColor: '#4ade80', type: 'entity', visible: true, locked: false, parentId: 'root', children: [] },
-      {
-        id: 'actors', name: 'Actors', icon: 'fa-users', iconColor: '#60a5fa', type: 'group', visible: true, locked: false, parentId: 'root',
-        children: [
-          { id: 'player', name: 'Player', icon: 'fa-person', iconColor: '#22c55e', type: 'entity', visible: true, locked: false, parentId: 'actors', children: [] },
-          { id: 'npc', name: 'AI Agent - NPC', icon: 'fa-robot', iconColor: '#c084fc', type: 'entity', visible: true, locked: false, parentId: 'actors', children: [] },
-        ],
-      },
-      { id: 'environment', name: 'Environment', icon: 'fa-tree', iconColor: '#4ade80', type: 'entity', visible: true, locked: false, parentId: 'root', children: [] },
-    ],
-  },
-];
-
-const defaultPropertySections: PropertySection[] = [
-  {
-    id: 'transform', label: 'Transform', icon: 'fa-arrows-up-down-left-right', color: '#f97316',
-    fields: [
-      { key: 'position', label: 'Position', type: 'vector3', value: [0, 0, 0] },
-      { key: 'rotation', label: 'Rotation', type: 'vector3', value: [0, 0, 0] },
-      { key: 'scale', label: 'Scale', type: 'vector3', value: [1, 1, 1] },
-    ],
-  },
-  {
-    id: 'neural', label: 'Neural Component', icon: 'fa-brain', color: '#8b5cf6',
-    fields: [
-      { key: 'ai_model', label: 'AI Model', type: 'select', value: 'gpt-4', options: [{ label: 'GPT-4', value: 'gpt-4' }, { label: 'Claude 3', value: 'claude-3' }, { label: 'SparkAI', value: 'sparkai' }] },
-      { key: 'behavior', label: 'Behavior', type: 'select', value: 'autonomous', options: [{ label: 'Autonomous', value: 'autonomous' }, { label: 'Scripted', value: 'scripted' }, { label: 'Hybrid', value: 'hybrid' }] },
-      { key: 'awareness', label: 'Awareness', type: 'slider', value: 75, min: 0, max: 100 },
-      { key: 'memory', label: 'Memory', type: 'slider', value: 60, min: 0, max: 100 },
-    ],
-  },
-  {
-    id: 'rendering', label: 'Rendering', icon: 'fa-paintbrush', color: '#06b6d4',
-    fields: [
-      { key: 'material', label: 'Material', type: 'select', value: 'standard', options: [{ label: 'Standard', value: 'standard' }, { label: 'Unlit', value: 'unlit' }, { label: 'Neural', value: 'neural' }] },
-      { key: 'color', label: 'Color', type: 'color', value: '#f97316' },
-      { key: 'cast_shadow', label: 'Cast Shadow', type: 'checkbox', value: true },
-    ],
-  },
-  {
-    id: 'physics', label: 'Physics', icon: 'fa-atom', color: '#ef4444',
-    fields: [
-      { key: 'body_type', label: 'Body Type', type: 'select', value: 'dynamic', options: [{ label: 'Dynamic', value: 'dynamic' }, { label: 'Static', value: 'static' }, { label: 'Kinematic', value: 'kinematic' }] },
-      { key: 'mass', label: 'Mass', type: 'number', value: 1.0, step: 0.1, min: 0 },
-      { key: 'gravity_scale', label: 'Gravity Scale', type: 'slider', value: 1.0, min: 0, max: 5, step: 0.1 },
-    ],
-  },
-];
-
-interface PanelSizes {
-  left: number;
-  right: number;
-  bottom: number;
-}
-
-const DEFAULT_PANEL_SIZES: PanelSizes = { left: 260, right: 300, bottom: 180 };
-const MIN_PANEL_SIZES: PanelSizes = { left: 180, right: 200, bottom: 80 };
+const MIN_PANEL_SIZES = { left: 180, right: 200, bottom: 80 };
 
 const ResizableHandle: React.FC<{
   direction: 'vertical' | 'horizontal';
@@ -141,40 +77,38 @@ const ResizableHandle: React.FC<{
 );
 
 const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
-  const [currentTool, setCurrentTool] = useState<TransformTool>('move');
-  const [isPlaying, setIsPlaying] = useState(false);
-  const [selectedEntity, setSelectedEntity] = useState<string | null>('ai-core');
-  const [selectedEntityName, setSelectedEntityName] = useState<string | null>('AI Core');
-  const [sceneNodes, setSceneNodes] = useState<SceneNode[]>(defaultSceneNodes);
-  const [propertySections, setPropertySections] = useState<PropertySection[]>(defaultPropertySections);
-  const [isGenerating, setIsGenerating] = useState(false);
-  const [generatingStatus, setGeneratingStatus] = useState('');
-  const [activeMode, setActiveMode] = useState<ViewMode>('dashboard');
-  const [logs, setLogs] = useState<ConsoleLine[]>([
-    { type: 'info', message: '[SparkLabs] Editor initialized' },
-    { type: 'success', message: '[SparkLabs] Neural Core loaded' },
-    { type: 'info', message: '[SparkLabs] Scene "Main World" ready' },
-    { type: 'info', message: '[SparkLabs] AI Agent system online' },
-    { type: 'success', message: '[SparkLabs] 7 entities in scene' },
-    { type: 'info', message: '[SparkLabs] Viewport renderer: WebGL 2.0' },
-  ]);
-  const [panelSizes, setPanelSizes] = useState<PanelSizes>(DEFAULT_PANEL_SIZES);
-  const [leftTab, setLeftTab] = useState<LeftPanelTab>('scene');
-  const [rightTab, setRightTab] = useState<RightPanelTab>('inspector');
-  const [bottomTab, setBottomTab] = useState<BottomPanelTab>('console');
-  const [fps, setFps] = useState(60);
-  const [toasts, setToasts] = useState<Toast[]>([]);
+  const store = useEditorStore();
+  const {
+    activeMode, currentTool, isPlaying, isPaused, selectedEntity, selectedEntityName,
+    sceneNodes, propertySections, logs, aiGeneration, fps,
+    leftTab, rightTab, bottomTab,
+    leftPanelWidth, rightPanelWidth, bottomPanelHeight,
+    backendConnected,
+    setActiveMode, setCurrentTool, togglePlay, togglePause,
+    selectEntity, addSceneNode, removeSceneNode, reorderNodes, toggleNodeVisibility, toggleNodeLock,
+    updatePropertyField, addLog, pushHistory, undo, redo,
+    setLeftTab, setRightTab, setBottomTab,
+    setLeftPanelWidth, setRightPanelWidth, setBottomPanelHeight,
+  } = store;
+
   const containerRef = useRef<HTMLDivElement>(null);
   const resizingRef = useRef<{ type: 'left' | 'right' | 'bottom'; startX: number; startSize: number } | null>(null);
   const fpsFrameRef = useRef<number>(0);
   const fpsLastTimeRef = useRef<number>(performance.now());
   const fpsCountRef = useRef<number>(0);
+  const [toasts, setToasts] = React.useState<{ id: string; type: 'success' | 'error' | 'warning' | 'info'; title: string; message?: string; duration?: number }[]>([]);
+
+  useEffect(() => {
+    initializeEditorBackend();
+  }, []);
+
+  const ws = useWebSocket();
 
   useEffect(() => {
     const measureFps = (now: number) => {
       fpsCountRef.current++;
       if (now - fpsLastTimeRef.current >= 1000) {
-        setFps(fpsCountRef.current);
+        useEditorStore.getState().setFps(fpsCountRef.current);
         fpsCountRef.current = 0;
         fpsLastTimeRef.current = now;
       }
@@ -184,17 +118,10 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
     return () => cancelAnimationFrame(fpsFrameRef.current);
   }, []);
 
-  const addLog = useCallback((type: ConsoleLine['type'], message: string) => {
-    setLogs((prev) => [...prev, { type, message }]);
-  }, []);
-
-  const addToast = useCallback((toast: Omit<Toast, 'id'>) => {
+  const addToast = useCallback((toast: { type: 'success' | 'error' | 'warning' | 'info'; title: string; message?: string; duration?: number }) => {
     const id = `toast_${Date.now()}`;
     setToasts((prev) => [...prev, { ...toast, id }]);
-  }, []);
-
-  const dismissToast = useCallback((id: string) => {
-    setToasts((prev) => prev.filter((t) => t.id !== id));
+    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), toast.duration || 3000);
   }, []);
 
   useEffect(() => {
@@ -203,12 +130,12 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       const { type, startX, startSize } = resizingRef.current;
       const delta = e.clientX - startX;
       if (type === 'left') {
-        setPanelSizes((prev) => ({ ...prev, left: Math.max(MIN_PANEL_SIZES.left, startSize + delta) }));
+        setLeftPanelWidth(Math.max(MIN_PANEL_SIZES.left, startSize + delta));
       } else if (type === 'right') {
-        setPanelSizes((prev) => ({ ...prev, right: Math.max(MIN_PANEL_SIZES.right, startSize - delta) }));
+        setRightPanelWidth(Math.max(MIN_PANEL_SIZES.right, startSize - delta));
       } else if (type === 'bottom') {
         const dy = e.clientY - startX;
-        setPanelSizes((prev) => ({ ...prev, bottom: Math.max(MIN_PANEL_SIZES.bottom, startSize - dy) }));
+        setBottomPanelHeight(Math.max(MIN_PANEL_SIZES.bottom, startSize - dy));
       }
     };
     const handleMouseUp = () => {
@@ -222,99 +149,83 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, []);
+  }, [setLeftPanelWidth, setRightPanelWidth, setBottomPanelHeight]);
 
   const startResize = useCallback((type: 'left' | 'right' | 'bottom', e: React.MouseEvent) => {
     e.preventDefault();
     const startX = type === 'bottom' ? e.clientY : e.clientX;
-    const startSize = type === 'left' ? panelSizes.left : type === 'right' ? panelSizes.right : panelSizes.bottom;
+    const startSize = type === 'left' ? leftPanelWidth : type === 'right' ? rightPanelWidth : bottomPanelHeight;
     resizingRef.current = { type, startX, startSize };
     document.body.style.cursor = type === 'bottom' ? 'row-resize' : 'col-resize';
     document.body.style.userSelect = 'none';
-  }, [panelSizes]);
+  }, [leftPanelWidth, rightPanelWidth, bottomPanelHeight]);
 
   const handleSelectEntity = useCallback((id: string, name: string) => {
-    setSelectedEntity(id);
-    setSelectedEntityName(name);
+    selectEntity(id, name);
     addLog('info', `[Editor] Selected: ${name}`);
-  }, [addLog]);
+  }, [selectEntity, addLog]);
 
   const handleAddEntity = useCallback(() => {
-    const newEntity: SceneNode = {
+    pushHistory();
+    const newEntity = {
       id: `entity_${Date.now()}`,
       name: 'New Entity',
       icon: 'fa-cube',
       iconColor: '#60a5fa',
-      type: 'entity',
+      type: 'entity' as const,
       visible: true,
       locked: false,
       parentId: 'root',
       children: [],
     };
-    setSceneNodes((prev) =>
-      prev.map((n) =>
-        n.id === 'root' ? { ...n, children: [...n.children, newEntity] } : n
-      )
-    );
+    addSceneNode(newEntity, 'root');
     addLog('success', '[Editor] Entity added to scene');
-  }, [addLog]);
+  }, [addSceneNode, addLog]);
 
   const handleDeleteEntity = useCallback((id: string) => {
-    const removeRecursive = (nodes: SceneNode[]): SceneNode[] =>
-      nodes.filter((n) => n.id !== id).map((n) => ({ ...n, children: removeRecursive(n.children) }));
-    setSceneNodes((prev) => removeRecursive(prev));
-    addLog('info', `[Editor] Entity deleted`);
-  }, [addLog]);
-
-  const handleToggleVisibility = useCallback((id: string) => {
-    const toggle = (nodes: SceneNode[]): SceneNode[] =>
-      nodes.map((n) => (n.id === id ? { ...n, visible: !n.visible } : { ...n, children: toggle(n.children) }));
-    setSceneNodes((prev) => toggle(prev));
-  }, []);
-
-  const handleToggleLock = useCallback((id: string) => {
-    const toggle = (nodes: SceneNode[]): SceneNode[] =>
-      nodes.map((n) => (n.id === id ? { ...n, locked: !n.locked } : { ...n, children: toggle(n.children) }));
-    setSceneNodes((prev) => toggle(prev));
-  }, []);
+    pushHistory();
+    removeSceneNode(id);
+    addLog('info', '[Editor] Entity deleted');
+  }, [removeSceneNode, addLog]);
 
   const handleReorder = useCallback((dragId: string, dropId: string, position: 'before' | 'after' | 'inside') => {
+    pushHistory();
+    reorderNodes(dragId, dropId, position);
     addLog('info', `[Editor] Reordered ${dragId} ${position} ${dropId}`);
-  }, [addLog]);
+  }, [reorderNodes, addLog]);
 
   const handleFieldChange = useCallback((sectionId: string, fieldKey: string, value: unknown) => {
-    setPropertySections((prev) =>
-      prev.map((s) =>
-        s.id === sectionId
-          ? { ...s, fields: s.fields.map((f) => (f.key === fieldKey ? { ...f, value } : f)) }
-          : s
-      )
-    );
-  }, []);
+    updatePropertyField(sectionId, fieldKey, value);
+
+    if (sectionId === 'transform' && selectedEntity) {
+      const sections = useEditorStore.getState().propertySections;
+      const transformSection = sections.find((s) => s.id === 'transform');
+      if (transformSection) {
+        const posField = transformSection.fields.find((f) => f.key === 'position');
+        const rotField = transformSection.fields.find((f) => f.key === 'rotation');
+        const sclField = transformSection.fields.find((f) => f.key === 'scale');
+
+        const pos = (fieldKey === 'position' ? value : posField?.value) as number[] | undefined;
+        const rot = (fieldKey === 'rotation' ? value : rotField?.value) as number[] | undefined;
+        const scl = (fieldKey === 'scale' ? value : sclField?.value) as number[] | undefined;
+
+        sceneBridge.updateEntityTransform(
+          selectedEntity,
+          pos as [number, number, number] | undefined,
+          rot as [number, number, number] | undefined,
+          scl as [number, number, number] | undefined,
+        );
+      }
+    }
+  }, [updatePropertyField, selectedEntity]);
 
   const handleAIGenerate = useCallback(() => {
     setActiveMode('dashboard');
-  }, []);
+  }, [setActiveMode]);
 
-  const handleAIPrompt = useCallback((prompt: string) => {
-    addLog('info', `[AI] Processing prompt: "${prompt.substring(0, 50)}..."`);
-    setIsGenerating(true);
-    const phases = ['Analyzing prompt', 'Building neural graph', 'Generating world geometry', 'Placing AI agents', 'Configuring behaviors', 'Rendering scene'];
-    let phase = 0;
-    const interval = setInterval(() => {
-      if (phase < phases.length) {
-        setGeneratingStatus(phases[phase]);
-        addLog('info', `[AI] ${phases[phase]}...`);
-        phase++;
-      } else {
-        clearInterval(interval);
-        setIsGenerating(false);
-        setGeneratingStatus('');
-        addLog('success', '[AI] World generated successfully');
-        addLog('success', '[AI] 3 new entities added to scene');
-      }
-    }, 800);
-  }, [addLog]);
+  const handleAIPrompt = useCallback(async (prompt: string) => {
+    await processAIPrompt(prompt);
+  }, []);
 
   const handleQuickAction = useCallback((action: string) => {
     const prompts: Record<string, string> = {
@@ -328,23 +239,48 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
     handleAIPrompt(prompts[action] || action);
   }, [handleAIPrompt]);
 
-  const handleTogglePlay = useCallback(() => {
-    setIsPlaying((prev) => {
-      const next = !prev;
-      addLog(next ? 'success' : 'info', next ? '[Engine] Play mode started' : '[Engine] Play mode stopped');
-      return next;
-    });
-  }, [addLog]);
+  const handleTogglePlay = useCallback(async () => {
+    const willPlay = !isPlaying;
+    togglePlay();
+    addLog(willPlay ? 'success' : 'info', willPlay ? '[Engine] Play mode started' : '[Engine] Play mode stopped');
+
+    if (willPlay) {
+      try {
+        const { initializeEditorBackend, createWorldInBackend, startWorldInBackend } = await import('../services/aiService');
+        await initializeEditorBackend();
+        const wId = await createWorldInBackend('PlayWorld');
+        if (wId) {
+          await startWorldInBackend();
+          addLog('success', '[Engine] Game runtime executing');
+        }
+        if (ws.send) {
+          ws.send({ type: 'engine_command', command: 'start' });
+        }
+      } catch (e) {
+        addLog('warn', '[Engine] Running in simulation mode');
+      }
+    } else {
+      try {
+        const { stopWorldInBackend } = await import('../services/aiService');
+        await stopWorldInBackend();
+        if (ws.send) {
+          ws.send({ type: 'engine_command', command: 'stop' });
+        }
+      } catch {
+        addLog('info', '[Engine] Stopped (standalone)');
+      }
+    }
+  }, [isPlaying, togglePlay, addLog, ws]);
 
   const handleToolChange = useCallback((tool: TransformTool) => {
     setCurrentTool(tool);
     addLog('info', `[Editor] Tool changed to: ${tool}`);
-  }, [addLog]);
+  }, [setCurrentTool, addLog]);
 
   const handleModeSwitch = useCallback((mode: string) => {
     setActiveMode(mode as ViewMode);
     addLog('info', `[Editor] Switched to ${mode}`);
-  }, [addLog]);
+  }, [setActiveMode, addLog]);
 
   const renderModePanel = () => {
     switch (activeMode) {
@@ -387,10 +323,11 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
   };
 
   const isEditorMode = activeMode === 'dashboard';
-
   const entityCount = sceneNodes.reduce((acc, n) => acc + 1 + n.children.length, 0);
 
   const shortcuts: ShortcutDef[] = [
+    { key: 'z', ctrl: true, label: 'Undo', category: 'Edit', action: () => undo() },
+    { key: 'z', ctrl: true, shift: true, label: 'Redo', category: 'Edit', action: () => redo() },
     { key: '1', ctrl: true, label: 'Move Tool', category: 'Tools', action: () => handleToolChange('move') },
     { key: '2', ctrl: true, label: 'Rotate Tool', category: 'Tools', action: () => handleToolChange('rotate') },
     { key: '3', ctrl: true, label: 'Scale Tool', category: 'Tools', action: () => handleToolChange('scale') },
@@ -403,7 +340,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
   return (
     <div className="relative h-screen">
       <KeyboardShortcuts shortcuts={shortcuts} />
-      <NotificationToast toasts={toasts} onDismiss={dismissToast} />
+      <NotificationToast toasts={toasts} onDismiss={(id) => setToasts((prev) => prev.filter((t) => t.id !== id))} />
       <div className="grid h-full" style={{ gridTemplateRows: '40px 1fr 24px' }}>
       <EditorToolbar
         currentTool={currentTool}
@@ -418,7 +355,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
 
       {isEditorMode ? (
         <div ref={containerRef} className="flex overflow-hidden">
-          <div style={{ width: panelSizes.left }} className="flex-shrink-0 flex flex-col overflow-hidden">
+          <div style={{ width: leftPanelWidth }} className="flex-shrink-0 flex flex-col overflow-hidden">
             <div className="sl-tab-bar">
               {([['scene', 'Scene', 'fa-sitemap'], ['assets', 'Assets', 'fa-folder-open'], ['nodes', 'Nodes', 'fa-diagram-project']] as const).map(([id, label, icon]) => (
                 <button
@@ -438,8 +375,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
                   onSelect={handleSelectEntity}
                   onAddEntity={handleAddEntity}
                   onDeleteEntity={handleDeleteEntity}
-                  onToggleVisibility={handleToggleVisibility}
-                  onToggleLock={handleToggleLock}
+                  onToggleVisibility={toggleNodeVisibility}
+                  onToggleLock={toggleNodeLock}
                   onReorder={handleReorder}
                   nodes={sceneNodes}
                 />
@@ -455,18 +392,21 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
             <div className="flex-1 overflow-hidden">
               <GameViewport
                 isPlaying={isPlaying}
-                isGenerating={isGenerating}
-                generatingStatus={generatingStatus}
+                isGenerating={aiGeneration.isGenerating}
+                generatingStatus={aiGeneration.phase || aiGeneration.status}
                 onTogglePlay={handleTogglePlay}
-                onStep={() => addLog('info', '[Engine] Step frame')}
-                onTogglePause={() => addLog('info', '[Engine] Pause toggled')}
+                onStep={() => {
+                  addLog('info', '[Engine] Step frame');
+                  if (ws.send) ws.send({ type: 'engine_command', command: 'step' });
+                }}
+                onTogglePause={() => { togglePause(); addLog('info', '[Engine] Pause toggled'); }}
                 fps={fps}
               />
             </div>
 
             <ResizableHandle direction="horizontal" onMouseDown={(e) => startResize('bottom', e)} />
 
-            <div style={{ height: panelSizes.bottom }} className="flex-shrink-0 flex flex-col overflow-hidden">
+            <div style={{ height: bottomPanelHeight }} className="flex-shrink-0 flex flex-col overflow-hidden">
               <div className="sl-tab-bar">
                 {([['console', 'Console', 'fa-terminal'], ['timeline', 'Timeline', 'fa-film'], ['ai-assistant', 'AI Assistant', 'fa-wand-magic-sparkles']] as const).map(([id, label, icon]) => (
                   <button
@@ -496,7 +436,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
                       <AIPromptBar
                         onPrompt={handleAIPrompt}
                         onQuickAction={handleQuickAction}
-                        isGenerating={isGenerating}
+                        isGenerating={aiGeneration.isGenerating}
                       />
                     </div>
                   </div>
@@ -507,7 +447,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
 
           <ResizableHandle direction="vertical" onMouseDown={(e) => startResize('right', e)} />
 
-          <div style={{ width: panelSizes.right }} className="flex-shrink-0 flex flex-col overflow-hidden">
+          <div style={{ width: rightPanelWidth }} className="flex-shrink-0 flex flex-col overflow-hidden">
             <div className="sl-tab-bar">
               {([['inspector', 'Inspector', 'fa-sliders'], ['ai-config', 'AI Config', 'fa-brain']] as const).map(([id, label, icon]) => (
                 <button
@@ -569,7 +509,10 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
                       />
                     </div>
                     <div className="px-2">
-                      <button className="w-full py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg text-[12px] font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleAIPrompt('Generate based on current configuration')}
+                        className="w-full py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg text-[12px] font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                      >
                         <i className="fa-solid fa-wand-magic-sparkles text-[10px]" />
                         Generate with AI
                       </button>
@@ -586,7 +529,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
             <AIPromptBar
               onPrompt={handleAIPrompt}
               onQuickAction={handleQuickAction}
-              isGenerating={isGenerating}
+              isGenerating={aiGeneration.isGenerating}
             />
           </div>
           <div className="flex-1 overflow-hidden">
@@ -597,18 +540,22 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
 
       <div className="bg-[#0d0d0d] border-t border-[#1e1e1e] flex items-center px-3 text-[10px] text-[#444] font-mono h-6">
         <div className="flex items-center gap-1.5">
-          <div className="w-1.5 h-1.5 bg-green-500 rounded-full pulse-dot" />
+          <div className={`w-1.5 h-1.5 rounded-full pulse-dot ${backendConnected ? 'bg-green-500' : 'bg-yellow-500'}`} />
           <span className="text-[#666]">SparkLabs Engine v17.0.0</span>
         </div>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span>Scene: Main World</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span>Entities: {entityCount}</span>
-        <div className="flex-1" />
+        <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span>WebGL 2.0</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span className={fps >= 55 ? 'text-green-600' : 'text-yellow-600'}>{fps} FPS</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
+        <span className={backendConnected ? 'text-green-500' : 'text-yellow-500'}>
+          {backendConnected ? 'Backend Connected' : 'Standalone Mode'}
+        </span>
+        <div className="flex-1" />
         <span className="text-orange-500">AI Ready</span>
       </div>
       </div>

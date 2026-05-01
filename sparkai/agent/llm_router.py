@@ -162,6 +162,7 @@ class LLMRouter:
         self._routing_history: List[RoutingDecision] = []
         self._max_history: int = 1000
         self._provider_stats: Dict[str, Dict[str, Any]] = {}
+        self._credential_manager = None
 
     def register_provider(
         self,
@@ -196,6 +197,9 @@ class LLMRouter:
         if self._default_provider is None:
             self._default_provider = name
         return profile
+
+    def set_credential_manager(self, manager) -> None:
+        self._credential_manager = manager
 
     def set_default_provider(self, name: str) -> bool:
         if name in self._providers:
@@ -293,6 +297,8 @@ class LLMRouter:
 
             except Exception:
                 tried_providers.add(provider_name)
+                if self._credential_manager and profile.config:
+                    self._credential_manager.report_failure(profile.config.api_key)
                 base_delay = 2.0
                 jitter = random.uniform(0, base_delay * 0.5)
                 await asyncio.sleep(base_delay + jitter)

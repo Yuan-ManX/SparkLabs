@@ -4,7 +4,7 @@ import path from 'path';
 
 export default defineConfig({
   plugins: [react()],
-  base: '/sparklabs/',
+  base: '/SparkLabs/Editor/',
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '.'),
@@ -12,6 +12,7 @@ export default defineConfig({
       '@hooks': path.resolve(__dirname, 'hooks'),
       '@utils': path.resolve(__dirname, 'utils'),
       '@types': path.resolve(__dirname, 'types'),
+      '@store': path.resolve(__dirname, 'store'),
     },
   },
   server: {
@@ -28,8 +29,8 @@ export default defineConfig({
     },
     historyApiFallback: {
       rewrites: [
-        { from: /^\/sparklabs\/editor$/, to: '/sparklabs/index.html' },
-        { from: /^\/sparklabs$/, to: '/sparklabs/index.html' },
+        { from: /^\/SparkLabs\/Editor$/, to: '/SparkLabs/Editor/index.html' },
+        { from: /^\/SparkLabs\/Editor\/.*$/, to: '/SparkLabs/Editor/index.html' },
       ],
     },
   },

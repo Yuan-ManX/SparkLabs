@@ -1,4 +1,7 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
+import * as THREE from 'three';
+import { sceneBridge } from '../services/sceneBridge';
+import { useEditorStore } from '../store/editorStore';
 
 interface GameViewportProps {
   isPlaying: boolean;
@@ -22,140 +25,199 @@ const GameViewport: React.FC<GameViewportProps> = ({
   const [viewMode, setViewMode] = useState<'game' | 'scene' | 'wireframe'>('scene');
   const [isPaused, setIsPaused] = useState(false);
   const [showStats, setShowStats] = useState(true);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const rendererRef = useRef<THREE.WebGLRenderer | null>(null);
+  const sceneRef = useRef<THREE.Scene | null>(null);
+  const cameraRef = useRef<THREE.PerspectiveCamera | null>(null);
   const animRef = useRef<number>(0);
   const timeRef = useRef(0);
+  const entityMeshesRef = useRef<THREE.Object3D[]>([]);
+  const orbitNodesRef = useRef<THREE.Mesh[]>([]);
+
+  const sceneNodes = useEditorStore((s) => s.sceneNodes);
+  const selectedEntity = useEditorStore((s) => s.selectedEntity);
+  const setFps = useEditorStore((s) => s.setFps);
 
   useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
+    if (!containerRef.current) return;
+    const container = containerRef.current;
+    const width = container.clientWidth;
+    const height = container.clientHeight;
 
-    const resize = () => {
-      const rect = canvas.parentElement?.getBoundingClientRect();
-      if (rect) {
-        canvas.width = rect.width;
-        canvas.height = rect.height;
-      }
-    };
-    resize();
-    window.addEventListener('resize', resize);
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a0a0a);
+    scene.fog = new THREE.Fog(0x0a0a0a, 30, 80);
+    sceneRef.current = scene;
 
-    const draw = () => {
+    const camera = new THREE.PerspectiveCamera(60, width / height, 0.1, 200);
+    camera.position.set(12, 7, 12);
+    camera.lookAt(0, 1, 0);
+    cameraRef.current = camera;
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.shadowMap.enabled = true;
+    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+    renderer.toneMapping = THREE.ACESFilmicToneMapping;
+    renderer.toneMappingExposure = 1.2;
+    container.appendChild(renderer.domElement);
+    rendererRef.current = renderer;
+
+    const ambientLight = new THREE.AmbientLight(0x404060, 0.6);
+    scene.add(ambientLight);
+
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.5);
+    dirLight.position.set(8, 16, 8);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = 1024;
+    dirLight.shadow.mapSize.height = 1024;
+    dirLight.shadow.camera.near = 0.5;
+    dirLight.shadow.camera.far = 60;
+    dirLight.shadow.camera.left = -20;
+    dirLight.shadow.camera.right = 20;
+    dirLight.shadow.camera.top = 20;
+    dirLight.shadow.camera.bottom = -20;
+    dirLight.shadow.bias = -0.0005;
+    scene.add(dirLight);
+
+    const gridHelper = new THREE.GridHelper(50, 50, 0x1a2a1a, 0x111a11);
+    scene.add(gridHelper);
+
+    const groundGeo = new THREE.PlaneGeometry(50, 50);
+    const groundMat = new THREE.MeshStandardMaterial({ color: 0x0a0a0a, roughness: 0.95, metalness: 0.05 });
+    const ground = new THREE.Mesh(groundGeo, groundMat);
+    ground.rotation.x = -Math.PI / 2;
+    ground.position.y = -0.01;
+    ground.receiveShadow = true;
+    ground.renderOrder = 1;
+    scene.add(ground);
+
+    const decoNodes: THREE.Mesh[] = [];
+    const nodeColors = [0x4ade80, 0x60a5fa, 0xc084fc, 0xfbbf24, 0xf97316, 0xef4444, 0x06b6d4, 0x8b5cf6];
+    for (let i = 0; i < 8; i++) {
+      const angle = (i / 8) * Math.PI * 2;
+      const nodeGeo = new THREE.SphereGeometry(0.12, 16, 16);
+      const nodeMat = new THREE.MeshStandardMaterial({ color: nodeColors[i], emissive: nodeColors[i], emissiveIntensity: 0.5, roughness: 0.3, metalness: 0.6 });
+      const nodeMesh = new THREE.Mesh(nodeGeo, nodeMat);
+      nodeMesh.position.set(Math.cos(angle) * 4, 1.8 + Math.sin(i * 0.7) * 0.3, Math.sin(angle) * 4);
+      nodeMesh.userData = { orbitIndex: i, baseY: 1.8 + Math.sin(i * 0.7) * 0.3 };
+      scene.add(nodeMesh);
+      decoNodes.push(nodeMesh);
+    }
+    orbitNodesRef.current = decoNodes;
+
+    const renderLoop = () => {
       timeRef.current += 0.016;
       const t = timeRef.current;
-      const w = canvas.width;
-      const h = canvas.height;
 
-      ctx.fillStyle = '#0a0a0a';
-      ctx.fillRect(0, 0, w, h);
+      for (const nodeMesh of decoNodes) {
+        const i = (nodeMesh.userData as Record<string, number>).orbitIndex ?? 0;
+        const angle = (i / 8) * Math.PI * 2 + t * 0.4;
+        const orbitR = 4 + Math.sin(t + i) * 0.4;
+        nodeMesh.position.x = Math.cos(angle) * orbitR;
+        nodeMesh.position.z = Math.sin(angle) * orbitR;
+        nodeMesh.position.y = (nodeMesh.userData as Record<string, number>).baseY + Math.sin(t * 2 + i) * 0.2;
+      }
 
-      if (viewMode === 'wireframe') {
-        ctx.strokeStyle = '#1a1a1a';
-        ctx.lineWidth = 1;
-        for (let x = 0; x < w; x += 40) {
-          ctx.beginPath();
-          ctx.moveTo(x, 0);
-          ctx.lineTo(x, h);
-          ctx.stroke();
-        }
-        for (let y = 0; y < h; y += 40) {
-          ctx.beginPath();
-          ctx.moveTo(0, y);
-          ctx.lineTo(w, y);
-          ctx.stroke();
+      for (const entityMesh of entityMeshesRef.current) {
+        if (entityMesh.userData.animate) {
+          (entityMesh.userData.animate as (t: number, dt: number) => void)(t, 0.016);
         }
       }
 
-      const cx = w / 2;
-      const cy = h / 2;
+      camera.position.x = 12 * Math.cos(t * 0.07);
+      camera.position.z = 12 * Math.sin(t * 0.07);
+      camera.lookAt(0, 1.5, 0);
 
-      ctx.save();
-      ctx.translate(cx, cy);
-
-      ctx.strokeStyle = '#1a2a1a';
-      ctx.lineWidth = 1;
-      for (let i = -5; i <= 5; i++) {
-        const offset = i * 40;
-        const perspective = 0.7;
-        ctx.beginPath();
-        ctx.moveTo(-200, offset * perspective);
-        ctx.lineTo(200, offset * perspective);
-        ctx.stroke();
-        ctx.beginPath();
-        ctx.moveTo(offset * perspective, -200);
-        ctx.lineTo(offset * perspective, 200);
-        ctx.stroke();
-      }
-
-      const coreSize = 30 + Math.sin(t * 2) * 5;
-      const gradient = ctx.createRadialGradient(0, 0, 0, 0, 0, coreSize * 2);
-      gradient.addColorStop(0, 'rgba(249, 115, 22, 0.3)');
-      gradient.addColorStop(0.5, 'rgba(249, 115, 22, 0.1)');
-      gradient.addColorStop(1, 'rgba(249, 115, 22, 0)');
-      ctx.fillStyle = gradient;
-      ctx.beginPath();
-      ctx.arc(0, 0, coreSize * 2, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.strokeStyle = '#f97316';
-      ctx.lineWidth = 2;
-      ctx.beginPath();
-      for (let i = 0; i < 6; i++) {
-        const angle = (i / 6) * Math.PI * 2 + t * 0.5;
-        const r = coreSize;
-        const x = Math.cos(angle) * r;
-        const y = Math.sin(angle) * r;
-        if (i === 0) ctx.moveTo(x, y);
-        else ctx.lineTo(x, y);
-      }
-      ctx.closePath();
-      ctx.stroke();
-
-      for (let i = 0; i < 8; i++) {
-        const angle = (i / 8) * Math.PI * 2 + t * 0.3;
-        const orbitR = 80 + Math.sin(t + i) * 15;
-        const nx = Math.cos(angle) * orbitR;
-        const ny = Math.sin(angle) * orbitR;
-        const nodeSize = 4 + Math.sin(t * 2 + i) * 1.5;
-
-        ctx.strokeStyle = `rgba(249, 115, 22, ${0.15 + Math.sin(t + i) * 0.05})`;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.moveTo(0, 0);
-        ctx.lineTo(nx, ny);
-        ctx.stroke();
-
-        ctx.fillStyle = `rgba(249, 115, 22, ${0.6 + Math.sin(t * 3 + i) * 0.2})`;
-        ctx.beginPath();
-        ctx.arc(nx, ny, nodeSize, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      ctx.restore();
-
-      if (isPlaying && !isPaused) {
-        const playerX = cx + Math.sin(t * 1.5) * 60;
-        const playerY = cy + 80 + Math.abs(Math.sin(t * 3)) * -30;
-        ctx.fillStyle = '#22c55e';
-        ctx.fillRect(playerX - 8, playerY - 16, 16, 16);
-        ctx.fillStyle = '#22c55e';
-        ctx.beginPath();
-        ctx.arc(playerX, playerY - 20, 6, 0, Math.PI * 2);
-        ctx.fill();
-      }
-
-      animRef.current = requestAnimationFrame(draw);
+      renderer.render(scene, camera);
+      animRef.current = requestAnimationFrame(renderLoop);
     };
+    animRef.current = requestAnimationFrame(renderLoop);
 
-    animRef.current = requestAnimationFrame(draw);
+    const handleResize = () => {
+      if (!containerRef.current) return;
+      const w = containerRef.current.clientWidth;
+      const h = containerRef.current.clientHeight;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    };
+    window.addEventListener('resize', handleResize);
 
     return () => {
-      window.removeEventListener('resize', resize);
+      window.removeEventListener('resize', handleResize);
       cancelAnimationFrame(animRef.current);
+      sceneBridge.disposeAll();
+      renderer.dispose();
+      if (container.contains(renderer.domElement)) {
+        container.removeChild(renderer.domElement);
+      }
     };
-  }, [viewMode, isPlaying, isPaused]);
+  }, []);
+
+  useEffect(() => {
+    if (!sceneRef.current) return;
+    const entries = sceneBridge.buildFromNodes(sceneNodes);
+
+    for (const existing of entityMeshesRef.current) {
+      sceneRef.current.remove(existing);
+    }
+    entityMeshesRef.current = [];
+
+    const positionMap: Record<string, THREE.Vector3> = {
+      'camera': new THREE.Vector3(4, 3, -3),
+      'light': new THREE.Vector3(6, 6, 2),
+      'ai-core': new THREE.Vector3(0, 1.5, 0),
+      'terrain': new THREE.Vector3(-5, 0.25, -4),
+      'player': new THREE.Vector3(3, 0, 3),
+      'npc': new THREE.Vector3(-3, 0, 3),
+    };
+
+    for (const entry of entries) {
+      const pos = positionMap[entry.entityId];
+      if (pos) {
+        entry.mesh.position.copy(pos);
+        entry.transform.position.copy(pos);
+      }
+      sceneRef.current.add(entry.mesh);
+      entityMeshesRef.current.push(entry.mesh);
+
+      if (entry.entityId === 'ai-core') {
+        entry.mesh.userData.animate = (t: number) => {
+          entry.mesh.rotation.y = t * 0.5;
+          entry.mesh.rotation.x = Math.sin(t * 0.3) * 0.2;
+          entry.mesh.position.y = 1.5 + Math.sin(t * 2) * 0.15;
+        };
+      }
+
+      if (entry.entityId === 'player' && isPlaying && !isPaused) {
+        entry.mesh.userData.animate = (t: number) => {
+          entry.mesh.position.x = 3 + Math.sin(t * 1.5) * 2;
+          entry.mesh.position.z = 3 + Math.cos(t * 1.2) * 2;
+          entry.mesh.rotation.y = t * 1.5;
+        };
+      }
+
+      if (entry.entityId === 'npc' && !isPaused) {
+        entry.mesh.userData.animate = (t: number) => {
+          entry.mesh.position.x = -3 + Math.sin(t * 0.5) * 1.5;
+          entry.mesh.position.z = 3 + Math.cos(t * 0.4) * 1.5;
+          entry.mesh.rotation.y = t * 0.3;
+        };
+      }
+    }
+  }, [sceneNodes, isPlaying, isPaused]);
+
+  useEffect(() => {
+    if (!sceneRef.current) return;
+    sceneRef.current.traverse((obj) => {
+      if (obj instanceof THREE.Mesh && obj.material instanceof THREE.MeshStandardMaterial) {
+        obj.material.wireframe = viewMode === 'wireframe';
+        obj.material.needsUpdate = true;
+      }
+    });
+  }, [viewMode]);
 
   const handlePauseToggle = useCallback(() => {
     setIsPaused((prev) => !prev);
@@ -189,7 +251,7 @@ const GameViewport: React.FC<GameViewportProps> = ({
         </div>
       </div>
       <div className="flex-1 relative">
-        <canvas ref={canvasRef} className="w-full h-full" />
+        <div ref={containerRef} className="w-full h-full" />
         {isGenerating && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
             <div className="text-center">
@@ -201,38 +263,32 @@ const GameViewport: React.FC<GameViewportProps> = ({
         {showStats && (
           <div className="absolute top-2 left-2 bg-black/70 rounded px-2 py-1 text-[10px] font-mono text-[#666] z-10">
             <div>FPS: <span className={fps >= 55 ? 'text-green-500' : fps >= 30 ? 'text-yellow-500' : 'text-red-500'}>{fps}</span></div>
-            <div>Draw Calls: 42</div>
-            <div>Triangles: 12.4K</div>
+            <div>Renderer: WebGL 2.0</div>
+            <div>Objects: {sceneRef.current?.children.length ?? 0}</div>
+            <div>Selected: {useEditorStore.getState().selectedEntityName || 'None'}</div>
           </div>
         )}
         <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex items-center gap-1 z-10">
-          <button
-            onClick={onTogglePlay}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white transition-all ${
-              isPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'
-            }`}
-          >
+          <button onClick={onTogglePlay} className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-semibold text-white transition-all ${isPlaying ? 'bg-red-600 hover:bg-red-700' : 'bg-green-600 hover:bg-green-700'}`}>
             <i className={`fa-solid ${isPlaying ? 'fa-stop' : 'fa-play'} text-[9px]`} />
             {isPlaying ? 'Stop' : 'Play'}
           </button>
           {isPlaying && (
-            <button
-              onClick={handlePauseToggle}
-              className="flex items-center gap-1 px-2 py-1.5 bg-[#222] hover:bg-[#333] rounded-lg text-[11px] text-[#999] transition-all"
-            >
+            <button onClick={handlePauseToggle} className="flex items-center gap-1 px-2 py-1.5 bg-[#222] hover:bg-[#333] rounded-lg text-[11px] text-[#999] transition-all">
               <i className={`fa-solid ${isPaused ? 'fa-play' : 'fa-pause'} text-[9px]`} />
               {isPaused ? 'Resume' : 'Pause'}
             </button>
           )}
           {!isPlaying && (
-            <button
-              onClick={onStep}
-              className="flex items-center gap-1 px-2 py-1.5 bg-[#222] hover:bg-[#333] rounded-lg text-[11px] text-[#999] transition-all"
-            >
-              <i className="fa-solid fa-forward-step text-[9px]" />
-              Step
+            <button onClick={onStep} className="flex items-center gap-1 px-2 py-1.5 bg-[#222] hover:bg-[#333] rounded-lg text-[11px] text-[#999] transition-all">
+              <i className="fa-solid fa-forward-step text-[9px]" /> Step
             </button>
           )}
+        </div>
+        <div className="absolute top-2 right-2 flex gap-1 z-10">
+          <div className="bg-black/60 px-2 py-0.5 rounded text-[9px] text-[#555] font-mono">
+            {entityMeshesRef.current.length} entities
+          </div>
         </div>
       </div>
     </div>

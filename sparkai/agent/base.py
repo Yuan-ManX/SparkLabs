@@ -17,11 +17,14 @@ Agent Roles:
 from __future__ import annotations
 
 import asyncio
+import logging
 import uuid
 import time
 from enum import Enum
 from typing import Any, Dict, List, Optional, Callable
 from dataclasses import dataclass, field
+
+logger = logging.getLogger(__name__)
 
 from sparkai.agent.memory import AgentMemory, MemoryType
 from sparkai.agent.toolkit import ToolRegistry, Tool, Toolset, ToolsetRegistry, get_tools_for_role
@@ -317,12 +320,12 @@ class SparkAgent:
                 if action in ("read_file", "list_directory", "search_code", "web_fetch"):
                     path = (params or {}).get("path", (params or {}).get("file_path", (params or {}).get("directory", "")))
                     if path:
-                        file_state.register_read(self.agent_id, str(path))
+                        file_state.register_read(self.id, str(path))
                 elif action in ("write_file", "create_file", "delete_file", "update_file"):
                     path = (params or {}).get("path", (params or {}).get("file_path", ""))
                     if path:
                         content = (params or {}).get("content", "")
-                        file_state.register_write(self.agent_id, str(path), str(content))
+                        file_state.register_write(self.id, str(path), str(content))
                 self._consecutive_failures = 0
                 self.state = AgentState.IDLE
                 self.emit("action_complete", {"action": action, "result": result})
@@ -734,8 +737,8 @@ class SparkAgent:
                 entities = ctx.list_entities()
                 if entities:
                     summary_parts.append(f"Entities: {len(entities)} objects in scene")
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("Failed to list entities for context summary: %s", e)
 
         if hasattr(ctx, 'list_scenes'):
             try:
@@ -743,24 +746,24 @@ class SparkAgent:
                 if scenes:
                     active = ctx.get_active_scene() if hasattr(ctx, 'get_active_scene') else None
                     summary_parts.append(f"Scenes: {len(scenes)} (active: {active.name if active else 'none'})")
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("Failed to list scenes for context summary: %s", e)
 
         if hasattr(ctx, 'list_assets'):
             try:
                 assets = ctx.list_assets()
                 if assets:
                     summary_parts.append(f"Assets: {len(assets)} loaded")
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("Failed to list assets for context summary: %s", e)
 
         if hasattr(ctx, 'get_pipeline_state'):
             try:
                 pipeline = ctx.get_pipeline_state()
                 if pipeline and hasattr(pipeline, 'current_phase'):
                     summary_parts.append(f"Pipeline: {pipeline.current_phase}")
-            except Exception:
-                pass
+            except Exception as e:
+                logger.debug("Failed to get pipeline state for context summary: %s", e)
 
         return "\n".join(summary_parts) if summary_parts else ""
 

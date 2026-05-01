@@ -119,8 +119,9 @@ class TrajectoryLearner:
                         last_seen=p_data.get("last_seen", time.time()),
                     )
                     self._patterns[pt.signature] = pt
-            except (json.JSONDecodeError, KeyError):
-                pass
+            except (json.JSONDecodeError, KeyError) as e:
+                import logging
+                logging.getLogger(__name__).warning("Failed to load trajectory patterns: %s", e)
 
     def _save_patterns(self) -> None:
         os.makedirs(os.path.dirname(self.PATTERN_FILE), exist_ok=True)

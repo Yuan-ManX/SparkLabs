@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useEditorStore } from '../store/editorStore';
 import {
   Play,
   Pause,
@@ -88,6 +89,20 @@ const COMPONENT_TYPES: { type: ComponentType; icon: any; color: string }[] = [
 
 // Enhanced game engine
 const GameEditor: React.FC = () => {
+  const storeBackendConnected = useEditorStore((s) => s.backendConnected);
+  const storeAddLog = useEditorStore((s) => s.addLog);
+  const storeSceneNodes = useEditorStore((s) => s.sceneNodes);
+  const storeSelectEntity = useEditorStore((s) => s.selectEntity);
+  const storeIsPlaying = useEditorStore((s) => s.isPlaying);
+  const storeTogglePlay = useEditorStore((s) => s.togglePlay);
+  const storeAddSceneNode = useEditorStore((s) => s.addSceneNode);
+
+  useEffect(() => {
+    storeAddLog('info', '[Game Studio] Initialized');
+    if (storeBackendConnected) {
+      storeAddLog('success', '[Game Studio] Backend connected — full AI capabilities available');
+    }
+  }, []);
   const [scenes, setScenes] = useState<Scene[]>([
     {
       id: 'main',

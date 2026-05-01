@@ -323,7 +323,8 @@ class SessionCompactionEngine:
                 else:
                     loop.run_until_complete(self.maybe_compact(session_id))
             except RuntimeError:
-                pass
+                import logging
+                logging.getLogger(__name__).warning("Compaction scheduling failed for session %s", session_id)
         return msg
 
     async def maybe_compact(self, session_id: str, strategy: Optional[CompactionStrategy] = None) -> Optional[CompactionRecord]:
