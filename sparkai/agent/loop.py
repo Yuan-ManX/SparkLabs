@@ -293,9 +293,12 @@ class AgentLoop:
                 )
                 return ThoughtStep(content=response)
             except Exception as e:
+                from sparkai.agent.agent_error_classifier import get_error_classifier
+                classifier = get_error_classifier()
+                classified = classifier.classify(e)
                 return ThoughtStep(
                     content=f"Thinking error: {str(e)}",
-                    metadata={"error": True, "retry_eligible": True},
+                    metadata={"error": True, "retry_eligible": True, "error_category": classified.category.value, "should_compress": classified.hints.should_compress},
                 )
         return ThoughtStep(content=f"[No agent] Input: {input_text[:500]}")
 
@@ -351,8 +354,11 @@ class AgentLoop:
 
             if self.agent and hasattr(self.agent, 'act'):
                 result = await self.agent.act(action.tool_name, action.parameters)
+                from sparkai.agent.agent_tool_pruner import get_tool_output_pruner
+                pruner = get_tool_output_pruner()
+                pruned_result, prune_info = pruner.prune(action.tool_name, result)
                 return ObservationStep(
-                    content=str(result)[:2000] if result else "Action completed with no output",
+                    content=pruned_result if isinstance(pruned_result, str) else str(pruned_result)[:2000] if pruned_result else "Action completed with no output",
                     success=True,
                     duration=time.time() - start,
                 )

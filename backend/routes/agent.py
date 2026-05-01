@@ -4016,3 +4016,35 @@ async def tool_pruner_rules():
 @router.get("/tool-pruner/stats")
 async def tool_pruner_stats():
     return _tool_pruner.get_stats()
+
+
+# === Trajectory Learning Engine ===
+
+from sparkai.agent.agent_trajectory_learner import TrajectoryLearner, get_trajectory_learner
+
+_trajectory_learner = get_trajectory_learner()
+
+
+@router.post("/trajectory/analyze-chains")
+async def trajectory_analyze_chains():
+    result = _trajectory_learner.analyze_saved_chains()
+    return result
+
+
+@router.get("/trajectory/patterns")
+async def trajectory_patterns(pattern_type: Optional[str] = None):
+    from sparkai.agent.agent_trajectory_learner import PatternType
+    pt = PatternType(pattern_type) if pattern_type else None
+    patterns = _trajectory_learner.get_patterns(pt)
+    return {"patterns": [p.to_dict() for p in patterns]}
+
+
+@router.get("/trajectory/recommendation")
+async def trajectory_recommendation(goal: str = ""):
+    tools = _trajectory_learner.get_tool_sequence_recommendation(goal)
+    return {"goal": goal, "recommended_tools": tools, "has_recommendation": tools is not None}
+
+
+@router.get("/trajectory/stats")
+async def trajectory_stats():
+    return _trajectory_learner.get_stats()

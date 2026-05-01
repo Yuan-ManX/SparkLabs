@@ -27,6 +27,9 @@ from sparkai.agent.memory import AgentMemory, MemoryType
 from sparkai.agent.toolkit import ToolRegistry, Tool, Toolset, ToolsetRegistry, get_tools_for_role
 from sparkai.agent.llm import LLMProvider, LLMConfig
 from sparkai.agent.skills.base import Skill, SkillRegistry
+from sparkai.agent.agent_error_classifier import ErrorClassifier, get_error_classifier
+from sparkai.agent.agent_tool_pruner import ToolOutputPruner, get_tool_output_pruner
+from sparkai.agent.agent_file_state import FileStateEngine, get_file_state_engine
 
 
 class AgentCapability(Enum):
@@ -272,7 +275,11 @@ class SparkAgent:
         except Exception as e:
             self._consecutive_failures += 1
             self.state = AgentState.ERROR
-            self.emit("thinking_error", {"error": str(e)})
+            classifier = get_error_classifier()
+            classified = classifier.classify(e, context_messages=len(self._message_history))
+            self.emit("thinking_error", {"error": str(e), "category": classified.category.value, "hints": classified.hints.to_dict()})
+            if classified.hints.should_compress:
+                self.emit("context_overflow_detected", {"tokens": len(self._message_history)})
             return f"Error during thinking: {str(e)}"
 
     async def act(self, action: str, params: Optional[Dict[str, Any]] = None) -> Any:
@@ -301,6 +308,21 @@ class SparkAgent:
                     memory_type=MemoryType.EPISODIC,
                     importance=0.7,
                 )
+                pruner = get_tool_output_pruner()
+                pruned_result, prune_info = pruner.prune(action, result)
+                if prune_info.was_pruned:
+                    self.emit("tool_output_pruned", {"tool": action, "original_size": prune_info.original_size, "pruned_size": prune_info.pruned_size})
+                    result = pruned_result
+                file_state = get_file_state_engine()
+                if action in ("read_file", "list_directory", "search_code", "web_fetch"):
+                    path = (params or {}).get("path", (params or {}).get("file_path", (params or {}).get("directory", "")))
+                    if path:
+                        file_state.register_read(self.agent_id, str(path))
+                elif action in ("write_file", "create_file", "delete_file", "update_file"):
+                    path = (params or {}).get("path", (params or {}).get("file_path", ""))
+                    if path:
+                        content = (params or {}).get("content", "")
+                        file_state.register_write(self.agent_id, str(path), str(content))
                 self._consecutive_failures = 0
                 self.state = AgentState.IDLE
                 self.emit("action_complete", {"action": action, "result": result})
@@ -312,7 +334,9 @@ class SparkAgent:
         except Exception as e:
             self._consecutive_failures += 1
             self.state = AgentState.ERROR
-            self.emit("action_error", {"action": action, "error": str(e)})
+            classifier = get_error_classifier()
+            classified = classifier.classify(e)
+            self.emit("action_error", {"action": action, "error": str(e), "category": classified.category.value})
             return f"Error executing action: {str(e)}"
 
     async def verify(self, criteria: str, evidence: Optional[str] = None) -> Dict[str, Any]:

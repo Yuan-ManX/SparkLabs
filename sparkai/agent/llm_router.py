@@ -22,6 +22,8 @@ Task types and their optimal providers:
 
 from __future__ import annotations
 
+import asyncio
+import random
 import time
 import uuid
 from dataclasses import dataclass, field
@@ -291,6 +293,9 @@ class LLMRouter:
 
             except Exception:
                 tried_providers.add(provider_name)
+                base_delay = 2.0
+                jitter = random.uniform(0, base_delay * 0.5)
+                await asyncio.sleep(base_delay + jitter)
                 continue
 
         decision.latency_ms = (time.time() - start_time) * 1000

@@ -1527,3 +1527,10 @@ export const toolPrunerApi = {
   rules: () => api.get('/agent/tool-pruner/rules'),
   stats: () => api.get('/agent/tool-pruner/stats'),
 };
+
+export const trajectoryApi = {
+  analyzeChains: () => api.post('/agent/trajectory/analyze-chains'),
+  patterns: (patternType?: string) => api.get(`/agent/trajectory/patterns${patternType ? `?pattern_type=${encodeURIComponent(patternType)}` : ''}`),
+  recommendation: (goal: string) => api.get(`/agent/trajectory/recommendation?goal=${encodeURIComponent(goal)}`),
+  stats: () => api.get('/agent/trajectory/stats'),
+};

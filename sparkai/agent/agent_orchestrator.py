@@ -256,6 +256,12 @@ class RoutingStrategy:
             if not task.required_capabilities.issubset(agent.capabilities):
                 continue
 
+            task_tools = task.input_data.get("required_tools", set())
+            if isinstance(task_tools, (list, set)):
+                blocked = task_tools & agent.blocked_tools
+                if blocked:
+                    continue
+
             score = agent.success_rate * 10.0
             score += (1.0 - agent.current_tasks / max(agent.max_concurrent_tasks, 1)) * 5.0
             score -= agent.avg_latency_ms / 1000.0
@@ -385,6 +391,19 @@ class OrchestratorEngine:
         parent_task_id: Optional[str] = None,
     ) -> OrchestratedTask:
         caps = {AgentCapability(c) for c in (required_capabilities or [])}
+        parent_task = self._tasks.get(parent_task_id) if parent_task_id else None
+        current_depth = parent_task.spawn_depth + 1 if parent_task else 0
+        if current_depth >= 3:
+            return OrchestratedTask(
+                name=name,
+                description=description,
+                required_capabilities=caps,
+                priority=TaskPriority[priority.upper()],
+                input_data=input_data or {},
+                parent_task_id=parent_task_id,
+                spawn_depth=current_depth,
+                status=TaskStatus.FAILED,
+            )
         task = OrchestratedTask(
             name=name,
             description=description,
@@ -392,6 +411,7 @@ class OrchestratorEngine:
             priority=TaskPriority[priority.upper()],
             input_data=input_data or {},
             parent_task_id=parent_task_id,
+            spawn_depth=current_depth,
         )
         self._tasks[task.id] = task
         self._task_count += 1

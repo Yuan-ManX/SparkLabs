@@ -139,6 +139,7 @@ from sparkai.agent.agent_error_classifier import ErrorClassifier, get_error_clas
 from sparkai.agent.agent_file_state import FileStateEngine, get_file_state_engine
 from sparkai.agent.agent_subagent_spawner import SubagentSpawner, get_subagent_spawner
 from sparkai.agent.agent_tool_pruner import ToolOutputPruner, get_tool_output_pruner
+from sparkai.agent.agent_trajectory_learner import TrajectoryLearner, get_trajectory_learner
 
 
 class RuntimeState(Enum):
@@ -254,6 +255,7 @@ class AgentRuntime:
         self._file_state_engine: Optional[FileStateEngine] = None
         self._subagent_spawner: Optional[SubagentSpawner] = None
         self._tool_pruner: Optional[ToolOutputPruner] = None
+        self._trajectory_learner: Optional[TrajectoryLearner] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -332,6 +334,7 @@ class AgentRuntime:
             self._file_state_engine = get_file_state_engine()
             self._subagent_spawner = get_subagent_spawner()
             self._tool_pruner = get_tool_output_pruner()
+            self._trajectory_learner = get_trajectory_learner()
             self._integration.register_subsystem("protocol", self._protocol)
             self._integration.register_subsystem("orchestrator", self._orchestrator)
             self._integration.register_subsystem("studio", self._studio_coordinator)
@@ -347,6 +350,7 @@ class AgentRuntime:
             self._integration.register_subsystem("file_state", self._file_state_engine)
             self._integration.register_subsystem("subagent_spawner", self._subagent_spawner)
             self._integration.register_subsystem("tool_pruner", self._tool_pruner)
+            self._integration.register_subsystem("trajectory_learner", self._trajectory_learner)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -366,7 +370,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 62,
+                    "subsystems": 63,
                 }},
             ))
 
@@ -912,6 +916,7 @@ class AgentRuntime:
                 "file_state_engine": self._file_state_engine is not None,
                 "subagent_spawner": self._subagent_spawner is not None,
                 "tool_pruner": self._tool_pruner is not None,
+                "trajectory_learner": self._trajectory_learner is not None,
             },
         }
 
@@ -1027,6 +1032,8 @@ class AgentRuntime:
             status["subagent_spawner_stats"] = self._subagent_spawner.get_stats()
         if self._tool_pruner:
             status["tool_pruner_stats"] = self._tool_pruner.get_stats()
+        if self._trajectory_learner:
+            status["trajectory_learner_stats"] = self._trajectory_learner.get_stats()
         return status
 
 

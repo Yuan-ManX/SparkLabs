@@ -100,7 +100,11 @@ class ToolRegistry:
         tool = self.get(name)
         if not tool:
             raise ValueError(f"Tool '{name}' not found")
-        return await tool.execute(params)
+        result = await tool.execute(params)
+        from sparkai.agent.agent_tool_pruner import get_tool_output_pruner
+        pruner = get_tool_output_pruner()
+        pruned_result, prune_info = pruner.prune(name, result)
+        return pruned_result
 
     def load_toolset(self, tools: List[Tool]) -> None:
         for tool in tools:
@@ -686,12 +690,34 @@ def create_orchestration_toolset() -> Toolset:
     """Agent orchestration and delegation tools for directors and leads."""
 
     async def delegate_task(params: Dict[str, Any]) -> Dict[str, Any]:
+        from sparkai.agent.agent_subagent_spawner import get_subagent_spawner, SpawnRequest, SubagentConfig, SubagentRole
+        task_description = params.get("task_description", "")
+        target_role = params.get("target_role", "worker")
+        capability = params.get("capability", "reasoning")
+        parent_id = params.get("parent_id", "unknown")
+        current_depth = params.get("current_depth", 0)
+        role_map = {"worker": SubagentRole.WORKER, "researcher": SubagentRole.RESEARCHER, "coder": SubagentRole.CODER, "reviewer": SubagentRole.REVIEWER, "tester": SubagentRole.TESTER}
+        role = role_map.get(target_role, SubagentRole.WORKER)
+        config = SubagentConfig(role=role)
+        request = SpawnRequest(
+            parent_id=parent_id,
+            task_description=task_description,
+            config=config,
+            current_depth=current_depth,
+        )
+        spawner = get_subagent_spawner()
+        result = spawner.create_subagent(request)
+        if result.state.value == "failed":
+            return {"action": "delegate_task", "status": "failed", "error": result.error}
+        spawner.start_subagent(result.subagent_id)
         return {
             "action": "delegate_task",
-            "task_description": params.get("task_description", ""),
-            "target_role": params.get("target_role", "specialist"),
-            "capability": params.get("capability", "reasoning"),
+            "task_description": task_description,
+            "target_role": target_role,
+            "capability": capability,
             "status": "delegated",
+            "subagent_id": result.subagent_id,
+            "spawn_depth": result.spawn_depth,
         }
 
     async def create_plan(params: Dict[str, Any]) -> Dict[str, Any]:

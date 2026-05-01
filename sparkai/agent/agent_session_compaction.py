@@ -314,6 +314,16 @@ class SessionCompactionEngine:
         if not session:
             return None
         msg = session.add_message(role, content, token_count)
+        if session.needs_compaction():
+            try:
+                import asyncio
+                loop = asyncio.get_event_loop()
+                if loop.is_running():
+                    asyncio.ensure_future(self.maybe_compact(session_id))
+                else:
+                    loop.run_until_complete(self.maybe_compact(session_id))
+            except RuntimeError:
+                pass
         return msg
 
     async def maybe_compact(self, session_id: str, strategy: Optional[CompactionStrategy] = None) -> Optional[CompactionRecord]:
