@@ -126,6 +126,14 @@ Runtime architecture:
     |-- Input Mapping (action-based rebindable controls)
     |-- Undo/Redo System (editor command history)
     |-- Sprite Sheet (frame-based sprite animation)
+    |-- Prompt Cache (LLM response caching with fingerprinting)
+    |-- Trajectory Recorder (full session event timeline logging)
+    |-- Checkpoint System (state snapshot with rollback/rollforward)
+    |-- Budget Tracker (token cost tracking with alert thresholds)
+    |-- Tween System (19-curve property animation library)
+    |-- Node Path System (path-based game object referencing)
+    |-- Project Template System (12-genre game scaffolding)
+    |-- Asset Pipeline (end-to-end asset lifecycle management)
 
 The runtime provides a single initialization point and unified
 API for all engine operations. It manages the lifecycle of all
@@ -237,6 +245,10 @@ from sparkai.agent.agent_observability import ObservabilitySystem, SpanKind, get
 from sparkai.agent.agent_output_limiter import OutputLimiter, LimitPolicy, get_output_limiter
 from sparkai.agent.agent_context_engine import ContextEngine, ContextStrategy, get_context_engine
 from sparkai.agent.agent_skill_discovery import SkillDiscovery, CapabilityDomain, get_skill_discovery
+from sparkai.agent.agent_prompt_cache import PromptCache, get_prompt_cache
+from sparkai.agent.agent_trajectory_recorder import TrajectoryRecorder, get_trajectory_recorder
+from sparkai.agent.agent_checkpoint_system import CheckpointSystem, get_checkpoint_system
+from sparkai.agent.agent_budget_tracker import BudgetTracker, get_budget_tracker
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -273,6 +285,10 @@ from sparkai.engine.effects_system import EffectsSystem, EffectType, get_effects
 from sparkai.engine.input_mapping import InputMappingSystem, InputDevice, get_input_mapping
 from sparkai.engine.undo_redo_system import UndoRedoSystem, CommandTarget, get_undo_redo_system
 from sparkai.engine.sprite_sheet import SpriteSheetSystem, SheetLayout, get_sprite_sheet_system
+from sparkai.engine.tween_system import TweenSystem, get_tween_system
+from sparkai.engine.node_path_system import NodePathSystem, get_node_path_system
+from sparkai.engine.project_template import ProjectTemplateSystem, get_project_template_system
+from sparkai.engine.asset_pipeline import AssetPipeline, get_asset_pipeline
 
 
 class RuntimeState(Enum):
@@ -310,7 +326,7 @@ class AgentRuntime:
     Unified execution engine for the SparkLabs AI-Native Game Engine.
 
     The runtime is the central orchestrator that initializes and manages
-    all 129 subsystems. It provides a single entry point for all engine
+    all 137 subsystems. It provides a single entry point for all engine
     operations and ensures proper lifecycle management.
 
     Usage:
@@ -455,6 +471,14 @@ class AgentRuntime:
         self._input_mapping: Optional[InputMappingSystem] = None
         self._undo_redo_system: Optional[UndoRedoSystem] = None
         self._sprite_sheet: Optional[SpriteSheetSystem] = None
+        self._prompt_cache: Optional[PromptCache] = None
+        self._trajectory_recorder: Optional[TrajectoryRecorder] = None
+        self._checkpoint_system: Optional[CheckpointSystem] = None
+        self._budget_tracker: Optional[BudgetTracker] = None
+        self._tween_system: Optional[TweenSystem] = None
+        self._node_path_system: Optional[NodePathSystem] = None
+        self._project_template_system: Optional[ProjectTemplateSystem] = None
+        self._asset_pipeline: Optional[AssetPipeline] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -600,6 +624,14 @@ class AgentRuntime:
             self._input_mapping = get_input_mapping()
             self._undo_redo_system = get_undo_redo_system()
             self._sprite_sheet = get_sprite_sheet_system()
+            self._prompt_cache = get_prompt_cache()
+            self._trajectory_recorder = get_trajectory_recorder()
+            self._checkpoint_system = get_checkpoint_system()
+            self._budget_tracker = get_budget_tracker()
+            self._tween_system = get_tween_system()
+            self._node_path_system = get_node_path_system()
+            self._project_template_system = get_project_template_system()
+            self._asset_pipeline = get_asset_pipeline()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -704,6 +736,14 @@ class AgentRuntime:
             self._integration.register_subsystem("input_mapping", self._input_mapping)
             self._integration.register_subsystem("undo_redo_system", self._undo_redo_system)
             self._integration.register_subsystem("sprite_sheet", self._sprite_sheet)
+            self._integration.register_subsystem("prompt_cache", self._prompt_cache)
+            self._integration.register_subsystem("trajectory_recorder", self._trajectory_recorder)
+            self._integration.register_subsystem("checkpoint_system", self._checkpoint_system)
+            self._integration.register_subsystem("budget_tracker", self._budget_tracker)
+            self._integration.register_subsystem("tween_system", self._tween_system)
+            self._integration.register_subsystem("node_path_system", self._node_path_system)
+            self._integration.register_subsystem("project_template_system", self._project_template_system)
+            self._integration.register_subsystem("asset_pipeline", self._asset_pipeline)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -713,6 +753,10 @@ class AgentRuntime:
             self._recovery_engine.register_action_handler("classify_intent", lambda params: self._intent_classifier and self._intent_classifier.classify(params.get("prompt", "")) is not None)
             self._recovery_engine.register_action_handler("check_approval", lambda params: self._approval_engine and self._approval_engine.request_approval(params.get("action", ""), params.get("level", "low")) is not None)
             self._recovery_engine.register_action_handler("create_checkpoint", lambda params: self._checkpoint_manager and self._checkpoint_manager.create_checkpoint(params.get("session_id", "default"), params) is not None)
+            self._recovery_engine.register_action_handler("flush_cache", lambda params: self._prompt_cache and self._prompt_cache.clear() is None)
+            self._recovery_engine.register_action_handler("record_event", lambda params: self._trajectory_recorder and self._trajectory_recorder.record_event(params.get("event_type", "ERROR"), params.get("data", {}), params.get("session_id", "default")) is not None)
+            self._recovery_engine.register_action_handler("create_snapshot", lambda params: self._checkpoint_system and self._checkpoint_system.create_checkpoint("recovery", params, CheckpointScope.FULL.value) is not None)
+            self._recovery_engine.register_action_handler("check_budget_tracker", lambda params: self._budget_tracker and self._budget_tracker.can_proceed(params.get("session_id", "default"), params.get("tokens", 0)) is not None)
 
             if self._protocol and self._event_bus:
                 self._event_bus.subscribe(
@@ -728,7 +772,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 129,
+                    "subsystems": 137,
                 }},
             ))
 
@@ -1462,6 +1506,38 @@ class AgentRuntime:
     def sprite_sheet(self) -> Optional[SpriteSheetSystem]:
         return self._sprite_sheet
 
+    @property
+    def prompt_cache(self) -> Optional[PromptCache]:
+        return self._prompt_cache
+
+    @property
+    def trajectory_recorder(self) -> Optional[TrajectoryRecorder]:
+        return self._trajectory_recorder
+
+    @property
+    def checkpoint_system(self) -> Optional[CheckpointSystem]:
+        return self._checkpoint_system
+
+    @property
+    def budget_tracker(self) -> Optional[BudgetTracker]:
+        return self._budget_tracker
+
+    @property
+    def tween_system(self) -> Optional[TweenSystem]:
+        return self._tween_system
+
+    @property
+    def node_path_system(self) -> Optional[NodePathSystem]:
+        return self._node_path_system
+
+    @property
+    def project_template_system(self) -> Optional[ProjectTemplateSystem]:
+        return self._project_template_system
+
+    @property
+    def asset_pipeline(self) -> Optional[AssetPipeline]:
+        return self._asset_pipeline
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -1605,6 +1681,14 @@ class AgentRuntime:
                 "input_mapping": self._input_mapping is not None,
                 "undo_redo_system": self._undo_redo_system is not None,
                 "sprite_sheet": self._sprite_sheet is not None,
+                "prompt_cache": self._prompt_cache is not None,
+                "trajectory_recorder": self._trajectory_recorder is not None,
+                "checkpoint_system": self._checkpoint_system is not None,
+                "budget_tracker": self._budget_tracker is not None,
+                "tween_system": self._tween_system is not None,
+                "node_path_system": self._node_path_system is not None,
+                "project_template_system": self._project_template_system is not None,
+                "asset_pipeline": self._asset_pipeline is not None,
             },
         }
 
@@ -1836,6 +1920,22 @@ class AgentRuntime:
             status["undo_redo_stats"] = self._undo_redo_system.get_stats()
         if self._sprite_sheet:
             status["sprite_sheet_stats"] = self._sprite_sheet.get_stats()
+        if self._prompt_cache:
+            status["prompt_cache_stats"] = self._prompt_cache.get_stats()
+        if self._trajectory_recorder:
+            status["trajectory_recorder_stats"] = self._trajectory_recorder.get_stats()
+        if self._checkpoint_system:
+            status["checkpoint_system_stats"] = self._checkpoint_system.get_stats()
+        if self._budget_tracker:
+            status["budget_tracker_stats"] = self._budget_tracker.get_all_usage()
+        if self._tween_system:
+            status["tween_system_stats"] = self._tween_system.get_stats()
+        if self._node_path_system:
+            status["node_path_system_stats"] = self._node_path_system.get_stats()
+        if self._project_template_system:
+            status["project_template_system_stats"] = self._project_template_system.get_stats()
+        if self._asset_pipeline:
+            status["asset_pipeline_stats"] = self._asset_pipeline.get_stats()
         return status
 
 
