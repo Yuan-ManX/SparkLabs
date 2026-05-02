@@ -64,6 +64,68 @@ Runtime architecture:
     |-- Prompt Builder (layered system prompt construction)
     |-- Intent Classifier (prompt intent detection and routing)
     |-- Execution Budget (token/cost tracking and enforcement)
+    |-- Approval Engine (action gate with trust tier escalation)
+    |-- Checkpoint Manager (session state snapshot and rollback)
+    |-- Game Loop (ordered execution phases with time management)
+    |-- Signal Bus (decoupled signal/slot communication)
+    |-- Animation Player (keyframe playback and tweening)
+    |-- Collision System (spatial hash broad-phase detection)
+    |-- Input Manager (unified keyboard/mouse/touch input)
+    |-- Code Execution Sandbox (isolated code execution with AST validation)
+    |-- File Safety Controller (path-based access control)
+    |-- Guard System (content threat scanning and trust tiering)
+    |-- Interrupt System (thread-scoped session interruption)
+    |-- Result Storage (structured tool output caching and query)
+    |-- Physics System (rigid body 2D dynamics with constraints)
+    |-- Particle System (configurable emitter engine)
+    |-- Pathfinding System (A* grid-based navigation)
+    |-- Audio System (channels, 3D spatial, playback)
+    |-- State Machine (hierarchical FSM with transitions)
+    |-- Resource Manager (lazy-loading asset cache with ref counting)
+    |-- Behavior System (modular entity behavior composition)
+    |-- Tilemap System (multi-layer grid map engine)
+    |-- Self Evaluator (quality assessment with dimension rubrics)
+    |-- Strategic Planner (task decomposition with DAG dependency management)
+    |-- Circuit Breaker (API resilience with sliding window failure tracking)
+    |-- Persona System (role-based agent profiles with tool grants)
+    |-- Camera System (dynamic 2D viewport with parallax and shake)
+    |-- Serializer (schema-versioned scene/entity serialization)
+    |-- UI System (retained-mode widget tree with theme support)
+    |-- Layer System (z-ordered rendering with blend modes)
+    |-- Profiler (frame timing, memory tracking, bottleneck detection)
+    |-- Streaming Manager (real-time chunked response streaming)
+    |-- Delegation System (isolated subagent spawning and execution)
+    |-- MCP Bridge (model context protocol server integration)
+    |-- Parallel Executor (multi-provider concurrent task dispatch)
+    |-- Event Scripting System (condition/action event sheets)
+    |-- Scene Tree (hierarchical node graph with groups)
+    |-- Shader System (built-in 2D shaders with materials)
+    |-- Variable System (scoped typed variables with expressions)
+    |-- Resource Loader (LRU-cached asset loading pipeline)
+    |-- Content Safety (PII redaction, unsafe content filtering)
+    |-- Title Generator (dynamic project/session/asset naming)
+    |-- Shell Hooks (sandboxed command execution with hooks)
+    |-- Skill Preprocessor (parameter validation and normalization)
+    |-- Inventory System (item management with categories/equipping)
+    |-- Localization System (multi-language string tables)
+    |-- Achievement System (progress tracking and unlock rewards)
+    |-- Cloud Sync (cloud save with conflict resolution)
+    |-- Rate Limiter (multi-strategy API rate limiting)
+    |-- Retry System (exponential backoff with circuit breaker)
+    |-- Web Browser (controlled URL fetching with domain safety)
+    |-- Session Search (inverted index full-text session search)
+    |-- Object Pool System (pre-allocated object reuse with strategies)
+    |-- Lighting System (2D dynamic lighting with point/directional lights)
+    |-- Font System (font management with glyph metrics and layout)
+    |-- Plugin System (extensible plugin architecture with hooks)
+    |-- Observability (distributed tracing, metrics, logging)
+    |-- Output Limiter (content size control and sanitization)
+    |-- Context Engine (context window management and compaction)
+    |-- Skill Discovery (dynamic tool/capability discovery)
+    |-- Effects System (post-processing visual pipeline)
+    |-- Input Mapping (action-based rebindable controls)
+    |-- Undo/Redo System (editor command history)
+    |-- Sprite Sheet (frame-based sprite animation)
 
 The runtime provides a single initialization point and unified
 API for all engine operations. It manages the lifecycle of all
@@ -148,6 +210,69 @@ from sparkai.agent.agent_skill_curator import SkillCurator, get_skill_curator
 from sparkai.agent.agent_prompt_builder import PromptBuilder, get_prompt_builder
 from sparkai.agent.agent_intent_classifier import IntentClassifier, get_intent_classifier
 from sparkai.agent.agent_execution_budget import ExecutionBudget, get_execution_budget
+from sparkai.agent.agent_approval_engine import ApprovalEngine, get_approval_engine
+from sparkai.agent.agent_checkpoint_manager import CheckpointManager, get_checkpoint_manager
+from sparkai.agent.agent_code_execution import CodeExecutionSandbox, get_code_sandbox, ExecutionMode
+from sparkai.agent.agent_file_safety import FileSafetyController, get_file_safety
+from sparkai.agent.agent_guard_system import GuardSystem, get_guard_system
+from sparkai.agent.agent_interrupt_system import InterruptSystem, get_interrupt_system
+from sparkai.agent.agent_result_storage import ResultStorage, get_result_storage
+from sparkai.agent.agent_self_evaluator import SelfEvaluator, get_self_evaluator
+from sparkai.agent.agent_strategic_planner import StrategicPlanner, get_strategic_planner
+from sparkai.agent.agent_circuit_breaker import CircuitBreaker, get_circuit_breaker
+from sparkai.agent.agent_persona import PersonaSystem, get_persona_system
+from sparkai.agent.agent_streaming import StreamingManager, StreamState, get_streaming_manager
+from sparkai.agent.agent_delegation import DelegationSystem, DelegationPolicy, get_delegation_system
+from sparkai.agent.agent_mcp_bridge import MCPBridge, TransportType, ServerState, get_mcp_bridge
+from sparkai.agent.agent_parallel_executor import ParallelExecutor, TaskType as ParallelTaskType, ProviderTier, get_parallel_executor
+from sparkai.agent.agent_content_safety import ContentSafety, SensitivityLevel, get_content_safety
+from sparkai.agent.agent_title_generator import TitleGenerator, TitleStyle, get_title_generator
+from sparkai.agent.agent_shell_hooks import ShellHookManager, ShellPermission, get_shell_hooks
+from sparkai.agent.agent_skill_preprocessor import SkillPreprocessor, ValidationResult, get_skill_preprocessor
+from sparkai.agent.agent_rate_limiter import RateLimiter, LimitStrategy, get_rate_limiter
+from sparkai.agent.agent_retry_system import RetrySystem, RetryStrategy, get_retry_system
+from sparkai.agent.agent_web_browser import WebBrowser, FetchMethod, get_web_browser
+from sparkai.agent.agent_session_search import SessionSearch, SearchScope, get_session_search
+from sparkai.agent.agent_observability import ObservabilitySystem, SpanKind, get_observability
+from sparkai.agent.agent_output_limiter import OutputLimiter, LimitPolicy, get_output_limiter
+from sparkai.agent.agent_context_engine import ContextEngine, ContextStrategy, get_context_engine
+from sparkai.agent.agent_skill_discovery import SkillDiscovery, CapabilityDomain, get_skill_discovery
+
+from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
+from sparkai.engine.signal_system import SignalBus, get_signal_bus
+from sparkai.engine.animation_system import AnimationPlayer, get_animation_player
+from sparkai.engine.collision_system import CollisionSystem, get_collision_system
+from sparkai.engine.input_manager import InputManager, get_input_manager
+from sparkai.engine.physics_system import PhysicsSystem, get_physics_system
+from sparkai.engine.particle_system import ParticleSystem, get_particle_system
+from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding
+from sparkai.engine.audio_system import AudioSystem, get_audio_system
+from sparkai.engine.state_machine import StateMachine, get_state_machine
+from sparkai.engine.resource_manager import ResourceManager, get_resource_manager
+from sparkai.engine.behavior_system import BehaviorSystem, get_behavior_system
+from sparkai.engine.tilemap_system import TilemapSystem, get_tilemap_system
+from sparkai.engine.camera_system import CameraSystem, get_camera_system
+from sparkai.engine.serialization import Serializer, get_serializer
+from sparkai.engine.ui_system import UISystem, get_ui_system
+from sparkai.engine.layer_system import LayerSystem, get_layer_system
+from sparkai.engine.profiler import Profiler, get_profiler
+from sparkai.engine.event_scripting import EventScriptingSystem, get_event_scripting_system
+from sparkai.engine.scene_tree import SceneTree, get_scene_tree
+from sparkai.engine.shader_system import ShaderSystem, get_shader_system
+from sparkai.engine.variable_system import VariableSystem, get_variable_system
+from sparkai.engine.resource_loader import ResourceLoader, get_resource_loader
+from sparkai.engine.inventory_system import InventorySystem, Item, ItemCategory, get_inventory_system
+from sparkai.engine.localization_system import LocalizationSystem, Language, get_localization_system
+from sparkai.engine.achievement_system import AchievementSystem, Achievement, AchievementState, get_achievement_system
+from sparkai.engine.cloud_sync import CloudSync, SyncState, SyncOperation, get_cloud_sync
+from sparkai.engine.object_pool import ObjectPoolSystem, PoolConfig, get_object_pool_system
+from sparkai.engine.lighting_system import LightingSystem, LightType, get_lighting_system
+from sparkai.engine.font_system import FontSystem, TextStyle, get_font_system
+from sparkai.engine.plugin_system import PluginSystem, PluginState, get_plugin_system
+from sparkai.engine.effects_system import EffectsSystem, EffectType, get_effects_system
+from sparkai.engine.input_mapping import InputMappingSystem, InputDevice, get_input_mapping
+from sparkai.engine.undo_redo_system import UndoRedoSystem, CommandTarget, get_undo_redo_system
+from sparkai.engine.sprite_sheet import SpriteSheetSystem, SheetLayout, get_sprite_sheet_system
 
 
 class RuntimeState(Enum):
@@ -185,7 +310,7 @@ class AgentRuntime:
     Unified execution engine for the SparkLabs AI-Native Game Engine.
 
     The runtime is the central orchestrator that initializes and manages
-    all 67 subsystems. It provides a single entry point for all engine
+    all 129 subsystems. It provides a single entry point for all engine
     operations and ensures proper lifecycle management.
 
     Usage:
@@ -268,6 +393,68 @@ class AgentRuntime:
         self._prompt_builder: Optional[PromptBuilder] = None
         self._intent_classifier: Optional[IntentClassifier] = None
         self._execution_budget: Optional[ExecutionBudget] = None
+        self._approval_engine: Optional[ApprovalEngine] = None
+        self._checkpoint_manager: Optional[CheckpointManager] = None
+        self._game_loop: Optional[GameLoop] = None
+        self._signal_bus: Optional[SignalBus] = None
+        self._animation_player: Optional[AnimationPlayer] = None
+        self._collision_system: Optional[CollisionSystem] = None
+        self._input_manager: Optional[InputManager] = None
+        self._code_sandbox: Optional[CodeExecutionSandbox] = None
+        self._file_safety: Optional[FileSafetyController] = None
+        self._guard_system: Optional[GuardSystem] = None
+        self._interrupt_system: Optional[InterruptSystem] = None
+        self._result_storage: Optional[ResultStorage] = None
+        self._physics_system: Optional[PhysicsSystem] = None
+        self._particle_system: Optional[ParticleSystem] = None
+        self._pathfinding: Optional[PathfindingSystem] = None
+        self._audio_system: Optional[AudioSystem] = None
+        self._state_machine: Optional[StateMachine] = None
+        self._resource_manager: Optional[ResourceManager] = None
+        self._behavior_system: Optional[BehaviorSystem] = None
+        self._tilemap_system: Optional[TilemapSystem] = None
+        self._self_evaluator: Optional[SelfEvaluator] = None
+        self._strategic_planner: Optional[StrategicPlanner] = None
+        self._circuit_breaker: Optional[CircuitBreaker] = None
+        self._persona_system: Optional[PersonaSystem] = None
+        self._camera_system: Optional[CameraSystem] = None
+        self._serializer: Optional[Serializer] = None
+        self._ui_system: Optional[UISystem] = None
+        self._layer_system: Optional[LayerSystem] = None
+        self._profiler: Optional[Profiler] = None
+        self._streaming_manager: Optional[StreamingManager] = None
+        self._delegation_system: Optional[DelegationSystem] = None
+        self._mcp_bridge: Optional[MCPBridge] = None
+        self._parallel_executor: Optional[ParallelExecutor] = None
+        self._event_scripting: Optional[EventScriptingSystem] = None
+        self._scene_tree: Optional[SceneTree] = None
+        self._shader_system: Optional[ShaderSystem] = None
+        self._variable_system: Optional[VariableSystem] = None
+        self._resource_loader: Optional[ResourceLoader] = None
+        self._content_safety: Optional[ContentSafety] = None
+        self._title_generator: Optional[TitleGenerator] = None
+        self._shell_hooks: Optional[ShellHookManager] = None
+        self._skill_preprocessor: Optional[SkillPreprocessor] = None
+        self._inventory_system: Optional[InventorySystem] = None
+        self._localization_system: Optional[LocalizationSystem] = None
+        self._achievement_system: Optional[AchievementSystem] = None
+        self._cloud_sync: Optional[CloudSync] = None
+        self._rate_limiter: Optional[RateLimiter] = None
+        self._retry_system: Optional[RetrySystem] = None
+        self._web_browser: Optional[WebBrowser] = None
+        self._session_search: Optional[SessionSearch] = None
+        self._object_pool_system: Optional[ObjectPoolSystem] = None
+        self._lighting_system: Optional[LightingSystem] = None
+        self._font_system: Optional[FontSystem] = None
+        self._plugin_system: Optional[PluginSystem] = None
+        self._observability: Optional[ObservabilitySystem] = None
+        self._output_limiter: Optional[OutputLimiter] = None
+        self._context_engine: Optional[ContextEngine] = None
+        self._skill_discovery: Optional[SkillDiscovery] = None
+        self._effects_system: Optional[EffectsSystem] = None
+        self._input_mapping: Optional[InputMappingSystem] = None
+        self._undo_redo_system: Optional[UndoRedoSystem] = None
+        self._sprite_sheet: Optional[SpriteSheetSystem] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -351,6 +538,68 @@ class AgentRuntime:
             self._prompt_builder = get_prompt_builder()
             self._intent_classifier = get_intent_classifier()
             self._execution_budget = get_execution_budget()
+            self._approval_engine = get_approval_engine()
+            self._checkpoint_manager = get_checkpoint_manager()
+            self._game_loop = get_game_loop()
+            self._signal_bus = get_signal_bus()
+            self._animation_player = get_animation_player()
+            self._collision_system = get_collision_system()
+            self._input_manager = get_input_manager()
+            self._code_sandbox = get_code_sandbox()
+            self._file_safety = get_file_safety()
+            self._guard_system = get_guard_system()
+            self._interrupt_system = get_interrupt_system()
+            self._result_storage = get_result_storage()
+            self._physics_system = get_physics_system()
+            self._particle_system = get_particle_system()
+            self._pathfinding = get_pathfinding()
+            self._audio_system = get_audio_system()
+            self._state_machine = get_state_machine()
+            self._resource_manager = get_resource_manager()
+            self._behavior_system = get_behavior_system()
+            self._tilemap_system = get_tilemap_system()
+            self._self_evaluator = get_self_evaluator()
+            self._strategic_planner = get_strategic_planner()
+            self._circuit_breaker = get_circuit_breaker()
+            self._persona_system = get_persona_system()
+            self._camera_system = get_camera_system()
+            self._serializer = get_serializer()
+            self._ui_system = get_ui_system()
+            self._layer_system = get_layer_system()
+            self._profiler = get_profiler()
+            self._streaming_manager = get_streaming_manager()
+            self._delegation_system = get_delegation_system()
+            self._mcp_bridge = get_mcp_bridge()
+            self._parallel_executor = get_parallel_executor()
+            self._event_scripting = get_event_scripting_system()
+            self._scene_tree = get_scene_tree()
+            self._shader_system = get_shader_system()
+            self._variable_system = get_variable_system()
+            self._resource_loader = get_resource_loader()
+            self._content_safety = get_content_safety()
+            self._title_generator = get_title_generator()
+            self._shell_hooks = get_shell_hooks()
+            self._skill_preprocessor = get_skill_preprocessor()
+            self._inventory_system = get_inventory_system()
+            self._localization_system = get_localization_system()
+            self._achievement_system = get_achievement_system()
+            self._cloud_sync = get_cloud_sync()
+            self._rate_limiter = get_rate_limiter()
+            self._retry_system = get_retry_system()
+            self._web_browser = get_web_browser()
+            self._session_search = get_session_search()
+            self._object_pool_system = get_object_pool_system()
+            self._lighting_system = get_lighting_system()
+            self._font_system = get_font_system()
+            self._plugin_system = get_plugin_system()
+            self._observability = get_observability()
+            self._output_limiter = get_output_limiter()
+            self._context_engine = get_context_engine()
+            self._skill_discovery = get_skill_discovery()
+            self._effects_system = get_effects_system()
+            self._input_mapping = get_input_mapping()
+            self._undo_redo_system = get_undo_redo_system()
+            self._sprite_sheet = get_sprite_sheet_system()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -393,6 +642,68 @@ class AgentRuntime:
             self._integration.register_subsystem("prompt_builder", self._prompt_builder)
             self._integration.register_subsystem("intent_classifier", self._intent_classifier)
             self._integration.register_subsystem("execution_budget", self._execution_budget)
+            self._integration.register_subsystem("approval_engine", self._approval_engine)
+            self._integration.register_subsystem("checkpoint_manager", self._checkpoint_manager)
+            self._integration.register_subsystem("game_loop", self._game_loop)
+            self._integration.register_subsystem("signal_bus", self._signal_bus)
+            self._integration.register_subsystem("animation_player", self._animation_player)
+            self._integration.register_subsystem("collision_system", self._collision_system)
+            self._integration.register_subsystem("input_manager", self._input_manager)
+            self._integration.register_subsystem("code_sandbox", self._code_sandbox)
+            self._integration.register_subsystem("file_safety", self._file_safety)
+            self._integration.register_subsystem("guard_system", self._guard_system)
+            self._integration.register_subsystem("interrupt_system", self._interrupt_system)
+            self._integration.register_subsystem("result_storage", self._result_storage)
+            self._integration.register_subsystem("physics_system", self._physics_system)
+            self._integration.register_subsystem("particle_system", self._particle_system)
+            self._integration.register_subsystem("pathfinding", self._pathfinding)
+            self._integration.register_subsystem("audio_system", self._audio_system)
+            self._integration.register_subsystem("state_machine", self._state_machine)
+            self._integration.register_subsystem("resource_manager", self._resource_manager)
+            self._integration.register_subsystem("behavior_system", self._behavior_system)
+            self._integration.register_subsystem("tilemap_system", self._tilemap_system)
+            self._integration.register_subsystem("self_evaluator", self._self_evaluator)
+            self._integration.register_subsystem("strategic_planner", self._strategic_planner)
+            self._integration.register_subsystem("circuit_breaker", self._circuit_breaker)
+            self._integration.register_subsystem("persona_system", self._persona_system)
+            self._integration.register_subsystem("camera_system", self._camera_system)
+            self._integration.register_subsystem("serializer", self._serializer)
+            self._integration.register_subsystem("ui_system", self._ui_system)
+            self._integration.register_subsystem("layer_system", self._layer_system)
+            self._integration.register_subsystem("profiler", self._profiler)
+            self._integration.register_subsystem("streaming_manager", self._streaming_manager)
+            self._integration.register_subsystem("delegation_system", self._delegation_system)
+            self._integration.register_subsystem("mcp_bridge", self._mcp_bridge)
+            self._integration.register_subsystem("parallel_executor", self._parallel_executor)
+            self._integration.register_subsystem("event_scripting", self._event_scripting)
+            self._integration.register_subsystem("scene_tree", self._scene_tree)
+            self._integration.register_subsystem("shader_system", self._shader_system)
+            self._integration.register_subsystem("variable_system", self._variable_system)
+            self._integration.register_subsystem("resource_loader", self._resource_loader)
+            self._integration.register_subsystem("content_safety", self._content_safety)
+            self._integration.register_subsystem("title_generator", self._title_generator)
+            self._integration.register_subsystem("shell_hooks", self._shell_hooks)
+            self._integration.register_subsystem("skill_preprocessor", self._skill_preprocessor)
+            self._integration.register_subsystem("inventory_system", self._inventory_system)
+            self._integration.register_subsystem("localization_system", self._localization_system)
+            self._integration.register_subsystem("achievement_system", self._achievement_system)
+            self._integration.register_subsystem("cloud_sync", self._cloud_sync)
+            self._integration.register_subsystem("rate_limiter", self._rate_limiter)
+            self._integration.register_subsystem("retry_system", self._retry_system)
+            self._integration.register_subsystem("web_browser", self._web_browser)
+            self._integration.register_subsystem("session_search", self._session_search)
+            self._integration.register_subsystem("object_pool_system", self._object_pool_system)
+            self._integration.register_subsystem("lighting_system", self._lighting_system)
+            self._integration.register_subsystem("font_system", self._font_system)
+            self._integration.register_subsystem("plugin_system", self._plugin_system)
+            self._integration.register_subsystem("observability", self._observability)
+            self._integration.register_subsystem("output_limiter", self._output_limiter)
+            self._integration.register_subsystem("context_engine", self._context_engine)
+            self._integration.register_subsystem("skill_discovery", self._skill_discovery)
+            self._integration.register_subsystem("effects_system", self._effects_system)
+            self._integration.register_subsystem("input_mapping", self._input_mapping)
+            self._integration.register_subsystem("undo_redo_system", self._undo_redo_system)
+            self._integration.register_subsystem("sprite_sheet", self._sprite_sheet)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -400,6 +711,8 @@ class AgentRuntime:
             self._recovery_engine.register_action_handler("review_skills", lambda params: self._skill_curator and self._skill_curator.review() is not None)
             self._recovery_engine.register_action_handler("check_budget", lambda params: self._execution_budget and self._execution_budget.check_tier(params.get("session_id", "default")) is not None)
             self._recovery_engine.register_action_handler("classify_intent", lambda params: self._intent_classifier and self._intent_classifier.classify(params.get("prompt", "")) is not None)
+            self._recovery_engine.register_action_handler("check_approval", lambda params: self._approval_engine and self._approval_engine.request_approval(params.get("action", ""), params.get("level", "low")) is not None)
+            self._recovery_engine.register_action_handler("create_checkpoint", lambda params: self._checkpoint_manager and self._checkpoint_manager.create_checkpoint(params.get("session_id", "default"), params) is not None)
 
             if self._protocol and self._event_bus:
                 self._event_bus.subscribe(
@@ -415,7 +728,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 67,
+                    "subsystems": 129,
                 }},
             ))
 
@@ -901,6 +1214,254 @@ class AgentRuntime:
     def execution_budget(self) -> Optional[ExecutionBudget]:
         return self._execution_budget
 
+    @property
+    def approval_engine(self) -> Optional[ApprovalEngine]:
+        return self._approval_engine
+
+    @property
+    def checkpoint_manager(self) -> Optional[CheckpointManager]:
+        return self._checkpoint_manager
+
+    @property
+    def game_loop(self) -> Optional[GameLoop]:
+        return self._game_loop
+
+    @property
+    def signal_bus(self) -> Optional[SignalBus]:
+        return self._signal_bus
+
+    @property
+    def animation_player(self) -> Optional[AnimationPlayer]:
+        return self._animation_player
+
+    @property
+    def collision_system(self) -> Optional[CollisionSystem]:
+        return self._collision_system
+
+    @property
+    def input_manager(self) -> Optional[InputManager]:
+        return self._input_manager
+
+    @property
+    def code_sandbox(self) -> Optional[CodeExecutionSandbox]:
+        return self._code_sandbox
+
+    @property
+    def file_safety(self) -> Optional[FileSafetyController]:
+        return self._file_safety
+
+    @property
+    def guard_system(self) -> Optional[GuardSystem]:
+        return self._guard_system
+
+    @property
+    def interrupt_system(self) -> Optional[InterruptSystem]:
+        return self._interrupt_system
+
+    @property
+    def result_storage(self) -> Optional[ResultStorage]:
+        return self._result_storage
+
+    @property
+    def physics_system(self) -> Optional[PhysicsSystem]:
+        return self._physics_system
+
+    @property
+    def particle_system(self) -> Optional[ParticleSystem]:
+        return self._particle_system
+
+    @property
+    def pathfinding(self) -> Optional[PathfindingSystem]:
+        return self._pathfinding
+
+    @property
+    def audio_system(self) -> Optional[AudioSystem]:
+        return self._audio_system
+
+    @property
+    def state_machine(self) -> Optional[StateMachine]:
+        return self._state_machine
+
+    @property
+    def resource_manager(self) -> Optional[ResourceManager]:
+        return self._resource_manager
+
+    @property
+    def behavior_system(self) -> Optional[BehaviorSystem]:
+        return self._behavior_system
+
+    @property
+    def tilemap_system(self) -> Optional[TilemapSystem]:
+        return self._tilemap_system
+
+    @property
+    def self_evaluator(self) -> Optional[SelfEvaluator]:
+        return self._self_evaluator
+
+    @property
+    def strategic_planner(self) -> Optional[StrategicPlanner]:
+        return self._strategic_planner
+
+    @property
+    def circuit_breaker(self) -> Optional[CircuitBreaker]:
+        return self._circuit_breaker
+
+    @property
+    def persona_system(self) -> Optional[PersonaSystem]:
+        return self._persona_system
+
+    @property
+    def camera_system(self) -> Optional[CameraSystem]:
+        return self._camera_system
+
+    @property
+    def serializer(self) -> Optional[Serializer]:
+        return self._serializer
+
+    @property
+    def ui_system(self) -> Optional[UISystem]:
+        return self._ui_system
+
+    @property
+    def layer_system(self) -> Optional[LayerSystem]:
+        return self._layer_system
+
+    @property
+    def profiler(self) -> Optional[Profiler]:
+        return self._profiler
+
+    @property
+    def streaming_manager(self) -> Optional[StreamingManager]:
+        return self._streaming_manager
+
+    @property
+    def delegation_system(self) -> Optional[DelegationSystem]:
+        return self._delegation_system
+
+    @property
+    def mcp_bridge(self) -> Optional[MCPBridge]:
+        return self._mcp_bridge
+
+    @property
+    def parallel_executor(self) -> Optional[ParallelExecutor]:
+        return self._parallel_executor
+
+    @property
+    def event_scripting(self) -> Optional[EventScriptingSystem]:
+        return self._event_scripting
+
+    @property
+    def scene_tree(self) -> Optional[SceneTree]:
+        return self._scene_tree
+
+    @property
+    def shader_system(self) -> Optional[ShaderSystem]:
+        return self._shader_system
+
+    @property
+    def variable_system(self) -> Optional[VariableSystem]:
+        return self._variable_system
+
+    @property
+    def resource_loader(self) -> Optional[ResourceLoader]:
+        return self._resource_loader
+
+    @property
+    def content_safety(self) -> Optional[ContentSafety]:
+        return self._content_safety
+
+    @property
+    def title_generator(self) -> Optional[TitleGenerator]:
+        return self._title_generator
+
+    @property
+    def shell_hooks(self) -> Optional[ShellHookManager]:
+        return self._shell_hooks
+
+    @property
+    def skill_preprocessor(self) -> Optional[SkillPreprocessor]:
+        return self._skill_preprocessor
+
+    @property
+    def inventory_system(self) -> Optional[InventorySystem]:
+        return self._inventory_system
+
+    @property
+    def localization_system(self) -> Optional[LocalizationSystem]:
+        return self._localization_system
+
+    @property
+    def achievement_system(self) -> Optional[AchievementSystem]:
+        return self._achievement_system
+
+    @property
+    def cloud_sync(self) -> Optional[CloudSync]:
+        return self._cloud_sync
+
+    @property
+    def rate_limiter(self) -> Optional[RateLimiter]:
+        return self._rate_limiter
+
+    @property
+    def retry_system(self) -> Optional[RetrySystem]:
+        return self._retry_system
+
+    @property
+    def web_browser(self) -> Optional[WebBrowser]:
+        return self._web_browser
+
+    @property
+    def session_search(self) -> Optional[SessionSearch]:
+        return self._session_search
+
+    @property
+    def object_pool_system(self) -> Optional[ObjectPoolSystem]:
+        return self._object_pool_system
+
+    @property
+    def lighting_system(self) -> Optional[LightingSystem]:
+        return self._lighting_system
+
+    @property
+    def font_system(self) -> Optional[FontSystem]:
+        return self._font_system
+
+    @property
+    def plugin_system(self) -> Optional[PluginSystem]:
+        return self._plugin_system
+
+    @property
+    def observability(self) -> Optional[ObservabilitySystem]:
+        return self._observability
+
+    @property
+    def output_limiter(self) -> Optional[OutputLimiter]:
+        return self._output_limiter
+
+    @property
+    def context_engine(self) -> Optional[ContextEngine]:
+        return self._context_engine
+
+    @property
+    def skill_discovery(self) -> Optional[SkillDiscovery]:
+        return self._skill_discovery
+
+    @property
+    def effects_system(self) -> Optional[EffectsSystem]:
+        return self._effects_system
+
+    @property
+    def input_mapping(self) -> Optional[InputMappingSystem]:
+        return self._input_mapping
+
+    @property
+    def undo_redo_system(self) -> Optional[UndoRedoSystem]:
+        return self._undo_redo_system
+
+    @property
+    def sprite_sheet(self) -> Optional[SpriteSheetSystem]:
+        return self._sprite_sheet
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -982,6 +1543,68 @@ class AgentRuntime:
                 "prompt_builder": self._prompt_builder is not None,
                 "intent_classifier": self._intent_classifier is not None,
                 "execution_budget": self._execution_budget is not None,
+                "approval_engine": self._approval_engine is not None,
+                "checkpoint_manager": self._checkpoint_manager is not None,
+                "game_loop": self._game_loop is not None,
+                "signal_bus": self._signal_bus is not None,
+                "animation_player": self._animation_player is not None,
+                "collision_system": self._collision_system is not None,
+                "input_manager": self._input_manager is not None,
+                "code_sandbox": self._code_sandbox is not None,
+                "file_safety": self._file_safety is not None,
+                "guard_system": self._guard_system is not None,
+                "interrupt_system": self._interrupt_system is not None,
+                "result_storage": self._result_storage is not None,
+                "physics_system": self._physics_system is not None,
+                "particle_system": self._particle_system is not None,
+                "pathfinding": self._pathfinding is not None,
+                "audio_system": self._audio_system is not None,
+                "state_machine": self._state_machine is not None,
+                "resource_manager": self._resource_manager is not None,
+                "behavior_system": self._behavior_system is not None,
+                "tilemap_system": self._tilemap_system is not None,
+                "self_evaluator": self._self_evaluator is not None,
+                "strategic_planner": self._strategic_planner is not None,
+                "circuit_breaker": self._circuit_breaker is not None,
+                "persona_system": self._persona_system is not None,
+                "camera_system": self._camera_system is not None,
+                "serializer": self._serializer is not None,
+                "ui_system": self._ui_system is not None,
+                "layer_system": self._layer_system is not None,
+                "profiler": self._profiler is not None,
+                "streaming_manager": self._streaming_manager is not None,
+                "delegation_system": self._delegation_system is not None,
+                "mcp_bridge": self._mcp_bridge is not None,
+                "parallel_executor": self._parallel_executor is not None,
+                "event_scripting": self._event_scripting is not None,
+                "scene_tree": self._scene_tree is not None,
+                "shader_system": self._shader_system is not None,
+                "variable_system": self._variable_system is not None,
+                "resource_loader": self._resource_loader is not None,
+                "content_safety": self._content_safety is not None,
+                "title_generator": self._title_generator is not None,
+                "shell_hooks": self._shell_hooks is not None,
+                "skill_preprocessor": self._skill_preprocessor is not None,
+                "inventory_system": self._inventory_system is not None,
+                "localization_system": self._localization_system is not None,
+                "achievement_system": self._achievement_system is not None,
+                "cloud_sync": self._cloud_sync is not None,
+                "rate_limiter": self._rate_limiter is not None,
+                "retry_system": self._retry_system is not None,
+                "web_browser": self._web_browser is not None,
+                "session_search": self._session_search is not None,
+                "object_pool_system": self._object_pool_system is not None,
+                "lighting_system": self._lighting_system is not None,
+                "font_system": self._font_system is not None,
+                "plugin_system": self._plugin_system is not None,
+                "observability": self._observability is not None,
+                "output_limiter": self._output_limiter is not None,
+                "context_engine": self._context_engine is not None,
+                "skill_discovery": self._skill_discovery is not None,
+                "effects_system": self._effects_system is not None,
+                "input_mapping": self._input_mapping is not None,
+                "undo_redo_system": self._undo_redo_system is not None,
+                "sprite_sheet": self._sprite_sheet is not None,
             },
         }
 
@@ -1107,6 +1730,112 @@ class AgentRuntime:
             status["intent_classifier_stats"] = {"ready": True}
         if self._execution_budget:
             status["execution_budget_stats"] = self._execution_budget.get_overall_stats()
+        if self._approval_engine:
+            status["approval_engine_stats"] = self._approval_engine.get_stats()
+        if self._checkpoint_manager:
+            status["checkpoint_manager_stats"] = self._checkpoint_manager.get_stats()
+        if self._game_loop:
+            status["game_loop_stats"] = self._game_loop.get_statistics()
+        if self._signal_bus:
+            status["signal_bus_stats"] = {"connections": self._signal_bus.get_connection_count()}
+        if self._animation_player:
+            status["animation_player_stats"] = self._animation_player.get_status()
+        if self._collision_system:
+            status["collision_system_stats"] = {"colliders": len(self._collision_system._colliders)}
+        if self._input_manager:
+            status["input_manager_stats"] = self._input_manager.get_snapshot()
+        if self._code_sandbox:
+            status["code_sandbox_stats"] = self._code_sandbox.get_stats()
+        if self._file_safety:
+            status["file_safety_stats"] = self._file_safety.get_stats()
+        if self._guard_system:
+            status["guard_system_stats"] = self._guard_system.get_stats()
+        if self._interrupt_system:
+            status["interrupt_system_stats"] = self._interrupt_system.get_stats()
+        if self._result_storage:
+            status["result_storage_stats"] = self._result_storage.get_stats()
+        if self._physics_system:
+            status["physics_system_stats"] = self._physics_system.get_stats()
+        if self._particle_system:
+            status["particle_system_stats"] = self._particle_system.get_stats()
+        if self._pathfinding:
+            status["pathfinding_stats"] = self._pathfinding.get_stats()
+        if self._audio_system:
+            status["audio_system_stats"] = self._audio_system.get_stats()
+        if self._state_machine:
+            status["state_machine_stats"] = self._state_machine.get_stats()
+        if self._resource_manager:
+            status["resource_manager_stats"] = self._resource_manager.get_stats()
+        if self._behavior_system:
+            status["behavior_system_stats"] = self._behavior_system.get_stats()
+        if self._tilemap_system:
+            status["tilemap_system_stats"] = self._tilemap_system.get_stats()
+        if self._streaming_manager:
+            status["streaming_manager_stats"] = {"ready": True}
+        if self._delegation_system:
+            status["delegation_system_stats"] = self._delegation_system.get_stats()
+        if self._mcp_bridge:
+            status["mcp_bridge_stats"] = self._mcp_bridge.get_stats()
+        if self._parallel_executor:
+            status["parallel_executor_stats"] = self._parallel_executor.get_stats()
+        if self._event_scripting:
+            status["event_scripting_stats"] = self._event_scripting.get_stats()
+        if self._scene_tree:
+            status["scene_tree_stats"] = self._scene_tree.get_stats()
+        if self._shader_system:
+            status["shader_system_stats"] = self._shader_system.get_stats()
+        if self._variable_system:
+            status["variable_system_stats"] = self._variable_system.get_stats()
+        if self._resource_loader:
+            status["resource_loader_stats"] = self._resource_loader.get_stats()
+        if self._content_safety:
+            status["content_safety_stats"] = self._content_safety.get_stats()
+        if self._title_generator:
+            status["title_generator_stats"] = self._title_generator.get_stats()
+        if self._shell_hooks:
+            status["shell_hooks_stats"] = self._shell_hooks.get_stats()
+        if self._skill_preprocessor:
+            status["skill_preprocessor_stats"] = self._skill_preprocessor.get_stats()
+        if self._inventory_system:
+            status["inventory_system_stats"] = self._inventory_system.get_stats()
+        if self._localization_system:
+            status["localization_system_stats"] = self._localization_system.get_stats()
+        if self._achievement_system:
+            status["achievement_system_stats"] = self._achievement_system.get_stats()
+        if self._cloud_sync:
+            status["cloud_sync_stats"] = self._cloud_sync.get_stats()
+        if self._rate_limiter:
+            status["rate_limiter_stats"] = self._rate_limiter.get_stats()
+        if self._retry_system:
+            status["retry_system_stats"] = self._retry_system.get_stats()
+        if self._web_browser:
+            status["web_browser_stats"] = self._web_browser.get_stats()
+        if self._session_search:
+            status["session_search_stats"] = self._session_search.get_stats()
+        if self._object_pool_system:
+            status["object_pool_stats"] = self._object_pool_system.get_stats()
+        if self._lighting_system:
+            status["lighting_stats"] = self._lighting_system.get_stats()
+        if self._font_system:
+            status["font_system_stats"] = self._font_system.get_stats()
+        if self._plugin_system:
+            status["plugin_system_stats"] = self._plugin_system.get_stats()
+        if self._observability:
+            status["observability_stats"] = self._observability.get_stats()
+        if self._output_limiter:
+            status["output_limiter_stats"] = self._output_limiter.get_stats()
+        if self._context_engine:
+            status["context_engine_stats"] = self._context_engine.get_stats()
+        if self._skill_discovery:
+            status["skill_discovery_stats"] = self._skill_discovery.get_stats()
+        if self._effects_system:
+            status["effects_system_stats"] = self._effects_system.get_stats()
+        if self._input_mapping:
+            status["input_mapping_stats"] = self._input_mapping.get_stats()
+        if self._undo_redo_system:
+            status["undo_redo_stats"] = self._undo_redo_system.get_stats()
+        if self._sprite_sheet:
+            status["sprite_sheet_stats"] = self._sprite_sheet.get_stats()
         return status
 
 
