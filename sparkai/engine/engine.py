@@ -53,6 +53,10 @@ from sparkai.engine.effects_system import EffectsSystem, get_effects_system
 from sparkai.engine.input_mapping import InputMappingSystem, get_input_mapping
 from sparkai.engine.undo_redo_system import UndoRedoSystem, get_undo_redo_system
 from sparkai.engine.sprite_sheet import SpriteSheetSystem, get_sprite_sheet_system
+from sparkai.engine.tween_system import TweenSystem, get_tween_system
+from sparkai.engine.node_path_system import NodePathSystem, get_node_path_system
+from sparkai.engine.project_template import ProjectTemplateSystem, get_project_template_system
+from sparkai.engine.asset_pipeline import AssetPipeline, get_asset_pipeline
 
 
 class SparkEngine:
@@ -110,6 +114,10 @@ class SparkEngine:
         self._input_mapping: InputMappingSystem = get_input_mapping()
         self._undo_redo_system: UndoRedoSystem = get_undo_redo_system()
         self._sprite_sheet: SpriteSheetSystem = get_sprite_sheet_system()
+        self._tween_system: TweenSystem = get_tween_system()
+        self._node_path_system: NodePathSystem = get_node_path_system()
+        self._project_template_system: ProjectTemplateSystem = get_project_template_system()
+        self._asset_pipeline: AssetPipeline = get_asset_pipeline()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -125,6 +133,7 @@ class SparkEngine:
     def _step_simulation(self, dt: float) -> None:
         self._physics_system.step(dt)
         self._particle_system.update(dt)
+        self._tween_system.update(dt)
         self._behavior_system.step_pre(dt)
         self._tick_worlds(dt)
         self._behavior_system.step_post(dt)
@@ -290,6 +299,10 @@ class SparkEngine:
             "input_mapping": self._input_mapping.get_stats(),
             "undo_redo_system": self._undo_redo_system.get_stats(),
             "sprite_sheet": self._sprite_sheet.get_stats(),
+            "tween_system": self._tween_system.get_stats(),
+            "node_path_system": self._node_path_system.get_stats(),
+            "project_template_system": self._project_template_system.get_stats(),
+            "asset_pipeline": self._asset_pipeline.get_stats(),
         }
 
     @property
@@ -415,6 +428,22 @@ class SparkEngine:
     @property
     def plugin_system(self) -> PluginSystem:
         return self._plugin_system
+
+    @property
+    def tween_system(self) -> TweenSystem:
+        return self._tween_system
+
+    @property
+    def node_path_system(self) -> NodePathSystem:
+        return self._node_path_system
+
+    @property
+    def project_template_system(self) -> ProjectTemplateSystem:
+        return self._project_template_system
+
+    @property
+    def asset_pipeline(self) -> AssetPipeline:
+        return self._asset_pipeline
 
 
 @dataclass
