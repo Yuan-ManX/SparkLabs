@@ -4394,3 +4394,3308 @@ async def agent_command(command: str, args: Optional[str] = None):
         return {"error": "Command timed out"}
     except Exception as e:
         return {"error": str(e)}
+
+
+# === Game Loop Engine ===
+
+from sparkai.engine.game_loop import get_game_loop, ExecutionPhase
+
+_game_loop = get_game_loop()
+
+
+class LoopConfigRequest(BaseModel):
+    target_fps: int = 60
+    max_frame_skip: int = 5
+    use_fixed_timestep: bool = True
+    fixed_timestep: float = 0.016
+    time_scale: float = 1.0
+
+
+@router.get("/game-loop/status")
+async def game_loop_status():
+    return _game_loop.get_statistics()
+
+
+@router.get("/game-loop/phases")
+async def game_loop_phases():
+    return {"phases": [p.value for p in ExecutionPhase]}
+
+
+@router.post("/game-loop/start")
+async def game_loop_start():
+    _game_loop.start()
+    return {"status": "started"}
+
+
+@router.post("/game-loop/stop")
+async def game_loop_stop():
+    _game_loop.stop()
+    return {"status": "stopped"}
+
+
+@router.post("/game-loop/pause")
+async def game_loop_pause():
+    _game_loop.pause()
+    return {"status": "paused"}
+
+
+@router.post("/game-loop/resume")
+async def game_loop_resume():
+    _game_loop.resume()
+    return {"status": "resumed"}
+
+
+@router.post("/game-loop/time-scale")
+async def game_loop_set_time_scale(scale: float = 1.0):
+    _game_loop.set_time_scale(scale)
+    return {"time_scale": scale}
+
+
+@router.post("/game-loop/tick")
+async def game_loop_tick():
+    stats = _game_loop.tick()
+    return stats
+
+
+# === Signal Bus ===
+
+from sparkai.engine.signal_system import get_signal_bus, ConnectionType
+
+_signal_bus = get_signal_bus()
+
+
+@router.get("/signal-bus/connections")
+async def signal_bus_connections():
+    return {"count": _signal_bus.get_connection_count()}
+
+
+@router.post("/signal-bus/emit")
+async def signal_bus_emit(signal_name: str, data: Any = None):
+    count = _signal_bus.emit(signal_name, data)
+    return {"signal": signal_name, "listeners_notified": count}
+
+
+@router.post("/signal-bus/flush-deferred")
+async def signal_bus_flush():
+    count = _signal_bus.flush_deferred()
+    return {"deferred_flushed": count}
+
+
+# === Animation Player ===
+
+from sparkai.engine.animation_system import get_animation_player, PlaybackState
+
+_animation_player = get_animation_player()
+
+
+@router.get("/animation/status")
+async def animation_status():
+    return _animation_player.get_status()
+
+
+@router.get("/animation/clips")
+async def animation_clips():
+    return {"clips": [c.name for c in _animation_player._clips.values()]}
+
+
+@router.post("/animation/play")
+async def animation_play(clip_name: str):
+    _animation_player.play(clip_name)
+    return _animation_player.get_status()
+
+
+@router.post("/animation/pause")
+async def animation_pause():
+    _animation_player.pause()
+    return _animation_player.get_status()
+
+
+@router.post("/animation/stop")
+async def animation_stop():
+    _animation_player.stop()
+    return _animation_player.get_status()
+
+
+@router.post("/animation/seek")
+async def animation_seek(time: float = 0.0):
+    _animation_player.seek(time)
+    return _animation_player.get_status()
+
+
+# === Collision System ===
+
+from sparkai.engine.collision_system import get_collision_system, CollisionLayer
+
+_collision_system = get_collision_system()
+
+
+class RaycastRequest(BaseModel):
+    origin_x: float
+    origin_y: float
+    direction_x: float
+    direction_y: float
+    max_distance: float = 100.0
+    layer_mask: Optional[int] = None
+
+
+@router.get("/collision/colliders")
+async def collision_colliders():
+    return {
+        "count": len(_collision_system._colliders),
+        "layers": [l.name for l in CollisionLayer],
+    }
+
+
+@router.get("/collision/events")
+async def collision_events(limit: int = 50):
+    return {"events": _collision_system._active_events[-limit:]}
+
+
+@router.post("/collision/raycast")
+async def collision_raycast(req: RaycastRequest):
+    from sparkai.engine.collision_system import AABB
+    aabb = AABB(req.origin_x, req.origin_y, 0, 0)
+    result = _collision_system.raycast(
+        aabb, (req.direction_x, req.direction_y),
+        req.max_distance, req.layer_mask,
+    )
+    if result:
+        return {"entity_id": result[0], "point": result[1], "distance": result[2]}
+    return {"hit": False}
+
+
+# === Input Manager ===
+
+from sparkai.engine.input_manager import get_input_manager
+
+_input_manager = get_input_manager()
+
+
+class SimulateKeyRequest(BaseModel):
+    key: str
+    pressed: bool = True
+
+
+class SimulateMouseRequest(BaseModel):
+    x: float
+    y: float
+    button: int = 0
+    pressed: bool = True
+
+
+@router.get("/input/snapshot")
+async def input_snapshot():
+    return _input_manager.get_snapshot()
+
+
+@router.get("/input/actions")
+async def input_actions():
+    return {"actions": list(_input_manager._actions.keys())}
+
+
+@router.post("/input/simulate-key")
+async def input_simulate_key(req: SimulateKeyRequest):
+    if req.pressed:
+        _input_manager.simulate_key_press(req.key)
+    else:
+        _input_manager.simulate_key_release(req.key)
+    return {"key": req.key, "pressed": req.pressed}
+
+
+@router.post("/input/simulate-mouse")
+async def input_simulate_mouse(req: SimulateMouseRequest):
+    im = get_input_manager()
+    im.simulate_mouse_move(req.x, req.y)
+    button_map = {0: "left", 1: "right", 2: "middle"}
+    btn = button_map.get(req.button, "left")
+    if req.pressed:
+        im.simulate_mouse_press(btn)
+    else:
+        im.simulate_mouse_release(btn)
+    return {"x": req.x, "y": req.y, "button": req.button, "pressed": req.pressed}
+
+
+@router.get("/input/state/{key}")
+async def input_key_state(key: str):
+    return {
+        "key": key,
+        "down": _input_manager.is_key_down(key),
+        "just_pressed": _input_manager.is_key_just_pressed(key),
+        "just_released": _input_manager.is_key_just_released(key),
+    }
+
+
+# === Approval Engine ===
+
+from sparkai.agent.agent_approval_engine import ApprovalEngine, get_approval_engine, TrustTier
+
+_approval_engine = get_approval_engine()
+
+
+class ApprovalRequest(BaseModel):
+    action: str
+    level: str = "medium"
+    session_id: str = "default"
+    context: Optional[Dict[str, Any]] = None
+
+
+class GrantRequest(BaseModel):
+    action: str
+    session_id: str = "default"
+    tier: str = "medium"
+    max_uses: int = 1
+    ttl: float = 300.0
+
+
+class ResolveRequest(BaseModel):
+    action: str
+    choice: str
+    resolve_all: bool = False
+
+
+@router.get("/approval/stats")
+async def approval_stats():
+    return _approval_engine.get_stats()
+
+
+@router.post("/approval/request")
+async def approval_request(req: ApprovalRequest):
+    return _approval_engine.request_approval(
+        action=req.action,
+        level=req.level,
+        session_id=req.session_id,
+        context=req.context,
+    )
+
+
+@router.post("/approval/grant")
+async def approval_grant(req: GrantRequest):
+    tier = TrustTier(req.tier) if req.tier in [t.value for t in TrustTier] else TrustTier.MEDIUM
+    grant = _approval_engine.grant(
+        action=req.action,
+        session_id=req.session_id,
+        tier=tier,
+        max_uses=req.max_uses,
+        ttl=req.ttl,
+    )
+    return {
+        "action": grant.action,
+        "tier": grant.tier.value,
+        "expires_at": grant.expires_at,
+        "max_uses": grant.max_uses,
+    }
+
+
+@router.post("/approval/deny")
+async def approval_deny(action: str, session_id: str = "default"):
+    return {"success": _approval_engine.deny(action, session_id)}
+
+
+@router.get("/approval/pending")
+async def approval_pending(session_id: Optional[str] = None):
+    return {"pending": _approval_engine.get_pending_approvals(session_id)}
+
+
+@router.post("/approval/resolve")
+async def approval_resolve(req: ResolveRequest):
+    resolved = _approval_engine.resolve_pending(req.action, req.choice, req.resolve_all)
+    return {"resolved": resolved}
+
+
+@router.get("/approval/session/{session_id}")
+async def approval_session(session_id: str):
+    return {
+        "approvals": _approval_engine.get_session_approvals(session_id),
+        "has_blocking": _approval_engine.has_blocking_approval(session_id),
+    }
+
+
+@router.post("/approval/revoke/{session_id}")
+async def approval_revoke(session_id: str):
+    return {"revoked_count": _approval_engine.revoke_session(session_id)}
+
+
+# === Checkpoint Manager ===
+
+from sparkai.agent.agent_checkpoint_manager import CheckpointManager, get_checkpoint_manager
+
+_checkpoint_manager = get_checkpoint_manager()
+
+
+class CheckpointCreateRequest(BaseModel):
+    session_id: str
+    state: Any
+    reason: str = "api"
+    metadata: Optional[Dict[str, Any]] = None
+
+
+class CheckpointDiffRequest(BaseModel):
+    session_id: str
+    checkpoint_id: str
+    current_state: Any
+
+
+@router.get("/checkpoints/stats")
+async def checkpoints_stats():
+    return _checkpoint_manager.get_stats()
+
+
+@router.post("/checkpoints/create")
+async def checkpoints_create(req: CheckpointCreateRequest):
+    cid = _checkpoint_manager.create_checkpoint(
+        session_id=req.session_id,
+        state=req.state,
+        reason=req.reason,
+        metadata=req.metadata,
+    )
+    cp = _checkpoint_manager.get_checkpoint(req.session_id, cid)
+    return {"checkpoint_id": cid, "detail": cp}
+
+
+@router.get("/checkpoints/{session_id}")
+async def checkpoints_list(session_id: str):
+    return {"checkpoints": _checkpoint_manager.list_checkpoints(session_id)}
+
+
+@router.get("/checkpoints/{session_id}/{checkpoint_id}")
+async def checkpoints_get(session_id: str, checkpoint_id: str):
+    cp = _checkpoint_manager.get_checkpoint(session_id, checkpoint_id)
+    if cp:
+        return cp
+    return {"error": "Checkpoint not found"}
+
+
+@router.post("/checkpoints/diff")
+async def checkpoints_diff(req: CheckpointDiffRequest):
+    delta = _checkpoint_manager.diff_checkpoint(
+        req.session_id, req.checkpoint_id, req.current_state,
+    )
+    return {
+        "added": delta.added,
+        "modified": delta.modified,
+        "removed": delta.removed,
+        "key_count": delta.key_count,
+    }
+
+
+@router.post("/checkpoints/rollback/{session_id}/{checkpoint_id}")
+async def checkpoints_rollback(session_id: str, checkpoint_id: str):
+    data = _checkpoint_manager.rollback(session_id, checkpoint_id)
+    if data is not None:
+        return {"status": "rolled_back", "checkpoint_id": checkpoint_id}
+    return {"error": "Checkpoint not found"}
+
+
+@router.delete("/checkpoints/{session_id}/{checkpoint_id}")
+async def checkpoints_remove(session_id: str, checkpoint_id: str):
+    return {"success": _checkpoint_manager.remove_checkpoint(session_id, checkpoint_id)}
+
+
+@router.delete("/checkpoints/session/{session_id}")
+async def checkpoints_remove_session(session_id: str):
+    return {"removed": _checkpoint_manager.remove_session(session_id)}
+
+
+@router.get("/checkpoints/{session_id}/rollback-history")
+async def checkpoints_rollback_history(session_id: str):
+    return {"history": _checkpoint_manager.get_rollback_history(session_id)}
+
+
+# === Code Execution Sandbox ===
+
+from sparkai.agent.agent_code_execution import CodeExecutionSandbox, get_code_sandbox, ExecutionMode
+
+_code_sandbox = get_code_sandbox()
+
+
+class ExecRequest(BaseModel):
+    code: str
+    mode: str = "safe"
+    context: Optional[Dict[str, Any]] = None
+    namespace: Optional[str] = None
+    timeout_ms: Optional[float] = None
+
+
+class ValidateRequest(BaseModel):
+    code: str
+
+
+@router.get("/code-exec/stats")
+async def code_exec_stats():
+    return _code_sandbox.get_stats()
+
+
+@router.post("/code-exec/execute")
+async def code_exec_execute(req: ExecRequest):
+    mode = ExecutionMode(req.mode) if req.mode in [m.value for m in ExecutionMode] else ExecutionMode.SAFE
+    result = _code_sandbox.execute(
+        code=req.code, mode=mode, context=req.context,
+        namespace=req.namespace, timeout_ms=req.timeout_ms,
+    )
+    return {
+        "status": result.status.value, "output": result.output,
+        "stdout": result.stdout, "stderr": result.stderr,
+        "error": result.error, "duration_ms": result.duration_ms,
+    }
+
+
+@router.post("/code-exec/validate")
+async def code_exec_validate(req: ValidateRequest):
+    return {"violations": _code_sandbox.validate(req.code)}
+
+
+@router.post("/code-exec/namespace/{name}")
+async def code_exec_create_namespace(name: str):
+    _code_sandbox.create_namespace(name)
+    return {"namespace": name}
+
+
+@router.delete("/code-exec/namespace/{name}")
+async def code_exec_delete_namespace(name: str):
+    return {"success": _code_sandbox.delete_namespace(name)}
+
+
+# === File Safety ===
+
+from sparkai.agent.agent_file_safety import FileSafetyController, get_file_safety
+
+_file_safety = get_file_safety()
+
+
+class PathCheckRequest(BaseModel):
+    path: str
+
+
+class MultiPathRequest(BaseModel):
+    paths: List[str]
+
+
+@router.get("/file-safety/stats")
+async def file_safety_stats():
+    return _file_safety.get_stats()
+
+
+@router.post("/file-safety/check-write")
+async def file_safety_check_write(req: PathCheckRequest):
+    return {"path": req.path, "allowed": _file_safety.is_write_allowed(req.path)}
+
+
+@router.post("/file-safety/check-read")
+async def file_safety_check_read(req: PathCheckRequest):
+    return {"path": req.path, "allowed": _file_safety.is_read_allowed(req.path)}
+
+
+@router.post("/file-safety/validate-paths")
+async def file_safety_validate(req: MultiPathRequest):
+    return {"violations": _file_safety.validate_paths(req.paths)}
+
+
+@router.post("/file-safety/workspace")
+async def file_safety_set_workspace(path: str):
+    _file_safety.set_workspace(path)
+    return {"workspace": path}
+
+
+# === Guard System ===
+
+from sparkai.agent.agent_guard_system import GuardSystem, get_guard_system, GuardResult
+
+_guard_system = get_guard_system()
+
+
+@router.get("/guard/stats")
+async def guard_stats():
+    return _guard_system.get_stats()
+
+
+@router.post("/guard/scan")
+async def guard_scan(path: str, source: str = "community"):
+    from pathlib import Path
+    result = _guard_system.scan(Path(path), source)
+    allowed, reason = _guard_system.evaluate(result)
+    return {
+        "verdict": result.verdict, "trust_level": result.trust_level,
+        "findings_count": len(result.findings),
+        "findings": [
+            {"id": f.pattern_id, "severity": f.severity, "category": f.category,
+             "file": f.file, "line": f.line, "description": f.description}
+            for f in result.findings[:50]
+        ],
+        "allowed": allowed, "reason": reason,
+    }
+
+
+@router.post("/guard/hash")
+async def guard_hash(path: str):
+    from pathlib import Path
+    return {"hash": _guard_system.hash_content(Path(path))}
+
+
+# === Interrupt System ===
+
+from sparkai.agent.agent_interrupt_system import InterruptSystem, get_interrupt_system
+
+_interrupt_system = get_interrupt_system()
+
+
+@router.get("/interrupt/stats")
+async def interrupt_stats():
+    return _interrupt_system.get_stats()
+
+
+@router.post("/interrupt/sessions/{session_id}")
+async def interrupt_register(session_id: str):
+    _interrupt_system.register_session(session_id)
+    return {"session_id": session_id}
+
+
+@router.post("/interrupt/{session_id}")
+async def interrupt_set(session_id: str, active: bool = True):
+    _interrupt_system.set_interrupt(session_id, active)
+    return {"session_id": session_id, "interrupted": active}
+
+
+@router.get("/interrupt/{session_id}")
+async def interrupt_check(session_id: str):
+    return {"session_id": session_id, "interrupted": _interrupt_system.is_interrupted(session_id)}
+
+
+@router.get("/interrupt/sessions/active")
+async def interrupt_active_sessions():
+    return {"sessions": _interrupt_system.get_active_sessions()}
+
+
+# === Result Storage ===
+
+from sparkai.agent.agent_result_storage import ResultStorage, get_result_storage, ResultEntry
+
+_result_storage = get_result_storage()
+
+
+class StoreRequest(BaseModel):
+    key: str
+    value: Any
+    ttl: Optional[float] = None
+    metadata: Optional[Dict[str, Any]] = None
+
+
+@router.get("/result-storage/stats")
+async def result_storage_stats():
+    return _result_storage.get_stats()
+
+
+@router.post("/result-storage/store")
+async def result_storage_store(req: StoreRequest):
+    key = _result_storage.store(req.key, req.value, req.ttl, req.metadata)
+    return {"key": key}
+
+
+@router.get("/result-storage/{key}")
+async def result_storage_get(key: str):
+    entry = _result_storage.retrieve(key)
+    if entry:
+        return {"key": key, "value": entry.value, "version": entry.version}
+    return {"error": "Not found"}
+
+
+@router.get("/result-storage/exists/{key}")
+async def result_storage_exists(key: str):
+    return {"key": key, "exists": _result_storage.exists(key)}
+
+
+@router.delete("/result-storage/{key}")
+async def result_storage_delete(key: str):
+    return {"success": _result_storage.delete(key)}
+
+
+# === Physics System ===
+
+from sparkai.engine.physics_system import PhysicsSystem, get_physics_system, BodyType
+
+_physics_system = get_physics_system()
+
+
+class PhysicsBodyRequest(BaseModel):
+    entity_id: str
+    mass: float = 1.0
+    body_type: str = "dynamic"
+    px: float = 0.0
+    py: float = 0.0
+    vx: float = 0.0
+    vy: float = 0.0
+
+
+class ForceRequest(BaseModel):
+    entity_id: str
+    fx: float = 0.0
+    fy: float = 0.0
+
+
+@router.get("/physics/stats")
+async def physics_stats():
+    return _physics_system.get_stats()
+
+
+@router.post("/physics/body")
+async def physics_create_body(req: PhysicsBodyRequest):
+    bt = BodyType(req.body_type) if req.body_type in [b.value for b in BodyType] else BodyType.DYNAMIC
+    body = _physics_system.create_body(
+        req.entity_id, req.mass, bt, (req.px, req.py), (req.vx, req.vy),
+    )
+    return {"entity_id": body.entity_id, "position": body.position, "velocity": body.velocity}
+
+
+@router.get("/physics/body/{entity_id}")
+async def physics_get_body(entity_id: str):
+    body = _physics_system.get_body(entity_id)
+    if body:
+        return {"entity_id": body.entity_id, "position": body.position, "velocity": body.velocity, "speed": body.speed}
+    return {"error": "Not found"}
+
+
+@router.post("/physics/force")
+async def physics_apply_force(req: ForceRequest):
+    _physics_system.apply_force(req.entity_id, (req.fx, req.fy))
+    return {"entity_id": req.entity_id, "force": (req.fx, req.fy)}
+
+
+@router.post("/physics/impulse")
+async def physics_apply_impulse(req: ForceRequest):
+    _physics_system.apply_impulse(req.entity_id, (req.fx, req.fy))
+    return {"entity_id": req.entity_id, "impulse": (req.fx, req.fy)}
+
+
+@router.post("/physics/step")
+async def physics_step(dt: float = 0.016):
+    _physics_system.step(dt)
+    return _physics_system.get_stats()
+
+
+# === Particle System ===
+
+from sparkai.engine.particle_system import ParticleSystem, get_particle_system, EmitterShape, EmitterMode
+
+_particle_system = get_particle_system()
+
+
+class EmitterRequest(BaseModel):
+    name: str
+    emission_rate: float = 100.0
+    lifetime: float = 1.0
+    speed: float = 100.0
+    start_size: float = 10.0
+    end_size: float = 0.0
+
+
+class EmitRequest(BaseModel):
+    emitter: str
+    x: float = 0.0
+    y: float = 0.0
+    dx: float = 0.0
+    dy: float = -1.0
+    count: int = 0
+
+
+@router.get("/particle/stats")
+async def particle_stats():
+    return _particle_system.get_stats()
+
+
+@router.post("/particle/emitter")
+async def particle_create_emitter(req: EmitterRequest):
+    emitter = _particle_system.create_emitter(
+        req.name, emission_rate=req.emission_rate,
+        lifetime=req.lifetime, speed=req.speed,
+        start_size=req.start_size, end_size=req.end_size,
+    )
+    return {"name": emitter.name, "active": emitter.active}
+
+
+@router.post("/particle/emit")
+async def particle_emit(req: EmitRequest):
+    count = _particle_system.emit(req.emitter, (req.x, req.y), (req.dx, req.dy), req.count)
+    return {"emitter": req.emitter, "spawned": count}
+
+
+@router.post("/particle/update")
+async def particle_update(dt: float = 0.016):
+    _particle_system.update(dt)
+    return {"particles": _particle_system.get_count()}
+
+
+# === Pathfinding ===
+
+from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding
+
+_pathfinding = get_pathfinding()
+
+
+class PathRequest(BaseModel):
+    sx: int
+    sy: int
+    gx: int
+    gy: int
+    diagonal: bool = True
+
+
+class BlockRequest(BaseModel):
+    x: int
+    y: int
+    blocked: bool = True
+
+
+@router.get("/pathfinding/stats")
+async def pathfinding_stats():
+    return _pathfinding.get_stats()
+
+
+@router.post("/pathfinding/find")
+async def pathfinding_find(req: PathRequest):
+    path = _pathfinding.find_path((req.sx, req.sy), (req.gx, req.gy), req.diagonal)
+    if path:
+        return {"path": path, "length": len(path)}
+    return {"path": None, "reason": "No path found"}
+
+
+@router.post("/pathfinding/block")
+async def pathfinding_block(req: BlockRequest):
+    _pathfinding.set_blocked(req.x, req.y, req.blocked)
+    return {"x": req.x, "y": req.y, "blocked": req.blocked}
+
+
+# === Audio System ===
+
+from sparkai.engine.audio_system import AudioSystem, get_audio_system, AudioChannel
+
+_audio_system = get_audio_system()
+
+
+@router.get("/audio/stats")
+async def audio_stats():
+    return _audio_system.get_stats()
+
+
+@router.post("/audio/play/{source_id}")
+async def audio_play(source_id: str):
+    return {"success": _audio_system.play(source_id)}
+
+
+@router.post("/audio/stop/{source_id}")
+async def audio_stop(source_id: str):
+    return {"success": _audio_system.stop(source_id)}
+
+
+@router.post("/audio/stop-all")
+async def audio_stop_all(channel: Optional[str] = None):
+    ch = AudioChannel(channel) if channel else None
+    return {"stopped": _audio_system.stop_all(ch)}
+
+
+@router.post("/audio/volume/{channel}")
+async def audio_set_volume(channel: str, volume: float = 1.0):
+    ch = AudioChannel(channel)
+    _audio_system.set_channel_volume(ch, volume)
+    return {"channel": channel, "volume": volume}
+
+
+# === State Machine ===
+
+from sparkai.engine.state_machine import StateMachine, get_state_machine
+
+_default_sm = get_state_machine()
+
+
+class SMTransitionRequest(BaseModel):
+    source: str
+    target: str
+    priority: int = 0
+
+
+@router.get("/state-machine/stats")
+async def sm_stats():
+    return _default_sm.get_stats()
+
+
+@router.post("/state-machine/start/{state}")
+async def sm_start(state: str):
+    return {"success": _default_sm.start(state)}
+
+
+@router.post("/state-machine/go/{state}")
+async def sm_go(state: str):
+    return {"success": _default_sm.go_to(state)}
+
+
+@router.get("/state-machine/current")
+async def sm_current():
+    return {"state": _default_sm.get_state(), "duration": _default_sm.get_state_duration()}
+
+
+# === Resource Manager ===
+
+from sparkai.engine.resource_manager import ResourceManager, get_resource_manager, ResourceType
+
+_resource_manager = get_resource_manager()
+
+
+@router.get("/resources/stats")
+async def resources_stats():
+    return _resource_manager.get_stats()
+
+
+@router.post("/resources/load")
+async def resources_load(resource_id: str, resource_type: str = "custom"):
+    rt = ResourceType(resource_type) if resource_type in [r.value for r in ResourceType] else ResourceType.CUSTOM
+    from pathlib import Path
+    handle = _resource_manager.load(resource_id, rt)
+    return {"id": resource_id, "status": handle.status.value}
+
+
+@router.get("/resources/{resource_id}")
+async def resources_get(resource_id: str):
+    handle = _resource_manager.get_handle(resource_id)
+    if handle:
+        return {"id": resource_id, "type": handle.resource_type.value, "status": handle.status.value, "ref_count": handle.ref_count}
+    return {"error": "Not found"}
+
+
+# === Behavior System ===
+
+from sparkai.engine.behavior_system import BehaviorSystem, get_behavior_system
+
+_behavior_system = get_behavior_system()
+
+
+@router.get("/behavior/stats")
+async def behavior_stats():
+    return _behavior_system.get_stats()
+
+
+@router.get("/behavior/entity/{entity_id}")
+async def behavior_get(entity_id: str):
+    behaviors = _behavior_system.get_behaviors(entity_id)
+    return {"entity_id": entity_id, "behaviors": [b.name for b in behaviors]}
+
+
+# === Tilemap System ===
+
+from sparkai.engine.tilemap_system import TilemapSystem, get_tilemap_system
+
+_tilemap_system = get_tilemap_system()
+
+
+class TileRequest(BaseModel):
+    layer: str
+    x: int
+    y: int
+    tile_id: int = -1
+    tileset_id: str = ""
+
+
+@router.get("/tilemap/stats")
+async def tilemap_stats():
+    return _tilemap_system.get_stats()
+
+
+@router.post("/tilemap/tile")
+async def tilemap_set_tile(req: TileRequest):
+    return {"success": _tilemap_system.set_tile(req.layer, req.x, req.y, req.tile_id, req.tileset_id)}
+
+
+@router.get("/tilemap/tile/{layer}/{x}/{y}")
+async def tilemap_get_tile(layer: str, x: int, y: int):
+    tile = _tilemap_system.get_tile(layer, x, y)
+    if tile:
+        return {"x": x, "y": y, "tile_id": tile.tile_id, "tileset": tile.tileset_id}
+    return {"empty": True}
+
+
+@router.post("/tilemap/layer/{name}")
+async def tilemap_add_layer(name: str, collision: bool = False, z: int = 0):
+    layer = _tilemap_system.add_layer(name, z_order=z, collision_enabled=collision)
+    return {"name": layer.name, "visible": layer.visible}
+
+
+@router.get("/tilemap/blocked/{layer}")
+async def tilemap_blocked(layer: str):
+    return {"blocked": _tilemap_system.get_blocked_cells(layer)}
+
+
+# === Self Evaluator ===
+
+from sparkai.agent.agent_self_evaluator import SelfEvaluator, get_self_evaluator
+
+_evaluator = get_self_evaluator()
+
+
+class EvaluateRequest(BaseModel):
+    content: str = ""
+    content_type: str = "game_design"
+    metadata: Optional[Dict[str, Any]] = None
+
+
+@router.get("/self-evaluator/rubrics")
+async def evaluator_rubrics():
+    return {"rubrics": _evaluator.list_rubric_types()}
+
+
+@router.post("/self-evaluator/evaluate")
+async def evaluator_evaluate(req: EvaluateRequest):
+    result = _evaluator.evaluate(req.content, req.content_type, req.metadata)
+    return result.to_dict() if hasattr(result, 'to_dict') else {
+        "overall_score": result.overall_score,
+        "grade": result.overall_grade.value if hasattr(result.overall_grade, 'value') else str(result.overall_grade),
+        "dimensions": [
+            {"name": d.name, "score": d.score, "weight": d.weight, "evidence": d.evidence}
+            for d in result.dimensions
+        ] if hasattr(result, 'dimensions') else [],
+        "strengths": result.strengths if hasattr(result, 'strengths') else [],
+        "weaknesses": result.weaknesses if hasattr(result, 'weaknesses') else [],
+        "suggestions": result.suggestions if hasattr(result, 'suggestions') else [],
+    }
+
+
+# === Strategic Planner ===
+
+from sparkai.agent.agent_strategic_planner import StrategicPlanner, get_strategic_planner, ExecutionStrategy, TaskStatus
+
+_planner = get_strategic_planner()
+
+
+class PlanRequest(BaseModel):
+    goal: str
+    game_type: str = "2d_platformer"
+    max_depth: int = 5
+    metadata: Optional[Dict[str, Any]] = None
+
+
+@router.post("/planner/create-plan")
+async def planner_create(req: PlanRequest):
+    plan = _planner.create_plan(req.goal, req.game_type, req.max_depth, req.metadata)
+    return {
+        "plan_id": plan.plan_id,
+        "goal": plan.goal,
+        "total_tasks": len(plan.tasks),
+        "estimated_tokens": plan.estimated_tokens if hasattr(plan, 'estimated_tokens') else 0,
+        "tasks": [
+            {"id": t.task_id, "name": t.name, "status": t.status.value, "deps": t.dependencies}
+            for t in plan.tasks
+        ],
+        "critical_path": plan.critical_path if hasattr(plan, 'critical_path') else [],
+    }
+
+
+@router.get("/planner/plan/{plan_id}")
+async def planner_get(plan_id: str):
+    plan = _planner.get_plan(plan_id)
+    if not plan:
+        return {"error": "Plan not found"}
+    return {
+        "plan_id": plan.plan_id,
+        "goal": plan.goal,
+        "progress": plan.progress if hasattr(plan, 'progress') else 0.0,
+        "tasks": [
+            {"id": t.task_id, "name": t.name, "status": t.status.value, "progress": t.progress if hasattr(t, 'progress') else 0.0}
+            for t in plan.tasks
+        ],
+    }
+
+
+@router.get("/planner/templates")
+async def planner_templates():
+    return {"templates": _planner.list_templates()}
+
+
+# === Circuit Breaker ===
+
+from sparkai.agent.agent_circuit_breaker import CircuitBreaker, get_circuit_breaker
+
+_breaker = get_circuit_breaker()
+
+
+@router.get("/circuit/stats")
+async def circuit_stats():
+    return _breaker.get_stats()
+
+
+@router.post("/circuit/reset")
+async def circuit_reset():
+    _breaker.reset()
+    return {"success": True}
+
+
+@router.get("/circuit/state")
+async def circuit_state():
+    return {"state": _breaker.get_state().value, "stats": _breaker.get_stats()}
+
+
+# === Persona System ===
+
+from sparkai.agent.agent_persona import PersonaSystem, get_persona_system
+
+_personas = get_persona_system()
+
+
+class PersonaRequest(BaseModel):
+    role: str = "game_designer"
+    session_id: str = "default"
+
+
+@router.get("/persona/list")
+async def persona_list():
+    return {"personas": _personas.list_personas()}
+
+
+@router.post("/persona/assign")
+async def persona_assign(req: PersonaRequest):
+    persona = _personas.assign_persona(req.role, req.session_id)
+    return {
+        "role": persona.display_name,
+        "description": persona.role_description,
+        "creativity": persona.creativity.value,
+        "tools": [t.tool_name for t in persona.tool_grants if t.allowed],
+    }
+
+
+@router.get("/persona/current/{session_id}")
+async def persona_current(session_id: str):
+    persona = _personas.get_session_persona(session_id)
+    if not persona:
+        return {"none": True}
+    return {"role": persona.display_name, "description": persona.role_description}
+
+
+# === Camera System ===
+
+from sparkai.engine.camera_system import CameraSystem, get_camera_system, CameraMode
+
+_camera = get_camera_system()
+
+
+class CameraFollowRequest(BaseModel):
+    entity_id: str
+    smoothing: float = 0.1
+    offset_x: float = 0.0
+    offset_y: float = 0.0
+    dead_zone_w: float = 0.0
+    dead_zone_h: float = 0.0
+
+
+class CameraShakeRequest(BaseModel):
+    intensity: float = 0.5
+    duration: float = 0.3
+    frequency: float = 30.0
+    falloff: str = "linear"
+
+
+class CameraTransitionRequest(BaseModel):
+    x: float = 0.0
+    y: float = 0.0
+    zoom: float = 1.0
+    duration: float = 1.0
+    easing: str = "ease_in_out"
+
+
+@router.get("/camera/stats")
+async def camera_stats():
+    return _camera.get_stats()
+
+
+@router.post("/camera/position")
+async def camera_position(x: float = 0.0, y: float = 0.0):
+    _camera.set_position(x, y)
+    return {"x": _camera.x, "y": _camera.y}
+
+
+@router.get("/camera/current")
+async def camera_current():
+    return {"x": _camera.x, "y": _camera.y, "zoom": _camera.zoom}
+
+
+@router.post("/camera/follow")
+async def camera_follow(req: CameraFollowRequest):
+    _camera.follow(req.entity_id, req.smoothing, req.offset_x, req.offset_y, req.dead_zone_w, req.dead_zone_h)
+    return {"following": req.entity_id}
+
+
+@router.post("/camera/free")
+async def camera_free():
+    _camera.free_mode()
+    return {"mode": "free"}
+
+
+@router.post("/camera/shake")
+async def camera_shake(req: CameraShakeRequest):
+    _camera.shake(req.intensity, req.duration, req.frequency, req.falloff)
+    return {"shaking": True, "intensity": req.intensity}
+
+
+@router.post("/camera/stop-shake")
+async def camera_stop_shake():
+    _camera.stop_shake()
+    return {"shaking": False}
+
+
+@router.post("/camera/zoom")
+async def camera_set_zoom(zoom: float = 1.0):
+    _camera.set_zoom(zoom)
+    return {"zoom": zoom}
+
+
+@router.post("/camera/bounds")
+async def camera_bounds(left: float = 0, top: float = 0, right: float = 1000, bottom: float = 1000):
+    _camera.set_bounds(left, top, right, bottom)
+    return {"bounds": [left, top, right, bottom]}
+
+
+@router.post("/camera/transition")
+async def camera_transition(req: CameraTransitionRequest):
+    _camera.transition_to(req.x, req.y, req.zoom, req.duration, req.easing)
+    return {"transitioning": True, "target": [req.x, req.y]}
+
+
+@router.get("/camera/visible")
+async def camera_visible():
+    return {"bounds": _camera.get_visible_bounds()}
+
+
+@router.post("/camera/world-to-screen")
+async def camera_world_to_screen(x: float = 0.0, y: float = 0.0):
+    sx, sy = _camera.world_to_screen(x, y)
+    return {"screen_x": sx, "screen_y": sy}
+
+
+@router.post("/camera/screen-to-world")
+async def camera_screen_to_world(x: float = 0.0, y: float = 0.0):
+    wx, wy = _camera.screen_to_world(x, y)
+    return {"world_x": wx, "world_y": wy}
+
+
+# === Serializer ===
+
+from sparkai.engine.serialization import Serializer, get_serializer, SerialFormat
+
+_serializer = get_serializer()
+
+
+class SerializeRequest(BaseModel):
+    data: Any = None
+    format: str = "json_readable"
+
+
+class DeserializeRequest(BaseModel):
+    data: str = ""
+    validate: bool = True
+
+
+@router.get("/serializer/info")
+async def serializer_info():
+    return _serializer.get_schema_info()
+
+
+@router.get("/serializer/stats")
+async def serializer_stats():
+    return _serializer.get_stats()
+
+
+@router.post("/serializer/serialize")
+async def serializer_serialize(req: SerializeRequest):
+    fmt = SerialFormat.JSON_READABLE
+    if req.format == "json_compact":
+        fmt = SerialFormat.JSON_COMPACT
+    elif req.format == "binary_blob":
+        fmt = SerialFormat.BINARY_BLOB
+    elif req.format == "yaml_layout":
+        return {"result": _serializer.serialize_to_yaml(req.data)}
+    result = _serializer.serialize_scene(req.data, format=fmt)
+    return {"result": result}
+
+
+@router.post("/serializer/deserialize")
+async def serializer_deserialize(req: DeserializeRequest):
+    scene = _serializer.deserialize_scene(req.data, req.validate)
+    return {"id": scene.id, "name": scene.name, "entity_count": len(scene.entities)}
+
+
+# === UI System ===
+
+from sparkai.engine.ui_system import UISystem, get_ui_system
+
+_ui = get_ui_system()
+
+
+class UICreateWidgetRequest(BaseModel):
+    widget_type: str = "label"
+    widget_id: str = ""
+    text: str = ""
+    label: str = ""
+    x: float = 0.0
+    y: float = 0.0
+    w: float = 100.0
+    h: float = 24.0
+    title: str = ""
+    value: float = 0.0
+    min_val: float = 0.0
+    max_val: float = 1.0
+    step: float = 0.01
+
+
+@router.get("/ui/stats")
+async def ui_stats():
+    return _ui.get_stats()
+
+
+@router.get("/ui/widgets")
+async def ui_widgets():
+    return {"widgets": _ui.get_all_widgets()}
+
+
+@router.get("/ui/widget/{widget_id}")
+async def ui_get_widget(widget_id: str):
+    widget = _ui.get_widget(widget_id)
+    if not widget:
+        return {"error": "Not found"}
+    return {"id": widget.id, "type": widget.widget_type, "rect": widget.rect.to_dict(), "visible": widget.visible}
+
+
+@router.post("/ui/widget/create")
+async def ui_create_widget(req: UICreateWidgetRequest):
+    if req.widget_type == "label":
+        w = _ui.create_label(req.widget_id, req.text or req.label, req.x, req.y, req.w, req.h)
+    elif req.widget_type == "button":
+        w = _ui.create_button(req.widget_id, req.label or req.text, req.x, req.y, req.w, req.h)
+    elif req.widget_type == "panel":
+        w = _ui.create_panel(req.widget_id, req.x, req.y, req.w, req.h, req.title)
+    elif req.widget_type == "slider":
+        w = _ui.create_slider(req.widget_id, req.x, req.y, req.w, req.h, req.value, req.min_val, req.max_val, req.step)
+    elif req.widget_type == "progress_bar":
+        w = _ui.create_progress_bar(req.widget_id, req.x, req.y, req.w, req.h, req.value, req.max_val)
+    else:
+        return {"error": f"Unknown widget type: {req.widget_type}"}
+    return {"id": w.id, "type": w.widget_type}
+
+
+@router.delete("/ui/widget/{widget_id}")
+async def ui_delete_widget(widget_id: str):
+    return {"success": _ui.delete_widget(widget_id)}
+
+
+@router.post("/ui/widget/{widget_id}/visibility")
+async def ui_widget_visibility(widget_id: str, visible: bool = True):
+    return {"success": _ui.set_widget_visibility(widget_id, visible)}
+
+
+@router.post("/ui/widget/{widget_id}/position")
+async def ui_widget_position(widget_id: str, x: float = 0.0, y: float = 0.0, w: float = None, h: float = None):
+    return {"success": _ui.update_widget_position(widget_id, x, y, w, h)}
+
+
+@router.get("/ui/theme")
+async def ui_theme():
+    t = _ui.theme
+    return {"name": t.name, "primary": t.primary_color.as_hex(), "bg": t.background_color.as_hex(), "font_size": t.font_size}
+
+
+# === Layer System ===
+
+from sparkai.engine.layer_system import LayerSystem, get_layer_system, LayerBlendMode
+
+_layers = get_layer_system()
+
+
+class LayerRequest(BaseModel):
+    name: str
+    z_index: int = 0
+    parallax: float = 1.0
+    blend: str = "normal"
+
+
+@router.get("/layers/stats")
+async def layers_stats():
+    return _layers.get_stats()
+
+
+@router.get("/layers/list")
+async def layers_list():
+    return {"layers": _layers.get_all_layers()}
+
+
+@router.get("/layers/render")
+async def layers_render():
+    return {"layers": _layers.get_layers_for_rendering()}
+
+
+@router.post("/layers/add")
+async def layers_add(req: LayerRequest):
+    blend = LayerBlendMode.NORMAL
+    if req.blend in [b.name.lower() for b in LayerBlendMode]:
+        blend = LayerBlendMode[req.blend.upper()]
+    layer = _layers.add_layer(req.name, req.z_index, req.parallax, blend)
+    return {"id": layer.layer_id, "name": layer.name, "z": layer.z_index}
+
+
+@router.post("/layers/remove/{layer_id}")
+async def layers_remove(layer_id: str):
+    return {"success": _layers.remove_layer(layer_id)}
+
+
+@router.post("/layers/hide/{identifier}")
+async def layers_hide(identifier: str):
+    return {"success": _layers.hide_layer(identifier)}
+
+
+@router.post("/layers/show/{identifier}")
+async def layers_show(identifier: str):
+    return {"success": _layers.show_layer(identifier)}
+
+
+@router.post("/layers/toggle/{identifier}")
+async def layers_toggle(identifier: str):
+    return {"visible": _layers.toggle_layer(identifier)}
+
+
+@router.post("/layers/move-up/{identifier}")
+async def layers_move_up(identifier: str):
+    return {"success": _layers.move_layer_up(identifier)}
+
+
+@router.post("/layers/move-down/{identifier}")
+async def layers_move_down(identifier: str):
+    return {"success": _layers.move_layer_down(identifier)}
+
+
+@router.post("/layers/z/{identifier}")
+async def layers_set_z(identifier: str, z: int = 0):
+    return {"success": _layers.set_layer_z_index(identifier, z)}
+
+
+@router.post("/layers/opacity/{identifier}")
+async def layers_opacity(identifier: str, opacity: float = 1.0):
+    return {"success": _layers.set_layer_opacity(identifier, opacity)}
+
+
+@router.post("/layers/parallax/{identifier}")
+async def layers_parallax(identifier: str, factor: float = 1.0):
+    return {"success": _layers.set_layer_parallax(identifier, factor)}
+
+
+@router.get("/layers/groups")
+async def layers_groups():
+    return {"groups": _layers.get_all_groups()}
+
+
+@router.post("/layers/groups/create")
+async def layers_group_create(name: str = "New Group"):
+    group = _layers.create_group(name)
+    return {"id": group.group_id, "name": group.name}
+
+
+# === Profiler ===
+
+from sparkai.engine.profiler import Profiler, get_profiler
+
+_profiler = get_profiler()
+
+
+@router.get("/profiler/snapshot")
+async def profiler_snapshot():
+    return _profiler.get_snapshot()
+
+
+@router.get("/profiler/report")
+async def profiler_report():
+    report = _profiler.generate_report()
+    return {
+        "report_id": report.report_id,
+        "avg_fps": report.avg_fps,
+        "min_fps": report.min_fps,
+        "max_fps": report.max_fps,
+        "avg_frame_ms": report.avg_frame_ms,
+        "p95_frame_ms": report.p95_frame_ms,
+        "p99_frame_ms": report.p99_frame_ms,
+        "one_percent_low_fps": report.one_percent_low_fps,
+        "frame_count": report.frame_count,
+        "elapsed_seconds": report.elapsed_seconds,
+        "phase_averages": report.phase_averages,
+        "peak_memory_bytes": report.peak_memory_bytes,
+        "current_memory_bytes": report.current_memory_bytes,
+        "bottleneck_count": report.bottleneck_count,
+        "recommendations": report.recommendations,
+        "performance_level": report.performance_level,
+    }
+
+
+@router.get("/profiler/bottlenecks")
+async def profiler_bottlenecks(threshold_ms: float = 16.0):
+    return {"bottlenecks": _profiler.detect_bottlenecks(threshold_ms)}
+
+
+@router.get("/profiler/frame-report")
+async def profiler_frame_report():
+    report = _profiler.get_frame_report()
+    return {
+        "frame": report.frame_number,
+        "total_ms": report.total_ms,
+        "fps": report.fps,
+        "phases": report.phase_timings,
+        "bottleneck": report.bottleneck_level.name,
+        "reason": report.bottleneck_reason,
+    }
+
+
+@router.post("/profiler/enable")
+async def profiler_enable(enabled: bool = True):
+    _profiler.enabled = enabled
+    return {"enabled": _profiler.enabled}
+
+
+@router.post("/profiler/reset")
+async def profiler_reset():
+    _profiler.reset()
+    return {"success": True}
+
+
+# === Streaming Manager ===
+
+from sparkai.agent.agent_streaming import StreamingManager, get_streaming_manager
+
+_streaming_manager = get_streaming_manager()
+
+
+@router.get("/streaming/stats")
+async def streaming_stats():
+    return {"stats": _streaming_manager.get_stats()}
+
+
+@router.post("/streaming/start")
+async def streaming_start():
+    _streaming_manager.start()
+    return {"state": _streaming_manager.state.name.lower()}
+
+
+@router.post("/streaming/stop")
+async def streaming_stop():
+    _streaming_manager.stop()
+    return {"state": _streaming_manager.state.name.lower()}
+
+
+@router.post("/streaming/pause")
+async def streaming_pause():
+    _streaming_manager.pause()
+    return {"state": _streaming_manager.state.name.lower()}
+
+
+@router.post("/streaming/resume")
+async def streaming_resume():
+    _streaming_manager.resume()
+    return {"state": _streaming_manager.state.name.lower()}
+
+
+@router.post("/streaming/cancel")
+async def streaming_cancel(reason: str = "user_cancelled"):
+    _streaming_manager.cancel(reason)
+    return {"state": _streaming_manager.state.name.lower()}
+
+
+@router.get("/streaming/partial")
+async def streaming_partial():
+    return {"partial": _streaming_manager.get_partial()}
+
+
+# === Delegation System ===
+
+from sparkai.agent.agent_delegation import DelegationSystem, get_delegation_system
+
+_delegation_system = get_delegation_system()
+
+
+class DelegationSpawnRequest(BaseModel):
+    task: str
+    agent_config: Optional[Dict[str, Any]] = None
+    timeout: float = 60.0
+
+
+class DelegationBatchRequest(BaseModel):
+    tasks: List[Dict[str, Any]]
+
+
+@router.get("/delegation/stats")
+async def delegation_stats():
+    return {"stats": _delegation_system.get_stats()}
+
+
+@router.post("/delegation/spawn")
+async def delegation_spawn(request: DelegationSpawnRequest):
+    result = await _delegation_system.spawn(request.task, request.agent_config, request.timeout)
+    return result.to_dict()
+
+
+@router.post("/delegation/batch")
+async def delegation_batch(request: DelegationBatchRequest):
+    results = await _delegation_system.execute_batch(request.tasks)
+    return {"results": [r.to_dict() for r in results], "count": len(results)}
+
+
+# === MCP Bridge ===
+
+from sparkai.agent.agent_mcp_bridge import MCPBridge, get_mcp_bridge
+
+_mcp_bridge = get_mcp_bridge()
+
+
+class MCPConnectRequest(BaseModel):
+    transport: str = "stdio"
+    command: Optional[str] = None
+    args: Optional[List[str]] = None
+    url: Optional[str] = None
+    server_id: str = "default"
+
+
+class MCPInvokeRequest(BaseModel):
+    server_id: str
+    tool_name: str
+    arguments: Dict[str, Any] = {}
+
+
+@router.get("/mcp/stats")
+async def mcp_stats():
+    return {"stats": _mcp_bridge.get_stats()}
+
+
+@router.get("/mcp/servers")
+async def mcp_servers():
+    return {"servers": _mcp_bridge.list_servers()}
+
+
+@router.post("/mcp/connect")
+async def mcp_connect(request: MCPConnectRequest):
+    transport_map = {"stdio": "stdio", "http": "http_sse", "websocket": "websocket"}
+    t = transport_map.get(request.transport, "stdio")
+    if t == "stdio" and request.command:
+        server = await _mcp_bridge.connect_stdio(request.server_id, request.command, request.args or [])
+    elif t == "http_sse" and request.url:
+        server = await _mcp_bridge.connect_http(request.server_id, request.url)
+    else:
+        return {"error": "Invalid transport configuration"}
+    return server.to_dict()
+
+
+@router.post("/mcp/disconnect")
+async def mcp_disconnect(server_id: str):
+    success = _mcp_bridge.disconnect(server_id)
+    return {"success": success}
+
+
+@router.post("/mcp/invoke")
+async def mcp_invoke(request: MCPInvokeRequest):
+    result = await _mcp_bridge.invoke(request.server_id, request.tool_name, request.arguments)
+    return result.to_dict()
+
+
+@router.get("/mcp/tools")
+async def mcp_tools(server_id: Optional[str] = None):
+    if server_id:
+        tools = _mcp_bridge.list_tools(server_id)
+    else:
+        tools = _mcp_bridge.list_all_tools()
+    return {"tools": tools, "count": len(tools)}
+
+
+# === Parallel Executor ===
+
+from sparkai.agent.agent_parallel_executor import ParallelExecutor, get_parallel_executor
+
+_parallel_executor = get_parallel_executor()
+
+
+class ParallelDispatchRequest(BaseModel):
+    tasks: List[Dict[str, Any]]
+    max_concurrent: int = 4
+
+
+@router.get("/parallel/stats")
+async def parallel_stats():
+    return {"stats": _parallel_executor.get_stats()}
+
+
+@router.post("/parallel/dispatch")
+async def parallel_dispatch(request: ParallelDispatchRequest):
+    results = await _parallel_executor.dispatch_batch(request.tasks, request.max_concurrent)
+    merged = _parallel_executor.merge_results(results)
+    return {"results": [r.to_dict() for r in results], "merged": merged, "count": len(results)}
+
+
+# === Event Scripting System ===
+
+from sparkai.engine.event_scripting import EventScriptingSystem, get_event_scripting_system
+
+_event_scripting = get_event_scripting_system()
+
+
+class EventSheetCreateRequest(BaseModel):
+    name: str
+    events_json: Optional[List[Dict[str, Any]]] = None
+    priority: int = 0
+
+
+@router.get("/event-scripting/stats")
+async def event_scripting_stats():
+    return {"stats": _event_scripting.get_stats()}
+
+
+@router.get("/event-scripting/sheets")
+async def event_scripting_sheets():
+    return {"sheets": _event_scripting.list_sheets()}
+
+
+@router.post("/event-scripting/sheets/create")
+async def event_scripting_create_sheet(request: EventSheetCreateRequest):
+    sheet = _event_scripting.create_sheet(request.name, description="")
+    if request.events_json:
+        _event_scripting.import_sheet_from_json(sheet.sheet_id, request.events_json)
+    return sheet.to_dict()
+
+
+@router.get("/event-scripting/sheets/{sheet_id}")
+async def event_scripting_get_sheet(sheet_id: str):
+    sheet = _event_scripting.get_sheet(sheet_id)
+    if sheet:
+        return sheet.to_dict()
+    return {"error": f"Sheet '{sheet_id}' not found"}
+
+
+@router.delete("/event-scripting/sheets/{sheet_id}")
+async def event_scripting_delete_sheet(sheet_id: str):
+    success = _event_scripting.delete_sheet(sheet_id)
+    return {"success": success}
+
+
+@router.post("/event-scripting/sheets/{sheet_id}/run")
+async def event_scripting_run_sheet(sheet_id: str, context: Optional[Dict[str, Any]] = None):
+    _event_scripting.run_sheet(sheet_id, 0.016, context or {})
+    sheet = _event_scripting.get_sheet(sheet_id)
+    return {"executed": sheet is not None}
+
+
+@router.post("/event-scripting/run-all")
+async def event_scripting_run_all(context: Optional[Dict[str, Any]] = None):
+    _event_scripting.run_all(0.016, context or {})
+    return {"success": True}
+
+
+# === Scene Tree ===
+
+from sparkai.engine.scene_tree import SceneTree, get_scene_tree
+
+_scene_tree = get_scene_tree()
+
+
+class SceneNodeCreateRequest(BaseModel):
+    name: str
+    parent_path: Optional[str] = None
+    x: float = 0.0
+    y: float = 0.0
+    rotation: float = 0.0
+    scale_x: float = 1.0
+    scale_y: float = 1.0
+
+
+class ScenePushRequest(BaseModel):
+    path_or_name: str
+
+
+@router.get("/scene-tree/stats")
+async def scene_tree_stats():
+    return {"stats": _scene_tree.get_stats()}
+
+
+@router.get("/scene-tree/root")
+async def scene_tree_root():
+    root = _scene_tree.root
+    return root.to_dict() if root else {"error": "No root node"}
+
+
+@router.post("/scene-tree/nodes/create")
+async def scene_tree_create_node(request: SceneNodeCreateRequest):
+    parent = None
+    if request.parent_path:
+        parent = _scene_tree.find_by_path(request.parent_path)
+    if not parent:
+        parent = _scene_tree.root
+    if not parent:
+        return {"error": "Root node does not exist"}
+    from sparkai.engine.scene_tree import SceneNode
+    node = SceneNode(name=request.name)
+    node.transform.x = request.x
+    node.transform.y = request.y
+    node.transform.rotation = request.rotation
+    node.transform.scale_x = request.scale_x
+    node.transform.scale_y = request.scale_y
+    parent.add_child(node)
+    return node.to_dict()
+
+
+@router.get("/scene-tree/nodes/find")
+async def scene_tree_find_node(path: str):
+    node = _scene_tree.find_by_path(path)
+    if node:
+        return node.to_dict()
+    return {"error": f"Node not found at path '{path}'"}
+
+
+@router.get("/scene-tree/nodes/by-name")
+async def scene_tree_find_by_name(name: str):
+    node = _scene_tree.root.find_by_name(name) if _scene_tree.root else None
+    if node:
+        return node.to_dict()
+    return {"error": f"Node '{name}' not found"}
+
+
+@router.delete("/scene-tree/nodes/remove")
+async def scene_tree_remove_node(path: str):
+    node = _scene_tree.find_by_path(path)
+    if node and node.parent is not None:
+        node.parent.remove_child(node.id)
+        return {"success": True}
+    return {"error": "Cannot remove root node or node not found"}
+
+
+@router.post("/scene-tree/reparent")
+async def scene_tree_reparent(node_path: str, new_parent_path: str):
+    node = _scene_tree.find_by_path(node_path)
+    new_parent = _scene_tree.find_by_path(new_parent_path)
+    if not node or not new_parent:
+        return {"error": "Node or parent not found"}
+    success = _scene_tree.reparent(node.id, new_parent.id)
+    return {"success": success}
+
+
+@router.get("/scene-tree/groups")
+async def scene_tree_groups():
+    return {"groups": list(_scene_tree._groups.keys())}
+
+
+@router.post("/scene-tree/groups/add")
+async def scene_tree_group_add(group_name: str, node_path: str):
+    node = _scene_tree.find_by_path(node_path)
+    if not node:
+        return {"error": "Node not found"}
+    _scene_tree.add_to_group(node.id, group_name)
+    return {"success": True}
+
+
+@router.get("/scene-tree/groups/{group_name}")
+async def scene_tree_group_nodes(group_name: str):
+    nodes = _scene_tree.get_group(group_name)
+    return {"nodes": [n.to_dict() for n in nodes], "count": len(nodes)}
+
+
+@router.post("/scene-tree/scene/push")
+async def scene_tree_push(request: ScenePushRequest):
+    _scene_tree.push_scene(request.path_or_name)
+    return {"success": True}
+
+
+@router.post("/scene-tree/scene/pop")
+async def scene_tree_pop():
+    _scene_tree.pop_scene()
+    return {"success": True}
+
+
+# === Shader System ===
+
+from sparkai.engine.shader_system import ShaderSystem, get_shader_system
+
+_shader_system = get_shader_system()
+
+
+class MaterialCreateRequest(BaseModel):
+    shader_name: str = "default_sprite"
+    name: str = "New Material"
+
+
+class UniformSetRequest(BaseModel):
+    uniform_name: str
+    value: Any
+    value_type: str = "float"
+
+
+@router.get("/shader/stats")
+async def shader_stats():
+    return {"stats": _shader_system.get_stats()}
+
+
+@router.get("/shader/programs")
+async def shader_programs():
+    return {"programs": _shader_system.list_shaders()}
+
+
+@router.get("/shader/programs/{program_name}")
+async def shader_program_detail(program_name: str):
+    prog = _shader_system.find_shader(program_name)
+    if prog:
+        return {
+            "program_id": prog.program_id,
+            "name": prog.name,
+            "source_id": prog.source_id,
+            "uniform_count": len(prog.uniforms),
+            "rendered_count": prog.rendered_count,
+            "compiled": prog.compiled,
+        }
+    return {"error": f"Program '{program_name}' not found"}
+
+
+@router.post("/shader/materials/create")
+async def shader_create_material(request: MaterialCreateRequest):
+    material = _shader_system.create_material(request.name, request.shader_name)
+    return {
+        "material_id": material.material_id,
+        "name": material.name,
+        "shader_id": material.shader_id,
+        "uniforms": material.uniforms,
+        "render_queue": material.render_queue,
+        "enabled": material.enabled,
+    }
+
+
+@router.get("/shader/materials")
+async def shader_materials():
+    return {"materials": _shader_system.list_materials()}
+
+
+@router.post("/shader/materials/{material_id}/uniform")
+async def shader_set_uniform(material_id: str, request: UniformSetRequest):
+    success = _shader_system.set_sprite_uniform(material_id, request.uniform_name, request.value)
+    return {"success": success}
+
+
+@router.post("/shader/render-passes/add")
+async def shader_add_render_pass(name: str, shader_name: str = "default_sprite", order: int = 0):
+    rp = _shader_system.add_render_pass(name, shader_name, order)
+    return {
+        "pass_id": rp.pass_id,
+        "name": rp.name,
+        "target": rp.target,
+        "order": rp.order,
+        "enabled": rp.enabled,
+    }
+
+
+@router.get("/shader/render-passes")
+async def shader_render_passes():
+    passes = _shader_system.get_sorted_passes()
+    return {"passes": [{"pass_id": p.pass_id, "name": p.name, "order": p.order, "enabled": p.enabled} for p in passes]}
+
+
+# === Variable System ===
+
+from sparkai.engine.variable_system import VariableSystem, get_variable_system
+
+_variable_system = get_variable_system()
+
+
+class VariableSetRequest(BaseModel):
+    name: str
+    value: Any
+    var_type: str = "any"
+    scope: str = "global"
+
+
+class ExpressionEvaluateRequest(BaseModel):
+    expression: str
+    context: Optional[Dict[str, Any]] = None
+
+
+@router.get("/variables/stats")
+async def variables_stats():
+    return {"stats": _variable_system.get_stats()}
+
+
+@router.get("/variables/list")
+async def variables_list(scope: Optional[str] = None):
+    if scope:
+        st = {"global": "GLOBAL", "scene": "SCENE", "temporary": "TEMPORARY"}.get(scope, "GLOBAL")
+        from sparkai.engine.variable_system import Scope
+        try:
+            sc = Scope[st]
+            var_list = _variable_system.get_all(sc)
+            return {"variables": var_list, "count": len(var_list), "scope": scope}
+        except KeyError:
+            return {"error": f"Unknown scope: {scope}"}
+    return {"variables": _variable_system.get_all()}
+
+
+@router.post("/variables/set")
+async def variables_set(request: VariableSetRequest):
+    scope_map = {"global": "GLOBAL", "scene": "SCENE", "temporary": "TEMPORARY"}
+    st = scope_map.get(request.scope, "GLOBAL")
+    from sparkai.engine.variable_system import Scope
+    try:
+        sc = Scope[st]
+        _variable_system.set(request.name, request.value, sc)
+        return {"success": True, "name": request.name, "scope": request.scope}
+    except KeyError:
+        return {"error": f"Unknown scope: {request.scope}"}
+
+
+@router.get("/variables/get")
+async def variables_get(name: str, scope: str = "global"):
+    scope_map = {"global": "GLOBAL", "scene": "SCENE", "temporary": "TEMPORARY"}
+    st = scope_map.get(scope, "GLOBAL")
+    from sparkai.engine.variable_system import Scope
+    try:
+        sc = Scope[st]
+        value = _variable_system.get(name, sc)
+        return {"name": name, "scope": scope, "value": value}
+    except KeyError:
+        return {"error": f"Unknown scope: {scope}"}
+
+
+@router.delete("/variables/remove")
+async def variables_remove(name: str, scope: str = "global"):
+    scope_map = {"global": "GLOBAL", "scene": "SCENE", "temporary": "TEMPORARY"}
+    st = scope_map.get(scope, "GLOBAL")
+    from sparkai.engine.variable_system import Scope
+    try:
+        sc = Scope[st]
+        success = _variable_system.remove(name, sc)
+        return {"success": success}
+    except KeyError:
+        return {"error": f"Unknown scope: {scope}"}
+
+
+@router.post("/variables/evaluate")
+async def variables_evaluate(request: ExpressionEvaluateRequest):
+    result = _variable_system.evaluate(request.expression, request.context)
+    return {"expression": request.expression, "result": result}
+
+
+@router.post("/variables/increment")
+async def variables_increment(name: str, delta: float = 1.0, scope: str = "global"):
+    scope_map = {"global": "GLOBAL", "scene": "SCENE", "temporary": "TEMPORARY"}
+    st = scope_map.get(scope, "GLOBAL")
+    from sparkai.engine.variable_system import Scope
+    sc = Scope[st]
+    new_val = _variable_system.increment(name, delta, sc)
+    return {"name": name, "new_value": new_val}
+
+
+@router.post("/variables/toggle")
+async def variables_toggle(name: str, scope: str = "global"):
+    scope_map = {"global": "GLOBAL", "scene": "SCENE", "temporary": "TEMPORARY"}
+    st = scope_map.get(scope, "GLOBAL")
+    from sparkai.engine.variable_system import Scope
+    sc = Scope[st]
+    new_val = _variable_system.toggle(name, scope=sc)
+    return {"name": name, "new_value": new_val}
+
+
+@router.get("/variables/history")
+async def variables_history(limit: int = 20):
+    return {"history": _variable_system.get_history(limit=limit)}
+
+
+# === Resource Loader ===
+
+from sparkai.engine.resource_loader import ResourceLoader, get_resource_loader
+
+_resource_loader = get_resource_loader()
+
+
+class ResourceLoadRequest(BaseModel):
+    path: str
+    resource_type: Optional[str] = None
+    priority: int = 0
+
+
+@router.get("/resource-loader/stats")
+async def resource_loader_stats():
+    return {"stats": _resource_loader.get_stats()}
+
+
+@router.post("/resource-loader/load")
+async def resource_loader_load(request: ResourceLoadRequest):
+    handle = _resource_loader.acquire(request.path)
+    if handle:
+        return {
+            "handle_id": handle.handle_id,
+            "path": handle.path,
+            "resource_type": handle.resource_type.name.lower(),
+            "state": handle.state.name.lower(),
+            "ref_count": handle.ref_count,
+            "data": str(handle.data)[:100] if handle.data else None,
+        }
+    return {"error": f"Resource not found: {request.path}"}
+
+
+@router.post("/resource-loader/release")
+async def resource_loader_release(path: str):
+    success = _resource_loader.release(path)
+    return {"success": success}
+
+
+@router.get("/resource-loader/cache")
+async def resource_loader_cache():
+    return {"cache": _resource_loader.get_cache_stats()}
+
+
+@router.post("/resource-loader/preload")
+async def resource_loader_preload(paths: List[str]):
+    _resource_loader.preload_batch(paths)
+    return {"success": True, "count": len(paths)}
+
+
+@router.post("/resource-loader/unload")
+async def resource_loader_unload(path: str):
+    _resource_loader.unload(path)
+    return {"success": True}
+
+
+@router.post("/resource-loader/clear")
+async def resource_loader_clear():
+    count = _resource_loader.clear_cache()
+    return {"cleared": count}
+
+
+# === Content Safety ===
+
+from sparkai.agent.agent_content_safety import ContentSafety, get_content_safety
+
+_content_safety = get_content_safety()
+
+
+class ContentScanRequest(BaseModel):
+    text: str
+    redact: bool = True
+
+
+@router.get("/content-safety/stats")
+async def content_safety_stats():
+    return {"stats": _content_safety.get_stats()}
+
+
+@router.get("/content-safety/rules")
+async def content_safety_rules():
+    return {"rules": _content_safety.list_rules()}
+
+
+@router.post("/content-safety/scan")
+async def content_safety_scan(request: ContentScanRequest):
+    result = _content_safety.scan(request.text, redact=request.redact)
+    return result.to_dict()
+
+
+@router.post("/content-safety/sanitize")
+async def content_safety_sanitize(text: str):
+    cleaned = _content_safety.sanitize(text)
+    return {"sanitized": cleaned}
+
+
+@router.post("/content-safety/check")
+async def content_safety_check(text: str):
+    is_safe, violations = _content_safety.is_safe(text)
+    return {"safe": is_safe, "violations": violations}
+
+
+@router.post("/content-safety/rules/toggle")
+async def content_safety_toggle_rule(rule_id: str, enabled: bool):
+    success = _content_safety.toggle_rule(rule_id, enabled)
+    return {"success": success}
+
+
+# === Title Generator ===
+
+from sparkai.agent.agent_title_generator import TitleGenerator, get_title_generator
+
+_title_generator = get_title_generator()
+
+
+class TitleGenerateRequest(BaseModel):
+    content: str
+    style: str = "descriptive"
+    max_length: int = 80
+
+
+class BatchTitleRequest(BaseModel):
+    contents: List[str]
+
+
+@router.get("/title-generator/stats")
+async def title_generator_stats():
+    return {"stats": _title_generator.get_stats()}
+
+
+@router.post("/title-generator/generate")
+async def title_generator_generate(request: TitleGenerateRequest):
+    from sparkai.agent.agent_title_generator import TitleContext
+    style_map = {"concise": "CONCISE", "descriptive": "DESCRIPTIVE",
+                 "creative": "CREATIVE", "technical": "TECHNICAL"}
+    st = style_map.get(request.style, "DESCRIPTIVE")
+    from sparkai.agent.agent_title_generator import TitleStyle
+    ctx = TitleContext(content=request.content, style=TitleStyle[st],
+                       max_length=request.max_length)
+    title = _title_generator.generate(ctx)
+    return {"title": title}
+
+
+@router.post("/title-generator/batch")
+async def title_generator_batch(request: BatchTitleRequest):
+    titles = _title_generator.batch_generate(request.contents)
+    return {"titles": titles}
+
+
+# === Shell Hooks ===
+
+from sparkai.agent.agent_shell_hooks import ShellHookManager, get_shell_hooks
+
+_shell_hooks = get_shell_hooks()
+
+
+class ShellExecuteRequest(BaseModel):
+    command: str
+    args: List[str] = []
+    cwd: Optional[str] = None
+    timeout: float = 30.0
+
+
+@router.get("/shell-hooks/stats")
+async def shell_hooks_stats():
+    return {"stats": _shell_hooks.get_stats()}
+
+
+@router.get("/shell-hooks/allowlist")
+async def shell_hooks_allowlist():
+    return {"allowlist": _shell_hooks.list_allowlist()}
+
+
+@router.get("/shell-hooks/denylist")
+async def shell_hooks_denylist():
+    return {"denylist": _shell_hooks.list_denylist()}
+
+
+@router.get("/shell-hooks/hooks")
+async def shell_hooks_list():
+    return {"hooks": _shell_hooks.list_hooks()}
+
+
+@router.post("/shell-hooks/execute")
+async def shell_hooks_execute(request: ShellExecuteRequest):
+    from sparkai.agent.agent_shell_hooks import ShellCommand
+    cmd = ShellCommand(command=request.command, args=request.args,
+                       cwd=request.cwd, timeout=request.timeout)
+    result = _shell_hooks.execute(cmd)
+    return result.to_dict()
+
+
+@router.post("/shell-hooks/allowlist/add")
+async def shell_hooks_allowlist_add(command: str):
+    _shell_hooks.add_to_allowlist(command)
+    return {"success": True}
+
+
+@router.post("/shell-hooks/denylist/add")
+async def shell_hooks_denylist_add(command: str):
+    _shell_hooks.add_to_denylist(command)
+    return {"success": True}
+
+
+# === Skill Preprocessor ===
+
+from sparkai.agent.agent_skill_preprocessor import SkillPreprocessor, get_skill_preprocessor
+
+_skill_preprocessor = get_skill_preprocessor()
+
+
+class SkillValidateRequest(BaseModel):
+    skill_id: str
+    params: Dict[str, Any] = {}
+
+
+class SkillRegisterRequest(BaseModel):
+    skill_id: str
+    name: str
+    description: str = ""
+    category: str = "general"
+
+
+@router.get("/skill-preprocessor/stats")
+async def skill_preprocessor_stats():
+    return {"stats": _skill_preprocessor.get_stats()}
+
+
+@router.get("/skill-preprocessor/skills")
+async def skill_preprocessor_skills():
+    return {"skills": _skill_preprocessor.list_skills()}
+
+
+@router.post("/skill-preprocessor/validate")
+async def skill_preprocessor_validate(request: SkillValidateRequest):
+    report = _skill_preprocessor.validate(request.skill_id, request.params)
+    return report.to_dict()
+
+
+@router.post("/skill-preprocessor/prepare")
+async def skill_preprocessor_prepare(request: SkillValidateRequest):
+    ok, normalized, errors = _skill_preprocessor.prepare_context(
+        request.skill_id, request.params)
+    return {"success": ok, "normalized_params": normalized, "errors": errors}
+
+
+# === Inventory System ===
+
+from sparkai.engine.inventory_system import InventorySystem, get_inventory_system
+
+_inventory_system = get_inventory_system()
+
+
+class InventoryCreateRequest(BaseModel):
+    owner_id: str
+    max_slots: int = 20
+    max_weight: float = 100.0
+
+
+class ItemCreateRequest(BaseModel):
+    name: str
+    category: str = "misc"
+    rarity: str = "common"
+
+
+class ItemTransferRequest(BaseModel):
+    source_id: str
+    target_id: str
+    item_id: str
+    quantity: int = 1
+
+
+@router.get("/inventory/stats")
+async def inventory_stats():
+    return {"stats": _inventory_system.get_stats()}
+
+
+@router.post("/inventory/create")
+async def inventory_create(request: InventoryCreateRequest):
+    inv = _inventory_system.create_inventory(request.owner_id,
+                                              request.max_slots, request.max_weight)
+    return inv.to_dict()
+
+
+@router.get("/inventory/{owner_id}")
+async def inventory_get(owner_id: str):
+    inv = _inventory_system.get_inventory(owner_id)
+    if inv:
+        return inv.to_dict()
+    return {"error": f"Inventory for '{owner_id}' not found"}
+
+
+@router.post("/inventory/{owner_id}/add")
+async def inventory_add_item(owner_id: str, item_id: str, quantity: int = 1):
+    inv = _inventory_system.get_or_create_inventory(owner_id)
+    item = _inventory_system.get_item_definition(item_id)
+    if not item:
+        return {"error": f"Item '{item_id}' not found"}
+    added, remaining = inv.add_item(item, quantity)
+    return {"added": added, "remaining": remaining}
+
+
+@router.delete("/inventory/{owner_id}/remove")
+async def inventory_remove_item(owner_id: str, item_id: str, quantity: int = 1):
+    inv = _inventory_system.get_inventory(owner_id)
+    if not inv:
+        return {"error": f"Inventory '{owner_id}' not found"}
+    removed, complete = inv.remove_item(item_id, quantity)
+    return {"removed": removed, "completely_removed": complete}
+
+
+@router.post("/inventory/{owner_id}/equip")
+async def inventory_equip(owner_id: str, item_id: str):
+    inv = _inventory_system.get_inventory(owner_id)
+    if not inv:
+        return {"error": f"Inventory '{owner_id}' not found"}
+    success = inv.equip(item_id)
+    return {"success": success}
+
+
+@router.post("/inventory/transfer")
+async def inventory_transfer(request: ItemTransferRequest):
+    result = _inventory_system.transfer(request.source_id, request.target_id,
+                                         request.item_id, request.quantity)
+    return result.to_dict()
+
+
+@router.post("/inventory/items/register")
+async def inventory_register_item(request: ItemCreateRequest):
+    from sparkai.engine.inventory_system import ItemCategory, ItemRarity
+    cat_map = {"weapon": "WEAPON", "armor": "ARMOR", "consumable": "CONSUMABLE",
+               "key": "KEY_ITEM", "material": "MATERIAL", "quest": "QUEST_ITEM",
+               "tool": "TOOL", "cosmetic": "COSMETIC", "misc": "MISC"}
+    rar_map = {"common": "COMMON", "uncommon": "UNCOMMON", "rare": "RARE",
+               "epic": "EPIC", "legendary": "LEGENDARY", "mythic": "MYTHIC"}
+    cat = ItemCategory[cat_map.get(request.category, "MISC")]
+    rar = ItemRarity[rar_map.get(request.rarity, "COMMON")]
+    item = _inventory_system.create_item(request.name, cat, rar)
+    return item.to_dict()
+
+
+@router.get("/inventory/items/list")
+async def inventory_items_list(category: Optional[str] = None):
+    from sparkai.engine.inventory_system import ItemCategory
+    cat_filter = None
+    if category:
+        try:
+            cat_filter = ItemCategory[category.upper()]
+        except KeyError:
+            pass
+    return {"items": _inventory_system.list_registered_items(cat_filter)}
+
+
+# === Localization System ===
+
+from sparkai.engine.localization_system import LocalizationSystem, get_localization_system
+
+_localization_system = get_localization_system()
+
+
+class LocaleStringRequest(BaseModel):
+    key: str
+    text: str
+    language: Optional[str] = None
+    category: str = "general"
+
+
+class LocaleBulkRequest(BaseModel):
+    entries: Dict[str, str]
+    language: Optional[str] = None
+
+
+class LocaleGetRequest(BaseModel):
+    key: str
+    variables: Optional[Dict[str, Any]] = None
+    fallback: Optional[str] = None
+
+
+@router.get("/localization/stats")
+async def localization_stats():
+    return {"stats": _localization_system.get_stats()}
+
+
+@router.get("/localization/languages")
+async def localization_languages():
+    return {"languages": _localization_system.get_supported_languages()}
+
+
+@router.get("/localization/current")
+async def localization_current():
+    return _localization_system.get_current_language_info()
+
+
+@router.post("/localization/language/set")
+async def localization_set_language(language: str):
+    from sparkai.engine.localization_system import Language
+    try:
+        lang = Language[language.upper()]
+        _localization_system.set_language(lang)
+        return {"success": True, "language": lang.iso_code}
+    except KeyError:
+        return {"error": f"Unknown language: {language}"}
+
+
+@router.get("/localization/string")
+async def localization_get_string(key: str, variables: Optional[str] = None,
+                                   fallback_text: Optional[str] = None):
+    import json
+    vars_dict = json.loads(variables) if variables else None
+    text = _localization_system.get_string(key, variables=vars_dict, fallback_text=fallback_text)
+    return {"key": key, "text": text}
+
+
+@router.post("/localization/string/add")
+async def localization_add_string(request: LocaleStringRequest):
+    _localization_system.add_string(request.key, request.text,
+                                     language=request.language, category=request.category)
+    return {"success": True}
+
+
+@router.post("/localization/bulk/add")
+async def localization_bulk_add(request: LocaleBulkRequest):
+    _localization_system.add_bulk(request.entries, language=request.language)
+    return {"success": True, "count": len(request.entries)}
+
+
+@router.get("/localization/missing")
+async def localization_missing(language: Optional[str] = None):
+    missing = _localization_system.get_missing_translations(language)
+    return {"missing": missing, "count": len(missing)}
+
+
+@router.get("/localization/export")
+async def localization_export(language: Optional[str] = None):
+    return {"json": _localization_system.export_json(language)}
+
+
+@router.post("/localization/import")
+async def localization_import(json_str: str, language: Optional[str] = None):
+    count = _localization_system.import_json(json_str, language)
+    return {"imported": count}
+
+
+# === Achievement System ===
+
+from sparkai.engine.achievement_system import AchievementSystem, get_achievement_system
+
+_achievement_system = get_achievement_system()
+
+
+class AchievementStatUpdate(BaseModel):
+    stat_name: str
+    value: float
+
+
+class AchievementIncrement(BaseModel):
+    stat_name: str
+    amount: float = 1.0
+
+
+@router.get("/achievement/stats")
+async def achievement_stats():
+    return {"stats": _achievement_system.get_stats()}
+
+
+@router.get("/achievement/list")
+async def achievement_list(owner_id: Optional[str] = None):
+    if owner_id:
+        achievements = _achievement_system.get_visible_achievements(owner_id)
+    else:
+        achievements = [a.to_dict() for a in _achievement_system.get_all_achievements()]
+    return {"achievements": achievements}
+
+
+@router.get("/achievement/summary")
+async def achievement_summary(owner_id: str):
+    return _achievement_system.get_unlock_summary(owner_id)
+
+
+@router.post("/achievement/stat/update")
+async def achievement_stat_update(owner_id: str, stat_name: str, value: float):
+    unlocked = _achievement_system.update_stat(owner_id, stat_name, value)
+    return {"newly_unlocked": [a.to_dict() for a in unlocked], "count": len(unlocked)}
+
+
+@router.post("/achievement/stat/increment")
+async def achievement_stat_increment(owner_id: str, stat_name: str, amount: float = 1.0):
+    unlocked = _achievement_system.increment_stat(owner_id, stat_name, amount)
+    return {"newly_unlocked": [a.to_dict() for a in unlocked], "count": len(unlocked)}
+
+
+@router.post("/achievement/check")
+async def achievement_check(owner_id: str):
+    unlocked = _achievement_system.check_achievements(owner_id)
+    return {"newly_unlocked": [a.to_dict() for a in unlocked], "count": len(unlocked)}
+
+
+@router.get("/achievement/unlocked")
+async def achievement_unlocked(owner_id: str):
+    unlocked_list = _achievement_system.get_unlocked_achievements(owner_id)
+    return {"unlocked": [a.to_dict() for a in unlocked_list]}
+
+
+@router.post("/achievement/rewards/grant")
+async def achievement_grant_rewards(owner_id: str, achievement_id: str):
+    result = _achievement_system.grant_rewards(owner_id, achievement_id)
+    return result
+
+
+# === Cloud Sync ===
+
+from sparkai.engine.cloud_sync import CloudSync, get_cloud_sync
+
+_cloud_sync = get_cloud_sync()
+
+
+class CloudSaveCreate(BaseModel):
+    owner_id: str
+    game_id: str
+    data: Dict[str, Any]
+    slot_name: str = "auto"
+
+
+class CloudSaveUpdate(BaseModel):
+    save_id: str
+    data: Dict[str, Any]
+
+
+@router.get("/cloud-sync/stats")
+async def cloud_sync_stats():
+    return {"stats": _cloud_sync.get_stats()}
+
+
+@router.post("/cloud-sync/save/create")
+async def cloud_sync_create_save(request: CloudSaveCreate):
+    save = _cloud_sync.create_save(request.owner_id, request.game_id,
+                                    request.data, request.slot_name)
+    return save.to_summary()
+
+
+@router.get("/cloud-sync/saves/list")
+async def cloud_sync_list_saves(owner_id: Optional[str] = None, game_id: Optional[str] = None):
+    saves = _cloud_sync.list_local_saves(owner_id=owner_id, game_id=game_id)
+    return {"saves": [s.to_summary() for s in saves]}
+
+
+@router.post("/cloud-sync/push")
+async def cloud_sync_push(save_id: str):
+    result = _cloud_sync.push(save_id)
+    return result.to_dict()
+
+
+@router.post("/cloud-sync/pull")
+async def cloud_sync_pull(save_id: str):
+    result = _cloud_sync.pull(save_id)
+    return result.to_dict()
+
+
+@router.post("/cloud-sync/sync")
+async def cloud_sync_sync(save_id: str):
+    result = _cloud_sync.sync(save_id)
+    return result.to_dict()
+
+
+@router.post("/cloud-sync/resolve")
+async def cloud_sync_resolve(save_id: str, choose_local: bool = False):
+    success = _cloud_sync.resolve_conflict(save_id, choose_local=choose_local)
+    return {"success": success}
+
+
+@router.post("/cloud-sync/save/update")
+async def cloud_sync_update_local(request: CloudSaveUpdate):
+    success = _cloud_sync.update_local_save(request.save_id, request.data)
+    return {"success": success}
+
+
+@router.get("/cloud-sync/queue")
+async def cloud_sync_queue():
+    return {"queue_size": _cloud_sync.get_queue_size()}
+
+
+# === Rate Limiter ===
+
+from sparkai.agent.agent_rate_limiter import RateLimiter, LimitStrategy, get_rate_limiter
+
+_rate_limiter = get_rate_limiter()
+_rate_limiter.register_defaults()
+
+
+class RateLimitCheckRequest(BaseModel):
+    endpoint: str
+    request_id: str = ""
+    tokens: int = 1
+
+
+@router.get("/rate-limiter/stats")
+async def rate_limiter_stats():
+    return {"stats": _rate_limiter.get_stats()}
+
+
+@router.post("/rate-limiter/check")
+async def rate_limiter_check(request: RateLimitCheckRequest):
+    allowed, detail = _rate_limiter.allow(request.endpoint, request.request_id, request.tokens)
+    remaining = _rate_limiter.get_remaining(request.endpoint)
+    return {"allowed": allowed, "detail": detail, "remaining": remaining, "endpoint": request.endpoint}
+
+
+@router.post("/rate-limiter/release")
+async def rate_limiter_release(endpoint: str, request_id: str):
+    _rate_limiter.release(endpoint, request_id)
+    return {"success": True, "endpoint": endpoint}
+
+
+# === Retry System ===
+
+from sparkai.agent.agent_retry_system import RetrySystem, RetryStrategy, get_retry_system
+
+_retry_system = get_retry_system()
+_retry_system.register_defaults()
+
+
+@router.get("/retry-system/stats")
+async def retry_system_stats():
+    return {"stats": _retry_system.get_stats()}
+
+
+@router.get("/retry-system/circuit")
+async def retry_system_circuit_stats(operation: str = "default"):
+    state = _retry_system.get_circuit_state(operation)
+    return {"operation": operation, "circuit_state": state}
+
+
+@router.get("/retry-system/operations")
+async def retry_system_operations():
+    return {"operations": _retry_system.list_operations()}
+
+
+@router.post("/retry-system/reset")
+async def retry_system_reset():
+    _retry_system.reset()
+    return {"success": True}
+
+
+# === Web Browser ===
+
+from sparkai.agent.agent_web_browser import WebBrowser, FetchMethod, get_web_browser
+
+_web_browser = get_web_browser()
+
+
+class WebFetchRequest(BaseModel):
+    url: str
+    timeout: Optional[float] = None
+    bypass_cache: bool = False
+
+
+@router.get("/web-browser/stats")
+async def web_browser_stats():
+    return {"stats": _web_browser.get_stats()}
+
+
+@router.post("/web-browser/fetch")
+async def web_browser_fetch(request: WebFetchRequest):
+    result = _web_browser.fetch(request.url, timeout=request.timeout, bypass_cache=request.bypass_cache)
+    return result.to_dict()
+
+
+@router.post("/web-browser/fetch-text")
+async def web_browser_fetch_text(url: str, timeout: Optional[float] = None):
+    text = _web_browser.fetch_text(url, timeout=timeout)
+    return {"url": url, "text": text[:5000] if text else None}
+
+
+@router.get("/web-browser/allowlist")
+async def web_browser_allowlist():
+    stats = _web_browser.get_stats()
+    return {"allowed_domains": stats.get("allowed_domains", 0), "denied_domains": stats.get("denied_domains", 0)}
+
+
+# === Session Search ===
+
+from sparkai.agent.agent_session_search import SessionSearch, SearchScope, SearchQuery, get_session_search
+
+_session_search = get_session_search()
+
+
+class SessionSearchRequest(BaseModel):
+    query: str
+    scope: str = "all"
+    session_id: Optional[str] = None
+    agent_id: Optional[str] = None
+    limit: int = 20
+    case_sensitive: bool = False
+
+
+@router.get("/session-search/stats")
+async def session_search_stats():
+    return {"stats": _session_search.get_stats()}
+
+
+@router.post("/session-search/search")
+async def session_search_query(request: SessionSearchRequest):
+    try:
+        scope = SearchScope[request.scope.upper()]
+    except KeyError:
+        scope = SearchScope.ALL
+    q = SearchQuery(
+        text=request.query,
+        scope=scope,
+        session_id=request.session_id,
+        agent_id=request.agent_id,
+        max_results=request.limit,
+        case_sensitive=request.case_sensitive,
+    )
+    results = _session_search.search(q)
+    return {"results": [r.to_dict() for r in results], "query": request.query}
+
+
+@router.post("/session-search/quick")
+async def session_search_quick(query: str, limit: int = 10):
+    results = _session_search.quick_search(query, limit)
+    return {"results": results, "query": query}
+
+
+@router.post("/session-search/index")
+async def session_search_index(session_id: str, title: str = "", content: str = "", agent_id: str = ""):
+    _session_search.index_session(session_id, title=title, messages=[content] if content else None, agent_id=agent_id)
+    return {"success": True, "session_id": session_id}
+
+
+# === Object Pool System ===
+
+from sparkai.engine.object_pool import ObjectPoolSystem, PoolConfig, get_object_pool_system
+
+_object_pool_system = get_object_pool_system()
+
+
+@router.get("/object-pool/stats")
+async def object_pool_stats():
+    return {"stats": _object_pool_system.get_stats()}
+
+
+@router.get("/object-pool/list")
+async def object_pool_list():
+    return {"pools": _object_pool_system.list_pools()}
+
+
+@router.post("/object-pool/shrink")
+async def object_pool_shrink():
+    result = _object_pool_system.shrink_all()
+    return {"shrunk": result}
+
+
+# === Lighting System ===
+
+from sparkai.engine.lighting_system import LightingSystem, LightType, get_lighting_system
+
+_lighting_system = get_lighting_system()
+
+
+@router.get("/lighting/stats")
+async def lighting_stats():
+    return {"stats": _lighting_system.get_stats()}
+
+
+@router.get("/lighting/lights")
+async def lighting_list_lights():
+    lights = _lighting_system.list_lights()
+    return {"lights": [l.to_dict() for l in lights]}
+
+
+@router.post("/lighting/light/create")
+async def lighting_create_light(
+    name: str = "Light",
+    light_type: str = "POINT",
+    x: float = 0.0,
+    y: float = 0.0,
+    intensity: float = 1.0,
+    radius: float = 200.0,
+):
+    try:
+        lt = LightType[light_type]
+    except KeyError:
+        lt = LightType.POINT
+    light = _lighting_system.create_light(
+        name=name, light_type=lt, position=(x, y),
+        intensity=intensity, radius=radius,
+    )
+    return light.to_dict()
+
+
+@router.post("/lighting/light/position")
+async def lighting_set_position(light_id: str, x: float = 0.0, y: float = 0.0):
+    success = _lighting_system.set_light_position(light_id, x, y)
+    return {"success": success}
+
+
+@router.post("/lighting/light/enable")
+async def lighting_set_enabled(light_id: str, enabled: bool = True):
+    success = _lighting_system.set_light_enabled(light_id, enabled)
+    return {"success": success}
+
+
+@router.delete("/lighting/light/remove")
+async def lighting_remove_light(light_id: str):
+    success = _lighting_system.remove_light(light_id)
+    return {"success": success}
+
+
+@router.post("/lighting/ambient")
+async def lighting_set_ambient(r: float = 0.1, g: float = 0.1, b: float = 0.15, intensity: float = 0.3):
+    _lighting_system.set_ambient((r, g, b, 1.0), intensity)
+    return {"success": True}
+
+
+@router.post("/lighting/enabled")
+async def lighting_toggle(enabled: bool = True):
+    _lighting_system.set_enabled(enabled)
+    return {"enabled": enabled}
+
+
+# === Font System ===
+
+from sparkai.engine.font_system import FontSystem, TextStyle, FontWeight, FontType, get_font_system
+
+_font_system = get_font_system()
+
+
+@router.get("/font/stats")
+async def font_stats():
+    return {"stats": _font_system.get_stats()}
+
+
+@router.get("/font/list")
+async def font_list():
+    fonts = _font_system.list_fonts()
+    return {"fonts": [f.to_dict() for f in fonts]}
+
+
+@router.post("/font/create")
+async def font_create(
+    name: str = "Font",
+    family: str = "sans-serif",
+    weight: str = "REGULAR",
+    default_size: float = 16.0,
+):
+    try:
+        fw = FontWeight[weight]
+    except KeyError:
+        fw = FontWeight.REGULAR
+    font = _font_system.create_font(name=name, family=family, weight=fw, default_size=default_size)
+    return font.to_dict()
+
+
+@router.get("/font/default")
+async def font_default():
+    font_id = _font_system.get_default_font_id()
+    return {"default_font_id": font_id}
+
+
+class FontMeasureRequest(BaseModel):
+    text: str
+    font_id: str = ""
+    font_size: float = 16.0
+    max_width: Optional[float] = None
+    alignment: str = "left"
+
+
+@router.post("/font/measure")
+async def font_measure(request: FontMeasureRequest):
+    from sparkai.engine.font_system import TextAlignment
+    try:
+        alignment = TextAlignment(request.alignment)
+    except ValueError:
+        alignment = TextAlignment.LEFT
+    font_id = request.font_id or _font_system.get_default_font_id()
+    style = TextStyle(font_id=font_id, font_size=request.font_size,
+                       max_width=request.max_width, alignment=alignment)
+    block = _font_system.measure_text(request.text, style)
+    return block.to_dict()
+
+
+@router.post("/font/wrap")
+async def font_wrap(text: str, font_id: str = "", font_size: float = 16.0, max_width: Optional[float] = None):
+    font_id = font_id or _font_system.get_default_font_id()
+    style = TextStyle(font_id=font_id, font_size=font_size, max_width=max_width)
+    lines = _font_system.wrap_text(text, style)
+    return {"lines": lines}
+
+
+# === Plugin System ===
+
+from sparkai.engine.plugin_system import PluginSystem, PluginState, PluginManifest, get_plugin_system
+
+_plugin_system = get_plugin_system()
+
+
+@router.get("/plugin/stats")
+async def plugin_stats():
+    return {"stats": _plugin_system.get_stats()}
+
+
+@router.get("/plugin/list")
+async def plugin_list():
+    return {"plugins": _plugin_system.list_plugins()}
+
+
+@router.get("/plugin/active")
+async def plugin_active():
+    return {"active": _plugin_system.list_active_plugins()}
+
+
+class PluginDiscoverRequest(BaseModel):
+    name: str
+    version: str = "1.0.0"
+    author: str = ""
+    description: str = ""
+    dependencies: List[str] = []
+    hooks: List[str] = []
+    permissions: List[str] = []
+    entry_point: str = ""
+
+
+@router.post("/plugin/discover")
+async def plugin_discover(request: PluginDiscoverRequest):
+    manifest = _plugin_system.discover_manifest(request.dict())
+    _plugin_system.register_plugin(manifest)
+    return manifest.to_dict()
+
+
+@router.post("/plugin/load")
+async def plugin_load(plugin_id: str):
+    success = _plugin_system.load_plugin(plugin_id)
+    return {"success": success, "plugin_id": plugin_id}
+
+
+@router.post("/plugin/activate")
+async def plugin_activate(plugin_id: str):
+    success = _plugin_system.activate_plugin(plugin_id)
+    return {"success": success, "plugin_id": plugin_id}
+
+
+@router.post("/plugin/deactivate")
+async def plugin_deactivate(plugin_id: str):
+    success = _plugin_system.deactivate_plugin(plugin_id)
+    return {"success": success, "plugin_id": plugin_id}
+
+
+@router.post("/plugin/unload")
+async def plugin_unload(plugin_id: str):
+    success = _plugin_system.unload_plugin(plugin_id)
+    return {"success": success, "plugin_id": plugin_id}
+
+
+@router.get("/plugin/validate")
+async def plugin_validate(plugin_id: str):
+    missing = _plugin_system.validate_dependencies(plugin_id)
+    return {"valid": len(missing) == 0, "missing_dependencies": missing}
+
+
+@router.get("/plugin/hooks")
+async def plugin_hooks(hook_name: Optional[str] = None):
+    hooks = _plugin_system._registry.list_hooks(hook_name)
+    return {"hooks": hooks}
+
+
+# === Observability ===
+
+from sparkai.agent.agent_observability import ObservabilitySystem, SpanKind, LogLevel, get_observability
+
+_observability = get_observability()
+
+
+@router.get("/observability/stats")
+async def observability_stats():
+    return {"stats": _observability.get_stats()}
+
+
+@router.get("/observability/metrics")
+async def observability_metrics():
+    return {"metrics": _observability.get_metric_snapshot()}
+
+
+@router.get("/observability/traces")
+async def observability_traces(limit: int = 50):
+    traces = _observability.get_recent_traces(limit)
+    return {"traces": traces}
+
+
+@router.get("/observability/logs")
+async def observability_logs(limit: int = 100, level: Optional[str] = None):
+    try:
+        log_level = LogLevel[level.upper()] if level else None
+    except (KeyError, AttributeError):
+        log_level = None
+    logs = _observability.get_recent_logs(limit, log_level)
+    return {"logs": [l.to_dict() for l in logs]}
+
+
+@router.post("/observability/enabled")
+async def observability_toggle(enabled: bool = True):
+    _observability.set_enabled(enabled)
+    return {"enabled": enabled}
+
+
+# === Output Limiter ===
+
+from sparkai.agent.agent_output_limiter import OutputLimiter, LimitPolicy, get_output_limiter
+
+_output_limiter = get_output_limiter()
+
+
+class LimitContentRequest(BaseModel):
+    content: str
+    content_type: str = "text"
+
+
+@router.get("/output-limiter/stats")
+async def output_limiter_stats():
+    return {"stats": _output_limiter.get_stats()}
+
+
+@router.post("/output-limiter/limit")
+async def output_limiter_limit(request: LimitContentRequest):
+    result = _output_limiter.limit(request.content, request.content_type)
+    return result.to_dict()
+
+
+# === Context Engine ===
+
+from sparkai.agent.agent_context_engine import ContextEngine, ContextStrategy, MessageRole, get_context_engine
+
+_context_engine = get_context_engine()
+
+
+@router.get("/context-engine/stats")
+async def context_engine_stats():
+    return {"stats": _context_engine.get_stats()}
+
+
+@router.post("/context-engine/window/create")
+async def context_window_create(session_id: str, max_tokens: int = 8000, strategy: str = "HYBRID"):
+    try:
+        strat = ContextStrategy[strategy]
+    except KeyError:
+        strat = ContextStrategy.HYBRID
+    window = _context_engine.create_window(session_id, max_tokens, strat)
+    return window.to_dict()
+
+
+@router.post("/context-engine/window/add")
+async def context_window_add(window_id: str, role: str = "user", content: str = "", importance: float = 0.5):
+    try:
+        r = MessageRole[role.upper()]
+    except KeyError:
+        r = MessageRole.USER
+    msg = _context_engine.add_message(window_id, r, content, importance)
+    return msg.to_dict() if msg else None
+
+
+@router.get("/context-engine/window/messages")
+async def context_window_messages(window_id: str):
+    messages = _context_engine.get_messages_for_llm(window_id)
+    return {"messages": messages, "count": len(messages)}
+
+
+# === Skill Discovery ===
+
+from sparkai.agent.agent_skill_discovery import SkillDiscovery, CapabilityDomain, get_skill_discovery
+
+_skill_discovery = get_skill_discovery()
+
+
+@router.get("/skill-discovery/stats")
+async def skill_discovery_stats():
+    return {"stats": _skill_discovery.get_stats()}
+
+
+@router.get("/skill-discovery/discover")
+async def skill_discovery_search(query: str = "", domain: Optional[str] = None):
+    try:
+        dom = CapabilityDomain[domain.upper()] if domain else None
+    except (KeyError, AttributeError):
+        dom = None
+    skills = _skill_discovery.discover(query, dom)
+    return {"skills": [s.to_dict() for s in skills], "count": len(skills)}
+
+
+@router.get("/skill-discovery/domains")
+async def skill_discovery_domains():
+    return {"domains": _skill_discovery.list_domains()}
+
+
+@router.get("/skill-discovery/tags")
+async def skill_discovery_tags():
+    return {"tags": _skill_discovery.list_tags()}
+
+
+@router.get("/skill-discovery/context")
+async def skill_discovery_context(domain: Optional[str] = None):
+    try:
+        dom = CapabilityDomain[domain.upper()] if domain else None
+    except (KeyError, AttributeError):
+        dom = None
+    ctx = _skill_discovery.get_for_llm_context(dom)
+    return {"context": ctx}
+
+
+# === Effects System ===
+
+from sparkai.engine.effects_system import EffectsSystem, EffectType, EffectBlend, EffectConfig, get_effects_system
+
+_effects_system = get_effects_system()
+
+
+@router.get("/effects/stats")
+async def effects_stats():
+    return {"stats": _effects_system.get_stats()}
+
+
+@router.get("/effects/stacks")
+async def effects_stacks():
+    stacks = _effects_system.list_stacks()
+    return {"stacks": [s.to_dict() for s in stacks]}
+
+
+@router.post("/effects/stack/create")
+async def effects_stack_create(name: str = "Stack", target_id: str = "", target_type: str = "layer"):
+    stack = _effects_system.create_stack(name, target_id, target_type)
+    return stack.to_dict()
+
+
+@router.post("/effects/add")
+async def effects_add(stack_id: str, preset_name: str = "bloom_soft"):
+    instance = _effects_system.add_effect_by_preset(stack_id, preset_name)
+    return instance.to_dict() if instance else {"error": "Preset not found"}
+
+
+@router.post("/effects/toggle")
+async def effects_toggle(stack_id: str, instance_id: str, enabled: bool = True):
+    success = _effects_system.set_effect_enabled(stack_id, instance_id, enabled)
+    return {"success": success}
+
+
+@router.post("/effects/intensity")
+async def effects_intensity(stack_id: str, instance_id: str, intensity: float = 1.0):
+    success = _effects_system.set_effect_intensity(stack_id, instance_id, intensity)
+    return {"success": success}
+
+
+@router.get("/effects/presets")
+async def effects_presets():
+    return {"presets": _effects_system.list_presets()}
+
+
+# === Input Mapping ===
+
+from sparkai.engine.input_mapping import InputMappingSystem, InputDevice, get_input_mapping
+
+_input_mapping = get_input_mapping()
+
+
+@router.get("/input-mapping/stats")
+async def input_mapping_stats():
+    return {"stats": _input_mapping.get_stats()}
+
+
+@router.get("/input-mapping/contexts")
+async def input_mapping_contexts():
+    return {"contexts": [c.to_dict() for c in _input_mapping.list_contexts()]}
+
+
+@router.post("/input-mapping/context/create")
+async def input_mapping_context_create(name: str = "Context", priority: int = 0):
+    ctx = _input_mapping.create_context(name, priority)
+    return ctx.to_dict()
+
+
+@router.get("/input-mapping/bindings")
+async def input_mapping_bindings(context_id: Optional[str] = None):
+    bindings = _input_mapping.list_bindings(context_id)
+    return {"bindings": [b.to_dict() for b in bindings]}
+
+
+@router.get("/input-mapping/actions")
+async def input_mapping_actions():
+    actions = list(_input_mapping._action_states.keys()) or [
+        "move_up", "move_down", "move_left", "move_right", "jump", "interact", "pause"
+    ]
+    return {"actions": actions}
+
+
+# === Undo/Redo System ===
+
+from sparkai.engine.undo_redo_system import UndoRedoSystem, CommandTarget, get_undo_redo_system
+
+_undo_redo_system = get_undo_redo_system()
+
+
+@router.get("/undo-redo/stats")
+async def undo_redo_stats():
+    return {"stats": _undo_redo_system.get_stats()}
+
+
+@router.post("/undo-redo/undo")
+async def undo_redo_undo():
+    cmd = _undo_redo_system.undo()
+    return {"command": cmd.to_dict() if cmd else None, "can_undo": _undo_redo_system.can_undo()}
+
+
+@router.post("/undo-redo/redo")
+async def undo_redo_redo():
+    cmd = _undo_redo_system.redo()
+    return {"command": cmd.to_dict() if cmd else None, "can_redo": _undo_redo_system.can_redo()}
+
+
+@router.get("/undo-redo/state")
+async def undo_redo_state():
+    return {
+        "can_undo": _undo_redo_system.can_undo(),
+        "can_redo": _undo_redo_system.can_redo(),
+        "undo_label": _undo_redo_system.get_undo_label(),
+        "redo_label": _undo_redo_system.get_redo_label(),
+    }
+
+
+@router.post("/undo-redo/clear")
+async def undo_redo_clear():
+    _undo_redo_system.clear_history()
+    return {"success": True}
+
+
+# === Sprite Sheet ===
+
+from sparkai.engine.sprite_sheet import SpriteSheetSystem, SheetLayout, LoopMode, get_sprite_sheet_system
+
+_sprite_sheet = get_sprite_sheet_system()
+
+
+@router.get("/sprite-sheet/stats")
+async def sprite_sheet_stats():
+    return {"stats": _sprite_sheet.get_stats()}
+
+
+@router.get("/sprite-sheet/list")
+async def sprite_sheet_list():
+    sheets = _sprite_sheet.list_sheets()
+    return {"sheets": [s.to_dict() for s in sheets]}
+
+
+@router.post("/sprite-sheet/create")
+async def sprite_sheet_create(
+    name: str = "Sheet",
+    texture_width: int = 256,
+    texture_height: int = 256,
+    grid_cols: int = 8,
+    grid_rows: int = 8,
+    cell_width: int = 32,
+    cell_height: int = 32,
+):
+    sheet = _sprite_sheet.create_sheet(
+        name, texture_width, texture_height,
+        grid_cols, grid_rows, cell_width, cell_height,
+    )
+    return sheet.to_dict()
+
+
+@router.post("/sprite-sheet/clip/create")
+async def sprite_sheet_clip_create(
+    sheet_id: str,
+    name: str = "idle",
+    frame_indices: str = "0,1,2,3",
+    loop_mode: str = "LOOP",
+    speed_multiplier: float = 1.0,
+):
+    import json
+    try:
+        indices = json.loads(frame_indices)
+    except json.JSONDecodeError:
+        indices = [int(x.strip()) for x in frame_indices.split(",") if x.strip().isdigit()]
+    try:
+        lm = LoopMode[loop_mode]
+    except KeyError:
+        lm = LoopMode.LOOP
+    clip = _sprite_sheet.create_clip(sheet_id, name, indices, lm, speed_multiplier)
+    return clip.to_dict() if clip else {"error": "Clip creation failed"}
+
+
+@router.post("/sprite-sheet/play")
+async def sprite_sheet_play(entity_id: str, sheet_id: str, clip_name: str, speed: float = 1.0):
+    success = _sprite_sheet.play(entity_id, sheet_id, clip_name, speed)
+    return {"success": success}
+
+
+@router.post("/sprite-sheet/pause")
+async def sprite_sheet_pause(entity_id: str):
+    success = _sprite_sheet.pause(entity_id)
+    return {"success": success}
+
+
+@router.post("/sprite-sheet/stop")
+async def sprite_sheet_stop(entity_id: str):
+    success = _sprite_sheet.stop(entity_id)
+    return {"success": success}
