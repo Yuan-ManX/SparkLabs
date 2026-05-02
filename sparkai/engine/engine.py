@@ -18,6 +18,41 @@ from sparkai.engine.ecs.entity import Entity
 from sparkai.engine.ecs.component import Component, ComponentRegistry
 from sparkai.engine.ecs.system import System, SystemRegistry
 from sparkai.engine.ecs.resource import ResourceManager
+from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
+from sparkai.engine.signal_system import SignalBus, get_signal_bus
+from sparkai.engine.animation_system import AnimationPlayer, get_animation_player
+from sparkai.engine.collision_system import CollisionSystem, get_collision_system
+from sparkai.engine.input_manager import InputManager, get_input_manager
+from sparkai.engine.physics_system import PhysicsSystem, get_physics_system
+from sparkai.engine.particle_system import ParticleSystem, get_particle_system
+from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding
+from sparkai.engine.audio_system import AudioSystem, get_audio_system
+from sparkai.engine.state_machine import StateMachine, get_state_machine
+from sparkai.engine.resource_manager import ResourceManager as EngineResourceManager, get_resource_manager
+from sparkai.engine.behavior_system import BehaviorSystem, get_behavior_system
+from sparkai.engine.tilemap_system import TilemapSystem, get_tilemap_system
+from sparkai.engine.camera_system import CameraSystem, get_camera_system
+from sparkai.engine.serialization import Serializer, get_serializer
+from sparkai.engine.ui_system import UISystem, get_ui_system
+from sparkai.engine.layer_system import LayerSystem, get_layer_system
+from sparkai.engine.profiler import Profiler, get_profiler
+from sparkai.engine.event_scripting import EventScriptingSystem, get_event_scripting_system
+from sparkai.engine.scene_tree import SceneTree, get_scene_tree
+from sparkai.engine.shader_system import ShaderSystem, get_shader_system
+from sparkai.engine.variable_system import VariableSystem, get_variable_system
+from sparkai.engine.resource_loader import ResourceLoader, get_resource_loader
+from sparkai.engine.inventory_system import InventorySystem, get_inventory_system
+from sparkai.engine.localization_system import LocalizationSystem, get_localization_system
+from sparkai.engine.achievement_system import AchievementSystem, get_achievement_system
+from sparkai.engine.cloud_sync import CloudSync, get_cloud_sync
+from sparkai.engine.object_pool import ObjectPoolSystem, get_object_pool_system
+from sparkai.engine.lighting_system import LightingSystem, get_lighting_system
+from sparkai.engine.font_system import FontSystem, get_font_system
+from sparkai.engine.plugin_system import PluginSystem, get_plugin_system
+from sparkai.engine.effects_system import EffectsSystem, get_effects_system
+from sparkai.engine.input_mapping import InputMappingSystem, get_input_mapping
+from sparkai.engine.undo_redo_system import UndoRedoSystem, get_undo_redo_system
+from sparkai.engine.sprite_sheet import SpriteSheetSystem, get_sprite_sheet_system
 
 
 class SparkEngine:
@@ -40,6 +75,78 @@ class SparkEngine:
         self._frame_count: int = 0
         self._scenes: Dict[str, "Scene"] = {}
         self._active_scene_id: Optional[str] = None
+        self._game_loop: GameLoop = get_game_loop()
+        self._signal_bus: SignalBus = get_signal_bus()
+        self._animation_player: AnimationPlayer = get_animation_player()
+        self._collision_system: CollisionSystem = get_collision_system()
+        self._input_manager: InputManager = get_input_manager()
+        self._physics_system: PhysicsSystem = get_physics_system()
+        self._particle_system: ParticleSystem = get_particle_system()
+        self._pathfinding: PathfindingSystem = get_pathfinding()
+        self._audio_system: AudioSystem = get_audio_system()
+        self._state_machine: StateMachine = get_state_machine()
+        self._engine_resource_manager: EngineResourceManager = get_resource_manager()
+        self._behavior_system: BehaviorSystem = get_behavior_system()
+        self._tilemap_system: TilemapSystem = get_tilemap_system()
+        self._camera_system: CameraSystem = get_camera_system()
+        self._serializer: Serializer = get_serializer()
+        self._ui_system: UISystem = get_ui_system()
+        self._layer_system: LayerSystem = get_layer_system()
+        self._profiler: Profiler = get_profiler()
+        self._event_scripting: EventScriptingSystem = get_event_scripting_system()
+        self._scene_tree: SceneTree = get_scene_tree()
+        self._shader_system: ShaderSystem = get_shader_system()
+        self._variable_system: VariableSystem = get_variable_system()
+        self._resource_loader: ResourceLoader = get_resource_loader()
+        self._inventory_system: InventorySystem = get_inventory_system()
+        self._localization_system: LocalizationSystem = get_localization_system()
+        self._achievement_system: AchievementSystem = get_achievement_system()
+        self._cloud_sync: CloudSync = get_cloud_sync()
+        self._object_pool_system: ObjectPoolSystem = get_object_pool_system()
+        self._lighting_system: LightingSystem = get_lighting_system()
+        self._font_system: FontSystem = get_font_system()
+        self._plugin_system: PluginSystem = get_plugin_system()
+        self._effects_system: EffectsSystem = get_effects_system()
+        self._input_mapping: InputMappingSystem = get_input_mapping()
+        self._undo_redo_system: UndoRedoSystem = get_undo_redo_system()
+        self._sprite_sheet: SpriteSheetSystem = get_sprite_sheet_system()
+        self._wire_engine_phases()
+
+    def _wire_engine_phases(self) -> None:
+        self._game_loop.register_phase_handler(
+            ExecutionPhase.INPUT,
+            lambda dt, stats: self._input_manager.post_update(),
+        )
+        self._game_loop.register_phase_handler(
+            ExecutionPhase.STEP,
+            lambda dt, stats: self._step_simulation(dt),
+        )
+
+    def _step_simulation(self, dt: float) -> None:
+        self._physics_system.step(dt)
+        self._particle_system.update(dt)
+        self._behavior_system.step_pre(dt)
+        self._tick_worlds(dt)
+        self._behavior_system.step_post(dt)
+        self._game_loop.register_phase_handler(
+            ExecutionPhase.POST_STEP,
+            lambda dt, stats: self._update_collision_and_animation(dt),
+        )
+        self._game_loop.register_phase_handler(
+            ExecutionPhase.CLEANUP,
+            lambda dt, stats: self._signal_bus.flush_deferred(),
+        )
+
+    def _tick_worlds(self, dt: float) -> None:
+        for world in self._worlds.values():
+            world.tick(dt)
+        scene = self.get_active_scene()
+        if scene:
+            scene.update(dt)
+
+    def _update_collision_and_animation(self, dt: float) -> None:
+        self._collision_system.update()
+        self._animation_player.update(dt)
 
     @classmethod
     def get_instance(cls) -> "SparkEngine":
@@ -119,22 +226,22 @@ class SparkEngine:
         self._running = True
         for world in self._worlds.values():
             world.start()
+        self._game_loop.start()
 
     def stop(self) -> None:
         self._running = False
         for world in self._worlds.values():
             world.stop()
+        self._game_loop.stop()
 
     def update(self, delta_time: Optional[float] = None) -> None:
         if not self._running:
             return
         self._delta_time = delta_time or self._delta_time
         self._frame_count += 1
-        for world in self._worlds.values():
-            world.tick(self._delta_time)
-        scene = self.get_active_scene()
-        if scene:
-            scene.update(self._delta_time)
+        stats = self._game_loop.tick()
+        if stats:
+            self._frame_count = stats.frame_count
 
     def get_status(self) -> Dict[str, Any]:
         return {
@@ -148,7 +255,166 @@ class SparkEngine:
             "component_types": ComponentRegistry.list_types(),
             "system_types": SystemRegistry.list_types(),
             "resource_count": self._resource_manager.count,
+            "game_loop": self._game_loop.get_statistics(),
+            "signal_bus_connections": self._signal_bus.get_connection_count(),
+            "animation_state": self._animation_player.get_status(),
+            "collision_colliders": len(self._collision_system._colliders),
+            "input_snapshot": self._input_manager.get_snapshot(),
+            "physics": self._physics_system.get_stats(),
+            "particles": self._particle_system.get_stats(),
+            "pathfinding": self._pathfinding.get_stats(),
+            "audio": self._audio_system.get_stats(),
+            "state_machine": self._state_machine.get_stats(),
+            "resources": self._engine_resource_manager.get_stats(),
+            "behaviors": self._behavior_system.get_stats(),
+            "tilemap": self._tilemap_system.get_stats(),
+            "camera": self._camera_system.get_stats(),
+            "serializer": self._serializer.get_stats(),
+            "ui": self._ui_system.get_stats(),
+            "layer": self._layer_system.get_stats(),
+            "profiler": self._profiler.get_snapshot(),
+            "event_scripting": self._event_scripting.get_stats(),
+            "scene_tree": self._scene_tree.get_stats(),
+            "shader_system": self._shader_system.get_stats(),
+            "variable_system": self._variable_system.get_stats(),
+            "resource_loader": self._resource_loader.get_stats(),
+            "inventory_system": self._inventory_system.get_stats(),
+            "localization_system": self._localization_system.get_stats(),
+            "achievement_system": self._achievement_system.get_stats(),
+            "cloud_sync": self._cloud_sync.get_stats(),
+            "object_pool": self._object_pool_system.get_stats(),
+            "lighting_system": self._lighting_system.get_stats(),
+            "font_system": self._font_system.get_stats(),
+            "plugin_system": self._plugin_system.get_stats(),
+            "effects_system": self._effects_system.get_stats(),
+            "input_mapping": self._input_mapping.get_stats(),
+            "undo_redo_system": self._undo_redo_system.get_stats(),
+            "sprite_sheet": self._sprite_sheet.get_stats(),
         }
+
+    @property
+    def game_loop(self) -> GameLoop:
+        return self._game_loop
+
+    @property
+    def signal_bus(self) -> SignalBus:
+        return self._signal_bus
+
+    @property
+    def animation_player(self) -> AnimationPlayer:
+        return self._animation_player
+
+    @property
+    def collision_system(self) -> CollisionSystem:
+        return self._collision_system
+
+    @property
+    def input_manager(self) -> InputManager:
+        return self._input_manager
+
+    @property
+    def physics_system(self) -> PhysicsSystem:
+        return self._physics_system
+
+    @property
+    def particle_system(self) -> ParticleSystem:
+        return self._particle_system
+
+    @property
+    def pathfinding(self) -> PathfindingSystem:
+        return self._pathfinding
+
+    @property
+    def audio_system(self) -> AudioSystem:
+        return self._audio_system
+
+    @property
+    def state_machine(self) -> StateMachine:
+        return self._state_machine
+
+    @property
+    def engine_resource_manager(self) -> EngineResourceManager:
+        return self._engine_resource_manager
+
+    @property
+    def behavior_system(self) -> BehaviorSystem:
+        return self._behavior_system
+
+    @property
+    def tilemap_system(self) -> TilemapSystem:
+        return self._tilemap_system
+
+    @property
+    def camera_system(self) -> CameraSystem:
+        return self._camera_system
+
+    @property
+    def serializer(self) -> Serializer:
+        return self._serializer
+
+    @property
+    def ui_system(self) -> UISystem:
+        return self._ui_system
+
+    @property
+    def layer_system(self) -> LayerSystem:
+        return self._layer_system
+
+    @property
+    def profiler(self) -> Profiler:
+        return self._profiler
+
+    @property
+    def event_scripting(self) -> EventScriptingSystem:
+        return self._event_scripting
+
+    @property
+    def scene_tree(self) -> SceneTree:
+        return self._scene_tree
+
+    @property
+    def shader_system(self) -> ShaderSystem:
+        return self._shader_system
+
+    @property
+    def variable_system(self) -> VariableSystem:
+        return self._variable_system
+
+    @property
+    def resource_loader(self) -> ResourceLoader:
+        return self._resource_loader
+
+    @property
+    def inventory_system(self) -> InventorySystem:
+        return self._inventory_system
+
+    @property
+    def localization_system(self) -> LocalizationSystem:
+        return self._localization_system
+
+    @property
+    def achievement_system(self) -> AchievementSystem:
+        return self._achievement_system
+
+    @property
+    def cloud_sync(self) -> CloudSync:
+        return self._cloud_sync
+
+    @property
+    def object_pool_system(self) -> ObjectPoolSystem:
+        return self._object_pool_system
+
+    @property
+    def lighting_system(self) -> LightingSystem:
+        return self._lighting_system
+
+    @property
+    def font_system(self) -> FontSystem:
+        return self._font_system
+
+    @property
+    def plugin_system(self) -> PluginSystem:
+        return self._plugin_system
 
 
 @dataclass
