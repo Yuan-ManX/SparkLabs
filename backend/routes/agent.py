@@ -69,6 +69,14 @@ from sparkai.agent.agent_validator import ValidatorEngine, ValidationCategory, V
 from sparkai.agent.agent_orchestrator import OrchestratorEngine, AgentDescriptor, OrchestratedTask, AgentChannel, WorkflowPlan, AgentRole as OrchAgentRole, AgentCapability as OrchAgentCapability, TaskPriority, TaskStatus, WorkflowState, ChannelType, get_orchestrator_engine
 from sparkai.agent.agent_skill_evolution import SkillEvolutionEngine, SkillTemplate, DebugProtocol, SkillExecution, EvolutionCycle, SkillDomain, SkillMaturity as EvolSkillMaturity, ExecutionOutcome, FixStatus as EvolFixStatus, EvolutionType, get_skill_evolution_engine
 from sparkai.agent.agent_evaluator import GameEvaluatorEngine, EvaluationMetric, EvaluationReport, EvaluationBenchmark, EvalDimension, MetricType as EvalMetricType, ReportStatus, SeverityLevel as EvalSeverityLevel, get_game_evaluator
+from sparkai.agent.agent_prompt_cache import PromptCache, get_prompt_cache
+from sparkai.agent.agent_trajectory_recorder import TrajectoryRecorder, get_trajectory_recorder
+from sparkai.agent.agent_checkpoint_system import CheckpointSystem, get_checkpoint_system
+from sparkai.agent.agent_budget_tracker import BudgetTracker, get_budget_tracker
+from sparkai.engine.tween_system import TweenSystem, EasingType, TweenLoopMode, get_tween_system
+from sparkai.engine.node_path_system import NodePathSystem, get_node_path_system
+from sparkai.engine.project_template import ProjectTemplateSystem, GameGenre, get_project_template_system
+from sparkai.engine.asset_pipeline import AssetPipeline, AssetCategory, AssetFormat, get_asset_pipeline
 
 router = APIRouter()
 
@@ -7699,3 +7707,291 @@ async def sprite_sheet_pause(entity_id: str):
 async def sprite_sheet_stop(entity_id: str):
     success = _sprite_sheet.stop(entity_id)
     return {"success": success}
+
+
+# === Prompt Cache ===
+
+_prompt_cache = get_prompt_cache()
+
+
+@router.get("/prompt-cache/stats")
+async def prompt_cache_stats():
+    return _prompt_cache.get_stats()
+
+
+@router.post("/prompt-cache/clear")
+async def prompt_cache_clear():
+    _prompt_cache.clear()
+    return {"success": True}
+
+
+@router.post("/prompt-cache/invalidate")
+async def prompt_cache_invalidate(fingerprint: str):
+    _prompt_cache.invalidate(fingerprint)
+    return {"success": True}
+
+
+@router.get("/prompt-cache/hit-rate")
+async def prompt_cache_hit_rate():
+    return {"hit_rate": _prompt_cache.get_hit_rate()}
+
+
+# === Trajectory Recorder ===
+
+_trajectory_recorder = get_trajectory_recorder()
+
+
+@router.get("/trajectory/stats")
+async def trajectory_stats():
+    return _trajectory_recorder.get_stats()
+
+
+@router.get("/trajectory/sessions")
+async def trajectory_sessions():
+    return {"sessions": _trajectory_recorder.list_sessions()}
+
+
+@router.get("/trajectory/sessions/{session_id}")
+async def trajectory_session(session_id: str):
+    session = _trajectory_recorder.get_session(session_id)
+    if session:
+        return session.to_dict()
+    return {"error": "Session not found"}
+
+
+@router.post("/trajectory/sessions/{session_id}/export")
+async def trajectory_export(session_id: str):
+    data = _trajectory_recorder.export_session(session_id)
+    if data:
+        return data
+    return {"error": "Session not found"}
+
+
+# === Checkpoint System ===
+
+_checkpoint_system_agent = get_checkpoint_system()
+
+
+@router.get("/checkpoint-system/stats")
+async def checkpoint_system_stats():
+    return _checkpoint_system_agent.get_stats()
+
+
+@router.get("/checkpoint-system/chains")
+async def checkpoint_system_chains():
+    return {"chains": _checkpoint_system_agent.list_chains()}
+
+
+@router.post("/checkpoint-system/create")
+async def checkpoint_system_create(chain_id: str, label: str = "", scope: str = "FULL"):
+    from sparkai.agent.agent_checkpoint_system import CheckpointScope
+    try:
+        sc = CheckpointScope[scope.upper()]
+    except KeyError:
+        sc = CheckpointScope.FULL
+    cp = _checkpoint_system_agent.create_checkpoint(chain_id, label, sc)
+    if cp:
+        return {"checkpoint_id": cp.checkpoint_id, "chain_id": chain_id}
+    return {"error": "No state collectors registered"}
+
+
+@router.post("/checkpoint-system/restore")
+async def checkpoint_system_restore(chain_id: str, checkpoint_id: str):
+    success = _checkpoint_system_agent.restore_checkpoint(chain_id, checkpoint_id)
+    return {"success": success}
+
+
+@router.post("/checkpoint-system/rollback")
+async def checkpoint_system_rollback(chain_id: str):
+    checkpoint = _checkpoint_system_agent.rollback(chain_id)
+    if checkpoint:
+        return checkpoint.to_dict()
+    return {"error": "Cannot rollback"}
+
+
+# === Budget Tracker ===
+
+_budget_tracker = get_budget_tracker()
+
+
+@router.get("/budget-tracker/stats")
+async def budget_tracker_stats():
+    return _budget_tracker.get_all_usage()
+
+
+@router.get("/budget-tracker/session/{session_id}")
+async def budget_tracker_session(session_id: str):
+    return _budget_tracker.get_session_usage(session_id)
+
+
+@router.post("/budget-tracker/record")
+async def budget_tracker_record(session_id: str, tokens_input: int = 0, tokens_output: int = 0, model: str = "default"):
+    alerts = _budget_tracker.record_usage(session_id, tokens_input, tokens_output, model)
+    return {"alerts": {scope.value: level.value for scope, level in alerts.items()}}
+
+
+@router.get("/budget-tracker/check/{session_id}")
+async def budget_tracker_check(session_id: str, tokens: int = 0):
+    can = _budget_tracker.can_proceed(session_id, tokens)
+    return {"can_proceed": can}
+
+
+@router.get("/budget-tracker/alerts")
+async def budget_tracker_alerts():
+    return {"alerts": [a.to_dict() for a in _budget_tracker.get_recent_alerts()]}
+
+
+# === Tween System ===
+
+_tween_system = get_tween_system()
+
+
+@router.get("/tween/stats")
+async def tween_stats():
+    return _tween_system.get_stats()
+
+
+@router.get("/tween/list")
+async def tween_list():
+    return {"tweens": _tween_system.list_tweens()}
+
+
+@router.post("/tween/create")
+async def tween_create(target_id: str, property_name: str, start_value: float, end_value: float,
+                       duration: float = 1.0, easing: str = "LINEAR", loop_mode: str = "ONCE",
+                       delay: float = 0.0):
+    tid = _tween_system.create(target_id, property_name, start_value, end_value,
+                               duration, easing, delay, loop_mode)
+    return {"tween_id": tid}
+
+
+@router.post("/tween/pause")
+async def tween_pause(tween_id: str):
+    _tween_system.pause(tween_id)
+    return {"success": True}
+
+
+@router.post("/tween/resume")
+async def tween_resume(tween_id: str):
+    _tween_system.resume(tween_id)
+    return {"success": True}
+
+
+@router.post("/tween/cancel")
+async def tween_cancel(tween_id: str):
+    _tween_system.cancel(tween_id)
+    return {"success": True}
+
+
+# === Node Path System ===
+
+_node_path_system = get_node_path_system()
+
+
+@router.get("/node-path/stats")
+async def node_path_stats():
+    return _node_path_system.get_stats()
+
+
+@router.post("/node-path/parse")
+async def node_path_parse(path_str: str):
+    path = _node_path_system.parse(path_str)
+    if path:
+        return path.to_dict()
+    return {"error": "Invalid path"}
+
+
+@router.post("/node-path/resolve")
+async def node_path_resolve(path_str: str, root_object_id: str):
+    results = _node_path_system.resolve(path_str, {"object_id": root_object_id})
+    return {"results": results}
+
+
+@router.post("/node-path/alias")
+async def node_path_alias(name: str, path_str: str):
+    _node_path_system.register_alias(name, path_str)
+    return {"success": True}
+
+
+@router.get("/node-path/aliases")
+async def node_path_aliases():
+    return {"aliases": _node_path_system.list_aliases()}
+
+
+# === Project Template System ===
+
+_project_template_system = get_project_template_system()
+
+
+@router.get("/project-templates/stats")
+async def project_templates_stats():
+    return _project_template_system.get_stats()
+
+
+@router.get("/project-templates/genres")
+async def project_templates_genres():
+    return {"genres": _project_template_system.list_genres()}
+
+
+@router.get("/project-templates/list")
+async def project_templates_list(genre: Optional[str] = None):
+    templates = _project_template_system.list_by_genre(genre) if genre else _project_template_system.list_all()
+    return {"templates": [t.to_dict() for t in templates]}
+
+
+@router.get("/project-templates/{template_id}")
+async def project_template_detail(template_id: str):
+    template = _project_template_system.get(template_id)
+    if template:
+        return template.to_dict()
+    return {"error": "Template not found"}
+
+
+# === Asset Pipeline ===
+
+_asset_pipeline = get_asset_pipeline()
+
+
+@router.get("/asset-pipeline/stats")
+async def asset_pipeline_stats():
+    return _asset_pipeline.get_stats()
+
+
+@router.get("/asset-pipeline/assets")
+async def asset_pipeline_assets():
+    return {"assets": _asset_pipeline.list_assets()}
+
+
+@router.get("/asset-pipeline/categories")
+async def asset_pipeline_categories():
+    return {"categories": _asset_pipeline.list_categories()}
+
+
+@router.post("/asset-pipeline/register")
+async def asset_pipeline_register(name: str, category: str, format: str, description: str = "",
+                                  source_path: str = "", tags: Optional[List[str]] = None):
+    aid = _asset_pipeline.register_asset(name, category, format, description, source_path, tags or [])
+    return {"asset_id": aid}
+
+
+@router.get("/asset-pipeline/search")
+async def asset_pipeline_search(query: str):
+    results = _asset_pipeline.search(query)
+    return {"results": [r.to_dict() for r in results]}
+
+
+@router.get("/asset-pipeline/category/{category}")
+async def asset_pipeline_by_category(category: str):
+    assets = _asset_pipeline.get_by_category(category)
+    return {"assets": [a.to_dict() for a in assets]}
+
+
+@router.post("/asset-pipeline/bundle")
+async def asset_pipeline_bundle(name: str, asset_ids: List[str]):
+    bid = _asset_pipeline.create_bundle(name, asset_ids)
+    return {"bundle_id": bid}
+
+
+@router.get("/asset-pipeline/import-history")
+async def asset_pipeline_import_history():
+    return {"history": _asset_pipeline.get_import_history()}

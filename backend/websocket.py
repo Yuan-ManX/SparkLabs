@@ -1031,6 +1031,194 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "sprite_sheet_error", "error": str(e)})
 
+                elif msg_type == "prompt_cache":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.agent.agent_prompt_cache import get_prompt_cache
+                        pc = get_prompt_cache()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "prompt_cache_stats", "data": pc.get_stats()})
+                        elif action == "hit_rate":
+                            await manager.send_to_client(client_id, {"type": "prompt_cache_hit_rate", "data": pc.get_hit_rate()})
+                        elif action == "clear":
+                            pc.clear()
+                            await manager.send_to_client(client_id, {"type": "prompt_cache_cleared", "data": {"success": True}})
+                        elif action == "invalidate":
+                            pc.invalidate(message.get("fingerprint", ""))
+                            await manager.send_to_client(client_id, {"type": "prompt_cache_invalidated", "data": {"success": True}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "prompt_cache_error", "error": str(e)})
+
+                elif msg_type == "trajectory":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.agent.agent_trajectory_recorder import get_trajectory_recorder
+                        tr = get_trajectory_recorder()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "trajectory_stats", "data": tr.get_stats()})
+                        elif action == "sessions":
+                            await manager.send_to_client(client_id, {"type": "trajectory_sessions", "data": tr.list_sessions()})
+                        elif action == "export":
+                            data = tr.export_session(message.get("session_id", ""))
+                            await manager.send_to_client(client_id, {"type": "trajectory_exported", "data": data or {}})
+                        elif action == "record":
+                            evt = tr.record_event(message.get("event_type", "ENGINE_ACTION"), message.get("data", {}),
+                                                  message.get("session_id", "default"))
+                            await manager.broadcast_agent_event("trajectory_event", {"event_id": evt.event_id if evt else None})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "trajectory_error", "error": str(e)})
+
+                elif msg_type == "checkpoint_sys":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.agent.agent_checkpoint_system import get_checkpoint_system
+                        cs = get_checkpoint_system()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "checkpoint_sys_stats", "data": cs.get_stats()})
+                        elif action == "chains":
+                            await manager.send_to_client(client_id, {"type": "checkpoint_sys_chains", "data": cs.list_chains()})
+                        elif action == "create":
+                            cp = cs.create_checkpoint(message.get("chain_id", "default"), message.get("label", ""),
+                                                       message.get("scope", "FULL"))
+                            await manager.send_to_client(client_id, {"type": "checkpoint_sys_created",
+                                "data": {"checkpoint_id": cp.checkpoint_id if cp else None}})
+                        elif action == "rollback":
+                            cp = cs.rollback(message.get("chain_id", "default"))
+                            await manager.send_to_client(client_id, {"type": "checkpoint_sys_rolled_back",
+                                "data": cp.to_dict() if cp else {"error": "Cannot rollback"}})
+                        elif action == "restore":
+                            success = cs.restore_checkpoint(message.get("chain_id", "default"), message.get("checkpoint_id", ""))
+                            await manager.send_to_client(client_id, {"type": "checkpoint_sys_restored", "data": {"success": success}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "checkpoint_sys_error", "error": str(e)})
+
+                elif msg_type == "budget_tracker":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.agent.agent_budget_tracker import get_budget_tracker
+                        bt = get_budget_tracker()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "budget_tracker_stats", "data": bt.get_all_usage()})
+                        elif action == "session":
+                            await manager.send_to_client(client_id, {"type": "budget_tracker_session",
+                                "data": bt.get_session_usage(message.get("session_id", "default"))})
+                        elif action == "check":
+                            can = bt.can_proceed(message.get("session_id", "default"), message.get("tokens", 0))
+                            await manager.send_to_client(client_id, {"type": "budget_tracker_check", "data": {"can_proceed": can}})
+                        elif action == "record":
+                            alerts = bt.record_usage(message.get("session_id", "default"),
+                                                     message.get("tokens_input", 0),
+                                                     message.get("tokens_output", 0),
+                                                     message.get("model", "default"))
+                            await manager.broadcast_agent_event("budget_tracker_alerts",
+                                {"alerts": {scope.value: level.value for scope, level in alerts.items()}})
+                        elif action == "alerts":
+                            await manager.send_to_client(client_id, {"type": "budget_tracker_alerts",
+                                "data": [a.to_dict() for a in bt.get_recent_alerts()]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "budget_tracker_error", "error": str(e)})
+
+                elif msg_type == "tween":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.engine.tween_system import get_tween_system
+                        ts = get_tween_system()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "tween_stats", "data": ts.get_stats()})
+                        elif action == "list":
+                            await manager.send_to_client(client_id, {"type": "tween_list", "data": ts.list_tweens()})
+                        elif action == "create":
+                            tid = ts.create(message.get("target_id", ""), message.get("property_name", "x"),
+                                           message.get("start_value", 0.0), message.get("end_value", 0.0),
+                                           message.get("duration", 1.0),
+                                           message.get("easing", "LINEAR"),
+                                           message.get("delay", 0.0),
+                                           message.get("loop_mode", "ONCE"))
+                            await manager.send_to_client(client_id, {"type": "tween_created", "data": {"tween_id": tid}})
+                        elif action == "pause":
+                            ts.pause(message.get("tween_id", ""))
+                            await manager.send_to_client(client_id, {"type": "tween_paused", "data": {"success": True}})
+                        elif action == "resume":
+                            ts.resume(message.get("tween_id", ""))
+                            await manager.send_to_client(client_id, {"type": "tween_resumed", "data": {"success": True}})
+                        elif action == "cancel":
+                            ts.cancel(message.get("tween_id", ""))
+                            await manager.send_to_client(client_id, {"type": "tween_cancelled", "data": {"success": True}})
+                        elif action == "create_group":
+                            gid = ts.create_group(message.get("name", "group"), message.get("tween_ids", []),
+                                                  message.get("mode", "parallel"))
+                            await manager.send_to_client(client_id, {"type": "tween_group_created", "data": {"group_id": gid}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "tween_error", "error": str(e)})
+
+                elif msg_type == "node_path":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.engine.node_path_system import get_node_path_system
+                        np = get_node_path_system()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "node_path_stats", "data": np.get_stats()})
+                        elif action == "parse":
+                            path = np.parse(message.get("path_str", ""))
+                            await manager.send_to_client(client_id, {"type": "node_path_parsed",
+                                "data": path.to_dict() if path else {"error": "Invalid path"}})
+                        elif action == "resolve":
+                            results = np.resolve(message.get("path_str", ""), message.get("root", {}))
+                            await manager.send_to_client(client_id, {"type": "node_path_resolved", "data": {"results": results}})
+                        elif action == "alias":
+                            np.register_alias(message.get("name", ""), message.get("path_str", ""))
+                            await manager.send_to_client(client_id, {"type": "node_path_alias_registered", "data": {"success": True}})
+                        elif action == "aliases":
+                            await manager.send_to_client(client_id, {"type": "node_path_aliases", "data": np.list_aliases()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "node_path_error", "error": str(e)})
+
+                elif msg_type == "project_template":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.engine.project_template import get_project_template_system
+                        pts = get_project_template_system()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "project_template_stats", "data": pts.get_stats()})
+                        elif action == "genres":
+                            await manager.send_to_client(client_id, {"type": "project_template_genres", "data": pts.list_genres()})
+                        elif action == "list":
+                            templates = pts.list_by_genre(message.get("genre"))
+                            await manager.send_to_client(client_id, {"type": "project_template_list",
+                                "data": [t.to_dict() for t in (templates if templates else pts.list_all())]})
+                        elif action == "get":
+                            tmpl = pts.get(message.get("template_id", ""))
+                            await manager.send_to_client(client_id, {"type": "project_template_detail",
+                                "data": tmpl.to_dict() if tmpl else {"error": "Not found"}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "project_template_error", "error": str(e)})
+
+                elif msg_type == "asset_pipeline":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.engine.asset_pipeline import get_asset_pipeline
+                        ap = get_asset_pipeline()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "asset_pipeline_stats", "data": ap.get_stats()})
+                        elif action == "list":
+                            await manager.send_to_client(client_id, {"type": "asset_pipeline_assets", "data": ap.list_assets()})
+                        elif action == "categories":
+                            await manager.send_to_client(client_id, {"type": "asset_pipeline_categories", "data": ap.list_categories()})
+                        elif action == "search":
+                            results = ap.search(message.get("query", ""))
+                            await manager.send_to_client(client_id, {"type": "asset_pipeline_search",
+                                "data": [r.to_dict() for r in results]})
+                        elif action == "register":
+                            aid = ap.register_asset(message.get("name", ""), message.get("category", ""),
+                                                    message.get("format", ""), message.get("description", ""),
+                                                    message.get("source_path", ""), message.get("tags", []))
+                            await manager.send_to_client(client_id, {"type": "asset_pipeline_registered", "data": {"asset_id": aid}})
+                        elif action == "bundle":
+                            bid = ap.create_bundle(message.get("name", ""), message.get("asset_ids", []))
+                            await manager.send_to_client(client_id, {"type": "asset_pipeline_bundled", "data": {"bundle_id": bid}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "asset_pipeline_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
