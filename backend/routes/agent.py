@@ -6,7 +6,7 @@ studio hierarchy, toolsets, hooks, rules, teams,
 bench evaluation, and session management.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 
@@ -77,6 +77,14 @@ from sparkai.engine.tween_system import TweenSystem, EasingType, TweenLoopMode, 
 from sparkai.engine.node_path_system import NodePathSystem, get_node_path_system
 from sparkai.engine.project_template import ProjectTemplateSystem, GameGenre, get_project_template_system
 from sparkai.engine.asset_pipeline import AssetPipeline, AssetCategory, AssetFormat, get_asset_pipeline
+from sparkai.agent.agent_insights import InsightsEngine, get_insights_engine
+from sparkai.agent.agent_state_sync import StateSyncMesh, SyncDomain, get_state_sync_mesh
+from sparkai.agent.agent_dev_loop import DevelopmentLoop, CyclePhase, get_dev_loop
+from sparkai.agent.agent_context_references import ContextReferenceResolver, RefDomain, get_context_reference_resolver
+from sparkai.engine.rendering_server import RenderingServer, get_rendering_server
+from sparkai.engine.input_event_system import InputEventSystem, get_input_event_system
+from sparkai.engine.game_object import GameObject, GameObjectRegistry, create_game_object, get_game_object_registry
+from sparkai.engine.scene_manager import SceneManager, SceneState, get_scene_manager
 
 router = APIRouter()
 
@@ -7995,3 +8003,375 @@ async def asset_pipeline_bundle(name: str, asset_ids: List[str]):
 @router.get("/asset-pipeline/import-history")
 async def asset_pipeline_import_history():
     return {"history": _asset_pipeline.get_import_history()}
+
+
+# === Insights Engine ===
+
+_insights_engine = get_insights_engine()
+
+
+@router.get("/insights/stats")
+async def insights_stats():
+    return _insights_engine.get_stats()
+
+
+@router.get("/insights/report")
+async def insights_report(days: int = 30):
+    report = _insights_engine.generate(days=days)
+    return report.to_dict()
+
+
+@router.get("/insights/summary")
+async def insights_summary(days: int = 7):
+    report = _insights_engine.generate(days=days)
+    return {"summary": _insights_engine.format_summary(report)}
+
+
+@router.post("/insights/track-task")
+async def insights_track_task(started: bool = False, completed: bool = False,
+                              failed: bool = False, iterations: int = 0, retries: int = 0):
+    _insights_engine.track_task(started, completed, failed, iterations, retries)
+    return {"success": True}
+
+
+@router.post("/insights/reset")
+async def insights_reset():
+    _insights_engine.reset()
+    return {"success": True}
+
+
+# === State Sync Mesh ===
+
+_state_sync_mesh = get_state_sync_mesh()
+
+
+@router.get("/state-sync/stats")
+async def state_sync_stats():
+    return _state_sync_mesh.get_stats()
+
+
+@router.get("/state-sync/channels")
+async def state_sync_channels():
+    stats = _state_sync_mesh.get_stats()
+    return {"channels": stats.get("channels_detail", {})}
+
+
+@router.post("/state-sync/sync-all")
+async def state_sync_sync_all():
+    reports = _state_sync_mesh.sync_all()
+    return {"reports": [
+        {
+            "domain": r.domain.value,
+            "conflicts": r.conflicts_found,
+            "resolved": r.conflicts_resolved,
+        }
+        for r in reports
+    ]}
+
+
+@router.post("/state-sync/sync-domain")
+async def state_sync_sync_domain(domain: str):
+    try:
+        sd = SyncDomain[domain.upper()]
+        report = _state_sync_mesh.sync_domain(sd)
+        return {
+            "domain": report.domain.value,
+            "conflicts": report.conflicts_found,
+            "resolved": report.conflicts_resolved,
+            "strategy": report.strategy_used.value,
+        }
+    except KeyError:
+        return {"error": f"Unknown domain: {domain}"}
+
+
+@router.get("/state-sync/reports")
+async def state_sync_reports(limit: int = 20):
+    return {"reports": [
+        {
+            "domain": r.domain.value,
+            "conflicts": r.conflicts_found,
+            "resolved": r.conflicts_resolved,
+            "timestamp": r.timestamp,
+        }
+        for r in _state_sync_mesh.get_recent_reports(limit)
+    ]}
+
+
+# === Development Loop ===
+
+_dev_loop = get_dev_loop()
+
+
+@router.get("/dev-loop/stats")
+async def dev_loop_stats():
+    return _dev_loop.get_stats()
+
+
+@router.get("/dev-loop/history")
+async def dev_loop_history(limit: int = 20):
+    return {"history": _dev_loop.get_history(limit)}
+
+
+@router.get("/dev-loop/phase")
+async def dev_loop_phase():
+    return {"phase": _dev_loop.get_phase().value}
+
+
+@router.post("/dev-loop/execute")
+async def dev_loop_execute(task: str):
+    result = await _dev_loop.execute(task)
+    return {
+        "task_id": result.task_id,
+        "success": result.success,
+        "iterations": result.total_iterations,
+        "quality": result.final_quality,
+        "artifacts": result.artifacts,
+    }
+
+
+@router.post("/dev-loop/set-policy")
+async def dev_loop_set_policy(max_iterations: Optional[int] = None,
+                              quality_threshold: Optional[float] = None,
+                              timeout_seconds: Optional[float] = None):
+    kwargs = {}
+    if max_iterations is not None:
+        kwargs["max_iterations"] = max_iterations
+    if quality_threshold is not None:
+        kwargs["quality_threshold"] = quality_threshold
+    if timeout_seconds is not None:
+        kwargs["timeout_seconds"] = timeout_seconds
+    _dev_loop.set_policy(**kwargs)
+    return {"success": True}
+
+
+@router.post("/dev-loop/abort")
+async def dev_loop_abort():
+    _dev_loop.abort()
+    return {"success": True}
+
+
+# === Context References ===
+
+_context_references = get_context_reference_resolver()
+
+
+@router.get("/context-refs/stats")
+async def context_refs_stats():
+    return _context_references.get_stats()
+
+
+@router.post("/context-refs/parse")
+async def context_refs_parse(message: str = Query(..., description="Message to parse for @domain:target references")):
+    refs = _context_references.parse_references(message)
+    return {"references": [
+        {"raw": r.raw, "domain": r.domain.value, "target": r.target}
+        for r in refs
+    ]}
+
+
+@router.post("/context-refs/resolve")
+async def context_refs_resolve(message: str = Query(..., description="Message to resolve references in"),
+                               max_tokens: int = Query(0, description="Max tokens for injected context")):
+    result = _context_references.resolve_message(message, max_tokens)
+    return {
+        "expanded": result.expanded_message[:500] + ("..." if len(result.expanded_message) > 500 else ""),
+        "found": result.found_count,
+        "total": result.total_count,
+        "tokens": result.injected_tokens,
+        "warnings": result.warnings,
+    }
+
+
+@router.post("/context-refs/invalidate")
+async def context_refs_invalidate(domain: Optional[str] = None, target: Optional[str] = None):
+    try:
+        rd = RefDomain[domain.upper()] if domain else None
+    except KeyError:
+        rd = None
+    _context_references.invalidate_cache(rd, target)
+    return {"success": True}
+
+
+# === Rendering Server ===
+
+_rendering_server = get_rendering_server()
+
+
+@router.get("/rendering-server/stats")
+async def rendering_server_stats():
+    return _rendering_server.get_stats()
+
+
+@router.get("/rendering-server/commands")
+async def rendering_server_commands():
+    cmds = _rendering_server.get_commands()
+    return {"commands": [
+        {"type": c.cmd_type.value, "layer": c.layer, "z": c.z_index}
+        for c in cmds[:50]
+    ], "total": len(cmds)}
+
+
+@router.post("/rendering-server/set-viewport")
+async def rendering_server_set_viewport(width: int = 1920, height: int = 1080,
+                                        scale: float = 1.0, cam_x: float = 0.0,
+                                        cam_y: float = 0.0):
+    _rendering_server.set_viewport(0, 0, width, height, scale, cam_x, cam_y)
+    return {"success": True}
+
+
+@router.post("/rendering-server/register-sprite")
+async def rendering_server_register_sprite(key: str):
+    _rendering_server.register_sprite(key, None)
+    return {"success": True, "key": key}
+
+
+@router.post("/rendering-server/reset-stats")
+async def rendering_server_reset_stats():
+    _rendering_server.reset_stats()
+    return {"success": True}
+
+
+# === Input Event System ===
+
+_input_event_system = get_input_event_system()
+
+
+@router.get("/input-events/stats")
+async def input_events_stats():
+    return _input_event_system.get_stats()
+
+
+@router.post("/input-events/emit-key")
+async def input_events_emit_key(key_code: str, pressed: bool = True):
+    evt = _input_event_system.emit_key(key_code, pressed)
+    return {"event_id": evt.event_id}
+
+
+@router.post("/input-events/emit-mouse")
+async def input_events_emit_mouse(x: int, y: int, button: int = 0, pressed: bool = False):
+    evt = _input_event_system.emit_mouse(x, y, button, pressed)
+    return {"event_id": evt.event_id}
+
+
+@router.post("/input-events/emit-touch")
+async def input_events_emit_touch(touch_id: int, x: float, y: float, phase: str = "start"):
+    evt = _input_event_system.emit_touch(touch_id, x, y, phase)
+    return {"event_id": evt.event_id}
+
+
+@router.post("/input-events/register")
+async def input_events_register(action: str, key: str = "", axis: str = "",
+                                dead_zone: float = 0.15):
+    binding = _input_event_system.register(action, key=key, axis=axis, dead_zone=dead_zone)
+    return {"action": binding.action_name}
+
+
+@router.get("/input-events/action/{action_name}")
+async def input_events_action(action_name: str):
+    return {"value": _input_event_system.get_action_value(action_name)}
+
+
+@router.post("/input-events/flush")
+async def input_events_flush():
+    flushed = _input_event_system.flush_events()
+    return {"flushed": flushed}
+
+
+# === Game Object Registry ===
+
+_game_object_registry = get_game_object_registry()
+
+
+@router.get("/game-objects/stats")
+async def game_objects_stats():
+    return _game_object_registry.get_stats()
+
+
+@router.get("/game-objects/list")
+async def game_objects_list(tag: Optional[str] = None):
+    if tag:
+        objects = _game_object_registry.find_by_tag(tag)
+    else:
+        objects = _game_object_registry.find_active()
+    return {"objects": [o.to_dict() for o in objects[:50]], "total": len(objects)}
+
+
+@router.get("/game-objects/{object_id}")
+async def game_object_detail(object_id: str):
+    go = _game_object_registry.find(object_id)
+    if go:
+        return go.to_dict()
+    return {"error": "Object not found"}
+
+
+@router.post("/game-objects/create")
+async def game_objects_create(name: str = "GameObject", x: float = 0, y: float = 0,
+                              tags: Optional[List[str]] = None):
+    go = create_game_object(name, (x, y), tags)
+    return go.to_dict()
+
+
+@router.post("/game-objects/destroy-all")
+async def game_objects_destroy_all():
+    count = _game_object_registry.destroy_all()
+    return {"destroyed": count}
+
+
+# === Scene Manager ===
+
+_scene_manager = get_scene_manager()
+
+
+@router.get("/scene-manager/stats")
+async def scene_manager_stats():
+    return _scene_manager.get_stats()
+
+
+@router.get("/scene-manager/scenes")
+async def scene_manager_scenes():
+    return {"scenes": _scene_manager.list_definitions()}
+
+
+@router.get("/scene-manager/stack")
+async def scene_manager_stack():
+    return {
+        "stack": _scene_manager.get_scene_stack(),
+        "overlays": _scene_manager.get_overlay_stack(),
+    }
+
+
+@router.post("/scene-manager/register")
+async def scene_manager_register(name: str, permanent: bool = True,
+                                 poolable: bool = False, preload: bool = False):
+    defn = _scene_manager.register(name, None, permanent, poolable, preload)
+    return {"scene_id": defn.scene_id, "name": defn.name}
+
+
+@router.post("/scene-manager/push-scene")
+async def scene_manager_push_scene(name: str):
+    instance = _scene_manager.push_scene(name)
+    if instance:
+        return {"instance_id": instance.instance_id, "state": instance.state.value}
+    return {"error": "Scene not found"}
+
+
+@router.post("/scene-manager/pop-scene")
+async def scene_manager_pop_scene():
+    instance = _scene_manager.pop_scene()
+    if instance:
+        return {"instance_id": instance.instance_id, "name": instance.definition.name}
+    return {"error": "No scene to pop"}
+
+
+@router.get("/scene-manager/active")
+async def scene_manager_active():
+    active = _scene_manager.get_active_scene()
+    if active:
+        return {"name": active.definition.name, "state": active.state.value}
+    return {"error": "No active scene"}
+
+
+@router.post("/scene-manager/clear-pool")
+async def scene_manager_clear_pool():
+    _scene_manager.clear_pool()
+    return {"success": True}
