@@ -134,6 +134,14 @@ Runtime architecture:
     |-- Node Path System (path-based game object referencing)
     |-- Project Template System (12-genre game scaffolding)
     |-- Asset Pipeline (end-to-end asset lifecycle management)
+    |-- Insights Engine (session analytics + token cost reporting)
+    |-- State Sync Mesh (bidirectional agent↔engine coherence)
+    |-- Development Loop (Plan→Code→Test→Iterate cycle)
+    |-- Context References (@asset:@scene:@script: resolution)
+    |-- Rendering Server (batched 2D draw pipeline with culling)
+    |-- Input Event System (action-mapped event dispatch)
+    |-- GameObject Model (full Awake/Start/Update/Destroy lifecycle)
+    |-- Scene Manager (async transitions, pooling, overlay stack)
 
 The runtime provides a single initialization point and unified
 API for all engine operations. It manages the lifecycle of all
@@ -249,6 +257,10 @@ from sparkai.agent.agent_prompt_cache import PromptCache, get_prompt_cache
 from sparkai.agent.agent_trajectory_recorder import TrajectoryRecorder, get_trajectory_recorder
 from sparkai.agent.agent_checkpoint_system import CheckpointSystem, get_checkpoint_system
 from sparkai.agent.agent_budget_tracker import BudgetTracker, get_budget_tracker
+from sparkai.agent.agent_insights import InsightsEngine, get_insights_engine
+from sparkai.agent.agent_state_sync import StateSyncMesh, SyncDomain, get_state_sync_mesh
+from sparkai.agent.agent_dev_loop import DevelopmentLoop, CyclePhase, get_dev_loop
+from sparkai.agent.agent_context_references import ContextReferenceResolver, RefDomain, get_context_reference_resolver
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -289,6 +301,10 @@ from sparkai.engine.tween_system import TweenSystem, get_tween_system
 from sparkai.engine.node_path_system import NodePathSystem, get_node_path_system
 from sparkai.engine.project_template import ProjectTemplateSystem, get_project_template_system
 from sparkai.engine.asset_pipeline import AssetPipeline, get_asset_pipeline
+from sparkai.engine.rendering_server import RenderingServer, get_rendering_server
+from sparkai.engine.input_event_system import InputEventSystem, get_input_event_system
+from sparkai.engine.game_object import GameObject, GameObjectRegistry, get_game_object_registry
+from sparkai.engine.scene_manager import SceneManager, SceneState, get_scene_manager
 
 
 class RuntimeState(Enum):
@@ -326,7 +342,7 @@ class AgentRuntime:
     Unified execution engine for the SparkLabs AI-Native Game Engine.
 
     The runtime is the central orchestrator that initializes and manages
-    all 137 subsystems. It provides a single entry point for all engine
+    all 145 subsystems. It provides a single entry point for all engine
     operations and ensures proper lifecycle management.
 
     Usage:
@@ -479,6 +495,14 @@ class AgentRuntime:
         self._node_path_system: Optional[NodePathSystem] = None
         self._project_template_system: Optional[ProjectTemplateSystem] = None
         self._asset_pipeline: Optional[AssetPipeline] = None
+        self._insights_engine: Optional[InsightsEngine] = None
+        self._state_sync_mesh: Optional[StateSyncMesh] = None
+        self._dev_loop: Optional[DevelopmentLoop] = None
+        self._context_references: Optional[ContextReferenceResolver] = None
+        self._rendering_server: Optional[RenderingServer] = None
+        self._input_event_system: Optional[InputEventSystem] = None
+        self._game_object_registry: Optional[GameObjectRegistry] = None
+        self._scene_manager: Optional[SceneManager] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -632,6 +656,14 @@ class AgentRuntime:
             self._node_path_system = get_node_path_system()
             self._project_template_system = get_project_template_system()
             self._asset_pipeline = get_asset_pipeline()
+            self._insights_engine = get_insights_engine()
+            self._state_sync_mesh = get_state_sync_mesh()
+            self._dev_loop = get_dev_loop()
+            self._context_references = get_context_reference_resolver()
+            self._rendering_server = get_rendering_server()
+            self._input_event_system = get_input_event_system()
+            self._game_object_registry = get_game_object_registry()
+            self._scene_manager = get_scene_manager()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -744,6 +776,14 @@ class AgentRuntime:
             self._integration.register_subsystem("node_path_system", self._node_path_system)
             self._integration.register_subsystem("project_template_system", self._project_template_system)
             self._integration.register_subsystem("asset_pipeline", self._asset_pipeline)
+            self._integration.register_subsystem("insights_engine", self._insights_engine)
+            self._integration.register_subsystem("state_sync_mesh", self._state_sync_mesh)
+            self._integration.register_subsystem("dev_loop", self._dev_loop)
+            self._integration.register_subsystem("context_references", self._context_references)
+            self._integration.register_subsystem("rendering_server", self._rendering_server)
+            self._integration.register_subsystem("input_event_system", self._input_event_system)
+            self._integration.register_subsystem("game_object_registry", self._game_object_registry)
+            self._integration.register_subsystem("scene_manager", self._scene_manager)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -772,7 +812,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 137,
+                    "subsystems": 145,
                 }},
             ))
 
@@ -1538,6 +1578,38 @@ class AgentRuntime:
     def asset_pipeline(self) -> Optional[AssetPipeline]:
         return self._asset_pipeline
 
+    @property
+    def insights_engine(self) -> Optional[InsightsEngine]:
+        return self._insights_engine
+
+    @property
+    def state_sync_mesh(self) -> Optional[StateSyncMesh]:
+        return self._state_sync_mesh
+
+    @property
+    def dev_loop(self) -> Optional[DevelopmentLoop]:
+        return self._dev_loop
+
+    @property
+    def context_references(self) -> Optional[ContextReferenceResolver]:
+        return self._context_references
+
+    @property
+    def rendering_server(self) -> Optional[RenderingServer]:
+        return self._rendering_server
+
+    @property
+    def input_event_system(self) -> Optional[InputEventSystem]:
+        return self._input_event_system
+
+    @property
+    def game_object_registry(self) -> Optional[GameObjectRegistry]:
+        return self._game_object_registry
+
+    @property
+    def scene_manager(self) -> Optional[SceneManager]:
+        return self._scene_manager
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -1689,6 +1761,14 @@ class AgentRuntime:
                 "node_path_system": self._node_path_system is not None,
                 "project_template_system": self._project_template_system is not None,
                 "asset_pipeline": self._asset_pipeline is not None,
+                "insights_engine": self._insights_engine is not None,
+                "state_sync_mesh": self._state_sync_mesh is not None,
+                "dev_loop": self._dev_loop is not None,
+                "context_references": self._context_references is not None,
+                "rendering_server": self._rendering_server is not None,
+                "input_event_system": self._input_event_system is not None,
+                "game_object_registry": self._game_object_registry is not None,
+                "scene_manager": self._scene_manager is not None,
             },
         }
 
@@ -1936,6 +2016,22 @@ class AgentRuntime:
             status["project_template_system_stats"] = self._project_template_system.get_stats()
         if self._asset_pipeline:
             status["asset_pipeline_stats"] = self._asset_pipeline.get_stats()
+        if self._insights_engine:
+            status["insights_stats"] = self._insights_engine.get_stats()
+        if self._state_sync_mesh:
+            status["state_sync_stats"] = self._state_sync_mesh.get_stats()
+        if self._dev_loop:
+            status["dev_loop_stats"] = self._dev_loop.get_stats()
+        if self._context_references:
+            status["context_references_stats"] = self._context_references.get_stats()
+        if self._rendering_server:
+            status["rendering_server_stats"] = self._rendering_server.get_stats()
+        if self._input_event_system:
+            status["input_event_system_stats"] = self._input_event_system.get_stats()
+        if self._game_object_registry:
+            status["game_object_registry_stats"] = self._game_object_registry.get_stats()
+        if self._scene_manager:
+            status["scene_manager_stats"] = self._scene_manager.get_stats()
         return status
 
 

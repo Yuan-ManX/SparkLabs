@@ -57,6 +57,10 @@ from sparkai.engine.tween_system import TweenSystem, get_tween_system
 from sparkai.engine.node_path_system import NodePathSystem, get_node_path_system
 from sparkai.engine.project_template import ProjectTemplateSystem, get_project_template_system
 from sparkai.engine.asset_pipeline import AssetPipeline, get_asset_pipeline
+from sparkai.engine.rendering_server import RenderingServer, get_rendering_server
+from sparkai.engine.input_event_system import InputEventSystem, get_input_event_system
+from sparkai.engine.game_object import GameObject, GameObjectRegistry, get_game_object_registry
+from sparkai.engine.scene_manager import SceneManager, get_scene_manager
 
 
 class SparkEngine:
@@ -118,6 +122,10 @@ class SparkEngine:
         self._node_path_system: NodePathSystem = get_node_path_system()
         self._project_template_system: ProjectTemplateSystem = get_project_template_system()
         self._asset_pipeline: AssetPipeline = get_asset_pipeline()
+        self._rendering_server: RenderingServer = get_rendering_server()
+        self._input_event_system: InputEventSystem = get_input_event_system()
+        self._game_object_registry: GameObjectRegistry = get_game_object_registry()
+        self._scene_manager: SceneManager = get_scene_manager()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -126,17 +134,24 @@ class SparkEngine:
             lambda dt, stats: self._input_manager.post_update(),
         )
         self._game_loop.register_phase_handler(
+            ExecutionPhase.INPUT,
+            lambda dt, stats: self._input_event_system.dispatch_events(dt),
+        )
+        self._game_loop.register_phase_handler(
             ExecutionPhase.STEP,
             lambda dt, stats: self._step_simulation(dt),
         )
 
     def _step_simulation(self, dt: float) -> None:
+        self._rendering_server.begin_frame()
         self._physics_system.step(dt)
         self._particle_system.update(dt)
         self._tween_system.update(dt)
         self._behavior_system.step_pre(dt)
+        self._game_object_registry.update_all(dt)
         self._tick_worlds(dt)
         self._behavior_system.step_post(dt)
+        self._rendering_server.end_frame()
         self._game_loop.register_phase_handler(
             ExecutionPhase.POST_STEP,
             lambda dt, stats: self._update_collision_and_animation(dt),
@@ -303,6 +318,10 @@ class SparkEngine:
             "node_path_system": self._node_path_system.get_stats(),
             "project_template_system": self._project_template_system.get_stats(),
             "asset_pipeline": self._asset_pipeline.get_stats(),
+            "rendering_server": self._rendering_server.get_stats(),
+            "input_event_system": self._input_event_system.get_stats(),
+            "game_object_registry": self._game_object_registry.get_stats(),
+            "scene_manager": self._scene_manager.get_stats(),
         }
 
     @property
@@ -444,6 +463,22 @@ class SparkEngine:
     @property
     def asset_pipeline(self) -> AssetPipeline:
         return self._asset_pipeline
+
+    @property
+    def rendering_server(self) -> RenderingServer:
+        return self._rendering_server
+
+    @property
+    def input_event_system(self) -> InputEventSystem:
+        return self._input_event_system
+
+    @property
+    def game_object_registry(self) -> GameObjectRegistry:
+        return self._game_object_registry
+
+    @property
+    def scene_manager(self) -> SceneManager:
+        return self._scene_manager
 
 
 @dataclass
