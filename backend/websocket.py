@@ -1219,6 +1219,182 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "asset_pipeline_error", "error": str(e)})
 
+                elif msg_type == "insights":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.agent.agent_insights import get_insights_engine
+                        ie = get_insights_engine()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "insights_stats", "data": ie.get_stats()})
+                        elif action == "report":
+                            report = ie.generate(days=message.get("days", 30))
+                            await manager.send_to_client(client_id, {"type": "insights_report", "data": report.to_dict()})
+                        elif action == "summary":
+                            report = ie.generate(days=message.get("days", 7))
+                            await manager.send_to_client(client_id, {"type": "insights_summary", "data": ie.format_summary(report)})
+                        elif action == "track_task":
+                            ie.track_task(message.get("started", False), message.get("completed", False),
+                                         message.get("failed", False), message.get("iterations", 0))
+                            await manager.send_to_client(client_id, {"type": "insights_task_tracked", "data": {"success": True}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "insights_error", "error": str(e)})
+
+                elif msg_type == "state_sync":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.agent.agent_state_sync import get_state_sync_mesh, SyncDomain
+                        sm = get_state_sync_mesh()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "state_sync_stats", "data": sm.get_stats()})
+                        elif action == "sync_all":
+                            reports = sm.sync_all()
+                            await manager.send_to_client(client_id, {"type": "state_sync_complete",
+                                "data": {"domains_synced": len(reports)}})
+                        elif action == "sync":
+                            sd = SyncDomain[message.get("domain", "OBJECTS").upper()]
+                            report = sm.sync_domain(sd)
+                            await manager.send_to_client(client_id, {"type": "state_sync_domain_done",
+                                "data": {"domain": report.domain.value, "conflicts": report.conflicts_found}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "state_sync_error", "error": str(e)})
+
+                elif msg_type == "dev_loop":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.agent.agent_dev_loop import get_dev_loop
+                        dl = get_dev_loop()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "dev_loop_stats", "data": dl.get_stats()})
+                        elif action == "history":
+                            await manager.send_to_client(client_id, {"type": "dev_loop_history",
+                                "data": dl.get_history(message.get("limit", 20))})
+                        elif action == "phase":
+                            await manager.send_to_client(client_id, {"type": "dev_loop_phase",
+                                "data": dl.get_phase().value})
+                        elif action == "execute":
+                            result = await dl.execute(message.get("task", ""))
+                            await manager.broadcast_agent_event("dev_loop_result", {
+                                "task_id": result.task_id, "success": result.success,
+                                "iterations": result.total_iterations,
+                            })
+                        elif action == "abort":
+                            dl.abort()
+                            await manager.send_to_client(client_id, {"type": "dev_loop_aborted", "data": {"success": True}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "dev_loop_error", "error": str(e)})
+
+                elif msg_type == "context_refs":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.agent.agent_context_references import get_context_reference_resolver
+                        cr = get_context_reference_resolver()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "context_refs_stats", "data": cr.get_stats()})
+                        elif action == "parse":
+                            refs = cr.parse_references(message.get("content", ""))
+                            await manager.send_to_client(client_id, {"type": "context_refs_parsed",
+                                "data": [{"domain": r.domain.value, "target": r.target} for r in refs]})
+                        elif action == "resolve":
+                            result = cr.resolve_message(message.get("content", ""),
+                                                       message.get("max_tokens", 0))
+                            await manager.send_to_client(client_id, {"type": "context_refs_resolved",
+                                "data": {"found": result.found_count, "total": result.total_count}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "context_refs_error", "error": str(e)})
+
+                elif msg_type == "rendering":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.engine.rendering_server import get_rendering_server
+                        rs = get_rendering_server()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "rendering_stats", "data": rs.get_stats()})
+                        elif action == "commands":
+                            cmds = rs.get_commands()
+                            await manager.send_to_client(client_id, {"type": "rendering_commands",
+                                "data": {"count": len(cmds), "frame": rs.get_stats().get("frames", 0)}})
+                        elif action == "viewport":
+                            rs.set_viewport(0, 0, message.get("width", 1920), message.get("height", 1080),
+                                           message.get("scale", 1.0), message.get("cam_x", 0), message.get("cam_y", 0))
+                            await manager.send_to_client(client_id, {"type": "rendering_viewport_set", "data": {"success": True}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "rendering_error", "error": str(e)})
+
+                elif msg_type == "input_events":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.engine.input_event_system import get_input_event_system
+                        ies = get_input_event_system()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "input_events_stats", "data": ies.get_stats()})
+                        elif action == "emit_key":
+                            evt = ies.emit_key(message.get("key_code", ""), message.get("pressed", True))
+                            await manager.broadcast_agent_event("input_event", {"event_id": evt.event_id, "key": message.get("key_code")})
+                        elif action == "emit_mouse":
+                            evt = ies.emit_mouse(message.get("x", 0), message.get("y", 0),
+                                                message.get("button", 0), message.get("pressed", False))
+                            await manager.send_to_client(client_id, {"type": "input_event_emitted", "data": {"event_id": evt.event_id}})
+                        elif action == "get_action":
+                            val = ies.get_action_value(message.get("action_name", ""))
+                            await manager.send_to_client(client_id, {"type": "input_action_value", "data": {"value": val}})
+                        elif action == "flush":
+                            flushed = ies.flush_events()
+                            await manager.send_to_client(client_id, {"type": "input_events_flushed", "data": {"flushed": flushed}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "input_events_error", "error": str(e)})
+
+                elif msg_type == "game_objects":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.engine.game_object import get_game_object_registry, create_game_object
+                        gor = get_game_object_registry()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "game_objects_stats", "data": gor.get_stats()})
+                        elif action == "list":
+                            objects = gor.find_by_tag(message.get("tag", "")) if message.get("tag") else gor.find_active()
+                            await manager.send_to_client(client_id, {"type": "game_objects_list",
+                                "data": [o.to_dict() for o in objects[:50]]})
+                        elif action == "create":
+                            go = create_game_object(message.get("name", "GameObject"),
+                                                   (message.get("x", 0), message.get("y", 0)),
+                                                   message.get("tags"))
+                            await manager.broadcast_agent_event("game_object_created", go.to_dict())
+                        elif action == "destroy_all":
+                            count = gor.destroy_all()
+                            await manager.send_to_client(client_id, {"type": "game_objects_destroyed", "data": {"count": count}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "game_objects_error", "error": str(e)})
+
+                elif msg_type == "scene_manager":
+                    action = message.get("action", "stats")
+                    try:
+                        from sparkai.engine.scene_manager import get_scene_manager
+                        scm = get_scene_manager()
+                        if action == "stats":
+                            await manager.send_to_client(client_id, {"type": "scene_manager_stats", "data": scm.get_stats()})
+                        elif action == "stack":
+                            await manager.send_to_client(client_id, {"type": "scene_manager_stack",
+                                "data": {"stack": scm.get_scene_stack(), "overlays": scm.get_overlay_stack()}})
+                        elif action == "register":
+                            defn = scm.register(message.get("name", ""), None, message.get("permanent", True),
+                                              message.get("poolable", False), message.get("preload", False))
+                            await manager.send_to_client(client_id, {"type": "scene_manager_registered",
+                                "data": {"scene_id": defn.scene_id, "name": defn.name}})
+                        elif action == "push":
+                            inst = scm.push_scene(message.get("name", ""))
+                            await manager.broadcast_agent_event("scene_pushed",
+                                {"name": message.get("name", ""), "state": inst.state.value if inst else "error"})
+                        elif action == "pop":
+                            inst = scm.pop_scene()
+                            await manager.broadcast_agent_event("scene_popped",
+                                {"name": inst.definition.name if inst else "none"})
+                        elif action == "active":
+                            active = scm.get_active_scene()
+                            await manager.send_to_client(client_id, {"type": "scene_manager_active",
+                                "data": {"name": active.definition.name if active else "none"}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "scene_manager_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
