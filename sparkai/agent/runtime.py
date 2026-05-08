@@ -325,6 +325,14 @@ from sparkai.engine.terrain_system import TerrainSystem, TerrainType, NoiseAlgor
 from sparkai.engine.save_system import SaveSystem, SaveSlot, SaveStatus, get_save_system
 from sparkai.engine.network_sync import NetworkSync, SyncAuthority as NetSyncAuthority, get_network_sync
 from sparkai.engine.behavior_tree import BehaviorTree, NodeStatus, Blackboard, get_behavior_tree
+from sparkai.engine.math_utils import MathUtils, Vector2, Vector3, Rect2, Transform2D, get_math_utils
+from sparkai.engine.gui_system import GUISystem, Widget, Container, Button, Label, get_gui_system
+from sparkai.engine.config_manager import ConfigManager, ConfigScope, ConfigEntry, get_config_manager
+from sparkai.engine.animation_controller import AnimationController, AnimState, AnimClip, get_animation_controller
+from sparkai.agent.agent_trajectory import TrajectoryRecorder, TrajectoryPhase, TrajectorySession, get_trajectory_recorder
+from sparkai.agent.agent_skill_commands import SkillCommandRegistry, CommandCategory, CommandDef, get_skill_command_registry
+from sparkai.agent.agent_session_persistence import SessionStore, SessionStatus, SessionRecord, get_session_store
+from sparkai.agent.agent_platform_bridge import PlatformBridge, PlatformType, PlatformMessage, get_platform_bridge
 
 
 class RuntimeState(Enum):
@@ -533,6 +541,14 @@ class AgentRuntime:
         self._save_system: Optional[SaveSystem] = None
         self._network_sync: Optional[NetworkSync] = None
         self._behavior_tree: Optional[BehaviorTree] = None
+        self._math_utils: Optional[MathUtils] = None
+        self._gui_system: Optional[GUISystem] = None
+        self._config_manager: Optional[ConfigManager] = None
+        self._animation_controller: Optional[AnimationController] = None
+        self._trajectory_recorder_v2: Optional[TrajectoryRecorder] = None
+        self._skill_command_registry: Optional[SkillCommandRegistry] = None
+        self._session_store: Optional[SessionStore] = None
+        self._platform_bridge: Optional[PlatformBridge] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -704,6 +720,14 @@ class AgentRuntime:
             self._save_system = get_save_system()
             self._network_sync = get_network_sync()
             self._behavior_tree = get_behavior_tree()
+            self._math_utils = get_math_utils()
+            self._gui_system = get_gui_system()
+            self._config_manager = get_config_manager()
+            self._animation_controller = get_animation_controller()
+            self._trajectory_recorder_v2 = get_trajectory_recorder()
+            self._skill_command_registry = get_skill_command_registry()
+            self._session_store = get_session_store()
+            self._platform_bridge = get_platform_bridge()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -834,6 +858,14 @@ class AgentRuntime:
             self._integration.register_subsystem("save_system", self._save_system)
             self._integration.register_subsystem("network_sync", self._network_sync)
             self._integration.register_subsystem("behavior_tree", self._behavior_tree)
+            self._integration.register_subsystem("math_utils", self._math_utils)
+            self._integration.register_subsystem("gui_system", self._gui_system)
+            self._integration.register_subsystem("config_manager", self._config_manager)
+            self._integration.register_subsystem("animation_controller", self._animation_controller)
+            self._integration.register_subsystem("trajectory_recorder_v2", self._trajectory_recorder_v2)
+            self._integration.register_subsystem("skill_command_registry", self._skill_command_registry)
+            self._integration.register_subsystem("session_store", self._session_store)
+            self._integration.register_subsystem("platform_bridge", self._platform_bridge)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -862,7 +894,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 155,
+                    "subsystems": 163,
                 }},
             ))
 
@@ -1700,6 +1732,38 @@ class AgentRuntime:
     def behavior_tree(self) -> Optional[BehaviorTree]:
         return self._behavior_tree
 
+    @property
+    def math_utils(self) -> Optional[MathUtils]:
+        return self._math_utils
+
+    @property
+    def gui_system(self) -> Optional[GUISystem]:
+        return self._gui_system
+
+    @property
+    def config_manager(self) -> Optional[ConfigManager]:
+        return self._config_manager
+
+    @property
+    def animation_controller(self) -> Optional[AnimationController]:
+        return self._animation_controller
+
+    @property
+    def trajectory_recorder_v2(self) -> Optional[TrajectoryRecorder]:
+        return self._trajectory_recorder_v2
+
+    @property
+    def skill_command_registry(self) -> Optional[SkillCommandRegistry]:
+        return self._skill_command_registry
+
+    @property
+    def session_store(self) -> Optional[SessionStore]:
+        return self._session_store
+
+    @property
+    def platform_bridge(self) -> Optional[PlatformBridge]:
+        return self._platform_bridge
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -1869,6 +1933,14 @@ class AgentRuntime:
                 "save_system": self._save_system is not None,
                 "network_sync": self._network_sync is not None,
                 "behavior_tree": self._behavior_tree is not None,
+                "math_utils": self._math_utils is not None,
+                "gui_system": self._gui_system is not None,
+                "config_manager": self._config_manager is not None,
+                "animation_controller": self._animation_controller is not None,
+                "trajectory_recorder_v2": self._trajectory_recorder_v2 is not None,
+                "skill_command_registry": self._skill_command_registry is not None,
+                "session_store": self._session_store is not None,
+                "platform_bridge": self._platform_bridge is not None,
             },
         }
 
@@ -2152,6 +2224,22 @@ class AgentRuntime:
             status["network_sync_stats"] = self._network_sync.get_stats()
         if self._behavior_tree:
             status["behavior_tree_stats"] = self._behavior_tree.get_stats()
+        if self._math_utils:
+            status["math_utils_stats"] = self._math_utils.get_stats()
+        if self._gui_system:
+            status["gui_system_stats"] = self._gui_system.get_stats()
+        if self._config_manager:
+            status["config_manager_stats"] = self._config_manager.get_stats()
+        if self._animation_controller:
+            status["animation_controller_stats"] = self._animation_controller.get_stats()
+        if self._trajectory_recorder_v2:
+            status["trajectory_recorder_v2_stats"] = self._trajectory_recorder_v2.get_stats()
+        if self._skill_command_registry:
+            status["skill_command_registry_stats"] = self._skill_command_registry.get_stats()
+        if self._session_store:
+            status["session_store_stats"] = self._session_store.get_stats()
+        if self._platform_bridge:
+            status["platform_bridge_stats"] = self._platform_bridge.get_stats()
         return status
 
 
