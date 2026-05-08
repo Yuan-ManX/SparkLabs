@@ -61,6 +61,10 @@ from sparkai.engine.rendering_server import RenderingServer, get_rendering_serve
 from sparkai.engine.input_event_system import InputEventSystem, get_input_event_system
 from sparkai.engine.game_object import GameObject, GameObjectRegistry, get_game_object_registry
 from sparkai.engine.scene_manager import SceneManager, get_scene_manager
+from sparkai.engine.terrain_system import TerrainSystem, get_terrain_system
+from sparkai.engine.save_system import SaveSystem, get_save_system
+from sparkai.engine.network_sync import NetworkSync, get_network_sync
+from sparkai.engine.behavior_tree import BehaviorTree, get_behavior_tree
 
 
 class SparkEngine:
@@ -126,6 +130,10 @@ class SparkEngine:
         self._input_event_system: InputEventSystem = get_input_event_system()
         self._game_object_registry: GameObjectRegistry = get_game_object_registry()
         self._scene_manager: SceneManager = get_scene_manager()
+        self._terrain_system: TerrainSystem = get_terrain_system()
+        self._save_system: SaveSystem = get_save_system()
+        self._network_sync: NetworkSync = get_network_sync()
+        self._behavior_tree: BehaviorTree = get_behavior_tree()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -151,6 +159,8 @@ class SparkEngine:
         self._game_object_registry.update_all(dt)
         self._tick_worlds(dt)
         self._behavior_system.step_post(dt)
+        self._behavior_tree.tick_all()
+        self._network_sync.tick()
         self._rendering_server.end_frame()
         self._game_loop.register_phase_handler(
             ExecutionPhase.POST_STEP,
@@ -322,6 +332,10 @@ class SparkEngine:
             "input_event_system": self._input_event_system.get_stats(),
             "game_object_registry": self._game_object_registry.get_stats(),
             "scene_manager": self._scene_manager.get_stats(),
+            "terrain_system": self._terrain_system.get_stats(),
+            "save_system": self._save_system.get_stats(),
+            "network_sync": self._network_sync.get_stats(),
+            "behavior_tree": self._behavior_tree.get_stats(),
         }
 
     @property
@@ -479,6 +493,22 @@ class SparkEngine:
     @property
     def scene_manager(self) -> SceneManager:
         return self._scene_manager
+
+    @property
+    def terrain_system(self) -> TerrainSystem:
+        return self._terrain_system
+
+    @property
+    def save_system(self) -> SaveSystem:
+        return self._save_system
+
+    @property
+    def network_sync(self) -> NetworkSync:
+        return self._network_sync
+
+    @property
+    def behavior_tree(self) -> BehaviorTree:
+        return self._behavior_tree
 
 
 @dataclass
