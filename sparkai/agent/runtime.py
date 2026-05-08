@@ -142,6 +142,16 @@ Runtime architecture:
     |-- Input Event System (action-mapped event dispatch)
     |-- GameObject Model (full Awake/Start/Update/Destroy lifecycle)
     |-- Scene Manager (async transitions, pooling, overlay stack)
+    |-- Process Registry (background process lifecycle management)
+    |-- Cron Scheduler (scheduled automation for game dev workflows)
+    |-- Expression Evaluator (safe math/logic/string expression engine)
+    |-- Class Registry (meta-object reflection for game entity types)
+    |-- Multi-Modal Agent (image/sprite/screenshot visual analysis)
+    |-- Import Pipeline (format detection, conversion, asset registration)
+    |-- Terrain System (procedural 2D heightmap/biome generation)
+    |-- Save System (versioned save/load with integrity verification)
+    |-- Network Sync (multiplayer state replication and sync)
+    |-- Behavior Tree (composable NPC AI decision trees)
 
 The runtime provides a single initialization point and unified
 API for all engine operations. It manages the lifecycle of all
@@ -261,6 +271,12 @@ from sparkai.agent.agent_insights import InsightsEngine, get_insights_engine
 from sparkai.agent.agent_state_sync import StateSyncMesh, SyncDomain, get_state_sync_mesh
 from sparkai.agent.agent_dev_loop import DevelopmentLoop, CyclePhase, get_dev_loop
 from sparkai.agent.agent_context_references import ContextReferenceResolver, RefDomain, get_context_reference_resolver
+from sparkai.agent.agent_process_registry import ProcessRegistry, ProcessState as ProcState, ProcessType, get_process_registry
+from sparkai.agent.agent_cron_scheduler import CronScheduler, ScheduleType, JobState, get_cron_scheduler
+from sparkai.agent.agent_expression_evaluator import ExpressionEvaluator, ExpressionError, get_expression_evaluator
+from sparkai.agent.agent_class_registry import ClassRegistry, DataType, TypeDescriptor, get_class_registry
+from sparkai.agent.agent_multi_modal import MultiModalAgent, AnalysisDomain, get_multi_modal_agent
+from sparkai.agent.agent_import_pipeline import ImportPipeline, AssetCategory as ImportAssetCategory, ImportStatus, get_import_pipeline
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -305,6 +321,10 @@ from sparkai.engine.rendering_server import RenderingServer, get_rendering_serve
 from sparkai.engine.input_event_system import InputEventSystem, get_input_event_system
 from sparkai.engine.game_object import GameObject, GameObjectRegistry, get_game_object_registry
 from sparkai.engine.scene_manager import SceneManager, SceneState, get_scene_manager
+from sparkai.engine.terrain_system import TerrainSystem, TerrainType, NoiseAlgorithm, get_terrain_system
+from sparkai.engine.save_system import SaveSystem, SaveSlot, SaveStatus, get_save_system
+from sparkai.engine.network_sync import NetworkSync, SyncAuthority as NetSyncAuthority, get_network_sync
+from sparkai.engine.behavior_tree import BehaviorTree, NodeStatus, Blackboard, get_behavior_tree
 
 
 class RuntimeState(Enum):
@@ -503,6 +523,16 @@ class AgentRuntime:
         self._input_event_system: Optional[InputEventSystem] = None
         self._game_object_registry: Optional[GameObjectRegistry] = None
         self._scene_manager: Optional[SceneManager] = None
+        self._process_registry: Optional[ProcessRegistry] = None
+        self._cron_scheduler: Optional[CronScheduler] = None
+        self._expression_evaluator: Optional[ExpressionEvaluator] = None
+        self._class_registry: Optional[ClassRegistry] = None
+        self._multi_modal_agent: Optional[MultiModalAgent] = None
+        self._import_pipeline: Optional[ImportPipeline] = None
+        self._terrain_system: Optional[TerrainSystem] = None
+        self._save_system: Optional[SaveSystem] = None
+        self._network_sync: Optional[NetworkSync] = None
+        self._behavior_tree: Optional[BehaviorTree] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -664,6 +694,16 @@ class AgentRuntime:
             self._input_event_system = get_input_event_system()
             self._game_object_registry = get_game_object_registry()
             self._scene_manager = get_scene_manager()
+            self._process_registry = get_process_registry()
+            self._cron_scheduler = get_cron_scheduler()
+            self._expression_evaluator = get_expression_evaluator()
+            self._class_registry = get_class_registry()
+            self._multi_modal_agent = get_multi_modal_agent()
+            self._import_pipeline = get_import_pipeline()
+            self._terrain_system = get_terrain_system()
+            self._save_system = get_save_system()
+            self._network_sync = get_network_sync()
+            self._behavior_tree = get_behavior_tree()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -784,6 +824,16 @@ class AgentRuntime:
             self._integration.register_subsystem("input_event_system", self._input_event_system)
             self._integration.register_subsystem("game_object_registry", self._game_object_registry)
             self._integration.register_subsystem("scene_manager", self._scene_manager)
+            self._integration.register_subsystem("process_registry", self._process_registry)
+            self._integration.register_subsystem("cron_scheduler", self._cron_scheduler)
+            self._integration.register_subsystem("expression_evaluator", self._expression_evaluator)
+            self._integration.register_subsystem("class_registry", self._class_registry)
+            self._integration.register_subsystem("multi_modal_agent", self._multi_modal_agent)
+            self._integration.register_subsystem("import_pipeline", self._import_pipeline)
+            self._integration.register_subsystem("terrain_system", self._terrain_system)
+            self._integration.register_subsystem("save_system", self._save_system)
+            self._integration.register_subsystem("network_sync", self._network_sync)
+            self._integration.register_subsystem("behavior_tree", self._behavior_tree)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -812,7 +862,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 145,
+                    "subsystems": 155,
                 }},
             ))
 
@@ -1610,6 +1660,46 @@ class AgentRuntime:
     def scene_manager(self) -> Optional[SceneManager]:
         return self._scene_manager
 
+    @property
+    def process_registry(self) -> Optional[ProcessRegistry]:
+        return self._process_registry
+
+    @property
+    def cron_scheduler(self) -> Optional[CronScheduler]:
+        return self._cron_scheduler
+
+    @property
+    def expression_evaluator(self) -> Optional[ExpressionEvaluator]:
+        return self._expression_evaluator
+
+    @property
+    def class_registry(self) -> Optional[ClassRegistry]:
+        return self._class_registry
+
+    @property
+    def multi_modal_agent(self) -> Optional[MultiModalAgent]:
+        return self._multi_modal_agent
+
+    @property
+    def import_pipeline(self) -> Optional[ImportPipeline]:
+        return self._import_pipeline
+
+    @property
+    def terrain_system(self) -> Optional[TerrainSystem]:
+        return self._terrain_system
+
+    @property
+    def save_system(self) -> Optional[SaveSystem]:
+        return self._save_system
+
+    @property
+    def network_sync(self) -> Optional[NetworkSync]:
+        return self._network_sync
+
+    @property
+    def behavior_tree(self) -> Optional[BehaviorTree]:
+        return self._behavior_tree
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -1769,6 +1859,16 @@ class AgentRuntime:
                 "input_event_system": self._input_event_system is not None,
                 "game_object_registry": self._game_object_registry is not None,
                 "scene_manager": self._scene_manager is not None,
+                "process_registry": self._process_registry is not None,
+                "cron_scheduler": self._cron_scheduler is not None,
+                "expression_evaluator": self._expression_evaluator is not None,
+                "class_registry": self._class_registry is not None,
+                "multi_modal_agent": self._multi_modal_agent is not None,
+                "import_pipeline": self._import_pipeline is not None,
+                "terrain_system": self._terrain_system is not None,
+                "save_system": self._save_system is not None,
+                "network_sync": self._network_sync is not None,
+                "behavior_tree": self._behavior_tree is not None,
             },
         }
 
@@ -2032,6 +2132,26 @@ class AgentRuntime:
             status["game_object_registry_stats"] = self._game_object_registry.get_stats()
         if self._scene_manager:
             status["scene_manager_stats"] = self._scene_manager.get_stats()
+        if self._process_registry:
+            status["process_registry_stats"] = self._process_registry.get_stats()
+        if self._cron_scheduler:
+            status["cron_scheduler_stats"] = self._cron_scheduler.get_stats()
+        if self._expression_evaluator:
+            status["expression_evaluator_stats"] = self._expression_evaluator.get_stats()
+        if self._class_registry:
+            status["class_registry_stats"] = self._class_registry.get_stats()
+        if self._multi_modal_agent:
+            status["multi_modal_stats"] = self._multi_modal_agent.get_stats()
+        if self._import_pipeline:
+            status["import_pipeline_stats"] = self._import_pipeline.get_stats()
+        if self._terrain_system:
+            status["terrain_system_stats"] = self._terrain_system.get_stats()
+        if self._save_system:
+            status["save_system_stats"] = self._save_system.get_stats()
+        if self._network_sync:
+            status["network_sync_stats"] = self._network_sync.get_stats()
+        if self._behavior_tree:
+            status["behavior_tree_stats"] = self._behavior_tree.get_stats()
         return status
 
 
