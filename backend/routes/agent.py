@@ -8722,3 +8722,634 @@ async def behavior_tree_blackboard(tree_id: str):
     if bb:
         return {"tree_id": tree_id, "data": bb.to_dict()}
     return {"error": "Tree not found"}
+
+
+# ============================================================
+# Math Utils Endpoints
+# ============================================================
+
+from sparkai.engine.math_utils import MathUtils, Vector2, Vector3, Rect2, Transform2D, Easing, Interpolation, Geometry2D, get_math_utils
+
+_math_utils = get_math_utils()
+
+
+class Vector2Request(BaseModel):
+    x: float = 0.0
+    y: float = 0.0
+
+
+class Vector3Request(BaseModel):
+    x: float = 0.0
+    y: float = 0.0
+    z: float = 0.0
+
+
+class Rect2Request(BaseModel):
+    x: float = 0.0
+    y: float = 0.0
+    width: float = 0.0
+    height: float = 0.0
+
+
+class Transform2DRequest(BaseModel):
+    origin: Vector2Request = Vector2Request()
+    rotation: float = 0.0
+    scale: Vector2Request = Vector2Request(x=1.0, y=1.0)
+    translation: Vector2Request = Vector2Request()
+
+
+@router.get("/math/stats")
+async def math_stats():
+    return _math_utils.get_stats()
+
+
+@router.get("/math/easing-curves")
+async def math_easing_curves():
+    return {"curves": Easing.list_all()}
+
+
+@router.get("/math/easing/{curve_name}")
+async def math_easing(curve_name: str, t: float = 0.5):
+    val = Easing.apply(curve_name, t)
+    return {"curve": curve_name, "t": t, "value": val}
+
+
+@router.post("/math/vector2/distance")
+async def math_vector2_distance(a: Vector2Request, b: Vector2Request):
+    va = Vector2(a.x, a.y)
+    vb = Vector2(b.x, b.y)
+    return {"distance": va.distance_to(vb), "dot": va.dot(vb), "cross": va.cross(vb)}
+
+
+@router.post("/math/vector2/rotate")
+async def math_vector2_rotate(v: Vector2Request, angle: float = 0.0):
+    vec = Vector2(v.x, v.y)
+    rotated = vec.rotate(angle)
+    return rotated.to_dict()
+
+
+@router.post("/math/geometry/point-in-polygon")
+async def math_geometry_point_in_polygon(point: Vector2Request, polygon: List[Vector2Request]):
+    pt = Vector2(point.x, point.y)
+    poly = [Vector2(p.x, p.y) for p in polygon]
+    return {"inside": Geometry2D.point_in_polygon(pt, poly)}
+
+
+@router.post("/math/interpolation/lerp")
+async def math_interpolation_lerp(a: float = 0.0, b: float = 1.0, t: float = 0.5):
+    return {"result": Interpolation.lerp(a, b, t), "smoothstep": Interpolation.smoothstep(a, b, t)}
+
+
+# ============================================================
+# GUI System Endpoints
+# ============================================================
+
+from sparkai.engine.gui_system import GUISystem, Widget, Container, Button, Label, Slider, TextInput, Image, get_gui_system, LayoutMode, WidgetState, Theme
+
+_gui_system = get_gui_system()
+
+
+class WidgetCreateRequest(BaseModel):
+    widget_type: str = "label"
+    name: str = ""
+    text: str = ""
+    x: float = 0.0
+    y: float = 0.0
+    width: float = 100.0
+    height: float = 30.0
+    parent_id: str = ""
+
+
+@router.get("/gui/stats")
+async def gui_stats():
+    return _gui_system.get_stats()
+
+
+@router.post("/gui/create-root")
+async def gui_create_root(width: float = 800, height: float = 600):
+    root = _gui_system.create_root(width, height)
+    return root.to_dict()
+
+
+@router.get("/gui/root")
+async def gui_get_root():
+    root = _gui_system.root
+    if root:
+        return root.to_dict()
+    return {"error": "No root container"}
+
+
+@router.post("/gui/create-widget")
+async def gui_create_widget(req: WidgetCreateRequest):
+    parent = None
+    if req.parent_id:
+        parent_widget = _gui_system.find_widget(req.parent_id)
+        if isinstance(parent_widget, Container):
+            parent = parent_widget
+    if req.widget_type == "label":
+        widget = _gui_system.create_label(text=req.text or req.name, parent=parent, x=req.x, y=req.y, width=req.width, height=req.height)
+    elif req.widget_type == "button":
+        widget = _gui_system.create_button(text=req.text or req.name, parent=parent, x=req.x, y=req.y, width=req.width, height=req.height)
+    elif req.widget_type == "container":
+        widget = _gui_system.create_container(parent=parent, name=req.name, x=req.x, y=req.y, width=req.width, height=req.height)
+    else:
+        return {"error": f"Unknown widget type: {req.widget_type}"}
+    return widget.to_dict()
+
+
+@router.get("/gui/widget/{widget_id}")
+async def gui_get_widget(widget_id: str):
+    widget = _gui_system.find_widget(widget_id)
+    if widget:
+        return widget.to_dict()
+    return {"error": "Widget not found"}
+
+
+@router.post("/gui/handle-mouse-click")
+async def gui_handle_mouse_click(mx: float = 0.0, my: float = 0.0):
+    widget_id = _gui_system.handle_mouse_click(mx, my)
+    return {"clicked_widget": widget_id}
+
+
+@router.post("/gui/handle-mouse-move")
+async def gui_handle_mouse_move(mx: float = 0.0, my: float = 0.0):
+    _gui_system.handle_mouse_move(mx, my)
+    return {"hover_widget": _gui_system._hover_widget}
+
+
+@router.get("/gui/themes")
+async def gui_themes():
+    return {"themes": [t.to_dict() for t in _gui_system._themes.values()], "active": _gui_system._active_theme}
+
+
+@router.post("/gui/set-theme")
+async def gui_set_theme(name: str = "default"):
+    success = _gui_system.set_theme(name)
+    return {"success": success, "theme": _gui_system._active_theme}
+
+
+# ============================================================
+# Config Manager Endpoints
+# ============================================================
+
+from sparkai.engine.config_manager import ConfigManager, ConfigScope, ConfigEntry, ConfigSchema, get_config_manager
+
+_config_manager = get_config_manager()
+
+
+class ConfigSetRequest(BaseModel):
+    key: str
+    value: Any
+    scope: str = "project"
+    description: str = ""
+
+
+@router.get("/config/stats")
+async def config_stats():
+    return _config_manager.get_stats()
+
+
+@router.get("/config/keys")
+async def config_keys(scope: Optional[str] = None):
+    cscope = ConfigScope(scope) if scope else None
+    return {"keys": _config_manager.list_keys(scope=cscope)}
+
+
+@router.get("/config/all")
+async def config_all():
+    return _config_manager.get_all()
+
+
+@router.get("/config/validate")
+async def config_validate():
+    return _config_manager.validate_all()
+
+
+@router.get("/config/scope/{scope}")
+async def config_scope(scope: str):
+    try:
+        cscope = ConfigScope(scope)
+        return {"scope": scope, "config": _config_manager.get_scope(cscope)}
+    except ValueError:
+        return {"error": f"Invalid scope: {scope}"}
+
+
+@router.get("/config/{key}")
+async def config_get(key: str):
+    return {"key": key, "value": _config_manager.get(key)}
+
+
+@router.post("/config/set")
+async def config_set(req: ConfigSetRequest):
+    scope = ConfigScope(req.scope) if req.scope in [s.value for s in ConfigScope] else ConfigScope.PROJECT
+    entry = _config_manager.set(req.key, req.value, scope, req.description)
+    return entry.to_dict()
+
+
+@router.delete("/config/{key}")
+async def config_delete(key: str):
+    return {"deleted": _config_manager.delete(key)}
+
+
+@router.post("/config/load")
+async def config_load(file_path: str):
+    count = _config_manager.load_from_file(file_path)
+    return {"loaded": count, "file": file_path}
+
+
+@router.post("/config/save")
+async def config_save(file_path: str = ""):
+    count = _config_manager.save_to_file(file_path)
+    return {"saved": count}
+
+
+# ============================================================
+# Animation Controller Endpoints
+# ============================================================
+
+from sparkai.engine.animation_controller import (
+    AnimationController, AnimState, AnimClip, AnimLayer, Transition, AnimCondition,
+    BlendTree, BlendTreeNode, AnimParameter, AnimParameterType, AnimClipMode,
+    AnimConditionMode, BlendTreeType, get_animation_controller,
+)
+
+_animation_controller = get_animation_controller()
+
+
+class AnimClipCreateRequest(BaseModel):
+    name: str
+    duration: float = 1.0
+    mode: str = "loop"
+    speed: float = 1.0
+
+
+class AnimParameterRequest(BaseModel):
+    name: str
+    param_type: str = "float"
+    default_value: Any = None
+
+
+class AnimStateCreateRequest(BaseModel):
+    name: str
+    layer_id: str = ""
+    clip_id: Optional[str] = None
+    is_default: bool = False
+
+
+class AnimTransitionCreateRequest(BaseModel):
+    from_state: str
+    to_state: str
+    duration: float = 0.2
+    conditions: Optional[List[Dict[str, Any]]] = None
+
+
+@router.get("/anim-controller/stats")
+async def anim_controller_stats():
+    return _animation_controller.get_stats()
+
+
+@router.get("/anim-controller/active-states")
+async def anim_controller_active_states():
+    return {"active_states": _animation_controller.get_active_state_names()}
+
+
+@router.post("/anim-controller/create-clip")
+async def anim_controller_create_clip(req: AnimClipCreateRequest):
+    mode = AnimClipMode(req.mode) if req.mode in [m.value for m in AnimClipMode] else AnimClipMode.LOOP
+    clip = _animation_controller.create_clip(req.name, req.duration, mode, req.speed)
+    return clip.to_dict()
+
+
+@router.get("/anim-controller/clips")
+async def anim_controller_clips():
+    return {"clips": [c.to_dict() for c in _animation_controller._clip_library.values()]}
+
+
+@router.get("/anim-controller/clip/{clip_id}")
+async def anim_controller_get_clip(clip_id: str):
+    clip = _animation_controller.get_clip(clip_id)
+    if clip:
+        return clip.to_dict()
+    return {"error": "Clip not found"}
+
+
+@router.post("/anim-controller/create-parameter")
+async def anim_controller_create_parameter(req: AnimParameterRequest):
+    ptype = AnimParameterType(req.param_type) if req.param_type in [t.value for t in AnimParameterType] else AnimParameterType.FLOAT
+    param = _animation_controller.create_parameter(req.name, ptype)
+    return param.to_dict()
+
+
+@router.post("/anim-controller/set-parameter")
+async def anim_controller_set_parameter(name: str, value: Any):
+    param = _animation_controller._parameters.get(name)
+    if not param:
+        return {"error": "Parameter not found"}
+    if param.param_type == AnimParameterType.FLOAT:
+        _animation_controller.set_float(name, float(value))
+    elif param.param_type == AnimParameterType.INT:
+        _animation_controller.set_int(name, int(value))
+    elif param.param_type == AnimParameterType.BOOL:
+        _animation_controller.set_bool(name, bool(value))
+    elif param.param_type == AnimParameterType.TRIGGER:
+        _animation_controller.set_trigger(name)
+    return {"name": name, "value": _animation_controller.get_parameter_value(name)}
+
+
+@router.get("/anim-controller/parameters")
+async def anim_controller_parameters():
+    return {"parameters": [p.to_dict() for p in _animation_controller._parameters.values()]}
+
+
+@router.post("/anim-controller/create-layer")
+async def anim_controller_create_layer(name: str, weight: float = 1.0):
+    layer = _animation_controller.create_layer(name, weight)
+    return layer.to_dict()
+
+
+@router.get("/anim-controller/layers")
+async def anim_controller_layers():
+    return {"layers": [l.to_dict() for l in _animation_controller._layers.values()]}
+
+
+@router.post("/anim-controller/update")
+async def anim_controller_update(delta_time: float = 0.016):
+    _animation_controller.update(delta_time)
+    return _animation_controller.get_stats()
+
+
+# ============================================================
+# Trajectory Recorder V2 Endpoints
+# ============================================================
+
+from sparkai.agent.agent_trajectory import TrajectoryRecorder, TrajectoryPhase, TrajectorySession, get_trajectory_recorder
+
+_trajectory_recorder_v2 = get_trajectory_recorder()
+
+
+class TrajectoryRecordRequest(BaseModel):
+    session_id: str
+    phase: str = "observe"
+    action: str = ""
+    data: Optional[Dict[str, Any]] = None
+
+
+@router.get("/trajectory-v2/stats")
+async def trajectory_v2_stats():
+    return _trajectory_recorder_v2.get_stats()
+
+
+@router.get("/trajectory-v2/sessions")
+async def trajectory_v2_sessions():
+    return {"sessions": [s.to_dict() for s in _trajectory_recorder_v2._sessions.values()]}
+
+
+@router.get("/trajectory-v2/session/{session_id}")
+async def trajectory_v2_get_session(session_id: str):
+    session = _trajectory_recorder_v2.get_session(session_id)
+    if session:
+        return session.to_full_dict()
+    return {"error": "Session not found"}
+
+
+@router.post("/trajectory-v2/start-session")
+async def trajectory_v2_start_session(session_id: str = "", project_name: str = ""):
+    session = _trajectory_recorder_v2.start_session(session_id, project_name)
+    return session.to_dict()
+
+
+@router.post("/trajectory-v2/record")
+async def trajectory_v2_record(req: TrajectoryRecordRequest):
+    phase = TrajectoryPhase(req.phase) if req.phase in [p.value for p in TrajectoryPhase] else TrajectoryPhase.OBSERVE
+    step = _trajectory_recorder_v2.record(req.session_id, phase, req.action, req.data)
+    return step.to_dict()
+
+
+@router.post("/trajectory-v2/end-session")
+async def trajectory_v2_end_session(session_id: str, outcome: str = "success"):
+    session = _trajectory_recorder_v2.end_session(session_id, outcome)
+    if session:
+        return session.to_dict()
+    return {"error": "Session not found"}
+
+
+@router.get("/trajectory-v2/replay/{session_id}")
+async def trajectory_v2_replay(session_id: str):
+    summary = _trajectory_recorder_v2.replay_summary(session_id)
+    return summary
+
+
+@router.post("/trajectory-v2/export/{session_id}")
+async def trajectory_v2_export(session_id: str, file_path: str = ""):
+    success = _trajectory_recorder_v2.export_session(session_id, file_path)
+    return {"success": success, "file": file_path}
+
+
+@router.post("/trajectory-v2/import")
+async def trajectory_v2_import_session(file_path: str):
+    session_id = _trajectory_recorder_v2.import_session(file_path)
+    if session_id:
+        return {"session_id": session_id}
+    return {"error": "Import failed"}
+
+
+# ============================================================
+# Skill Command Registry Endpoints
+# ============================================================
+
+from sparkai.agent.agent_skill_commands import SkillCommandRegistry, CommandCategory, CommandDef, get_skill_command_registry
+
+_skill_command_registry = get_skill_command_registry()
+
+
+class CommandExecuteRequest(BaseModel):
+    command_name: str
+    args: Dict[str, Any] = {}
+    user_id: str = "api"
+    project_id: str = ""
+
+
+@router.get("/commands/stats")
+async def commands_stats():
+    return _skill_command_registry.get_stats()
+
+
+@router.get("/commands/list")
+async def commands_list(category: Optional[str] = None):
+    if category:
+        cat = CommandCategory(category) if category in [c.value for c in CommandCategory] else None
+        cmds = _skill_command_registry.list_commands(cat)
+    else:
+        cmds = _skill_command_registry.list_commands()
+    return {"commands": [c.to_dict() for c in cmds]}
+
+
+@router.get("/commands/help/{command_name}")
+async def commands_help(command_name: str):
+    help_text = _skill_command_registry.get_help(command_name)
+    return {"command": command_name, "help": help_text}
+
+
+@router.post("/commands/execute")
+async def commands_execute(req: CommandExecuteRequest):
+    result = _skill_command_registry.execute(req.command_name, req.args, req.user_id, req.project_id)
+    return result.to_dict()
+
+
+@router.get("/commands/history")
+async def commands_history(limit: int = 20):
+    return {"history": [r.to_dict() for r in _skill_command_registry.get_history(limit)]}
+
+
+# ============================================================
+# Session Store Endpoints
+# ============================================================
+
+from sparkai.agent.agent_session_persistence import SessionStore, SessionStatus, SessionRecord, get_session_store
+
+_session_store = get_session_store()
+
+
+class SessionCreateRequest(BaseModel):
+    title: str = "Session"
+    project_name: str = ""
+    tags: List[str] = []
+    metadata: Optional[Dict[str, Any]] = None
+
+
+@router.get("/sessions/store/stats")
+async def sessions_store_stats():
+    return _session_store.get_stats()
+
+
+@router.post("/sessions/store/create")
+async def sessions_store_create(req: SessionCreateRequest):
+    record = _session_store.create(req.title, req.project_name, req.tags, req.metadata)
+    return record.to_dict()
+
+
+@router.get("/sessions/store/{record_id}")
+async def sessions_store_get(record_id: str):
+    record = _session_store.get(record_id)
+    if record:
+        return record.to_dict()
+    return {"error": "Record not found"}
+
+
+@router.post("/sessions/store/update")
+async def sessions_store_update(record_id: str, data: Dict[str, Any]):
+    record = _session_store.update(record_id, data)
+    if record:
+        return record.to_dict()
+    return {"error": "Record not found"}
+
+
+@router.get("/sessions/store/search")
+async def sessions_store_search(query: str = "", tag: str = "", project_name: str = "", status: Optional[str] = None, limit: int = 20):
+    if status:
+        st = SessionStatus(status) if status in [s.value for s in SessionStatus] else None
+    else:
+        st = None
+    results = _session_store.search(query=query, tag=tag, project_name=project_name, status=st, limit=limit)
+    return {"results": [r.to_dict() for r in results]}
+
+
+@router.get("/sessions/store/active")
+async def sessions_store_active():
+    return {"active": [r.to_dict() for r in _session_store.find_active()]}
+
+
+@router.get("/sessions/store/tag/{tag}")
+async def sessions_store_by_tag(tag: str):
+    return {"records": [r.to_dict() for r in _session_store.find_by_tag(tag)]}
+
+
+@router.post("/sessions/store/save")
+async def sessions_store_save(file_path: str = ""):
+    success = _session_store.save_to_disk(file_path)
+    return {"success": success}
+
+
+@router.post("/sessions/store/load")
+async def sessions_store_load(file_path: str = ""):
+    success = _session_store.load_from_disk(file_path)
+    return {"success": success}
+
+
+@router.delete("/sessions/store/{record_id}")
+async def sessions_store_delete(record_id: str):
+    return {"deleted": _session_store.delete(record_id)}
+
+
+# ============================================================
+# Platform Bridge Endpoints
+# ============================================================
+
+from sparkai.agent.agent_platform_bridge import PlatformBridge, PlatformType, PlatformMessage, MessageRole, MessageFormat, get_platform_bridge
+
+_platform_bridge = get_platform_bridge()
+
+
+class BridgeSendRequest(BaseModel):
+    platform: str = "web"
+    role: str = "assistant"
+    content: str = ""
+    format: str = "markdown"
+    target_id: str = ""
+    metadata: Optional[Dict[str, Any]] = None
+
+
+@router.get("/platform-bridge/stats")
+async def platform_bridge_stats():
+    return _platform_bridge.get_stats()
+
+
+@router.get("/platform-bridge/platforms")
+async def platform_bridge_platforms():
+    configs = _platform_bridge.list_platforms()
+    return {"platforms": {k.value: v for k, v in configs.items()}}
+
+
+@router.post("/platform-bridge/send")
+async def platform_bridge_send(req: BridgeSendRequest):
+    platform = PlatformType(req.platform) if req.platform in [p.value for p in PlatformType] else PlatformType.WEB
+    role = MessageRole(req.role) if req.role in [r.value for r in MessageRole] else MessageRole.ASSISTANT
+    fmt = MessageFormat(req.format) if req.format in [f.value for f in MessageFormat] else MessageFormat.MARKDOWN
+    msg = _platform_bridge.send(platform, role, req.content, fmt, req.target_id, req.metadata)
+    return msg.to_dict()
+
+
+@router.post("/platform-bridge/broadcast")
+async def platform_bridge_broadcast(content: str, role: str = "system"):
+    r = MessageRole(role) if role in [ro.value for ro in MessageRole] else MessageRole.SYSTEM
+    msgs = _platform_bridge.send_to_all(r, content)
+    return {"broadcast_count": len(msgs)}
+
+
+@router.get("/platform-bridge/messages")
+async def platform_bridge_messages(platform: Optional[str] = None, limit: int = 50):
+    if platform:
+        p = PlatformType(platform) if platform in [pt.value for pt in PlatformType] else None
+    else:
+        p = None
+    msgs = _platform_bridge.get_messages(p, limit)
+    return {"messages": [m.to_dict() for m in msgs]}
+
+
+@router.get("/platform-bridge/config/{platform}")
+async def platform_bridge_get_config(platform: str):
+    if platform in [p.value for p in PlatformType]:
+        pt = PlatformType(platform)
+        cfg = _platform_bridge.get_config(pt)
+        if cfg:
+            return {"platform": platform, "config": cfg.to_dict()}
+    return {"error": "Platform not found"}
+
+
+@router.post("/platform-bridge/register-handler")
+async def platform_bridge_register_handler(platform: str, callback_url: str = ""):
+    if platform not in [p.value for p in PlatformType]:
+        return {"error": "Invalid platform"}
+    pt = PlatformType(platform)
+    _platform_bridge.register_handler(pt, lambda msg: {"status": "handled", "callback": callback_url, "msg": msg.to_dict()})
+    return {"success": True, "platform": platform}
