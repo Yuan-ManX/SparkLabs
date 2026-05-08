@@ -65,6 +65,10 @@ from sparkai.engine.terrain_system import TerrainSystem, get_terrain_system
 from sparkai.engine.save_system import SaveSystem, get_save_system
 from sparkai.engine.network_sync import NetworkSync, get_network_sync
 from sparkai.engine.behavior_tree import BehaviorTree, get_behavior_tree
+from sparkai.engine.math_utils import MathUtils, Vector2, Vector3, Rect2, Transform2D, get_math_utils
+from sparkai.engine.gui_system import GUISystem, Widget, Container, Button, Label, get_gui_system
+from sparkai.engine.config_manager import ConfigManager, ConfigScope, ConfigEntry, get_config_manager
+from sparkai.engine.animation_controller import AnimationController, AnimState, AnimClip, get_animation_controller
 
 
 class SparkEngine:
@@ -134,6 +138,10 @@ class SparkEngine:
         self._save_system: SaveSystem = get_save_system()
         self._network_sync: NetworkSync = get_network_sync()
         self._behavior_tree: BehaviorTree = get_behavior_tree()
+        self._math_utils: MathUtils = get_math_utils()
+        self._gui_system: GUISystem = get_gui_system()
+        self._config_manager: ConfigManager = get_config_manager()
+        self._animation_controller: AnimationController = get_animation_controller()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -160,6 +168,7 @@ class SparkEngine:
         self._tick_worlds(dt)
         self._behavior_system.step_post(dt)
         self._behavior_tree.tick_all()
+        self._animation_controller.update(dt)
         self._network_sync.tick()
         self._rendering_server.end_frame()
         self._game_loop.register_phase_handler(
@@ -336,6 +345,10 @@ class SparkEngine:
             "save_system": self._save_system.get_stats(),
             "network_sync": self._network_sync.get_stats(),
             "behavior_tree": self._behavior_tree.get_stats(),
+            "math_utils": self._math_utils.get_stats(),
+            "gui_system": self._gui_system.get_stats(),
+            "config_manager": self._config_manager.get_stats(),
+            "animation_controller": self._animation_controller.get_stats(),
         }
 
     @property
@@ -509,6 +522,22 @@ class SparkEngine:
     @property
     def behavior_tree(self) -> BehaviorTree:
         return self._behavior_tree
+
+    @property
+    def math_utils(self) -> MathUtils:
+        return self._math_utils
+
+    @property
+    def gui_system(self) -> GUISystem:
+        return self._gui_system
+
+    @property
+    def config_manager(self) -> ConfigManager:
+        return self._config_manager
+
+    @property
+    def animation_controller(self) -> AnimationController:
+        return self._animation_controller
 
 
 @dataclass
