@@ -1517,6 +1517,176 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "behavior_tree_error", "error": str(e)})
 
+                elif msg_type == "math_utils":
+                    try:
+                        from sparkai.engine.math_utils import get_math_utils, Easing, Geometry2D, Interpolation, Vector2
+                        mu = get_math_utils()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "math_utils_stats", "data": mu.get_stats()})
+                        elif sub == "easing_curves":
+                            await manager.send_to_client(client_id, {"type": "math_easing_curves", "data": Easing.list_all()})
+                        elif sub == "easing":
+                            curve = data.get("curve", "linear")
+                            t = data.get("t", 0.5)
+                            await manager.send_to_client(client_id, {"type": "math_easing", "data": {"curve": curve, "t": t, "value": Easing.apply(curve, t)}})
+                        elif sub == "lerp":
+                            result = Interpolation.lerp(data.get("a", 0.0), data.get("b", 1.0), data.get("t", 0.5))
+                            await manager.send_to_client(client_id, {"type": "math_lerp", "data": {"result": result}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "math_utils_error", "error": str(e)})
+
+                elif msg_type == "gui_system":
+                    try:
+                        from sparkai.engine.gui_system import get_gui_system
+                        gs = get_gui_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "gui_system_stats", "data": gs.get_stats()})
+                        elif sub == "root":
+                            root = gs.root
+                            await manager.send_to_client(client_id, {"type": "gui_system_root", "data": root.to_dict() if root else None})
+                        elif sub == "create_root":
+                            gs.create_root(data.get("width", 800), data.get("height", 600))
+                            await manager.send_to_client(client_id, {"type": "gui_system_created", "data": gs.root.to_dict() if gs.root else None})
+                        elif sub == "mouse_click":
+                            widget_id = gs.handle_mouse_click(data.get("x", 0.0), data.get("y", 0.0))
+                            await manager.send_to_client(client_id, {"type": "gui_mouse_click", "data": {"widget": widget_id}})
+                        elif sub == "themes":
+                            await manager.send_to_client(client_id, {"type": "gui_themes", "data": {"active": gs._active_theme, "themes": list(gs._themes.keys())}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "gui_system_error", "error": str(e)})
+
+                elif msg_type == "config_manager":
+                    try:
+                        from sparkai.engine.config_manager import get_config_manager
+                        cm = get_config_manager()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "config_manager_stats", "data": cm.get_stats()})
+                        elif sub == "get":
+                            key = data.get("key", "")
+                            await manager.send_to_client(client_id, {"type": "config_manager_value", "data": {"key": key, "value": cm.get(key)}})
+                        elif sub == "keys":
+                            await manager.send_to_client(client_id, {"type": "config_manager_keys", "data": cm.list_keys()})
+                        elif sub == "all":
+                            await manager.send_to_client(client_id, {"type": "config_manager_all", "data": cm.get_all()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "config_manager_error", "error": str(e)})
+
+                elif msg_type == "animation_controller":
+                    try:
+                        from sparkai.engine.animation_controller import get_animation_controller
+                        ac = get_animation_controller()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "animation_controller_stats", "data": ac.get_stats()})
+                        elif sub == "active_states":
+                            await manager.send_to_client(client_id, {"type": "animation_active_states", "data": ac.get_active_state_names()})
+                        elif sub == "clips":
+                            clips = [c.to_dict() for c in ac._clip_library.values()]
+                            await manager.send_to_client(client_id, {"type": "animation_clips", "data": clips})
+                        elif sub == "parameters":
+                            params = [p.to_dict() for p in ac._parameters.values()]
+                            await manager.send_to_client(client_id, {"type": "animation_parameters", "data": params})
+                        elif sub == "update":
+                            ac.update(data.get("delta_time", 0.016))
+                            await manager.send_to_client(client_id, {"type": "animation_updated", "data": ac.get_stats()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "animation_controller_error", "error": str(e)})
+
+                elif msg_type == "trajectory_v2":
+                    try:
+                        from sparkai.agent.agent_trajectory import get_trajectory_recorder, TrajectoryPhase
+                        tr = get_trajectory_recorder()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "trajectory_v2_stats", "data": tr.get_stats()})
+                        elif sub == "sessions":
+                            sessions = [s.to_dict() for s in tr._sessions.values()]
+                            await manager.send_to_client(client_id, {"type": "trajectory_v2_sessions", "data": sessions})
+                        elif sub == "start":
+                            session = tr.start_session(data.get("session_id", ""), data.get("project_name", ""))
+                            await manager.send_to_client(client_id, {"type": "trajectory_v2_started", "data": session.to_dict()})
+                        elif sub == "end":
+                            session = tr.end_session(data.get("session_id", ""), data.get("outcome", "success"))
+                            await manager.send_to_client(client_id, {"type": "trajectory_v2_ended", "data": session.to_dict() if session else None})
+                        elif sub == "replay":
+                            summary = tr.replay_summary(data.get("session_id", ""))
+                            await manager.send_to_client(client_id, {"type": "trajectory_v2_replay", "data": summary})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "trajectory_v2_error", "error": str(e)})
+
+                elif msg_type == "skill_commands":
+                    try:
+                        from sparkai.agent.agent_skill_commands import get_skill_command_registry
+                        scr = get_skill_command_registry()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "skill_commands_stats", "data": scr.get_stats()})
+                        elif sub == "list":
+                            cmds = [c.to_dict() for c in scr.list_commands()]
+                            await manager.send_to_client(client_id, {"type": "skill_commands_list", "data": cmds})
+                        elif sub == "help":
+                            cmd_name = data.get("command", "")
+                            help_text = scr.get_help(cmd_name)
+                            await manager.send_to_client(client_id, {"type": "skill_commands_help", "data": {"command": cmd_name, "help": help_text}})
+                        elif sub == "execute":
+                            result = scr.execute(data.get("command", ""), data.get("args", {}), data.get("user_id", "ws"))
+                            await manager.send_to_client(client_id, {"type": "skill_commands_result", "data": result.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "skill_commands_error", "error": str(e)})
+
+                elif msg_type == "session_store":
+                    try:
+                        from sparkai.agent.agent_session_persistence import get_session_store
+                        ss = get_session_store()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "session_store_stats", "data": ss.get_stats()})
+                        elif sub == "search":
+                            results = ss.search(
+                                query=data.get("query", ""),
+                                tag=data.get("tag", ""),
+                                project_name=data.get("project_name", ""),
+                                limit=data.get("limit", 20),
+                            )
+                            await manager.send_to_client(client_id, {"type": "session_store_search", "data": [r.to_dict() for r in results]})
+                        elif sub == "active":
+                            active = [r.to_dict() for r in ss.find_active()]
+                            await manager.send_to_client(client_id, {"type": "session_store_active", "data": active})
+                        elif sub == "create":
+                            record = ss.create(
+                                data.get("title", "WS Session"),
+                                data.get("project_name", ""),
+                                data.get("tags", []),
+                            )
+                            await manager.send_to_client(client_id, {"type": "session_store_created", "data": record.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "session_store_error", "error": str(e)})
+
+                elif msg_type == "platform_bridge":
+                    try:
+                        from sparkai.agent.agent_platform_bridge import get_platform_bridge, PlatformType, MessageRole, MessageFormat
+                        pb = get_platform_bridge()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "platform_bridge_stats", "data": pb.get_stats()})
+                        elif sub == "platforms":
+                            configs = pb.list_platforms()
+                            await manager.send_to_client(client_id, {"type": "platform_bridge_platforms", "data": {k.value: v for k, v in configs.items()}})
+                        elif sub == "send":
+                            platform = PlatformType(data.get("platform", "web"))
+                            role = MessageRole(data.get("role", "assistant"))
+                            fmt = MessageFormat(data.get("format", "markdown"))
+                            msg = pb.send(platform, role, data.get("content", ""), fmt)
+                            await manager.send_to_client(client_id, {"type": "platform_bridge_sent", "data": msg.to_dict()})
+                        elif sub == "broadcast":
+                            msgs = pb.send_to_all(MessageRole.SYSTEM, data.get("content", ""))
+                            await manager.send_to_client(client_id, {"type": "platform_bridge_broadcast", "data": {"count": len(msgs)}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "platform_bridge_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
