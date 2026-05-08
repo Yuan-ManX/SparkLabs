@@ -1395,6 +1395,128 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "scene_manager_error", "error": str(e)})
 
+                elif msg_type == "process_registry":
+                    try:
+                        from sparkai.agent.agent_process_registry import get_process_registry
+                        pr = get_process_registry()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "process_registry_stats", "data": pr.get_stats()})
+                        elif sub == "list":
+                            await manager.send_to_client(client_id, {"type": "process_registry_list", "data": [p.to_dict() for p in pr.list_all()]})
+                        elif sub == "active":
+                            await manager.send_to_client(client_id, {"type": "process_registry_active", "data": [p.to_dict() for p in pr.list_active()]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "process_registry_error", "error": str(e)})
+
+                elif msg_type == "cron_scheduler":
+                    try:
+                        from sparkai.agent.agent_cron_scheduler import get_cron_scheduler
+                        cs = get_cron_scheduler()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "cron_scheduler_stats", "data": cs.get_stats()})
+                        elif sub == "jobs":
+                            await manager.send_to_client(client_id, {"type": "cron_scheduler_jobs", "data": [
+                                {"job_id": j.job_id, "name": j.name, "state": j.state.value} for j in cs._jobs.values()
+                            ]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "cron_scheduler_error", "error": str(e)})
+
+                elif msg_type == "expression_evaluator":
+                    try:
+                        from sparkai.agent.agent_expression_evaluator import get_expression_evaluator
+                        ee = get_expression_evaluator()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "expression_evaluator_stats", "data": ee.get_stats()})
+                        elif sub == "evaluate":
+                            expr = data.get("expression", "")
+                            result = ee.evaluate(expr)
+                            await manager.send_to_client(client_id, {"type": "expression_evaluator_result", "data": {"expression": expr, "result": result}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "expression_evaluator_error", "error": str(e)})
+
+                elif msg_type == "class_registry":
+                    try:
+                        from sparkai.agent.agent_class_registry import get_class_registry
+                        cr = get_class_registry()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "class_registry_stats", "data": cr.get_stats()})
+                        elif sub == "list":
+                            await manager.send_to_client(client_id, {"type": "class_registry_types", "data": [t.to_dict() for t in cr.list_all()]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "class_registry_error", "error": str(e)})
+
+                elif msg_type == "multi_modal":
+                    try:
+                        from sparkai.agent.agent_multi_modal import get_multi_modal_agent
+                        mm = get_multi_modal_agent()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "multi_modal_stats", "data": mm.get_stats()})
+                        elif sub == "reports":
+                            await manager.send_to_client(client_id, {"type": "multi_modal_reports", "data": [r.to_dict() for r in mm.list_reports()]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "multi_modal_error", "error": str(e)})
+
+                elif msg_type == "import_pipeline":
+                    try:
+                        from sparkai.agent.agent_import_pipeline import get_import_pipeline
+                        ip = get_import_pipeline()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "import_pipeline_stats", "data": ip.get_stats()})
+                        elif sub == "formats":
+                            await manager.send_to_client(client_id, {"type": "import_pipeline_formats", "data": ip.list_supported_formats()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "import_pipeline_error", "error": str(e)})
+
+                elif msg_type == "terrain_system":
+                    try:
+                        from sparkai.engine.terrain_system import get_terrain_system
+                        ts = get_terrain_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "terrain_system_stats", "data": ts.get_stats()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "terrain_system_error", "error": str(e)})
+
+                elif msg_type == "save_system":
+                    try:
+                        from sparkai.engine.save_system import get_save_system
+                        ss = get_save_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "save_system_stats", "data": ss.get_stats()})
+                        elif sub == "slots":
+                            await manager.send_to_client(client_id, {"type": "save_system_slots", "data": [s.to_dict() for s in ss.list_slots()]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "save_system_error", "error": str(e)})
+
+                elif msg_type == "network_sync":
+                    try:
+                        from sparkai.engine.network_sync import get_network_sync
+                        ns = get_network_sync()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "network_sync_stats", "data": ns.get_stats()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "network_sync_error", "error": str(e)})
+
+                elif msg_type == "behavior_tree":
+                    try:
+                        from sparkai.engine.behavior_tree import get_behavior_tree
+                        bt = get_behavior_tree()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "behavior_tree_stats", "data": bt.get_stats()})
+                        elif sub == "trees":
+                            await manager.send_to_client(client_id, {"type": "behavior_tree_trees", "data": bt.list_trees()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "behavior_tree_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
