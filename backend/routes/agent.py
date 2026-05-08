@@ -81,10 +81,20 @@ from sparkai.agent.agent_insights import InsightsEngine, get_insights_engine
 from sparkai.agent.agent_state_sync import StateSyncMesh, SyncDomain, get_state_sync_mesh
 from sparkai.agent.agent_dev_loop import DevelopmentLoop, CyclePhase, get_dev_loop
 from sparkai.agent.agent_context_references import ContextReferenceResolver, RefDomain, get_context_reference_resolver
+from sparkai.agent.agent_process_registry import ProcessRegistry, ProcessState as ProcState, ProcessType, get_process_registry
+from sparkai.agent.agent_cron_scheduler import CronScheduler, ScheduleType, JobState, get_cron_scheduler
+from sparkai.agent.agent_expression_evaluator import ExpressionEvaluator, ExpressionError, get_expression_evaluator
+from sparkai.agent.agent_class_registry import ClassRegistry, DataType, TypeDescriptor, get_class_registry
+from sparkai.agent.agent_multi_modal import MultiModalAgent, AnalysisDomain, get_multi_modal_agent
+from sparkai.agent.agent_import_pipeline import ImportPipeline, AssetCategory as ImportAssetCategory, ImportStatus, get_import_pipeline
 from sparkai.engine.rendering_server import RenderingServer, get_rendering_server
 from sparkai.engine.input_event_system import InputEventSystem, get_input_event_system
 from sparkai.engine.game_object import GameObject, GameObjectRegistry, create_game_object, get_game_object_registry
 from sparkai.engine.scene_manager import SceneManager, SceneState, get_scene_manager
+from sparkai.engine.terrain_system import TerrainSystem, TerrainType, NoiseAlgorithm, get_terrain_system
+from sparkai.engine.save_system import SaveSystem, SaveSlot, SaveStatus, get_save_system
+from sparkai.engine.network_sync import NetworkSync, SyncAuthority as NetSyncAuthority, get_network_sync
+from sparkai.engine.behavior_tree import BehaviorTree, NodeStatus, Blackboard, get_behavior_tree
 
 router = APIRouter()
 
@@ -8320,6 +8330,16 @@ async def game_objects_destroy_all():
 # === Scene Manager ===
 
 _scene_manager = get_scene_manager()
+_process_registry = get_process_registry()
+_cron_scheduler = get_cron_scheduler()
+_expression_evaluator = get_expression_evaluator()
+_class_registry = get_class_registry()
+_multi_modal_agent = get_multi_modal_agent()
+_import_pipeline = get_import_pipeline()
+_terrain_system = get_terrain_system()
+_save_system = get_save_system()
+_network_sync = get_network_sync()
+_behavior_tree = get_behavior_tree()
 
 
 @router.get("/scene-manager/stats")
@@ -8375,3 +8395,330 @@ async def scene_manager_active():
 async def scene_manager_clear_pool():
     _scene_manager.clear_pool()
     return {"success": True}
+
+
+# ============================================================
+# Process Registry Endpoints
+# ============================================================
+
+@router.get("/process-registry/stats")
+async def process_registry_stats():
+    return _process_registry.get_stats()
+
+
+@router.post("/process-registry/register")
+async def process_registry_register(name: str, command: str, process_type: str = "custom"):
+    try:
+        pt = ProcessType(process_type)
+    except ValueError:
+        pt = ProcessType.CUSTOM
+    entry = _process_registry.register(name=name, command=command, process_type=pt)
+    return entry.to_dict()
+
+
+@router.get("/process-registry/list")
+async def process_registry_list():
+    return {"processes": [p.to_dict() for p in _process_registry.list_all()]}
+
+
+@router.get("/process-registry/active")
+async def process_registry_active():
+    return {"processes": [p.to_dict() for p in _process_registry.list_active()]}
+
+
+@router.post("/process-registry/update-state")
+async def process_registry_update_state(process_id: str, state: str):
+    try:
+        ps = ProcState(state)
+    except ValueError:
+        return {"error": f"Invalid state: {state}"}
+    entry = _process_registry.update_state(process_id, ps)
+    if entry:
+        return entry.to_dict()
+    return {"error": "Process not found"}
+
+
+# ============================================================
+# Cron Scheduler Endpoints
+# ============================================================
+
+@router.get("/cron-scheduler/stats")
+async def cron_scheduler_stats():
+    return _cron_scheduler.get_stats()
+
+
+@router.post("/cron-scheduler/schedule-interval")
+async def cron_scheduler_schedule_interval(name: str, seconds: int):
+    def job():
+        return f"Cron job '{name}' executed"
+    job_obj = _cron_scheduler.schedule_interval(name, seconds, job)
+    return {"job_id": job_obj.job_id, "name": job_obj.name, "next_run_at": job_obj.next_run_at}
+
+
+@router.get("/cron-scheduler/jobs")
+async def cron_scheduler_jobs():
+    return {"jobs": [
+        {"job_id": j.job_id, "name": j.name, "state": j.state.value}
+        for j in _cron_scheduler._jobs.values()
+    ]}
+
+
+@router.post("/cron-scheduler/cancel")
+async def cron_scheduler_cancel(job_id: str):
+    return {"cancelled": _cron_scheduler.cancel(job_id)}
+
+
+@router.post("/cron-scheduler/start")
+async def cron_scheduler_start():
+    _cron_scheduler.start()
+    return {"running": True}
+
+
+@router.post("/cron-scheduler/stop")
+async def cron_scheduler_stop():
+    _cron_scheduler.stop()
+    return {"running": False}
+
+
+# ============================================================
+# Expression Evaluator Endpoints
+# ============================================================
+
+@router.get("/expression-evaluator/stats")
+async def expression_evaluator_stats():
+    return _expression_evaluator.get_stats()
+
+
+@router.post("/expression-evaluator/evaluate")
+async def expression_evaluator_evaluate(expression: str):
+    result = _expression_evaluator.evaluate(expression)
+    return {"expression": expression, "result": result, "type": type(result).__name__}
+
+
+@router.post("/expression-evaluator/evaluate-bool")
+async def expression_evaluator_evaluate_bool(expression: str):
+    result = _expression_evaluator.evaluate_bool(expression)
+    return {"expression": expression, "result": result}
+
+
+# ============================================================
+# Class Registry Endpoints
+# ============================================================
+
+@router.get("/class-registry/stats")
+async def class_registry_stats():
+    return _class_registry.get_stats()
+
+
+@router.get("/class-registry/types")
+async def class_registry_types():
+    types = _class_registry.list_all()
+    return {"types": [t.to_dict() for t in types]}
+
+
+@router.get("/class-registry/type/{type_name}")
+async def class_registry_get_type(type_name: str):
+    td = _class_registry.get(type_name)
+    if td:
+        return td.to_dict()
+    return {"error": f"Type '{type_name}' not found"}
+
+
+@router.get("/class-registry/search")
+async def class_registry_search(query: str):
+    results = _class_registry.search(query)
+    return {"results": [t.to_dict() for t in results]}
+
+
+@router.get("/class-registry/categories")
+async def class_registry_categories():
+    return {"categories": _class_registry.list_categories()}
+
+
+# ============================================================
+# Multi-Modal Agent Endpoints
+# ============================================================
+
+@router.get("/multi-modal/stats")
+async def multi_modal_stats():
+    return _multi_modal_agent.get_stats()
+
+
+@router.post("/multi-modal/analyze-sprite")
+async def multi_modal_analyze_sprite(asset_name: str, width: int = 0, height: int = 0, frame_count: int = 1):
+    dims = (width, height) if width > 0 and height > 0 else None
+    report = _multi_modal_agent.analyze_sprite(asset_name, dims, frame_count)
+    return report.to_dict()
+
+
+@router.post("/multi-modal/analyze-ui")
+async def multi_modal_analyze_ui(widget_count: int = 0):
+    report = _multi_modal_agent.analyze_ui_layout(widget_count)
+    return report.to_dict()
+
+
+@router.get("/multi-modal/reports")
+async def multi_modal_reports():
+    return {"reports": [r.to_dict() for r in _multi_modal_agent.list_reports()]}
+
+
+# ============================================================
+# Import Pipeline Endpoints
+# ============================================================
+
+@router.get("/import-pipeline/stats")
+async def import_pipeline_stats():
+    return _import_pipeline.get_stats()
+
+
+@router.post("/import-pipeline/import")
+async def import_pipeline_import(source_path: str):
+    entry = _import_pipeline.import_asset(source_path)
+    return entry.to_dict()
+
+
+@router.post("/import-pipeline/detect")
+async def import_pipeline_detect(file_path: str):
+    category, fmt_name = _import_pipeline.detect_format(file_path)
+    return {"category": category.value, "format": fmt_name, "supported": _import_pipeline.is_format_supported(file_path)}
+
+
+@router.get("/import-pipeline/list")
+async def import_pipeline_list(limit: int = 20):
+    entries = _import_pipeline.list_recent(limit)
+    return {"imports": [e.to_dict() for e in entries]}
+
+
+@router.get("/import-pipeline/formats")
+async def import_pipeline_formats():
+    return {"formats": _import_pipeline.list_supported_formats()}
+
+
+# ============================================================
+# Terrain System Endpoints
+# ============================================================
+
+@router.get("/terrain-system/stats")
+async def terrain_system_stats():
+    return _terrain_system.get_stats()
+
+
+@router.post("/terrain-system/generate")
+async def terrain_system_generate(width: int = 32, height: int = 32, scale: float = 0.05, octaves: int = 4):
+    cells = _terrain_system.generate_terrain(width, height, scale, octaves)
+    result = [[c.to_dict() for c in row] for row in cells]
+    return {"width": width, "height": height, "terrain": result}
+
+
+@router.get("/terrain-system/biomes")
+async def terrain_system_biomes():
+    return {"biomes": [
+        {"name": b.name, "terrain": b.terrain_type.value}
+        for b in _terrain_system.list_biomes()
+    ]}
+
+
+# ============================================================
+# Save System Endpoints
+# ============================================================
+
+@router.get("/save-system/stats")
+async def save_system_stats():
+    return _save_system.get_stats()
+
+
+@router.post("/save-system/save")
+async def save_system_save(slot_id: int, scene_name: str = "", playtime_seconds: float = 0.0):
+    state = {"scene": scene_name, "playtime": playtime_seconds}
+    slot = _save_system.save(slot_id, state, scene_name=scene_name, playtime_seconds=playtime_seconds)
+    if slot:
+        return slot.to_dict()
+    return {"error": "Save failed"}
+
+
+@router.get("/save-system/load/{slot_id}")
+async def save_system_load(slot_id: int):
+    state = _save_system.load(slot_id)
+    if state:
+        return {"state": state}
+    return {"error": "Load failed"}
+
+
+@router.delete("/save-system/slot/{slot_id}")
+async def save_system_delete(slot_id: int):
+    return {"deleted": _save_system.delete(slot_id)}
+
+
+@router.get("/save-system/slots")
+async def save_system_slots():
+    return {"slots": [s.to_dict() for s in _save_system.list_slots()]}
+
+
+# ============================================================
+# Network Sync Endpoints
+# ============================================================
+
+@router.get("/network-sync/stats")
+async def network_sync_stats():
+    return _network_sync.get_stats()
+
+
+@router.post("/network-sync/register-object")
+async def network_sync_register_object(object_id: str, owner_id: str = ""):
+    obj = _network_sync.register_object(object_id, owner_id)
+    return {"object_id": obj.object_id, "authority": obj.authority.value}
+
+
+@router.post("/network-sync/mark-dirty")
+async def network_sync_mark_dirty(object_id: str):
+    return {"dirtied": _network_sync.mark_dirty(object_id)}
+
+
+@router.post("/network-sync/tick")
+async def network_sync_tick():
+    count = _network_sync.tick()
+    return {"synced": count}
+
+
+# ============================================================
+# Behavior Tree Endpoints
+# ============================================================
+
+@router.get("/behavior-tree/stats")
+async def behavior_tree_stats():
+    return _behavior_tree.get_stats()
+
+
+@router.post("/behavior-tree/create")
+async def behavior_tree_create(tree_id: str):
+    root = Sequence([
+        Action(lambda bb: NodeStatus.SUCCESS, "Patrol"),
+    ], "DefaultRoot")
+    bb = _behavior_tree.create(tree_id, root)
+    bb.set("health", 100)
+    return {"tree_id": tree_id, "blackboard": bb.to_dict()}
+
+
+@router.post("/behavior-tree/tick")
+async def behavior_tree_tick(tree_id: str):
+    status = _behavior_tree.tick(tree_id)
+    return {"tree_id": tree_id, "status": status.value}
+
+
+@router.post("/behavior-tree/tick-all")
+async def behavior_tree_tick_all():
+    results = _behavior_tree.tick_all()
+    return {"results": {k: v.value for k, v in results.items()}}
+
+
+@router.get("/behavior-tree/trees")
+async def behavior_tree_trees():
+    return {"trees": _behavior_tree.list_trees()}
+
+
+@router.get("/behavior-tree/blackboard/{tree_id}")
+async def behavior_tree_blackboard(tree_id: str):
+    bb = _behavior_tree.get_blackboard(tree_id)
+    if bb:
+        return {"tree_id": tree_id, "data": bb.to_dict()}
+    return {"error": "Tree not found"}
