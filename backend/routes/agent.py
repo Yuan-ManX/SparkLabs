@@ -4078,7 +4078,7 @@ async def trajectory_stats():
 
 # === Intent Classifier Engine ===
 
-from sparkai.agent.agent_intent_classifier import IntentClassifier, get_intent_classifier, PromptIntent
+from sparkai.agent.agent_intent_classifier import IntentClassifier, IntentDomain, get_intent_classifier
 
 _intent_classifier = get_intent_classifier()
 
@@ -4109,7 +4109,7 @@ async def intent_classify_batch(request: IntentBatchClassifyRequest):
 
 @router.get("/intent/intents")
 async def intent_list_intents():
-    return {"intents": [i.value for i in PromptIntent]}
+    return {"intents": [d.value for d in IntentDomain]}
 
 
 # === Skill Curator Engine ===
@@ -10472,3 +10472,453 @@ async def network_rpc_process_queue(max_messages: int = 50):
 async def network_rpc_cleanup():
     timed_out = _network_rpc.cleanup_timed_out()
     return {"timed_out": timed_out}
+
+
+# === Intent Classifier ===
+
+from sparkai.agent.agent_intent_classifier import IntentClassifier, IntentDomain, get_intent_classifier
+
+_intent_classifier = get_intent_classifier()
+
+
+@router.get("/intent-classifier/stats")
+async def intent_classifier_stats():
+    return _intent_classifier.get_stats()
+
+
+@router.post("/intent-classifier/classify")
+async def intent_classifier_classify(query: str):
+    result = _intent_classifier.classify(query)
+    return result.to_dict()
+
+
+@router.post("/intent-classifier/route")
+async def intent_classifier_route(query: str):
+    target = _intent_classifier.get_routing_target(query)
+    return target
+
+
+@router.get("/intent-classifier/history")
+async def intent_classifier_history(limit: int = 20):
+    history = _intent_classifier.get_history(limit)
+    return {"history": [h.to_dict() for h in history]}
+
+
+@router.post("/intent-classifier/add-rule")
+async def intent_classifier_add_rule(
+    domain: str = "general", patterns: str = "", keywords: str = "",
+    target_agent: str = "", tool_chain: str = "", priority: int = 5,
+):
+    try:
+        dom = IntentDomain(domain)
+    except ValueError:
+        dom = IntentDomain.GENERAL
+    pattern_list = [p.strip() for p in patterns.split("|") if p.strip()]
+    keyword_list = [k.strip() for k in keywords.split(",") if k.strip()]
+    rule = _intent_classifier.add_rule(dom, pattern_list, keyword_list, target_agent, tool_chain, priority)
+    return {"rule_id": rule.rule_id, "domain": dom.value}
+
+
+@router.post("/intent-classifier/clear-history")
+async def intent_classifier_clear_history():
+    _intent_classifier.clear_history()
+    return {"success": True}
+
+
+# === Context Assembler ===
+
+from sparkai.agent.agent_context_assembler import ContextAssembler, ContextSource, ContextFormat, get_context_assembler
+
+_context_assembler = get_context_assembler()
+
+
+@router.get("/context-assembler/stats")
+async def context_assembler_stats():
+    return _context_assembler.get_stats()
+
+
+@router.post("/context-assembler/register-tool")
+async def context_assembler_register_tool(
+    name: str, description: str = "", category: str = "",
+    parameters: str = "{}", returns: str = "", example: str = "",
+):
+    import json
+    try:
+        params = json.loads(parameters)
+    except json.JSONDecodeError:
+        params = {}
+    tool = _context_assembler.register_tool(name, description, category, params, returns, example)
+    return tool.to_dict()
+
+
+@router.post("/context-assembler/set-project-meta")
+async def context_assembler_set_project_meta(
+    name: str = "", genre: str = "", platform: str = "",
+    resolution: str = "", language: str = "", art_style: str = "",
+    description: str = "",
+):
+    _context_assembler.set_project_meta(name, genre, platform, resolution, language, art_style, description)
+    return {"success": True}
+
+
+@router.post("/context-assembler/user-preference")
+async def context_assembler_set_user_preference(key: str, value: str):
+    _context_assembler.set_user_preference(key, value)
+    return {"success": True}
+
+
+@router.post("/context-assembler/assemble")
+async def context_assembler_assemble(format: str = "markdown", history: int = 10):
+    try:
+        fmt = ContextFormat(format)
+    except ValueError:
+        fmt = ContextFormat.MARKDOWN
+    ctx = _context_assembler.assemble(format=fmt, include_recent_history=history)
+    return ctx.to_dict()
+
+
+@router.post("/context-assembler/assemble-for-tool")
+async def context_assembler_assemble_for_tool(tool_name: str):
+    ctx = _context_assembler.assemble_for_tool(tool_name)
+    return ctx.to_dict()
+
+
+@router.post("/context-assembler/assemble-minimal")
+async def context_assembler_assemble_minimal(purpose: str = ""):
+    ctx = _context_assembler.assemble_minimal(purpose)
+    return ctx.to_dict()
+
+
+@router.get("/context-assembler/tools")
+async def context_assembler_tools(category: str = ""):
+    tools = _context_assembler.list_tools(category or None)
+    return {"tools": [t.to_dict() for t in tools]}
+
+
+@router.get("/context-assembler/categories")
+async def context_assembler_categories():
+    return {"categories": _context_assembler.list_categories()}
+
+
+@router.post("/context-assembler/snapshot")
+async def context_assembler_snapshot(
+    active_scene: str = "", entity_count: int = 0,
+):
+    snapshot = _context_assembler.take_state_snapshot(active_scene, entity_count)
+    return snapshot.to_dict()
+
+
+# === Action Sequencer ===
+
+from sparkai.agent.agent_action_sequencer import ActionSequencer, ExecutionPipeline, OpType, OpStatus, get_action_sequencer
+
+_action_sequencer = get_action_sequencer()
+
+
+@router.get("/action-sequencer/stats")
+async def action_sequencer_stats():
+    return _action_sequencer.get_stats()
+
+
+@router.post("/action-sequencer/create-pipeline")
+async def action_sequencer_create_pipeline(name: str = ""):
+    pipeline = _action_sequencer.create_pipeline(name)
+    return pipeline.to_full_dict()
+
+
+@router.get("/action-sequencer/pipelines")
+async def action_sequencer_pipelines():
+    pipelines = _action_sequencer.list_pipelines()
+    return {"pipelines": [p.to_dict() for p in pipelines]}
+
+
+@router.get("/action-sequencer/pipeline/{pipeline_id}")
+async def action_sequencer_get_pipeline(pipeline_id: str):
+    pipeline = _action_sequencer.get_pipeline(pipeline_id)
+    if pipeline:
+        return pipeline.to_full_dict()
+    return {"error": "Pipeline not found"}
+
+
+@router.post("/action-sequencer/pipeline/{pipeline_id}/operation")
+async def action_sequencer_add_operation(
+    pipeline_id: str, op_type: str = "property_set",
+    description: str = "", target: str = "", priority: int = 0,
+    depends_on: str = "",
+):
+    try:
+        ot = OpType(op_type)
+    except ValueError:
+        ot = OpType.PROPERTY_SET
+    dep_list = [d.strip() for d in depends_on.split(",") if d.strip()] if depends_on else None
+    op = _action_sequencer.add_operation(pipeline_id, ot, description, target, priority=priority, depends_on=dep_list)
+    if op:
+        return op.to_dict()
+    return {"error": "Could not add operation"}
+
+
+@router.post("/action-sequencer/pipeline/{pipeline_id}/auto-sequence")
+async def action_sequencer_auto_sequence(
+    pipeline_id: str, operations: str = "[]",
+):
+    import json
+    try:
+        ops = json.loads(operations)
+    except json.JSONDecodeError:
+        ops = []
+    result = _action_sequencer.auto_sequence(pipeline_id, ops)
+    return {"sequenced_operations": [r.to_dict() for r in result]}
+
+
+@router.post("/action-sequencer/pipeline/{pipeline_id}/operation/{op_id}/status")
+async def action_sequencer_update_status(
+    pipeline_id: str, op_id: str, status: str = "succeeded",
+):
+    try:
+        st = OpStatus(status)
+    except ValueError:
+        st = OpStatus.SUCCEEDED
+    op = _action_sequencer.update_operation_status(pipeline_id, op_id, st)
+    if op:
+        return op.to_dict()
+    return {"error": "Operation not found"}
+
+
+@router.get("/action-sequencer/pipeline/{pipeline_id}/conflicts")
+async def action_sequencer_conflicts(pipeline_id: str):
+    conflicts = _action_sequencer.detect_conflicts(pipeline_id)
+    return {"conflicts": [{"op_id": c[0], "dep_id": c[1], "type": c[2]} for c in conflicts]}
+
+
+# === Console System ===
+
+from sparkai.engine.console_system import ConsoleSystem, CommandDef, get_console_system
+
+_console_system = get_console_system()
+
+
+@router.get("/console-system/stats")
+async def console_system_stats():
+    return _console_system.get_stats()
+
+
+@router.post("/console-system/execute")
+async def console_system_execute(command: str):
+    result = _console_system.execute(command)
+    return {"result": result}
+
+
+@router.get("/console-system/output")
+async def console_system_output(limit: int = 50):
+    lines = _console_system.get_output(limit)
+    return {"lines": [{"text": l.text, "level": l.level.value} for l in lines]}
+
+
+@router.get("/console-system/history")
+async def console_system_history(limit: int = 20):
+    history = _console_system.get_history(limit)
+    return {"history": history}
+
+
+@router.get("/console-system/commands")
+async def console_system_commands(category: str = ""):
+    cmds = _console_system.list_commands(category or None)
+    return {"commands": [c.to_dict() for c in cmds]}
+
+
+@router.get("/console-system/autocomplete")
+async def console_system_autocomplete(prefix: str):
+    suggestions = _console_system.autocomplete(prefix)
+    return {"suggestions": suggestions}
+
+
+@router.post("/console-system/register")
+async def console_system_register(
+    name: str, description: str = "", category: str = "system", syntax: str = "",
+):
+    cmd = _console_system.register_command(name, description, category, syntax)
+    return cmd.to_dict()
+
+
+# === Input Recorder ===
+
+from sparkai.engine.input_recorder import InputRecorder, RecordingSession, get_input_recorder
+
+_input_recorder = get_input_recorder()
+
+
+@router.get("/input-recorder/stats")
+async def input_recorder_stats():
+    return _input_recorder.get_stats()
+
+
+@router.post("/input-recorder/start-recording")
+async def input_recorder_start_recording(name: str = ""):
+    session = _input_recorder.start_recording(name)
+    return session.to_dict()
+
+
+@router.post("/input-recorder/stop-recording")
+async def input_recorder_stop_recording():
+    session = _input_recorder.stop_recording()
+    if session:
+        return session.to_dict()
+    return {"error": "No active recording"}
+
+
+@router.post("/input-recorder/record-event")
+async def input_recorder_record_event(
+    event_type: str = "key_down", code: int = 0, value: float = 0.0,
+    x: float = 0.0, y: float = 0.0,
+):
+    from sparkai.engine.input_recorder import InputEventType
+    try:
+        et = InputEventType(event_type)
+    except ValueError:
+        et = InputEventType.KEY_DOWN
+    event = _input_recorder.record_event(et, code, value, x, y)
+    if event:
+        return event.to_dict()
+    return {"error": "Not recording"}
+
+
+@router.post("/input-recorder/start-replay/{session_id}")
+async def input_recorder_start_replay(session_id: str):
+    success = _input_recorder.start_replay(session_id)
+    return {"success": success}
+
+
+@router.post("/input-recorder/stop-replay")
+async def input_recorder_stop_replay():
+    _input_recorder.stop_replay()
+    return {"success": True}
+
+
+@router.get("/input-recorder/recordings")
+async def input_recorder_recordings():
+    recordings = _input_recorder.list_recordings()
+    return {"recordings": [r.to_dict() for r in recordings]}
+
+
+@router.get("/input-recorder/recording/{session_id}")
+async def input_recorder_get_recording(session_id: str):
+    session = _input_recorder.get_recording(session_id)
+    if session:
+        return session.to_full_dict()
+    return {"error": "Recording not found"}
+
+
+@router.get("/input-recorder/save/{session_id}")
+async def input_recorder_save(session_id: str):
+    json_str = _input_recorder.save_recording(session_id)
+    if json_str:
+        return {"json": json_str}
+    return {"error": "Recording not found"}
+
+
+@router.post("/input-recorder/load")
+async def input_recorder_load(json_str: str):
+    session = _input_recorder.load_recording(json_str)
+    if session:
+        return session.to_dict()
+    return {"error": "Failed to load"}
+
+
+@router.delete("/input-recorder/recording/{session_id}")
+async def input_recorder_delete_recording(session_id: str):
+    success = _input_recorder.delete_recording(session_id)
+    return {"success": success}
+
+
+# === Collision Layers ===
+
+from sparkai.engine.collision_layers import CollisionLayerManager, LayerFlag, LayerMask, get_collision_layer_manager
+
+_collision_layer_manager = get_collision_layer_manager()
+
+
+@router.get("/collision-layers/stats")
+async def collision_layers_stats():
+    return _collision_layer_manager.get_stats()
+
+
+@router.get("/collision-layers/layers")
+async def collision_layers_layers():
+    return {"layers": _collision_layer_manager.list_layers()}
+
+
+@router.get("/collision-layers/interactions")
+async def collision_layers_interactions():
+    return {"interactions": _collision_layer_manager.list_interactions()}
+
+
+@router.post("/collision-layers/set-interaction")
+async def collision_layers_set_interaction(
+    layer_a: str = "", layer_b: str = "", should_collide: bool = True,
+):
+    try:
+        la = LayerFlag[layer_a.upper()]
+    except KeyError:
+        return {"error": f"Unknown layer: {layer_a}"}
+    try:
+        lb = LayerFlag[layer_b.upper()]
+    except KeyError:
+        return {"error": f"Unknown layer: {layer_b}"}
+    _collision_layer_manager.set_interaction(la, lb, should_collide)
+    return {"success": True}
+
+
+@router.post("/collision-layers/assign-mask")
+async def collision_layers_assign_mask(
+    object_id: str, layer_names: str = "DEFAULT", description: str = "",
+):
+    layer_bits = 0
+    for name in layer_names.split(","):
+        name = name.strip()
+        try:
+            flag = LayerFlag[name.upper()]
+            layer_bits |= flag.value
+        except KeyError:
+            custom_flag = _collision_layer_manager.get_layer_flag(name)
+            if custom_flag:
+                layer_bits |= custom_flag.value
+    if layer_bits == 0:
+        layer_bits = LayerFlag.DEFAULT.value
+
+    layers = LayerFlag(layer_bits)
+    mask = _collision_layer_manager.assign_mask(object_id, layers, description)
+    return mask.to_dict()
+
+
+@router.get("/collision-layers/mask/{object_id}")
+async def collision_layers_get_mask(object_id: str):
+    mask = _collision_layer_manager.get_mask(object_id)
+    if mask:
+        return mask.to_dict()
+    return {"error": "Mask not found"}
+
+
+@router.post("/collision-layers/check")
+async def collision_layers_check(mask_a: int = 0, mask_b: int = 0):
+    should_collide = _collision_layer_manager.check_collision(mask_a, mask_b)
+    return {"should_collide": should_collide}
+
+
+@router.get("/collision-layers/objects-on-layer/{layer_name}")
+async def collision_layers_objects_on_layer(layer_name: str):
+    try:
+        flag = LayerFlag[layer_name.upper()]
+    except KeyError:
+        flag = _collision_layer_manager.get_layer_flag(layer_name)
+        if not flag:
+            return {"error": f"Unknown layer: {layer_name}"}
+    objects = _collision_layer_manager.find_objects_on_layer(flag)
+    return {"object_ids": objects}
+
+
+@router.post("/collision-layers/create-custom-layer")
+async def collision_layers_create_custom_layer(name: str, description: str = ""):
+    layer_def = _collision_layer_manager.create_custom_layer(name, description)
+    if layer_def:
+        return {"layer_name": layer_def.layer_name, "bit_position": layer_def.bit_position}
+    return {"error": "No available bit positions"}
