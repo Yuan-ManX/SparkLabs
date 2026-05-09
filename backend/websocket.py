@@ -1687,6 +1687,133 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "platform_bridge_error", "error": str(e)})
 
+                elif msg_type == "reasoning_chain":
+                    try:
+                        from sparkai.agent.agent_reasoning_chain import get_reasoning_chain, ReasoningPhase
+                        rc = get_reasoning_chain()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "reasoning_chain_stats", "data": rc.get_stats()})
+                        elif sub == "begin":
+                            trace = rc.begin(data.get("goal", ""))
+                            await manager.send_to_client(client_id, {"type": "reasoning_chain_trace", "data": trace.to_dict()})
+                        elif sub == "think":
+                            step = rc.think(data.get("thought", ""), ReasoningPhase(data.get("phase", "analyze")))
+                            await manager.send_to_client(client_id, {"type": "reasoning_chain_step", "data": step.to_dict() if step else None})
+                        elif sub == "finish":
+                            trace = rc.finish(data.get("outcome", ""), data.get("success", True))
+                            await manager.send_to_client(client_id, {"type": "reasoning_chain_finished", "data": trace.to_dict() if trace else None})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "reasoning_chain_error", "error": str(e)})
+
+                elif msg_type == "tool_composer":
+                    try:
+                        from sparkai.agent.agent_tool_composer import get_tool_composer
+                        tc = get_tool_composer()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "tool_composer_stats", "data": tc.get_stats()})
+                        elif sub == "create_chain":
+                            chain = tc.create_chain(data.get("name", "chain"))
+                            await manager.send_to_client(client_id, {"type": "tool_chain_created", "data": chain.to_dict()})
+                        elif sub == "templates":
+                            templates = [t.to_dict() for t in tc.list_templates()]
+                            await manager.send_to_client(client_id, {"type": "tool_templates", "data": templates})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "tool_composer_error", "error": str(e)})
+
+                elif msg_type == "feedback_loop":
+                    try:
+                        from sparkai.agent.agent_feedback_loop import get_feedback_loop
+                        fl = get_feedback_loop()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "feedback_loop_stats", "data": fl.get_stats()})
+                        elif sub == "report":
+                            await manager.send_to_client(client_id, {"type": "feedback_report", "data": fl.get_quality_report()})
+                        elif sub == "record":
+                            entry = fl.record(data.get("action_type", ""), "user", data.get("sentiment", "neutral"), data.get("score", 0.5), data.get("message", ""))
+                            await manager.send_to_client(client_id, {"type": "feedback_recorded", "data": entry.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "feedback_loop_error", "error": str(e)})
+
+                elif msg_type == "agent_negotiation":
+                    try:
+                        from sparkai.agent.agent_negotiation import get_agent_negotiation
+                        an = get_agent_negotiation()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "negotiation_stats", "data": an.get_stats()})
+                        elif sub == "open":
+                            session = an.open_session(data.get("topic", ""), data.get("description", ""))
+                            await manager.send_to_client(client_id, {"type": "negotiation_opened", "data": session.to_dict()})
+                        elif sub == "resolve":
+                            result = an.resolve_session(data.get("session_id", ""))
+                            await manager.send_to_client(client_id, {"type": "negotiation_resolved", "data": result.to_dict() if result else None})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "negotiation_error", "error": str(e)})
+
+                elif msg_type == "debug_draw":
+                    try:
+                        from sparkai.engine.debug_draw_system import get_debug_draw_system, DrawCategory
+                        dd = get_debug_draw_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "debug_draw_stats", "data": dd.get_stats()})
+                        elif sub == "toggle":
+                            dd.enabled = data.get("enabled", True)
+                            await manager.send_to_client(client_id, {"type": "debug_draw_toggled", "data": {"enabled": dd.enabled}})
+                        elif sub == "clear":
+                            dd.clear()
+                            await manager.send_to_client(client_id, {"type": "debug_draw_cleared", "data": {}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "debug_draw_error", "error": str(e)})
+
+                elif msg_type == "prefab_system":
+                    try:
+                        from sparkai.engine.prefab_system import get_prefab_system
+                        ps = get_prefab_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "prefab_stats", "data": ps.get_stats()})
+                        elif sub == "templates":
+                            templates = [t.to_dict() for t in ps.list_templates()]
+                            await manager.send_to_client(client_id, {"type": "prefab_templates", "data": templates})
+                        elif sub == "instantiate":
+                            inst = ps.instantiate(data.get("template_id", ""), data.get("x", 0.0), data.get("y", 0.0))
+                            await manager.send_to_client(client_id, {"type": "prefab_instantiated", "data": inst.to_dict() if inst else None})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "prefab_system_error", "error": str(e)})
+
+                elif msg_type == "physics_constraints":
+                    try:
+                        from sparkai.engine.physics_constraints import get_physics_constraints
+                        pc = get_physics_constraints()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "physics_constraints_stats", "data": pc.get_stats()})
+                        elif sub == "create_spring":
+                            c = pc.create_spring(data.get("body_a", ""), data.get("body_b", ""), data.get("rest_length", 50.0))
+                            await manager.send_to_client(client_id, {"type": "constraint_created", "data": c.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "physics_constraints_error", "error": str(e)})
+
+                elif msg_type == "spatial_index":
+                    try:
+                        from sparkai.engine.spatial_index import get_spatial_index
+                        si = get_spatial_index()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "spatial_index_stats", "data": si.get_stats()})
+                        elif sub == "query_range":
+                            results = si.query_range(data.get("x", 0), data.get("y", 0), data.get("w", 500), data.get("h", 500))
+                            await manager.send_to_client(client_id, {"type": "spatial_query_results", "data": [r.to_dict() for r in results]})
+                        elif sub == "insert":
+                            entry = si.insert(data.get("id", ""), data.get("x", 0), data.get("y", 0), data.get("w", 0), data.get("h", 0))
+                            await manager.send_to_client(client_id, {"type": "spatial_entry_inserted", "data": entry.to_dict() if entry else None})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "spatial_index_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
