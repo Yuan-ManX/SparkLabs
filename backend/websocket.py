@@ -1921,6 +1921,87 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "network_rpc_error", "error": str(e)})
 
+                elif msg_type == "intent_classifier":
+                    try:
+                        from sparkai.agent.agent_intent_classifier import get_intent_classifier
+                        ic = get_intent_classifier()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "intent_classifier_stats", "data": ic.get_stats()})
+                        elif sub == "classify":
+                            result = ic.classify(data.get("query", ""))
+                            await manager.send_to_client(client_id, {"type": "intent_result", "data": result.to_dict()})
+                        elif sub == "route":
+                            target = ic.get_routing_target(data.get("query", ""))
+                            await manager.send_to_client(client_id, {"type": "routing_target", "data": target})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "intent_classifier_error", "error": str(e)})
+
+                elif msg_type == "context_assembler":
+                    try:
+                        from sparkai.agent.agent_context_assembler import get_context_assembler
+                        ca = get_context_assembler()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "context_assembler_stats", "data": ca.get_stats()})
+                        elif sub == "assemble":
+                            ctx = ca.assemble(include_recent_history=data.get("history", 10))
+                            await manager.send_to_client(client_id, {"type": "assembled_context", "data": ctx.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "context_assembler_error", "error": str(e)})
+
+                elif msg_type == "action_sequencer":
+                    try:
+                        from sparkai.agent.agent_action_sequencer import get_action_sequencer
+                        aseq = get_action_sequencer()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "action_sequencer_stats", "data": aseq.get_stats()})
+                        elif sub == "create_pipeline":
+                            pipeline = aseq.create_pipeline(data.get("name", ""))
+                            await manager.send_to_client(client_id, {"type": "pipeline_created", "data": pipeline.to_full_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "action_sequencer_error", "error": str(e)})
+
+                elif msg_type == "console_system":
+                    try:
+                        from sparkai.engine.console_system import get_console_system
+                        cs = get_console_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "console_stats", "data": cs.get_stats()})
+                        elif sub == "execute":
+                            result = cs.execute(data.get("command", ""))
+                            await manager.send_to_client(client_id, {"type": "console_result", "data": {"result": result}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "console_error", "error": str(e)})
+
+                elif msg_type == "input_recorder":
+                    try:
+                        from sparkai.engine.input_recorder import get_input_recorder
+                        ir = get_input_recorder()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "input_recorder_stats", "data": ir.get_stats()})
+                        elif sub == "start_recording":
+                            session = ir.start_recording(data.get("name", ""))
+                            await manager.send_to_client(client_id, {"type": "recording_started", "data": session.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "input_recorder_error", "error": str(e)})
+
+                elif msg_type == "collision_layers":
+                    try:
+                        from sparkai.engine.collision_layers import get_collision_layer_manager
+                        clm = get_collision_layer_manager()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "collision_layers_stats", "data": clm.get_stats()})
+                        elif sub == "check":
+                            should = clm.check_collision(data.get("mask_a", 0), data.get("mask_b", 0))
+                            await manager.send_to_client(client_id, {"type": "collision_check", "data": {"should_collide": should}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "collision_layers_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
