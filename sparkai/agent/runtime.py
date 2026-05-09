@@ -341,6 +341,9 @@ from sparkai.agent.agent_simulation_env import SimulationEnv, SimScenario, Simul
 from sparkai.agent.agent_goal_decomposer import GoalDecomposer, GoalTree, GoalNode, GoalLevel, get_goal_decomposer
 from sparkai.agent.agent_prompt_template import PromptTemplateLib, TemplateEntry, TemplateDomain, get_prompt_template_lib
 from sparkai.agent.agent_semantic_memory import SemanticMemory, MemoryVector, MemoryCategory, get_semantic_memory
+from sparkai.agent.agent_intent_classifier import IntentClassifier, IntentDomain, ClassificationResult, get_intent_classifier
+from sparkai.agent.agent_context_assembler import ContextAssembler, ContextSource, AssembledContext, get_context_assembler
+from sparkai.agent.agent_action_sequencer import ActionSequencer, ExecutionPipeline, OpType, get_action_sequencer
 
 
 class RuntimeState(Enum):
@@ -565,6 +568,9 @@ class AgentRuntime:
         self._goal_decomposer: Optional[GoalDecomposer] = None
         self._prompt_template_lib: Optional[PromptTemplateLib] = None
         self._semantic_memory: Optional[SemanticMemory] = None
+        self._intent_classifier: Optional[IntentClassifier] = None
+        self._context_assembler: Optional[ContextAssembler] = None
+        self._action_sequencer: Optional[ActionSequencer] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -752,6 +758,9 @@ class AgentRuntime:
             self._goal_decomposer = get_goal_decomposer()
             self._prompt_template_lib = get_prompt_template_lib()
             self._semantic_memory = get_semantic_memory()
+            self._intent_classifier = get_intent_classifier()
+            self._context_assembler = get_context_assembler()
+            self._action_sequencer = get_action_sequencer()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -898,6 +907,9 @@ class AgentRuntime:
             self._integration.register_subsystem("goal_decomposer", self._goal_decomposer)
             self._integration.register_subsystem("prompt_template_lib", self._prompt_template_lib)
             self._integration.register_subsystem("semantic_memory", self._semantic_memory)
+            self._integration.register_subsystem("intent_classifier", self._intent_classifier)
+            self._integration.register_subsystem("context_assembler", self._context_assembler)
+            self._integration.register_subsystem("action_sequencer", self._action_sequencer)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -1828,6 +1840,18 @@ class AgentRuntime:
     def semantic_memory(self) -> Optional[SemanticMemory]:
         return self._semantic_memory
 
+    @property
+    def intent_classifier(self) -> Optional[IntentClassifier]:
+        return self._intent_classifier
+
+    @property
+    def context_assembler(self) -> Optional[ContextAssembler]:
+        return self._context_assembler
+
+    @property
+    def action_sequencer(self) -> Optional[ActionSequencer]:
+        return self._action_sequencer
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -2013,6 +2037,9 @@ class AgentRuntime:
                 "goal_decomposer": self._goal_decomposer is not None,
                 "prompt_template_lib": self._prompt_template_lib is not None,
                 "semantic_memory": self._semantic_memory is not None,
+                "intent_classifier": self._intent_classifier is not None,
+                "context_assembler": self._context_assembler is not None,
+                "action_sequencer": self._action_sequencer is not None,
             },
         }
 
@@ -2328,6 +2355,12 @@ class AgentRuntime:
             status["prompt_template_lib_stats"] = self._prompt_template_lib.get_stats()
         if self._semantic_memory:
             status["semantic_memory_stats"] = self._semantic_memory.get_stats()
+        if self._intent_classifier:
+            status["intent_classifier_stats"] = self._intent_classifier.get_stats()
+        if self._context_assembler:
+            status["context_assembler_stats"] = self._context_assembler.get_stats()
+        if self._action_sequencer:
+            status["action_sequencer_stats"] = self._action_sequencer.get_stats()
         return status
 
 
