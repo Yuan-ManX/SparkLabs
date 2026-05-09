@@ -9822,3 +9822,653 @@ async def spatial_index_get_entry(object_id: str):
     if entry:
         return entry.to_dict()
     return {"error": "Entry not found"}
+
+
+# === Simulation Environment ===
+
+from sparkai.agent.agent_simulation_env import SimulationEnv, SimScenario, SimulationMode, get_simulation_env
+
+_simulation_env = get_simulation_env()
+
+
+@router.get("/simulation/stats")
+async def simulation_stats():
+    return _simulation_env.get_stats()
+
+
+@router.post("/simulation/scenario")
+async def simulation_create_scenario(name: str, description: str = "", seed: int = 42, tags: str = ""):
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else None
+    scenario = _simulation_env.create_scenario(name, description, seed, tag_list)
+    return scenario.to_dict()
+
+
+@router.get("/simulation/scenarios")
+async def simulation_list_scenarios(tag: Optional[str] = None):
+    scenarios = _simulation_env.list_scenarios(tag)
+    return {"scenarios": [s.to_dict() for s in scenarios]}
+
+
+@router.get("/simulation/scenario/{scenario_id}")
+async def simulation_get_scenario(scenario_id: str):
+    scenario = _simulation_env.get_scenario(scenario_id)
+    if scenario:
+        return scenario.to_dict()
+    return {"error": "Scenario not found"}
+
+
+@router.post("/simulation/scenario/{scenario_id}/action")
+async def simulation_add_action(
+    scenario_id: str, action_name: str, tool: str,
+    parameters: str = "{}", expected_outcome: str = "",
+    preconditions: str = "", postconditions: str = "",
+):
+    import json
+    try:
+        params = json.loads(parameters)
+    except json.JSONDecodeError:
+        params = {}
+    pre_list = [p.strip() for p in preconditions.split(",") if p.strip()] if preconditions else None
+    post_list = [p.strip() for p in postconditions.split(",") if p.strip()] if postconditions else None
+    action = _simulation_env.add_action_to_scenario(
+        scenario_id, action_name, tool, params, expected_outcome, pre_list, post_list
+    )
+    if action:
+        return {"action_id": action.action_id, "name": action.name}
+    return {"error": "Scenario not found"}
+
+
+@router.post("/simulation/run/{scenario_id}")
+async def simulation_run_scenario(scenario_id: str, mode: str = "dry_run"):
+    try:
+        m = SimulationMode(mode)
+    except ValueError:
+        m = SimulationMode.DRY_RUN
+    run = _simulation_env.run_scenario(scenario_id, m)
+    if run:
+        return run.to_dict()
+    return {"error": "Scenario not found"}
+
+
+@router.get("/simulation/runs")
+async def simulation_list_runs(limit: int = 50):
+    runs = _simulation_env.list_runs(limit)
+    return {"runs": [r.to_dict() for r in runs]}
+
+
+@router.get("/simulation/run/{run_id}")
+async def simulation_get_run(run_id: str):
+    run = _simulation_env.replay_run(run_id)
+    if run:
+        return run.to_dict()
+    return {"error": "Run not found"}
+
+
+@router.post("/simulation/clear-history")
+async def simulation_clear_history():
+    _simulation_env.clear_history()
+    return {"success": True}
+
+
+@router.delete("/simulation/scenario/{scenario_id}")
+async def simulation_delete_scenario(scenario_id: str):
+    success = _simulation_env.delete_scenario(scenario_id)
+    return {"success": success}
+
+
+# === Goal Decomposer ===
+
+from sparkai.agent.agent_goal_decomposer import GoalDecomposer, GoalTree, GoalLevel, GoalStatus, get_goal_decomposer
+
+_goal_decomposer = get_goal_decomposer()
+
+
+@router.get("/goal-decomposer/stats")
+async def goal_decomposer_stats():
+    return _goal_decomposer.get_stats()
+
+
+@router.post("/goal-decomposer/create-tree")
+async def goal_decomposer_create_tree(root_title: str, root_description: str = ""):
+    tree = _goal_decomposer.create_goal_tree(root_title, root_description)
+    return tree.to_full_dict()
+
+
+@router.get("/goal-decomposer/trees")
+async def goal_decomposer_list_trees():
+    trees = _goal_decomposer.list_trees()
+    return {"trees": [t.to_dict() for t in trees]}
+
+
+@router.get("/goal-decomposer/tree/{tree_id}")
+async def goal_decomposer_get_tree(tree_id: str):
+    tree = _goal_decomposer.get_tree(tree_id)
+    if tree:
+        return tree.to_full_dict()
+    return {"error": "Tree not found"}
+
+
+@router.post("/goal-decomposer/tree/{tree_id}/node")
+async def goal_decomposer_add_node(
+    tree_id: str, title: str, description: str = "", parent_id: str = "",
+    level: str = "task", priority: int = 5, depends_on: str = "", tags: str = "",
+):
+    try:
+        lvl = GoalLevel[level.upper()]
+    except KeyError:
+        lvl = GoalLevel.TASK
+    dep_list = [d.strip() for d in depends_on.split(",") if d.strip()] if depends_on else None
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else None
+    node = _goal_decomposer.add_goal_node(
+        tree_id, title, description, parent_id or None, lvl, priority, dep_list, tag_list
+    )
+    if node:
+        return node.to_dict()
+    return {"error": "Could not add node"}
+
+
+@router.get("/goal-decomposer/tree/{tree_id}/ready")
+async def goal_decomposer_ready_nodes(tree_id: str, limit: int = 10):
+    tasks = _goal_decomposer.get_next_tasks(tree_id, limit)
+    return {"tasks": [t.to_dict() for t in tasks]}
+
+
+@router.post("/goal-decomposer/tree/{tree_id}/node/{node_id}/status")
+async def goal_decomposer_update_status(tree_id: str, node_id: str, status: str = "completed"):
+    try:
+        st = GoalStatus(status)
+    except ValueError:
+        st = GoalStatus.COMPLETED
+    node = _goal_decomposer.update_node_status(tree_id, node_id, st)
+    if node:
+        return node.to_dict()
+    return {"error": "Node not found"}
+
+
+@router.post("/goal-decomposer/tree/{tree_id}/dependency")
+async def goal_decomposer_set_dependency(tree_id: str, source_id: str, target_id: str):
+    success = _goal_decomposer.set_dependency(tree_id, source_id, target_id)
+    return {"success": success}
+
+
+@router.delete("/goal-decomposer/tree/{tree_id}")
+async def goal_decomposer_delete_tree(tree_id: str):
+    success = _goal_decomposer.delete_tree(tree_id)
+    return {"success": success}
+
+
+# === Prompt Template Library ===
+
+from sparkai.agent.agent_prompt_template import PromptTemplateLib, TemplateEntry, TemplateDomain, TemplateRole, VariableDef, get_prompt_template_lib
+
+_prompt_template_lib = get_prompt_template_lib()
+
+
+@router.get("/prompt-template/stats")
+async def prompt_template_stats():
+    return _prompt_template_lib.get_stats()
+
+
+@router.post("/prompt-template/create")
+async def prompt_template_create(
+    name: str, content: str, domain: str = "general", role: str = "user",
+    description: str = "", tags: str = "",
+):
+    try:
+        dom = TemplateDomain(domain)
+    except ValueError:
+        dom = TemplateDomain.GENERAL
+    try:
+        rl = TemplateRole(role)
+    except ValueError:
+        rl = TemplateRole.USER
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else None
+    template = _prompt_template_lib.create_template(name, content, dom, rl, description, tags=tag_list)
+    return template.to_dict()
+
+
+@router.get("/prompt-template/templates")
+async def prompt_template_list(domain: Optional[str] = None, tag: Optional[str] = None):
+    dom = TemplateDomain(domain) if domain else None
+    templates = _prompt_template_lib.list_templates(dom, tag)
+    return {"templates": [t.to_dict() for t in templates]}
+
+
+@router.get("/prompt-template/template/{template_id}")
+async def prompt_template_get(template_id: str):
+    template = _prompt_template_lib.get_template(template_id)
+    if template:
+        return template.to_dict()
+    return {"error": "Template not found"}
+
+
+@router.post("/prompt-template/resolve/{template_id}")
+async def prompt_template_resolve(template_id: str, variables: str = "{}"):
+    import json
+    try:
+        vars_ = json.loads(variables)
+    except json.JSONDecodeError:
+        vars_ = {}
+    result = _prompt_template_lib.resolve_template(template_id, vars_)
+    if result:
+        return {"resolved": result}
+    return {"error": "Resolution failed"}
+
+
+@router.get("/prompt-template/variables/{template_id}")
+async def prompt_template_variables(template_id: str):
+    vars_ = _prompt_template_lib.get_variables(template_id)
+    return {"variables": [{"name": v.name, "default": v.default, "description": v.description, "required": v.required} for v in vars_]}
+
+
+@router.post("/prompt-template/compose")
+async def prompt_template_compose(
+    name: str, template_ids: str = "", variables_list: str = "[]",
+):
+    import json
+    ids = [t.strip() for t in template_ids.split(",") if t.strip()]
+    try:
+        vars_list = json.loads(variables_list)
+    except json.JSONDecodeError:
+        vars_list = [{}] * len(ids)
+    composed = _prompt_template_lib.compose_prompt(name, ids, vars_list)
+    if composed:
+        return composed.to_dict()
+    return {"error": "Composition failed"}
+
+
+@router.put("/prompt-template/template/{template_id}")
+async def prompt_template_update(template_id: str, content: str):
+    template = _prompt_template_lib.update_template(template_id, content)
+    if template:
+        return template.to_dict()
+    return {"error": "Template not found"}
+
+
+@router.delete("/prompt-template/template/{template_id}")
+async def prompt_template_delete(template_id: str):
+    success = _prompt_template_lib.delete_template(template_id)
+    return {"success": success}
+
+
+# === Semantic Memory ===
+
+from sparkai.agent.agent_semantic_memory import SemanticMemory, MemoryVector, MemoryCategory, get_semantic_memory
+
+_semantic_memory = get_semantic_memory()
+
+
+@router.get("/semantic-memory/stats")
+async def semantic_memory_stats():
+    return _semantic_memory.get_stats()
+
+
+@router.post("/semantic-memory/store")
+async def semantic_memory_store(
+    content: str, category: str = "general", importance: float = 0.5,
+    tags: str = "",
+):
+    try:
+        cat = MemoryCategory(category)
+    except ValueError:
+        cat = MemoryCategory.GENERAL
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else None
+    memory = _semantic_memory.store(content, None, cat, importance, tags=tag_list)
+    return memory.to_full_dict()
+
+
+@router.post("/semantic-memory/search")
+async def semantic_memory_search(
+    query: str, top_k: int = 10, category: Optional[str] = None,
+    min_similarity: float = 0.0, tags: Optional[str] = None,
+):
+    cat = MemoryCategory(category) if category else None
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else None
+    results = _semantic_memory.search(query, top_k, cat, min_similarity, tag_list)
+    return {"results": [{"memory": m.to_full_dict(), "score": round(s, 4)} for m, s in results]}
+
+
+@router.get("/semantic-memory/memory/{memory_id}")
+async def semantic_memory_get(memory_id: str):
+    memory = _semantic_memory.get_memory(memory_id)
+    if memory:
+        return memory.to_full_dict()
+    return {"error": "Memory not found"}
+
+
+@router.get("/semantic-memory/similar/{memory_id}")
+async def semantic_memory_similar(memory_id: str, top_k: int = 5):
+    results = _semantic_memory.search_similar(memory_id, top_k)
+    return {"results": [{"memory": m.to_full_dict(), "score": round(s, 4)} for m, s in results]}
+
+
+@router.post("/semantic-memory/importance/{memory_id}")
+async def semantic_memory_update_importance(memory_id: str, importance: float = 0.5):
+    success = _semantic_memory.update_importance(memory_id, importance)
+    return {"success": success}
+
+
+@router.get("/semantic-memory/category/{category}")
+async def semantic_memory_by_category(category: str, limit: int = 100):
+    try:
+        cat = MemoryCategory(category)
+    except ValueError:
+        cat = MemoryCategory.GENERAL
+    memories = _semantic_memory.list_by_category(cat, limit)
+    return {"memories": [m.to_dict() for m in memories]}
+
+
+@router.get("/semantic-memory/tag/{tag}")
+async def semantic_memory_by_tag(tag: str):
+    memories = _semantic_memory.list_by_tag(tag)
+    return {"memories": [m.to_dict() for m in memories]}
+
+
+@router.post("/semantic-memory/consolidate")
+async def semantic_memory_consolidate(category: str = "general", min_similarity: float = 0.85):
+    try:
+        cat = MemoryCategory(category)
+    except ValueError:
+        cat = MemoryCategory.GENERAL
+    merged = _semantic_memory.consolidate(cat, min_similarity)
+    return {"merged": merged}
+
+
+@router.post("/semantic-memory/context")
+async def semantic_memory_context(query: str, window_size: int = 5):
+    context = _semantic_memory.get_context_window(query, window_size)
+    return {"context": context}
+
+
+@router.delete("/semantic-memory/memory/{memory_id}")
+async def semantic_memory_delete(memory_id: str):
+    success = _semantic_memory.delete_memory(memory_id)
+    return {"success": success}
+
+
+# === Engine Subsystem Endpoints ===
+
+from sparkai.engine.procedural_generation import ProceduralGenerator, LootTable, LootEntry, get_procedural_generator
+
+_procedural_generator = get_procedural_generator()
+
+
+@router.get("/procedural-generation/stats")
+async def procedural_generation_stats():
+    return _procedural_generator.get_stats()
+
+
+@router.post("/procedural-generation/terrain")
+async def procedural_generation_terrain(
+    width: int = 64, height: int = 64, seed: int = 42,
+    octaves: int = 4, persistence: float = 0.5, scale: float = 32.0,
+):
+    terrain = _procedural_generator.generate_terrain(width, height, seed, octaves, persistence, scale)
+    return terrain.to_dict()
+
+
+@router.get("/procedural-generation/terrain/{map_id}")
+async def procedural_generation_get_terrain(map_id: str):
+    terrain = _procedural_generator.get_terrain_map(map_id)
+    if terrain:
+        return terrain.to_dict()
+    return {"error": "Terrain map not found"}
+
+
+@router.post("/procedural-generation/dungeon")
+async def procedural_generation_dungeon(
+    width: int = 80, height: int = 60, seed: int = 42,
+    room_count: int = 12, min_room_size: int = 4, max_room_size: int = 10,
+):
+    dungeon = _procedural_generator.generate_dungeon(width, height, seed, room_count, min_room_size, max_room_size)
+    return dungeon.to_dict()
+
+
+@router.get("/procedural-generation/dungeon/{map_id}")
+async def procedural_generation_get_dungeon(map_id: str):
+    dungeon = _procedural_generator.get_dungeon_map(map_id)
+    if dungeon:
+        return dungeon.to_dict()
+    return {"error": "Dungeon map not found"}
+
+
+@router.post("/procedural-generation/loot-table")
+async def procedural_generation_create_loot_table(name: str, min_rolls: int = 1, max_rolls: int = 3):
+    table = _procedural_generator.create_loot_table(name, min_rolls, max_rolls)
+    return table.to_dict()
+
+
+@router.post("/procedural-generation/loot-table/{table_id}/entry")
+async def procedural_generation_add_loot_entry(
+    table_id: str, name: str, weight: float = 1.0,
+    min_qty: int = 1, max_qty: int = 1, category: str = "common",
+):
+    entry = _procedural_generator.add_loot_entry(table_id, name, weight, min_qty, max_qty, category)
+    if entry:
+        return {"item_id": entry.item_id, "name": entry.name, "weight": entry.weight}
+    return {"error": "Loot table not found"}
+
+
+@router.post("/procedural-generation/loot-table/{table_id}/roll")
+async def procedural_generation_roll_loot(table_id: str):
+    results = _procedural_generator.roll_loot(table_id)
+    return {"items": [{"name": e.name, "category": e.category} for e in results]}
+
+
+@router.get("/procedural-generation/loot-tables")
+async def procedural_generation_loot_tables():
+    tables = _procedural_generator.list_loot_tables()
+    return {"tables": [t.to_dict() for t in tables]}
+
+
+from sparkai.engine.ragdoll_physics import RagdollSystem, RagdollSkeleton, get_ragdoll_system
+
+_ragdoll_system = get_ragdoll_system()
+
+
+@router.get("/ragdoll-physics/stats")
+async def ragdoll_physics_stats():
+    return _ragdoll_system.get_stats()
+
+
+@router.post("/ragdoll-physics/create-humanoid")
+async def ragdoll_physics_create_humanoid(name: str = "humanoid"):
+    skeleton = _ragdoll_system.build_humanoid(name)
+    return skeleton.to_dict()
+
+
+@router.post("/ragdoll-physics/create-skeleton")
+async def ragdoll_physics_create_skeleton(name: str = "", gravity_y: float = -9.81):
+    from sparkai.engine.ragdoll_physics import Vec3
+    skeleton = _ragdoll_system.create_skeleton(name, Vec3(0.0, gravity_y, 0.0))
+    return skeleton.to_dict()
+
+
+@router.get("/ragdoll-physics/skeleton/{skeleton_id}")
+async def ragdoll_physics_get_skeleton(skeleton_id: str):
+    skeleton = _ragdoll_system.get_skeleton(skeleton_id)
+    if skeleton:
+        return skeleton.to_dict()
+    return {"error": "Skeleton not found"}
+
+
+@router.post("/ragdoll-physics/activate/{skeleton_id}")
+async def ragdoll_physics_activate(skeleton_id: str):
+    success = _ragdoll_system.activate_skeleton(skeleton_id)
+    return {"success": success}
+
+
+@router.post("/ragdoll-physics/deactivate/{skeleton_id}")
+async def ragdoll_physics_deactivate(skeleton_id: str):
+    success = _ragdoll_system.deactivate_skeleton(skeleton_id)
+    return {"success": success}
+
+
+@router.post("/ragdoll-physics/impact/{skeleton_id}")
+async def ragdoll_physics_impact(skeleton_id: str, fx: float = 0, fy: float = 50, fz: float = 0, bone: str = ""):
+    success = _ragdoll_system.apply_impact(skeleton_id, (fx, fy, fz), bone or None)
+    return {"success": success}
+
+
+@router.get("/ragdoll-physics/skeletons")
+async def ragdoll_physics_skeletons():
+    skeletons = _ragdoll_system.list_skeletons()
+    return {"skeletons": [s.to_dict() for s in skeletons]}
+
+
+@router.delete("/ragdoll-physics/skeleton/{skeleton_id}")
+async def ragdoll_physics_delete_skeleton(skeleton_id: str):
+    success = _ragdoll_system.delete_skeleton(skeleton_id)
+    return {"success": success}
+
+
+from sparkai.engine.game_telemetry import TelemetryEngine, TelemetryEvent, EventCategory, EventSeverity, get_telemetry_engine
+
+_telemetry_engine = get_telemetry_engine()
+
+
+@router.get("/telemetry/stats")
+async def telemetry_stats():
+    return _telemetry_engine.get_stats()
+
+
+@router.post("/telemetry/event")
+async def telemetry_track_event(
+    category: str = "player", event_type: str = "", player_id: str = "",
+    session_id: str = "", data: str = "{}",
+):
+    import json
+    try:
+        cat = EventCategory(category)
+    except ValueError:
+        cat = EventCategory.PLAYER
+    try:
+        event_data = json.loads(data)
+    except json.JSONDecodeError:
+        event_data = {}
+    event = _telemetry_engine.track_event(cat, event_type, event_data, player_id, session_id)
+    if event:
+        return event.to_dict()
+    return {"error": "Telemetry disabled"}
+
+
+@router.post("/telemetry/session/start")
+async def telemetry_start_session(player_id: str = ""):
+    session = _telemetry_engine.start_session(player_id)
+    return session.to_dict()
+
+
+@router.post("/telemetry/session/{session_id}/end")
+async def telemetry_end_session(session_id: str):
+    success = _telemetry_engine.end_session(session_id)
+    return {"success": success}
+
+
+@router.get("/telemetry/sessions")
+async def telemetry_sessions(limit: int = 50):
+    sessions = _telemetry_engine.list_sessions(limit)
+    return {"sessions": [s.to_dict() for s in sessions]}
+
+
+@router.get("/telemetry/session/{session_id}")
+async def telemetry_get_session(session_id: str):
+    session = _telemetry_engine.get_session(session_id)
+    if session:
+        return session.to_dict()
+    return {"error": "Session not found"}
+
+
+@router.get("/telemetry/events")
+async def telemetry_events(category: Optional[str] = None, limit: int = 100):
+    if category:
+        try:
+            cat = EventCategory(category)
+        except ValueError:
+            cat = EventCategory.PLAYER
+        events = _telemetry_engine.get_events_by_category(cat, limit)
+    else:
+        events = _telemetry_engine._events[-limit:]
+    return {"events": [e.to_full_dict() for e in events]}
+
+
+@router.get("/telemetry/heatmap")
+async def telemetry_heatmap(category: Optional[str] = None):
+    cat = EventCategory(category) if category else None
+    points = _telemetry_engine.get_heatmap_data(cat)
+    return {"points": points}
+
+
+from sparkai.engine.network_rpc import NetworkRPC, RPCCallType, RPCDelivery, get_network_rpc
+
+_network_rpc = get_network_rpc()
+
+
+@router.get("/network-rpc/stats")
+async def network_rpc_stats():
+    return _network_rpc.get_stats()
+
+
+@router.post("/network-rpc/register-handler")
+async def network_rpc_register_handler(procedure: str):
+    def _passthrough(params):
+        return {"received": True, "params": params}
+    _network_rpc.register_handler(procedure, _passthrough)
+    return {"success": True, "procedure": procedure}
+
+
+@router.post("/network-rpc/call")
+async def network_rpc_call(
+    procedure: str, parameters: str = "{}", target_id: str = "",
+    call_type: str = "request", delivery: str = "reliable",
+):
+    import json
+    try:
+        params = json.loads(parameters)
+    except json.JSONDecodeError:
+        params = {}
+    try:
+        ct = RPCCallType(call_type)
+    except ValueError:
+        ct = RPCCallType.REQUEST
+    try:
+        dl = RPCDelivery(delivery)
+    except ValueError:
+        dl = RPCDelivery.RELIABLE
+    result = _network_rpc.call(procedure, params, target_id, ct, dl)
+    if result:
+        return result.to_dict()
+    return {"error": "Call failed"}
+
+
+@router.post("/network-rpc/broadcast")
+async def network_rpc_broadcast(procedure: str, parameters: str = "{}"):
+    import json
+    try:
+        params = json.loads(parameters)
+    except json.JSONDecodeError:
+        params = {}
+    results = _network_rpc.broadcast(procedure, params)
+    return {"results": [r.to_dict() for r in results]}
+
+
+@router.get("/network-rpc/handlers")
+async def network_rpc_handlers():
+    return {"handlers": _network_rpc.list_handlers()}
+
+
+@router.get("/network-rpc/history")
+async def network_rpc_history(limit: int = 50):
+    history = _network_rpc.get_call_history(limit)
+    return {"history": [h.to_dict() for h in history]}
+
+
+@router.post("/network-rpc/process-queue")
+async def network_rpc_process_queue(max_messages: int = 50):
+    processed = _network_rpc.process_queue(max_messages)
+    return {"processed": processed, "queue_remaining": _network_rpc.get_queue_size()}
+
+
+@router.post("/network-rpc/cleanup")
+async def network_rpc_cleanup():
+    timed_out = _network_rpc.cleanup_timed_out()
+    return {"timed_out": timed_out}
