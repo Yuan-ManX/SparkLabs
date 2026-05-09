@@ -1814,6 +1814,113 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "spatial_index_error", "error": str(e)})
 
+                elif msg_type == "simulation_env":
+                    try:
+                        from sparkai.agent.agent_simulation_env import get_simulation_env
+                        se = get_simulation_env()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "simulation_stats", "data": se.get_stats()})
+                        elif sub == "create_scenario":
+                            scenario = se.create_scenario(data.get("name", "untitled"), data.get("description", ""))
+                            await manager.send_to_client(client_id, {"type": "scenario_created", "data": scenario.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "simulation_error", "error": str(e)})
+
+                elif msg_type == "goal_decomposer":
+                    try:
+                        from sparkai.agent.agent_goal_decomposer import get_goal_decomposer
+                        gd = get_goal_decomposer()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "goal_decomposer_stats", "data": gd.get_stats()})
+                        elif sub == "create_tree":
+                            tree = gd.create_goal_tree(data.get("root_title", "Untitled"), data.get("root_description", ""))
+                            await manager.send_to_client(client_id, {"type": "goal_tree_created", "data": tree.to_full_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "goal_decomposer_error", "error": str(e)})
+
+                elif msg_type == "prompt_template":
+                    try:
+                        from sparkai.agent.agent_prompt_template import get_prompt_template_lib
+                        ptl = get_prompt_template_lib()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "prompt_template_stats", "data": ptl.get_stats()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "prompt_template_error", "error": str(e)})
+
+                elif msg_type == "semantic_memory":
+                    try:
+                        from sparkai.agent.agent_semantic_memory import get_semantic_memory
+                        sm = get_semantic_memory()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "semantic_memory_stats", "data": sm.get_stats()})
+                        elif sub == "store":
+                            memory = sm.store(data.get("content", ""), tags=data.get("tags", "").split(",") if data.get("tags") else None)
+                            await manager.send_to_client(client_id, {"type": "memory_stored", "data": memory.to_full_dict()})
+                        elif sub == "search":
+                            results = sm.search(data.get("query", ""), top_k=data.get("top_k", 10))
+                            await manager.send_to_client(client_id, {"type": "search_results", "data": [{"memory": m.to_full_dict(), "score": round(s, 4)} for m, s in results]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "semantic_memory_error", "error": str(e)})
+
+                elif msg_type == "procedural_generation":
+                    try:
+                        from sparkai.engine.procedural_generation import get_procedural_generator
+                        pg = get_procedural_generator()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "procedural_stats", "data": pg.get_stats()})
+                        elif sub == "generate_terrain":
+                            terrain = pg.generate_terrain(seed=data.get("seed", 42))
+                            await manager.send_to_client(client_id, {"type": "terrain_generated", "data": terrain.to_dict()})
+                        elif sub == "generate_dungeon":
+                            dungeon = pg.generate_dungeon(seed=data.get("seed", 42))
+                            await manager.send_to_client(client_id, {"type": "dungeon_generated", "data": dungeon.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "procedural_error", "error": str(e)})
+
+                elif msg_type == "ragdoll_physics":
+                    try:
+                        from sparkai.engine.ragdoll_physics import get_ragdoll_system
+                        rs = get_ragdoll_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "ragdoll_stats", "data": rs.get_stats()})
+                        elif sub == "create_humanoid":
+                            skeleton = rs.build_humanoid(data.get("name", "humanoid"))
+                            await manager.send_to_client(client_id, {"type": "ragdoll_created", "data": skeleton.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "ragdoll_error", "error": str(e)})
+
+                elif msg_type == "telemetry":
+                    try:
+                        from sparkai.engine.game_telemetry import get_telemetry_engine
+                        te = get_telemetry_engine()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "telemetry_stats", "data": te.get_stats()})
+                        elif sub == "start_session":
+                            session = te.start_session(data.get("player_id", ""))
+                            await manager.send_to_client(client_id, {"type": "session_started", "data": session.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "telemetry_error", "error": str(e)})
+
+                elif msg_type == "network_rpc":
+                    try:
+                        from sparkai.engine.network_rpc import get_network_rpc
+                        nrpc = get_network_rpc()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "network_rpc_stats", "data": nrpc.get_stats()})
+                        elif sub == "register_handler":
+                            nrpc.register_handler(data.get("procedure", ""), lambda p: {"received": True})
+                            await manager.send_to_client(client_id, {"type": "handler_registered", "data": {"procedure": data.get("procedure", "")}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "network_rpc_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
