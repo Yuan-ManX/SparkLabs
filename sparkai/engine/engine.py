@@ -73,6 +73,10 @@ from sparkai.engine.debug_draw_system import DebugDrawSystem, DrawCategory, get_
 from sparkai.engine.prefab_system import PrefabSystem, PrefabTemplate, PrefabInstance, get_prefab_system
 from sparkai.engine.physics_constraints import PhysicsConstraints, Constraint, ConstraintType, get_physics_constraints
 from sparkai.engine.spatial_index import SpatialIndex, SpatialEntry, get_spatial_index
+from sparkai.engine.procedural_generation import ProceduralGenerator, TerrainMap, DungeonMap, get_procedural_generator
+from sparkai.engine.ragdoll_physics import RagdollSystem, RagdollSkeleton, BoneBody, get_ragdoll_system
+from sparkai.engine.game_telemetry import TelemetryEngine, TelemetryEvent, PlaySession, get_telemetry_engine
+from sparkai.engine.network_rpc import NetworkRPC, RPCMessage, RPCCallType, get_network_rpc
 
 
 class SparkEngine:
@@ -150,6 +154,10 @@ class SparkEngine:
         self._prefab_system: PrefabSystem = get_prefab_system()
         self._physics_constraints: PhysicsConstraints = get_physics_constraints()
         self._spatial_index: SpatialIndex = get_spatial_index()
+        self._procedural_generator: ProceduralGenerator = get_procedural_generator()
+        self._ragdoll_system: RagdollSystem = get_ragdoll_system()
+        self._telemetry_engine: TelemetryEngine = get_telemetry_engine()
+        self._network_rpc: NetworkRPC = get_network_rpc()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -178,6 +186,7 @@ class SparkEngine:
         self._behavior_tree.tick_all()
         self._animation_controller.update(dt)
         self._physics_constraints.step(dt)
+        self._ragdoll_system.step(dt)
         self._network_sync.tick()
         self._rendering_server.end_frame()
         self._game_loop.register_phase_handler(
@@ -362,6 +371,10 @@ class SparkEngine:
             "prefab_system": self._prefab_system.get_stats(),
             "physics_constraints": self._physics_constraints.get_stats(),
             "spatial_index": self._spatial_index.get_stats(),
+            "procedural_generator": self._procedural_generator.get_stats(),
+            "ragdoll_system": self._ragdoll_system.get_stats(),
+            "telemetry_engine": self._telemetry_engine.get_stats(),
+            "network_rpc": self._network_rpc.get_stats(),
         }
 
     @property
@@ -567,6 +580,22 @@ class SparkEngine:
     @property
     def spatial_index(self) -> SpatialIndex:
         return self._spatial_index
+
+    @property
+    def procedural_generator(self) -> ProceduralGenerator:
+        return self._procedural_generator
+
+    @property
+    def ragdoll_system(self) -> RagdollSystem:
+        return self._ragdoll_system
+
+    @property
+    def telemetry_engine(self) -> TelemetryEngine:
+        return self._telemetry_engine
+
+    @property
+    def network_rpc(self) -> NetworkRPC:
+        return self._network_rpc
 
 
 @dataclass
