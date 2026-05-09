@@ -77,6 +77,9 @@ from sparkai.engine.procedural_generation import ProceduralGenerator, TerrainMap
 from sparkai.engine.ragdoll_physics import RagdollSystem, RagdollSkeleton, BoneBody, get_ragdoll_system
 from sparkai.engine.game_telemetry import TelemetryEngine, TelemetryEvent, PlaySession, get_telemetry_engine
 from sparkai.engine.network_rpc import NetworkRPC, RPCMessage, RPCCallType, get_network_rpc
+from sparkai.engine.console_system import ConsoleSystem, CommandDef, ConsoleLogLevel, get_console_system
+from sparkai.engine.input_recorder import InputRecorder, RecordingSession, InputEventType, get_input_recorder
+from sparkai.engine.collision_layers import CollisionLayerManager, LayerFlag, LayerMask, get_collision_layer_manager
 
 
 class SparkEngine:
@@ -158,6 +161,9 @@ class SparkEngine:
         self._ragdoll_system: RagdollSystem = get_ragdoll_system()
         self._telemetry_engine: TelemetryEngine = get_telemetry_engine()
         self._network_rpc: NetworkRPC = get_network_rpc()
+        self._console_system: ConsoleSystem = get_console_system()
+        self._input_recorder: InputRecorder = get_input_recorder()
+        self._collision_layer_manager: CollisionLayerManager = get_collision_layer_manager()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -375,6 +381,9 @@ class SparkEngine:
             "ragdoll_system": self._ragdoll_system.get_stats(),
             "telemetry_engine": self._telemetry_engine.get_stats(),
             "network_rpc": self._network_rpc.get_stats(),
+            "console_system": self._console_system.get_stats(),
+            "input_recorder": self._input_recorder.get_stats(),
+            "collision_layer_manager": self._collision_layer_manager.get_stats(),
         }
 
     @property
@@ -596,6 +605,18 @@ class SparkEngine:
     @property
     def network_rpc(self) -> NetworkRPC:
         return self._network_rpc
+
+    @property
+    def console_system(self) -> ConsoleSystem:
+        return self._console_system
+
+    @property
+    def input_recorder(self) -> InputRecorder:
+        return self._input_recorder
+
+    @property
+    def collision_layer_manager(self) -> CollisionLayerManager:
+        return self._collision_layer_manager
 
 
 @dataclass
