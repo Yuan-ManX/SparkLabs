@@ -69,6 +69,10 @@ from sparkai.engine.math_utils import MathUtils, Vector2, Vector3, Rect2, Transf
 from sparkai.engine.gui_system import GUISystem, Widget, Container, Button, Label, get_gui_system
 from sparkai.engine.config_manager import ConfigManager, ConfigScope, ConfigEntry, get_config_manager
 from sparkai.engine.animation_controller import AnimationController, AnimState, AnimClip, get_animation_controller
+from sparkai.engine.debug_draw_system import DebugDrawSystem, DrawCategory, get_debug_draw_system
+from sparkai.engine.prefab_system import PrefabSystem, PrefabTemplate, PrefabInstance, get_prefab_system
+from sparkai.engine.physics_constraints import PhysicsConstraints, Constraint, ConstraintType, get_physics_constraints
+from sparkai.engine.spatial_index import SpatialIndex, SpatialEntry, get_spatial_index
 
 
 class SparkEngine:
@@ -142,6 +146,10 @@ class SparkEngine:
         self._gui_system: GUISystem = get_gui_system()
         self._config_manager: ConfigManager = get_config_manager()
         self._animation_controller: AnimationController = get_animation_controller()
+        self._debug_draw_system: DebugDrawSystem = get_debug_draw_system()
+        self._prefab_system: PrefabSystem = get_prefab_system()
+        self._physics_constraints: PhysicsConstraints = get_physics_constraints()
+        self._spatial_index: SpatialIndex = get_spatial_index()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -169,6 +177,7 @@ class SparkEngine:
         self._behavior_system.step_post(dt)
         self._behavior_tree.tick_all()
         self._animation_controller.update(dt)
+        self._physics_constraints.step(dt)
         self._network_sync.tick()
         self._rendering_server.end_frame()
         self._game_loop.register_phase_handler(
@@ -349,6 +358,10 @@ class SparkEngine:
             "gui_system": self._gui_system.get_stats(),
             "config_manager": self._config_manager.get_stats(),
             "animation_controller": self._animation_controller.get_stats(),
+            "debug_draw_system": self._debug_draw_system.get_stats(),
+            "prefab_system": self._prefab_system.get_stats(),
+            "physics_constraints": self._physics_constraints.get_stats(),
+            "spatial_index": self._spatial_index.get_stats(),
         }
 
     @property
@@ -538,6 +551,22 @@ class SparkEngine:
     @property
     def animation_controller(self) -> AnimationController:
         return self._animation_controller
+
+    @property
+    def debug_draw_system(self) -> DebugDrawSystem:
+        return self._debug_draw_system
+
+    @property
+    def prefab_system(self) -> PrefabSystem:
+        return self._prefab_system
+
+    @property
+    def physics_constraints(self) -> PhysicsConstraints:
+        return self._physics_constraints
+
+    @property
+    def spatial_index(self) -> SpatialIndex:
+        return self._spatial_index
 
 
 @dataclass
