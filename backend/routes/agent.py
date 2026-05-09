@@ -9353,3 +9353,472 @@ async def platform_bridge_register_handler(platform: str, callback_url: str = ""
     pt = PlatformType(platform)
     _platform_bridge.register_handler(pt, lambda msg: {"status": "handled", "callback": callback_url, "msg": msg.to_dict()})
     return {"success": True, "platform": platform}
+
+
+# ============================================================
+# Reasoning Chain Endpoints
+# ============================================================
+
+from sparkai.agent.agent_reasoning_chain import ReasoningChain, ReasoningTrace, ReasoningPhase, DecisionConfidence, get_reasoning_chain
+
+_reasoning_chain = get_reasoning_chain()
+
+
+@router.get("/reasoning/stats")
+async def reasoning_stats():
+    return _reasoning_chain.get_stats()
+
+
+@router.post("/reasoning/begin")
+async def reasoning_begin(goal: str):
+    trace = _reasoning_chain.begin(goal)
+    return trace.to_dict()
+
+
+@router.get("/reasoning/active")
+async def reasoning_active():
+    active = _reasoning_chain.active
+    if active:
+        return active.to_full_dict()
+    return {"active": False}
+
+
+@router.post("/reasoning/think")
+async def reasoning_think(thought: str, phase: str = "analyze"):
+    p = ReasoningPhase(phase) if phase in [ph.value for ph in ReasoningPhase] else ReasoningPhase.ANALYZE
+    step = _reasoning_chain.think(thought, p)
+    return step.to_dict() if step else {"error": "No active trace"}
+
+
+@router.post("/reasoning/decide")
+async def reasoning_decide(question: str, chosen: str, rationale: str, alternatives: str = "", confidence: str = "medium"):
+    alts = [a.strip() for a in alternatives.split(",")] if alternatives else []
+    conf = DecisionConfidence(confidence) if confidence in [c.value for c in DecisionConfidence] else DecisionConfidence.MEDIUM
+    decision = _reasoning_chain.decide(question, chosen, rationale, alts, conf)
+    return decision.to_dict() if decision else {"error": "No active trace"}
+
+
+@router.post("/reasoning/finish")
+async def reasoning_finish(outcome: str = "", success: bool = True):
+    trace = _reasoning_chain.finish(outcome, success)
+    return trace.to_dict() if trace else {"error": "No active trace"}
+
+
+@router.get("/reasoning/history")
+async def reasoning_history(limit: int = 10):
+    return {"traces": [t.to_dict() for t in _reasoning_chain.get_history(limit)]}
+
+
+# ============================================================
+# Tool Composer Endpoints
+# ============================================================
+
+from sparkai.agent.agent_tool_composer import ToolComposer, ToolChain, ChainTemplate, ChainExecutionMode, get_tool_composer
+
+_tool_composer = get_tool_composer()
+
+
+@router.get("/tool-composer/stats")
+async def tool_composer_stats():
+    return _tool_composer.get_stats()
+
+
+@router.post("/tool-composer/create-chain")
+async def tool_composer_create_chain(name: str = "chain", mode: str = "sequential"):
+    m = ChainExecutionMode(mode) if mode in [m.value for m in ChainExecutionMode] else ChainExecutionMode.SEQUENTIAL
+    chain = _tool_composer.create_chain(name, m)
+    return chain.to_dict()
+
+
+@router.get("/tool-composer/chain/{chain_id}")
+async def tool_composer_get_chain(chain_id: str):
+    chain = _tool_composer.get_chain(chain_id)
+    if chain:
+        return chain.to_dict()
+    return {"error": "Chain not found"}
+
+
+@router.post("/tool-composer/chain/{chain_id}/add-step")
+async def tool_composer_add_step(chain_id: str, tool_name: str, inputs: Optional[Dict[str, Any]] = None, depends_on: Optional[List[str]] = None, description: str = ""):
+    chain = _tool_composer.get_chain(chain_id)
+    if not chain:
+        return {"error": "Chain not found"}
+    step = chain.add_step(tool_name, inputs, depends_on, description)
+    return step.to_dict()
+
+
+@router.get("/tool-composer/templates")
+async def tool_composer_templates(category: Optional[str] = None):
+    templates = _tool_composer.list_templates(category)
+    return {"templates": [t.to_dict() for t in templates]}
+
+
+@router.post("/tool-composer/instantiate-template")
+async def tool_composer_instantiate_template(template_id: str, name: str = ""):
+    chain = _tool_composer.instantiate_template(template_id, name)
+    if chain:
+        return chain.to_dict()
+    return {"error": "Template not found"}
+
+
+# ============================================================
+# Feedback Loop Endpoints
+# ============================================================
+
+from sparkai.agent.agent_feedback_loop import FeedbackLoop, FeedbackEntry, FeedbackSource, FeedbackSentiment, FeedbackSeverity, get_feedback_loop
+
+_feedback_loop = get_feedback_loop()
+
+
+@router.get("/feedback/stats")
+async def feedback_stats():
+    return _feedback_loop.get_stats()
+
+
+@router.get("/feedback/report")
+async def feedback_report():
+    return _feedback_loop.get_quality_report()
+
+
+@router.post("/feedback/record")
+async def feedback_record(action_type: str, source: str = "user", sentiment: str = "neutral", score: float = 0.5, message: str = "", suggestion: str = "", severity: str = "info"):
+    src = FeedbackSource(source) if source in [s.value for s in FeedbackSource] else FeedbackSource.USER
+    sent = FeedbackSentiment(sentiment) if sentiment in [s.value for s in FeedbackSentiment] else FeedbackSentiment.NEUTRAL
+    sev = FeedbackSeverity(severity) if severity in [s.value for s in FeedbackSeverity] else FeedbackSeverity.INFO
+    entry = _feedback_loop.record(action_type, src, sent, score, message, suggestion, sev)
+    return entry.to_dict()
+
+
+@router.post("/feedback/playtest")
+async def feedback_playtest(action_type: str, passed: bool = True, message: str = "", session_id: str = ""):
+    entry = _feedback_loop.record_playtest_result(action_type, passed, message, session_id)
+    return entry.to_dict()
+
+
+@router.post("/feedback/compiler")
+async def feedback_compiler(action_type: str, errors: int = 0, warnings: int = 0, message: str = ""):
+    entry = _feedback_loop.record_compiler_result(action_type, errors, warnings, message)
+    return entry.to_dict()
+
+
+@router.post("/feedback/user-rating")
+async def feedback_user_rating(action_type: str, rating: int = 3, comment: str = "", session_id: str = ""):
+    entry = _feedback_loop.record_user_rating(action_type, rating, comment, session_id)
+    return entry.to_dict()
+
+
+@router.get("/feedback/suggestions")
+async def feedback_suggestions():
+    return {"suggestions": [s.to_dict() for s in _feedback_loop.get_pending_suggestions()]}
+
+
+@router.post("/feedback/apply-suggestion")
+async def feedback_apply_suggestion(suggestion_id: str):
+    return {"applied": _feedback_loop.apply_suggestion(suggestion_id)}
+
+
+@router.get("/feedback/action/{action_type}")
+async def feedback_action_quality(action_type: str):
+    stats = _feedback_loop.get_action_quality(action_type)
+    return stats.to_dict() if stats else {"error": "No data for this action type"}
+
+
+# ============================================================
+# Agent Negotiation Endpoints
+# ============================================================
+
+from sparkai.agent.agent_negotiation import AgentNegotiation, NegotiationSession, VoteStance, Proposal, get_agent_negotiation
+
+_agent_negotiation = get_agent_negotiation()
+
+
+@router.get("/negotiation/stats")
+async def negotiation_stats():
+    return _agent_negotiation.get_stats()
+
+
+@router.post("/negotiation/open")
+async def negotiation_open(topic: str, description: str = ""):
+    session = _agent_negotiation.open_session(topic, description)
+    return session.to_dict()
+
+
+@router.get("/negotiation/session/{session_id}")
+async def negotiation_get_session(session_id: str):
+    session = _agent_negotiation.get_session(session_id)
+    if session:
+        return session.to_dict()
+    return {"error": "Session not found"}
+
+
+@router.post("/negotiation/session/{session_id}/add-participant")
+async def negotiation_add_participant(session_id: str, name: str, role: str, expertise: str = ""):
+    session = _agent_negotiation.get_session(session_id)
+    if not session:
+        return {"error": "Session not found"}
+    session.add_participant(name, role, expertise)
+    return {"participants": session.participants}
+
+
+@router.post("/negotiation/session/{session_id}/propose")
+async def negotiation_propose(session_id: str, agent_name: str, agent_role: str, title: str, description: str, justification: str = ""):
+    session = _agent_negotiation.get_session(session_id)
+    if not session:
+        return {"error": "Session not found"}
+    proposal = session.propose(agent_name, agent_role, title, description, justification)
+    return proposal.to_dict()
+
+
+@router.post("/negotiation/session/{session_id}/vote")
+async def negotiation_vote(session_id: str, agent_name: str, agent_role: str, proposal_id: str, stance: str = "support", reasoning: str = "", conditions: str = ""):
+    session = _agent_negotiation.get_session(session_id)
+    if not session:
+        return {"error": "Session not found"}
+    s = VoteStance(stance) if stance in [v.value for v in VoteStance] else VoteStance.SUPPORT
+    vote = session.cast_vote(agent_name, agent_role, proposal_id, s, reasoning, conditions)
+    return vote.to_dict()
+
+
+@router.post("/negotiation/session/{session_id}/advance")
+async def negotiation_advance(session_id: str):
+    phase = _agent_negotiation.advance_phase(session_id)
+    return {"phase": phase.value if phase else "null"}
+
+
+@router.post("/negotiation/session/{session_id}/resolve")
+async def negotiation_resolve(session_id: str, method: str = "majority"):
+    result = _agent_negotiation.resolve_session(session_id, method)
+    return result.to_dict() if result else {"error": "Could not resolve"}
+
+
+@router.get("/negotiation/sessions")
+async def negotiation_sessions(active_only: bool = True):
+    sessions = _agent_negotiation.list_sessions(active_only)
+    return {"sessions": [s.to_dict() for s in sessions]}
+
+
+# ============================================================
+# Debug Draw System Endpoints
+# ============================================================
+
+from sparkai.engine.debug_draw_system import DebugDrawSystem, DrawCategory, get_debug_draw_system
+
+_debug_draw_system = get_debug_draw_system()
+
+
+@router.get("/debug-draw/stats")
+async def debug_draw_stats():
+    return _debug_draw_system.get_stats()
+
+
+@router.post("/debug-draw/line")
+async def debug_draw_line(x1: float = 0, y1: float = 0, x2: float = 100, y2: float = 0, r: int = 0, g: int = 255, b: int = 0, a: int = 200, category: str = "PHYSICS"):
+    try:
+        cat = DrawCategory[category]
+    except (KeyError, AttributeError):
+        cat = DrawCategory.PHYSICS
+    cmd_id = _debug_draw_system.draw_line(x1, y1, x2, y2, (r, g, b, a), cat, 1.0)
+    return {"cmd_id": cmd_id}
+
+
+@router.post("/debug-draw/circle")
+async def debug_draw_circle(cx: float = 0, cy: float = 0, radius: float = 10, r: int = 0, g: int = 255, b: int = 0, a: int = 200, category: str = "PHYSICS", fill: bool = False):
+    try:
+        cat = DrawCategory[category]
+    except (KeyError, AttributeError):
+        cat = DrawCategory.PHYSICS
+    cmd_id = _debug_draw_system.draw_circle(cx, cy, radius, (r, g, b, a), cat, fill)
+    return {"cmd_id": cmd_id}
+
+
+@router.post("/debug-draw/rect")
+async def debug_draw_rect(x: float = 0, y: float = 0, w: float = 100, h: float = 100, r: int = 0, g: int = 255, b: int = 0, a: int = 200, category: str = "PHYSICS", fill: bool = False):
+    try:
+        cat = DrawCategory[category]
+    except (KeyError, AttributeError):
+        cat = DrawCategory.PHYSICS
+    cmd_id = _debug_draw_system.draw_rect(x, y, w, h, (r, g, b, a), cat, fill)
+    return {"cmd_id": cmd_id}
+
+
+@router.post("/debug-draw/clear")
+async def debug_draw_clear():
+    _debug_draw_system.clear()
+    return {"cleared": True}
+
+
+@router.post("/debug-draw/toggle")
+async def debug_draw_toggle(enabled: bool = True):
+    _debug_draw_system.enabled = enabled
+    return {"enabled": _debug_draw_system.enabled}
+
+
+@router.post("/debug-draw/show-category")
+async def debug_draw_show_category(category: str = "ALL"):
+    try:
+        cat = DrawCategory[category]
+        _debug_draw_system.show_category(cat)
+    except (KeyError, AttributeError):
+        _debug_draw_system.show_category(DrawCategory.ALL)
+    return {"ok": True}
+
+
+# ============================================================
+# Prefab System Endpoints
+# ============================================================
+
+from sparkai.engine.prefab_system import PrefabSystem, PrefabTemplate, PrefabInstance, get_prefab_system
+
+_prefab_system = get_prefab_system()
+
+
+@router.get("/prefab/stats")
+async def prefab_stats():
+    return _prefab_system.get_stats()
+
+
+@router.post("/prefab/create-template")
+async def prefab_create_template(name: str, category: str = "general", description: str = ""):
+    template = _prefab_system.create_template(name, category, description)
+    return template.to_dict()
+
+
+@router.get("/prefab/templates")
+async def prefab_templates(category: Optional[str] = None, tag: Optional[str] = None):
+    templates = _prefab_system.list_templates(category, tag)
+    return {"templates": [t.to_dict() for t in templates]}
+
+
+@router.get("/prefab/template/{template_id}")
+async def prefab_get_template(template_id: str):
+    template = _prefab_system.get_template(template_id)
+    if template:
+        return template.to_dict()
+    return {"error": "Template not found"}
+
+
+@router.post("/prefab/create-variant")
+async def prefab_create_variant(parent_template_id: str, name: str):
+    variant = _prefab_system.create_variant(parent_template_id, name)
+    if variant:
+        return variant.to_dict()
+    return {"error": "Parent template not found"}
+
+
+@router.post("/prefab/instantiate")
+async def prefab_instantiate(template_id: str, x: float = 0.0, y: float = 0.0):
+    instance = _prefab_system.instantiate(template_id, x, y)
+    if instance:
+        return instance.to_dict()
+    return {"error": "Template not found"}
+
+
+@router.get("/prefab/instances")
+async def prefab_instances(template_id: Optional[str] = None):
+    instances = _prefab_system.list_instances(template_id)
+    return {"instances": [i.to_dict() for i in instances]}
+
+
+# ============================================================
+# Physics Constraints Endpoints
+# ============================================================
+
+from sparkai.engine.physics_constraints import PhysicsConstraints, ConstraintType, get_physics_constraints
+
+_physics_constraints = get_physics_constraints()
+
+
+@router.get("/physics-constraints/stats")
+async def physics_constraints_stats():
+    return _physics_constraints.get_stats()
+
+
+@router.post("/physics-constraints/create-spring")
+async def physics_constraints_create_spring(body_a_id: str = "", body_b_id: str = "", rest_length: float = 50.0):
+    constraint = _physics_constraints.create_spring(body_a_id, body_b_id, rest_length)
+    return constraint.to_dict()
+
+
+@router.post("/physics-constraints/create-hinge")
+async def physics_constraints_create_hinge(body_a_id: str = "", body_b_id: str = "", anchor_x: float = 0, anchor_y: float = 0):
+    constraint = _physics_constraints.create_hinge(body_a_id, body_b_id, (anchor_x, anchor_y))
+    return constraint.to_dict()
+
+
+@router.post("/physics-constraints/create-slider")
+async def physics_constraints_create_slider(body_a_id: str = "", body_b_id: str = "", axis_x: float = 1.0, axis_y: float = 0.0):
+    constraint = _physics_constraints.create_slider(body_a_id, body_b_id, (axis_x, axis_y))
+    return constraint.to_dict()
+
+
+@router.post("/physics-constraints/create-distance")
+async def physics_constraints_create_distance(body_a_id: str = "", body_b_id: str = "", distance: float = 100.0):
+    constraint = _physics_constraints.create_distance(body_a_id, body_b_id, distance)
+    return constraint.to_dict()
+
+
+@router.post("/physics-constraints/create-weld")
+async def physics_constraints_create_weld(body_a_id: str = "", body_b_id: str = ""):
+    constraint = _physics_constraints.create_weld(body_a_id, body_b_id)
+    return constraint.to_dict()
+
+
+@router.post("/physics-constraints/enable")
+async def physics_constraints_enable(constraint_id: str):
+    return {"enabled": _physics_constraints.enable(constraint_id)}
+
+
+@router.post("/physics-constraints/disable")
+async def physics_constraints_disable(constraint_id: str):
+    return {"disabled": _physics_constraints.disable(constraint_id)}
+
+
+# ============================================================
+# Spatial Index Endpoints
+# ============================================================
+
+from sparkai.engine.spatial_index import SpatialIndex, SpatialEntry, get_spatial_index
+
+_spatial_index = get_spatial_index()
+
+
+@router.get("/spatial-index/stats")
+async def spatial_index_stats():
+    return _spatial_index.get_stats()
+
+
+@router.post("/spatial-index/initialize")
+async def spatial_index_initialize(x: float = 0, y: float = 0, width: float = 10000, height: float = 10000):
+    _spatial_index.initialize(x, y, width, height)
+    return _spatial_index.get_stats()
+
+
+@router.post("/spatial-index/insert")
+async def spatial_index_insert(object_id: str, x: float = 0, y: float = 0, width: float = 0, height: float = 0, object_type: str = "", layer: int = 0):
+    entry = _spatial_index.insert(object_id, x, y, width, height, object_type, layer)
+    return entry.to_dict() if entry else {"error": "Insert failed"}
+
+
+@router.delete("/spatial-index/{object_id}")
+async def spatial_index_remove(object_id: str):
+    return {"removed": _spatial_index.remove(object_id)}
+
+
+@router.get("/spatial-index/query-range")
+async def spatial_index_query_range(x: float = 0, y: float = 0, width: float = 500, height: float = 500, layer: Optional[int] = None):
+    results = _spatial_index.query_range(x, y, width, height, layer)
+    return {"results": [r.to_dict() for r in results], "count": len(results)}
+
+
+@router.get("/spatial-index/nearest")
+async def spatial_index_nearest(px: float = 0, py: float = 0, n: int = 1, max_distance: float = 10000):
+    results = _spatial_index.find_nearest(px, py, n, max_distance)
+    return {"results": [r.to_dict() for r in results]}
+
+
+@router.get("/spatial-index/entry/{object_id}")
+async def spatial_index_get_entry(object_id: str):
+    entry = _spatial_index.get_entry(object_id)
+    if entry:
+        return entry.to_dict()
+    return {"error": "Entry not found"}
