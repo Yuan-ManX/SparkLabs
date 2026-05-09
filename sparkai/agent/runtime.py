@@ -333,6 +333,10 @@ from sparkai.agent.agent_trajectory import TrajectoryRecorder, TrajectoryPhase, 
 from sparkai.agent.agent_skill_commands import SkillCommandRegistry, CommandCategory, CommandDef, get_skill_command_registry
 from sparkai.agent.agent_session_persistence import SessionStore, SessionStatus, SessionRecord, get_session_store
 from sparkai.agent.agent_platform_bridge import PlatformBridge, PlatformType, PlatformMessage, get_platform_bridge
+from sparkai.agent.agent_reasoning_chain import ReasoningChain, ReasoningTrace, ReasoningPhase, get_reasoning_chain
+from sparkai.agent.agent_tool_composer import ToolComposer, ToolChain, ChainTemplate, get_tool_composer
+from sparkai.agent.agent_feedback_loop import FeedbackLoop, FeedbackEntry, FeedbackSource, get_feedback_loop
+from sparkai.agent.agent_negotiation import AgentNegotiation, NegotiationSession, VoteStance, get_agent_negotiation
 
 
 class RuntimeState(Enum):
@@ -549,6 +553,10 @@ class AgentRuntime:
         self._skill_command_registry: Optional[SkillCommandRegistry] = None
         self._session_store: Optional[SessionStore] = None
         self._platform_bridge: Optional[PlatformBridge] = None
+        self._reasoning_chain: Optional[ReasoningChain] = None
+        self._tool_composer: Optional[ToolComposer] = None
+        self._feedback_loop: Optional[FeedbackLoop] = None
+        self._agent_negotiation: Optional[AgentNegotiation] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -728,6 +736,10 @@ class AgentRuntime:
             self._skill_command_registry = get_skill_command_registry()
             self._session_store = get_session_store()
             self._platform_bridge = get_platform_bridge()
+            self._reasoning_chain = get_reasoning_chain()
+            self._tool_composer = get_tool_composer()
+            self._feedback_loop = get_feedback_loop()
+            self._agent_negotiation = get_agent_negotiation()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -866,6 +878,10 @@ class AgentRuntime:
             self._integration.register_subsystem("skill_command_registry", self._skill_command_registry)
             self._integration.register_subsystem("session_store", self._session_store)
             self._integration.register_subsystem("platform_bridge", self._platform_bridge)
+            self._integration.register_subsystem("reasoning_chain", self._reasoning_chain)
+            self._integration.register_subsystem("tool_composer", self._tool_composer)
+            self._integration.register_subsystem("feedback_loop", self._feedback_loop)
+            self._integration.register_subsystem("agent_negotiation", self._agent_negotiation)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -894,7 +910,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 163,
+                    "subsystems": 171,
                 }},
             ))
 
@@ -1764,6 +1780,22 @@ class AgentRuntime:
     def platform_bridge(self) -> Optional[PlatformBridge]:
         return self._platform_bridge
 
+    @property
+    def reasoning_chain(self) -> Optional[ReasoningChain]:
+        return self._reasoning_chain
+
+    @property
+    def tool_composer(self) -> Optional[ToolComposer]:
+        return self._tool_composer
+
+    @property
+    def feedback_loop(self) -> Optional[FeedbackLoop]:
+        return self._feedback_loop
+
+    @property
+    def agent_negotiation(self) -> Optional[AgentNegotiation]:
+        return self._agent_negotiation
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -1941,6 +1973,10 @@ class AgentRuntime:
                 "skill_command_registry": self._skill_command_registry is not None,
                 "session_store": self._session_store is not None,
                 "platform_bridge": self._platform_bridge is not None,
+                "reasoning_chain": self._reasoning_chain is not None,
+                "tool_composer": self._tool_composer is not None,
+                "feedback_loop": self._feedback_loop is not None,
+                "agent_negotiation": self._agent_negotiation is not None,
             },
         }
 
@@ -2240,6 +2276,14 @@ class AgentRuntime:
             status["session_store_stats"] = self._session_store.get_stats()
         if self._platform_bridge:
             status["platform_bridge_stats"] = self._platform_bridge.get_stats()
+        if self._reasoning_chain:
+            status["reasoning_chain_stats"] = self._reasoning_chain.get_stats()
+        if self._tool_composer:
+            status["tool_composer_stats"] = self._tool_composer.get_stats()
+        if self._feedback_loop:
+            status["feedback_loop_stats"] = self._feedback_loop.get_stats()
+        if self._agent_negotiation:
+            status["agent_negotiation_stats"] = self._agent_negotiation.get_stats()
         return status
 
 
