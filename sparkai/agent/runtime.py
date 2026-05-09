@@ -337,6 +337,10 @@ from sparkai.agent.agent_reasoning_chain import ReasoningChain, ReasoningTrace, 
 from sparkai.agent.agent_tool_composer import ToolComposer, ToolChain, ChainTemplate, get_tool_composer
 from sparkai.agent.agent_feedback_loop import FeedbackLoop, FeedbackEntry, FeedbackSource, get_feedback_loop
 from sparkai.agent.agent_negotiation import AgentNegotiation, NegotiationSession, VoteStance, get_agent_negotiation
+from sparkai.agent.agent_simulation_env import SimulationEnv, SimScenario, SimulationMode, get_simulation_env
+from sparkai.agent.agent_goal_decomposer import GoalDecomposer, GoalTree, GoalNode, GoalLevel, get_goal_decomposer
+from sparkai.agent.agent_prompt_template import PromptTemplateLib, TemplateEntry, TemplateDomain, get_prompt_template_lib
+from sparkai.agent.agent_semantic_memory import SemanticMemory, MemoryVector, MemoryCategory, get_semantic_memory
 
 
 class RuntimeState(Enum):
@@ -557,6 +561,10 @@ class AgentRuntime:
         self._tool_composer: Optional[ToolComposer] = None
         self._feedback_loop: Optional[FeedbackLoop] = None
         self._agent_negotiation: Optional[AgentNegotiation] = None
+        self._simulation_env: Optional[SimulationEnv] = None
+        self._goal_decomposer: Optional[GoalDecomposer] = None
+        self._prompt_template_lib: Optional[PromptTemplateLib] = None
+        self._semantic_memory: Optional[SemanticMemory] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -740,6 +748,10 @@ class AgentRuntime:
             self._tool_composer = get_tool_composer()
             self._feedback_loop = get_feedback_loop()
             self._agent_negotiation = get_agent_negotiation()
+            self._simulation_env = get_simulation_env()
+            self._goal_decomposer = get_goal_decomposer()
+            self._prompt_template_lib = get_prompt_template_lib()
+            self._semantic_memory = get_semantic_memory()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -882,6 +894,10 @@ class AgentRuntime:
             self._integration.register_subsystem("tool_composer", self._tool_composer)
             self._integration.register_subsystem("feedback_loop", self._feedback_loop)
             self._integration.register_subsystem("agent_negotiation", self._agent_negotiation)
+            self._integration.register_subsystem("simulation_env", self._simulation_env)
+            self._integration.register_subsystem("goal_decomposer", self._goal_decomposer)
+            self._integration.register_subsystem("prompt_template_lib", self._prompt_template_lib)
+            self._integration.register_subsystem("semantic_memory", self._semantic_memory)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -1796,6 +1812,22 @@ class AgentRuntime:
     def agent_negotiation(self) -> Optional[AgentNegotiation]:
         return self._agent_negotiation
 
+    @property
+    def simulation_env(self) -> Optional[SimulationEnv]:
+        return self._simulation_env
+
+    @property
+    def goal_decomposer(self) -> Optional[GoalDecomposer]:
+        return self._goal_decomposer
+
+    @property
+    def prompt_template_lib(self) -> Optional[PromptTemplateLib]:
+        return self._prompt_template_lib
+
+    @property
+    def semantic_memory(self) -> Optional[SemanticMemory]:
+        return self._semantic_memory
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -1977,6 +2009,10 @@ class AgentRuntime:
                 "tool_composer": self._tool_composer is not None,
                 "feedback_loop": self._feedback_loop is not None,
                 "agent_negotiation": self._agent_negotiation is not None,
+                "simulation_env": self._simulation_env is not None,
+                "goal_decomposer": self._goal_decomposer is not None,
+                "prompt_template_lib": self._prompt_template_lib is not None,
+                "semantic_memory": self._semantic_memory is not None,
             },
         }
 
@@ -2284,6 +2320,14 @@ class AgentRuntime:
             status["feedback_loop_stats"] = self._feedback_loop.get_stats()
         if self._agent_negotiation:
             status["agent_negotiation_stats"] = self._agent_negotiation.get_stats()
+        if self._simulation_env:
+            status["simulation_env_stats"] = self._simulation_env.get_stats()
+        if self._goal_decomposer:
+            status["goal_decomposer_stats"] = self._goal_decomposer.get_stats()
+        if self._prompt_template_lib:
+            status["prompt_template_lib_stats"] = self._prompt_template_lib.get_stats()
+        if self._semantic_memory:
+            status["semantic_memory_stats"] = self._semantic_memory.get_stats()
         return status
 
 
