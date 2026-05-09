@@ -1,306 +1,321 @@
 """
-SparkAI Agent - Intent Classifier
+SparkLabs Agent - Intent Classifier
 
-Intent classification engine that routes user prompts to appropriate
-agent workflows. Classifies game development prompts into structured
-intents, enabling the agent system to select the right tools, models,
-and execution strategies for each request type.
+Intent classification engine that determines the user's game
+development goal from natural language input. Routes to the
+appropriate agent, tool chain, or workflow based on classified
+intent type, confidence score, and domain specificity.
 
 Architecture:
   IntentClassifier
-    |-- KeywordMatcher (fast pre-filter using keyword patterns)
-    |-- ContextAnalyzer (semantic analysis of prompt structure)
-    |-- IntentRouter (maps intents to execution pipelines)
-    |-- ConfidenceScorer (multi-signal confidence estimation)
+    |-- IntentMatcher (keyword + pattern-based matching)
+    |-- IntentConfidence (score ranking for ambiguous queries)
+    |-- DomainRouter (route to specialized agent by domain)
+    |-- IntentHistory (learn from repeated user patterns)
+    |-- DisambiguationResolver (handle multi-intent inputs)
 
-Intent Categories:
-  - WORLD: terrain, biomes, environment generation
-  - CHARACTER: player, NPC, enemy creation
-  - MECHANIC: game rules, systems, physics
-  - NARRATIVE: story, dialogue, quest design
-  - ASSET: textures, models, sounds
-  - CODE: game scripts, engine code
-  - ANALYSIS: review, debug, optimize existing content
-  - ORCHESTRATE: multi-step pipelines combining above intents
+Intent Domains (Game Development specific):
+  - CREATE: generate new game content (level, character, asset)
+  - MODIFY: alter existing game content
+  - QUERY: ask about game state or design
+  - DEBUG: find and fix game issues
+  - OPTIMIZE: improve game performance
+  - DEPLOY: build, package, or publish game
 """
 
 from __future__ import annotations
 
 import re
+import threading
+import time
+import uuid
+from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 
-class PromptIntent(Enum):
-    WORLD = "world"
-    CHARACTER = "character"
-    NPC = "npc"
-    ENEMY = "enemy"
-    MECHANIC = "mechanic"
-    NARRATIVE = "narrative"
-    DIALOGUE = "dialogue"
-    QUEST = "quest"
-    ASSET = "asset"
-    CODE = "code"
-    ANALYSIS = "analysis"
-    ORCHESTRATE = "orchestrate"
+class IntentDomain(Enum):
+    CREATE = "create"
+    MODIFY = "modify"
+    QUERY = "query"
+    DEBUG = "debug"
+    OPTIMIZE = "optimize"
+    DEPLOY = "deploy"
     GENERAL = "general"
-    UNKNOWN = "unknown"
+
+
+class IntentConfidence(Enum):
+    HIGH = (0.85, "Strong match, route directly")
+    MEDIUM = (0.60, "Good match, confirm with user")
+    LOW = (0.30, "Weak match, suggest alternatives")
+    UNCERTAIN = (0.0, "No match, ask clarifying question")
 
 
 @dataclass
-class IntentResult:
-    primary: PromptIntent = PromptIntent.UNKNOWN
-    secondary: List[PromptIntent] = field(default_factory=list)
+class IntentMatch:
+    domain: IntentDomain
     confidence: float = 0.0
-    keywords_matched: List[str] = field(default_factory=list)
-    suggested_pipeline: str = ""
-    entity_type: str = ""
-    detail_level: str = "standard"
+    target_agent: str = ""
+    tool_chain: str = ""
+    extracted_params: Dict[str, Any] = field(default_factory=dict)
+    reasoning: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "primary": self.primary.value,
-            "secondary": [s.value for s in self.secondary],
+            "domain": self.domain.value,
             "confidence": round(self.confidence, 3),
-            "keywords_matched": self.keywords_matched,
-            "suggested_pipeline": self.suggested_pipeline,
-            "entity_type": self.entity_type,
-            "detail_level": self.detail_level,
+            "target_agent": self.target_agent,
+            "tool_chain": self.tool_chain,
+            "params": self.extracted_params,
+            "reasoning": self.reasoning,
         }
 
-    @property
-    def is_confident(self) -> bool:
-        return self.confidence >= 0.6
+
+@dataclass
+class IntentRule:
+    rule_id: str = field(default_factory=lambda: str(uuid.uuid4())[:8])
+    domain: IntentDomain = IntentDomain.GENERAL
+    patterns: List[str] = field(default_factory=list)
+    keywords: List[str] = field(default_factory=list)
+    target_agent: str = ""
+    tool_chain: str = ""
+    priority: int = 5
 
 
-INTENT_PATTERNS: Dict[PromptIntent, List[Tuple[str, float]]] = {
-    PromptIntent.WORLD: [
-        (r"\b(terrain|landscape|biome|environment|world|map|level|ocean|forest|desert|mountain|island|planet|dungeon)\b", 0.15),
-        (r"\b(generate|create|build|design|make)\b.*\b(world|terrain|environment|map|level|landscape|realm)\b", 0.20),
-        (r"\b(procedural|random|seed)\b.*\b(generat|terrain|world)\b", 0.25),
-        (r"\b(open.world|sandbox|explorable)\b", 0.15),
-    ],
-    PromptIntent.CHARACTER: [
-        (r"\b(character|player|hero|protagonist|avatar|persona)\b", 0.15),
-        (r"\b(generate|create|design|make|build)\b.*\b(character|player|hero|protagonist)\b", 0.20),
-        (r"\b(backstory|personality|trait|skill|ability|class|race)\b", 0.10),
-    ],
-    PromptIntent.NPC: [
-        (r"\b(npc|non.player|vendor|merchant|quest.giver|villager|townsfolk)\b", 0.15),
-        (r"\b(create|generate|spawn|place)\b.*\b(npc|character)\b", 0.15),
-        (r"\b(dialog|conversation|speak|talk|interact)\b.*\b(npc|character)\b", 0.10),
-    ],
-    PromptIntent.ENEMY: [
-        (r"\b(enemy|monster|boss|creature|beast|dragon|zombie|undead|goblin|orc)\b", 0.15),
-        (r"\b(combat|fight|battle|attack|damage|health|hp|ai.behavio)\b", 0.10),
-        (r"\b(spawn|generate)\b.*\b(enemy|monster|mob)\b", 0.20),
-    ],
-    PromptIntent.MECHANIC: [
-        (r"\b(mechanic|gameplay|system|rule|physics|inventory|crafting|combat.system|economy)\b", 0.15),
-        (r"\b(design|implement|add|create)\b.*\b(system|mechanic|rule|physics)\b", 0.15),
-        (r"\b(balance|tuning|difficulty|progression|leveling|skill.tree)\b", 0.10),
-    ],
-    PromptIntent.NARRATIVE: [
-        (r"\b(story|plot|narrative|lore|backstory|history|timeline|arc|chapter)\b", 0.15),
-        (r"\b(write|generate|create|tell|craft)\b.*\b(story|narrative|plot|lore)\b", 0.15),
-        (r"\b(world.building|setting|universe|mythology|legend)\b", 0.10),
-    ],
-    PromptIntent.DIALOGUE: [
-        (r"\b(dialog|conversation|speak|talk|chat|greet|respond|say)\b", 0.15),
-        (r"\b(dialog.tree|branching|choice|option|response)\b", 0.20),
-        (r"\b(write|generate)\b.*\b(dialog|conversation|script)\b", 0.15),
-    ],
-    PromptIntent.QUEST: [
-        (r"\b(quest|mission|task|objective|goal|side.quest|main.quest|fetch|escort)\b", 0.15),
-        (r"\b(design|create|generate)\b.*\b(quest|mission)\b", 0.15),
-        (r"\b(reward|loot|treasure|xp|experience)\b", 0.05),
-    ],
-    PromptIntent.ASSET: [
-        (r"\b(texture|model|mesh|sprite|animation|sound|music|audio|vfx|particle|shader|material)\b", 0.15),
-        (r"\b(generate|create|import|export)\b.*\b(asset|texture|model|sound|animation)\b", 0.15),
-        (r"\b(2d|3d|pixel.art|voxel|low.poly)\b", 0.10),
-    ],
-    PromptIntent.CODE: [
-        (r"\b(code|script|program|function|class|api|sdk|framework|engine)\b", 0.10),
-        (r"\b(write|generate|implement|fix|debug|refactor)\b.*\b(code|script|function)\b", 0.15),
-        (r"\b(python|javascript|lua|csharp|c\+\+|typescript|rust)\b", 0.10),
-        (r"\b(module|package|library|plugin|extension|addon)\b", 0.05),
-    ],
-    PromptIntent.ANALYSIS: [
-        (r"\b(analyze|review|check|audit|inspect|examine|evaluate|assess)\b", 0.15),
-        (r"\b(bug|issue|error|problem|broken|fix|debug|optimize|improve|enhance)\b", 0.10),
-        (r"\b(performance|fps|lag|slow|bottleneck|memory|leak)\b", 0.10),
-    ],
-    PromptIntent.ORCHESTRATE: [
-        (r"\b(full.game|complete.project|entire|whole|everything|all.in.one)\b", 0.20),
-        (r"\b(pipeline|workflow|orchestrat|multi.step|end.to.end)\b", 0.20),
-        (r"\b(build|make|create|develop)\b.*\b(game|project|world|experience)\b", 0.15),
-    ],
-}
+@dataclass
+class ClassificationResult:
+    query: str = ""
+    matches: List[IntentMatch] = field(default_factory=list)
+    primary_intent: Optional[IntentMatch] = None
+    needs_clarification: bool = False
+    timestamp: float = field(default_factory=time.time)
 
-
-def _strip_punctuation(text: str) -> str:
-    return re.sub(r"[^\w\s]", " ", text.lower())
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "query": self.query[:100],
+            "primary_intent": self.primary_intent.to_dict() if self.primary_intent else None,
+            "all_matches": [m.to_dict() for m in self.matches[:5]],
+            "needs_clarification": self.needs_clarification,
+        }
 
 
 class IntentClassifier:
-    """
-    Multi-strategy intent classification engine.
+    """Intent classification for AI game development agent routing."""
 
-    Classifies game development prompts using layered analysis:
-    1. Fast keyword matching for primary intent detection
-    2. Pattern-based scoring with weighted confidence
-    3. Secondary intent detection for compound prompts
-    4. Pipeline suggestion based on intent cluster
+    _instance: Optional["IntentClassifier"] = None
+    _lock = threading.Lock()
 
-    Usage:
-        classifier = IntentClassifier()
-        result = classifier.classify("Create a fantasy world with forests and mountains")
-        print(result.primary)  # PromptIntent.WORLD
-    """
+    MAX_HISTORY = 100
+    MAX_RULES = 500
 
     def __init__(self):
-        self._compiled: Dict[PromptIntent, List[Tuple[re.Pattern, float]]] = {}
-        self._compile_patterns()
+        self._rules: Dict[str, IntentRule] = {}
+        self._history: List[ClassificationResult] = []
+        self._domain_counts: Dict[str, int] = defaultdict(int)
+        self._register_default_rules()
 
-    def _compile_patterns(self) -> None:
-        for intent, patterns in INTENT_PATTERNS.items():
-            compiled = []
-            for pattern_str, weight in patterns:
-                compiled.append((re.compile(pattern_str, re.IGNORECASE), weight))
-            self._compiled[intent] = compiled
+    @classmethod
+    def get_instance(cls) -> "IntentClassifier":
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = cls()
+        return cls._instance
 
-    def classify(self, prompt: str) -> IntentResult:
-        if not prompt or not prompt.strip():
-            return IntentResult()
+    def _register_default_rules(self) -> None:
+        defaults = [
+            IntentRule(
+                domain=IntentDomain.CREATE,
+                patterns=[
+                    r"\b(create|make|build|generate|design|add)\b.*\b(level|map|world|scene|terrain)\b",
+                    r"\b(create|make|build|generate|design|add)\b.*\b(character|player|npc|enemy|boss)\b",
+                    r"\b(create|make|build|generate|design|add)\b.*\b(asset|sprite|texture|sound|music)\b",
+                    r"\b(create|make|build|generate|design|add)\b.*\b(game|project)\b",
+                ],
+                keywords=["create", "make", "build", "generate", "design", "new", "add"],
+                target_agent="game_designer",
+                tool_chain="scaffold_game",
+            ),
+            IntentRule(
+                domain=IntentDomain.MODIFY,
+                patterns=[
+                    r"\b(change|modify|update|edit|adjust|tweak|refactor|rename)\b",
+                    r"\b(set|assign|configure|override)\b.*\b(property|value|component)\b",
+                ],
+                keywords=["change", "modify", "update", "edit", "adjust", "tweak", "refactor"],
+                target_agent="game_developer",
+                tool_chain="code_modify",
+            ),
+            IntentRule(
+                domain=IntentDomain.QUERY,
+                patterns=[
+                    r"\b(what|how|why|where|when|which|who|explain|describe|tell|show|list|find|search)\b",
+                    r"\b(check|inspect|examine|look at)\b",
+                ],
+                keywords=["what", "how", "why", "explain", "describe", "show", "list", "check"],
+                target_agent="knowledge_base",
+                tool_chain="semantic_search",
+            ),
+            IntentRule(
+                domain=IntentDomain.DEBUG,
+                patterns=[
+                    r"\b(fix|debug|resolve|repair|correct|error|bug|crash|broken|issue|problem)\b",
+                    r"\b(not working|doesn't work|failed|failing)\b",
+                ],
+                keywords=["fix", "debug", "error", "bug", "crash", "broken", "issue", "problem"],
+                target_agent="debug_agent",
+                tool_chain="error_analyzer",
+            ),
+            IntentRule(
+                domain=IntentDomain.OPTIMIZE,
+                patterns=[
+                    r"\b(optimize|improve|performance|speed up|faster|slow|lag|stutter)\b",
+                    r"\b(reduce|lower|decrease)\b.*\b(memory|load time|draw calls|fps)\b",
+                ],
+                keywords=["optimize", "improve", "performance", "faster", "speed", "reduce"],
+                target_agent="performance_agent",
+                tool_chain="perf_profiler",
+            ),
+            IntentRule(
+                domain=IntentDomain.DEPLOY,
+                patterns=[
+                    r"\b(deploy|publish|release|export|build|package|ship|launch)\b",
+                    r"\b(web|mobile|desktop|html5|android|ios|steam|itch)\b",
+                ],
+                keywords=["deploy", "publish", "release", "export", "build", "package", "ship"],
+                target_agent="build_master",
+                tool_chain="build_deploy",
+            ),
+        ]
+        for rule in defaults:
+            self._rules[rule.rule_id] = rule
 
-        normalized = _strip_punctuation(prompt)
-
-        scores: Dict[PromptIntent, Tuple[float, List[str]]] = {}
-        for intent, patterns in self._compiled.items():
-            total = 0.0
-            matched_keywords: List[str] = []
-            for pattern, weight in patterns:
-                matches = pattern.findall(normalized)
-                if matches:
-                    total += weight
-                    matched_keywords.append(pattern.pattern[:40])
-
-            if total > 0:
-                scores[intent] = (total, matched_keywords)
-
-        if not scores:
-            return IntentResult(
-                primary=PromptIntent.GENERAL,
-                confidence=0.3,
-                detail_level="standard",
-            )
-
-        sorted_scores = sorted(scores.items(), key=lambda x: x[1][0], reverse=True)
-
-        primary_intent, (primary_score, primary_keywords) = sorted_scores[0]
-        confidence = min(primary_score * 1.5, 1.0)
-
-        secondary = []
-        for intent, (score, _) in sorted_scores[1:3]:
-            if score >= 0.1:
-                secondary.append(intent)
-
-        pipeline = self._suggest_pipeline(primary_intent, secondary)
-        entity_type = self._infer_entity_type(primary_intent, prompt)
-        detail_level = self._infer_detail_level(prompt)
-
-        return IntentResult(
-            primary=primary_intent,
-            secondary=secondary,
-            confidence=confidence,
-            keywords_matched=primary_keywords,
-            suggested_pipeline=pipeline,
-            entity_type=entity_type,
-            detail_level=detail_level,
+    def add_rule(
+        self,
+        domain: IntentDomain,
+        patterns: List[str],
+        keywords: List[str],
+        target_agent: str = "",
+        tool_chain: str = "",
+        priority: int = 5,
+    ) -> IntentRule:
+        rule = IntentRule(
+            domain=domain,
+            patterns=patterns,
+            keywords=keywords,
+            target_agent=target_agent,
+            tool_chain=tool_chain,
+            priority=priority,
         )
+        self._rules[rule.rule_id] = rule
+        return rule
 
-    def _suggest_pipeline(self, primary: PromptIntent, secondary: List[PromptIntent]) -> str:
-        all_intents = [primary] + secondary
+    def classify(self, query: str) -> ClassificationResult:
+        query_lower = query.lower().strip()
+        result = ClassificationResult(query=query)
+        matches: List[Tuple[IntentMatch, float]] = []
 
-        has_world = PromptIntent.WORLD in all_intents
-        has_char = PromptIntent.CHARACTER in all_intents or PromptIntent.NPC in all_intents
-        has_narrative = PromptIntent.NARRATIVE in all_intents or PromptIntent.DIALOGUE in all_intents
-        has_mechanic = PromptIntent.MECHANIC in all_intents
-        has_asset = PromptIntent.ASSET in all_intents
+        for rule in self._rules.values():
+            domain_score = 0.0
 
-        if PromptIntent.ORCHESTRATE in all_intents:
-            return "full_game_generation"
-        if has_world and has_char:
-            return "world_with_entities"
-        if has_world:
-            return "world_generation"
-        if has_char:
-            return "entity_creation"
-        if has_narrative:
-            return "narrative_design"
-        if has_mechanic:
-            return "mechanic_implementation"
-        if has_asset:
-            return "asset_generation"
-        if PromptIntent.CODE in all_intents:
-            return "code_execution"
-        if PromptIntent.ANALYSIS in all_intents:
-            return "analysis_review"
+            for pattern in rule.patterns:
+                try:
+                    m = re.search(pattern, query_lower)
+                    if m:
+                        domain_score += 0.4
+                except re.error:
+                    pass
 
-        return "standard_agent_loop"
+            keyword_count = sum(
+                1 for kw in rule.keywords if kw.lower() in query_lower
+            )
+            keyword_score = min(0.6, keyword_count * 0.15)
 
-    def _infer_entity_type(self, primary: PromptIntent, prompt: str) -> str:
-        entity_map = {
-            PromptIntent.WORLD: "world",
-            PromptIntent.CHARACTER: "character",
-            PromptIntent.NPC: "npc",
-            PromptIntent.ENEMY: "enemy",
-            PromptIntent.MECHANIC: "mechanic",
-            PromptIntent.NARRATIVE: "narrative",
-            PromptIntent.DIALOGUE: "dialogue",
-            PromptIntent.QUEST: "quest",
-            PromptIntent.ASSET: "asset",
-            PromptIntent.CODE: "code",
-        }
-        return entity_map.get(primary, "entity")
+            total_score = domain_score + keyword_score
+            total_score += rule.priority * 0.02
+            total_score = min(0.99, total_score)
 
-    def _infer_detail_level(self, prompt: str) -> str:
-        words = prompt.lower().split()
-        if any(w in words for w in ["detailed", "rich", "complex", "elaborate", "deep", "comprehensive"]):
-            return "high"
-        if any(w in words for w in ["quick", "simple", "basic", "minimal", "rough", "sketch"]):
-            return "low"
-        return "standard"
+            if total_score > 0.1:
+                match = IntentMatch(
+                    domain=rule.domain,
+                    confidence=total_score,
+                    target_agent=rule.target_agent,
+                    tool_chain=rule.tool_chain,
+                    reasoning=f"Rule domain={rule.domain.value}, pattern_score={domain_score:.2f}, keyword_score={keyword_score:.2f}",
+                )
+                matches.append((match, total_score))
 
-    def classify_batch(self, prompts: List[str]) -> List[IntentResult]:
-        return [self.classify(p) for p in prompts]
+        matches.sort(key=lambda x: -x[1])
+        result.matches = [m for m, _ in matches]
 
-    def get_intent_summary(self, results: List[IntentResult]) -> Dict[str, Any]:
-        if not results:
-            return {}
+        if result.matches:
+            best = result.matches[0]
+            if best.confidence >= 0.7:
+                result.primary_intent = best
+                result.needs_clarification = False
+            elif best.confidence >= 0.4:
+                result.primary_intent = best
+                result.needs_clarification = True
+            else:
+                result.primary_intent = IntentMatch(
+                    domain=IntentDomain.GENERAL,
+                    confidence=0.3,
+                    target_agent="general_agent",
+                    reasoning="No strong match found",
+                )
+                result.needs_clarification = True
+        else:
+            result.primary_intent = IntentMatch(
+                domain=IntentDomain.GENERAL,
+                confidence=0.2,
+                target_agent="general_agent",
+                reasoning="No rules matched",
+            )
+            result.needs_clarification = True
 
-        confident_results = [r for r in results if r.is_confident]
-        primary_counts: Dict[str, int] = {}
-        for r in confident_results:
-            key = r.primary.value
-            primary_counts[key] = primary_counts.get(key, 0) + 1
+        self._history.append(result)
+        if len(self._history) > self.MAX_HISTORY:
+            self._history = self._history[-self.MAX_HISTORY:]
 
+        if result.primary_intent:
+            self._domain_counts[result.primary_intent.domain.value] += 1
+
+        return result
+
+    def get_routing_target(self, query: str) -> Dict[str, Any]:
+        result = self.classify(query)
+        if result.primary_intent:
+            return {
+                "agent": result.primary_intent.target_agent,
+                "tool_chain": result.primary_intent.tool_chain,
+                "confidence": result.primary_intent.confidence,
+                "needs_clarification": result.needs_clarification,
+            }
         return {
-            "total_prompts": len(results),
-            "confident_classifications": len(confident_results),
-            "primary_intents": primary_counts,
-            "top_intent": max(primary_counts, key=primary_counts.get) if primary_counts else "unknown",
+            "agent": "general_agent",
+            "tool_chain": "",
+            "confidence": 0.0,
+            "needs_clarification": True,
         }
 
+    def get_history(self, limit: int = 20) -> List[ClassificationResult]:
+        return self._history[-limit:]
 
-_global_intent_classifier: Optional[IntentClassifier] = None
+    def get_stats(self) -> Dict[str, Any]:
+        return {
+            "total_rules": len(self._rules),
+            "classification_history": len(self._history),
+            "domain_breakdown": dict(self._domain_counts),
+            "most_common_domain": max(
+                self._domain_counts, key=self._domain_counts.get
+            ) if self._domain_counts else None,
+        }
+
+    def clear_history(self) -> None:
+        self._history.clear()
+        self._domain_counts.clear()
 
 
 def get_intent_classifier() -> IntentClassifier:
-    global _global_intent_classifier
-    if _global_intent_classifier is None:
-        _global_intent_classifier = IntentClassifier()
-    return _global_intent_classifier
+    return IntentClassifier.get_instance()
