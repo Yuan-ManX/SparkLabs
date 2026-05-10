@@ -95,6 +95,14 @@ from sparkai.engine.terrain_system import TerrainSystem, TerrainType, NoiseAlgor
 from sparkai.engine.save_system import SaveSystem, SaveSlot, SaveStatus, get_save_system
 from sparkai.engine.network_sync import NetworkSync, SyncAuthority as NetSyncAuthority, get_network_sync
 from sparkai.engine.behavior_tree import BehaviorTree, NodeStatus, Blackboard, get_behavior_tree
+from sparkai.agent.agent_event_bus import AgentEventBus, get_agent_event_bus
+from sparkai.agent.agent_task_queue import AgentTaskQueue, get_agent_task_queue
+from sparkai.agent.agent_code_review import CodeReviewEngine, get_code_review_engine
+from sparkai.agent.agent_pipeline import AgentPipeline, get_agent_pipeline
+from sparkai.engine.camera_shake import CameraShakeSystem, get_camera_shake_system
+from sparkai.engine.difficulty_system import DifficultySystem, get_difficulty_system
+from sparkai.engine.fog_of_war import FogOfWarSystem, get_fog_of_war
+from sparkai.engine.game_modes import GameModeSystem, get_game_mode_system
 
 router = APIRouter()
 
@@ -10922,3 +10930,606 @@ async def collision_layers_create_custom_layer(name: str, description: str = "")
     if layer_def:
         return {"layer_name": layer_def.layer_name, "bit_position": layer_def.bit_position}
     return {"error": "No available bit positions"}
+
+
+# === Agent Event Bus ===
+
+_agent_event_bus = get_agent_event_bus()
+
+
+class EventEmitRequest(BaseModel):
+    domain: str = "agent"
+    name: str = ""
+    priority: str = "normal"
+    data: Dict[str, Any] = {}
+    source: str = "api"
+
+
+class EventSubscribeRequest(BaseModel):
+    subscriber_id: str
+    domain: str = "agent"
+    event_name: str = "*"
+
+
+@router.get("/event-bus/stats")
+async def event_bus_stats():
+    return {"stats": _agent_event_bus.get_stats()}
+
+
+@router.get("/event-bus/history")
+async def event_bus_history(limit: int = 50, domain: Optional[str] = None):
+    from sparkai.agent.agent_event_bus import EventDomain
+    domain_enum = None
+    if domain:
+        try:
+            domain_enum = EventDomain(domain)
+        except ValueError:
+            domain_enum = EventDomain.CUSTOM
+    return {"history": [e.to_dict() for e in _agent_event_bus.get_history(limit=limit, domain=domain_enum)]}
+
+
+@router.get("/event-bus/pending")
+async def event_bus_pending():
+    return {"pending_count": _agent_event_bus.get_pending_count()}
+
+
+@router.post("/event-bus/emit")
+async def event_bus_emit(request: EventEmitRequest):
+    from sparkai.agent.agent_event_bus import EventDomain, EventPriority
+    try:
+        domain_enum = EventDomain(request.domain)
+    except ValueError:
+        domain_enum = EventDomain.CUSTOM
+    try:
+        priority_enum = EventPriority[request.priority.upper()]
+    except KeyError:
+        priority_enum = EventPriority.NORMAL
+    event = _agent_event_bus.emit(
+        domain=domain_enum,
+        event_type=request.name,
+        data=request.data,
+        source=request.source,
+        priority=priority_enum,
+    )
+    return {"success": True, "event_id": event.event_id, "event_name": request.name}
+
+
+@router.post("/event-bus/dispatch")
+async def event_bus_dispatch(max_events: int = 50):
+    count = _agent_event_bus.dispatch(max_events=max_events)
+    return {"success": True, "dispatched": count}
+
+
+@router.get("/event-bus/subscribers")
+async def event_bus_subscribers(domain: Optional[str] = None):
+    from sparkai.agent.agent_event_bus import EventDomain
+    domain_enum = None
+    if domain:
+        try:
+            domain_enum = EventDomain(domain)
+        except ValueError:
+            domain_enum = EventDomain.CUSTOM
+    subs = _agent_event_bus.get_subscribers(domain=domain_enum)
+    return {"subscribers": [{"sub_id": s.sub_id, "domain": s.domain.value if s.domain else None, "event_type": s.event_type, "subscriber_name": s.subscriber_name} for s in subs], "count": len(subs)}
+
+
+@router.get("/event-bus/domains")
+async def event_bus_domains():
+    from sparkai.agent.agent_event_bus import EventDomain
+    return {"domains": [d.value for d in EventDomain]}
+
+
+@router.get("/event-bus/priorities")
+async def event_bus_priorities():
+    from sparkai.agent.agent_event_bus import EventPriority
+    return {"priorities": [p.name.lower() for p in EventPriority]}
+
+
+# === Agent Task Queue ===
+
+_agent_task_queue = get_agent_task_queue()
+
+
+class TaskSubmitRequest(BaseModel):
+    name: str
+    priority: str = "normal"
+    category: str = "general"
+    dependencies: List[str] = []
+    payload: Dict[str, Any] = {}
+
+
+@router.get("/task-queue/stats")
+async def task_queue_stats():
+    return {"stats": _agent_task_queue.get_stats()}
+
+
+@router.get("/task-queue/tasks")
+async def task_queue_list(status: Optional[str] = None):
+    tasks = _agent_task_queue.list_tasks(state=status)
+    return {"tasks": tasks, "count": len(tasks)}
+
+
+@router.post("/task-queue/submit")
+async def task_queue_submit(request: TaskSubmitRequest):
+    from sparkai.agent.agent_task_queue import TaskPriority, TaskCategory
+    try:
+        priority_enum = TaskPriority(request.priority)
+    except ValueError:
+        priority_enum = TaskPriority.NORMAL
+    try:
+        category_enum = TaskCategory(request.category)
+    except ValueError:
+        category_enum = TaskCategory.CUSTOM
+    task_id = _agent_task_queue.submit(
+        name=request.name,
+        handler=lambda payload: {"status": "completed", "payload": payload},
+        priority=priority_enum,
+        category=category_enum,
+        payload=request.payload,
+        dependencies=request.dependencies,
+    )
+    return {"task_id": task_id}
+
+
+@router.post("/task-queue/cancel")
+async def task_queue_cancel(task_id: str):
+    success = _agent_task_queue.cancel(task_id)
+    return {"success": success}
+
+
+@router.get("/task-queue/{task_id}")
+async def task_queue_get(task_id: str):
+    task = _agent_task_queue._tasks.get(task_id)
+    if task:
+        return {"task": {"task_id": task.task_id, "name": task.name, "state": task.state.name.lower(), "category": task.category.value}}
+    return {"error": "Task not found"}
+
+
+# === Agent Code Review ===
+
+_code_review_engine = get_code_review_engine()
+
+
+class CodeReviewRequest(BaseModel):
+    code: str
+    language: str = "python"
+    categories: List[str] = ["gameplay", "performance", "architecture", "security", "style"]
+
+
+class BatchReviewRequest(BaseModel):
+    files: List[Dict[str, str]]
+    categories: List[str] = ["gameplay", "performance", "architecture", "security", "style"]
+
+
+@router.get("/code-review/stats")
+async def code_review_stats():
+    return {"stats": _code_review_engine.get_stats()}
+
+
+@router.post("/code-review/review")
+async def code_review_review(request: CodeReviewRequest):
+    report = _code_review_engine.review(file_path="<api>", code=request.code)
+    return report.to_dict()
+
+
+@router.post("/code-review/batch")
+async def code_review_batch(request: BatchReviewRequest):
+    file_dict = {f.get("file_path", f"<api_{i}>"): f.get("code", "") for i, f in enumerate(request.files)}
+    report = _code_review_engine.review_multiple(file_dict)
+    return report.to_dict()
+
+
+# === Agent Pipeline ===
+
+_agent_pipeline = get_agent_pipeline()
+
+
+class PipelineExecuteRequest(BaseModel):
+    definition_name: str = ""
+    inputs: Dict[str, Any] = {}
+    description: str = ""
+
+
+class PipelineCreateRequest(BaseModel):
+    name: str
+    description: str = ""
+    stages: List[str] = []
+
+
+@router.get("/pipeline-v2/stats")
+async def pipeline_v2_stats():
+    return {"stats": _agent_pipeline.get_stats()}
+
+
+@router.get("/pipeline-v2/runs")
+async def pipeline_v2_runs(limit: int = 20, definition_name: Optional[str] = None):
+    return {"runs": _agent_pipeline.list_runs(definition_name=definition_name)[:limit]}
+
+
+@router.get("/pipeline-v2/runs/{run_id}")
+async def pipeline_v2_get_run(run_id: str):
+    run = _agent_pipeline.get_run(run_id)
+    if run:
+        return run.to_dict()
+    return {"error": "Run not found"}
+
+
+@router.post("/pipeline-v2/execute")
+async def pipeline_v2_execute(request: PipelineExecuteRequest):
+    run = await _agent_pipeline.execute(
+        inputs=request.inputs,
+        definition_name=request.definition_name,
+    )
+    return run.to_dict()
+
+
+@router.post("/pipeline-v2/cancel")
+async def pipeline_v2_cancel(run_id: str):
+    success = _agent_pipeline.cancel_run(run_id)
+    return {"success": success}
+
+
+@router.get("/pipeline-v2/definitions")
+async def pipeline_v2_definitions():
+    return {"definitions": list(_agent_pipeline._definitions.keys())}
+
+
+# === Camera Shake ===
+
+_camera_shake_system = get_camera_shake_system()
+
+
+class CameraShakeRequest(BaseModel):
+    preset: str = "impact"
+    intensity: float = 1.0
+    duration: float = 0.5
+
+
+class CameraFollowRequest(BaseModel):
+    target_x: float = 0.0
+    target_y: float = 0.0
+    follow_speed: float = 5.0
+
+
+class CameraZoomRequest(BaseModel):
+    target_zoom: float = 1.0
+    speed: float = 3.0
+
+
+@router.get("/camera-shake/stats")
+async def camera_shake_stats():
+    return {"stats": _camera_shake_system.get_stats()}
+
+
+@router.get("/camera-shake/state")
+async def camera_shake_state():
+    return {"state": _camera_shake_system.get_state()}
+
+
+@router.post("/camera-shake/trigger")
+async def camera_shake_trigger(request: CameraShakeRequest):
+    from sparkai.engine.camera_shake import ShakePreset, ShakeConfig
+    try:
+        preset_enum = ShakePreset[request.preset.upper()]
+    except KeyError:
+        preset_enum = ShakePreset.IMPACT
+    config = ShakeConfig(
+        amplitude_x=10.0 * request.intensity,
+        amplitude_y=10.0 * request.intensity,
+        frequency=30.0,
+        duration=request.duration,
+        decay=0.9,
+    )
+    _camera_shake_system.shake(preset=preset_enum, config=config)
+    return {"success": True, "preset": request.preset}
+
+
+@router.post("/camera-shake/follow")
+async def camera_shake_follow(request: CameraFollowRequest):
+    _camera_shake_system.set_target(request.target_x, request.target_y)
+    _camera_shake_system.set_follow_speed(request.follow_speed)
+    return {"success": True}
+
+
+@router.post("/camera-shake/zoom")
+async def camera_shake_zoom(request: CameraZoomRequest):
+    _camera_shake_system.set_zoom(request.target_zoom, request.speed)
+    return {"success": True}
+
+
+@router.post("/camera-shake/dead-zone")
+async def camera_shake_dead_zone(width: float = 50.0, height: float = 50.0):
+    _camera_shake_system.set_dead_zone(max(width, height) / 2)
+    return {"success": True}
+
+
+@router.post("/camera-shake/stop")
+async def camera_shake_stop():
+    _camera_shake_system._active_shakes.clear()
+    return {"success": True}
+
+
+# === Difficulty System ===
+
+_difficulty_system = get_difficulty_system()
+
+
+class DifficultySetRequest(BaseModel):
+    tier: str = "normal"
+    level: int = 1
+
+
+class DifficultyRecordRequest(BaseModel):
+    metric_name: str
+    value: float
+
+
+@router.get("/difficulty/stats")
+async def difficulty_stats():
+    return {"stats": _difficulty_system.get_stats()}
+
+
+@router.get("/difficulty/current")
+async def difficulty_current():
+    return {
+        "tier": _difficulty_system.get_tier().value,
+        "level": _difficulty_system.get_level(),
+        "params": _difficulty_system.get_current_params(),
+    }
+
+
+@router.post("/difficulty/set")
+async def difficulty_set(request: DifficultySetRequest):
+    from sparkai.engine.difficulty_system import DifficultyTier
+    try:
+        tier_enum = DifficultyTier(request.tier.upper())
+    except ValueError:
+        tier_enum = DifficultyTier.NORMAL
+    _difficulty_system.set_tier(tier_enum)
+    _difficulty_system.set_level(request.level)
+    return {"success": True, "tier": request.tier, "level": request.level}
+
+
+@router.get("/difficulty/metrics")
+async def difficulty_metrics():
+    return {"metrics": _difficulty_system.get_metrics()}
+
+
+@router.post("/difficulty/record-death")
+async def difficulty_record_death():
+    _difficulty_system.record_death()
+    return {"success": True}
+
+
+@router.post("/difficulty/record-complete")
+async def difficulty_record_complete(time_taken: float = 60.0):
+    _difficulty_system.record_level_complete(time_taken)
+    return {"success": True}
+
+
+@router.post("/difficulty/record-retry")
+async def difficulty_record_retry():
+    _difficulty_system.record_retry()
+    return {"success": True}
+
+
+@router.post("/difficulty/record-metric")
+async def difficulty_record_metric(request: DifficultyRecordRequest):
+    _difficulty_system.record_metric(request.metric_name, request.value)
+    return {"success": True}
+
+
+@router.post("/difficulty/reset-metrics")
+async def difficulty_reset_metrics():
+    _difficulty_system.reset_metrics()
+    return {"success": True}
+
+
+@router.get("/difficulty/enemy-params")
+async def difficulty_enemy_params():
+    return {"params": _difficulty_system.apply_to_enemy({})}
+
+
+@router.get("/difficulty/player-params")
+async def difficulty_player_params():
+    return {"params": _difficulty_system.apply_to_player({})}
+
+
+@router.get("/difficulty/score-multiplier")
+async def difficulty_score_multiplier():
+    return {"multiplier": _difficulty_system.get_score_multiplier()}
+
+
+# === Fog of War ===
+
+_fog_of_war = get_fog_of_war()
+
+
+class VisionSourceRequest(BaseModel):
+    source_id: str
+    team_id: int = 0
+    x: float = 0.0
+    y: float = 0.0
+    radius: float = 5.0
+    shape: str = "circle"
+    cone_angle: float = 360.0
+    cone_direction: float = 0.0
+
+
+class VisionSourceUpdateRequest(BaseModel):
+    source_id: str
+    x: Optional[float] = None
+    y: Optional[float] = None
+    radius: Optional[float] = None
+    enabled: Optional[bool] = None
+
+
+class VisibilityCheckRequest(BaseModel):
+    x: float
+    y: float
+    team_id: int = 0
+
+
+@router.get("/fog-of-war/stats")
+async def fog_of_war_stats():
+    return {"stats": _fog_of_war.get_stats()}
+
+
+@router.get("/fog-of-war/exploration/{team_id}")
+async def fog_of_war_exploration(team_id: int):
+    return {"percentage": _fog_of_war.get_exploration_percentage(team_id)}
+
+
+@router.get("/fog-of-war/visible-count/{team_id}")
+async def fog_of_war_visible_count(team_id: int):
+    return {"count": _fog_of_war.get_visible_count(team_id)}
+
+
+@router.post("/fog-of-war/check-visible")
+async def fog_of_war_check_visible(request: VisibilityCheckRequest):
+    tile_size = _fog_of_war._tile_size
+    tx = int(request.x / tile_size)
+    ty = int(request.y / tile_size)
+    return {"visible": _fog_of_war.is_visible(tx, ty, request.team_id)}
+
+
+@router.post("/fog-of-war/check-explored")
+async def fog_of_war_check_explored(request: VisibilityCheckRequest):
+    tile_size = _fog_of_war._tile_size
+    tx = int(request.x / tile_size)
+    ty = int(request.y / tile_size)
+    return {"explored": _fog_of_war.is_explored(tx, ty, request.team_id)}
+
+
+@router.post("/fog-of-war/add-vision-source")
+async def fog_of_war_add_vision(request: VisionSourceRequest):
+    from sparkai.engine.fog_of_war import FogShape
+    try:
+        shape_enum = FogShape[request.shape.upper()]
+    except KeyError:
+        shape_enum = FogShape.CIRCLE
+    source = _fog_of_war.add_vision_source(
+        source_id=request.source_id,
+        team=request.team_id,
+        x=request.x,
+        y=request.y,
+        radius=request.radius,
+        shape=shape_enum,
+        cone_angle=request.cone_angle,
+        cone_direction=request.cone_direction,
+    )
+    return {"source": source.to_dict() if hasattr(source, 'to_dict') else str(source)}
+
+
+@router.post("/fog-of-war/update-vision-source")
+async def fog_of_war_update_vision(request: VisionSourceUpdateRequest):
+    _fog_of_war.update_vision_source(
+        request.source_id,
+        x=request.x,
+        y=request.y,
+        radius=request.radius,
+        enabled=request.enabled,
+    )
+    return {"success": True}
+
+
+@router.post("/fog-of-war/remove-vision-source")
+async def fog_of_war_remove_vision(source_id: str):
+    _fog_of_war.remove_vision_source(source_id)
+    return {"success": True}
+
+
+@router.get("/fog-of-war/sources")
+async def fog_of_war_sources():
+    return {"sources": _fog_of_war.list_vision_sources()}
+
+
+@router.post("/fog-of-war/set-source-enabled")
+async def fog_of_war_set_enabled(source_id: str, enabled: bool = True):
+    _fog_of_war.set_source_enabled(source_id, enabled)
+    return {"success": True}
+
+
+@router.post("/fog-of-war/reset")
+async def fog_of_war_reset(team_id: Optional[int] = None):
+    _fog_of_war.reset(team_id=team_id)
+    return {"success": True}
+
+
+# === Game Modes ===
+
+_game_mode_system = get_game_mode_system()
+
+
+class GameModeRequest(BaseModel):
+    mode_name: str
+    params: Dict[str, Any] = {}
+
+
+@router.get("/game-modes/stats")
+async def game_modes_stats():
+    return {"stats": _game_mode_system.get_stats()}
+
+
+@router.get("/game-modes/current")
+async def game_modes_current():
+    current = _game_mode_system.get_current()
+    return {"mode": current}
+
+
+@router.get("/game-modes/stack")
+async def game_modes_stack():
+    return {
+        "stack": _game_mode_system.get_stack_names(),
+        "count": len(_game_mode_system.get_mode_stack()),
+    }
+
+
+@router.get("/game-modes/definitions")
+async def game_modes_definitions():
+    return {"definitions": _game_mode_system.list_mode_definitions() if hasattr(_game_mode_system, 'list_mode_definitions') else []}
+
+
+@router.post("/game-modes/start")
+async def game_modes_start(request: GameModeRequest):
+    success = _game_mode_system.start(request.mode_name, **request.params)
+    return {"success": success, "mode": request.mode_name}
+
+
+@router.post("/game-modes/push")
+async def game_modes_push(request: GameModeRequest):
+    success = _game_mode_system.push(request.mode_name, **request.params)
+    return {"success": success, "mode": request.mode_name}
+
+
+@router.post("/game-modes/pop")
+async def game_modes_pop():
+    popped = _game_mode_system.pop()
+    return {"success": popped is not None, "popped_mode": popped.mode_name if popped else None}
+
+
+@router.post("/game-modes/replace")
+async def game_modes_replace(request: GameModeRequest):
+    success = _game_mode_system.replace(request.mode_name, **request.params)
+    return {"success": success, "mode": request.mode_name}
+
+
+@router.post("/game-modes/switch")
+async def game_modes_switch(request: GameModeRequest):
+    success = _game_mode_system.switch(request.mode_name, **request.params)
+    return {"success": success, "mode": request.mode_name}
+
+
+@router.get("/game-modes/has-mode")
+async def game_modes_has_mode(mode_name: str):
+    return {"has_mode": _game_mode_system.has_mode(mode_name)}
+
+
+@router.get("/game-modes/is-transitioning")
+async def game_modes_is_transitioning():
+    return {"transitioning": _game_mode_system.is_transitioning()}
+
+
+@router.get("/game-modes/can-transition")
+async def game_modes_can_transition(to_mode: str):
+    return {"can_transition": _game_mode_system.can_transition(to_mode)}
