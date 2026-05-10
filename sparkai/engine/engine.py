@@ -94,6 +94,12 @@ from sparkai.engine.crafting_system import CraftingSystem, CraftingRecipe, get_c
 from sparkai.engine.loot_system import LootSystem, DropTable, get_loot_system
 from sparkai.engine.economy_system import EconomySystem, Wallet, get_economy_system
 from sparkai.engine.cutscene_system import CutsceneSystem, CutsceneDefinition, get_cutscene_system
+from sparkai.engine.character_controller import CharacterController, MovementMode, get_character_controller
+from sparkai.engine.vehicle_system import VehicleSystem, VehicleType, DriveType, get_vehicle_system
+from sparkai.engine.dynamic_music import DynamicMusicSystem, MusicState, MusicLayer, get_dynamic_music
+from sparkai.engine.destruction_system import DestructionSystem, DestructionTier, MaterialType, get_destruction_system
+from sparkai.engine.reputation_system import ReputationSystem, ReputationTier, RelationshipType, get_reputation_system
+from sparkai.engine.level_streaming import LevelStreamingSystem, ChunkState, get_level_streaming
 
 
 class SparkEngine:
@@ -192,6 +198,12 @@ class SparkEngine:
         self._loot_system: LootSystem = get_loot_system()
         self._economy_system: EconomySystem = get_economy_system()
         self._cutscene_system: CutsceneSystem = get_cutscene_system()
+        self._character_controller: CharacterController = get_character_controller()
+        self._vehicle_system: VehicleSystem = get_vehicle_system()
+        self._dynamic_music: DynamicMusicSystem = get_dynamic_music()
+        self._destruction_system: DestructionSystem = get_destruction_system()
+        self._reputation_system: ReputationSystem = get_reputation_system()
+        self._level_streaming: LevelStreamingSystem = get_level_streaming()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -426,6 +438,12 @@ class SparkEngine:
             "loot_system": self._loot_system.get_stats(),
             "economy_system": self._economy_system.get_stats(),
             "cutscene_system": self._cutscene_system.get_stats(),
+            "character_controller": self._character_controller.get_stats(),
+            "vehicle_system": self._vehicle_system.get_stats(),
+            "dynamic_music": self._dynamic_music.get_stats(),
+            "destruction_system": self._destruction_system.get_stats(),
+            "reputation_system": self._reputation_system.get_stats(),
+            "level_streaming": self._level_streaming.get_stats(),
         }
 
     @property

@@ -2887,6 +2887,233 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "cutscene_error", "error": str(e)})
 
+                elif msg_type == "memory_consolidation":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_memory_consolidation import get_memory_consolidation, MemoryDomain
+                        mc = get_memory_consolidation()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "memory_stats", "data": mc.get_stats()})
+                        elif sub == "store":
+                            eid = mc.store(data.get("content", {}),
+                                MemoryDomain(data.get("domain", "working")) if data.get("domain", "working") in [d.value for d in MemoryDomain] else MemoryDomain.WORKING,
+                                importance=data.get("importance", 0.5), tags=data.get("tags", []))
+                            await manager.send_to_client(client_id, {"type": "memory_stored", "data": {"entry_id": eid}})
+                        elif sub == "consolidate":
+                            log = mc.consolidate()
+                            await manager.broadcast_agent_event("memory_consolidated", log.to_dict())
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "memory_error", "error": str(e)})
+
+                elif msg_type == "conflict_resolution":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_conflict_resolution import get_conflict_resolver
+                        cr = get_conflict_resolver()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "conflict_stats", "data": cr.get_stats()})
+                        elif sub == "active":
+                            conflicts = cr.get_active_conflicts()
+                            await manager.send_to_client(client_id, {"type": "conflict_active", "data": [c.to_dict() for c in conflicts]})
+                        elif sub == "set_priority":
+                            cr.set_agent_priority(data.get("agent_id", ""), data.get("priority", 1))
+                            await manager.send_to_client(client_id, {"type": "conflict_priority_set", "data": {"agent_id": data.get("agent_id", "")}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "conflict_error", "error": str(e)})
+
+                elif msg_type == "risk_assessment":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_risk_assessment import get_risk_assessor
+                        ra = get_risk_assessor()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "risk_stats", "data": ra.get_stats()})
+                        elif sub == "assess":
+                            report = ra.run_assessment(data.get("target", ""), code=data.get("code", ""), text=data.get("text", ""))
+                            await manager.broadcast_agent_event("risk_assessed", report.to_dict())
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "risk_error", "error": str(e)})
+
+                elif msg_type == "documentation":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_documentation_generator import get_documentation_generator, DocumentType, ExportFormat
+                        dg = get_documentation_generator()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "docs_stats", "data": dg.get_stats()})
+                        elif sub == "create":
+                            dt = DocumentType(data.get("doc_type", "game_design")) if data.get("doc_type", "game_design") in [d.value for d in DocumentType] else DocumentType.GAME_DESIGN
+                            doc = dg.create_document(dt, data.get("title", ""), data.get("project_name", ""))
+                            await manager.broadcast_agent_event("doc_created", doc.to_dict())
+                        elif sub == "log_change":
+                            dg.log_change(data.get("description", ""), data.get("category", "general"), data.get("author", "system"))
+                            await manager.send_to_client(client_id, {"type": "change_logged", "data": {"success": True}})
+                        elif sub == "export":
+                            content = dg.export_document(data.get("doc_id", ""),
+                                ExportFormat(data.get("format", "markdown")) if data.get("format", "markdown") in [f.value for f in ExportFormat] else ExportFormat.MARKDOWN)
+                            await manager.send_to_client(client_id, {"type": "doc_exported", "data": {"content": content}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "docs_error", "error": str(e)})
+
+                elif msg_type == "asset_optimizer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_asset_optimizer import get_asset_optimizer, QualityPreset
+                        ao = get_asset_optimizer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "asset_opt_stats", "data": ao.get_stats()})
+                        elif sub == "set_preset":
+                            ao.set_quality_preset(QualityPreset(data.get("preset", "balanced")))
+                            await manager.broadcast_engine_status({"asset_opt": {"preset": data.get("preset", "balanced")}})
+                        elif sub == "analyze_all":
+                            results = ao.analyze_all()
+                            await manager.broadcast_engine_status({"asset_opt": {"analyzed": len(results)}})
+                        elif sub == "duplicates":
+                            dups = ao.find_duplicates()
+                            await manager.send_to_client(client_id, {"type": "asset_duplicates", "data": len(dups)})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "asset_opt_error", "error": str(e)})
+
+                elif msg_type == "cross_platform":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_cross_platform import get_cross_platform_engine, TargetPlatform
+                        cp = get_cross_platform_engine()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "platform_stats", "data": cp.get_stats()})
+                        elif sub == "generate_config":
+                            tp = TargetPlatform(data.get("platform", "desktop_windows")) if data.get("platform", "desktop_windows") in [p.value for p in TargetPlatform] else TargetPlatform.DESKTOP_WINDOWS
+                            config = cp.generate_build_config(tp, data.get("app_name", ""), data.get("bundle_id", ""), data.get("version", "1.0.0"))
+                            await manager.broadcast_agent_event("platform_config_generated", config.to_dict())
+                        elif sub == "check_compat":
+                            tp = TargetPlatform(data.get("platform", "desktop_windows")) if data.get("platform", "desktop_windows") in [p.value for p in TargetPlatform] else TargetPlatform.DESKTOP_WINDOWS
+                            ok, issues = cp.check_compatibility(tp, data.get("requirements", {}))
+                            await manager.send_to_client(client_id, {"type": "platform_compat", "data": {"compatible": ok, "issues": issues}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "platform_error", "error": str(e)})
+
+                elif msg_type == "character_controller":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.character_controller import get_character_controller
+                        cc = get_character_controller()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "char_ctrl_stats", "data": cc.get_stats()})
+                        elif sub == "create":
+                            state = cc.create_character(data.get("character_id", ""))
+                            await manager.broadcast_engine_status({"character": {"created": data.get("character_id", "")}})
+                        elif sub == "set_input":
+                            state = cc.set_movement_input(data.get("character_id", ""),
+                                (data.get("hx", 0.0), data.get("hy", 0.0)), data.get("jump", False),
+                                data.get("run", False), data.get("crouch", False))
+                            await manager.broadcast_engine_status({"character": state.to_dict() if state else {}})
+                        elif sub == "update":
+                            state = cc.update(data.get("character_id", ""), data.get("delta", 0.016), data.get("grounded", True))
+                            await manager.broadcast_engine_status({"character": state.to_dict() if state else {}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "char_ctrl_error", "error": str(e)})
+
+                elif msg_type == "vehicle":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.vehicle_system import get_vehicle_system, VehicleType
+                        vs = get_vehicle_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "vehicle_stats", "data": vs.get_stats()})
+                        elif sub == "create":
+                            vt = VehicleType(data.get("vehicle_type", "sedan")) if data.get("vehicle_type", "sedan") in [v.value for v in VehicleType] else VehicleType.SEDAN
+                            state = vs.create_vehicle(data.get("vehicle_id", ""), vt)
+                            await manager.broadcast_engine_status({"vehicle": {"created": data.get("vehicle_id", "")}})
+                        elif sub == "set_input":
+                            state = vs.set_input(data.get("vehicle_id", ""), data.get("throttle", 0.0),
+                                data.get("steering", 0.0), data.get("brake", 0.0), data.get("handbrake", False))
+                            await manager.broadcast_engine_status({"vehicle": state.to_dict() if state else {}})
+                        elif sub == "update":
+                            state = vs.update(data.get("vehicle_id", ""), data.get("delta", 0.016))
+                            await manager.broadcast_engine_status({"vehicle": state.to_dict() if state else {}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "vehicle_error", "error": str(e)})
+
+                elif msg_type == "dynamic_music":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.dynamic_music import get_dynamic_music, MusicState
+                        dm = get_dynamic_music()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "music_stats", "data": dm.get_stats()})
+                        elif sub == "set_state":
+                            ms = MusicState(data.get("state", "ambient")) if data.get("state", "ambient") in [s.value for s in MusicState] else MusicState.AMBIENT
+                            dm.set_state(ms, data.get("immediate", False))
+                            await manager.broadcast_engine_status({"music": dm.get_stats()})
+                        elif sub == "update":
+                            info = dm.update(data.get("delta", 0.016))
+                            await manager.broadcast_engine_status({"music": info})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "music_error", "error": str(e)})
+
+                elif msg_type == "destruction":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.destruction_system import get_destruction_system, MaterialType
+                        ds = get_destruction_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "destruction_stats", "data": ds.get_stats()})
+                        elif sub == "create":
+                            mt = MaterialType(data.get("material", "wood")) if data.get("material", "wood") in [m.value for m in MaterialType] else MaterialType.WOOD
+                            obj = ds.create_object(data.get("object_id", ""), mt, data.get("health"))
+                            await manager.broadcast_engine_status({"destruction": {"created": data.get("object_id", ""), "material": mt.value}})
+                        elif sub == "damage":
+                            event = ds.apply_damage(data.get("object_id", ""), data.get("amount", 10.0))
+                            await manager.broadcast_engine_status({"destruction": event.to_dict() if event else {}})
+                        elif sub == "repair":
+                            obj = ds.repair(data.get("object_id", ""), data.get("amount", -1))
+                            await manager.broadcast_engine_status({"destruction": {"repaired": data.get("object_id", "")}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "destruction_error", "error": str(e)})
+
+                elif msg_type == "reputation":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.reputation_system import get_reputation_system, RelationshipType
+                        rs = get_reputation_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "reputation_stats", "data": rs.get_stats()})
+                        elif sub == "create_faction":
+                            faction = rs.create_faction(data.get("faction_id", ""), data.get("name", ""),
+                                data.get("description", ""), data.get("color", "#888888"))
+                            await manager.broadcast_engine_status({"reputation": {"faction_created": data.get("name", "")}})
+                        elif sub == "modify":
+                            score = rs.modify_reputation(data.get("faction_id", ""), data.get("amount", 0.0),
+                                data.get("reason", ""), data.get("source", "system"), data.get("propagate", True))
+                            await manager.broadcast_engine_status({"reputation": {"faction_id": data.get("faction_id", ""), "score": score}})
+                        elif sub == "standing":
+                            standing = rs.get_player_standing_summary()
+                            await manager.send_to_client(client_id, {"type": "reputation_standing", "data": standing})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "reputation_error", "error": str(e)})
+
+                elif msg_type == "level_streaming":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.level_streaming import get_level_streaming
+                        ls = get_level_streaming()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "streaming_stats", "data": ls.get_stats()})
+                        elif sub == "define_chunk":
+                            chunk = ls.define_chunk(data.get("grid_x", 0), data.get("grid_y", 0),
+                                (data.get("cx", 0.0), data.get("cy", 0.0), data.get("cz", 0.0)),
+                                (data.get("sx", 64.0), data.get("sy", 64.0), data.get("sz", 64.0)),
+                                data.get("memory_mb", 5.0))
+                            await manager.broadcast_engine_status({"streaming": {"chunk_defined": chunk.chunk_id}})
+                        elif sub == "set_position":
+                            ls.set_player_position((data.get("x", 0.0), data.get("y", 0.0), data.get("z", 0.0)))
+                            await manager.broadcast_engine_status({"streaming": {"position_updated": True}})
+                        elif sub == "update":
+                            ls.update(data.get("delta", 0.0))
+                            await manager.broadcast_engine_status({"streaming": ls.get_stats()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "streaming_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",

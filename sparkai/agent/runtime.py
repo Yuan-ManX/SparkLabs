@@ -358,6 +358,12 @@ from sparkai.agent.agent_balancing import GameBalanceTuner, GameParameter, Balan
 from sparkai.agent.agent_localization import ContentLocalizationEngine, Locale, LocalizedString, get_localization_engine
 from sparkai.agent.agent_tutorial_design import TutorialDesignEngine, MechanicDefinition, TutorialSequence, get_tutorial_designer
 from sparkai.agent.agent_game_testing import GameTestingEngine, TestCase, TestRun, get_game_tester
+from sparkai.agent.agent_memory_consolidation import MemoryConsolidationEngine, MemoryDomain, get_memory_consolidation
+from sparkai.agent.agent_conflict_resolution import ConflictResolutionEngine, ConflictType, ResolutionStrategy, get_conflict_resolver
+from sparkai.agent.agent_risk_assessment import RiskAssessmentEngine, RiskCategory, RiskLevel, get_risk_assessor
+from sparkai.agent.agent_documentation_generator import DocumentationGenerator, DocumentType, ExportFormat, get_documentation_generator
+from sparkai.agent.agent_asset_optimizer import AssetOptimizationEngine, AssetType, QualityPreset, get_asset_optimizer
+from sparkai.agent.agent_cross_platform import CrossPlatformEngine, TargetPlatform, PlatformCapability, get_cross_platform_engine
 from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
@@ -603,6 +609,12 @@ class AgentRuntime:
         self._localization_engine: Optional[ContentLocalizationEngine] = None
         self._tutorial_designer: Optional[TutorialDesignEngine] = None
         self._game_tester: Optional[GameTestingEngine] = None
+        self._memory_consolidation: Optional[MemoryConsolidationEngine] = None
+        self._conflict_resolver: Optional[ConflictResolutionEngine] = None
+        self._risk_assessor: Optional[RiskAssessmentEngine] = None
+        self._documentation_generator: Optional[DocumentationGenerator] = None
+        self._asset_optimizer: Optional[AssetOptimizationEngine] = None
+        self._cross_platform_engine: Optional[CrossPlatformEngine] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
@@ -812,6 +824,12 @@ class AgentRuntime:
             self._localization_engine = get_localization_engine()
             self._tutorial_designer = get_tutorial_designer()
             self._game_tester = get_game_tester()
+            self._memory_consolidation = get_memory_consolidation()
+            self._conflict_resolver = get_conflict_resolver()
+            self._risk_assessor = get_risk_assessor()
+            self._documentation_generator = get_documentation_generator()
+            self._asset_optimizer = get_asset_optimizer()
+            self._cross_platform_engine = get_cross_platform_engine()
             self._camera_shake_system = get_camera_shake_system()
             self._difficulty_system = get_difficulty_system()
             self._fog_of_war = get_fog_of_war()
@@ -2550,6 +2568,18 @@ class AgentRuntime:
             status["tutorial_designer_stats"] = self._tutorial_designer.get_stats()
         if self._game_tester:
             status["game_tester_stats"] = self._game_tester.get_stats()
+        if self._memory_consolidation:
+            status["memory_consolidation_stats"] = self._memory_consolidation.get_stats()
+        if self._conflict_resolver:
+            status["conflict_resolution_stats"] = self._conflict_resolver.get_stats()
+        if self._risk_assessor:
+            status["risk_assessment_stats"] = self._risk_assessor.get_stats()
+        if self._documentation_generator:
+            status["documentation_stats"] = self._documentation_generator.get_stats()
+        if self._asset_optimizer:
+            status["asset_optimizer_stats"] = self._asset_optimizer.get_stats()
+        if self._cross_platform_engine:
+            status["cross_platform_stats"] = self._cross_platform_engine.get_stats()
         return status
 
 

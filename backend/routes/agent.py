@@ -123,6 +123,18 @@ from sparkai.engine.crafting_system import CraftingSystem, CraftingRecipe, get_c
 from sparkai.engine.loot_system import LootSystem, DropTable, get_loot_system
 from sparkai.engine.economy_system import EconomySystem, Wallet, get_economy_system
 from sparkai.engine.cutscene_system import CutsceneSystem, CutsceneDefinition, get_cutscene_system
+from sparkai.engine.character_controller import CharacterController, MovementMode, get_character_controller
+from sparkai.engine.vehicle_system import VehicleSystem, VehicleType, DriveType, get_vehicle_system
+from sparkai.engine.dynamic_music import DynamicMusicSystem, MusicState, MusicLayer, get_dynamic_music
+from sparkai.engine.destruction_system import DestructionSystem, DestructionTier, MaterialType, get_destruction_system
+from sparkai.engine.reputation_system import ReputationSystem, ReputationTier, RelationshipType, get_reputation_system
+from sparkai.engine.level_streaming import LevelStreamingSystem, ChunkState, get_level_streaming
+from sparkai.agent.agent_memory_consolidation import MemoryConsolidationEngine, MemoryDomain, get_memory_consolidation
+from sparkai.agent.agent_conflict_resolution import ConflictResolutionEngine, ConflictType, ResolutionStrategy, get_conflict_resolver
+from sparkai.agent.agent_risk_assessment import RiskAssessmentEngine, RiskCategory, RiskLevel, get_risk_assessor
+from sparkai.agent.agent_documentation_generator import DocumentationGenerator, DocumentType, ExportFormat, get_documentation_generator
+from sparkai.agent.agent_asset_optimizer import AssetOptimizationEngine, AssetType, QualityPreset, get_asset_optimizer
+from sparkai.agent.agent_cross_platform import CrossPlatformEngine, TargetPlatform, PlatformCapability, get_cross_platform_engine
 
 router = APIRouter()
 
@@ -12607,6 +12619,12 @@ async def tutorial_complete(sequence_id: str, completion_time: float = 0.0):
 # === Game Testing ===
 
 _game_tester = get_game_tester()
+_memory_consolidation = get_memory_consolidation()
+_conflict_resolver = get_conflict_resolver()
+_risk_assessor = get_risk_assessor()
+_documentation_generator = get_documentation_generator()
+_asset_optimizer = get_asset_optimizer()
+_cross_platform_engine = get_cross_platform_engine()
 
 
 class TestCaseDefineRequest(BaseModel):
@@ -13060,6 +13078,12 @@ async def economy_update_market(delta_time: float = 1.0):
 # === Cutscene System ===
 
 _cutscene_system = get_cutscene_system()
+_character_controller = get_character_controller()
+_vehicle_system = get_vehicle_system()
+_dynamic_music = get_dynamic_music()
+_destruction_system = get_destruction_system()
+_reputation_system = get_reputation_system()
+_level_streaming = get_level_streaming()
 
 
 class CutsceneActionRequest(BaseModel):
@@ -13161,3 +13185,365 @@ async def cutscene_state():
 @router.post("/cutscene/update")
 async def cutscene_update(delta_seconds: float = 0.016):
     return _cutscene_system.update(delta_seconds)
+
+
+# === Memory Consolidation Endpoints ===
+
+@router.get("/memory/stats")
+async def memory_consolidation_stats():
+    return _memory_consolidation.get_stats()
+
+@router.get("/memory/domain-summary")
+async def memory_domain_summary():
+    return _memory_consolidation.get_domain_summary()
+
+@router.post("/memory/store")
+async def memory_store(content: Dict[str, Any] = None, domain: str = "working",
+                       priority: str = "medium", importance: float = 0.5,
+                       tags: List[str] = None, source: str = "system"):
+    dom = MemoryDomain(domain) if domain in [d.value for d in MemoryDomain] else MemoryDomain.WORKING
+    pri = {"critical": 5, "high": 4, "medium": 3, "low": 2, "transient": 1}.get(priority, 3)
+    entry_id = _memory_consolidation.store(
+        content or {}, dom, _memory_consolidation.__class__._get_priority_enum(pri),
+        importance, tags or [], source)
+    return {"entry_id": entry_id}
+
+@router.post("/memory/consolidate")
+async def memory_consolidate(source: str = "working", target: str = "episodic"):
+    return _memory_consolidation.consolidate(
+        MemoryDomain(source) if source in [d.value for d in MemoryDomain] else MemoryDomain.WORKING,
+        MemoryDomain(target) if target in [d.value for d in MemoryDomain] else MemoryDomain.EPISODIC
+    ).to_dict()
+
+
+# === Conflict Resolution Endpoints ===
+
+@router.get("/conflict/stats")
+async def conflict_stats():
+    return _conflict_resolver.get_stats()
+
+@router.get("/conflict/active")
+async def conflict_active():
+    return [c.to_dict() for c in _conflict_resolver.get_active_conflicts()]
+
+@router.get("/conflict/history")
+async def conflict_history(limit: int = 20):
+    return _conflict_resolver.get_resolution_history(limit)
+
+@router.post("/conflict/set-priority")
+async def conflict_set_priority(agent_id: str, priority: int):
+    _conflict_resolver.set_agent_priority(agent_id, priority)
+    return {"agent_id": agent_id, "priority": priority}
+
+
+# === Risk Assessment Endpoints ===
+
+@router.get("/risk/stats")
+async def risk_stats():
+    return _risk_assessor.get_stats()
+
+@router.post("/risk/assess")
+async def risk_assess(target: str = "", code: str = "",
+                      text: str = ""):
+    report = _risk_assessor.run_assessment(target, code=code, text=text)
+    return report.to_dict()
+
+@router.get("/risk/reports")
+async def risk_reports(limit: int = 10):
+    return _risk_assessor.get_recent_reports(limit)
+
+
+# === Documentation Endpoints ===
+
+@router.get("/docs-agent/stats")
+async def docs_agent_stats():
+    return _documentation_generator.get_stats()
+
+@router.post("/docs-agent/create")
+async def docs_create(doc_type: str = "game_design", title: str = "",
+                      project_name: str = ""):
+    dt = DocumentType(doc_type) if doc_type in [d.value for d in DocumentType] else DocumentType.GAME_DESIGN
+    doc = _documentation_generator.create_document(dt, title, project_name)
+    return doc.to_dict()
+
+@router.get("/docs-agent/list")
+async def docs_list(doc_type: str = None):
+    dt = DocumentType(doc_type) if doc_type in [d.value for d in DocumentType] else None
+    return _documentation_generator.list_documents(dt)
+
+@router.get("/docs-agent/export/{doc_id}")
+async def docs_export(doc_id: str, fmt: str = "markdown"):
+    fe = ExportFormat(fmt) if fmt in [f.value for f in ExportFormat] else ExportFormat.MARKDOWN
+    content = _documentation_generator.export_document(doc_id, fe)
+    return {"doc_id": doc_id, "format": fmt, "content": content}
+
+@router.post("/docs-agent/log-change")
+async def docs_log_change(description: str, category: str = "general",
+                          author: str = "system"):
+    _documentation_generator.log_change(description, category, author)
+    return {"success": True}
+
+@router.post("/docs-agent/build-catalog")
+async def docs_build_catalog(project_name: str = ""):
+    doc = _documentation_generator.build_catalog(project_name)
+    return doc.to_dict()
+
+@router.post("/docs-agent/build-changelog")
+async def docs_build_changelog(project_name: str = "", limit: int = 50):
+    doc = _documentation_generator.build_change_log(project_name, limit)
+    return doc.to_dict()
+
+
+# === Asset Optimizer Endpoints ===
+
+@router.get("/asset-optimize/stats")
+async def asset_optimize_stats():
+    return _asset_optimizer.get_stats()
+
+@router.post("/asset-optimize/set-preset")
+async def asset_optimize_set_preset(preset: str = "balanced"):
+    _asset_optimizer.set_quality_preset(QualityPreset(preset))
+    return {"preset": preset}
+
+@router.post("/asset-optimize/analyze-all")
+async def asset_optimize_analyze_all():
+    return {k: [r.to_dict() for r in v] for k, v in _asset_optimizer.analyze_all().items()}
+
+@router.get("/asset-optimize/summary")
+async def asset_optimize_summary():
+    return _asset_optimizer.get_savings_summary()
+
+@router.get("/asset-optimize/duplicates")
+async def asset_optimize_duplicates():
+    return [{"original": a, "duplicate": b, "size": s} for a, b, s in _asset_optimizer.find_duplicates()]
+
+
+# === Cross-Platform Endpoints ===
+
+@router.get("/platform/stats")
+async def platform_stats():
+    return _cross_platform_engine.get_stats()
+
+@router.get("/platform/list")
+async def platform_list():
+    return _cross_platform_engine.list_platforms()
+
+@router.post("/platform/generate-config")
+async def platform_generate_config(platform: str = "desktop_windows",
+                                    app_name: str = "", bundle_id: str = "",
+                                    version: str = "1.0.0"):
+    tp = TargetPlatform(platform) if platform in [p.value for p in TargetPlatform] else TargetPlatform.DESKTOP_WINDOWS
+    config = _cross_platform_engine.generate_build_config(tp, app_name, bundle_id, version)
+    return config.to_dict()
+
+@router.post("/platform/create-input-mapping")
+async def platform_create_input_mapping(platform: str, actions: List[str] = None):
+    tp = TargetPlatform(platform) if platform in [p.value for p in TargetPlatform] else TargetPlatform.DESKTOP_WINDOWS
+    mapping = _cross_platform_engine.create_input_mapping(tp, actions or [])
+    return mapping.to_dict()
+
+@router.post("/platform/check-compatibility")
+async def platform_check_compatibility(platform: str, requirements: Dict[str, Any] = None):
+    tp = TargetPlatform(platform) if platform in [p.value for p in TargetPlatform] else TargetPlatform.DESKTOP_WINDOWS
+    compatible, issues = _cross_platform_engine.check_compatibility(tp, requirements or {})
+    return {"platform": platform, "compatible": compatible, "issues": issues}
+
+@router.get("/platform/input-modes/{platform}")
+async def platform_input_modes(platform: str):
+    tp = TargetPlatform(platform) if platform in [p.value for p in TargetPlatform] else TargetPlatform.DESKTOP_WINDOWS
+    return _cross_platform_engine.get_supported_input_modes(tp)
+
+
+# === Character Controller Endpoints ===
+
+@router.get("/character-controller/stats")
+async def character_controller_stats():
+    return _character_controller.get_stats()
+
+@router.post("/character-controller/create")
+async def character_controller_create(character_id: str):
+    state = _character_controller.create_character(character_id)
+    return state.to_dict()
+
+@router.post("/character-controller/set-input")
+async def character_controller_set_input(character_id: str, horizontal_x: float = 0.0,
+                                          horizontal_y: float = 0.0, jump: bool = False,
+                                          run: bool = False, crouch: bool = False):
+    state = _character_controller.set_movement_input(
+        character_id, (horizontal_x, horizontal_y), jump, run, crouch)
+    return state.to_dict() if state else {}
+
+@router.post("/character-controller/update")
+async def character_controller_update(character_id: str, delta_time: float = 0.016,
+                                       is_grounded: bool = True):
+    state = _character_controller.update(character_id, delta_time, is_grounded)
+    return state.to_dict() if state else {}
+
+@router.get("/character-controller/state/{character_id}")
+async def character_controller_state(character_id: str):
+    state = _character_controller.get_state(character_id)
+    return state.to_dict() if state else {}
+
+
+# === Vehicle System Endpoints ===
+
+@router.get("/vehicle/stats")
+async def vehicle_stats():
+    return _vehicle_system.get_stats()
+
+@router.post("/vehicle/create")
+async def vehicle_create(vehicle_id: str, vehicle_type: str = "sedan"):
+    vt = VehicleType(vehicle_type) if vehicle_type in [v.value for v in VehicleType] else VehicleType.SEDAN
+    state = _vehicle_system.create_vehicle(vehicle_id, vt)
+    return state.to_dict()
+
+@router.post("/vehicle/set-input")
+async def vehicle_set_input(vehicle_id: str, throttle: float = 0.0,
+                            steering: float = 0.0, brake: float = 0.0,
+                            handbrake: bool = False):
+    state = _vehicle_system.set_input(vehicle_id, throttle, steering, brake, handbrake)
+    return state.to_dict() if state else {}
+
+@router.post("/vehicle/update")
+async def vehicle_update(vehicle_id: str, delta_time: float = 0.016):
+    state = _vehicle_system.update(vehicle_id, delta_time)
+    return state.to_dict() if state else {}
+
+@router.get("/vehicle/state/{vehicle_id}")
+async def vehicle_state(vehicle_id: str):
+    state = _vehicle_system.get_state(vehicle_id)
+    return state.to_dict() if state else {}
+
+
+# === Dynamic Music Endpoints ===
+
+@router.get("/music/stats")
+async def music_stats():
+    return _dynamic_music.get_stats()
+
+@router.post("/music/set-state")
+async def music_set_state(state: str = "ambient", immediate: bool = False):
+    ms = MusicState(state) if state in [s.value for s in MusicState] else MusicState.AMBIENT
+    _dynamic_music.set_state(ms, immediate)
+    return _dynamic_music.get_stats()
+
+@router.post("/music/update")
+async def music_update(delta_time: float = 0.016):
+    return _dynamic_music.update(delta_time)
+
+@router.get("/music/current-config")
+async def music_current_config():
+    config = _dynamic_music.get_current_config()
+    return config.to_dict() if config else {}
+
+
+# === Destruction System Endpoints ===
+
+@router.get("/destruction/stats")
+async def destruction_stats():
+    return _destruction_system.get_stats()
+
+@router.post("/destruction/create")
+async def destruction_create(object_id: str, material: str = "wood",
+                              health: float = None):
+    mt = MaterialType(material) if material in [m.value for m in MaterialType] else MaterialType.WOOD
+    obj = _destruction_system.create_object(object_id, mt, health)
+    return obj.to_dict()
+
+@router.post("/destruction/damage")
+async def destruction_damage(object_id: str, amount: float = 10.0,
+                              damage_type: str = "physical"):
+    dt = DamageType(damage_type) if "DamageType" in globals() and damage_type in [d.value for d in DamageType] else None
+    event = _destruction_system.apply_damage(object_id, amount)
+    return event.to_dict() if event else {}
+
+@router.post("/destruction/repair")
+async def destruction_repair(object_id: str, amount: float = -1):
+    obj = _destruction_system.repair(object_id, amount)
+    return obj.to_dict() if obj else {}
+
+@router.post("/destruction/objects-in-radius")
+async def destruction_objects_in_radius(x: float = 0, y: float = 0, z: float = 0,
+                                         radius: float = 10.0):
+    objects = _destruction_system.get_objects_in_radius((x, y, z), radius)
+    return [o.to_dict() for o in objects]
+
+
+# === Reputation System Endpoints ===
+
+@router.get("/reputation/stats")
+async def reputation_stats():
+    return _reputation_system.get_stats()
+
+@router.post("/reputation/create-faction")
+async def reputation_create_faction(faction_id: str, name: str,
+                                     description: str = "", color: str = "#888888"):
+    faction = _reputation_system.create_faction(faction_id, name, description, color)
+    return faction.to_dict()
+
+@router.post("/reputation/set-relationship")
+async def reputation_set_relationship(faction_a: str, faction_b: str,
+                                       relationship: str = "neutral",
+                                       strength: float = 0.5):
+    rel = RelationshipType(relationship) if relationship in [r.value for r in RelationshipType] else RelationshipType.NEUTRAL
+    _reputation_system.set_relationship(faction_a, faction_b, rel, strength)
+    return {"faction_a": faction_a, "faction_b": faction_b, "relationship": relationship}
+
+@router.post("/reputation/modify")
+async def reputation_modify(faction_id: str, amount: float = 0.0,
+                            reason: str = "", source: str = "system",
+                            propagate: bool = True):
+    new_score = _reputation_system.modify_reputation(faction_id, amount, reason, source, propagate)
+    return {"faction_id": faction_id, "new_score": new_score}
+
+@router.get("/reputation/standing")
+async def reputation_standing():
+    return _reputation_system.get_player_standing_summary()
+
+@router.get("/reputation/consequences/{faction_id}")
+async def reputation_consequences(faction_id: str):
+    return _reputation_system.get_consequences(faction_id)
+
+@router.get("/reputation/statistics")
+async def reputation_statistics():
+    return _reputation_system.get_faction_statistics()
+
+
+# === Level Streaming Endpoints ===
+
+@router.get("/streaming/stats")
+async def streaming_stats():
+    return _level_streaming.get_stats()
+
+@router.post("/streaming/define-chunk")
+async def streaming_define_chunk(grid_x: int, grid_y: int,
+                                  center_x: float = 0, center_y: float = 0, center_z: float = 0,
+                                  size_x: float = 64, size_y: float = 64, size_z: float = 64,
+                                  memory_mb: float = 5.0):
+    chunk = _level_streaming.define_chunk(grid_x, grid_y,
+                                           (center_x, center_y, center_z),
+                                           (size_x, size_y, size_z), memory_mb)
+    return chunk.to_dict()
+
+@router.post("/streaming/set-player-position")
+async def streaming_set_player_position(x: float = 0, y: float = 0, z: float = 0):
+    _level_streaming.set_player_position((x, y, z))
+    return {"position": [x, y, z]}
+
+@router.post("/streaming/set-radius")
+async def streaming_set_radius(radius: float = 128.0):
+    _level_streaming.set_streaming_radius(radius)
+    return {"radius": radius}
+
+@router.post("/streaming/update")
+async def streaming_update(delta_time: float = 0.0):
+    _level_streaming.update(delta_time)
+    return _level_streaming.get_stats()
+
+@router.get("/streaming/loaded-chunks")
+async def streaming_loaded_chunks():
+    return _level_streaming.get_loaded_chunks_list()
+
+@router.get("/streaming/progress")
+async def streaming_progress():
+    return {"progress": _level_streaming.get_loading_progress()}
