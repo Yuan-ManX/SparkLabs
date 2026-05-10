@@ -80,6 +80,10 @@ from sparkai.engine.network_rpc import NetworkRPC, RPCMessage, RPCCallType, get_
 from sparkai.engine.console_system import ConsoleSystem, CommandDef, ConsoleLogLevel, get_console_system
 from sparkai.engine.input_recorder import InputRecorder, RecordingSession, InputEventType, get_input_recorder
 from sparkai.engine.collision_layers import CollisionLayerManager, LayerFlag, LayerMask, get_collision_layer_manager
+from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
+from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
+from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
+from sparkai.engine.game_modes import GameModeSystem, BuiltInMode, ModeLayer, get_game_mode_system
 
 
 class SparkEngine:
@@ -164,6 +168,10 @@ class SparkEngine:
         self._console_system: ConsoleSystem = get_console_system()
         self._input_recorder: InputRecorder = get_input_recorder()
         self._collision_layer_manager: CollisionLayerManager = get_collision_layer_manager()
+        self._camera_shake_system: CameraShakeSystem = get_camera_shake_system()
+        self._difficulty_system: DifficultySystem = get_difficulty_system()
+        self._fog_of_war: FogOfWarSystem = get_fog_of_war()
+        self._game_mode_system: GameModeSystem = get_game_mode_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -384,6 +392,10 @@ class SparkEngine:
             "console_system": self._console_system.get_stats(),
             "input_recorder": self._input_recorder.get_stats(),
             "collision_layer_manager": self._collision_layer_manager.get_stats(),
+            "camera_shake_system": self._camera_shake_system.get_stats(),
+            "difficulty_system": self._difficulty_system.get_stats(),
+            "fog_of_war": self._fog_of_war.get_stats(),
+            "game_mode_system": self._game_mode_system.get_stats(),
         }
 
     @property
@@ -617,6 +629,22 @@ class SparkEngine:
     @property
     def collision_layer_manager(self) -> CollisionLayerManager:
         return self._collision_layer_manager
+
+    @property
+    def camera_shake_system(self) -> CameraShakeSystem:
+        return self._camera_shake_system
+
+    @property
+    def difficulty_system(self) -> DifficultySystem:
+        return self._difficulty_system
+
+    @property
+    def fog_of_war(self) -> FogOfWarSystem:
+        return self._fog_of_war
+
+    @property
+    def game_mode_system(self) -> GameModeSystem:
+        return self._game_mode_system
 
 
 @dataclass
