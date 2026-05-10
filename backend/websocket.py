@@ -2469,6 +2469,424 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "day_night_error", "error": str(e)})
 
+                elif msg_type == "style_transfer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_style_transfer import get_style_transfer, StyleDomain, TransferIntensity
+                        st = get_style_transfer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "style_transfer_stats", "data": st.get_stats()})
+                        elif sub == "list":
+                            domain = None
+                            if data.get("domain"):
+                                try:
+                                    domain = StyleDomain(data.get("domain"))
+                                except ValueError:
+                                    pass
+                            styles = st.list_styles(domain)
+                            await manager.send_to_client(client_id, {"type": "style_transfer_list", "data": [s.to_dict() for s in styles]})
+                        elif sub == "transfer":
+                            domain = StyleDomain(data.get("domain", "visual"))
+                            intensity = TransferIntensity(data.get("intensity", "moderate"))
+                            result = st.transfer_style(
+                                source_content=data.get("source", ""),
+                                source_style_id=data.get("source_style_id", ""),
+                                target_style_id=data.get("target_style_id", ""),
+                                domain=domain,
+                                intensity=intensity,
+                            )
+                            await manager.broadcast_agent_event("style_transferred", result.to_dict())
+                        elif sub == "history":
+                            history = st.get_transfer_history(data.get("limit", 20))
+                            await manager.send_to_client(client_id, {"type": "style_transfer_history", "data": history})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "style_transfer_error", "error": str(e)})
+
+                elif msg_type == "curriculum_learning":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_curriculum_learning import get_curriculum_learning, LearningStrategy, SkillLevel
+                        cl = get_curriculum_learning()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "curriculum_learning_stats", "data": cl.get_stats()})
+                        elif sub == "start_session":
+                            strat = LearningStrategy(data.get("strategy", "scaffolded"))
+                            cl.set_strategy(strat)
+                            session = cl.start_session(
+                                player_id=data.get("player_id", "default"),
+                                initial_skill_level=SkillLevel(data.get("skill_level", "beginner")),
+                            )
+                            await manager.broadcast_agent_event("curriculum_session_started", session)
+                        elif sub == "record_performance":
+                            cl.record_performance(
+                                skill_id=data.get("skill_id", ""),
+                                accuracy=data.get("accuracy", 0.0),
+                                completion_time=data.get("completion_time", 0.0),
+                                attempts=data.get("attempts", 1),
+                            )
+                            await manager.send_to_client(client_id, {"type": "curriculum_performance_recorded", "data": {"skill_id": data.get("skill_id", "")}})
+                        elif sub == "recommended":
+                            skills = cl.get_recommended_skills(data.get("count", 3))
+                            await manager.send_to_client(client_id, {"type": "curriculum_recommended", "data": [s.to_dict() for s in skills]})
+                        elif sub == "graph":
+                            graph = cl.get_skill_graph()
+                            await manager.send_to_client(client_id, {"type": "curriculum_graph", "data": graph})
+                        elif sub == "end_session":
+                            result = cl.end_session()
+                            await manager.broadcast_agent_event("curriculum_session_ended", result or {})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "curriculum_learning_error", "error": str(e)})
+
+                elif msg_type == "balancing":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_balancing import get_game_balancer, TuningDomain
+                        gb = get_game_balancer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "balancing_stats", "data": gb.get_stats()})
+                        elif sub == "analyze":
+                            domain = TuningDomain(data.get("domain", "combat"))
+                            report = gb.analyze_domain(domain)
+                            await manager.broadcast_agent_event("balance_analyzed", report.to_dict())
+                        elif sub == "analyze_all":
+                            reports = gb.analyze_all()
+                            await manager.broadcast_agent_event("balance_all_analyzed",
+                                {k.value: v.to_dict() for k, v in reports.items()})
+                        elif sub == "parameters":
+                            domain = None
+                            if data.get("domain"):
+                                try:
+                                    domain = TuningDomain(data.get("domain"))
+                                except ValueError:
+                                    pass
+                            snapshot = gb.get_parameter_snapshot(domain)
+                            await manager.send_to_client(client_id, {"type": "balancing_parameters", "data": snapshot})
+                        elif sub == "report_metric":
+                            from sparkai.agent.agent_balancing import BalanceMetric
+                            metric = BalanceMetric(
+                                domain=TuningDomain(data.get("domain", "combat")),
+                                metric_name=data.get("metric_name", ""),
+                                value=data.get("value", 0.0),
+                                target_min=data.get("target_min"),
+                                target_max=data.get("target_max"),
+                            )
+                            gb.report_metric(metric)
+                            await manager.send_to_client(client_id, {"type": "balancing_metric_reported", "data": {"metric_name": data.get("metric_name", "")}})
+                        elif sub == "apply_tuning":
+                            domain = TuningDomain(data.get("domain", "combat"))
+                            report = gb.analyze_domain(domain)
+                            changes = gb.apply_tuning(report)
+                            await manager.broadcast_agent_event("balance_tuned", {"changes": changes, "domain": domain.value})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "balancing_error", "error": str(e)})
+
+                elif msg_type == "content_localization":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_localization import get_localization_engine, Locale, StringCategory
+                        le = get_localization_engine()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "content_localization_stats", "data": le.get_stats()})
+                        elif sub == "locales":
+                            locales = le.get_supported_locales()
+                            await manager.send_to_client(client_id, {"type": "content_localization_locales", "data": [l.value for l in locales]})
+                        elif sub == "register_string":
+                            cat = StringCategory(data.get("category", "ui_label"))
+                            string_id = le.register_string_by_key(
+                                key=data.get("key", ""),
+                                source_text=data.get("source_text", ""),
+                                category=cat,
+                                context=data.get("context"),
+                            )
+                            await manager.send_to_client(client_id, {"type": "content_localization_registered", "data": {"string_id": string_id}})
+                        elif sub == "get_text":
+                            locale = Locale(data.get("locale", "en"))
+                            text = le.get_text(data.get("string_id", ""), locale)
+                            await manager.send_to_client(client_id, {"type": "content_localization_text", "data": {"text": text}})
+                        elif sub == "completeness":
+                            locale = Locale(data.get("locale", "en"))
+                            pct = le.get_completeness(locale)
+                            await manager.send_to_client(client_id, {"type": "content_localization_completeness", "data": {"locale": locale.value, "completeness": pct}})
+                        elif sub == "missing":
+                            locale = Locale(data.get("locale", "en"))
+                            missing = le.get_missing_translations(locale)
+                            await manager.send_to_client(client_id, {"type": "content_localization_missing",
+                                "data": {"locale": locale.value, "missing_count": len(missing), "strings": [s.to_dict() for s in missing[:20]]}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "content_localization_error", "error": str(e)})
+
+                elif msg_type == "tutorial_design":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_tutorial_design import get_tutorial_designer, ScaffoldingTier
+                        td = get_tutorial_designer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "tutorial_design_stats", "data": td.get_stats()})
+                        elif sub == "design":
+                            from sparkai.agent.agent_tutorial_design import MechanicDefinition
+                            mech = MechanicDefinition(
+                                mechanic_id=data.get("mechanic_id", ""),
+                                name=data.get("name", ""),
+                                description=data.get("description", ""),
+                                complexity=data.get("complexity", 0.5),
+                                category=data.get("category", "core"),
+                                prerequisites=data.get("prerequisites", []),
+                            )
+                            td.define_mechanic(mech)
+                            tier = ScaffoldingTier(data.get("tier", "guided"))
+                            sequence = td.design_tutorial(mech.mechanic_id, tier)
+                            await manager.broadcast_agent_event("tutorial_designed", sequence.to_dict())
+                        elif sub == "mechanics":
+                            mechanics = td.get_all_mechanics_ordered()
+                            await manager.send_to_client(client_id, {"type": "tutorial_mechanics", "data": [m.to_dict() for m in mechanics]})
+                        elif sub == "next":
+                            next_mech = td.get_next_recommended_tutorial()
+                            await manager.send_to_client(client_id, {"type": "tutorial_next", "data": next_mech.to_dict() if next_mech else None})
+                        elif sub == "complete":
+                            td.record_completion(data.get("sequence_id", ""), data.get("completion_time", 0.0))
+                            await manager.send_to_client(client_id, {"type": "tutorial_completed", "data": {"sequence_id": data.get("sequence_id", "")}})
+                        elif sub == "skip":
+                            td.record_skip(data.get("sequence_id", ""))
+                            await manager.send_to_client(client_id, {"type": "tutorial_skipped", "data": {"sequence_id": data.get("sequence_id", "")}})
+                        elif sub == "adjust_tier":
+                            tier = td.adjust_tier(data.get("mechanic_id", ""))
+                            await manager.send_to_client(client_id, {"type": "tutorial_tier_adjusted", "data": {"mechanic_id": data.get("mechanic_id", ""), "tier": tier.value}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "tutorial_design_error", "error": str(e)})
+
+                elif msg_type == "game_testing":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_game_testing import get_game_tester, TestType, TestSeverity
+                        gt = get_game_tester()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "game_testing_stats", "data": gt.get_stats()})
+                        elif sub == "create_run":
+                            test_types = [TestType(t) for t in data.get("test_types", ["smoke"])]
+                            run_id = gt.create_test_run(
+                                game_id=data.get("game_id", "default"),
+                                test_types=test_types,
+                                max_duration=data.get("max_duration", 60.0),
+                                parameters=data.get("parameters"),
+                            )
+                            await manager.broadcast_agent_event("test_run_created", {"run_id": run_id})
+                        elif sub == "run":
+                            test_types = [TestType(t) for t in data.get("test_types", ["smoke"])]
+                            results = gt.run_tests(
+                                game_id=data.get("game_id", "default"),
+                                test_types=test_types,
+                                max_duration=data.get("max_duration", 60.0),
+                            )
+                            await manager.broadcast_agent_event("tests_completed", results or {})
+                        elif sub == "results":
+                            results = gt.get_latest_results()
+                            await manager.send_to_client(client_id, {"type": "game_testing_results", "data": results})
+                        elif sub == "coverage":
+                            report = gt.get_coverage_report()
+                            await manager.send_to_client(client_id, {"type": "game_testing_coverage", "data": report})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "game_testing_error", "error": str(e)})
+
+                elif msg_type == "weather":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.weather_system import get_weather_system, WeatherState
+                        ws = get_weather_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "weather_stats", "data": ws.get_stats()})
+                        elif sub == "zones":
+                            zones = ws.get_all_zones()
+                            await manager.send_to_client(client_id, {"type": "weather_zones", "data": zones})
+                        elif sub == "set":
+                            state = WeatherState(data.get("state", "clear"))
+                            ws.set_weather(data.get("zone_id", ""), state)
+                            await manager.broadcast_engine_status({"weather": {"zone_id": data.get("zone_id", ""), "state": state.value}})
+                        elif sub == "randomize":
+                            state = ws.randomize_weather(data.get("zone_id", ""))
+                            await manager.broadcast_engine_status({"weather": {"zone_id": data.get("zone_id", ""), "state": state.value if state else "unknown"}})
+                        elif sub == "update":
+                            ws.update(data.get("delta_seconds", 0.016))
+                            state = ws.get_current_state(data.get("zone_id", ""))
+                            await manager.broadcast_engine_status({"weather": {"updated": True, "state": state.value if state else "unknown"}})
+                        elif sub == "modifiers":
+                            modifiers = ws.get_gameplay_modifiers(data.get("zone_id", ""))
+                            await manager.send_to_client(client_id, {"type": "weather_modifiers", "data": modifiers})
+                        elif sub == "params":
+                            params = ws.get_current_params(data.get("zone_id", ""))
+                            if params:
+                                await manager.send_to_client(client_id, {"type": "weather_params", "data": params.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "weather_error", "error": str(e)})
+
+                elif msg_type == "skill_tree":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.skill_tree_system import get_skill_tree_system, NodeType, NodeState
+                        sts = get_skill_tree_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "skill_tree_stats", "data": sts.get_stats()})
+                        elif sub == "create_character":
+                            char = sts.create_character(data.get("character_id", ""), data.get("initial_points", 0))
+                            await manager.broadcast_engine_status({"skill_tree": {"character_created": data.get("character_id", ""), "points": char.available_points}})
+                        elif sub == "add_points":
+                            total = sts.add_points(data.get("character_id", ""), data.get("points", 1))
+                            await manager.send_to_client(client_id, {"type": "skill_tree_points_added", "data": {"character_id": data.get("character_id", ""), "total_points": total}})
+                        elif sub == "unlock":
+                            result = sts.unlock_node(data.get("character_id", ""), data.get("node_id", ""))
+                            await manager.broadcast_engine_status({"skill_tree": result})
+                        elif sub == "available":
+                            nodes = sts.get_available_nodes(data.get("character_id", ""), data.get("tree_id"))
+                            await manager.send_to_client(client_id, {"type": "skill_tree_available", "data": [n.to_dict() for n in nodes]})
+                        elif sub == "summary":
+                            summary = sts.get_tree_summary(data.get("tree_id", ""))
+                            await manager.send_to_client(client_id, {"type": "skill_tree_summary", "data": summary})
+                        elif sub == "modifiers":
+                            mods = sts.get_unlocked_modifiers(data.get("character_id", ""))
+                            await manager.send_to_client(client_id, {"type": "skill_tree_modifiers", "data": mods})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "skill_tree_error", "error": str(e)})
+
+                elif msg_type == "crafting":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.crafting_system import get_crafting_system, QualityTier, CraftingCategory
+                        cs = get_crafting_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "crafting_stats", "data": cs.get_stats()})
+                        elif sub == "craft":
+                            result = cs.craft(
+                                character_id=data.get("character_id", "default"),
+                                recipe_id=data.get("recipe_id", ""),
+                                provided_ingredients=data.get("ingredients", []),
+                                luck_modifier=data.get("luck", 0.0),
+                            )
+                            await manager.broadcast_engine_status({"crafting": result.to_dict()})
+                        elif sub == "discover":
+                            discovered = cs.discover_recipes(
+                                character_id=data.get("character_id", "default"),
+                                skill_category=CraftingCategory(data.get("category", "smithing")),
+                            )
+                            await manager.broadcast_engine_status({"crafting": {"discovered": len(discovered)}})
+                        elif sub == "available":
+                            recipes = cs.get_available_recipes(data.get("character_id", "default"))
+                            await manager.send_to_client(client_id, {"type": "crafting_available", "data": [r.to_dict() for r in recipes]})
+                        elif sub == "learn":
+                            success = cs.learn_recipe(data.get("character_id", "default"), data.get("recipe_id", ""))
+                            await manager.send_to_client(client_id, {"type": "crafting_learned", "data": {"success": success}})
+                        elif sub == "improve":
+                            level = cs.improve_skill(data.get("character_id", "default"), data.get("category", "all"), data.get("xp", 10))
+                            await manager.send_to_client(client_id, {"type": "crafting_skill_improved", "data": {"level": level}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "crafting_error", "error": str(e)})
+
+                elif msg_type == "loot":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.loot_system import get_loot_system, Rarity, LootCategory
+                        ls = get_loot_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "loot_stats", "data": ls.get_stats()})
+                        elif sub == "generate":
+                            items = ls.generate_loot(
+                                table_id=data.get("table_id", ""),
+                                luck_modifier=data.get("luck", 0.0),
+                                level=data.get("level", 1),
+                                count=data.get("count", 1),
+                            )
+                            await manager.broadcast_engine_status({"loot": {"generated": len(items), "items": [i.to_dict() for i in items]}})
+                        elif sub == "roll_rarity":
+                            rarity = ls.roll_rarity(data.get("luck", 0.0))
+                            color = ls.get_rarity_color(rarity)
+                            await manager.send_to_client(client_id, {"type": "loot_rarity_rolled", "data": {"rarity": rarity.value, "color": color}})
+                        elif sub == "rarity_colors":
+                            colors = {r.value: ls.get_rarity_color(r) for r in Rarity}
+                            await manager.send_to_client(client_id, {"type": "loot_rarity_colors", "data": colors})
+                        elif sub == "rarity_weights":
+                            weights = ls.get_rarity_weights()
+                            await manager.send_to_client(client_id, {"type": "loot_rarity_weights", "data": weights})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "loot_error", "error": str(e)})
+
+                elif msg_type == "economy":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.economy_system import get_economy_system, CurrencyType, TradeType
+                        es = get_economy_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "economy_stats", "data": es.get_stats()})
+                        elif sub == "wallet":
+                            summary = es.get_wallet_summary(data.get("owner_id", ""))
+                            await manager.send_to_client(client_id, {"type": "economy_wallet", "data": summary})
+                        elif sub == "add":
+                            currency = CurrencyType(data.get("currency", "gold"))
+                            new_balance = es.add_currency(data.get("owner_id", ""), currency, data.get("amount", 0.0))
+                            await manager.broadcast_engine_status({"economy": {"owner_id": data.get("owner_id", ""), "currency": currency.value, "new_balance": new_balance}})
+                        elif sub == "remove":
+                            currency = CurrencyType(data.get("currency", "gold"))
+                            success = es.remove_currency(data.get("owner_id", ""), currency, data.get("amount", 0.0))
+                            await manager.send_to_client(client_id, {"type": "economy_removed", "data": {"success": success}})
+                        elif sub == "market":
+                            summary = es.get_market_summary()
+                            await manager.send_to_client(client_id, {"type": "economy_market", "data": summary})
+                        elif sub == "trade":
+                            result = es.execute_trade(
+                                buyer_id=data.get("buyer_id", ""),
+                                seller_id=data.get("seller_id", ""),
+                                item_id=data.get("item_id", ""),
+                                currency=CurrencyType(data.get("currency", "gold")),
+                                quantity=data.get("quantity", 1),
+                                price=data.get("price", 0.0),
+                            )
+                            await manager.broadcast_engine_status({"economy": result.to_dict() if result else {"error": "Trade failed"}})
+                        elif sub == "convert":
+                            result = es.convert_currency(
+                                data.get("owner_id", ""),
+                                CurrencyType(data.get("from_currency", "gold")),
+                                CurrencyType(data.get("to_currency", "silver")),
+                                data.get("amount", 0.0),
+                            )
+                            if result:
+                                await manager.send_to_client(client_id, {"type": "economy_converted", "data": result.to_dict()})
+                        elif sub == "update_market":
+                            es.update_market(data.get("delta_time", 1.0))
+                            await manager.send_to_client(client_id, {"type": "economy_market_updated", "data": {"success": True}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "economy_error", "error": str(e)})
+
+                elif msg_type == "cutscene":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.cutscene_system import get_cutscene_system
+                        cut = get_cutscene_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "cutscene_stats", "data": cut.get_stats()})
+                        elif sub == "play":
+                            success = cut.play(data.get("scene_id", ""), data.get("start_time", 0.0))
+                            await manager.broadcast_engine_status({"cutscene": {"playing": success, "scene_id": data.get("scene_id", "")}})
+                        elif sub == "update":
+                            state = cut.update(data.get("delta_seconds", 0.016))
+                            await manager.broadcast_engine_status({"cutscene": state})
+                        elif sub == "skip":
+                            success = cut.skip()
+                            await manager.broadcast_engine_status({"cutscene": {"skipped": success}})
+                        elif sub == "skip_to_chapter":
+                            success = cut.skip_to_chapter(data.get("chapter_name", ""))
+                            await manager.broadcast_engine_status({"cutscene": {"skipped_to_chapter": success}})
+                        elif sub == "pause":
+                            cut.pause()
+                            await manager.broadcast_engine_status({"cutscene": {"paused": True}})
+                        elif sub == "resume":
+                            cut.resume()
+                            await manager.broadcast_engine_status({"cutscene": {"resumed": True}})
+                        elif sub == "stop":
+                            cut.stop()
+                            await manager.broadcast_engine_status({"cutscene": {"stopped": True}})
+                        elif sub == "state":
+                            state = cut.get_current_state()
+                            await manager.send_to_client(client_id, {"type": "cutscene_state", "data": state})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "cutscene_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
