@@ -103,6 +103,14 @@ from sparkai.engine.camera_shake import CameraShakeSystem, get_camera_shake_syst
 from sparkai.engine.difficulty_system import DifficultySystem, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, get_fog_of_war
 from sparkai.engine.game_modes import GameModeSystem, get_game_mode_system
+from sparkai.agent.agent_consensus import AgentConsensus, ConsensusProtocol, ConsensusResult, get_agent_consensus
+from sparkai.agent.agent_game_analyzer import GameAnalyzer, AnalysisDimension, GameAnalysisReport, get_game_analyzer
+from sparkai.agent.agent_adaptive_prompting import AdaptivePrompting, OptimizationStrategy, PromptVariant, get_adaptive_prompting
+from sparkai.agent.agent_entity_extraction import EntityExtractor, EntityType, GameWorldModel, get_entity_extractor
+from sparkai.engine.dialogue_system import DialogueSystem, DialogueTree, DialogueNode, get_dialogue_system
+from sparkai.engine.quest_system import QuestSystem, QuestDefinition, QuestState, get_quest_system
+from sparkai.engine.combat_system import CombatSystem, CombatUnit, CombatState, get_combat_system
+from sparkai.engine.day_night_cycle import DayNightCycle, TimePhase, DayNightConfig, get_day_night_cycle
 
 router = APIRouter()
 
@@ -11533,3 +11541,667 @@ async def game_modes_is_transitioning():
 @router.get("/game-modes/can-transition")
 async def game_modes_can_transition(to_mode: str):
     return {"can_transition": _game_mode_system.can_transition(to_mode)}
+
+
+# === Agent Consensus ===
+
+_agent_consensus = get_agent_consensus()
+
+
+class ConsensusProposeRequest(BaseModel):
+    topic: str
+    description: str = ""
+    context: Optional[Dict[str, Any]] = None
+    protocol: str = "majority"
+    min_participants: int = 2
+
+
+class ConsensusOpinionRequest(BaseModel):
+    round_id: str
+    agent_name: str
+    position: str
+    reasoning: str = ""
+    confidence: float = 0.5
+    expertise_areas: Optional[List[str]] = None
+
+
+class ConsensusVoteRequest(BaseModel):
+    round_id: str
+    agent_name: str
+    position: str
+    weight: float = 1.0
+
+
+@router.get("/consensus/stats")
+async def consensus_stats():
+    return {"stats": _agent_consensus.get_stats()}
+
+
+@router.post("/consensus/propose")
+async def consensus_propose(request: ConsensusProposeRequest):
+    try:
+        protocol = ConsensusProtocol(request.protocol)
+    except ValueError:
+        protocol = ConsensusProtocol.MAJORITY
+    round_id = _agent_consensus.propose(topic=request.topic)
+    return {"round_id": round_id, "topic": request.topic}
+
+
+@router.post("/consensus/submit-opinion")
+async def consensus_submit_opinion(request: ConsensusOpinionRequest):
+    success = _agent_consensus.submit_opinion(
+        topic=request.round_id,
+        agent_id=request.agent_name,
+        position=request.position,
+        confidence=request.confidence,
+        reasoning=request.reasoning,
+    )
+    return {"success": success, "agent": request.agent_name}
+
+
+@router.post("/consensus/vote")
+async def consensus_vote(request: ConsensusVoteRequest):
+    success = _agent_consensus.vote(
+        topic=request.round_id,
+        agent_id=request.agent_name,
+        position=request.position,
+    )
+    return {"vote_recorded": success, "round_id": request.round_id}
+
+
+@router.post("/consensus/resolve")
+async def consensus_resolve(round_id: str, protocol: str = "weighted"):
+    try:
+        proto = ConsensusProtocol(protocol)
+    except ValueError:
+        proto = ConsensusProtocol.WEIGHTED
+    result = _agent_consensus.resolve(topic=round_id, protocol=proto)
+    if result:
+        return {
+            "resolved": True,
+            "winning_position": result.winning_position,
+            "confidence": result.confidence_score,
+            "vote_distribution": result.vote_counts,
+            "participant_count": result.total_voters,
+        }
+    return {"resolved": False, "error": "Cannot resolve"}
+
+
+@router.get("/consensus/round/{round_id}")
+async def consensus_round_detail(round_id: str):
+    stats = _agent_consensus.get_stats()
+    return {"round_id": round_id, "found": False, "stats": stats}
+
+
+# === Game Analyzer ===
+
+_game_analyzer = get_game_analyzer()
+
+
+class AnalyzerRequest(BaseModel):
+    game_design_doc: str = ""
+    rules: Optional[Dict[str, Any]] = None
+    mechanics: Optional[List[str]] = None
+    target_dimensions: Optional[List[str]] = None
+
+
+@router.get("/game-analyzer/stats")
+async def game_analyzer_stats():
+    return {"stats": _game_analyzer.get_stats()}
+
+
+@router.post("/game-analyzer/analyze")
+async def game_analyzer_analyze(request: AnalyzerRequest):
+    dimensions = None
+    if request.target_dimensions:
+        try:
+            dimensions = [AnalysisDimension(d) for d in request.target_dimensions]
+        except ValueError:
+            pass
+    game_data = {
+        "title": "Game Analysis",
+        "design_doc": request.game_design_doc,
+        "rules": request.rules,
+        "mechanics": request.mechanics,
+    }
+    report = _game_analyzer.analyze(game_data=game_data, dimensions=dimensions)
+    return report.to_dict()
+
+
+@router.post("/game-analyzer/quick-scan")
+async def game_analyzer_quick_scan(game_data: Dict[str, Any]):
+    result = _game_analyzer.quick_scan(game_data)
+    return result
+
+
+@router.get("/game-analyzer/dimensions")
+async def game_analyzer_dimensions():
+    return {"dimensions": [d.value for d in AnalysisDimension]}
+
+
+# === Adaptive Prompting ===
+
+_adaptive_prompting = get_adaptive_prompting()
+
+
+class PromptTemplateRegisterRequest(BaseModel):
+    name: str
+    category: str
+    template_text: str
+    variables: Optional[List[str]] = None
+    tags: Optional[List[str]] = None
+
+
+class PromptGenerateRequest(BaseModel):
+    category: str
+    variables: Optional[Dict[str, str]] = None
+    strategy: str = "epsilon_greedy"
+
+
+class PromptOutcomeRequest(BaseModel):
+    template_id: str
+    variant_id: str
+    success: bool = True
+    response_time: float = 0.0
+
+
+@router.get("/adaptive-prompting/stats")
+async def adaptive_prompting_stats():
+    return {"stats": _adaptive_prompting.get_stats()}
+
+
+@router.post("/adaptive-prompting/templates")
+async def adaptive_prompting_register(request: PromptTemplateRegisterRequest):
+    from sparkai.agent.agent_adaptive_prompting import TaskCategory, PromptTemplate
+    try:
+        category = TaskCategory(request.category)
+    except ValueError:
+        category = TaskCategory.GAME_DESIGN
+    template = PromptTemplate(
+        name=request.name,
+        category=category,
+        base_prompt=request.template_text,
+        variables=request.variables or [],
+    )
+    template.template_id = f"{request.name}_{template.template_id}"
+    _adaptive_prompting._templates[template.template_id] = template
+    if request.tags:
+        for tag in request.tags:
+            _adaptive_prompting.add_variant(template.template_id, f"{request.template_text} [{tag}]")
+    return {"template_id": template.template_id, "name": request.name}
+
+
+@router.get("/adaptive-prompting/templates")
+async def adaptive_prompting_list_templates():
+    stats = _adaptive_prompting.get_stats()
+    return {"templates": stats.get("templates", 0), "template_count": stats.get("templates", 0)}
+
+
+@router.post("/adaptive-prompting/generate")
+async def adaptive_prompting_generate(request: PromptGenerateRequest):
+    try:
+        strategy = OptimizationStrategy(request.strategy)
+    except ValueError:
+        strategy = None
+    prompt_text, variant_id = _adaptive_prompting.generate_prompt(
+        template_id=request.category,
+        context=request.variables or {},
+        strategy=strategy,
+    )
+    return {"prompt": prompt_text, "variant_id": variant_id, "success": bool(prompt_text)}
+
+
+@router.post("/adaptive-prompting/outcome")
+async def adaptive_prompting_record_outcome(request: PromptOutcomeRequest):
+    success = _adaptive_prompting.record_outcome(
+        template_id=request.template_id,
+        variant_id=request.variant_id,
+        success=request.success,
+        response_time=request.response_time,
+    )
+    return {"success": success, "variant_id": request.variant_id}
+
+
+@router.get("/adaptive-prompting/strategies")
+async def adaptive_prompting_strategies():
+    return {"strategies": [s.value for s in OptimizationStrategy]}
+
+
+# === Entity Extractor ===
+
+_entity_extractor = get_entity_extractor()
+
+
+class EntityExtractRequest(BaseModel):
+    text: str
+    context: Optional[Dict[str, Any]] = None
+
+
+@router.get("/entity-extractor/stats")
+async def entity_extractor_stats():
+    return {"stats": _entity_extractor.get_stats()}
+
+
+@router.post("/entity-extractor/extract")
+async def entity_extractor_extract(request: EntityExtractRequest):
+    entities = _entity_extractor.extract(text=request.text, context=request.context)
+    return {
+        "entities": [e.to_dict() for e in entities],
+        "count": len(entities),
+        "entity_types": list(set(e.entity_type.value for e in entities)),
+    }
+
+
+@router.post("/entity-extractor/world-model")
+async def entity_extractor_world_model(request: EntityExtractRequest):
+    model = _entity_extractor.build_world_model(text=request.text, context=request.context)
+    return model.to_dict()
+
+
+@router.get("/entity-extractor/entity-types")
+async def entity_extractor_types():
+    return {"entity_types": [t.value for t in EntityType]}
+
+
+# === Dialogue System ===
+
+_dialogue_system = get_dialogue_system()
+
+
+class DialogueRegisterRequest(BaseModel):
+    tree_id: str
+    tree_data: Dict[str, Any]
+
+
+class DialogueStartRequest(BaseModel):
+    tree_id: str
+    session_id: Optional[str] = None
+
+
+class DialogueSelectRequest(BaseModel):
+    session_id: str
+    choice_id: str
+    context: Optional[Dict[str, Any]] = None
+
+
+@router.get("/dialogue/stats")
+async def dialogue_stats():
+    return {"stats": _dialogue_system.get_stats()}
+
+
+@router.get("/dialogue/trees")
+async def dialogue_trees():
+    return {"trees": _dialogue_system.list_trees()}
+
+
+@router.get("/dialogue/trees/{tree_id}")
+async def dialogue_get_tree(tree_id: str):
+    tree = _dialogue_system.get_tree(tree_id)
+    if tree:
+        return tree.to_dict()
+    return {"error": "Tree not found"}
+
+
+@router.post("/dialogue/trees")
+async def dialogue_register_tree(request: DialogueRegisterRequest):
+    from sparkai.engine.dialogue_system import DialogueTree
+    tree = DialogueTree.from_dict(request.tree_data)
+    tree.tree_id = request.tree_id
+    _dialogue_system.register_tree(tree)
+    return {"success": True, "tree_id": request.tree_id}
+
+
+@router.post("/dialogue/start")
+async def dialogue_start(request: DialogueStartRequest):
+    result = _dialogue_system.start_conversation(
+        tree_id=request.tree_id,
+        session_id=request.session_id,
+    )
+    return result
+
+
+@router.get("/dialogue/sessions/{session_id}")
+async def dialogue_get_session(session_id: str):
+    session = _dialogue_system.get_session(session_id)
+    if session:
+        return session
+    return {"error": "Session not found"}
+
+
+@router.get("/dialogue/choices/{session_id}")
+async def dialogue_choices(session_id: str):
+    choices = _dialogue_system.get_available_choices(session_id)
+    return {"session_id": session_id, "choices": [c.to_dict() for c in choices]}
+
+
+@router.post("/dialogue/select")
+async def dialogue_select(request: DialogueSelectRequest):
+    result = _dialogue_system.select_choice(
+        session_id=request.session_id,
+        choice_id=request.choice_id,
+        context=request.context or {},
+    )
+    return result
+
+
+# === Quest System ===
+
+_quest_system = get_quest_system()
+
+
+class QuestDefineRequest(BaseModel):
+    quest_id: str
+    title: str
+    description: str = ""
+    objectives: List[Dict[str, Any]] = []
+    rewards: Optional[List[Dict[str, Any]]] = None
+    prerequisites: Optional[List[str]] = None
+
+
+class QuestStartRequest(BaseModel):
+    quest_id: str
+    player_id: str = "default"
+
+
+class QuestObjectiveUpdateRequest(BaseModel):
+    quest_id: str
+    player_id: str = "default"
+    objective_index: int = 0
+    progress: int = 1
+
+
+@router.get("/quest/stats")
+async def quest_stats():
+    return {"stats": _quest_system.get_stats()}
+
+
+@router.get("/quest/definitions")
+async def quest_definitions():
+    return {"quests": _quest_system.get_quest_definitions()}
+
+
+@router.get("/quest/definitions/{quest_id}")
+async def quest_get_definition(quest_id: str):
+    quest = _quest_system.get_quest_definitions()
+    for q in quest:
+        if q.get("quest_id") == quest_id:
+            return q
+    return {"error": "Quest not found"}
+
+
+@router.post("/quest/define")
+async def quest_define(request: QuestDefineRequest):
+    from sparkai.engine.quest_system import QuestDefinition, QuestObjective, QuestReward
+    objectives = []
+    for obj in request.objectives:
+        objectives.append(QuestObjective(
+            description=obj.get("description", ""),
+            objective_type=obj.get("objective_type", "custom"),
+            target_count=obj.get("target_count", 1),
+            is_optional=obj.get("is_optional", False),
+        ))
+    rewards = None
+    if request.rewards:
+        rewards = []
+        for r in request.rewards:
+            rewards.append(QuestReward(
+                reward_type=r.get("reward_type", "experience"),
+                amount=r.get("amount", 0),
+                item_id=r.get("item_id"),
+            ))
+    quest_def = QuestDefinition(
+        quest_id=request.quest_id,
+        title=request.title,
+        description=request.description,
+        objectives=objectives,
+        rewards=rewards,
+        prerequisites=request.prerequisites,
+    )
+    qid = _quest_system.define_quest(quest_def)
+    return {"success": True, "quest_id": qid}
+
+
+@router.post("/quest/start")
+async def quest_start(request: QuestStartRequest):
+    success = _quest_system.start_quest(quest_id=request.quest_id)
+    return {"success": success, "quest_id": request.quest_id}
+
+
+@router.post("/quest/update-objective")
+async def quest_update_objective(request: QuestObjectiveUpdateRequest):
+    success = _quest_system.update_objective(
+        quest_id=request.quest_id,
+        objective_id=str(request.objective_index),
+        progress=request.progress,
+    )
+    return {"success": success, "quest_id": request.quest_id}
+
+
+@router.post("/quest/complete")
+async def quest_complete(quest_id: str):
+    result = _quest_system.complete_quest(quest_id=quest_id)
+    return {"success": result, "quest_id": quest_id}
+
+
+@router.post("/quest/fail")
+async def quest_fail(quest_id: str, reason: str = ""):
+    result = _quest_system.fail_quest(quest_id=quest_id)
+    return {"success": result, "quest_id": quest_id, "reason": reason}
+
+
+@router.get("/quest/active")
+async def quest_active():
+    active = _quest_system.get_active_quests()
+    return {"active_quests": [q.to_dict() if hasattr(q, 'to_dict') else str(q) for q in active], "count": len(active)}
+
+
+@router.get("/quest/states")
+async def quest_states():
+    return {"states": [s.value for s in QuestState]}
+
+
+# === Combat System ===
+
+_combat_system = get_combat_system()
+
+
+class CombatUnitCreateRequest(BaseModel):
+    unit_id: str
+    name: str = ""
+    hp: int = 100
+    max_hp: int = 100
+    attack: int = 10
+    defense: int = 5
+    speed: int = 10
+    element: Optional[str] = None
+    team: str = "player"
+
+
+class CombatInitiateRequest(BaseModel):
+    combat_id: Optional[str] = None
+    team_a: List[str] = []
+    team_b: List[str] = []
+    mode: str = "turn_based"
+
+
+class CombatActionRequest(BaseModel):
+    combat_id: str
+    actor_id: str
+    action_type: str = "attack"
+    target_id: Optional[str] = None
+    params: Optional[Dict[str, Any]] = None
+
+
+@router.get("/combat/stats")
+async def combat_stats():
+    return {"stats": _combat_system.get_stats()}
+
+
+@router.post("/combat/units")
+async def combat_create_unit(request: CombatUnitCreateRequest):
+    from sparkai.engine.combat_system import CombatUnit, Element
+    element = request.element or "physical"
+    unit = _combat_system.create_unit(
+        name=request.name or request.unit_id,
+        team_id=0 if request.team == "player" else 1,
+        max_hp=request.max_hp,
+        attack=request.attack,
+        defense=request.defense,
+        speed=request.speed,
+        element=element,
+    )
+    return {"success": True, "unit_id": unit.unit_id, "name": unit.name}
+
+
+@router.get("/combat/units")
+async def combat_list_units():
+    stats = _combat_system.get_stats()
+    return {"units": [], "stats": stats}
+
+
+@router.get("/combat/units/{unit_id}")
+async def combat_get_unit(unit_id: str):
+    stats = _combat_system.get_stats()
+    return {"unit_id": unit_id, "stats": stats}
+
+
+@router.post("/combat/initiate")
+async def combat_initiate(request: CombatInitiateRequest):
+    from sparkai.engine.combat_system import CombatMode, CombatUnit
+    try:
+        mode = CombatMode(request.mode)
+    except ValueError:
+        mode = CombatMode.TURN_BASED
+    units = []
+    for name in request.team_a:
+        units.append(_combat_system.create_unit(name=name, team_id=0))
+    for name in request.team_b:
+        units.append(_combat_system.create_unit(name=name, team_id=1))
+    battle_id = _combat_system.initiate_combat(units=units, mode=mode)
+    return {"battle_id": battle_id, "mode": mode.value, "units": len(units)}
+
+
+@router.post("/combat/execute")
+async def combat_execute_action(request: CombatActionRequest):
+    from sparkai.engine.combat_system import CombatActionType, CombatAction
+    try:
+        action_type = CombatActionType(request.action_type)
+    except ValueError:
+        action_type = CombatActionType.ATTACK
+    action = CombatAction(
+        actor=request.actor_id,
+        action_type=action_type,
+        target=request.target_id,
+        params=request.params,
+    )
+    result = _combat_system.execute_action(battle_id=request.combat_id, action=action)
+    return result
+
+
+@router.get("/combat/state/{combat_id}")
+async def combat_get_state(combat_id: str):
+    state = _combat_system.get_battle_state(combat_id)
+    if state:
+        return state
+    return {"error": "Combat not found"}
+
+
+@router.get("/combat/elements")
+async def combat_elements():
+    from sparkai.engine.combat_system import Element
+    return {"elements": [e.value for e in Element]}
+
+
+@router.get("/combat/action-types")
+async def combat_action_types():
+    from sparkai.engine.combat_system import CombatActionType, CombatMode
+    return {
+        "action_types": [a.value for a in CombatActionType],
+        "modes": [m.value for m in CombatMode],
+    }
+
+
+# === Day/Night Cycle ===
+
+_day_night_cycle = get_day_night_cycle()
+
+
+class DayNightConfigRequest(BaseModel):
+    day_length_seconds: float = 300.0
+    dawn_ratio: float = 0.1
+    day_ratio: float = 0.45
+    dusk_ratio: float = 0.1
+    night_ratio: float = 0.35
+    start_hour: float = 6.0
+
+
+class TimeEventScheduleRequest(BaseModel):
+    event_id: str
+    trigger_hour: float
+    callback_name: str
+    data: Optional[Dict[str, Any]] = None
+    repeat: bool = False
+
+
+@router.get("/day-night/stats")
+async def day_night_stats():
+    return {"stats": _day_night_cycle.get_stats()}
+
+
+@router.get("/day-night/state")
+async def day_night_state():
+    return {
+        "time_of_day": round(_day_night_cycle.get_time_of_day(), 3),
+        "current_phase": _day_night_cycle.get_phase().value,
+        "day_count": _day_night_cycle.get_day_count(),
+        "config": _day_night_cycle.get_stats(),
+    }
+
+
+@router.get("/day-night/lighting")
+async def day_night_lighting():
+    params = _day_night_cycle.get_lighting_params()
+    return {"lighting": params}
+
+
+@router.post("/day-night/config")
+async def day_night_config(request: DayNightConfigRequest):
+    _day_night_cycle.configure(
+        day_length=request.day_length_seconds,
+        dawn_ratio=request.dawn_ratio,
+        day_ratio=request.day_ratio,
+        dusk_ratio=request.dusk_ratio,
+        night_ratio=request.night_ratio,
+    )
+    return {"success": True, "day_length": request.day_length_seconds}
+
+
+@router.post("/day-night/update")
+async def day_night_update(delta_seconds: float = 1.0):
+    phase = _day_night_cycle.update(delta_seconds)
+    return {
+        "current_phase": phase.value,
+        "time_of_day": round(_day_night_cycle.get_time_of_day(), 3),
+    }
+
+
+@router.get("/day-night/phases")
+async def day_night_phases():
+    return {"phases": [p.value for p in TimePhase]}
+
+
+@router.post("/day-night/events")
+async def day_night_schedule_event(request: TimeEventScheduleRequest):
+    event_id = _day_night_cycle.schedule_event(
+        name=request.callback_name,
+        trigger_time=request.trigger_hour / 24.0,
+        trigger_phase=None,
+        callback_data=request.data,
+        is_repeating=request.repeat,
+    )
+    return {"success": True, "event_id": event_id}
+
+
+@router.get("/day-night/events")
+async def day_night_events():
+    return {"events": _day_night_cycle.get_stats()}

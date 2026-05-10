@@ -2234,6 +2234,241 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "agent_pipeline_error", "error": str(e)})
 
+                elif msg_type == "agent_consensus":
+                    try:
+                        from sparkai.agent.agent_consensus import get_agent_consensus, ConsensusProtocol
+                        ac = get_agent_consensus()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "consensus_stats", "data": ac.get_stats()})
+                        elif sub == "propose":
+                            try:
+                                protocol = ConsensusProtocol(data.get("protocol", "majority"))
+                            except ValueError:
+                                protocol = ConsensusProtocol.MAJORITY
+                            result = ac.propose(
+                                topic=data.get("topic", ""),
+                                description=data.get("description", ""),
+                                context=data.get("context", {}),
+                                protocol=protocol,
+                                min_participants=data.get("min_participants", 2),
+                            )
+                            await manager.broadcast_agent_event("consensus_proposed", {"round_id": result.round_id, "topic": data.get("topic", "")})
+                        elif sub == "submit_opinion":
+                            opinion = ac.submit_opinion(
+                                round_id=data.get("round_id", ""),
+                                agent_name=data.get("agent_name", ""),
+                                position=data.get("position", ""),
+                                reasoning=data.get("reasoning", ""),
+                                confidence=data.get("confidence", 0.5),
+                            )
+                            await manager.broadcast_agent_event("opinion_submitted", {"opinion_id": opinion.opinion_id})
+                        elif sub == "vote":
+                            ac.vote(round_id=data.get("round_id", ""), agent_name=data.get("agent_name", ""), position=data.get("position", ""), weight=data.get("weight", 1.0))
+                            await manager.broadcast_agent_event("vote_cast", {"round_id": data.get("round_id", "")})
+                        elif sub == "resolve":
+                            result = ac.resolve(data.get("round_id", ""))
+                            await manager.broadcast_agent_event("consensus_resolved", {"winning_position": result.winning_position, "confidence": result.confidence})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "consensus_error", "error": str(e)})
+
+                elif msg_type == "game_analyzer":
+                    try:
+                        from sparkai.agent.agent_game_analyzer import get_game_analyzer, AnalysisDimension
+                        ga = get_game_analyzer()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "game_analyzer_stats", "data": ga.get_stats()})
+                        elif sub == "analyze":
+                            dims = None
+                            if data.get("target_dimensions"):
+                                try:
+                                    dims = [AnalysisDimension(d) for d in data.get("target_dimensions", [])]
+                                except ValueError:
+                                    pass
+                            report = ga.analyze(
+                                design_doc=data.get("game_design_doc", ""),
+                                rules=data.get("rules"),
+                                mechanics=data.get("mechanics"),
+                                target_dimensions=dims,
+                            )
+                            await manager.broadcast_agent_event("game_analysis_complete", report.to_dict())
+                        elif sub == "reports":
+                            reports = ga.list_reports()[:data.get("limit", 10)]
+                            await manager.send_to_client(client_id, {"type": "game_analyzer_reports", "data": {"reports": reports}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "game_analyzer_error", "error": str(e)})
+
+                elif msg_type == "adaptive_prompting":
+                    try:
+                        from sparkai.agent.agent_adaptive_prompting import get_adaptive_prompting, OptimizationStrategy, TaskCategory
+                        ap = get_adaptive_prompting()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "adaptive_prompting_stats", "data": ap.get_stats()})
+                        elif sub == "generate":
+                            try:
+                                category = TaskCategory(data.get("category", "game_design"))
+                            except ValueError:
+                                category = TaskCategory.GAME_DESIGN
+                            try:
+                                strategy = OptimizationStrategy(data.get("strategy", "epsilon_greedy"))
+                            except ValueError:
+                                strategy = OptimizationStrategy.EPSILON_GREEDY
+                            result = ap.generate_prompt(category=category, variables=data.get("variables", {}), strategy=strategy)
+                            await manager.broadcast_agent_event("prompt_generated", {"prompt": result.prompt_text, "variant_id": result.variant_id})
+                        elif sub == "record_outcome":
+                            ap.record_outcome(variant_id=data.get("variant_id", ""), score=data.get("score", 0.0), feedback=data.get("feedback"))
+                            await manager.send_to_client(client_id, {"type": "outcome_recorded", "data": {"variant_id": data.get("variant_id", "")}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "adaptive_prompting_error", "error": str(e)})
+
+                elif msg_type == "entity_extractor":
+                    try:
+                        from sparkai.agent.agent_entity_extraction import get_entity_extractor
+                        ee = get_entity_extractor()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "entity_extractor_stats", "data": ee.get_stats()})
+                        elif sub == "extract":
+                            entities = ee.extract(text=data.get("text", ""), context=data.get("context"))
+                            await manager.broadcast_agent_event("entities_extracted", {"entities": [e.to_dict() for e in entities], "count": len(entities)})
+                        elif sub == "world_model":
+                            model = ee.build_world_model(text=data.get("text", ""), context=data.get("context"))
+                            await manager.broadcast_agent_event("world_model_built", model.to_dict())
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "entity_extractor_error", "error": str(e)})
+
+                elif msg_type == "dialogue_system":
+                    try:
+                        from sparkai.engine.dialogue_system import get_dialogue_system, DialogueTree
+                        ds = get_dialogue_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "dialogue_system_stats", "data": ds.get_stats()})
+                        elif sub == "start":
+                            result = ds.start_conversation(tree_id=data.get("tree_id", ""), session_id=data.get("session_id"))
+                            await manager.broadcast_engine_status({"dialogue": result})
+                        elif sub == "select":
+                            result = ds.select_choice(session_id=data.get("session_id", ""), choice_id=data.get("choice_id", ""), context=data.get("context", {}))
+                            await manager.broadcast_engine_status({"dialogue": result})
+                        elif sub == "choices":
+                            choices = ds.get_available_choices(data.get("session_id", ""))
+                            await manager.send_to_client(client_id, {"type": "dialogue_choices", "data": {"choices": [c.to_dict() for c in choices]}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "dialogue_system_error", "error": str(e)})
+
+                elif msg_type == "quest_system":
+                    try:
+                        from sparkai.engine.quest_system import get_quest_system, QuestDefinition, QuestObjective, QuestReward
+                        qs = get_quest_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "quest_system_stats", "data": qs.get_stats()})
+                        elif sub == "start":
+                            success = qs.start_quest(quest_id=data.get("quest_id", ""), player_id=data.get("player_id", "default"))
+                            await manager.broadcast_engine_status({"quest": {"started": success, "quest_id": data.get("quest_id", "")}})
+                        elif sub == "update":
+                            success = qs.update_objective(
+                                quest_id=data.get("quest_id", ""),
+                                player_id=data.get("player_id", "default"),
+                                objective_index=data.get("objective_index", 0),
+                                progress=data.get("progress", 1),
+                            )
+                            await manager.broadcast_engine_status({"quest": {"updated": success}})
+                        elif sub == "complete":
+                            result = qs.complete_quest(quest_id=data.get("quest_id", ""), player_id=data.get("player_id", "default"))
+                            await manager.broadcast_engine_status({"quest": result})
+                        elif sub == "active":
+                            active = qs.get_active_quests(data.get("player_id", "default"))
+                            await manager.send_to_client(client_id, {"type": "quest_active", "data": {"active_quests": [a.to_dict() for a in active]}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "quest_system_error", "error": str(e)})
+
+                elif msg_type == "combat_system":
+                    try:
+                        from sparkai.engine.combat_system import get_combat_system, CombatMode, CombatActionType, CombatUnit, Element
+                        cs = get_combat_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "combat_system_stats", "data": cs.get_stats()})
+                        elif sub == "create_unit":
+                            element = None
+                            if data.get("element"):
+                                try:
+                                    element = Element(data.get("element"))
+                                except ValueError:
+                                    pass
+                            unit = CombatUnit(
+                                unit_id=data.get("unit_id", ""), name=data.get("name", ""),
+                                hp=data.get("hp", 100), max_hp=data.get("max_hp", 100),
+                                attack=data.get("attack", 10), defense=data.get("defense", 5),
+                                speed=data.get("speed", 10), element=element,
+                                team=data.get("team", "player"),
+                            )
+                            cs.create_unit(unit)
+                            await manager.broadcast_engine_status({"combat": {"unit_created": data.get("unit_id", "")}})
+                        elif sub == "initiate":
+                            try:
+                                mode = CombatMode(data.get("mode", "turn_based"))
+                            except ValueError:
+                                mode = CombatMode.TURN_BASED
+                            state = cs.initiate_combat(team_a=data.get("team_a", []), team_b=data.get("team_b", []), mode=mode, combat_id=data.get("combat_id"))
+                            await manager.broadcast_engine_status({"combat": state.to_dict()})
+                        elif sub == "execute":
+                            try:
+                                action_type = CombatActionType(data.get("action_type", "attack"))
+                            except ValueError:
+                                action_type = CombatActionType.ATTACK
+                            result = cs.execute_action(
+                                combat_id=data.get("combat_id", ""), actor_id=data.get("actor_id", ""),
+                                action_type=action_type, target_id=data.get("target_id"),
+                                params=data.get("params"),
+                            )
+                            await manager.broadcast_engine_status({"combat": result.to_dict() if hasattr(result, 'to_dict') else result})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "combat_system_error", "error": str(e)})
+
+                elif msg_type == "day_night_cycle":
+                    try:
+                        from sparkai.engine.day_night_cycle import get_day_night_cycle, DayNightConfig, TimeEvent
+                        dnc = get_day_night_cycle()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "day_night_stats", "data": dnc.get_stats()})
+                        elif sub == "state":
+                            await manager.send_to_client(client_id, {"type": "day_night_state", "data": {
+                                "current_hour": dnc.get_current_hour(),
+                                "current_phase": dnc.get_current_phase().value,
+                            }})
+                        elif sub == "lighting":
+                            params = dnc.get_lighting_params()
+                            await manager.send_to_client(client_id, {"type": "day_night_lighting", "data": params.to_dict() if hasattr(params, 'to_dict') else params})
+                        elif sub == "configure":
+                            config = DayNightConfig(
+                                day_length_seconds=data.get("day_length_seconds", 300.0),
+                                dawn_ratio=data.get("dawn_ratio", 0.1),
+                                day_ratio=data.get("day_ratio", 0.45),
+                                dusk_ratio=data.get("dusk_ratio", 0.1),
+                                night_ratio=data.get("night_ratio", 0.35),
+                                start_hour=data.get("start_hour", 6.0),
+                            )
+                            dnc.configure(config)
+                            await manager.broadcast_engine_status({"day_night": {"configured": True}})
+                        elif sub == "update":
+                            dnc.update(data.get("delta_seconds", 1.0))
+                            await manager.broadcast_engine_status({"day_night": {"updated": True, "hour": dnc.get_current_hour()}})
+                        elif sub == "schedule_event":
+                            event = TimeEvent(
+                                event_id=data.get("event_id", ""), trigger_hour=data.get("trigger_hour", 0.0),
+                                callback_name=data.get("callback_name", ""), data=data.get("event_data"),
+                                repeat=data.get("repeat", False),
+                            )
+                            dnc.schedule_event(event)
+                            await manager.send_to_client(client_id, {"type": "day_night_event_scheduled", "data": {"event_id": data.get("event_id", "")}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "day_night_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
