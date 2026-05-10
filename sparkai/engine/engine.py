@@ -88,6 +88,12 @@ from sparkai.engine.dialogue_system import DialogueSystem, DialogueTree, Dialogu
 from sparkai.engine.quest_system import QuestSystem, QuestDefinition, QuestState, get_quest_system
 from sparkai.engine.combat_system import CombatSystem, CombatUnit, CombatState, get_combat_system
 from sparkai.engine.day_night_cycle import DayNightCycle, TimePhase, DayNightConfig, get_day_night_cycle
+from sparkai.engine.weather_system import WeatherSystem, WeatherState, get_weather_system
+from sparkai.engine.skill_tree_system import SkillTreeSystem, SkillNode, get_skill_tree_system
+from sparkai.engine.crafting_system import CraftingSystem, CraftingRecipe, get_crafting_system
+from sparkai.engine.loot_system import LootSystem, DropTable, get_loot_system
+from sparkai.engine.economy_system import EconomySystem, Wallet, get_economy_system
+from sparkai.engine.cutscene_system import CutsceneSystem, CutsceneDefinition, get_cutscene_system
 
 
 class SparkEngine:
@@ -180,6 +186,12 @@ class SparkEngine:
         self._quest_system: QuestSystem = get_quest_system()
         self._combat_system: CombatSystem = get_combat_system()
         self._day_night_cycle: DayNightCycle = get_day_night_cycle()
+        self._weather_system: WeatherSystem = get_weather_system()
+        self._skill_tree_system: SkillTreeSystem = get_skill_tree_system()
+        self._crafting_system: CraftingSystem = get_crafting_system()
+        self._loot_system: LootSystem = get_loot_system()
+        self._economy_system: EconomySystem = get_economy_system()
+        self._cutscene_system: CutsceneSystem = get_cutscene_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -408,6 +420,12 @@ class SparkEngine:
             "quest_system": self._quest_system.get_stats(),
             "combat_system": self._combat_system.get_stats(),
             "day_night_cycle": self._day_night_cycle.get_stats(),
+            "weather_system": self._weather_system.get_stats(),
+            "skill_tree_system": self._skill_tree_system.get_stats(),
+            "crafting_system": self._crafting_system.get_stats(),
+            "loot_system": self._loot_system.get_stats(),
+            "economy_system": self._economy_system.get_stats(),
+            "cutscene_system": self._cutscene_system.get_stats(),
         }
 
     @property
