@@ -111,6 +111,18 @@ from sparkai.engine.dialogue_system import DialogueSystem, DialogueTree, Dialogu
 from sparkai.engine.quest_system import QuestSystem, QuestDefinition, QuestState, get_quest_system
 from sparkai.engine.combat_system import CombatSystem, CombatUnit, CombatState, get_combat_system
 from sparkai.engine.day_night_cycle import DayNightCycle, TimePhase, DayNightConfig, get_day_night_cycle
+from sparkai.agent.agent_style_transfer import StyleTransferEngine, StyleProfile, TransferResult, get_style_transfer
+from sparkai.agent.agent_curriculum_learning import CurriculumLearningEngine, SkillNode, LearningSession, get_curriculum_learning
+from sparkai.agent.agent_balancing import GameBalanceTuner, GameParameter, BalanceReport, get_game_balancer
+from sparkai.agent.agent_localization import ContentLocalizationEngine, Locale, LocalizedString, get_localization_engine
+from sparkai.agent.agent_tutorial_design import TutorialDesignEngine, MechanicDefinition, TutorialSequence, get_tutorial_designer
+from sparkai.agent.agent_game_testing import GameTestingEngine, TestCase, TestRun, get_game_tester
+from sparkai.engine.weather_system import WeatherSystem, WeatherState, get_weather_system
+from sparkai.engine.skill_tree_system import SkillTreeSystem, SkillNode as EngineSkillNode, get_skill_tree_system
+from sparkai.engine.crafting_system import CraftingSystem, CraftingRecipe, get_crafting_system
+from sparkai.engine.loot_system import LootSystem, DropTable, get_loot_system
+from sparkai.engine.economy_system import EconomySystem, Wallet, get_economy_system
+from sparkai.engine.cutscene_system import CutsceneSystem, CutsceneDefinition, get_cutscene_system
 
 router = APIRouter()
 
@@ -12205,3 +12217,947 @@ async def day_night_schedule_event(request: TimeEventScheduleRequest):
 @router.get("/day-night/events")
 async def day_night_events():
     return {"events": _day_night_cycle.get_stats()}
+
+
+# === Style Transfer ===
+
+_style_transfer = get_style_transfer()
+
+
+class StyleRegisterRequest(BaseModel):
+    name: str
+    domain: str = "visual"
+    attributes: Optional[Dict[str, Any]] = None
+    color_palette: Optional[List[str]] = None
+    mood_tags: Optional[List[str]] = None
+
+
+class StyleTransferRequest(BaseModel):
+    source_profile_id: str
+    target_content: Dict[str, Any]
+    target_domain: str = "narrative"
+    intensity: str = "moderate"
+
+
+@router.get("/style-transfer/stats")
+async def style_transfer_stats():
+    return {"stats": _style_transfer.get_stats()}
+
+
+@router.post("/style-transfer/register")
+async def style_transfer_register(request: StyleRegisterRequest):
+    from sparkai.agent.agent_style_transfer import StyleDomain, StyleProfile
+    try:
+        domain = StyleDomain(request.domain)
+    except ValueError:
+        domain = StyleDomain.VISUAL
+    profile = StyleProfile(
+        name=request.name,
+        domain=domain,
+        attributes=request.attributes or {},
+        color_palette=request.color_palette or [],
+        mood_tags=request.mood_tags or [],
+    )
+    pid = _style_transfer.register_style(profile)
+    return {"success": True, "profile_id": pid}
+
+
+@router.get("/style-transfer/styles")
+async def style_transfer_list(domain: Optional[str] = None):
+    from sparkai.agent.agent_style_transfer import StyleDomain
+    dom = None
+    if domain:
+        try:
+            dom = StyleDomain(domain)
+        except ValueError:
+            pass
+    styles = _style_transfer.list_styles(domain=dom)
+    return {"styles": [s.to_dict() for s in styles]}
+
+
+@router.post("/style-transfer/transfer")
+async def style_transfer_transfer(request: StyleTransferRequest):
+    from sparkai.agent.agent_style_transfer import StyleDomain, TransferIntensity
+    try:
+        target = StyleDomain(request.target_domain)
+    except ValueError:
+        target = StyleDomain.NARRATIVE
+    try:
+        intensity = TransferIntensity(request.intensity)
+    except ValueError:
+        intensity = TransferIntensity.MODERATE
+    result = _style_transfer.transfer_style(
+        source_profile_id=request.source_profile_id,
+        target_content=request.target_content,
+        target_domain=target,
+        intensity=intensity,
+    )
+    if result:
+        return {"success": True, "result": result.__dict__}
+    return {"success": False, "error": "Transfer failed"}
+
+
+# === Curriculum Learning ===
+
+_curriculum_learning = get_curriculum_learning()
+
+
+class CurriculumSkillRequest(BaseModel):
+    name: str
+    description: str = ""
+    level: str = "novice"
+    difficulty_baseline: float = 1.0
+
+
+class CurriculumSessionRequest(BaseModel):
+    target_skills: List[str]
+    strategy: str = "scaffolded"
+
+
+@router.get("/curriculum/stats")
+async def curriculum_stats():
+    return {"stats": _curriculum_learning.get_stats()}
+
+
+@router.post("/curriculum/register-skill")
+async def curriculum_register_skill(request: CurriculumSkillRequest):
+    from sparkai.agent.agent_curriculum_learning import SkillNode, SkillLevel
+    try:
+        level = SkillLevel(request.level)
+    except ValueError:
+        level = SkillLevel.NOVICE
+    skill = SkillNode(
+        name=request.name,
+        description=request.description,
+        level=level,
+        difficulty_baseline=request.difficulty_baseline,
+    )
+    sid = _curriculum_learning.register_skill(skill)
+    return {"success": True, "skill_id": sid}
+
+
+@router.post("/curriculum/start-session")
+async def curriculum_start_session(request: CurriculumSessionRequest):
+    from sparkai.agent.agent_curriculum_learning import LearningStrategy
+    try:
+        strategy = LearningStrategy(request.strategy)
+    except ValueError:
+        strategy = None
+    session = _curriculum_learning.start_session(request.target_skills, strategy)
+    return {"session_id": session.session_id, "difficulty": session.difficulty_modifier}
+
+
+@router.post("/curriculum/record-performance")
+async def curriculum_record(skill_id: str, score: float):
+    proficiency = _curriculum_learning.record_performance(skill_id, score)
+    return {"skill_id": skill_id, "proficiency": proficiency}
+
+
+@router.get("/curriculum/skill-graph")
+async def curriculum_skill_graph():
+    return _curriculum_learning.get_skill_graph()
+
+
+@router.post("/curriculum/end-session")
+async def curriculum_end_session():
+    result = _curriculum_learning.end_session()
+    return {"result": result}
+
+
+# === Game Balancer ===
+
+_game_balancer = get_game_balancer()
+
+
+class BalancerParamRequest(BaseModel):
+    param_id: str
+    name: str = ""
+    domain: str = "combat"
+    current_value: float = 1.0
+    min_value: float = 0.1
+    max_value: float = 10.0
+    ideal_min: float = 0.8
+    ideal_max: float = 1.2
+
+
+class BalancerMetricRequest(BaseModel):
+    name: str
+    domain: str = "combat"
+    current_value: float
+    target_value: float
+
+
+@router.get("/balancer/stats")
+async def balancer_stats():
+    return {"stats": _game_balancer.get_stats()}
+
+
+@router.post("/balancer/register-param")
+async def balancer_register_param(request: BalancerParamRequest):
+    from sparkai.agent.agent_balancing import GameParameter, TuningDomain
+    try:
+        domain = TuningDomain(request.domain)
+    except ValueError:
+        domain = TuningDomain.COMBAT
+    param = GameParameter(
+        param_id=request.param_id,
+        name=request.name,
+        domain=domain,
+        current_value=request.current_value,
+        min_value=request.min_value,
+        max_value=request.max_value,
+        ideal_range=(request.ideal_min, request.ideal_max),
+    )
+    _game_balancer.register_parameter(param)
+    return {"success": True, "param_id": request.param_id}
+
+
+@router.post("/balancer/report-metric")
+async def balancer_report_metric(request: BalancerMetricRequest):
+    from sparkai.agent.agent_balancing import BalanceMetric, TuningDomain
+    try:
+        domain = TuningDomain(request.domain)
+    except ValueError:
+        domain = TuningDomain.COMBAT
+    metric = BalanceMetric(
+        name=request.name,
+        domain=domain,
+        current_value=request.current_value,
+        target_value=request.target_value,
+    )
+    _game_balancer.report_metric(metric)
+    return {"success": True, "metric_id": metric.metric_id}
+
+
+@router.post("/balancer/analyze")
+async def balancer_analyze(domain: str = "combat"):
+    from sparkai.agent.agent_balancing import TuningDomain
+    try:
+        dom = TuningDomain(domain)
+    except ValueError:
+        dom = TuningDomain.COMBAT
+    report = _game_balancer.analyze_domain(dom)
+    return {"status": report.status.value, "recommended": report.recommended_changes}
+
+
+@router.post("/balancer/apply")
+async def balancer_apply(domain: str = "combat"):
+    from sparkai.agent.agent_balancing import TuningDomain
+    try:
+        dom = TuningDomain(domain)
+    except ValueError:
+        dom = TuningDomain.COMBAT
+    report = _game_balancer.analyze_domain(dom)
+    count = _game_balancer.apply_tuning(report)
+    return {"applied": count, "params": _game_balancer.get_parameter_snapshot(dom)}
+
+
+# === Localization ===
+
+_localization_engine = get_localization_engine()
+
+
+class LocaleStringRequest(BaseModel):
+    key: str
+    source_text: str
+    category: str = "ui"
+    context_tags: Optional[List[str]] = None
+
+
+class TranslationRequest(BaseModel):
+    string_id: str
+    locale: str
+    text: str
+    quality_score: float = 1.0
+
+
+@router.get("/localization/stats")
+async def localization_stats():
+    return {"stats": _localization_engine.get_stats()}
+
+
+@router.post("/localization/register-string")
+async def localization_register_string(request: LocaleStringRequest):
+    from sparkai.agent.agent_localization import StringCategory
+    try:
+        category = StringCategory(request.category)
+    except ValueError:
+        category = StringCategory.UI
+    sid = _localization_engine.register_string_by_key(
+        key=request.key,
+        source_text=request.source_text,
+        category=category,
+        context_tags=request.context_tags,
+    )
+    return {"success": True, "string_id": sid}
+
+
+@router.post("/localization/translate")
+async def localization_translate(request: TranslationRequest):
+    from sparkai.agent.agent_localization import Locale
+    try:
+        locale = Locale(request.locale)
+    except ValueError:
+        locale = Locale.EN
+    success = _localization_engine.add_translation(
+        string_id=request.string_id,
+        locale=locale,
+        text=request.text,
+        quality_score=request.quality_score,
+    )
+    return {"success": success}
+
+
+@router.get("/localization/text/{string_id}")
+async def localization_get_text(string_id: str, locale: str = "en"):
+    from sparkai.agent.agent_localization import Locale
+    try:
+        loc = Locale(locale)
+    except ValueError:
+        loc = Locale.EN
+    return {"text": _localization_engine.get_text(string_id, loc)}
+
+
+@router.get("/localization/missing/{locale}")
+async def localization_missing(locale: str):
+    from sparkai.agent.agent_localization import Locale
+    try:
+        loc = Locale(locale)
+    except ValueError:
+        loc = Locale.EN
+    missing = _localization_engine.get_missing_translations(loc)
+    return {"missing": [m.key for m in missing], "count": len(missing)}
+
+
+@router.get("/localization/locales")
+async def localization_locales():
+    return {"locales": [l.value for l in _localization_engine.get_supported_locales()]}
+
+
+# === Tutorial Design ===
+
+_tutorial_designer = get_tutorial_designer()
+
+
+class MechanicDefineRequest(BaseModel):
+    name: str
+    description: str = ""
+    complexity: int = 1
+    prerequisites: Optional[List[str]] = None
+    input_actions: Optional[List[str]] = None
+    objective_description: str = ""
+    tips: Optional[List[str]] = None
+
+
+class TutorialDesignRequest(BaseModel):
+    mechanic_id: str
+    tier: str = "guided"
+    moment: str = "on_unlock"
+
+
+@router.get("/tutorial/stats")
+async def tutorial_stats():
+    return {"stats": _tutorial_designer.get_stats()}
+
+
+@router.post("/tutorial/define-mechanic")
+async def tutorial_define_mechanic(request: MechanicDefineRequest):
+    from sparkai.agent.agent_tutorial_design import MechanicDefinition
+    mechanic = MechanicDefinition(
+        name=request.name,
+        description=request.description,
+        complexity=request.complexity,
+        prerequisites=request.prerequisites or [],
+        input_actions=request.input_actions or [],
+        objective_description=request.objective_description,
+        tips=request.tips or [],
+    )
+    mid = _tutorial_designer.define_mechanic(mechanic)
+    return {"success": True, "mechanic_id": mid}
+
+
+@router.post("/tutorial/design")
+async def tutorial_design(request: TutorialDesignRequest):
+    from sparkai.agent.agent_tutorial_design import ScaffoldingTier, TutorialMoment
+    try:
+        tier = ScaffoldingTier(request.tier)
+    except ValueError:
+        tier = ScaffoldingTier.GUIDED
+    try:
+        moment = TutorialMoment(request.moment)
+    except ValueError:
+        moment = TutorialMoment.ON_UNLOCK
+    seq = _tutorial_designer.design_tutorial(request.mechanic_id, tier, moment)
+    if seq:
+        return {"success": True, "sequence_id": seq.sequence_id, "steps": len(seq.steps)}
+    return {"success": False, "error": "Mechanic not found"}
+
+
+@router.get("/tutorial/mechanics")
+async def tutorial_mechanics():
+    return {"mechanics": [{"id": m.mechanic_id, "name": m.name} for m in _tutorial_designer.get_all_mechanics_ordered()]}
+
+
+@router.post("/tutorial/complete")
+async def tutorial_complete(sequence_id: str, completion_time: float = 0.0):
+    _tutorial_designer.record_completion(sequence_id, completion_time)
+    return {"success": True}
+
+
+# === Game Testing ===
+
+_game_tester = get_game_tester()
+
+
+class TestCaseDefineRequest(BaseModel):
+    name: str
+    test_type: str = "smoke"
+    description: str = ""
+    target_feature: str = ""
+    steps: Optional[List[str]] = None
+    expected_outcome: str = ""
+
+
+class TestRunRequest(BaseModel):
+    name: str
+    test_types: Optional[List[str]] = None
+    simulator_player_type: str = "average"
+
+
+@router.get("/game-testing/stats")
+async def game_testing_stats():
+    return {"stats": _game_tester.get_stats()}
+
+
+@router.post("/game-testing/define-case")
+async def game_testing_define_case(request: TestCaseDefineRequest):
+    from sparkai.agent.agent_game_testing import TestCase, TestType
+    try:
+        test_type = TestType(request.test_type)
+    except ValueError:
+        test_type = TestType.SMOKE
+    case = TestCase(
+        name=request.name,
+        test_type=test_type,
+        description=request.description,
+        target_feature=request.target_feature,
+        steps=request.steps or [],
+        expected_outcome=request.expected_outcome,
+    )
+    cid = _game_tester.define_test_case(case)
+    return {"success": True, "case_id": cid}
+
+
+@router.post("/game-testing/run")
+async def game_testing_run(request: TestRunRequest):
+    from sparkai.agent.agent_game_testing import TestType, PlayerSimulator
+    test_types = None
+    if request.test_types:
+        try:
+            test_types = [TestType(t) for t in request.test_types]
+        except ValueError:
+            pass
+    simulators = _game_tester._simulators
+    sim = next((s for s in simulators if s.player_type == request.simulator_player_type), simulators[0])
+    run = _game_tester.create_test_run(request.name, test_types)
+    result = _game_tester.run_tests(sim)
+    return _game_tester.get_latest_results() or {"pass_rate": result.pass_rate()}
+
+
+@router.get("/game-testing/coverage")
+async def game_testing_coverage():
+    return _game_tester.get_coverage_report()
+
+
+# === Weather System ===
+
+_weather_system = get_weather_system()
+
+
+class WeatherZoneRequest(BaseModel):
+    zone_id: Optional[str] = None
+    name: str
+    allowed_states: List[str]
+    default_state: str = "clear"
+
+
+class WeatherSetRequest(BaseModel):
+    zone_id: str
+    state: str
+
+
+@router.get("/weather/stats")
+async def weather_stats():
+    return {"stats": _weather_system.get_stats()}
+
+
+@router.post("/weather/register-zone")
+async def weather_register_zone(request: WeatherZoneRequest):
+    from sparkai.engine.weather_system import ClimateZone, WeatherState
+    try:
+        default = WeatherState(request.default_state)
+    except ValueError:
+        default = WeatherState.CLEAR
+    states = []
+    for s in request.allowed_states:
+        try:
+            states.append(WeatherState(s))
+        except ValueError:
+            pass
+    zone = ClimateZone(
+        zone_id=request.zone_id or "",
+        name=request.name,
+        allowed_states=states or [WeatherState.CLEAR],
+        default_state=default,
+    )
+    zid = _weather_system.register_zone(zone)
+    return {"success": True, "zone_id": zid}
+
+
+@router.post("/weather/set")
+async def weather_set(request: WeatherSetRequest):
+    from sparkai.engine.weather_system import WeatherState
+    try:
+        state = WeatherState(request.state)
+    except ValueError:
+        state = WeatherState.CLEAR
+    success = _weather_system.set_weather(request.zone_id, state)
+    return {"success": success}
+
+
+@router.get("/weather/zones")
+async def weather_zones():
+    return {"zones": _weather_system.get_all_zones()}
+
+
+@router.get("/weather/modifiers/{zone_id}")
+async def weather_modifiers(zone_id: str):
+    return {"modifiers": _weather_system.get_gameplay_modifiers(zone_id)}
+
+
+@router.post("/weather/update")
+async def weather_update(delta_seconds: float = 1.0):
+    _weather_system.update(delta_seconds)
+    return {"zones": _weather_system.get_all_zones()}
+
+
+# === Skill Tree System ===
+
+_skill_tree_system = get_skill_tree_system()
+
+
+class SkillTreeRegisterRequest(BaseModel):
+    name: str
+    class_name: str
+    description: str = ""
+
+
+class SkillNodeAddRequest(BaseModel):
+    tree_id: str
+    name: str
+    description: str = ""
+    node_type: str = "passive"
+    tier: int = 0
+    cost: int = 1
+    max_rank: int = 1
+    prerequisites: Optional[List[str]] = None
+    is_root: bool = False
+
+
+class UnlockNodeRequest(BaseModel):
+    character_id: str
+    tree_id: str
+    node_id: str
+
+
+@router.get("/skill-tree/stats")
+async def skill_tree_stats():
+    return {"stats": _skill_tree_system.get_stats()}
+
+
+@router.post("/skill-tree/register")
+async def skill_tree_register(request: SkillTreeRegisterRequest):
+    from sparkai.engine.skill_tree_system import SkillTree
+    tree = SkillTree(
+        name=request.name,
+        class_name=request.class_name,
+        description=request.description,
+    )
+    tid = _skill_tree_system.register_tree(tree)
+    return {"success": True, "tree_id": tid}
+
+
+@router.post("/skill-tree/add-node")
+async def skill_tree_add_node(request: SkillNodeAddRequest):
+    from sparkai.engine.skill_tree_system import SkillNode, NodeType
+    tree = _skill_tree_system._trees.get(request.tree_id)
+    if tree is None:
+        return {"success": False, "error": "Tree not found"}
+    try:
+        node_type = NodeType(request.node_type)
+    except ValueError:
+        node_type = NodeType.PASSIVE
+    node = SkillNode(
+        name=request.name,
+        description=request.description,
+        node_type=node_type,
+        tier=request.tier,
+        cost=request.cost,
+        max_rank=request.max_rank,
+        prerequisites=request.prerequisites or [],
+    )
+    tree.nodes[node.node_id] = node
+    if request.is_root:
+        tree.root_node_ids.append(node.node_id)
+    _skill_tree_system._evaluate_availability(request.tree_id)
+    return {"success": True, "node_id": node.node_id}
+
+
+@router.post("/skill-tree/unlock")
+async def skill_tree_unlock(request: UnlockNodeRequest):
+    success = _skill_tree_system.unlock_node(
+        character_id=request.character_id,
+        tree_id=request.tree_id,
+        node_id=request.node_id,
+    )
+    return {"success": success}
+
+
+@router.get("/skill-tree/trees")
+async def skill_tree_trees():
+    return {"trees": {tid: t.to_dict() for tid, t in _skill_tree_system._trees.items()}}
+
+
+@router.get("/skill-tree/modifiers/{character_id}")
+async def skill_tree_modifiers(character_id: str):
+    return {"modifiers": _skill_tree_system.get_unlocked_modifiers(character_id)}
+
+
+# === Crafting System ===
+
+_crafting_system = get_crafting_system()
+
+
+class RecipeRegisterRequest(BaseModel):
+    name: str
+    description: str = ""
+    category: str = "consumable"
+    ingredients: List[Dict[str, Any]] = []
+    result_item_id: str = ""
+    result_name: str = ""
+    result_quantity: int = 1
+    min_skill_level: int = 1
+    crafting_time: float = 2.0
+    required_station: str = ""
+
+
+class CraftRequest(BaseModel):
+    character_id: str
+    recipe_id: str
+    inventory: Dict[str, int]
+    station: str = ""
+
+
+@router.get("/crafting/stats")
+async def crafting_stats():
+    return {"stats": _crafting_system.get_stats()}
+
+
+@router.post("/crafting/register-recipe")
+async def crafting_register_recipe(request: RecipeRegisterRequest):
+    from sparkai.engine.crafting_system import CraftingRecipe, CraftingCategory, Ingredient
+    try:
+        category = CraftingCategory(request.category)
+    except ValueError:
+        category = CraftingCategory.CONSUMABLE
+    ingredients = []
+    for ing in request.ingredients:
+        ingredients.append(Ingredient(
+            item_id=ing.get("item_id", ""),
+            name=ing.get("name", ""),
+            quantity=ing.get("quantity", 1),
+        ))
+    recipe = CraftingRecipe(
+        name=request.name,
+        description=request.description,
+        category=category,
+        ingredients=ingredients,
+        result_item_id=request.result_item_id,
+        result_name=request.result_name,
+        result_quantity=request.result_quantity,
+        min_skill_level=request.min_skill_level,
+        crafting_time=request.crafting_time,
+        required_station=request.required_station,
+    )
+    rid = _crafting_system.register_recipe(recipe)
+    return {"success": True, "recipe_id": rid}
+
+
+@router.post("/crafting/craft")
+async def crafting_craft(request: CraftRequest):
+    result = _crafting_system.craft(
+        character_id=request.character_id,
+        recipe_id=request.recipe_id,
+        inventory=request.inventory,
+        station=request.station,
+    )
+    return {"success": result.success, "result": result.__dict__}
+
+
+@router.get("/crafting/recipes")
+async def crafting_recipes():
+    return {"recipes": [r.to_dict() for r in _crafting_system._recipes.values()]}
+
+
+# === Loot System ===
+
+_loot_system = get_loot_system()
+
+
+class DropTableRegisterRequest(BaseModel):
+    name: str
+    entries: List[Dict[str, Any]] = []
+    min_drops: int = 1
+    max_drops: int = 5
+
+
+class LootGenerateRequest(BaseModel):
+    table_id: str
+    player_level: int = 1
+    luck_modifier: float = 0.0
+    count: Optional[int] = None
+
+
+@router.get("/loot/stats")
+async def loot_stats():
+    return {"stats": _loot_system.get_stats()}
+
+
+@router.post("/loot/register-table")
+async def loot_register_table(request: DropTableRegisterRequest):
+    from sparkai.engine.loot_system import DropTable, DropEntry, LootCategory, Rarity
+    entries = []
+    for entry in request.entries:
+        try:
+            category = LootCategory(entry.get("category", "material"))
+        except ValueError:
+            category = LootCategory.MATERIAL
+        try:
+            min_r = Rarity(entry.get("min_rarity", "common"))
+            max_r = Rarity(entry.get("max_rarity", "epic"))
+        except ValueError:
+            min_r, max_r = Rarity.COMMON, Rarity.EPIC
+        entries.append(DropEntry(
+            base_item_name=entry.get("base_item_name", ""),
+            category=category,
+            min_rarity=min_r,
+            max_rarity=max_r,
+            weight=entry.get("weight", 1.0),
+            min_quantity=entry.get("min_quantity", 1),
+            max_quantity=entry.get("max_quantity", 1),
+        ))
+    table = DropTable(
+        name=request.name,
+        entries=entries,
+        min_drops=request.min_drops,
+        max_drops=request.max_drops,
+    )
+    tid = _loot_system.register_table(table)
+    return {"success": True, "table_id": tid}
+
+
+@router.post("/loot/generate")
+async def loot_generate(request: LootGenerateRequest):
+    items = _loot_system.generate_loot(
+        table_id=request.table_id,
+        player_level=request.player_level,
+        luck_modifier=request.luck_modifier,
+        count=request.count,
+    )
+    return {"items": [i.to_dict() for i in items], "count": len(items)}
+
+
+@router.get("/loot/rarity-weights")
+async def loot_rarity_weights():
+    return {"weights": _loot_system.get_rarity_weights()}
+
+
+# === Economy System ===
+
+_economy_system = get_economy_system()
+
+
+class WalletCreateRequest(BaseModel):
+    owner_id: str
+    initial_balance: float = 0.0
+
+
+class TradeExecuteRequest(BaseModel):
+    buyer_id: str
+    seller_id: str = "market"
+    item_id: str
+    quantity: int = 1
+    currency: str = "gold"
+
+
+@router.get("/economy/stats")
+async def economy_stats():
+    return {"stats": _economy_system.get_stats()}
+
+
+@router.post("/economy/create-wallet")
+async def economy_create_wallet(request: WalletCreateRequest):
+    wallet = _economy_system.create_wallet(request.owner_id, request.initial_balance)
+    return {"success": True, "balances": {k.value: v for k, v in wallet.balances.items()}}
+
+
+@router.get("/economy/wallet/{owner_id}")
+async def economy_get_wallet(owner_id: str):
+    summary = _economy_system.get_wallet_summary(owner_id)
+    if summary:
+        return summary
+    return {"error": "Wallet not found"}
+
+
+@router.post("/economy/register-item")
+async def economy_register_item(item_id: str, name: str, base_price: float, category: str = ""):
+    from sparkai.engine.economy_system import MarketItem
+    item = MarketItem(item_id=item_id, name=name, base_price=base_price, category=category)
+    _economy_system.register_market_item(item)
+    return {"success": True, "item_id": item_id}
+
+
+@router.post("/economy/trade")
+async def economy_trade(request: TradeExecuteRequest):
+    from sparkai.engine.economy_system import CurrencyType
+    try:
+        currency = CurrencyType(request.currency)
+    except ValueError:
+        currency = CurrencyType.GOLD
+    transaction = _economy_system.execute_trade(
+        buyer_id=request.buyer_id,
+        seller_id=request.seller_id,
+        item_id=request.item_id,
+        quantity=request.quantity,
+        currency=currency,
+    )
+    if transaction:
+        return {"success": True, "total_price": transaction.total_price}
+    return {"success": False, "error": "Trade failed"}
+
+
+@router.get("/economy/market")
+async def economy_market():
+    return _economy_system.get_market_summary()
+
+
+@router.post("/economy/update-market")
+async def economy_update_market(delta_time: float = 1.0):
+    _economy_system.update_market(delta_time)
+    return {"success": True}
+
+
+# === Cutscene System ===
+
+_cutscene_system = get_cutscene_system()
+
+
+class CutsceneActionRequest(BaseModel):
+    action_type: str
+    trigger_time: float = 0.0
+    duration: float = 0.0
+    target_id: str = ""
+    params: Optional[Dict[str, Any]] = None
+
+
+class CutsceneRegisterRequest(BaseModel):
+    name: str
+    description: str = ""
+    is_skippable: bool = True
+    actions: List[Dict[str, Any]] = []
+    initial_transition: Optional[str] = None
+    final_transition: Optional[str] = None
+
+
+@router.get("/cutscene/stats")
+async def cutscene_stats():
+    return {"stats": _cutscene_system.get_stats()}
+
+
+@router.post("/cutscene/register")
+async def cutscene_register(request: CutsceneRegisterRequest):
+    from sparkai.engine.cutscene_system import CutsceneDefinition, CutsceneAction, ActionType, TransitionType
+    actions = []
+    for a in request.actions:
+        try:
+            action_type = ActionType(a["action_type"])
+        except (ValueError, KeyError):
+            continue
+        actions.append(CutsceneAction(
+            action_type=action_type,
+            trigger_time=a.get("trigger_time", 0.0),
+            duration=a.get("duration", 0.0),
+            target_id=a.get("target_id", ""),
+            params=a.get("params", {}),
+        ))
+    init_trans = None
+    final_trans = None
+    if request.initial_transition:
+        try:
+            init_trans = TransitionType(request.initial_transition)
+        except ValueError:
+            pass
+    if request.final_transition:
+        try:
+            final_trans = TransitionType(request.final_transition)
+        except ValueError:
+            pass
+    scene = CutsceneDefinition(
+        name=request.name,
+        description=request.description,
+        is_skippable=request.is_skippable,
+        actions=actions,
+        initial_transition=init_trans,
+        final_transition=final_trans,
+    )
+    sid = _cutscene_system.register_scene(scene)
+    return {"success": True, "scene_id": sid}
+
+
+@router.post("/cutscene/play/{scene_id}")
+async def cutscene_play(scene_id: str):
+    success = _cutscene_system.play(scene_id)
+    return {"success": success}
+
+
+@router.post("/cutscene/skip")
+async def cutscene_skip():
+    return {"skipped": _cutscene_system.skip()}
+
+
+@router.post("/cutscene/pause")
+async def cutscene_pause():
+    _cutscene_system.pause()
+    return {"success": True}
+
+
+@router.post("/cutscene/resume")
+async def cutscene_resume():
+    _cutscene_system.resume()
+    return {"success": True}
+
+
+@router.post("/cutscene/stop")
+async def cutscene_stop():
+    _cutscene_system.stop()
+    return {"success": True}
+
+
+@router.get("/cutscene/state")
+async def cutscene_state():
+    return _cutscene_system.get_current_state()
+
+
+@router.post("/cutscene/update")
+async def cutscene_update(delta_seconds: float = 0.016):
+    return _cutscene_system.update(delta_seconds)
