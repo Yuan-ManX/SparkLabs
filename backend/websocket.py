@@ -2002,6 +2002,238 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "collision_layers_error", "error": str(e)})
 
+                elif msg_type == "camera_shake":
+                    try:
+                        from sparkai.engine.camera_shake import get_camera_shake_system
+                        cs = get_camera_shake_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "camera_shake_stats", "data": cs.get_stats()})
+                        elif sub == "state":
+                            await manager.send_to_client(client_id, {"type": "camera_shake_state", "data": cs.get_state()})
+                        elif sub == "shake":
+                            from sparkai.engine.camera_shake import ShakePreset, ShakeConfig
+                            preset = data.get("preset", "impact")
+                            try:
+                                pe = ShakePreset[preset.upper()]
+                            except KeyError:
+                                pe = ShakePreset.IMPACT
+                            intensity = data.get("intensity", 1.0)
+                            config = ShakeConfig(
+                                amplitude_x=10.0 * intensity,
+                                amplitude_y=10.0 * intensity,
+                                frequency=30.0,
+                                duration=data.get("duration", 0.5),
+                                decay=0.9,
+                            )
+                            cs.shake(preset=pe, config=config)
+                            await manager.send_to_client(client_id, {"type": "camera_shake_triggered", "data": {"preset": preset}})
+                        elif sub == "follow":
+                            cs.set_target(data.get("target_x", 0.0), data.get("target_y", 0.0))
+                            cs.set_follow_speed(data.get("speed", 5.0))
+                            await manager.send_to_client(client_id, {"type": "camera_follow_set", "data": {"success": True}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "camera_shake_error", "error": str(e)})
+
+                elif msg_type == "difficulty_system":
+                    try:
+                        from sparkai.engine.difficulty_system import get_difficulty_system, DifficultyTier
+                        ds = get_difficulty_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "difficulty_stats", "data": ds.get_stats()})
+                        elif sub == "set_tier":
+                            tier_name = data.get("tier", "normal")
+                            try:
+                                tier = DifficultyTier(tier_name.upper())
+                            except ValueError:
+                                tier = DifficultyTier.NORMAL
+                            ds.set_tier(tier)
+                            ds.set_level(data.get("level", 1))
+                            await manager.send_to_client(client_id, {"type": "difficulty_updated", "data": {"tier": tier_name, "level": data.get("level", 1)}})
+                        elif sub == "get_params":
+                            await manager.send_to_client(client_id, {"type": "difficulty_params", "data": ds.get_current_params()})
+                        elif sub == "record_death":
+                            ds.record_death()
+                            await manager.send_to_client(client_id, {"type": "difficulty_event_recorded", "data": {"event": "death"}})
+                        elif sub == "record_complete":
+                            ds.record_level_complete()
+                            await manager.send_to_client(client_id, {"type": "difficulty_event_recorded", "data": {"event": "complete"}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "difficulty_system_error", "error": str(e)})
+
+                elif msg_type == "fog_of_war":
+                    try:
+                        from sparkai.engine.fog_of_war import get_fog_of_war, FogShape
+                        fow = get_fog_of_war()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "fog_of_war_stats", "data": fow.get_stats()})
+                        elif sub == "check_visible":
+                            tile_size = fow._tile_size if hasattr(fow, '_tile_size') else 32.0
+                            tx = int(data.get("x", 0.0) / tile_size)
+                            ty = int(data.get("y", 0.0) / tile_size)
+                            visible = fow.is_visible(tx, ty, data.get("team_id", 0))
+                            await manager.send_to_client(client_id, {"type": "fog_visibility", "data": {"visible": visible}})
+                        elif sub == "exploration":
+                            pct = fow.get_exploration_percentage(data.get("team_id", 0))
+                            await manager.send_to_client(client_id, {"type": "fog_exploration", "data": {"percentage": pct}})
+                        elif sub == "add_vision":
+                            shape_str = data.get("shape", "circle")
+                            try:
+                                shape = FogShape[shape_str.upper()]
+                            except KeyError:
+                                shape = FogShape.CIRCLE
+                            fow.add_vision_source(
+                                source_id=data.get("source_id", ""),
+                                team=data.get("team_id", 0),
+                                x=data.get("x", 0.0), y=data.get("y", 0.0),
+                                radius=data.get("radius", 5.0),
+                                shape=shape,
+                                cone_angle=data.get("cone_angle", 360.0),
+                                cone_direction=data.get("cone_direction", 0.0),
+                            )
+                            await manager.send_to_client(client_id, {"type": "fog_vision_added", "data": {"source_id": data.get("source_id", "")}})
+                        elif sub == "remove_vision":
+                            fow.remove_vision_source(data.get("source_id", ""))
+                            await manager.send_to_client(client_id, {"type": "fog_vision_removed", "data": {"source_id": data.get("source_id", "")}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "fog_of_war_error", "error": str(e)})
+
+                elif msg_type == "game_modes":
+                    try:
+                        from sparkai.engine.game_modes import get_game_mode_system
+                        gm = get_game_mode_system()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "game_modes_stats", "data": gm.get_stats()})
+                        elif sub == "current":
+                            await manager.send_to_client(client_id, {"type": "game_modes_current", "data": {"mode": gm.get_current()}})
+                        elif sub == "stack":
+                            await manager.send_to_client(client_id, {"type": "game_modes_stack", "data": {"stack": gm.get_stack_names(), "count": len(gm.get_mode_stack())}})
+                        elif sub == "push":
+                            success = gm.push(data.get("mode_name", ""), **data.get("params", {}))
+                            await manager.send_to_client(client_id, {"type": "game_modes_pushed", "data": {"success": success, "mode": data.get("mode_name", "")}})
+                        elif sub == "pop":
+                            popped = gm.pop()
+                            await manager.send_to_client(client_id, {"type": "game_modes_popped", "data": {"success": popped is not None, "popped_mode": popped}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "game_modes_error", "error": str(e)})
+
+                elif msg_type == "agent_event_bus":
+                    try:
+                        from sparkai.agent.agent_event_bus import get_agent_event_bus, EventDomain, EventPriority, AgentEvent
+                        eb = get_agent_event_bus()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "event_bus_stats", "data": eb.get_stats()})
+                        elif sub == "emit":
+                            domain_str = data.get("domain", "custom")
+                            try:
+                                domain = EventDomain(domain_str)
+                            except ValueError:
+                                domain = EventDomain.CUSTOM
+                            priority_str = data.get("priority", "normal")
+                            try:
+                                priority = EventPriority[priority_str.upper()]
+                            except KeyError:
+                                priority = EventPriority.NORMAL
+                            event = eb.emit(
+                                domain=domain,
+                                event_type=data.get("name", ""),
+                                data=data.get("data", {}),
+                                source=data.get("source", "ws"),
+                                priority=priority,
+                            )
+                            await manager.send_to_client(client_id, {"type": "event_emitted", "data": {"event_id": event.event_id, "event_name": data.get("name", "")}})
+                        elif sub == "history":
+                            domain_raw = data.get("domain")
+                            domain_filter = None
+                            if domain_raw:
+                                try:
+                                    domain_filter = EventDomain(domain_raw)
+                                except ValueError:
+                                    domain_filter = EventDomain.CUSTOM
+                            history = eb.get_history(limit=data.get("limit", 50), domain=domain_filter)
+                            await manager.send_to_client(client_id, {"type": "event_bus_history", "data": {"history": [e.to_dict() for e in history]}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "event_bus_error", "error": str(e)})
+
+                elif msg_type == "agent_task_queue":
+                    try:
+                        from sparkai.agent.agent_task_queue import get_agent_task_queue, TaskPriority, TaskCategory
+                        tq = get_agent_task_queue()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "task_queue_stats", "data": tq.get_stats()})
+                        elif sub == "list":
+                            tasks = tq.list_tasks(state=data.get("status"))
+                            await manager.send_to_client(client_id, {"type": "task_queue_list", "data": {"tasks": tasks, "count": len(tasks)}})
+                        elif sub == "submit":
+                            priority_str = data.get("priority", "normal")
+                            try:
+                                pri = TaskPriority(priority_str)
+                            except ValueError:
+                                pri = TaskPriority.NORMAL
+                            cat_str = data.get("category", "general")
+                            try:
+                                cat = TaskCategory(cat_str)
+                            except ValueError:
+                                cat = TaskCategory.CUSTOM
+                            task_id = tq.submit(
+                                name=data.get("name", ""),
+                                handler=lambda payload: {"status": "completed", "payload": payload},
+                                priority=pri,
+                                category=cat,
+                                payload=data.get("payload", {}),
+                                dependencies=data.get("dependencies", []),
+                            )
+                            await manager.send_to_client(client_id, {"type": "task_submitted", "data": {"task_id": task_id}})
+                        elif sub == "cancel":
+                            success = tq.cancel(data.get("task_id", ""))
+                            await manager.send_to_client(client_id, {"type": "task_cancelled", "data": {"success": success}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "task_queue_error", "error": str(e)})
+
+                elif msg_type == "code_review":
+                    try:
+                        from sparkai.agent.agent_code_review import get_code_review_engine
+                        cr = get_code_review_engine()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "code_review_stats", "data": cr.get_stats()})
+                        elif sub == "review":
+                            report = cr.review(file_path="<ws>", code=data.get("code", ""))
+                            await manager.send_to_client(client_id, {"type": "code_review_result", "data": report.to_dict()})
+                        elif sub == "batch_review":
+                            files_dict = {f.get("file_path", f"<ws_{i}>"): f.get("code", "") for i, f in enumerate(data.get("files", []))}
+                            report = cr.review_multiple(files_dict)
+                            await manager.send_to_client(client_id, {"type": "code_review_batch", "data": report.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "code_review_error", "error": str(e)})
+
+                elif msg_type == "agent_pipeline":
+                    try:
+                        from sparkai.agent.agent_pipeline import get_agent_pipeline
+                        ap = get_agent_pipeline()
+                        sub = data.get("subtype", "stats")
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "agent_pipeline_stats", "data": ap.get_stats()})
+                        elif sub == "list_runs":
+                            runs = ap.list_runs(limit=data.get("limit", 20))
+                            await manager.send_to_client(client_id, {"type": "agent_pipeline_runs", "data": {"runs": runs}})
+                        elif sub == "execute":
+                            run = await ap.execute(
+                                inputs=data.get("inputs", {}),
+                                definition_name=data.get("definition_name", ""),
+                            )
+                            await manager.send_to_client(client_id, {"type": "agent_pipeline_executing", "data": run.to_dict()})
+                        elif sub == "cancel":
+                            success = ap.cancel_run(data.get("run_id", ""))
+                            await manager.send_to_client(client_id, {"type": "agent_pipeline_cancelled", "data": {"success": success}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "agent_pipeline_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
