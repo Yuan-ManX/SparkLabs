@@ -344,6 +344,14 @@ from sparkai.agent.agent_semantic_memory import SemanticMemory, MemoryVector, Me
 from sparkai.agent.agent_intent_classifier import IntentClassifier, IntentDomain, ClassificationResult, get_intent_classifier
 from sparkai.agent.agent_context_assembler import ContextAssembler, ContextSource, AssembledContext, get_context_assembler
 from sparkai.agent.agent_action_sequencer import ActionSequencer, ExecutionPipeline, OpType, get_action_sequencer
+from sparkai.agent.agent_event_bus import AgentEventBus, EventPriority, EventDomain, get_agent_event_bus
+from sparkai.agent.agent_task_queue import AgentTaskQueue, TaskPriority, TaskState, TaskCategory, get_agent_task_queue
+from sparkai.agent.agent_code_review import CodeReviewEngine, ReviewSeverity, ReviewCategory, ReviewReport, get_code_review_engine
+from sparkai.agent.agent_pipeline import AgentPipeline, StageStatus, PipelineStatus, PipelineRun, get_agent_pipeline
+from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
+from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
+from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
+from sparkai.engine.game_modes import GameModeSystem, BuiltInMode, ModeLayer, get_game_mode_system
 
 
 class RuntimeState(Enum):
@@ -571,6 +579,14 @@ class AgentRuntime:
         self._intent_classifier: Optional[IntentClassifier] = None
         self._context_assembler: Optional[ContextAssembler] = None
         self._action_sequencer: Optional[ActionSequencer] = None
+        self._agent_event_bus: Optional[AgentEventBus] = None
+        self._agent_task_queue: Optional[AgentTaskQueue] = None
+        self._code_review_engine: Optional[CodeReviewEngine] = None
+        self._agent_pipeline_sys: Optional[AgentPipeline] = None
+        self._camera_shake_system: Optional[CameraShakeSystem] = None
+        self._difficulty_system: Optional[DifficultySystem] = None
+        self._fog_of_war: Optional[FogOfWarSystem] = None
+        self._game_mode_system: Optional[GameModeSystem] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -761,6 +777,15 @@ class AgentRuntime:
             self._intent_classifier = get_intent_classifier()
             self._context_assembler = get_context_assembler()
             self._action_sequencer = get_action_sequencer()
+            self._agent_event_bus = get_agent_event_bus()
+            self._agent_task_queue = get_agent_task_queue()
+            self._agent_task_queue.start()
+            self._code_review_engine = get_code_review_engine()
+            self._agent_pipeline_sys = get_agent_pipeline()
+            self._camera_shake_system = get_camera_shake_system()
+            self._difficulty_system = get_difficulty_system()
+            self._fog_of_war = get_fog_of_war()
+            self._game_mode_system = get_game_mode_system()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -910,6 +935,14 @@ class AgentRuntime:
             self._integration.register_subsystem("intent_classifier", self._intent_classifier)
             self._integration.register_subsystem("context_assembler", self._context_assembler)
             self._integration.register_subsystem("action_sequencer", self._action_sequencer)
+            self._integration.register_subsystem("agent_event_bus", self._agent_event_bus)
+            self._integration.register_subsystem("agent_task_queue", self._agent_task_queue)
+            self._integration.register_subsystem("code_review_engine", self._code_review_engine)
+            self._integration.register_subsystem("agent_pipeline_sys", self._agent_pipeline_sys)
+            self._integration.register_subsystem("camera_shake_system", self._camera_shake_system)
+            self._integration.register_subsystem("difficulty_system", self._difficulty_system)
+            self._integration.register_subsystem("fog_of_war", self._fog_of_war)
+            self._integration.register_subsystem("game_mode_system", self._game_mode_system)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -1852,6 +1885,38 @@ class AgentRuntime:
     def action_sequencer(self) -> Optional[ActionSequencer]:
         return self._action_sequencer
 
+    @property
+    def agent_event_bus(self) -> Optional[AgentEventBus]:
+        return self._agent_event_bus
+
+    @property
+    def agent_task_queue(self) -> Optional[AgentTaskQueue]:
+        return self._agent_task_queue
+
+    @property
+    def code_review_engine(self) -> Optional[CodeReviewEngine]:
+        return self._code_review_engine
+
+    @property
+    def agent_pipeline_sys(self) -> Optional[AgentPipeline]:
+        return self._agent_pipeline_sys
+
+    @property
+    def camera_shake_system(self) -> Optional[CameraShakeSystem]:
+        return self._camera_shake_system
+
+    @property
+    def difficulty_system(self) -> Optional[DifficultySystem]:
+        return self._difficulty_system
+
+    @property
+    def fog_of_war(self) -> Optional[FogOfWarSystem]:
+        return self._fog_of_war
+
+    @property
+    def game_mode_system(self) -> Optional[GameModeSystem]:
+        return self._game_mode_system
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -2040,6 +2105,14 @@ class AgentRuntime:
                 "intent_classifier": self._intent_classifier is not None,
                 "context_assembler": self._context_assembler is not None,
                 "action_sequencer": self._action_sequencer is not None,
+                "agent_event_bus": self._agent_event_bus is not None,
+                "agent_task_queue": self._agent_task_queue is not None,
+                "code_review_engine": self._code_review_engine is not None,
+                "agent_pipeline_sys": self._agent_pipeline_sys is not None,
+                "camera_shake_system": self._camera_shake_system is not None,
+                "difficulty_system": self._difficulty_system is not None,
+                "fog_of_war": self._fog_of_war is not None,
+                "game_mode_system": self._game_mode_system is not None,
             },
         }
 
@@ -2361,6 +2434,22 @@ class AgentRuntime:
             status["context_assembler_stats"] = self._context_assembler.get_stats()
         if self._action_sequencer:
             status["action_sequencer_stats"] = self._action_sequencer.get_stats()
+        if self._agent_event_bus:
+            status["agent_event_bus_stats"] = self._agent_event_bus.get_stats()
+        if self._agent_task_queue:
+            status["agent_task_queue_stats"] = self._agent_task_queue.get_stats()
+        if self._code_review_engine:
+            status["code_review_engine_stats"] = self._code_review_engine.get_stats()
+        if self._agent_pipeline_sys:
+            status["agent_pipeline_stats"] = self._agent_pipeline_sys.get_stats()
+        if self._camera_shake_system:
+            status["camera_shake_stats"] = self._camera_shake_system.get_stats()
+        if self._difficulty_system:
+            status["difficulty_system_stats"] = self._difficulty_system.get_stats()
+        if self._fog_of_war:
+            status["fog_of_war_stats"] = self._fog_of_war.get_stats()
+        if self._game_mode_system:
+            status["game_mode_system_stats"] = self._game_mode_system.get_stats()
         return status
 
 
