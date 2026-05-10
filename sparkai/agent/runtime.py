@@ -348,6 +348,10 @@ from sparkai.agent.agent_event_bus import AgentEventBus, EventPriority, EventDom
 from sparkai.agent.agent_task_queue import AgentTaskQueue, TaskPriority, TaskState, TaskCategory, get_agent_task_queue
 from sparkai.agent.agent_code_review import CodeReviewEngine, ReviewSeverity, ReviewCategory, ReviewReport, get_code_review_engine
 from sparkai.agent.agent_pipeline import AgentPipeline, StageStatus, PipelineStatus, PipelineRun, get_agent_pipeline
+from sparkai.agent.agent_consensus import AgentConsensus, ConsensusProtocol, DeliberationPhase, ConsensusResult, get_agent_consensus
+from sparkai.agent.agent_game_analyzer import GameAnalyzer, AnalysisDimension, IssueSeverity, GameAnalysisReport, get_game_analyzer
+from sparkai.agent.agent_adaptive_prompting import AdaptivePrompting, OptimizationStrategy, PromptVariant, get_adaptive_prompting
+from sparkai.agent.agent_entity_extraction import EntityExtractor, EntityType, GameWorldModel, get_entity_extractor
 from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
@@ -583,6 +587,10 @@ class AgentRuntime:
         self._agent_task_queue: Optional[AgentTaskQueue] = None
         self._code_review_engine: Optional[CodeReviewEngine] = None
         self._agent_pipeline_sys: Optional[AgentPipeline] = None
+        self._agent_consensus: Optional[AgentConsensus] = None
+        self._game_analyzer: Optional[GameAnalyzer] = None
+        self._adaptive_prompting: Optional[AdaptivePrompting] = None
+        self._entity_extractor: Optional[EntityExtractor] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
@@ -782,6 +790,10 @@ class AgentRuntime:
             self._agent_task_queue.start()
             self._code_review_engine = get_code_review_engine()
             self._agent_pipeline_sys = get_agent_pipeline()
+            self._agent_consensus = get_agent_consensus()
+            self._game_analyzer = get_game_analyzer()
+            self._adaptive_prompting = get_adaptive_prompting()
+            self._entity_extractor = get_entity_extractor()
             self._camera_shake_system = get_camera_shake_system()
             self._difficulty_system = get_difficulty_system()
             self._fog_of_war = get_fog_of_war()
@@ -943,6 +955,10 @@ class AgentRuntime:
             self._integration.register_subsystem("difficulty_system", self._difficulty_system)
             self._integration.register_subsystem("fog_of_war", self._fog_of_war)
             self._integration.register_subsystem("game_mode_system", self._game_mode_system)
+            self._integration.register_subsystem("agent_consensus", self._agent_consensus)
+            self._integration.register_subsystem("game_analyzer", self._game_analyzer)
+            self._integration.register_subsystem("adaptive_prompting", self._adaptive_prompting)
+            self._integration.register_subsystem("entity_extractor", self._entity_extractor)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -1917,6 +1933,22 @@ class AgentRuntime:
     def game_mode_system(self) -> Optional[GameModeSystem]:
         return self._game_mode_system
 
+    @property
+    def agent_consensus(self) -> Optional[AgentConsensus]:
+        return self._agent_consensus
+
+    @property
+    def game_analyzer(self) -> Optional[GameAnalyzer]:
+        return self._game_analyzer
+
+    @property
+    def adaptive_prompting(self) -> Optional[AdaptivePrompting]:
+        return self._adaptive_prompting
+
+    @property
+    def entity_extractor(self) -> Optional[EntityExtractor]:
+        return self._entity_extractor
+
     # === Runtime Status ===
 
     def get_status(self) -> Dict[str, Any]:
@@ -2450,6 +2482,14 @@ class AgentRuntime:
             status["fog_of_war_stats"] = self._fog_of_war.get_stats()
         if self._game_mode_system:
             status["game_mode_system_stats"] = self._game_mode_system.get_stats()
+        if self._agent_consensus:
+            status["agent_consensus_stats"] = self._agent_consensus.get_stats()
+        if self._game_analyzer:
+            status["game_analyzer_stats"] = self._game_analyzer.get_stats()
+        if self._adaptive_prompting:
+            status["adaptive_prompting_stats"] = self._adaptive_prompting.get_stats()
+        if self._entity_extractor:
+            status["entity_extractor_stats"] = self._entity_extractor.get_stats()
         return status
 
 

@@ -84,6 +84,10 @@ from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMo
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
 from sparkai.engine.game_modes import GameModeSystem, BuiltInMode, ModeLayer, get_game_mode_system
+from sparkai.engine.dialogue_system import DialogueSystem, DialogueTree, DialogueNode, get_dialogue_system
+from sparkai.engine.quest_system import QuestSystem, QuestDefinition, QuestState, get_quest_system
+from sparkai.engine.combat_system import CombatSystem, CombatUnit, CombatState, get_combat_system
+from sparkai.engine.day_night_cycle import DayNightCycle, TimePhase, DayNightConfig, get_day_night_cycle
 
 
 class SparkEngine:
@@ -172,6 +176,10 @@ class SparkEngine:
         self._difficulty_system: DifficultySystem = get_difficulty_system()
         self._fog_of_war: FogOfWarSystem = get_fog_of_war()
         self._game_mode_system: GameModeSystem = get_game_mode_system()
+        self._dialogue_system: DialogueSystem = get_dialogue_system()
+        self._quest_system: QuestSystem = get_quest_system()
+        self._combat_system: CombatSystem = get_combat_system()
+        self._day_night_cycle: DayNightCycle = get_day_night_cycle()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -396,6 +404,10 @@ class SparkEngine:
             "difficulty_system": self._difficulty_system.get_stats(),
             "fog_of_war": self._fog_of_war.get_stats(),
             "game_mode_system": self._game_mode_system.get_stats(),
+            "dialogue_system": self._dialogue_system.get_stats(),
+            "quest_system": self._quest_system.get_stats(),
+            "combat_system": self._combat_system.get_stats(),
+            "day_night_cycle": self._day_night_cycle.get_stats(),
         }
 
     @property
