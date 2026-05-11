@@ -100,6 +100,10 @@ from sparkai.engine.dynamic_music import DynamicMusicSystem, MusicState, MusicLa
 from sparkai.engine.destruction_system import DestructionSystem, DestructionTier, MaterialType, get_destruction_system
 from sparkai.engine.reputation_system import ReputationSystem, ReputationTier, RelationshipType, get_reputation_system
 from sparkai.engine.level_streaming import LevelStreamingSystem, ChunkState, get_level_streaming
+from sparkai.engine.water_system import WaterSystem, WaterBody, get_water_system
+from sparkai.engine.spline_system import SplineSystem, SplineType, SplinePath, get_spline_system
+from sparkai.engine.post_processing import PostProcessingSystem, PostProcessEffect, get_post_processing
+from sparkai.engine.trigger_system import TriggerSystem, TriggerType, TriggerEvent, get_trigger_system
 
 
 class SparkEngine:
@@ -204,6 +208,10 @@ class SparkEngine:
         self._destruction_system: DestructionSystem = get_destruction_system()
         self._reputation_system: ReputationSystem = get_reputation_system()
         self._level_streaming: LevelStreamingSystem = get_level_streaming()
+        self._water_system: WaterSystem = get_water_system()
+        self._spline_system: SplineSystem = get_spline_system()
+        self._post_processing: PostProcessingSystem = get_post_processing()
+        self._trigger_system: TriggerSystem = get_trigger_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -444,6 +452,10 @@ class SparkEngine:
             "destruction_system": self._destruction_system.get_stats(),
             "reputation_system": self._reputation_system.get_stats(),
             "level_streaming": self._level_streaming.get_stats(),
+            "water_system": self._water_system.get_stats(),
+            "spline_system": self._spline_system.get_stats(),
+            "post_processing": self._post_processing.get_stats(),
+            "trigger_system": self._trigger_system.get_stats(),
         }
 
     @property
