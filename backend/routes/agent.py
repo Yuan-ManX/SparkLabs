@@ -12626,6 +12626,24 @@ _documentation_generator = get_documentation_generator()
 _asset_optimizer = get_asset_optimizer()
 _cross_platform_engine = get_cross_platform_engine()
 
+from sparkai.agent.agent_player_analytics import get_player_analytics
+from sparkai.agent.agent_adaptive_difficulty import get_adaptive_difficulty
+from sparkai.agent.agent_content_moderation import get_content_moderation
+from sparkai.agent.agent_game_settings import get_game_settings, SettingsDomain
+from sparkai.engine.water_system import get_water_system
+from sparkai.engine.spline_system import get_spline_system
+from sparkai.engine.post_processing import get_post_processing
+from sparkai.engine.trigger_system import get_trigger_system
+
+_player_analytics = get_player_analytics()
+_adaptive_difficulty = get_adaptive_difficulty()
+_content_moderation = get_content_moderation()
+_game_settings = get_game_settings()
+_water_system = get_water_system()
+_spline_system = get_spline_system()
+_post_processing = get_post_processing()
+_trigger_system = get_trigger_system()
+
 
 class TestCaseDefineRequest(BaseModel):
     name: str
@@ -13547,3 +13565,283 @@ async def streaming_loaded_chunks():
 @router.get("/streaming/progress")
 async def streaming_progress():
     return {"progress": _level_streaming.get_loading_progress()}
+
+
+# === Player Analytics Endpoints ===
+
+@router.get("/player-analytics/stats")
+async def player_analytics_stats():
+    return _player_analytics.get_stats()
+
+@router.post("/player-analytics/classify")
+async def player_analytics_classify(player_id: str = ""):
+    if not player_id:
+        import uuid
+        player_id = f"player_{uuid.uuid4().hex[:8]}"
+    _player_analytics.register_player(player_id)
+    player = _player_analytics.get_player(player_id)
+    archetype = player.archetype.value if player and player.archetype else "unknown"
+    return {"player_id": player_id, "archetype": archetype}
+
+@router.post("/player-analytics/predict-churn")
+async def player_analytics_predict_churn(player_id: str = ""):
+    if not player_id:
+        return {"error": "player_id is required"}
+    return _player_analytics.predict_churn(player_id)
+
+@router.get("/player-analytics/segments")
+async def player_analytics_segments():
+    return _player_analytics.get_cohort_insights()
+
+@router.post("/player-analytics/record-session")
+async def player_analytics_record_session(player_id: str = "", duration_minutes: float = 0.0,
+                                           deaths: int = 0, items_collected: int = 0,
+                                           quests_completed: int = 0, social_interactions: int = 0,
+                                           exploration_coverage: float = 0.0, success_rate: float = 0.0):
+    sid = _player_analytics.record_session(player_id, duration_minutes, deaths,
+                                              items_collected, quests_completed,
+                                              social_interactions, exploration_coverage, success_rate)
+    return {"session_id": sid}
+
+
+# === Adaptive Difficulty Endpoints ===
+
+@router.get("/adaptive-difficulty/stats")
+async def adaptive_difficulty_stats():
+    return _adaptive_difficulty.get_stats()
+
+@router.get("/adaptive-difficulty/current-band")
+async def adaptive_difficulty_current_band():
+    return _adaptive_difficulty.get_current_band()
+
+@router.post("/adaptive-difficulty/report-death")
+async def adaptive_difficulty_report_death(enemy_type: str = "", time_since_last_death: float = 0.0):
+    _adaptive_difficulty.report_player_death(enemy_type, time_since_last_death)
+    return {"band": _adaptive_difficulty.get_current_band()}
+
+@router.post("/adaptive-difficulty/report-success")
+async def adaptive_difficulty_report_success(encounter_type: str = "", completion_time: float = 0.0):
+    _adaptive_difficulty.report_player_success(encounter_type, completion_time)
+    return {"band": _adaptive_difficulty.get_current_band()}
+
+@router.post("/adaptive-difficulty/get-params")
+async def adaptive_difficulty_get_params(domain: str = "combat"):
+    params = _adaptive_difficulty.get_domain_params(domain)
+    return params
+
+@router.get("/adaptive-difficulty/history")
+async def adaptive_difficulty_history():
+    return {"history": _adaptive_difficulty.get_adaptation_history()}
+
+
+# === Content Moderation Endpoints ===
+
+@router.get("/content-moderation/stats")
+async def content_moderation_stats():
+    return _content_moderation.get_stats()
+
+@router.post("/content-moderation/screen")
+async def content_moderation_screen(content: str = "", content_type: str = "text",
+                                     policy_tier: str = "teen"):
+    result = _content_moderation.screen_content(content, content_type, policy_tier)
+    return result
+
+@router.post("/content-moderation/batch-screen")
+async def content_moderation_batch_screen(items: List[str] = None,
+                                           content_type: str = "text",
+                                           policy_tier: str = "teen"):
+    results = _content_moderation.batch_screen(items or [], content_type, policy_tier)
+    return {"results": results}
+
+@router.post("/content-moderation/add-rule")
+async def content_moderation_add_rule(pattern: str = "", severity: str = "medium",
+                                       action: str = "flag", description: str = ""):
+    rule_id = _content_moderation.add_rule(pattern, severity, action, description)
+    return {"rule_id": rule_id}
+
+@router.get("/content-moderation/review-queue")
+async def content_moderation_review_queue():
+    return {"queue": _content_moderation.get_review_queue()}
+
+
+# === Game Settings Endpoints ===
+
+@router.get("/game-settings/stats")
+async def game_settings_stats():
+    return _game_settings.get_stats()
+
+@router.post("/game-settings/generate")
+async def game_settings_generate(name: str = "Default Profile",
+                                  quality_preset: str = "medium",
+                                  platform: str = "desktop",
+                                  target_fps: int = 60):
+    from sparkai.agent.agent_game_settings import QualityPreset
+    try:
+        quality = QualityPreset(quality_preset)
+    except ValueError:
+        quality = QualityPreset.MEDIUM
+    profile = _game_settings.create_profile(name, quality, platform, target_fps)
+    return {"profile_id": profile.profile_id, "settings": profile.settings}
+
+@router.get("/game-settings/domain/{domain}")
+async def game_settings_domain(domain: str, profile_id: str = ""):
+    if not profile_id:
+        return {"error": "profile_id is required"}
+    try:
+        sd = SettingsDomain(domain)
+    except ValueError:
+        return {"error": f"Invalid domain: {domain}", "valid_domains": [d.value for d in SettingsDomain]}
+    return {"settings": _game_settings.get_domain_settings(profile_id, sd)}
+
+@router.post("/game-settings/override")
+async def game_settings_override(profile_id: str = "", key: str = "", value: str = ""):
+    if not profile_id:
+        return {"error": "profile_id is required"}
+    success = _game_settings.update_setting(profile_id, key, value)
+    return {"success": success}
+
+@router.post("/game-settings/detect-conflicts")
+async def game_settings_detect_conflicts(profile_id: str = ""):
+    if not profile_id:
+        return {"error": "profile_id is required"}
+    conflicts = _game_settings.validate_profile(profile_id)
+    return {"conflicts": [c.to_dict() for c in conflicts]}
+
+@router.get("/game-settings/predefined")
+async def game_settings_predefined():
+    profiles = _game_settings.list_profiles()
+    stats = _game_settings.get_stats()
+    return {"profiles": profiles, "stats": stats}
+
+
+# === Water System Endpoints ===
+
+@router.get("/water-system/stats")
+async def water_system_stats():
+    return _water_system.get_stats()
+
+@router.post("/water-system/create-body")
+async def water_system_create_body(body_type: str = "lake", name: str = "",
+                                    position_x: float = 0.0, position_y: float = 0.0,
+                                    position_z: float = 0.0, size_x: float = 100.0,
+                                    size_y: float = 100.0, size_z: float = 10.0):
+    body_id = _water_system.create_water_body(body_type, name,
+                                                (position_x, position_y, position_z),
+                                                (size_x, size_y, size_z))
+    return {"body_id": body_id}
+
+@router.post("/water-system/update-physics")
+async def water_system_update_physics(delta_time: float = 0.016):
+    _water_system.update_physics(delta_time)
+    return {"success": True}
+
+@router.post("/water-system/add-object")
+async def water_system_add_object(object_id: str = "", density: float = 1.0,
+                                   drag: float = 0.5, angular_drag: float = 0.3):
+    _water_system.add_water_object(object_id, density, drag, angular_drag)
+    return {"success": True}
+
+@router.post("/water-system/remove-object")
+async def water_system_remove_object(object_id: str = ""):
+    _water_system.remove_water_object(object_id)
+    return {"success": True}
+
+
+# === Spline System Endpoints ===
+
+@router.get("/spline-system/stats")
+async def spline_system_stats():
+    return _spline_system.get_stats()
+
+@router.post("/spline-system/create-path")
+async def spline_system_create_path(name: str = "", spline_type: str = "bezier",
+                                     closed_loop: bool = False, resolution: int = 100):
+    path_id = _spline_system.create_path(name, spline_type, closed_loop, resolution)
+    return {"path_id": path_id}
+
+@router.post("/spline-system/add-point")
+async def spline_system_add_point(path_id: str = "", x: float = 0.0, y: float = 0.0,
+                                   z: float = 0.0):
+    _spline_system.add_control_point(path_id, (x, y, z))
+    return {"success": True}
+
+@router.get("/spline-system/evaluate/{path_id}")
+async def spline_system_evaluate(path_id: str, t: float = 0.0):
+    point = _spline_system.evaluate_at(path_id, t)
+    return point
+
+@router.get("/spline-system/length/{path_id}")
+async def spline_system_length(path_id: str):
+    return {"length": _spline_system.get_total_length(path_id)}
+
+@router.get("/spline-system/uniform-points/{path_id}")
+async def spline_system_uniform_points(path_id: str, count: int = 10):
+    points = _spline_system.get_uniform_points(path_id, count)
+    return {"points": points}
+
+
+# === Post Processing Endpoints ===
+
+@router.get("/post-processing/stats")
+async def post_processing_stats():
+    return _post_processing.get_stats()
+
+@router.post("/post-processing/create-stack")
+async def post_processing_create_stack(name: str = "", priority: int = 0, layer_mask: int = 0xFFFFFFFF):
+    stack_id = _post_processing.create_stack(name, priority, layer_mask)
+    return {"stack_id": stack_id}
+
+@router.post("/post-processing/add-effect")
+async def post_processing_add_effect(stack_id: str = "", effect: str = "bloom",
+                                      intensity: float = 1.0):
+    _post_processing.add_effect(stack_id, effect, intensity)
+    return {"success": True}
+
+@router.post("/post-processing/enable-effect")
+async def post_processing_enable_effect(stack_id: str = "", effect: str = "bloom"):
+    _post_processing.enable_effect(stack_id, effect)
+    return {"success": True}
+
+@router.post("/post-processing/disable-effect")
+async def post_processing_disable_effect(stack_id: str = "", effect: str = "bloom"):
+    _post_processing.disable_effect(stack_id, effect)
+    return {"success": True}
+
+
+# === Trigger System Endpoints ===
+
+@router.get("/trigger-system/stats")
+async def trigger_system_stats():
+    return _trigger_system.get_stats()
+
+@router.post("/trigger-system/create")
+async def trigger_system_create(name: str = "", trigger_type: str = "enter_zone",
+                                 shape: str = "box", position_x: float = 0.0,
+                                 position_y: float = 0.0, position_z: float = 0.0,
+                                 size_x: float = 10.0, size_y: float = 10.0,
+                                 size_z: float = 10.0, activation: str = "once",
+                                 cooldown: float = 0.0):
+    trigger_id = _trigger_system.create_trigger(name, trigger_type, shape,
+                                                   (position_x, position_y, position_z),
+                                                   (size_x, size_y, size_z), activation, cooldown)
+    return {"trigger_id": trigger_id}
+
+@router.post("/trigger-system/fire")
+async def trigger_system_fire(trigger_id: str = ""):
+    result = _trigger_system.fire_trigger(trigger_id)
+    return {"fired": result}
+
+@router.get("/trigger-system/active")
+async def trigger_system_active():
+    triggers = _trigger_system.get_active_triggers()
+    return {"triggers": triggers}
+
+@router.post("/trigger-system/enable")
+async def trigger_system_enable(trigger_id: str = ""):
+    _trigger_system.enable_trigger(trigger_id)
+    return {"success": True}
+
+@router.post("/trigger-system/disable")
+async def trigger_system_disable(trigger_id: str = ""):
+    _trigger_system.disable_trigger(trigger_id)
+    return {"success": True}
