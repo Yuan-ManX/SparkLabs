@@ -3114,6 +3114,162 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "streaming_error", "error": str(e)})
 
+                elif msg_type == "player_analytics":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_player_analytics import get_player_analytics
+                        pa = get_player_analytics()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "player_analytics_stats", "data": pa.get_stats()})
+                        elif sub == "classify":
+                            archetype = pa.classify_player(
+                                data.get("session_duration", 0), data.get("deaths", 0),
+                                data.get("items_collected", 0), data.get("quests_completed", 0),
+                                data.get("social_actions", 0), data.get("exploration_area", 0),
+                                data.get("retry_count", 0))
+                            await manager.broadcast_agent_event("player_classified", {"archetype": archetype.value if hasattr(archetype, 'value') else str(archetype)})
+                        elif sub == "predict_churn":
+                            risk = pa.predict_churn(
+                                data.get("sessions_count", 0), data.get("avg_session_length", 0),
+                                data.get("days_since_last", 0), data.get("completion_rate", 0),
+                                data.get("frustration_events", 0))
+                            await manager.broadcast_agent_event("churn_predicted", risk)
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "player_analytics_error", "error": str(e)})
+
+                elif msg_type == "adaptive_difficulty":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_adaptive_difficulty import get_adaptive_difficulty
+                        ad = get_adaptive_difficulty()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "adaptive_difficulty_stats", "data": ad.get_stats()})
+                        elif sub == "report_death":
+                            ad.report_player_death(data.get("enemy_type", ""), data.get("time_since_last_death", 0))
+                            await manager.broadcast_agent_event("difficulty_adjusted", ad.get_current_band())
+                        elif sub == "report_success":
+                            ad.report_player_success(data.get("encounter_type", ""), data.get("completion_time", 0))
+                            await manager.broadcast_agent_event("difficulty_adjusted", ad.get_current_band())
+                        elif sub == "get_params":
+                            params = ad.get_domain_params(data.get("domain", "combat"))
+                            await manager.send_to_client(client_id, {"type": "difficulty_params", "data": params})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "adaptive_difficulty_error", "error": str(e)})
+
+                elif msg_type == "content_moderation":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_content_moderation import get_content_moderation
+                        cm = get_content_moderation()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "moderation_stats", "data": cm.get_stats()})
+                        elif sub == "screen":
+                            result = cm.screen_content(data.get("content", ""), data.get("content_type", "text"), data.get("policy_tier", "teen"))
+                            await manager.broadcast_agent_event("content_screened", result)
+                        elif sub == "batch_screen":
+                            results = cm.batch_screen(data.get("items", []), data.get("content_type", "text"), data.get("policy_tier", "teen"))
+                            await manager.broadcast_agent_event("content_batch_screened", {"results": results})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "moderation_error", "error": str(e)})
+
+                elif msg_type == "game_settings":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_game_settings import get_game_settings
+                        gs = get_game_settings()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "game_settings_stats", "data": gs.get_stats()})
+                        elif sub == "generate":
+                            settings = gs.generate_settings(
+                                data.get("target_platform", "desktop_windows"),
+                                data.get("quality_preset", "balanced"),
+                                data.get("target_fps", 60))
+                            await manager.broadcast_agent_event("settings_generated", settings)
+                        elif sub == "detect_conflicts":
+                            conflicts = gs.detect_conflicts()
+                            await manager.send_to_client(client_id, {"type": "settings_conflicts", "data": conflicts})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "game_settings_error", "error": str(e)})
+
+                elif msg_type == "water_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.water_system import get_water_system
+                        ws = get_water_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "water_system_stats", "data": ws.get_stats()})
+                        elif sub == "create_body":
+                            body_id = ws.create_water_body(
+                                data.get("body_type", "lake"), data.get("name", ""),
+                                (data.get("px", 0), data.get("py", 0), data.get("pz", 0)),
+                                (data.get("sx", 100), data.get("sy", 100), data.get("sz", 10)))
+                            await manager.broadcast_engine_status({"water_body_created": body_id})
+                        elif sub == "update_physics":
+                            ws.update_physics(data.get("delta_time", 0.016))
+                            await manager.broadcast_engine_status({"water_physics_updated": True})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "water_system_error", "error": str(e)})
+
+                elif msg_type == "spline_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.spline_system import get_spline_system
+                        ss = get_spline_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "spline_system_stats", "data": ss.get_stats()})
+                        elif sub == "create_path":
+                            path_id = ss.create_path(data.get("name", ""), data.get("spline_type", "bezier"),
+                                                       data.get("closed_loop", False), data.get("resolution", 100))
+                            await manager.broadcast_engine_status({"spline_path_created": path_id})
+                        elif sub == "evaluate":
+                            point = ss.evaluate_at(data.get("path_id", ""), data.get("t", 0))
+                            await manager.send_to_client(client_id, {"type": "spline_point", "data": point})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "spline_system_error", "error": str(e)})
+
+                elif msg_type == "post_processing":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.post_processing import get_post_processing
+                        pp = get_post_processing()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "post_processing_stats", "data": pp.get_stats()})
+                        elif sub == "create_stack":
+                            stack_id = pp.create_stack(data.get("name", ""), data.get("priority", 0), data.get("layer_mask", 0xFFFFFFFF))
+                            await manager.broadcast_engine_status({"post_stack_created": stack_id})
+                        elif sub == "enable_effect":
+                            pp.enable_effect(data.get("stack_id", ""), data.get("effect", "bloom"))
+                            await manager.broadcast_engine_status({"post_effect_enabled": data.get("effect", "bloom")})
+                        elif sub == "disable_effect":
+                            pp.disable_effect(data.get("stack_id", ""), data.get("effect", "bloom"))
+                            await manager.broadcast_engine_status({"post_effect_disabled": data.get("effect", "bloom")})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "post_processing_error", "error": str(e)})
+
+                elif msg_type == "trigger_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.trigger_system import get_trigger_system
+                        ts = get_trigger_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "trigger_system_stats", "data": ts.get_stats()})
+                        elif sub == "create":
+                            trigger_id = ts.create_trigger(
+                                data.get("name", ""), data.get("trigger_type", "enter_zone"),
+                                data.get("shape", "box"),
+                                (data.get("px", 0), data.get("py", 0), data.get("pz", 0)),
+                                (data.get("sx", 10), data.get("sy", 10), data.get("sz", 10)),
+                                data.get("activation", "once"), data.get("cooldown", 0))
+                            await manager.broadcast_engine_status({"trigger_created": trigger_id})
+                        elif sub == "fire":
+                            result = ts.fire_trigger(data.get("trigger_id", ""))
+                            await manager.broadcast_engine_status({"trigger_fired": result})
+                        elif sub == "active":
+                            triggers = ts.get_active_triggers()
+                            await manager.send_to_client(client_id, {"type": "triggers_active", "data": triggers})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "trigger_system_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
