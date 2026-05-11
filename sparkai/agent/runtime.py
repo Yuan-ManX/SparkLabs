@@ -364,6 +364,10 @@ from sparkai.agent.agent_risk_assessment import RiskAssessmentEngine, RiskCatego
 from sparkai.agent.agent_documentation_generator import DocumentationGenerator, DocumentType, ExportFormat, get_documentation_generator
 from sparkai.agent.agent_asset_optimizer import AssetOptimizationEngine, AssetType, QualityPreset, get_asset_optimizer
 from sparkai.agent.agent_cross_platform import CrossPlatformEngine, TargetPlatform, PlatformCapability, get_cross_platform_engine
+from sparkai.agent.agent_player_analytics import PlayerAnalyticsEngine, PlayerArchetype, SessionQuality, get_player_analytics
+from sparkai.agent.agent_adaptive_difficulty import AdaptiveDifficultyEngine, DifficultyBand, FlowZone, get_adaptive_difficulty
+from sparkai.agent.agent_content_moderation import ContentModerationEngine, PolicyTier, ModerationAction, get_content_moderation
+from sparkai.agent.agent_game_settings import GameSettingsEngine, SettingsDomain, QualityPreset, get_game_settings
 from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
@@ -615,6 +619,10 @@ class AgentRuntime:
         self._documentation_generator: Optional[DocumentationGenerator] = None
         self._asset_optimizer: Optional[AssetOptimizationEngine] = None
         self._cross_platform_engine: Optional[CrossPlatformEngine] = None
+        self._player_analytics: Optional[PlayerAnalyticsEngine] = None
+        self._adaptive_difficulty: Optional[AdaptiveDifficultyEngine] = None
+        self._content_moderation: Optional[ContentModerationEngine] = None
+        self._game_settings: Optional[GameSettingsEngine] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
@@ -830,6 +838,10 @@ class AgentRuntime:
             self._documentation_generator = get_documentation_generator()
             self._asset_optimizer = get_asset_optimizer()
             self._cross_platform_engine = get_cross_platform_engine()
+            self._player_analytics = get_player_analytics()
+            self._adaptive_difficulty = get_adaptive_difficulty()
+            self._content_moderation = get_content_moderation()
+            self._game_settings = get_game_settings()
             self._camera_shake_system = get_camera_shake_system()
             self._difficulty_system = get_difficulty_system()
             self._fog_of_war = get_fog_of_war()
@@ -1001,6 +1013,10 @@ class AgentRuntime:
             self._integration.register_subsystem("localization_engine", self._localization_engine)
             self._integration.register_subsystem("tutorial_designer", self._tutorial_designer)
             self._integration.register_subsystem("game_tester", self._game_tester)
+            self._integration.register_subsystem("player_analytics", self._player_analytics)
+            self._integration.register_subsystem("adaptive_difficulty", self._adaptive_difficulty)
+            self._integration.register_subsystem("content_moderation", self._content_moderation)
+            self._integration.register_subsystem("game_settings", self._game_settings)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -2211,6 +2227,10 @@ class AgentRuntime:
                 "difficulty_system": self._difficulty_system is not None,
                 "fog_of_war": self._fog_of_war is not None,
                 "game_mode_system": self._game_mode_system is not None,
+                "player_analytics": self._player_analytics is not None,
+                "adaptive_difficulty": self._adaptive_difficulty is not None,
+                "content_moderation": self._content_moderation is not None,
+                "game_settings": self._game_settings is not None,
             },
         }
 
@@ -2580,6 +2600,14 @@ class AgentRuntime:
             status["asset_optimizer_stats"] = self._asset_optimizer.get_stats()
         if self._cross_platform_engine:
             status["cross_platform_stats"] = self._cross_platform_engine.get_stats()
+        if self._player_analytics:
+            status["player_analytics_stats"] = self._player_analytics.get_stats()
+        if self._adaptive_difficulty:
+            status["adaptive_difficulty_stats"] = self._adaptive_difficulty.get_stats()
+        if self._content_moderation:
+            status["content_moderation_stats"] = self._content_moderation.get_stats()
+        if self._game_settings:
+            status["game_settings_stats"] = self._game_settings.get_stats()
         return status
 
 
