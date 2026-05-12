@@ -104,6 +104,11 @@ from sparkai.engine.water_system import WaterSystem, WaterBody, get_water_system
 from sparkai.engine.spline_system import SplineSystem, SplineType, SplinePath, get_spline_system
 from sparkai.engine.post_processing import PostProcessingSystem, PostProcessEffect, get_post_processing
 from sparkai.engine.trigger_system import TriggerSystem, TriggerType, TriggerEvent, get_trigger_system
+from sparkai.engine.material_system import MaterialSystem, MaterialDomain, MaterialDefinition, get_material_system
+from sparkai.engine.navmesh_system import NavMeshSystem, NavArea, NavMeshQuery, get_navmesh_system
+from sparkai.engine.occlusion_system import OcclusionSystem, OcclusionMethod, OcclusionVolume, get_occlusion_system
+from sparkai.engine.timeline_system import TimelineSystem, TrackType, TimelineDefinition, get_timeline_system
+from sparkai.engine.vfx_system import VFXSystem, VFXType, VFXDefinition, get_vfx_system
 
 
 class SparkEngine:
@@ -212,6 +217,11 @@ class SparkEngine:
         self._spline_system: SplineSystem = get_spline_system()
         self._post_processing: PostProcessingSystem = get_post_processing()
         self._trigger_system: TriggerSystem = get_trigger_system()
+        self._material_system: MaterialSystem = get_material_system()
+        self._navmesh_system: NavMeshSystem = get_navmesh_system()
+        self._occlusion_system: OcclusionSystem = get_occlusion_system()
+        self._timeline_system: TimelineSystem = get_timeline_system()
+        self._vfx_system: VFXSystem = get_vfx_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -456,6 +466,11 @@ class SparkEngine:
             "spline_system": self._spline_system.get_stats(),
             "post_processing": self._post_processing.get_stats(),
             "trigger_system": self._trigger_system.get_stats(),
+            "material_system": self._material_system.get_stats(),
+            "navmesh_system": self._navmesh_system.get_stats(),
+            "occlusion_system": self._occlusion_system.get_stats(),
+            "timeline_system": self._timeline_system.get_stats(),
+            "vfx_system": self._vfx_system.get_stats(),
         }
 
     @property
