@@ -368,6 +368,12 @@ from sparkai.agent.agent_player_analytics import PlayerAnalyticsEngine, PlayerAr
 from sparkai.agent.agent_adaptive_difficulty import AdaptiveDifficultyEngine, DifficultyBand, FlowZone, get_adaptive_difficulty
 from sparkai.agent.agent_content_moderation import ContentModerationEngine, PolicyTier, ModerationAction, get_content_moderation
 from sparkai.agent.agent_game_settings import GameSettingsEngine, SettingsDomain, QualityPreset, get_game_settings
+from sparkai.agent.agent_game_progression import GameProgressionEngine, ProgressionPhase, ProgressionCurve, get_game_progression
+from sparkai.agent.agent_narrative_graph import NarrativeGraphEngine, NarrativeNodeType, NarrativeGraph, get_narrative_graph
+from sparkai.agent.agent_asset_harmonizer import AssetHarmonizer, AssetDescriptor, AssetDimension, get_asset_harmonizer
+from sparkai.agent.agent_agentic_memory import AgenticMemory, MemoryEntry, MemoryTier, get_agentic_memory
+from sparkai.agent.agent_multi_agent_orchestration import MultiAgentOrchestrator, OrchestrationRole, OrchestrationSession, get_multi_agent_orchestrator
+from sparkai.agent.agent_realtime_collaboration import RealtimeCollaborationEngine, CollaborationMode, CollaborationSession, get_realtime_collaboration
 from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
@@ -623,6 +629,12 @@ class AgentRuntime:
         self._adaptive_difficulty: Optional[AdaptiveDifficultyEngine] = None
         self._content_moderation: Optional[ContentModerationEngine] = None
         self._game_settings: Optional[GameSettingsEngine] = None
+        self._game_progression: Optional[GameProgressionEngine] = None
+        self._narrative_graph: Optional[NarrativeGraphEngine] = None
+        self._asset_harmonizer: Optional[AssetHarmonizer] = None
+        self._agentic_memory: Optional[AgenticMemory] = None
+        self._multi_agent_orchestrator: Optional[MultiAgentOrchestrator] = None
+        self._realtime_collaboration: Optional[RealtimeCollaborationEngine] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
@@ -842,6 +854,12 @@ class AgentRuntime:
             self._adaptive_difficulty = get_adaptive_difficulty()
             self._content_moderation = get_content_moderation()
             self._game_settings = get_game_settings()
+            self._game_progression = get_game_progression()
+            self._narrative_graph = get_narrative_graph()
+            self._asset_harmonizer = get_asset_harmonizer()
+            self._agentic_memory = get_agentic_memory()
+            self._multi_agent_orchestrator = get_multi_agent_orchestrator()
+            self._realtime_collaboration = get_realtime_collaboration()
             self._camera_shake_system = get_camera_shake_system()
             self._difficulty_system = get_difficulty_system()
             self._fog_of_war = get_fog_of_war()
@@ -1017,6 +1035,12 @@ class AgentRuntime:
             self._integration.register_subsystem("adaptive_difficulty", self._adaptive_difficulty)
             self._integration.register_subsystem("content_moderation", self._content_moderation)
             self._integration.register_subsystem("game_settings", self._game_settings)
+            self._integration.register_subsystem("game_progression", self._game_progression)
+            self._integration.register_subsystem("narrative_graph", self._narrative_graph)
+            self._integration.register_subsystem("asset_harmonizer", self._asset_harmonizer)
+            self._integration.register_subsystem("agentic_memory", self._agentic_memory)
+            self._integration.register_subsystem("multi_agent_orchestrator", self._multi_agent_orchestrator)
+            self._integration.register_subsystem("realtime_collaboration", self._realtime_collaboration)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -2231,6 +2255,12 @@ class AgentRuntime:
                 "adaptive_difficulty": self._adaptive_difficulty is not None,
                 "content_moderation": self._content_moderation is not None,
                 "game_settings": self._game_settings is not None,
+                "game_progression": self._game_progression is not None,
+                "narrative_graph": self._narrative_graph is not None,
+                "asset_harmonizer": self._asset_harmonizer is not None,
+                "agentic_memory": self._agentic_memory is not None,
+                "multi_agent_orchestrator": self._multi_agent_orchestrator is not None,
+                "realtime_collaboration": self._realtime_collaboration is not None,
             },
         }
 
@@ -2608,6 +2638,18 @@ class AgentRuntime:
             status["content_moderation_stats"] = self._content_moderation.get_stats()
         if self._game_settings:
             status["game_settings_stats"] = self._game_settings.get_stats()
+        if self._game_progression:
+            status["game_progression_stats"] = self._game_progression.get_stats()
+        if self._narrative_graph:
+            status["narrative_graph_stats"] = self._narrative_graph.get_stats()
+        if self._asset_harmonizer:
+            status["asset_harmonizer_stats"] = self._asset_harmonizer.get_stats()
+        if self._agentic_memory:
+            status["agentic_memory_stats"] = self._agentic_memory.get_stats()
+        if self._multi_agent_orchestrator:
+            status["orchestrator_stats"] = self._multi_agent_orchestrator.get_stats()
+        if self._realtime_collaboration:
+            status["collaboration_stats"] = self._realtime_collaboration.get_stats()
         return status
 
 
