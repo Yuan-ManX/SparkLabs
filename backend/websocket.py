@@ -3270,6 +3270,173 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "trigger_system_error", "error": str(e)})
 
+                elif msg_type == "game_progression":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_game_progression import get_game_progression
+                        gp = get_game_progression()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "progression_stats", "data": gp.get_stats()})
+                        elif sub == "create_curve":
+                            curve = gp.create_curve(data.get("name", ""), data.get("curve_type", "wave"), data.get("node_count", 10))
+                            await manager.broadcast_agent_event("curve_created", {"id": curve.id, "name": curve.name})
+                        elif sub == "pacing":
+                            score = gp.calculate_pacing_score(data.get("curve_id", ""))
+                            await manager.send_to_client(client_id, {"type": "pacing_score", "data": {"score": score}})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "progression_error", "error": str(e)})
+
+                elif msg_type == "narrative_graph":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_narrative_graph import get_narrative_graph
+                        ng = get_narrative_graph()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "narrative_stats", "data": ng.get_stats()})
+                        elif sub == "create_graph":
+                            graph = ng.create_graph(data.get("title", ""), {"title": data.get("root_title", "Prologue"), "node_type": "plot_point"})
+                            await manager.broadcast_agent_event("graph_created", {"title": graph.title})
+                        elif sub == "validate":
+                            result = ng.validate_graph(data.get("graph_id", ""))
+                            await manager.send_to_client(client_id, {"type": "graph_validated", "data": result})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "narrative_error", "error": str(e)})
+
+                elif msg_type == "asset_harmonizer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_asset_harmonizer import get_asset_harmonizer
+                        ah = get_asset_harmonizer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "harmonizer_stats", "data": ah.get_stats()})
+                        elif sub == "check":
+                            result = ah.check_compatibility(data.get("asset_a", ""), data.get("asset_b", ""))
+                            await manager.broadcast_agent_event("compatibility_checked", result)
+                        elif sub == "clashes":
+                            clashes = ah.find_clashing_assets()
+                            await manager.send_to_client(client_id, {"type": "asset_clashes", "data": clashes})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "harmonizer_error", "error": str(e)})
+
+                elif msg_type == "agentic_memory":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_agentic_memory import get_agentic_memory
+                        am = get_agentic_memory()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "memory_stats", "data": am.get_stats()})
+                        elif sub == "search":
+                            results = am.search(data.get("query", ""), data.get("limit", 10), data.get("min_score", 0.0))
+                            await manager.send_to_client(client_id, {"type": "memory_search_results", "data": {"count": len(results)}})
+                        elif sub == "store":
+                            entry_id = am.store({"text": data.get("text", "")}, data.get("category", "episodic"), data.get("importance", 0.5), data.get("tags", []))
+                            await manager.broadcast_agent_event("memory_stored", {"entry_id": entry_id})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "memory_error", "error": str(e)})
+
+                elif msg_type == "multi_agent_orchestration":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_multi_agent_orchestration import get_multi_agent_orchestrator
+                        mao = get_multi_agent_orchestrator()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "orchestration_stats", "data": mao.get_stats()})
+                        elif sub == "create_session":
+                            session = mao.create_session(data.get("goal", ""), data.get("consensus_method", "majority_vote"))
+                            await manager.broadcast_agent_event("session_created", {"id": session.id, "goal": session.goal_description})
+                        elif sub == "execute":
+                            results = mao.execute_session(data.get("session_id", ""))
+                            await manager.broadcast_agent_event("session_executed", results)
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "orchestration_error", "error": str(e)})
+
+                elif msg_type == "realtime_collaboration":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_realtime_collaboration import get_realtime_collaboration
+                        rc = get_realtime_collaboration()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "collaboration_stats", "data": rc.get_stats()})
+                        elif sub == "create_session":
+                            session = rc.create_session(data.get("mode", "real_time"))
+                            await manager.broadcast_agent_event("collab_session_created", {"id": session.id, "mode": session.mode.value})
+                        elif sub == "join":
+                            result = rc.join_session(data.get("session_id", ""), data.get("user_id", ""))
+                            await manager.broadcast_agent_event("user_joined", {"joined": result})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "collaboration_error", "error": str(e)})
+
+                elif msg_type == "material_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.material_system import get_material_system
+                        ms = get_material_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "material_stats", "data": ms.get_stats()})
+                        elif sub == "create_material":
+                            mat_id = ms.create_material(data.get("name", ""), data.get("domain", "surface"), data.get("blend_mode", "opaque"))
+                            await manager.broadcast_engine_status({"material_created": mat_id})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "material_error", "error": str(e)})
+
+                elif msg_type == "navmesh_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.navmesh_system import get_navmesh_system
+                        ns = get_navmesh_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "navmesh_stats", "data": ns.get_stats()})
+                        elif sub == "build":
+                            ns.build_navmesh(data.get("width", 100), data.get("height", 100), data.get("tile_size", 10))
+                            await manager.broadcast_engine_status({"navmesh_built": True})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "navmesh_error", "error": str(e)})
+
+                elif msg_type == "occlusion_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.occlusion_system import get_occlusion_system
+                        os_eng = get_occlusion_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "occlusion_stats", "data": os_eng.get_stats()})
+                        elif sub == "culling_pass":
+                            os_eng.perform_culling_pass((data.get("cx", 0), data.get("cy", 0), data.get("cz", 0)), data.get("radius", 500))
+                            await manager.broadcast_engine_status({"culling_completed": True})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "occlusion_error", "error": str(e)})
+
+                elif msg_type == "timeline_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.timeline_system import get_timeline_system
+                        ts_eng = get_timeline_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "timeline_stats", "data": ts_eng.get_stats()})
+                        elif sub == "create":
+                            tl = ts_eng.create_timeline(data.get("name", ""), data.get("duration", 10.0))
+                            await manager.broadcast_engine_status({"timeline_created": tl.id})
+                        elif sub == "play":
+                            ts_eng.play(data.get("timeline_id", ""))
+                            await manager.broadcast_engine_status({"timeline_playing": data.get("timeline_id", "")})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "timeline_error", "error": str(e)})
+
+                elif msg_type == "vfx_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.vfx_system import get_vfx_system
+                        vs = get_vfx_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "vfx_stats", "data": vs.get_stats()})
+                        elif sub == "create":
+                            effect = vs.create_effect(data.get("name", ""), data.get("vfx_type", "particle_burst"), data.get("shape", "point"), data.get("max_particles", 100))
+                            await manager.broadcast_engine_status({"vfx_created": effect.id})
+                        elif sub == "play":
+                            vs.play_effect(data.get("effect_id", ""))
+                            await manager.broadcast_engine_status({"vfx_playing": data.get("effect_id", "")})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "vfx_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
