@@ -12644,6 +12644,30 @@ _spline_system = get_spline_system()
 _post_processing = get_post_processing()
 _trigger_system = get_trigger_system()
 
+from sparkai.agent.agent_game_progression import get_game_progression
+from sparkai.agent.agent_narrative_graph import get_narrative_graph
+from sparkai.agent.agent_asset_harmonizer import get_asset_harmonizer
+from sparkai.agent.agent_agentic_memory import get_agentic_memory
+from sparkai.agent.agent_multi_agent_orchestration import get_multi_agent_orchestrator
+from sparkai.agent.agent_realtime_collaboration import get_realtime_collaboration
+from sparkai.engine.material_system import get_material_system
+from sparkai.engine.navmesh_system import get_navmesh_system
+from sparkai.engine.occlusion_system import get_occlusion_system
+from sparkai.engine.timeline_system import get_timeline_system
+from sparkai.engine.vfx_system import get_vfx_system
+
+_game_progression = get_game_progression()
+_narrative_graph = get_narrative_graph()
+_asset_harmonizer = get_asset_harmonizer()
+_agentic_memory = get_agentic_memory()
+_multi_agent_orchestrator = get_multi_agent_orchestrator()
+_realtime_collaboration = get_realtime_collaboration()
+_material_system = get_material_system()
+_navmesh_system = get_navmesh_system()
+_occlusion_system = get_occlusion_system()
+_timeline_system = get_timeline_system()
+_vfx_system = get_vfx_system()
+
 
 class TestCaseDefineRequest(BaseModel):
     name: str
@@ -13845,3 +13869,264 @@ async def trigger_system_enable(trigger_id: str = ""):
 async def trigger_system_disable(trigger_id: str = ""):
     _trigger_system.disable_trigger(trigger_id)
     return {"success": True}
+
+
+# === Game Progression Endpoints ===
+
+@router.get("/progression/stats")
+async def progression_stats():
+    return _game_progression.get_stats()
+
+@router.post("/progression/create-curve")
+async def progression_create_curve(name: str = "", curve_type: str = "wave", node_count: int = 10):
+    curve = _game_progression.create_curve(name, curve_type, node_count)
+    return curve.__dict__ if hasattr(curve, '__dict__') else str(curve)
+
+@router.post("/progression/add-node")
+async def progression_add_node(curve_id: str = "", phase: str = "early", level: float = 1.0,
+                                 multiplier: float = 1.0, reward_type: str = "xp",
+                                 reward_amount: float = 100.0, minutes: float = 30.0):
+    node_id = _game_progression.add_node(curve_id, phase, level, multiplier, reward_type, reward_amount, minutes)
+    return {"node_id": node_id}
+
+@router.get("/progression/pacing/{curve_id}")
+async def progression_pacing(curve_id: str):
+    score = _game_progression.calculate_pacing_score(curve_id)
+    return {"curve_id": curve_id, "pacing_score": score}
+
+
+# === Narrative Graph Endpoints ===
+
+@router.get("/narrative/stats")
+async def narrative_stats():
+    return _narrative_graph.get_stats()
+
+@router.post("/narrative/create-graph")
+async def narrative_create_graph(title: str = "", root_title: str = ""):
+    graph = _narrative_graph.create_graph(title, {"title": root_title, "node_type": "plot_point"})
+    return graph.__dict__ if hasattr(graph, '__dict__') else str(graph)
+
+@router.post("/narrative/add-node")
+async def narrative_add_node(graph_id: str = "", node_type: str = "dialogue",
+                               title: str = "", description: str = ""):
+    node = _narrative_graph.add_node(graph_id, node_type, title, description)
+    return {"node": str(node)}
+
+@router.post("/narrative/add-edge")
+async def narrative_add_edge(graph_id: str = "", from_node: str = "", to_node: str = ""):
+    result = _narrative_graph.add_edge(graph_id, from_node, to_node)
+    return {"added": result}
+
+@router.get("/narrative/validate/{graph_id}")
+async def narrative_validate(graph_id: str):
+    return _narrative_graph.validate_graph(graph_id)
+
+
+# === Asset Harmonizer Endpoints ===
+
+@router.get("/harmonizer/stats")
+async def harmonizer_stats():
+    return _asset_harmonizer.get_stats()
+
+@router.post("/harmonizer/register")
+async def harmonizer_register(name: str = "", asset_type: str = "", category: str = "",
+                                visual_style: str = "stylized_cartoon"):
+    descriptor = _asset_harmonizer.register_asset(name, asset_type, category, {"visual_style": visual_style})
+    return {"id": descriptor.id, "name": descriptor.name}
+
+@router.post("/harmonizer/check")
+async def harmonizer_check(asset_a: str = "", asset_b: str = ""):
+    result = _asset_harmonizer.check_compatibility(asset_a, asset_b)
+    return result
+
+@router.get("/harmonizer/clashes")
+async def harmonizer_clashes():
+    return {"clashes": _asset_harmonizer.find_clashing_assets()}
+
+
+# === Agentic Memory Endpoints ===
+
+@router.get("/memory/stats")
+async def memory_stats():
+    return _agentic_memory.get_stats()
+
+@router.post("/memory/store")
+async def memory_store(text: str = "", category: str = "episodic", importance: float = 0.5):
+    entry_id = _agentic_memory.store({"text": text}, category, importance, ["general"])
+    return {"entry_id": entry_id}
+
+@router.get("/memory/retrieve/{entry_id}")
+async def memory_retrieve(entry_id: str):
+    return _agentic_memory.retrieve(entry_id)
+
+@router.post("/memory/search")
+async def memory_search(query: str = "", limit: int = 10, min_score: float = 0.0):
+    results = _agentic_memory.search(query, limit, min_score)
+    return {"results": results}
+
+@router.post("/memory/consolidate")
+async def memory_consolidate(from_tier: str = "working", to_tier: str = "short_term", threshold: float = 0.6):
+    count = _agentic_memory.consolidate(from_tier, to_tier, threshold)
+    return {"consolidated": count}
+
+
+# === Multi-Agent Orchestration Endpoints ===
+
+@router.get("/orchestration/stats")
+async def orchestration_stats():
+    return _multi_agent_orchestrator.get_stats()
+
+@router.post("/orchestration/create-session")
+async def orchestration_create_session(goal: str = "", consensus_method: str = "majority_vote"):
+    session = _multi_agent_orchestrator.create_session(goal, consensus_method)
+    return session.__dict__ if hasattr(session, '__dict__') else str(session)
+
+@router.post("/orchestration/add-task")
+async def orchestration_add_task(session_id: str = "", description: str = "",
+                                   role: str = "generator", priority: int = 1):
+    task_id = _multi_agent_orchestrator.add_task(session_id, description, role, priority, [])
+    return {"task_id": task_id}
+
+@router.post("/orchestration/execute")
+async def orchestration_execute(session_id: str = ""):
+    _multi_agent_orchestrator.assign_tasks(session_id)
+    results = _multi_agent_orchestrator.execute_session(session_id)
+    return results
+
+@router.get("/orchestration/progress/{session_id}")
+async def orchestration_progress(session_id: str):
+    return _multi_agent_orchestrator.get_session_progress(session_id)
+
+
+# === Realtime Collaboration Endpoints ===
+
+@router.get("/collaboration/stats")
+async def collaboration_stats():
+    return _realtime_collaboration.get_stats()
+
+@router.post("/collaboration/create-session")
+async def collaboration_create_session(mode: str = "real_time"):
+    session = _realtime_collaboration.create_session(mode)
+    return session.__dict__ if hasattr(session, '__dict__') else str(session)
+
+@router.post("/collaboration/join")
+async def collaboration_join(session_id: str = "", user_id: str = ""):
+    result = _realtime_collaboration.join_session(session_id, user_id)
+    return {"joined": result}
+
+@router.post("/collaboration/leave")
+async def collaboration_leave(session_id: str = "", user_id: str = ""):
+    result = _realtime_collaboration.leave_session(session_id, user_id)
+    return {"left": result}
+
+@router.get("/collaboration/sessions")
+async def collaboration_sessions():
+    return {"sessions": _realtime_collaboration.get_active_sessions()}
+
+
+# === Material System Endpoints ===
+
+@router.get("/material/stats")
+async def material_stats():
+    return _material_system.get_stats()
+
+@router.post("/material/create")
+async def material_create(name: str = "", domain: str = "surface", blend_mode: str = "opaque"):
+    mat_id = _material_system.create_material(name, domain, blend_mode)
+    return {"material_id": mat_id}
+
+@router.post("/material/set-property")
+async def material_set_property(material_id: str = "", prop_name: str = "",
+                                  value: str = ""):
+    _material_system.set_property(material_id, prop_name, value)
+    return {"success": True}
+
+
+# === Navmesh System Endpoints ===
+
+@router.get("/navmesh/stats")
+async def navmesh_stats():
+    return _navmesh_system.get_stats()
+
+@router.post("/navmesh/find-path")
+async def navmesh_find_path(start_x: float = 0.0, start_y: float = 0.0,
+                               end_x: float = 0.0, end_y: float = 0.0):
+    query = _navmesh_system.find_path(start_x, start_y, end_x, end_y, 0.5, 2.0, 45.0)
+    return query.__dict__ if hasattr(query, '__dict__') else str(query)
+
+
+# === Occlusion System Endpoints ===
+
+@router.get("/occlusion/stats")
+async def occlusion_stats():
+    return _occlusion_system.get_stats()
+
+@router.post("/occlusion/create-volume")
+async def occlusion_create_volume(name: str = "", volume_type: str = "box",
+                                    px: float = 0.0, py: float = 0.0, pz: float = 0.0,
+                                    sx: float = 10.0, sy: float = 10.0, sz: float = 10.0):
+    vol = _occlusion_system.create_volume(name, volume_type, px, py, pz, sx, sy, sz)
+    return vol.__dict__ if hasattr(vol, '__dict__') else str(vol)
+
+@router.get("/occlusion/visible")
+async def occlusion_visible():
+    return {"visible": _occlusion_system.get_visible_objects()}
+
+
+# === Timeline System Endpoints ===
+
+@router.get("/timeline/stats")
+async def timeline_stats():
+    return _timeline_system.get_stats()
+
+@router.post("/timeline/create")
+async def timeline_create(name: str = "", duration_seconds: float = 10.0):
+    tl = _timeline_system.create_timeline(name, duration_seconds)
+    return tl.__dict__ if hasattr(tl, '__dict__') else str(tl)
+
+@router.post("/timeline/add-track")
+async def timeline_add_track(timeline_id: str = "", name: str = "", track_type: str = "animation"):
+    track = _timeline_system.add_track(timeline_id, name, track_type)
+    return track.__dict__ if hasattr(track, '__dict__') else str(track)
+
+@router.post("/timeline/add-keyframe")
+async def timeline_add_keyframe(track_id: str = "", time: float = 0.0, value: str = ""):
+    kf = _timeline_system.add_keyframe(track_id, time, value)
+    return kf.__dict__ if hasattr(kf, '__dict__') else str(kf)
+
+@router.post("/timeline/play/{timeline_id}")
+async def timeline_play(timeline_id: str):
+    result = _timeline_system.play(timeline_id)
+    return {"playing": result}
+
+@router.post("/timeline/pause/{timeline_id}")
+async def timeline_pause(timeline_id: str):
+    result = _timeline_system.pause(timeline_id)
+    return {"paused": result}
+
+
+# === VFX System Endpoints ===
+
+@router.get("/vfx/stats")
+async def vfx_stats():
+    return _vfx_system.get_stats()
+
+@router.post("/vfx/create")
+async def vfx_create(name: str = "", vfx_type: str = "particle_burst",
+                       emission_shape: str = "point", max_particles: int = 100):
+    effect = _vfx_system.create_effect(name, vfx_type, emission_shape, max_particles)
+    return effect.__dict__ if hasattr(effect, '__dict__') else str(effect)
+
+@router.post("/vfx/play/{effect_id}")
+async def vfx_play(effect_id: str):
+    _vfx_system.play_effect(effect_id)
+    return {"playing": True}
+
+@router.post("/vfx/stop/{effect_id}")
+async def vfx_stop(effect_id: str):
+    _vfx_system.stop_effect(effect_id)
+    return {"stopped": True}
+
+@router.get("/vfx/active")
+async def vfx_active():
+    return {"effects": _vfx_system.get_active_effects()}
