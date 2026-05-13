@@ -109,6 +109,12 @@ from sparkai.engine.navmesh_system import NavMeshSystem, NavArea, NavMeshQuery, 
 from sparkai.engine.occlusion_system import OcclusionSystem, OcclusionMethod, OcclusionVolume, get_occlusion_system
 from sparkai.engine.timeline_system import TimelineSystem, TrackType, TimelineDefinition, get_timeline_system
 from sparkai.engine.vfx_system import VFXSystem, VFXType, VFXDefinition, get_vfx_system
+from sparkai.engine.expression_evaluator import ExpressionEvaluator, ExpressionType, ExpressionNode, get_expression_evaluator
+from sparkai.engine.scene_variant_system import SceneVariantSystem, VariantType, SceneVariant, get_scene_variant_system
+from sparkai.engine.hot_reload_system import HotReloadSystem, ReloadTargetType, ReloadEvent, get_hot_reload_system
+from sparkai.engine.physics_joints_system import PhysicsJointsSystem, JointType, JointConfig, get_physics_joints_system
+from sparkai.engine.gpu_particle_system import GPUParticleSystem, EmitterShape, GPUParticleConfig, get_gpu_particle_system
+from sparkai.engine.input_gesture_system import InputGestureSystem, GestureType, GestureEvent, get_input_gesture_system
 
 
 class SparkEngine:
@@ -222,6 +228,12 @@ class SparkEngine:
         self._occlusion_system: OcclusionSystem = get_occlusion_system()
         self._timeline_system: TimelineSystem = get_timeline_system()
         self._vfx_system: VFXSystem = get_vfx_system()
+        self._expression_evaluator: ExpressionEvaluator = get_expression_evaluator()
+        self._scene_variant_system: SceneVariantSystem = get_scene_variant_system()
+        self._hot_reload_system: HotReloadSystem = get_hot_reload_system()
+        self._physics_joints_system: PhysicsJointsSystem = get_physics_joints_system()
+        self._gpu_particle_system: GPUParticleSystem = get_gpu_particle_system()
+        self._input_gesture_system: InputGestureSystem = get_input_gesture_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -471,6 +483,12 @@ class SparkEngine:
             "occlusion_system": self._occlusion_system.get_stats(),
             "timeline_system": self._timeline_system.get_stats(),
             "vfx_system": self._vfx_system.get_stats(),
+            "expression_evaluator": self._expression_evaluator.get_stats(),
+            "scene_variant_system": self._scene_variant_system.get_stats(),
+            "hot_reload_system": self._hot_reload_system.get_stats(),
+            "physics_joints_system": self._physics_joints_system.get_stats(),
+            "gpu_particle_system": self._gpu_particle_system.get_stats(),
+            "input_gesture_system": self._input_gesture_system.get_stats(),
         }
 
     @property

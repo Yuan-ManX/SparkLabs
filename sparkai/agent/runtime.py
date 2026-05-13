@@ -374,6 +374,13 @@ from sparkai.agent.agent_asset_harmonizer import AssetHarmonizer, AssetDescripto
 from sparkai.agent.agent_agentic_memory import AgenticMemory, MemoryEntry, MemoryTier, get_agentic_memory
 from sparkai.agent.agent_multi_agent_orchestration import MultiAgentOrchestrator, OrchestrationRole, OrchestrationSession, get_multi_agent_orchestrator
 from sparkai.agent.agent_realtime_collaboration import RealtimeCollaborationEngine, CollaborationMode, CollaborationSession, get_realtime_collaboration
+from sparkai.agent.agent_goal_planner import GoalPlannerEngine, GoalCategory, GoalPlan, get_goal_planner
+from sparkai.agent.agent_behavior_designer import BehaviorDesigner, BehaviorPattern, BehaviorProfile, get_behavior_designer
+from sparkai.agent.agent_game_vision import GameVisionEngine, VisionTaskType, VisionFinding, get_game_vision
+from sparkai.agent.agent_procedural_design import ProceduralDesignEngine, GenerationAlgorithm, ProceduralParams, get_procedural_design
+from sparkai.agent.agent_learning_cycle import LearningCycleEngine, CyclePhase, LearningDomain, get_learning_cycle
+from sparkai.agent.agent_context_sync import ContextSyncEngine, SyncDirection, SyncDelta, get_context_sync
+from sparkai.agent.agent_quality_chain import QualityChainEngine, QualityStage, GateStatus, get_quality_chain
 from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
@@ -635,6 +642,13 @@ class AgentRuntime:
         self._agentic_memory: Optional[AgenticMemory] = None
         self._multi_agent_orchestrator: Optional[MultiAgentOrchestrator] = None
         self._realtime_collaboration: Optional[RealtimeCollaborationEngine] = None
+        self._goal_planner: Optional[GoalPlannerEngine] = None
+        self._behavior_designer: Optional[BehaviorDesigner] = None
+        self._game_vision: Optional[GameVisionEngine] = None
+        self._procedural_design: Optional[ProceduralDesignEngine] = None
+        self._learning_cycle: Optional[LearningCycleEngine] = None
+        self._context_sync: Optional[ContextSyncEngine] = None
+        self._quality_chain: Optional[QualityChainEngine] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
@@ -854,12 +868,19 @@ class AgentRuntime:
             self._adaptive_difficulty = get_adaptive_difficulty()
             self._content_moderation = get_content_moderation()
             self._game_settings = get_game_settings()
+            self._game_vision = get_game_vision()
+            self._procedural_design = get_procedural_design()
+            self._learning_cycle = get_learning_cycle()
+            self._context_sync = get_context_sync()
+            self._quality_chain = get_quality_chain()
             self._game_progression = get_game_progression()
             self._narrative_graph = get_narrative_graph()
             self._asset_harmonizer = get_asset_harmonizer()
             self._agentic_memory = get_agentic_memory()
             self._multi_agent_orchestrator = get_multi_agent_orchestrator()
             self._realtime_collaboration = get_realtime_collaboration()
+            self._goal_planner = get_goal_planner()
+            self._behavior_designer = get_behavior_designer()
             self._camera_shake_system = get_camera_shake_system()
             self._difficulty_system = get_difficulty_system()
             self._fog_of_war = get_fog_of_war()
@@ -1041,6 +1062,13 @@ class AgentRuntime:
             self._integration.register_subsystem("agentic_memory", self._agentic_memory)
             self._integration.register_subsystem("multi_agent_orchestrator", self._multi_agent_orchestrator)
             self._integration.register_subsystem("realtime_collaboration", self._realtime_collaboration)
+            self._integration.register_subsystem("goal_planner", self._goal_planner)
+            self._integration.register_subsystem("behavior_designer", self._behavior_designer)
+            self._integration.register_subsystem("game_vision", self._game_vision)
+            self._integration.register_subsystem("procedural_design", self._procedural_design)
+            self._integration.register_subsystem("learning_cycle", self._learning_cycle)
+            self._integration.register_subsystem("context_sync", self._context_sync)
+            self._integration.register_subsystem("quality_chain", self._quality_chain)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -2261,6 +2289,13 @@ class AgentRuntime:
                 "agentic_memory": self._agentic_memory is not None,
                 "multi_agent_orchestrator": self._multi_agent_orchestrator is not None,
                 "realtime_collaboration": self._realtime_collaboration is not None,
+                "goal_planner": self._goal_planner is not None,
+                "behavior_designer": self._behavior_designer is not None,
+                "game_vision": self._game_vision is not None,
+                "procedural_design": self._procedural_design is not None,
+                "learning_cycle": self._learning_cycle is not None,
+                "context_sync": self._context_sync is not None,
+                "quality_chain": self._quality_chain is not None,
             },
         }
 
@@ -2650,6 +2685,20 @@ class AgentRuntime:
             status["orchestrator_stats"] = self._multi_agent_orchestrator.get_stats()
         if self._realtime_collaboration:
             status["collaboration_stats"] = self._realtime_collaboration.get_stats()
+        if self._goal_planner:
+            status["goal_planner_stats"] = self._goal_planner.get_stats()
+        if self._behavior_designer:
+            status["behavior_designer_stats"] = self._behavior_designer.get_stats()
+        if self._game_vision:
+            status["game_vision_stats"] = self._game_vision.get_stats()
+        if self._procedural_design:
+            status["procedural_design_stats"] = self._procedural_design.get_stats()
+        if self._learning_cycle:
+            status["learning_cycle_stats"] = self._learning_cycle.get_stats()
+        if self._context_sync:
+            status["context_sync_stats"] = self._context_sync.get_stats()
+        if self._quality_chain:
+            status["quality_chain_stats"] = self._quality_chain.get_stats()
         return status
 
 
