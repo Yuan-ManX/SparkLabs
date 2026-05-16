@@ -86,7 +86,7 @@ from sparkai.agent.agent_cron_scheduler import CronScheduler, ScheduleType, JobS
 from sparkai.agent.agent_expression_evaluator import ExpressionEvaluator, ExpressionError, get_expression_evaluator
 from sparkai.agent.agent_class_registry import ClassRegistry, DataType, TypeDescriptor, get_class_registry
 from sparkai.agent.agent_multi_modal import MultiModalAgent, AnalysisDomain, get_multi_modal_agent
-from sparkai.agent.agent_import_pipeline import ImportPipeline, AssetCategory as ImportAssetCategory, ImportStatus, get_import_pipeline
+from sparkai.agent.agent_import_pipeline import ImportPipelineEngine, AssetImportType, CompressionPreset, ImportPreset, ImportTask, get_import_pipeline
 from sparkai.engine.rendering_server import RenderingServer, get_rendering_server
 from sparkai.engine.input_event_system import InputEventSystem, get_input_event_system
 from sparkai.engine.game_object import GameObject, GameObjectRegistry, create_game_object, get_game_object_registry
@@ -2964,19 +2964,6 @@ from sparkai.agent.agent_validation_hooks import ValidationHooksSystem, HookPhas
 _lifecycle_manager = AgentLifecycleManager()
 _slash_command_system = SlashCommandSystem()
 _validation_hooks = ValidationHooksSystem()
-
-# R13: New Agent system singletons
-from sparkai.agent.agent_game_vision import GameVisionEngine
-from sparkai.agent.agent_procedural_design import ProceduralDesignEngine
-from sparkai.agent.agent_learning_cycle import LearningCycleEngine
-from sparkai.agent.agent_context_sync import ContextSyncEngine
-from sparkai.agent.agent_quality_chain import QualityChainEngine
-
-_game_vision = GameVisionEngine.get_instance()
-_procedural_design = ProceduralDesignEngine.get_instance()
-_learning_cycle = LearningCycleEngine.get_instance()
-_context_sync = ContextSyncEngine.get_instance()
-_quality_chain = QualityChainEngine.get_instance()
 
 
 class BlueprintCreateRequest(BaseModel):
@@ -9971,7 +9958,7 @@ async def simulation_delete_scenario(scenario_id: str):
 
 # === Goal Decomposer ===
 
-from sparkai.agent.agent_goal_decomposer import GoalDecomposer, GoalTree, GoalLevel, GoalStatus, get_goal_decomposer
+from sparkai.agent.agent_goal_decomposer import GoalDecomposer, GoalTree, GoalLevel, ChecklistStatus, get_goal_decomposer
 
 _goal_decomposer = get_goal_decomposer()
 
@@ -10029,9 +10016,9 @@ async def goal_decomposer_ready_nodes(tree_id: str, limit: int = 10):
 @router.post("/goal-decomposer/tree/{tree_id}/node/{node_id}/status")
 async def goal_decomposer_update_status(tree_id: str, node_id: str, status: str = "completed"):
     try:
-        st = GoalStatus(status)
+        st = ChecklistStatus(status)
     except ValueError:
-        st = GoalStatus.COMPLETED
+        st = ChecklistStatus.COMPLETED
     node = _goal_decomposer.update_node_status(tree_id, node_id, st)
     if node:
         return node.to_dict()
@@ -12681,17 +12668,31 @@ _occlusion_system = get_occlusion_system()
 _timeline_system = get_timeline_system()
 _vfx_system = get_vfx_system()
 
-from sparkai.agent.agent_lifecycle import AgentLifecycleManager
-from sparkai.agent.agent_slash_commands import SlashCommandSystem
-from sparkai.agent.agent_validation_hooks import ValidationHooksSystem
-from sparkai.agent.agent_task_executor import TaskExecutionEngine
-from sparkai.agent.agent_integration import SubsystemIntegration
+from sparkai.agent.agent_goal_decomposer import get_goal_decomposer
+from sparkai.agent.agent_skill_autonomy import get_skill_autonomy
+from sparkai.agent.agent_expression_validator import get_expression_validator
+from sparkai.agent.agent_variable_introspection import get_variable_introspection
+from sparkai.agent.agent_theme_designer import get_theme_designer
+from sparkai.agent.agent_import_pipeline import get_import_pipeline
+from sparkai.agent.agent_performance_advisor import get_performance_advisor
+from sparkai.engine.profiler_system import get_profiler_system as get_profiler_sys
+from sparkai.engine.expression_engine import get_expression_engine
+from sparkai.engine.extension_runtime import get_extension_runtime
+from sparkai.engine.terrain_system import get_terrain_system
+from sparkai.engine.fog_of_war import get_fog_of_war
 
-_lifecycle_manager = AgentLifecycleManager()
-_slash_command_system = SlashCommandSystem()
-_validation_hooks = ValidationHooksSystem()
-_task_executor = TaskExecutionEngine()
-_integration = SubsystemIntegration()
+_goal_decomposer = get_goal_decomposer()
+_skill_autonomy = get_skill_autonomy()
+_expression_validator = get_expression_validator()
+_variable_introspection = get_variable_introspection()
+_theme_designer = get_theme_designer()
+_import_pipeline = get_import_pipeline()
+_performance_advisor = get_performance_advisor()
+_profiler_sys = get_profiler_sys()
+_expression_engine = get_expression_engine()
+_extension_runtime = get_extension_runtime()
+_terrain_system = get_terrain_system()
+_fog_of_war = get_fog_of_war()
 
 
 class TestCaseDefineRequest(BaseModel):
@@ -14156,376 +14157,247 @@ async def vfx_stop(effect_id: str):
 async def vfx_active():
     return {"effects": _vfx_system.get_active_effects()}
 
+# === Goal Decomposer Endpoints ===
 
-# === Lifecycle Manager Endpoints ===
+@router.get("/goal/stats")
+async def goal_decomposer_stats():
+    return _goal_decomposer.get_stats()
 
-@router.get("/lifecycle/stats")
-async def lifecycle_stats():
-    return _lifecycle_manager.get_stats()
+@router.post("/goal/decompose")
+async def goal_decomposer_decompose(goal: str = ""):
+    result = _goal_decomposer.decompose(goal)
+    return result.__dict__ if hasattr(result, '__dict__') else str(result)
 
-@router.get("/lifecycle/phases")
-async def lifecycle_phases():
-    return {"phases": _lifecycle_manager.get_lifecycle_phases()}
+@router.get("/goal/progress/{decomposition_id}")
+async def goal_decomposer_progress(decomposition_id: str):
+    return _goal_decomposer.get_progress(decomposition_id)
 
-@router.post("/lifecycle/transition")
-async def lifecycle_transition(target_phase: str = ""):
-    result = _lifecycle_manager.transition_to(target_phase)
-    return {"transitioned": result, "current_phase": str(_lifecycle_manager.current_phase)}
-
-
-# === Slash Commands Endpoints ===
-
-@router.get("/slash-commands/stats")
-async def slash_commands_stats():
-    return _slash_command_system.get_stats()
-
-@router.get("/slash-commands/list")
-async def slash_commands_list():
-    return {"commands": _slash_command_system.get_commands()}
-
-@router.post("/slash-commands/execute")
-async def slash_commands_execute(command: str = "", args: str = ""):
-    result = _slash_command_system.execute(command, args)
-    return result
+@router.get("/goal/blocking/{decomposition_id}")
+async def goal_decomposer_blocking(decomposition_id: str):
+    return {"chain": _goal_decomposer.get_blocking_chain(decomposition_id)}
 
 
-# === Validation Hooks Endpoints ===
+# === Skill Autonomy Endpoints ===
 
-@router.get("/validation/stats")
-async def validation_hooks_stats():
-    return _validation_hooks.get_stats()
+@router.get("/skill/stats")
+async def skill_autonomy_stats():
+    return _skill_autonomy.get_stats()
 
-@router.post("/validation/run")
-async def validation_hooks_run(target: str = "", check_type: str = "all"):
-    results = _validation_hooks.run_checks(target, check_type)
+@router.get("/skill/search")
+async def skill_search(query: str = ""):
+    results = _skill_autonomy.search_skills(query)
     return {"results": results}
 
-@router.get("/validation/hooks")
-async def validation_hooks_list():
-    return {"hooks": _validation_hooks.list_hooks()}
-
-
-# === Task Executor Endpoints ===
-
-@router.get("/task-executor/stats")
-async def task_executor_stats():
-    return _task_executor.get_stats()
-
-@router.post("/task-executor/submit")
-async def task_executor_submit(task_type: str = "", payload: str = "", priority: int = 1):
-    task_id = _task_executor.submit_task(task_type, payload, priority)
-    return {"task_id": task_id}
-
-@router.get("/task-executor/queue")
-async def task_executor_queue():
-    return {"queue": _task_executor.get_queue()}
-
-@router.get("/task-executor/status/{task_id}")
-async def task_executor_status(task_id: str):
-    return _task_executor.get_task_status(task_id)
-
-
-# === Subsystem Integration Endpoints ===
-
-@router.get("/integration/stats")
-async def integration_stats():
-    return _integration.get_stats()
-
-@router.get("/integration/status")
-async def integration_status():
-    return {"status": _integration.get_status()}
-
-@router.post("/integration/connect")
-async def integration_connect(subsystem_a: str = "", subsystem_b: str = ""):
-    result = _integration.connect_subsystems(subsystem_a, subsystem_b)
-    return {"connected": result}
-
-@router.get("/integration/graph")
-async def integration_graph():
-    return {"graph": _integration.get_connection_graph()}
-
-
-# === Game Vision Endpoints ===
-
-@router.get("/game-vision/stats")
-async def game_vision_stats():
-    return _game_vision.get_stats()
-
-@router.post("/game-vision/analyze")
-async def game_vision_analyze(image_description: str = "", task_types: str = ""):
-    types = [t.strip() for t in task_types.split(",")] if task_types else None
-    from sparkai.agent.agent_game_vision import VisionTaskType
-    parsed_types = None
-    if types:
-        parsed_types = []
-        for t in types:
-            try:
-                parsed_types.append(VisionTaskType(t))
-            except ValueError:
-                pass
-    result = _game_vision.analyze_screenshot(image_description, parsed_types)
-    return {
-        "analysis_id": result.analysis_id,
-        "findings": [{"title": f.title, "severity": f.severity.value, "description": f.description, "suggested_fix": f.suggested_fix} for f in result.findings],
-        "ui_elements": [{"type": e.element_type.value, "label": e.label} for e in result.ui_elements],
-        "color_palette": result.color_palette,
-        "composition_score": result.composition_score,
-        "accessibility_score": result.accessibility_score,
-        "duration_ms": result.duration_ms,
-    }
-
-@router.get("/game-vision/findings")
-async def game_vision_findings(severity: str = "", limit: int = 50):
-    from sparkai.agent.agent_game_vision import VisionSeverity
-    parsed = None
-    if severity:
-        try:
-            parsed = VisionSeverity(severity)
-        except ValueError:
-            pass
-    findings = _game_vision.get_findings(parsed, limit)
-    return {"findings": [{"finding_id": f.finding_id, "title": f.title, "severity": f.severity.value, "description": f.description} for f in findings]}
-
-@router.post("/game-vision/template")
-async def game_vision_register_template(name: str = "", elements: str = ""):
+@router.post("/skill/extract")
+async def skill_extract(session_turns: str = ""):
     import json
-    from sparkai.agent.agent_game_vision import UIElement, UIElementType
-    elems = []
-    try:
-        data = json.loads(elements)
-        for d in data:
-            elems.append(UIElement(element_type=UIElementType(d.get("type", "button")), label=d.get("label", "")))
-    except (json.JSONDecodeError, ValueError):
-        pass
-    _game_vision.register_ui_template(name, elems)
-    return {"registered": True, "template_name": name}
+    turns = json.loads(session_turns) if session_turns else []
+    skill = _skill_autonomy.extract_skill_from_session(turns)
+    return {"skill_id": skill.id, "name": skill.name}
 
-@router.get("/game-vision/compare")
-async def game_vision_compare(template: str = "", description: str = ""):
-    result = _game_vision.compare_against_template(template, description)
-    return {"analysis_id": result.analysis_id, "findings": [{"title": f.title, "severity": f.severity.value, "description": f.description} for f in result.findings]}
-
-
-# === Procedural Design Endpoints ===
-
-@router.get("/procedural-design/stats")
-async def procedural_design_stats():
-    return _procedural_design.get_stats()
-
-@router.post("/procedural-design/create")
-async def procedural_design_create(algorithm: str = "", category: str = "", seed: int = 0, resolution: str = "64x64", overrides: str = "{}"):
+@router.post("/skill/apply")
+async def skill_apply(skill_id: str = "", parameters: str = "{}"):
     import json
-    from sparkai.agent.agent_procedural_design import GenerationAlgorithm, GeneratorCategory
-    try:
-        alg = GenerationAlgorithm(algorithm) if algorithm else GenerationAlgorithm.PERLIN_NOISE
-    except ValueError:
-        alg = GenerationAlgorithm.PERLIN_NOISE
-    try:
-        cat = GeneratorCategory(category) if category else GeneratorCategory.TERRAIN
-    except ValueError:
-        cat = GeneratorCategory.TERRAIN
-    try:
-        ov = json.loads(overrides)
-    except json.JSONDecodeError:
-        ov = {}
-    params = _procedural_design.create_generator(alg, cat, ov, seed if seed else None)
-    return {"params_id": params.params_id, "algorithm": params.algorithm.value, "category": params.category.value, "seed": params.seed}
-
-@router.post("/procedural-design/generate")
-async def procedural_design_generate(params_id: str = ""):
-    result = _procedural_design.generate(params_id)
-    return {"generation_id": result.generation_id, "output_description": result.output_description, "quality_score": result.quality_score, "generation_time_ms": result.generation_time_ms, "memory_usage_mb": result.memory_usage_mb}
-
-@router.post("/procedural-design/mutate")
-async def procedural_design_mutate(params_id: str = "", mutation_strength: float = 0.1):
-    mutated = _procedural_design.mutate_params(params_id, mutation_strength)
-    return {"params_id": mutated.params_id, "algorithm": mutated.algorithm.value, "seed": mutated.seed}
-
-@router.get("/procedural-design/presets/{category}")
-async def procedural_design_presets(category: str):
-    from sparkai.agent.agent_procedural_design import GeneratorCategory
-    try:
-        cat = GeneratorCategory(category)
-    except ValueError:
-        return {"presets": []}
-    presets = _procedural_design.get_presets_for_category(cat)
-    return {"presets": [{"params_id": p.params_id, "algorithm": p.algorithm.value, "seed": p.seed, "resolution": p.resolution} for p in presets]}
-
-@router.get("/procedural-design/compare")
-async def procedural_design_compare(result_a: str = "", result_b: str = ""):
-    diff = _procedural_design.compare_results(result_a, result_b)
-    return diff
+    params = json.loads(parameters)
+    step = _skill_autonomy.apply_skill(skill_id, params)
+    return step.__dict__ if hasattr(step, '__dict__') else str(step)
 
 
-# === Learning Cycle Endpoints ===
+# === Expression Validator Endpoints ===
 
-@router.get("/learning-cycle/stats")
-async def learning_cycle_stats():
-    return _learning_cycle.get_stats()
+@router.get("/expression/stats")
+async def expression_validator_stats():
+    return _expression_validator.get_stats()
 
-@router.post("/learning-cycle/start")
-async def learning_cycle_start(domain: str = "", task_description: str = ""):
-    from sparkai.agent.agent_learning_cycle import LearningDomain
-    try:
-        d = LearningDomain(domain) if domain else LearningDomain.CODE_GENERATION
-    except ValueError:
-        d = LearningDomain.CODE_GENERATION
-    cycle = _learning_cycle.start_cycle(d, task_description)
-    return {"cycle_id": cycle.cycle_id, "domain": cycle.domain.value, "phase": cycle.phase.value}
+@router.post("/expression/validate")
+async def expression_validate(code: str = ""):
+    result = _expression_validator.validate(code)
+    return {"has_errors": result.has_errors if hasattr(result, 'has_errors') else False}
 
-@router.post("/learning-cycle/phase")
-async def learning_cycle_phase(cycle_id: str = "", phase: str = "", details: str = ""):
-    from sparkai.agent.agent_learning_cycle import CyclePhase
-    try:
-        p = CyclePhase(phase) if phase else CyclePhase.EXECUTION
-    except ValueError:
-        p = CyclePhase.EXECUTION
-    _learning_cycle.record_phase(cycle_id, p, details)
-    return {"cycle_id": cycle_id, "phase": phase, "recorded": True}
+@router.get("/expression/functions")
+async def expression_functions():
+    return {"functions": _expression_validator.get_available_functions()}
 
-@router.post("/learning-cycle/complete")
-async def learning_cycle_complete(cycle_id: str = "", success: bool = True, quality: float = 0.0, lessons: str = ""):
+
+# === Variable Introspection Endpoints ===
+
+@router.get("/variables/stats")
+async def variable_introspection_stats():
+    return _variable_introspection.get_stats()
+
+@router.post("/variables/register")
+async def variables_register(name: str = "", scope: str = "scene", kind: str = "number",
+                               default_value: str = "", description: str = ""):
+    var = _variable_introspection.register_variable(name, scope, kind, default_value, description)
+    return var.__dict__ if hasattr(var, '__dict__') else str(var)
+
+@router.post("/variables/set")
+async def variables_set(definition_id: str = "", value: str = "", actor: str = "system"):
+    instance = _variable_introspection.set_value(definition_id, value, actor)
+    return instance.__dict__ if hasattr(instance, '__dict__') else str(instance)
+
+@router.get("/variables/context/{scope}")
+async def variables_context(scope: str = "global"):
+    return {"context": _variable_introspection.get_ai_context(scope)}
+
+
+# === Theme Designer Endpoints ===
+
+@router.get("/theme/stats")
+async def theme_designer_stats():
+    return _theme_designer.get_stats()
+
+@router.post("/theme/generate")
+async def theme_generate(description: str = "", mood: str = "dark"):
+    theme = _theme_designer.generate_theme(description, mood)
+    return theme.__dict__ if hasattr(theme, '__dict__') else str(theme)
+
+@router.post("/theme/export-css/{theme_id}")
+async def theme_export_css(theme_id: str):
+    return {"css": _theme_designer.export_css_variables(theme_id)}
+
+
+# === Import Pipeline Endpoints ===
+
+@router.get("/import/stats")
+async def import_pipeline_stats():
+    return _import_pipeline.get_stats()
+
+@router.post("/import/recommend")
+async def import_recommend(source_path: str = "", description: str = ""):
+    preset = _import_pipeline.ai_recommend_preset(source_path, description)
+    return preset.__dict__ if hasattr(preset, '__dict__') else str(preset)
+
+@router.post("/import/queue")
+async def import_queue(source_path: str = "", import_type: str = "texture", preset_id: str = ""):
+    task = _import_pipeline.queue_import(source_path, import_type, preset_id)
+    return {"task_id": task.id, "status": task.status if hasattr(task, 'status') else "queued"}
+
+@router.post("/import/batch")
+async def import_batch(paths: str = "", description: str = ""):
     import json
-    try:
-        lesson_list = json.loads(lessons) if lessons else []
-    except json.JSONDecodeError:
-        lesson_list = [lessons] if lessons else []
-    cycle = _learning_cycle.complete_cycle(cycle_id, success, quality, lesson_list)
-    return {"cycle_id": cycle.cycle_id, "completed": cycle.completed, "domain": cycle.domain.value}
-
-@router.get("/learning-cycle/skill/{domain}")
-async def learning_cycle_skill(domain: str):
-    from sparkai.agent.agent_learning_cycle import LearningDomain
-    try:
-        d = LearningDomain(domain)
-    except ValueError:
-        return {"error": "Invalid domain"}
-    skill = _learning_cycle.evaluate_skill_level(d)
-    return {"domain": skill.domain.value, "level": skill.current_level.value, "experience_count": skill.experience_count, "success_rate": skill.success_rate, "average_quality": skill.average_quality}
-
-@router.get("/learning-cycle/nudge")
-async def learning_cycle_nudge():
-    return {"nudge": _learning_cycle.generate_improvement_nudge()}
-
-@router.get("/learning-cycle/insights/{domain}")
-async def learning_cycle_insights(domain: str, min_experiences: int = 5):
-    from sparkai.agent.agent_learning_cycle import LearningDomain
-    try:
-        d = LearningDomain(domain)
-    except ValueError:
-        return {"insights": []}
-    return {"insights": _learning_cycle.extract_insights(d, min_experiences)}
+    path_list = json.loads(paths) if paths else []
+    tasks = _import_pipeline.process_batch(path_list, description)
+    return {"task_count": len(tasks)}
 
 
-# === Context Sync Endpoints ===
+# === Performance Advisor Endpoints ===
 
-@router.get("/context-sync/stats")
-async def context_sync_stats():
-    return _context_sync.get_stats()
+@router.get("/perf/stats")
+async def perf_advisor_stats():
+    return _performance_advisor.get_stats()
 
-@router.post("/context-sync/register")
-async def context_sync_register(scope: str = "", data: str = "{}"):
+@router.post("/perf/record")
+async def perf_record(domain: str = "rendering", metrics: str = "{}"):
     import json
-    try:
-        d = json.loads(data)
-    except json.JSONDecodeError:
-        d = {}
-    state = _context_sync.register_state(scope, d)
-    return {"scope": scope, "version": state.version}
+    m = json.loads(metrics)
+    snapshot = _performance_advisor.record_snapshot(domain, m)
+    return snapshot.__dict__ if hasattr(snapshot, '__dict__') else str(snapshot)
 
-@router.post("/context-sync/push")
-async def context_sync_push(scope: str = "", direction: str = "agent_to_engine", key_path: str = "", value: str = ""):
+@router.get("/perf/bottlenecks")
+async def perf_bottlenecks():
+    suggestions = _performance_advisor.analyze_bottlenecks()
+    return {"suggestions": suggestions}
+
+@router.post("/perf/diagnose")
+async def perf_diagnose(snapshot_id: str = "", query: str = ""):
+    suggestions = _performance_advisor.ai_diagnose(snapshot_id, query)
+    return {"suggestions": suggestions}
+
+
+# === Profiler System Endpoints ===
+
+@router.get("/profiler/stats")
+async def profiler_sys_stats():
+    return _profiler_sys.get_stats()
+
+@router.post("/profiler/add-monitor")
+async def profiler_add_monitor(name: str = "", category: str = "rendering",
+                                  monitor_type: str = "counter", unit: str = "ms"):
+    monitor = _profiler_sys.add_monitor(name, category, monitor_type, unit)
+    return monitor.__dict__ if hasattr(monitor, '__dict__') else str(monitor)
+
+@router.post("/profiler/record-frame")
+async def profiler_record_frame():
+    frame = _profiler_sys.record_frame()
+    return frame.__dict__ if hasattr(frame, '__dict__') else str(frame)
+
+@router.get("/profiler/frame-summary")
+async def profiler_frame_summary():
+    return _profiler_sys.get_frame_summary()
+
+
+# === Expression Engine Endpoints ===
+
+@router.get("/expr-engine/stats")
+async def expr_engine_stats():
+    return _expression_engine.get_stats()
+
+@router.post("/expr-engine/compile")
+async def expr_compile(expression: str = ""):
+    ok = _expression_engine.compile(expression)
+    return {"compiled": ok}
+
+@router.post("/expr-engine/execute")
+async def expr_execute(expression: str = "", context_json: str = "{}"):
     import json
-    from sparkai.agent.agent_context_sync import SyncDirection, SyncPriority
-    try:
-        v = json.loads(value)
-    except json.JSONDecodeError:
-        v = value
-    dir_map = {"agent_to_engine": SyncDirection.AGENT_TO_ENGINE, "engine_to_agent": SyncDirection.ENGINE_TO_AGENT}
-    sync_dir = dir_map.get(direction, SyncDirection.AGENT_TO_ENGINE)
-    if sync_dir == SyncDirection.AGENT_TO_ENGINE:
-        delta = _context_sync.push_agent_update(scope, key_path, v)
-    else:
-        delta = _context_sync.push_engine_update(scope, key_path, v)
-    return {"delta_id": delta.delta_id, "scope": scope, "conflict": delta.conflict}
-
-@router.post("/context-sync/sync")
-async def context_sync_sync_now(scope: str = ""):
-    deltas = _context_sync.sync_now(scope)
-    return {"scope": scope, "synced_deltas": len(deltas)}
-
-@router.get("/context-sync/conflicts/{scope}")
-async def context_sync_conflicts(scope: str):
-    conflicts = _context_sync.detect_conflicts(scope)
-    return {"scope": scope, "conflicts": [{"delta_id": c.delta_id, "key_path": list(c.changes.keys())[0] if c.changes else "", "priority": c.priority.value} for c in conflicts]}
-
-@router.post("/context-sync/checkpoint")
-async def context_sync_checkpoint(scope: str = "", label: str = ""):
-    cp = _context_sync.create_checkpoint(scope, label)
-    return {"checkpoint_id": cp.checkpoint_id, "scope": scope, "version": cp.version}
-
-@router.post("/context-sync/verify")
-async def context_sync_verify(scope: str = ""):
-    result = _context_sync.verify_consistency(scope)
-    return result
+    ctx = _expression_engine._ExpressionEngine__build_context()
+    ctx.variables = json.loads(context_json)
+    result = _expression_engine.execute(expression, ctx)
+    return result.__dict__ if hasattr(result, '__dict__') else str(result)
 
 
-# === Quality Chain Endpoints ===
+# === Extension Runtime Endpoints ===
 
-@router.get("/quality-chain/stats")
-async def quality_chain_stats():
-    return _quality_chain.get_stats()
+@router.get("/extension/stats")
+async def extension_stats():
+    return _extension_runtime.get_stats()
 
-@router.post("/quality-chain/pipeline")
-async def quality_chain_create_pipeline(name: str = "", stages: str = ""):
-    from sparkai.agent.agent_quality_chain import QualityStage
-    stage_list = []
-    if stages:
-        for s in stages.split(","):
-            try:
-                stage_list.append(QualityStage(s.strip()))
-            except ValueError:
-                pass
-    if not stage_list:
-        stage_list = [QualityStage.SYNTAX_CHECK, QualityStage.LINT_CHECK, QualityStage.UNIT_TEST]
-    run = _quality_chain.create_pipeline(name, stage_list)
-    return {"run_id": run.run_id, "name": run.name, "stages": [s.value for s in run.stages]}
+@router.get("/extension/loaded")
+async def extension_loaded():
+    return {"extensions": _extension_runtime.get_loaded_extensions()}
 
-@router.post("/quality-chain/execute-stage")
-async def quality_chain_execute_stage(run_id: str = "", stage: str = "", subject_data: str = "{}"):
-    import json
-    from sparkai.agent.agent_quality_chain import QualityStage
-    try:
-        s = QualityStage(stage)
-    except ValueError:
-        s = QualityStage.SYNTAX_CHECK
-    try:
-        sd = json.loads(subject_data)
-    except json.JSONDecodeError:
-        sd = {}
-    result = _quality_chain.execute_stage(run_id, s, sd)
-    return {"result_id": result.result_id, "status": result.status.value, "score": result.score, "issues": result.issues, "duration_ms": result.duration_ms}
+@router.post("/extension/load")
+async def extension_load(name: str = "", version: str = "1.0.0", author: str = "",
+                           description: str = "", category: str = "", entry: str = ""):
+    from sparkai.engine.extension_runtime import ExtensionManifest
+    manifest = ExtensionManifest(name=name, version=version, author=author,
+                                   description=description, category=category,
+                                   entry_point=entry)
+    ext = _extension_runtime.load_extension(manifest)
+    return {"extension_id": ext.id, "status": ext.status.value}
 
-@router.post("/quality-chain/execute-all")
-async def quality_chain_execute_all(run_id: str = "", subject_data: str = "{}"):
-    import json
-    try:
-        sd = json.loads(subject_data)
-    except json.JSONDecodeError:
-        sd = {}
-    run = _quality_chain.execute_full_pipeline(run_id, sd)
-    return {"run_id": run.run_id, "overall_score": run.overall_score, "status": run.status.value, "result_count": len(run.results)}
 
-@router.get("/quality-chain/regression")
-async def quality_chain_regression(run_a: str = "", run_b: str = ""):
-    regressions = _quality_chain.detect_regressions(run_a, run_b)
-    return {"regressions": regressions}
+# === Terrain System Endpoints ===
 
-@router.get("/quality-chain/trend/{dimension}")
-async def quality_chain_trend(dimension: str, window: int = 10):
-    from sparkai.agent.agent_quality_chain import QualityDimension
-    try:
-        d = QualityDimension(dimension)
-    except ValueError:
-        return {"trend": []}
-    return {"dimension": dimension, "trend": _quality_chain.get_trend(d, window)}
+@router.get("/terrain/stats")
+async def terrain_stats():
+    return _terrain_system.get_stats()
+
+@router.post("/terrain/create")
+async def terrain_create(width: int = 256, depth: int = 256, resolution: int = 1, seed: int = 42):
+    terrain_id = _terrain_system.create_terrain(width, depth, resolution, seed)
+    return {"terrain_id": terrain_id}
+
+@router.post("/terrain/smooth")
+async def terrain_smooth(chunk_id: str = "", radius: float = 3.0):
+    ok = _terrain_system.smooth_terrain(chunk_id, radius)
+    return {"smoothed": ok}
+
+
+# === Fog of War Endpoints ===
+
+@router.get("/fog/stats")
+async def fog_stats():
+    return _fog_of_war.get_stats()
+
+@router.post("/fog/create-layer")
+async def fog_create_layer(name: str = "", width: int = 64, height: int = 64, cell_size: float = 1.0):
+    layer = _fog_of_war.create_layer(name, width, height, cell_size)
+    return layer.__dict__ if hasattr(layer, '__dict__') else str(layer)
+
+@router.post("/fog/reveal")
+async def fog_reveal(layer_id: str = "", center_x: float = 0.0, center_y: float = 0.0,
+                      radius: float = 5.0, revealer_id: str = "player"):
+    count = _fog_of_war.reveal_area(layer_id, center_x, center_y, radius, revealer_id)
+    return {"cells_revealed": count}
