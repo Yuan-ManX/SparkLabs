@@ -1,117 +1,206 @@
 """
 SparkLabs Engine - Terrain System
 
-2D procedural terrain generation and management for game worlds.
-Provides heightmap-based terrain, auto-tiling, biome blending,
-and terrain editing tools. The AI agent uses this system to
-generate diverse game worlds algorithmically.
+Grid-based terrain editing and generation system for game worlds.
+Provides heightmap manipulation, brush-based sculpting, layer painting,
+and procedural terrain generation with LOD chunking.
 
 Architecture:
   TerrainSystem
-    |-- HeightmapGenerator (noise-based elevation)
-    |-- BiomeMapper (temperature/moisture → terrain type)
-    |-- AutoTiler (rule-based tileset mapping)
-    |-- TerrainChunk (region with LOD support)
-    |-- TerrainBrush (editing tools: raise, lower, smooth, flatten)
+    |-- TerrainChunk (subdivided terrain regions with LOD)
+    |-- TerrainBrush (sculpting and painting tools)
+    |-- Heightmap Generator (noise-based procedural generation)
+    |-- Layer Painter (multi-layer terrain material blending)
+    |-- Smooth Operator (Gaussian and average-based smoothing)
 
-Generation Algorithms:
-  - PERLIN: classic gradient noise
-  - SIMPLEX: improved gradient noise  
-  - VORONOI: cell-based biome distribution
-  - DIAMOND_SQUARE: fractal heightmap
+Terrain Layers:
+  - SOLID: base ground layer
+  - SAND: desert and beach areas
+  - GRASS: vegetation-covered terrain
+  - ROCK: exposed stone and cliffs
+  - SNOW: high-altitude frozen terrain
+  - MUD: wetland and swamp areas
+  - WATER_SURFACE: shallow water covering
+  - LAVA: volcanic terrain
 """
 
 from __future__ import annotations
 
 import math
 import random
+import time
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Set, Tuple
+
+
+class TerrainLayer(Enum):
+    SOLID = "solid"
+    SAND = "sand"
+    GRASS = "grass"
+    ROCK = "rock"
+    SNOW = "snow"
+    MUD = "mud"
+    WATER_SURFACE = "water_surface"
+    LAVA = "lava"
+
+
+class BrushShape(Enum):
+    CIRCLE = "circle"
+    SQUARE = "square"
+    DIAMOND = "diamond"
+    NOISE = "noise"
+    CUSTOM = "custom"
 
 
 class TerrainType(Enum):
-    WATER = "water"
-    SAND = "sand"
-    GRASS = "grass"
-    DIRT = "dirt"
-    STONE = "stone"
-    SNOW = "snow"
-    FOREST = "forest"
-    SWAMP = "swamp"
-    LAVA = "lava"
+    FLATLANDS = "flatlands"
+    HILLS = "hills"
+    MOUNTAINS = "mountains"
+    CANYON = "canyon"
+    ISLAND = "island"
+    PLATEAU = "plateau"
+    VALLEY = "valley"
+    ARCHIPELAGO = "archipelago"
+    VOLCANIC = "volcanic"
 
 
 class NoiseAlgorithm(Enum):
     PERLIN = "perlin"
     SIMPLEX = "simplex"
-    VALUE = "value"
-    DIAMOND_SQUARE = "diamond_square"
+    WORLEY = "worley"
+    RIDGED = "ridged"
+    BILLOW = "billow"
+    FBM = "fbm"
+    DOMAIN_WARP = "domain_warp"
 
 
-@dataclass
-class TerrainCell:
-    x: int
-    y: int
-    height: float = 0.0
-    terrain_type: TerrainType = TerrainType.GRASS
-    moisture: float = 0.5
-    temperature: float = 0.5
-    flags: int = 0
-
-    def to_dict(self) -> dict:
-        return {
-            "x": self.x,
-            "y": self.y,
-            "height": round(self.height, 3),
-            "terrain": self.terrain_type.value,
-        }
+LAYER_COLORS: Dict[TerrainLayer, Tuple[int, int, int]] = {
+    TerrainLayer.SOLID: (120, 100, 80),
+    TerrainLayer.SAND: (238, 214, 175),
+    TerrainLayer.GRASS: (76, 153, 76),
+    TerrainLayer.ROCK: (128, 128, 128),
+    TerrainLayer.SNOW: (255, 255, 255),
+    TerrainLayer.MUD: (101, 67, 33),
+    TerrainLayer.WATER_SURFACE: (64, 128, 192),
+    TerrainLayer.LAVA: (207, 16, 32),
+}
 
 
 @dataclass
 class TerrainChunk:
-    chunk_x: int
-    chunk_y: int
-    width: int
-    height: int
-    cells: List[List[TerrainCell]] = field(default_factory=list)
-    generated: bool = False
-    modified: bool = False
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    chunk_x: int = 0
+    chunk_y: int = 0
+    resolution: int = 32
+    heightmap: List[List[float]] = field(default_factory=list)
+    layer_mask: List[List[int]] = field(default_factory=list)
+    material_ids: List[str] = field(default_factory=list)
+    is_dirty: bool = False
+    lod_level: int = 0
+
+    def get_size(self) -> int:
+        return self.resolution
+
+    def get_height(self, x: int, y: int) -> float:
+        if 0 <= y < len(self.heightmap) and 0 <= x < len(self.heightmap[0]):
+            return self.heightmap[y][x]
+        return 0.0
+
+    def set_height(self, x: int, y: int, height: float) -> bool:
+        if 0 <= y < len(self.heightmap) and 0 <= x < len(self.heightmap[0]):
+            self.heightmap[y][x] = max(-1.0, min(1.0, height))
+            self.is_dirty = True
+            return True
+        return False
+
+    def get_layer(self, x: int, y: int) -> int:
+        if 0 <= y < len(self.layer_mask) and 0 <= x < len(self.layer_mask[0]):
+            return self.layer_mask[y][x]
+        return 0
+
+    def set_layer(self, x: int, y: int, layer_index: int) -> bool:
+        if 0 <= y < len(self.layer_mask) and 0 <= x < len(self.layer_mask[0]):
+            self.layer_mask[y][x] = layer_index
+            self.is_dirty = True
+            return True
+        return False
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "chunk_x": self.chunk_x,
+            "chunk_y": self.chunk_y,
+            "resolution": self.resolution,
+            "is_dirty": self.is_dirty,
+            "lod_level": self.lod_level,
+            "material_count": len(self.material_ids),
+        }
 
 
 @dataclass
-class BiomeRule:
-    name: str
-    terrain_type: TerrainType
-    min_height: float = -1.0
-    max_height: float = 1.0
-    min_moisture: float = 0.0
-    max_moisture: float = 1.0
-    min_temperature: float = 0.0
-    max_temperature: float = 1.0
+class TerrainBrush:
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    shape: BrushShape = BrushShape.CIRCLE
+    radius: float = 5.0
+    hardness: float = 0.75
+    falloff_mode: str = "smooth"
+    layer: TerrainLayer = TerrainLayer.GRASS
+    target_height: float = 0.0
+
+    def get_falloff(self, distance: float) -> float:
+        if distance > self.radius:
+            return 0.0
+        normalized = distance / self.radius
+
+        if self.falloff_mode == "linear":
+            return max(0.0, 1.0 - normalized)
+        elif self.falloff_mode == "sharp":
+            return 1.0 if normalized < self.hardness else 0.0
+        else:
+            t = max(0.0, min(1.0, 1.0 - normalized))
+            return t * t * (3.0 - 2.0 * t)
+
+    def is_inside(self, dx: float, dy: float) -> bool:
+        if self.shape == BrushShape.CIRCLE:
+            return math.sqrt(dx * dx + dy * dy) <= self.radius
+        elif self.shape == BrushShape.SQUARE:
+            half = self.radius
+            return abs(dx) <= half and abs(dy) <= half
+        elif self.shape == BrushShape.DIAMOND:
+            return abs(dx) + abs(dy) <= self.radius
+        elif self.shape == BrushShape.NOISE:
+            return math.sqrt(dx * dx + dy * dy) <= self.radius
+        else:
+            return math.sqrt(dx * dx + dy * dy) <= self.radius
 
 
 class TerrainSystem:
     """
-    Procedural 2D terrain generation and editing.
+    Grid-based terrain editing and generation system.
 
-    Generates heightmaps and biome distributions for game
-    worlds using noise algorithms. Supports auto-tiling
-    rulesets and brush-based terrain editing. AI agents use
-    this to procedurally generate landscapes and modify
-    them in response to game events.
+    Manages terrain chunks with heightmap and layer-mask data,
+    supports brush-based sculpting, procedural generation, and
+    LOD-aware terrain management.
+
+    Usage:
+        ts = get_terrain_system()
+        chunk_id = ts.create_terrain(256, 256, 32)
+        ts.generate_heightmap(chunk_id, seed=42, algorithm="perlin")
+        brush = TerrainBrush(radius=5.0, layer=TerrainLayer.ROCK)
+        ts.apply_brush(chunk_id, brush, 50, 50)
     """
 
     _instance: Optional["TerrainSystem"] = None
 
     def __init__(self):
-        self._chunks: Dict[Tuple[int, int], TerrainChunk] = {}
-        self._biome_rules: List[BiomeRule] = []
+        self._chunks: Dict[str, TerrainChunk] = {}
+        self._brushes: Dict[str, TerrainBrush] = {}
         self._permutation: List[int] = list(range(256)) * 2
         random.shuffle(self._permutation[:256])
         self._seed: int = 42
-        self._default_chunk_size: int = 16
-        self._register_default_biomes()
+        self._total_applies: int = 0
 
     @classmethod
     def get_instance(cls) -> "TerrainSystem":
@@ -125,148 +214,172 @@ class TerrainSystem:
         self._permutation = list(range(256)) * 2
         random.shuffle(self._permutation[:256])
 
-    def generate_heightmap(
-        self,
-        width: int,
-        height: int,
-        algorithm: NoiseAlgorithm = NoiseAlgorithm.PERLIN,
-        scale: float = 0.05,
-        octaves: int = 4,
-        persistence: float = 0.5,
-    ) -> List[List[float]]:
-        heights = [[0.0] * width for _ in range(height)]
+    def create_terrain(self, width: int, depth: int, resolution: int) -> str:
+        chunks_x = max(1, math.ceil(width / resolution))
+        chunks_y = max(1, math.ceil(depth / resolution))
 
-        for y in range(height):
-            for x in range(width):
-                if algorithm == NoiseAlgorithm.PERLIN:
-                    heights[y][x] = self._perlin_noise(x * scale, y * scale, octaves, persistence)
-                elif algorithm == NoiseAlgorithm.SIMPLEX:
-                    heights[y][x] = self._simplex_noise(x * scale, y * scale)
-                else:
-                    heights[y][x] = self._value_noise(x * scale, y * scale)
+        chunk_ids: List[str] = []
+        for cy in range(chunks_y):
+            for cx in range(chunks_x):
+                r = resolution
+                heightmap = [[0.0] * r for _ in range(r)]
+                layer_mask = [[0] * r for _ in range(r)]
 
-        return heights
+                chunk = TerrainChunk(
+                    chunk_x=cx,
+                    chunk_y=cy,
+                    resolution=r,
+                    heightmap=heightmap,
+                    layer_mask=layer_mask,
+                )
+                self._chunks[chunk.id] = chunk
+                chunk_ids.append(chunk.id)
 
-    def generate_terrain(
-        self,
-        width: int,
-        height: int,
-        scale: float = 0.05,
-        octaves: int = 4,
-    ) -> List[List[TerrainCell]]:
-        heightmap = self.generate_heightmap(width, height, scale=scale, octaves=octaves)
-        moisture_map = self.generate_heightmap(width, height, scale=scale * 1.3, octaves=3)
-        temp_map = self.generate_heightmap(width, height, scale=scale * 0.7, octaves=3)
+        return chunk_ids[0] if chunk_ids else ""
 
-        cells = []
-        for y in range(height):
-            row = []
-            for x in range(width):
-                h = heightmap[y][x]
-                m = (moisture_map[y][x] + 1.0) / 2.0
-                t = (temp_map[y][x] + 1.0) / 2.0
-                terrain = self._resolve_biome(h, m, t)
-                row.append(TerrainCell(x=x, y=y, height=h, terrain_type=terrain, moisture=m, temperature=t))
-            cells.append(row)
+    def remove_terrain(self, chunk_id: str) -> bool:
+        if chunk_id in self._chunks:
+            del self._chunks[chunk_id]
+            return True
+        return False
 
-        return cells
+    def set_height(self, chunk_id: str, x: int, y: int, height: float) -> bool:
+        chunk = self._chunks.get(chunk_id)
+        if chunk is None:
+            return False
+        return chunk.set_height(x, y, height)
 
-    def generate_chunk(self, chunk_x: int, chunk_y: int) -> TerrainChunk:
-        size = self._default_chunk_size
-        key = (chunk_x, chunk_y)
-        if key in self._chunks:
-            return self._chunks[key]
-
-        ox = chunk_x * size
-        oy = chunk_y * size
-        cells = self.generate_terrain(size, size, scale=0.05)
-        for row in cells:
-            for cell in row:
-                cell.x += ox
-                cell.y += oy
-
-        chunk = TerrainChunk(
-            chunk_x=chunk_x,
-            chunk_y=chunk_y,
-            width=size,
-            height=size,
-            cells=cells,
-            generated=True,
-        )
-        self._chunks[key] = chunk
-        return chunk
-
-    def get_cell(self, x: int, y: int) -> Optional[TerrainCell]:
-        size = self._default_chunk_size
-        cx, cy = x // size, y // size
-        chunk = self._chunks.get((cx, cy))
-        if not chunk:
+    def get_height(self, chunk_id: str, x: int, y: int) -> Optional[float]:
+        chunk = self._chunks.get(chunk_id)
+        if chunk is None:
             return None
-        lx, ly = x % size, y % size
-        if 0 <= ly < chunk.height and 0 <= lx < chunk.width:
-            return chunk.cells[ly][lx]
+        if 0 <= y < len(chunk.heightmap) and 0 <= x < len(chunk.heightmap[0]):
+            return chunk.heightmap[y][x]
         return None
 
-    def set_terrain(self, x: int, y: int, terrain_type: TerrainType) -> bool:
-        cell = self.get_cell(x, y)
-        if not cell:
+    def apply_brush(self, chunk_id: str, brush: TerrainBrush, center_x: float, center_y: float) -> bool:
+        chunk = self._chunks.get(chunk_id)
+        if chunk is None:
             return False
-        cell.terrain_type = terrain_type
-        size = self._default_chunk_size
-        key = (x // size, y // size)
-        if key in self._chunks:
-            self._chunks[key].modified = True
+
+        self._brushes[brush.id] = brush
+        layer_index = list(TerrainLayer).index(brush.layer)
+        affected = 0
+
+        r = chunk.resolution
+        for dy in range(r):
+            for dx in range(r):
+                dist = math.sqrt((dx - center_x) ** 2 + (dy - center_y) ** 2)
+                if brush.is_inside(dx - center_x, dy - center_y):
+                    falloff = brush.get_falloff(dist)
+                    current = chunk.heightmap[dy][dx]
+                    chunk.heightmap[dy][dx] = current + (brush.target_height - current) * falloff * brush.hardness
+
+                    if falloff > 0.5:
+                        chunk.layer_mask[dy][dx] = layer_index
+
+                    affected += 1
+
+        chunk.is_dirty = True
+        self._total_applies += 1
+        return affected > 0
+
+    def smooth_terrain(self, chunk_id: str, radius: float) -> bool:
+        chunk = self._chunks.get(chunk_id)
+        if chunk is None:
+            return False
+
+        r = chunk.resolution
+        smoothed = [row[:] for row in chunk.heightmap]
+        affected = 0
+
+        for y in range(r):
+            for x in range(r):
+                total = 0.0
+                count = 0
+                for ny in range(max(0, y - int(radius)), min(r, y + int(radius) + 1)):
+                    for nx in range(max(0, x - int(radius)), min(r, x + int(radius) + 1)):
+                        total += chunk.heightmap[ny][nx]
+                        count += 1
+                if count > 0:
+                    smoothed[y][x] = total / count
+                    affected += 1
+
+        chunk.heightmap = smoothed
+        chunk.is_dirty = True
         return True
 
-    def raise_terrain(self, x: int, y: int, amount: float) -> bool:
-        cell = self.get_cell(x, y)
-        if not cell:
+    def generate_heightmap(self, chunk_id: str, seed: int, algorithm: str) -> bool:
+        chunk = self._chunks.get(chunk_id)
+        if chunk is None:
             return False
-        cell.height = max(-1.0, min(1.0, cell.height + amount))
+
+        self.set_seed(seed)
+        r = chunk.resolution
+
+        for y in range(r):
+            for x in range(r):
+                if algorithm == "perlin":
+                    chunk.heightmap[y][x] = self._perlin_noise(x * 0.1, y * 0.1, 4, 0.5)
+                elif algorithm == "simplex":
+                    chunk.heightmap[y][x] = self._simplex_noise(x * 0.1, y * 0.1)
+                elif algorithm == "diamond_square":
+                    chunk.heightmap[y][x] = self._value_noise(x * 0.05, y * 0.05)
+                else:
+                    chunk.heightmap[y][x] = self._perlin_noise(x * 0.1, y * 0.1, 3, 0.6)
+
+        chunk.is_dirty = True
         return True
 
-    def smooth_area(self, cx: int, cy: int, radius: int) -> int:
-        count = 0
-        for dy in range(-radius, radius + 1):
-            for dx in range(-radius, radius + 1):
-                neighbors = []
-                cell = self.get_cell(cx + dx, cy + dy)
-                if not cell:
-                    continue
-                for ny in range(-1, 2):
-                    for nx in range(-1, 2):
-                        n = self.get_cell(cx + dx + nx, cy + dy + ny)
-                        if n:
-                            neighbors.append(n.height)
-                if neighbors:
-                    cell.height = sum(neighbors) / len(neighbors)
-                    count += 1
-        return count
+    def get_chunk(self, chunk_id: str) -> Optional[TerrainChunk]:
+        return self._chunks.get(chunk_id)
 
-    def add_biome_rule(self, rule: BiomeRule) -> None:
-        self._biome_rules.append(rule)
+    def list_chunks(self) -> List[TerrainChunk]:
+        return list(self._chunks.values())
 
-    def list_biomes(self) -> List[BiomeRule]:
-        return list(self._biome_rules)
+    def get_chunk_at(self, world_x: float, world_y: float, resolution: int) -> Optional[TerrainChunk]:
+        cx = int(world_x // resolution)
+        cy = int(world_y // resolution)
+        for chunk in self._chunks.values():
+            if chunk.chunk_x == cx and chunk.chunk_y == cy:
+                return chunk
+        return None
 
-    def _resolve_biome(self, height: float, moisture: float, temperature: float) -> TerrainType:
-        for rule in self._biome_rules:
-            if (
-                rule.min_height <= height <= rule.max_height
-                and rule.min_moisture <= moisture <= rule.max_moisture
-            ):
-                return rule.terrain_type
+    def create_brush(
+        self,
+        shape: BrushShape = BrushShape.CIRCLE,
+        radius: float = 5.0,
+        hardness: float = 0.75,
+        falloff_mode: str = "smooth",
+        layer: TerrainLayer = TerrainLayer.GRASS,
+        target_height: float = 0.0,
+    ) -> TerrainBrush:
+        brush = TerrainBrush(
+            shape=shape,
+            radius=radius,
+            hardness=hardness,
+            falloff_mode=falloff_mode,
+            layer=layer,
+            target_height=target_height,
+        )
+        self._brushes[brush.id] = brush
+        return brush
 
-        if height < -0.3:
-            return TerrainType.WATER
-        elif height < -0.1:
-            return TerrainType.SAND
-        elif height < 0.2:
-            return TerrainType.GRASS
-        elif height < 0.5:
-            return TerrainType.STONE
-        else:
-            return TerrainType.SNOW
+    def get_stats(self) -> Dict[str, Any]:
+        return {
+            "chunk_count": len(self._chunks),
+            "brush_count": len(self._brushes),
+            "seed": self._seed,
+            "total_applies": self._total_applies,
+            "dirty_chunks": sum(1 for c in self._chunks.values() if c.is_dirty),
+            "chunks": [c.to_dict() for c in self._chunks.values()],
+        }
+
+    def reset(self) -> None:
+        self._chunks.clear()
+        self._brushes.clear()
+        self._total_applies = 0
+        self.set_seed(42)
 
     def _fade(self, t: float) -> float:
         return t * t * t * (t * (t * 6.0 - 15.0) + 10.0)
@@ -324,36 +437,6 @@ class TerrainSystem:
         d = self._permutation[self._permutation[ix + 1] + iy + 1]
         val = self._lerp(self._lerp(a / 255.0, b / 255.0, u), self._lerp(c / 255.0, d / 255.0, u), v)
         return val * 2.0 - 1.0
-
-    def _register_default_biomes(self) -> None:
-        defaults = [
-            BiomeRule("deep_water", TerrainType.WATER, -1.0, -0.45),
-            BiomeRule("shallow_water", TerrainType.WATER, -0.45, -0.3),
-            BiomeRule("beach", TerrainType.SAND, -0.3, -0.15),
-            BiomeRule("grassland", TerrainType.GRASS, -0.15, 0.15),
-            BiomeRule("forest", TerrainType.FOREST, -0.1, 0.25, 0.4, 1.0),
-            BiomeRule("swamp", TerrainType.SWAMP, -0.2, 0.05, 0.6, 1.0),
-            BiomeRule("rocky", TerrainType.STONE, 0.2, 0.5),
-            BiomeRule("mountain", TerrainType.STONE, 0.5, 0.75),
-            BiomeRule("snow", TerrainType.SNOW, 0.7, 1.0),
-            BiomeRule("lava_field", TerrainType.LAVA, 0.3, 1.0, 0.0, 0.2, 0.8, 1.0),
-        ]
-        self._biome_rules = defaults
-
-    def get_stats(self) -> dict:
-        return {
-            "chunks": len(self._chunks),
-            "chunk_size": self._default_chunk_size,
-            "biome_rules": len(self._biome_rules),
-            "seed": self._seed,
-            "generated": all(c.generated for c in self._chunks.values()),
-        }
-
-    def reset(self) -> None:
-        self._chunks.clear()
-        self._biome_rules = []
-        self._register_default_biomes()
-        self.set_seed(self._seed)
 
 
 def get_terrain_system() -> TerrainSystem:
