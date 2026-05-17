@@ -90,6 +90,12 @@ export const engineApi = {
   listWorldSystems: (worldId: string) => api.get(`/engine/worlds/${worldId}/systems`),
   removeWorldSystem: (worldId: string, systemType: string) =>
     api.delete(`/engine/worlds/${worldId}/systems/${systemType}`),
+  updateEntity: (entityType: string, entityId: string, data: unknown) =>
+    api.put(`/engine/${entityType}/${entityId}`, data as Record<string, unknown>),
+  query: (queryType: string, params?: unknown) =>
+    api.post(`/engine/query/${queryType}`, params as Record<string, unknown> | undefined),
+  command: (commandType: string, params?: unknown) =>
+    api.post(`/engine/command/${commandType}`, params as Record<string, unknown> | undefined),
 };
 
 export const agentApi = {
