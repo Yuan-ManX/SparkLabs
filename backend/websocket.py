@@ -3761,6 +3761,112 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "physics_tuner_error", "error": str(e)})
 
+                elif msg_type == "rag_pipeline":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_rag_pipeline import get_rag_pipeline, RAGDomain
+                        rp = get_rag_pipeline()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "rag_stats", "data": rp.get_stats()})
+                        elif sub == "search":
+                            results = rp.hybrid_search(data.get("query", ""), RAGDomain(data.get("domain")) if data.get("domain") else None, data.get("top_k", 5))
+                            await manager.send_to_client(client_id, {"type": "rag_results", "data": [r.__dict__ for r in results] if results else []})
+                        elif sub == "ingest":
+                            tag_list = [t.strip() for t in data.get("tags", "").split(",") if t.strip()] if data.get("tags") else []
+                            doc_id = rp.ingest_document(data.get("title", ""), data.get("source", ""), data.get("content", ""), RAGDomain(data.get("domain", "game_design")), tag_list)
+                            await manager.send_to_client(client_id, {"type": "rag_ingested", "document_id": doc_id})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "rag_error", "error": str(e)})
+
+                elif msg_type == "tree_of_thought":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_tree_of_thought import get_tree_of_thought, ThoughtDomain, TraversalStrategy
+                        tot = get_tree_of_thought()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "tot_stats", "data": tot.get_stats()})
+                        elif sub == "create_session":
+                            session = tot.create_session(data.get("problem", ""), ThoughtDomain(data.get("domain", "game_design")), TraversalStrategy(data.get("strategy", "best_first")), data.get("max_depth", 5), data.get("max_branches", 8))
+                            await manager.send_to_client(client_id, {"type": "tot_session_created", "data": session.__dict__ if hasattr(session, '__dict__') else str(session)})
+                        elif sub == "expand":
+                            node = tot.expand(data.get("session_id", ""), data.get("branch_id", ""), data.get("thought", ""))
+                            await manager.send_to_client(client_id, {"type": "tot_expanded", "data": node.__dict__ if hasattr(node, '__dict__') else str(node)})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "tot_error", "error": str(e)})
+
+                elif msg_type == "reflection_loop":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_reflection_loop import get_reflection_loop, ReflectionDomain
+                        rl = get_reflection_loop()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "reflection_stats", "data": rl.get_stats()})
+                        elif sub == "start":
+                            session = rl.start_session(data.get("task", ""), ReflectionDomain(data.get("domain", "code_generation")), data.get("max_iterations", 5))
+                            await manager.send_to_client(client_id, {"type": "reflection_session", "data": session.__dict__ if hasattr(session, '__dict__') else str(session)})
+                        elif sub == "reflect":
+                            entry = rl.reflect(data.get("session_id", ""), data.get("action", ""), data.get("observation", ""), data.get("confidence", 0.7))
+                            await manager.send_to_client(client_id, {"type": "reflection_entry", "data": entry.__dict__ if hasattr(entry, '__dict__') else str(entry)})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "reflection_error", "error": str(e)})
+
+                elif msg_type == "scene_tree":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.scene_tree import get_scene_tree, NodeType
+                        st = get_scene_tree()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "scene_tree_stats", "data": st.get_stats()})
+                        elif sub == "create":
+                             scene_id = st.create_scene(data.get("name", ""), data.get("description", ""))
+                             await manager.send_to_client(client_id, {"type": "scene_created", "data": {"scene_id": scene_id}})
+                        elif sub == "add_node":
+                            node = st.add_node(data.get("scene_id", ""), data.get("parent_id", ""), data.get("name", ""), NodeType(data.get("node_type", "node2d")), data.get("x", 0), data.get("y", 0))
+                            await manager.broadcast_engine_status({"node_added": node.id if hasattr(node, 'id') else ""})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "scene_tree_error", "error": str(e)})
+
+                elif msg_type == "event_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.event_system import get_event_system
+                        es = get_event_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "event_system_stats", "data": es.get_stats()})
+                        elif sub == "evaluate":
+                            import json
+                            context = json.loads(data.get("context_json", "{}")) if data.get("context_json") else {}
+                            results = es.evaluate_sheet(data.get("sheet_id", ""), context)
+                            await manager.send_to_client(client_id, {"type": "event_sheet_evaluated", "data": results})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "event_system_error", "error": str(e)})
+
+                elif msg_type == "animation_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.animation_system import get_animation_system
+                        anims = get_animation_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "animation_stats", "data": anims.get_stats()})
+                        elif sub == "evaluate":
+                            values = anims.evaluate_clip(data.get("clip_id", ""), data.get("time", 0.0))
+                            await manager.send_to_client(client_id, {"type": "animation_values", "data": values})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "animation_error", "error": str(e)})
+
+                elif msg_type == "pathfinding":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.pathfinding_system import get_pathfinding_system, HeuristicMethod
+                        pf = get_pathfinding_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "pathfinding_stats", "data": pf.get_stats()})
+                        elif sub == "find_path":
+                            path = pf.find_path(data.get("grid_id", ""), data.get("start_x", 0), data.get("start_y", 0), data.get("end_x", 10), data.get("end_y", 10), HeuristicMethod(data.get("heuristic", "manhattan")))
+                            await manager.send_to_client(client_id, {"type": "path_found", "data": path.__dict__ if hasattr(path, '__dict__') else str(path)})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "pathfinding_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",

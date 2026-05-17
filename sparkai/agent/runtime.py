@@ -384,6 +384,9 @@ from sparkai.agent.agent_build_orchestrator import BuildOrchestrator, TargetPlat
 from sparkai.agent.agent_recall_engine import RecallEngine, RecallDomain, KnowledgeFragment, get_recall_engine
 from sparkai.agent.agent_interaction_designer import InteractionDesigner, InteractionPattern, InteractionFlow, get_interaction_designer
 from sparkai.agent.agent_physics_tuner import PhysicsTuner, PhysicsDomain as TunerPhysicsDomain, TunerPreset, get_physics_tuner
+from sparkai.agent.agent_rag_pipeline import RAGPipeline, get_rag_pipeline
+from sparkai.agent.agent_tree_of_thought import TreeOfThought, get_tree_of_thought
+from sparkai.agent.agent_reflection_loop import ReflectionLoop, get_reflection_loop
 from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
@@ -656,6 +659,9 @@ class AgentRuntime:
         self._recall_engine: Optional[RecallEngine] = None
         self._interaction_designer: Optional[InteractionDesigner] = None
         self._physics_tuner: Optional[PhysicsTuner] = None
+        self._rag_pipeline: Optional[RAGPipeline] = None
+        self._tree_of_thought: Optional[TreeOfThought] = None
+        self._reflection_loop: Optional[ReflectionLoop] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
@@ -896,6 +902,9 @@ class AgentRuntime:
             self._difficulty_system = get_difficulty_system()
             self._fog_of_war = get_fog_of_war()
             self._game_mode_system = get_game_mode_system()
+            self._rag_pipeline = get_rag_pipeline()
+            self._tree_of_thought = get_tree_of_thought()
+            self._reflection_loop = get_reflection_loop()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -1084,6 +1093,9 @@ class AgentRuntime:
             self._integration.register_subsystem("recall_engine", self._recall_engine)
             self._integration.register_subsystem("interaction_designer", self._interaction_designer)
             self._integration.register_subsystem("physics_tuner", self._physics_tuner)
+            self._integration.register_subsystem("rag_pipeline", self._rag_pipeline)
+            self._integration.register_subsystem("tree_of_thought", self._tree_of_thought)
+            self._integration.register_subsystem("reflection_loop", self._reflection_loop)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -2315,6 +2327,9 @@ class AgentRuntime:
                 "recall_engine": self._recall_engine is not None,
                 "interaction_designer": self._interaction_designer is not None,
                 "physics_tuner": self._physics_tuner is not None,
+                "rag_pipeline": self._rag_pipeline is not None,
+                "tree_of_thought": self._tree_of_thought is not None,
+                "reflection_loop": self._reflection_loop is not None,
             },
         }
 
@@ -2726,6 +2741,12 @@ class AgentRuntime:
             status["interaction_designer_stats"] = self._interaction_designer.get_stats()
         if self._physics_tuner:
             status["physics_tuner_stats"] = self._physics_tuner.get_stats()
+        if self._rag_pipeline:
+            status["rag_pipeline_stats"] = self._rag_pipeline.get_stats()
+        if self._tree_of_thought:
+            status["tree_of_thought_stats"] = self._tree_of_thought.get_stats()
+        if self._reflection_loop:
+            status["reflection_loop_stats"] = self._reflection_loop.get_stats()
         return status
 
 

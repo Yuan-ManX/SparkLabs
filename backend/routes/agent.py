@@ -145,6 +145,13 @@ from sparkai.agent.agent_build_orchestrator import BuildOrchestrator, get_build_
 from sparkai.agent.agent_recall_engine import RecallEngine, get_recall_engine
 from sparkai.agent.agent_interaction_designer import InteractionDesigner, get_interaction_designer
 from sparkai.agent.agent_physics_tuner import PhysicsTuner, get_physics_tuner
+from sparkai.agent.agent_rag_pipeline import RAGPipeline, get_rag_pipeline
+from sparkai.agent.agent_tree_of_thought import TreeOfThought, get_tree_of_thought
+from sparkai.agent.agent_reflection_loop import ReflectionLoop, get_reflection_loop
+from sparkai.engine.scene_tree import SceneTree, get_scene_tree
+from sparkai.engine.event_system import EventSystem, get_event_system
+from sparkai.engine.animation_system import AnimationSystem, get_animation_system
+from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding_system
 
 router = APIRouter()
 
@@ -2074,6 +2081,13 @@ _build_orchestrator = get_build_orchestrator()
 _recall_engine = get_recall_engine()
 _interaction_designer = get_interaction_designer()
 _physics_tuner = get_physics_tuner()
+_rag_pipeline = get_rag_pipeline()
+_tree_of_thought = get_tree_of_thought()
+_reflection_loop = get_reflection_loop()
+_scene_tree = get_scene_tree()
+_event_system = get_event_system()
+_animation_system = get_animation_system()
+_pathfinding_system = get_pathfinding_system()
 
 
 # === Blueprint Engine ===
@@ -14903,3 +14917,277 @@ async def physics_tuner_default_presets():
 async def physics_tuner_compare(preset_id_a: str = "", preset_id_b: str = ""):
     result = _physics_tuner.compare_presets(preset_id_a, preset_id_b)
     return str(result)
+
+
+# === RAG Pipeline Endpoints ===
+
+@router.get("/rag/stats")
+async def rag_stats():
+    return _rag_pipeline.get_stats()
+
+@router.post("/rag/ingest")
+async def rag_ingest(title: str = "", source: str = "", content: str = "",
+                      domain: str = "game_design", tags: str = ""):
+    from sparkai.agent.agent_rag_pipeline import RAGDomain
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else []
+    doc_id = _rag_pipeline.ingest_document(title, source, content, RAGDomain(domain), tag_list)
+    return {"document_id": doc_id}
+
+@router.post("/rag/search")
+async def rag_search(query: str = "", domain: str = "", mode: str = "hybrid", top_k: int = 5):
+    from sparkai.agent.agent_rag_pipeline import RAGDomain, SearchMode
+    if mode == "keyword":
+        results = _rag_pipeline.keyword_search(query, RAGDomain(domain) if domain else None, top_k)
+    elif mode == "semantic":
+        results = _rag_pipeline.semantic_search(query, RAGDomain(domain) if domain else None, top_k)
+    else:
+        results = _rag_pipeline.hybrid_search(query, RAGDomain(domain) if domain else None, top_k)
+    return {"results": [r.__dict__ for r in results] if results else []}
+
+@router.post("/rag/generate-context")
+async def rag_generate_context(query: str = "", domain: str = "", max_tokens: int = 2000, top_k: int = 5):
+    from sparkai.agent.agent_rag_pipeline import RAGDomain
+    context = _rag_pipeline.generate_context(query, RAGDomain(domain) if domain else None, max_tokens, top_k)
+    return {"context": context}
+
+@router.post("/rag/augment-prompt")
+async def rag_augment_prompt(base_prompt: str = "", query: str = "", domain: str = "", max_context_tokens: int = 1500):
+    from sparkai.agent.agent_rag_pipeline import RAGDomain
+    augmented = _rag_pipeline.augment_prompt(base_prompt, query, RAGDomain(domain) if domain else None, max_context_tokens)
+    return {"augmented_prompt": augmented}
+
+
+# === Tree of Thought Endpoints ===
+
+@router.get("/thought/stats")
+async def thought_stats():
+    return _tree_of_thought.get_stats()
+
+@router.post("/thought/create-session")
+async def thought_create_session(problem: str = "", domain: str = "game_design",
+                                   strategy: str = "best_first", max_depth: int = 5, max_branches: int = 8):
+    from sparkai.agent.agent_tree_of_thought import ThoughtDomain, TraversalStrategy
+    session = _tree_of_thought.create_session(problem, ThoughtDomain(domain),
+                                               TraversalStrategy(strategy), max_depth, max_branches)
+    return session.__dict__ if hasattr(session, '__dict__') else str(session)
+
+@router.post("/thought/expand")
+async def thought_expand(session_id: str = "", branch_id: str = "", thought: str = ""):
+    node = _tree_of_thought.expand(session_id, branch_id, thought)
+    return node.__dict__ if hasattr(node, '__dict__') else str(node)
+
+@router.post("/thought/branch")
+async def thought_branch(session_id: str = "", parent_node_id: str = "", thought: str = ""):
+    branch = _tree_of_thought.branch(session_id, parent_node_id, thought)
+    return branch.__dict__ if hasattr(branch, '__dict__') else str(branch)
+
+@router.post("/thought/evaluate")
+async def thought_evaluate(session_id: str = "", node_id: str = ""):
+    score = _tree_of_thought.evaluate_node(session_id, node_id)
+    return {"score": score}
+
+@router.post("/thought/consistency")
+async def thought_consistency(session_id: str = "", num_samples: int = 3):
+    result = _tree_of_thought.self_consistency(session_id, num_samples)
+    return str(result)
+
+@router.post("/thought/best-path")
+async def thought_best_path(session_id: str = ""):
+    path = _tree_of_thought.select_best_path(session_id)
+    return str(path)
+
+@router.post("/thought/reasoning-trace")
+async def thought_reasoning_trace(session_id: str = ""):
+    trace = _tree_of_thought.get_reasoning_trace(session_id)
+    return {"trace": trace}
+
+
+# === Reflection Loop Endpoints ===
+
+@router.get("/reflection/stats")
+async def reflection_stats():
+    return _reflection_loop.get_stats()
+
+@router.post("/reflection/start")
+async def reflection_start(task: str = "", domain: str = "code_generation", max_iterations: int = 5):
+    from sparkai.agent.agent_reflection_loop import ReflectionDomain
+    session = _reflection_loop.start_session(task, ReflectionDomain(domain), max_iterations)
+    return session.__dict__ if hasattr(session, '__dict__') else str(session)
+
+@router.post("/reflection/reflect")
+async def reflection_reflect(session_id: str = "", action: str = "",
+                               observation: str = "", confidence: float = 0.7):
+    entry = _reflection_loop.reflect(session_id, action, observation, confidence)
+    return entry.__dict__ if hasattr(entry, '__dict__') else str(entry)
+
+@router.post("/reflection/learn")
+async def reflection_learn(session_id: str = ""):
+    patterns = _reflection_loop.learn_from_session(session_id)
+    return {"patterns_found": len(patterns) if patterns else 0}
+
+@router.get("/reflection/summary")
+async def reflection_summary(session_id: str = ""):
+    summary = _reflection_loop.get_session_summary(session_id)
+    return summary
+
+@router.post("/reflection/match-pattern")
+async def reflection_match_pattern(observation: str = ""):
+    pattern = _reflection_loop.match_error_pattern(observation)
+    return pattern.__dict__ if hasattr(pattern, '__dict__') else str(pattern) if pattern else {"matched": False}
+
+
+# === Scene Tree Endpoints ===
+
+@router.get("/scene-tree/stats")
+async def scene_tree_stats():
+    return _scene_tree.get_stats()
+
+@router.post("/scene-tree/create")
+async def scene_tree_create(name: str = "", description: str = ""):
+    scene_id = _scene_tree.create_scene(name, description)
+    return {"scene_id": scene_id}
+
+@router.post("/scene-tree/add-node")
+async def scene_tree_add_node(scene_id: str = "", parent_id: str = "",
+                                name: str = "", node_type: str = "node2d", x: float = 0, y: float = 0):
+    from sparkai.engine.scene_tree import NodeType
+    node = _scene_tree.add_node(scene_id, parent_id, name, NodeType(node_type), x, y)
+    return node.__dict__ if hasattr(node, '__dict__') else str(node)
+
+@router.post("/scene-tree/remove-node")
+async def scene_tree_remove_node(scene_id: str = "", node_id: str = ""):
+    _scene_tree.remove_node(scene_id, node_id)
+    return {"removed": True}
+
+@router.get("/scene-tree/node-tree")
+async def scene_tree_node_tree(scene_id: str = ""):
+    tree = _scene_tree.get_node_tree(scene_id)
+    return tree
+
+@router.get("/scene-tree/stats-detail")
+async def scene_tree_stats_detail(scene_id: str = ""):
+    stats = _scene_tree.get_scene_stats(scene_id)
+    return stats
+
+
+# === Event System Endpoints ===
+
+@router.get("/event-system/stats")
+async def event_system_stats():
+    return _event_system.get_stats()
+
+@router.post("/event-system/create-sheet")
+async def event_system_create_sheet(name: str = "", description: str = "", priority: int = 0):
+    sheet = _event_system.create_sheet(name, description, priority)
+    return sheet.__dict__ if hasattr(sheet, '__dict__') else str(sheet)
+
+@router.post("/event-system/add-event")
+async def event_system_add_event(sheet_id: str = "", conditions_json: str = "[]",
+                                   actions_json: str = "[]", repeat_mode: str = "once"):
+    import json
+    from sparkai.engine.event_system import RepeatMode, EventCondition, EventAction
+    conditions_raw = json.loads(conditions_json) if conditions_json else []
+    actions_raw = json.loads(actions_json) if actions_json else []
+    conditions = [EventCondition(**c) for c in conditions_raw]
+    actions = [EventAction(**a) for a in actions_raw]
+    event = _event_system.add_event(sheet_id, conditions, actions, RepeatMode(repeat_mode))
+    return event.__dict__ if hasattr(event, '__dict__') else str(event)
+
+@router.post("/event-system/evaluate-sheet")
+async def event_system_evaluate_sheet(sheet_id: str = "", context_json: str = "{}"):
+    import json
+    context = json.loads(context_json) if context_json else {}
+    results = _event_system.evaluate_sheet(sheet_id, context)
+    return {"results": results}
+
+@router.post("/event-system/connect-signal")
+async def event_system_connect_signal(emitter_id: str = "", signal_name: str = "",
+                                        receiver_id: str = "", slot_method: str = ""):
+    signal = _event_system.connect_signal(emitter_id, signal_name, receiver_id, slot_method)
+    return signal.__dict__ if hasattr(signal, '__dict__') else str(signal)
+
+@router.post("/event-system/emit")
+async def event_system_emit(emitter_id: str = "", signal_name: str = "", data_json: str = "{}"):
+    import json
+    data = json.loads(data_json) if data_json else {}
+    results = _event_system.emit_signal(emitter_id, signal_name, data)
+    return {"results": results}
+
+
+# === Animation System Endpoints ===
+
+@router.get("/animation/stats")
+async def animation_stats():
+    return _animation_system.get_stats()
+
+@router.post("/animation/create-clip")
+async def animation_create_clip(name: str = "", loop_mode: str = "once", playback_speed: float = 1.0):
+    from sparkai.engine.animation_system import LoopMode
+    clip = _animation_system.create_clip(name, LoopMode(loop_mode), playback_speed)
+    return clip.__dict__ if hasattr(clip, '__dict__') else str(clip)
+
+@router.post("/animation/add-track")
+async def animation_add_track(clip_id: str = "", track_name: str = "",
+                                target_node_id: str = "", property_path: str = "", track_type: str = "position"):
+    from sparkai.engine.animation_system import TrackType
+    track = _animation_system.add_track(clip_id, track_name, target_node_id, property_path, TrackType(track_type))
+    return track.__dict__ if hasattr(track, '__dict__') else str(track)
+
+@router.post("/animation/add-keyframe")
+async def animation_add_keyframe(clip_id: str = "", track_id: str = "",
+                                   time: float = 0.0, value: float = 0.0, easing: str = "linear"):
+    from sparkai.engine.animation_system import EasingType
+    kf = _animation_system.add_keyframe(clip_id, track_id, time, value, EasingType(easing))
+    return kf.__dict__ if hasattr(kf, '__dict__') else str(kf)
+
+@router.post("/animation/evaluate")
+async def animation_evaluate(clip_id: str = "", time: float = 0.0):
+    values = _animation_system.evaluate_clip(clip_id, time)
+    return {"values": values}
+
+@router.post("/animation/tween")
+async def animation_tween(target_node_id: str = "", property_path: str = "",
+                            start_value: float = 0.0, end_value: float = 100.0,
+                            duration: float = 1.0, easing: str = "ease_out"):
+    from sparkai.engine.animation_system import EasingType
+    tween = _animation_system.start_tween(target_node_id, property_path, start_value,
+                                            end_value, duration, EasingType(easing))
+    return tween.__dict__ if hasattr(tween, '__dict__') else str(tween)
+
+
+# === Pathfinding System Endpoints ===
+
+@router.get("/pathfinding/stats")
+async def pathfinding_stats():
+    return _pathfinding_system.get_stats()
+
+@router.post("/pathfinding/create-grid")
+async def pathfinding_create_grid(name: str = "", width: int = 50, height: int = 50,
+                                    cell_size: float = 1.0, origin_x: float = 0, origin_y: float = 0):
+    grid_id = _pathfinding_system.create_grid(name, width, height, cell_size, origin_x, origin_y)
+    return {"grid_id": grid_id}
+
+@router.post("/pathfinding/set-cell")
+async def pathfinding_set_cell(grid_id: str = "", x: int = 0, y: int = 0,
+                                 is_walkable: bool = True, cost: float = 1.0):
+    _pathfinding_system.set_cell(grid_id, x, y, is_walkable, cost)
+    return {"updated": True}
+
+@router.post("/pathfinding/find-path")
+async def pathfinding_find_path(grid_id: str = "", start_x: int = 0, start_y: int = 0,
+                                  end_x: int = 10, end_y: int = 10, heuristic: str = "manhattan"):
+    from sparkai.engine.pathfinding_system import HeuristicMethod
+    path = _pathfinding_system.find_path(grid_id, start_x, start_y, end_x, end_y, HeuristicMethod(heuristic))
+    return path.__dict__ if hasattr(path, '__dict__') else str(path)
+
+@router.post("/pathfinding/is-reachable")
+async def pathfinding_is_reachable(grid_id: str = "", start_x: int = 0, start_y: int = 0,
+                                     end_x: int = 10, end_y: int = 10):
+    reachable = _pathfinding_system.is_reachable(grid_id, start_x, start_y, end_x, end_y)
+    return {"reachable": reachable}
+
+@router.post("/pathfinding/smooth")
+async def pathfinding_smooth(path_id: str = "", method: str = "simple"):
+    from sparkai.engine.pathfinding_system import SmoothingMethod
+    result = _pathfinding_system.smooth_path(path_id, SmoothingMethod(method))
+    return result.__dict__ if hasattr(result, '__dict__') else str(result)

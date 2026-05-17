@@ -118,6 +118,10 @@ from sparkai.engine.build_pipeline import BuildPipeline, get_build_pipeline
 from sparkai.engine.tileset_system import TileSetSystem, get_tileset_system
 from sparkai.engine.resource_pack import ResourcePack, get_resource_pack
 from sparkai.engine.input_profile_system import InputProfileSystem, get_input_profile_system
+from sparkai.engine.scene_tree import SceneTree, get_scene_tree
+from sparkai.engine.event_system import EventSystem, get_event_system
+from sparkai.engine.animation_system import AnimationSystem, get_animation_system
+from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding_system
 
 
 class SparkEngine:
@@ -241,6 +245,10 @@ class SparkEngine:
         self._tileset_system: TileSetSystem = get_tileset_system()
         self._resource_pack: ResourcePack = get_resource_pack()
         self._input_profile_system: InputProfileSystem = get_input_profile_system()
+        self._scene_tree: SceneTree = get_scene_tree()
+        self._event_system: EventSystem = get_event_system()
+        self._animation_system: AnimationSystem = get_animation_system()
+        self._pathfinding_system: PathfindingSystem = get_pathfinding_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -500,6 +508,10 @@ class SparkEngine:
             "tileset_system": self._tileset_system.get_stats(),
             "resource_pack": self._resource_pack.get_stats(),
             "input_profile_system": self._input_profile_system.get_stats(),
+            "scene_tree": self._scene_tree.get_stats(),
+            "event_system": self._event_system.get_stats(),
+            "animation_system": self._animation_system.get_stats(),
+            "pathfinding_system": self._pathfinding_system.get_stats(),
         }
 
     @property
