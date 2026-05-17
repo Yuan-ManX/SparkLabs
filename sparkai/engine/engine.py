@@ -82,7 +82,7 @@ from sparkai.engine.input_recorder import InputRecorder, RecordingSession, Input
 from sparkai.engine.collision_layers import CollisionLayerManager, LayerFlag, LayerMask, get_collision_layer_manager
 from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
-from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
+from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, FogRevealMethod, FogCellState, get_fog_of_war
 from sparkai.engine.game_modes import GameModeSystem, BuiltInMode, ModeLayer, get_game_mode_system
 from sparkai.engine.dialogue_system import DialogueSystem, DialogueTree, DialogueNode, get_dialogue_system
 from sparkai.engine.quest_system import QuestSystem, QuestDefinition, QuestState, get_quest_system
@@ -109,12 +109,15 @@ from sparkai.engine.navmesh_system import NavMeshSystem, NavArea, NavMeshQuery, 
 from sparkai.engine.occlusion_system import OcclusionSystem, OcclusionMethod, OcclusionVolume, get_occlusion_system
 from sparkai.engine.timeline_system import TimelineSystem, TrackType, TimelineDefinition, get_timeline_system
 from sparkai.engine.vfx_system import VFXSystem, VFXType, VFXDefinition, get_vfx_system
-from sparkai.engine.expression_evaluator import ExpressionEvaluator, ExpressionType, ExpressionNode, get_expression_evaluator
-from sparkai.engine.scene_variant_system import SceneVariantSystem, VariantType, SceneVariant, get_scene_variant_system
-from sparkai.engine.hot_reload_system import HotReloadSystem, ReloadTargetType, ReloadEvent, get_hot_reload_system
-from sparkai.engine.physics_joints_system import PhysicsJointsSystem, JointType, JointConfig, get_physics_joints_system
-from sparkai.engine.gpu_particle_system import GPUParticleSystem, EmitterShape, GPUParticleConfig, get_gpu_particle_system
-from sparkai.engine.input_gesture_system import InputGestureSystem, GestureType, GestureEvent, get_input_gesture_system
+from sparkai.engine.profiler_system import ProfilerSystem, ProfilerCategory, ProfilerFrame, get_profiler_system
+from sparkai.engine.expression_engine import ExpressionEngine, OperatorType, ExpressionResult, get_expression_engine
+from sparkai.engine.extension_runtime import ExtensionRuntime, ExtensionScope, RuntimeExtension, get_extension_runtime
+from sparkai.engine.terrain_system import TerrainSystem, TerrainLayer, TerrainChunk, get_terrain_system
+from sparkai.engine.shader_graph import ShaderGraph, get_shader_graph
+from sparkai.engine.build_pipeline import BuildPipeline, get_build_pipeline
+from sparkai.engine.tileset_system import TileSetSystem, get_tileset_system
+from sparkai.engine.resource_pack import ResourcePack, get_resource_pack
+from sparkai.engine.input_profile_system import InputProfileSystem, get_input_profile_system
 
 
 class SparkEngine:
@@ -228,12 +231,16 @@ class SparkEngine:
         self._occlusion_system: OcclusionSystem = get_occlusion_system()
         self._timeline_system: TimelineSystem = get_timeline_system()
         self._vfx_system: VFXSystem = get_vfx_system()
-        self._expression_evaluator: ExpressionEvaluator = get_expression_evaluator()
-        self._scene_variant_system: SceneVariantSystem = get_scene_variant_system()
-        self._hot_reload_system: HotReloadSystem = get_hot_reload_system()
-        self._physics_joints_system: PhysicsJointsSystem = get_physics_joints_system()
-        self._gpu_particle_system: GPUParticleSystem = get_gpu_particle_system()
-        self._input_gesture_system: InputGestureSystem = get_input_gesture_system()
+        self._profiler_system: ProfilerSystem = get_profiler_system()
+        self._expression_engine: ExpressionEngine = get_expression_engine()
+        self._extension_runtime: ExtensionRuntime = get_extension_runtime()
+        self._terrain_system: TerrainSystem = get_terrain_system()
+        self._fog_of_war: FogOfWarSystem = get_fog_of_war()
+        self._shader_graph: ShaderGraph = get_shader_graph()
+        self._build_pipeline: BuildPipeline = get_build_pipeline()
+        self._tileset_system: TileSetSystem = get_tileset_system()
+        self._resource_pack: ResourcePack = get_resource_pack()
+        self._input_profile_system: InputProfileSystem = get_input_profile_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -483,12 +490,16 @@ class SparkEngine:
             "occlusion_system": self._occlusion_system.get_stats(),
             "timeline_system": self._timeline_system.get_stats(),
             "vfx_system": self._vfx_system.get_stats(),
-            "expression_evaluator": self._expression_evaluator.get_stats(),
-            "scene_variant_system": self._scene_variant_system.get_stats(),
-            "hot_reload_system": self._hot_reload_system.get_stats(),
-            "physics_joints_system": self._physics_joints_system.get_stats(),
-            "gpu_particle_system": self._gpu_particle_system.get_stats(),
-            "input_gesture_system": self._input_gesture_system.get_stats(),
+            "profiler_system": self._profiler_system.get_stats(),
+            "expression_engine": self._expression_engine.get_stats(),
+            "extension_runtime": self._extension_runtime.get_stats(),
+            "terrain_system": self._terrain_system.get_stats(),
+            "fog_of_war": self._fog_of_war.get_stats(),
+            "shader_graph": self._shader_graph.get_stats(),
+            "build_pipeline": self._build_pipeline.get_stats(),
+            "tileset_system": self._tileset_system.get_stats(),
+            "resource_pack": self._resource_pack.get_stats(),
+            "input_profile_system": self._input_profile_system.get_stats(),
         }
 
     @property
