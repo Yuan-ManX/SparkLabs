@@ -277,6 +277,8 @@ from sparkai.agent.agent_expression_evaluator import ExpressionEvaluator, Expres
 from sparkai.agent.agent_class_registry import ClassRegistry, DataType, TypeDescriptor, get_class_registry
 from sparkai.agent.agent_multi_modal import MultiModalAgent, AnalysisDomain, get_multi_modal_agent
 from sparkai.agent.agent_import_pipeline import ImportPipelineEngine, AssetImportType, ImportTask, get_import_pipeline
+from sparkai.agent.agent_prompt_optimizer import PromptOptimizer, PromptDomain, PromptTemplate, PromptSession, get_prompt_optimizer
+from sparkai.agent.agent_skill_composer import SkillComposer, SkillDomain, SkillStep, SkillChain, get_skill_composer
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -322,6 +324,8 @@ from sparkai.engine.input_event_system import InputEventSystem, get_input_event_
 from sparkai.engine.game_object import GameObject, GameObjectRegistry, get_game_object_registry
 from sparkai.engine.scene_manager import SceneManager, SceneState, get_scene_manager
 from sparkai.engine.terrain_system import TerrainSystem, TerrainType, NoiseAlgorithm, get_terrain_system
+from sparkai.engine.ui_layout_system import UILayoutSystem, UILayout, UIContainer, UIAnchor, get_ui_layout_system
+from sparkai.engine.performance_overlay import PerformanceOverlay, FrameSample, MetricThreshold, get_performance_overlay
 from sparkai.engine.save_system import SaveSystem, SaveSlot, SaveStatus, get_save_system
 from sparkai.engine.network_sync import NetworkSync, SyncAuthority as NetSyncAuthority, get_network_sync
 from sparkai.engine.behavior_tree import BehaviorTree, NodeStatus, Blackboard, get_behavior_tree
@@ -662,6 +666,10 @@ class AgentRuntime:
         self._rag_pipeline: Optional[RAGPipeline] = None
         self._tree_of_thought: Optional[TreeOfThought] = None
         self._reflection_loop: Optional[ReflectionLoop] = None
+        self._prompt_optimizer: Optional[PromptOptimizer] = None
+        self._skill_composer: Optional[SkillComposer] = None
+        self._ui_layout_system: Optional[UILayoutSystem] = None
+        self._performance_overlay: Optional[PerformanceOverlay] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
@@ -905,6 +913,10 @@ class AgentRuntime:
             self._rag_pipeline = get_rag_pipeline()
             self._tree_of_thought = get_tree_of_thought()
             self._reflection_loop = get_reflection_loop()
+            self._prompt_optimizer = get_prompt_optimizer()
+            self._skill_composer = get_skill_composer()
+            self._ui_layout_system = get_ui_layout_system()
+            self._performance_overlay = get_performance_overlay()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -1096,6 +1108,10 @@ class AgentRuntime:
             self._integration.register_subsystem("rag_pipeline", self._rag_pipeline)
             self._integration.register_subsystem("tree_of_thought", self._tree_of_thought)
             self._integration.register_subsystem("reflection_loop", self._reflection_loop)
+            self._integration.register_subsystem("prompt_optimizer", self._prompt_optimizer)
+            self._integration.register_subsystem("skill_composer", self._skill_composer)
+            self._integration.register_subsystem("ui_layout_system", self._ui_layout_system)
+            self._integration.register_subsystem("performance_overlay", self._performance_overlay)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -1124,7 +1140,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 171,
+                    "subsystems": 175,
                 }},
             ))
 
@@ -2330,6 +2346,10 @@ class AgentRuntime:
                 "rag_pipeline": self._rag_pipeline is not None,
                 "tree_of_thought": self._tree_of_thought is not None,
                 "reflection_loop": self._reflection_loop is not None,
+                "prompt_optimizer": self._prompt_optimizer is not None,
+                "skill_composer": self._skill_composer is not None,
+                "ui_layout_system": self._ui_layout_system is not None,
+                "performance_overlay": self._performance_overlay is not None,
             },
         }
 
@@ -2747,6 +2767,14 @@ class AgentRuntime:
             status["tree_of_thought_stats"] = self._tree_of_thought.get_stats()
         if self._reflection_loop:
             status["reflection_loop_stats"] = self._reflection_loop.get_stats()
+        if self._prompt_optimizer:
+            status["prompt_optimizer_stats"] = self._prompt_optimizer.get_stats()
+        if self._skill_composer:
+            status["skill_composer_stats"] = self._skill_composer.get_stats()
+        if self._ui_layout_system:
+            status["ui_layout_system_stats"] = self._ui_layout_system.get_stats()
+        if self._performance_overlay:
+            status["performance_overlay_stats"] = self._performance_overlay.get_stats()
         return status
 
 

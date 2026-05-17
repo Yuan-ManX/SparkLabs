@@ -122,6 +122,8 @@ from sparkai.engine.scene_tree import SceneTree, get_scene_tree
 from sparkai.engine.event_system import EventSystem, get_event_system
 from sparkai.engine.animation_system import AnimationSystem, get_animation_system
 from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding_system
+from sparkai.engine.ui_layout_system import UILayoutSystem, get_ui_layout_system
+from sparkai.engine.performance_overlay import PerformanceOverlay, get_performance_overlay
 
 
 class SparkEngine:
@@ -249,6 +251,8 @@ class SparkEngine:
         self._event_system: EventSystem = get_event_system()
         self._animation_system: AnimationSystem = get_animation_system()
         self._pathfinding_system: PathfindingSystem = get_pathfinding_system()
+        self._ui_layout_system: UILayoutSystem = get_ui_layout_system()
+        self._performance_overlay: PerformanceOverlay = get_performance_overlay()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -512,6 +516,8 @@ class SparkEngine:
             "event_system": self._event_system.get_stats(),
             "animation_system": self._animation_system.get_stats(),
             "pathfinding_system": self._pathfinding_system.get_stats(),
+            "ui_layout_system": self._ui_layout_system.get_stats(),
+            "performance_overlay": self._performance_overlay.get_stats(),
         }
 
     @property

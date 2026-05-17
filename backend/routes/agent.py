@@ -152,6 +152,10 @@ from sparkai.engine.scene_tree import SceneTree, get_scene_tree
 from sparkai.engine.event_system import EventSystem, get_event_system
 from sparkai.engine.animation_system import AnimationSystem, get_animation_system
 from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding_system
+from sparkai.agent.agent_prompt_optimizer import PromptOptimizer, PromptDomain, get_prompt_optimizer
+from sparkai.agent.agent_skill_composer import SkillComposer, SkillDomain, get_skill_composer
+from sparkai.engine.ui_layout_system import UILayoutSystem, get_ui_layout_system
+from sparkai.engine.performance_overlay import PerformanceOverlay, get_performance_overlay
 
 router = APIRouter()
 
@@ -2088,6 +2092,10 @@ _scene_tree = get_scene_tree()
 _event_system = get_event_system()
 _animation_system = get_animation_system()
 _pathfinding_system = get_pathfinding_system()
+_prompt_optimizer = get_prompt_optimizer()
+_skill_composer = get_skill_composer()
+_ui_layout_system = get_ui_layout_system()
+_performance_overlay = get_performance_overlay()
 
 
 # === Blueprint Engine ===
@@ -15191,3 +15199,333 @@ async def pathfinding_smooth(path_id: str = "", method: str = "simple"):
     from sparkai.engine.pathfinding_system import SmoothingMethod
     result = _pathfinding_system.smooth_path(path_id, SmoothingMethod(method))
     return result.__dict__ if hasattr(result, '__dict__') else str(result)
+
+
+# === Prompt Optimizer Endpoints ===
+
+@router.get("/prompt-optimizer/stats")
+async def prompt_optimizer_stats():
+    return _prompt_optimizer.get_stats()
+
+@router.post("/prompt-optimizer/create-template")
+async def prompt_optimizer_create_template(name: str = "", domain: str = "",
+                                             template_text: str = "",
+                                             variables: str = "",
+                                             system_prompt: str = "",
+                                             temperature: float = 0.7,
+                                             max_tokens: int = 2048):
+    var_list = [v.strip() for v in variables.split(",") if v.strip()] if variables else []
+    tmpl = _prompt_optimizer.create_template(name, domain, template_text, var_list,
+                                              system_prompt, temperature, max_tokens)
+    return tmpl.to_dict()
+
+@router.get("/prompt-optimizer/get-template")
+async def prompt_optimizer_get_template(template_id: str = ""):
+    tmpl = _prompt_optimizer.get_template(template_id)
+    return tmpl.to_dict() if tmpl else {"error": "not found"}
+
+@router.get("/prompt-optimizer/list-templates")
+async def prompt_optimizer_list_templates(domain: str = ""):
+    templates = _prompt_optimizer.list_templates(domain or None)
+    return {"templates": [t.to_dict() for t in templates]}
+
+@router.post("/prompt-optimizer/fill-template")
+async def prompt_optimizer_fill_template(template_id: str = "", variables: str = "{}"):
+    import json as _json
+    vars_dict = _json.loads(variables) if isinstance(variables, str) else variables
+    filled = _prompt_optimizer.fill_template(template_id, vars_dict)
+    return {"filled_prompt": filled}
+
+@router.post("/prompt-optimizer/record-session")
+async def prompt_optimizer_record_session(template_id: str = "",
+                                            filled_prompt: str = "",
+                                            response_text: str = "",
+                                            quality_score: float = 0.0,
+                                            latency_ms: float = 0.0,
+                                            domain: str = "",
+                                            tags: str = "",
+                                            user_feedback: str = ""):
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else []
+    sid = _prompt_optimizer.record_session(template_id, filled_prompt, response_text,
+                                             quality_score, latency_ms, domain,
+                                             tag_list, user_feedback)
+    return {"session_id": sid}
+
+@router.get("/prompt-optimizer/get-best-template")
+async def prompt_optimizer_get_best(domain: str = ""):
+    tmpl = _prompt_optimizer.get_best_template(domain)
+    return tmpl.to_dict() if tmpl else {"error": "not found"}
+
+@router.get("/prompt-optimizer/domain-stats")
+async def prompt_optimizer_domain_stats(domain: str = ""):
+    return _prompt_optimizer.get_domain_stats(domain)
+
+@router.post("/prompt-optimizer/add-rule")
+async def prompt_optimizer_add_rule(rule_name: str = "", domain: str = "",
+                                      condition_description: str = "",
+                                      transformation: str = "",
+                                      priority: int = 0):
+    rule = _prompt_optimizer.add_rule(rule_name, domain, condition_description,
+                                       transformation, priority)
+    return {"rule": rule.to_dict()}
+
+@router.get("/prompt-optimizer/list-rules")
+async def prompt_optimizer_list_rules(domain: str = ""):
+    rules = _prompt_optimizer.list_rules(domain or None)
+    return {"rules": [r.to_dict() for r in rules]}
+
+@router.post("/prompt-optimizer/optimize-template")
+async def prompt_optimizer_optimize_template(template_id: str = ""):
+    result = _prompt_optimizer.optimize_template(template_id)
+    return result
+
+@router.post("/prompt-optimizer/export-template")
+async def prompt_optimizer_export_template(template_id: str = ""):
+    data = _prompt_optimizer.export_template(template_id)
+    return {"data": data} if data else {"error": "not found"}
+
+@router.post("/prompt-optimizer/import-template")
+async def prompt_optimizer_import_template(data: str = "{}"):
+    import json as _json
+    parsed = _json.loads(data) if isinstance(data, str) else data
+    tmpl = _prompt_optimizer.import_template(parsed)
+    return tmpl.to_dict()
+
+
+# === Skill Composer Endpoints ===
+
+@router.get("/skill-composer/stats")
+async def skill_composer_stats():
+    return _skill_composer.get_stats()
+
+@router.post("/skill-composer/create-chain")
+async def skill_composer_create_chain(name: str = "", description: str = "",
+                                       domain: str = "game_generation",
+                                       is_parallel: bool = False):
+    from sparkai.agent.agent_skill_composer import SkillDomain
+    chain = _skill_composer.create_chain(name, description, SkillDomain(domain), is_parallel)
+    return chain.to_dict()
+
+@router.get("/skill-composer/get-chain")
+async def skill_composer_get_chain(chain_id: str = ""):
+    chain = _skill_composer.get_chain(chain_id)
+    return chain.to_dict() if chain else {"error": "not found"}
+
+@router.get("/skill-composer/list-chains")
+async def skill_composer_list_chains():
+    return {"chains": _skill_composer.list_chains()}
+
+@router.post("/skill-composer/add-step")
+async def skill_composer_add_step(chain_id: str = "", step_name: str = "",
+                                    skill_type: str = "", agent_name: str = "",
+                                    parameters: str = "{}",
+                                    input_spec: str = "{}",
+                                    output_spec: str = "{}",
+                                    timeout_seconds: int = 60,
+                                    retry_count: int = 0):
+    import json as _json
+    params = _json.loads(parameters) if isinstance(parameters, str) else parameters
+    in_spec = _json.loads(input_spec) if isinstance(input_spec, str) else input_spec
+    out_spec = _json.loads(output_spec) if isinstance(output_spec, str) else output_spec
+    sid = _skill_composer.add_step(chain_id, step_name, skill_type, agent_name,
+                                     params, in_spec, out_spec, timeout_seconds, retry_count)
+    return {"step_id": sid}
+
+@router.post("/skill-composer/remove-step")
+async def skill_composer_remove_step(chain_id: str = "", step_index: int = 0):
+    removed = _skill_composer.remove_step(chain_id, step_index)
+    return {"removed": removed}
+
+@router.post("/skill-composer/execute-chain")
+async def skill_composer_execute_chain(chain_id: str = ""):
+    result = _skill_composer.execute_chain(chain_id)
+    return {"result": result}
+
+@router.get("/skill-composer/get-execution-log")
+async def skill_composer_get_log(chain_id: str = ""):
+    log = _skill_composer.get_execution_log(chain_id or None)
+    return {"log": log}
+
+@router.get("/skill-composer/chain-progress")
+async def skill_composer_chain_progress(chain_id: str = ""):
+    progress = _skill_composer.get_chain_progress(chain_id)
+    if progress:
+        total, done, pct = progress
+        return {"total_steps": total, "done_steps": done, "percent": pct}
+    return {"error": "not found"}
+
+@router.post("/skill-composer/cancel-chain")
+async def skill_composer_cancel_chain(chain_id: str = ""):
+    cancelled = _skill_composer.cancel_chain(chain_id)
+    return {"cancelled": cancelled}
+
+@router.post("/skill-composer/create-template")
+async def skill_composer_create_template(name: str = "", description: str = "",
+                                           domain: str = "game_generation",
+                                           chain_id: str = ""):
+    from sparkai.agent.agent_skill_composer import SkillDomain
+    tid = _skill_composer.create_template(name, description, SkillDomain(domain), chain_id)
+    return {"template_id": tid}
+
+@router.get("/skill-composer/list-templates")
+async def skill_composer_list_templates(domain: str = ""):
+    from sparkai.agent.agent_skill_composer import SkillDomain
+    if domain:
+        templates = _skill_composer.get_templates_by_domain(SkillDomain(domain))
+        return {"templates": [t.to_dict() for t in templates]}
+    return {"templates": _skill_composer.list_templates()}
+
+@router.get("/skill-composer/get-template")
+async def skill_composer_get_template(template_id: str = ""):
+    tmpl = _skill_composer.get_template(template_id)
+    return tmpl.to_dict() if tmpl else {"error": "not found"}
+
+@router.post("/skill-composer/instantiate-template")
+async def skill_composer_instantiate_template(template_id: str = "", name: str = ""):
+    cid = _skill_composer.instantiate_template(template_id, name)
+    return {"chain_id": cid}
+
+
+# === UI Layout System Endpoints ===
+
+@router.get("/ui-layout/stats")
+async def ui_layout_stats():
+    return _ui_layout_system.get_stats()
+
+@router.post("/ui-layout/create")
+async def ui_layout_create(name: str = "", theme_name: str = "default"):
+    lid = _ui_layout_system.create_layout(name, theme_name)
+    return {"layout_id": lid}
+
+@router.post("/ui-layout/add-container")
+async def ui_layout_add_container(layout_id: str = "", parent_id: str = "",
+                                    container_type: str = "box",
+                                    name: str = "",
+                                    x: float = 0.0, y: float = 0.0,
+                                    width: float = 100.0, height: float = 100.0):
+    from sparkai.engine.ui_layout_system import ContainerType
+    cid = _ui_layout_system.add_container(
+        layout_id, parent_id, name, ContainerType(container_type),
+        x, y, width, height,
+    )
+    return {"container_id": cid}
+
+@router.post("/ui-layout/remove-container")
+async def ui_layout_remove_container(layout_id: str = "", container_id: str = ""):
+    removed = _ui_layout_system.remove_container(layout_id, container_id)
+    return {"removed": removed}
+
+@router.post("/ui-layout/set-anchor")
+async def ui_layout_set_anchor(layout_id: str = "", container_id: str = "",
+                                 anchor_mode: str = "full_rect",
+                                 margin_left: float = 0.0, margin_top: float = 0.0,
+                                 margin_right: float = 0.0, margin_bottom: float = 0.0):
+    from sparkai.engine.ui_layout_system import AnchorMode
+    aid = _ui_layout_system.set_anchor(layout_id, container_id,
+                                         AnchorMode(anchor_mode),
+                                         (margin_left, margin_top, margin_right, margin_bottom))
+    return {"anchor_id": aid if aid else None}
+
+@router.get("/ui-layout/get-container-chain")
+async def ui_layout_get_chain(layout_id: str = "", container_id: str = ""):
+    chain = _ui_layout_system.get_container_chain(layout_id, container_id)
+    return {"chain": chain.to_dict() if chain else None}
+
+@router.post("/ui-layout/arrange-children")
+async def ui_layout_arrange(layout_id: str = "", container_id: str = ""):
+    arranged = _ui_layout_system.arrange_children(layout_id, container_id)
+    return {"arranged": arranged}
+
+@router.post("/ui-layout/export")
+async def ui_layout_export(layout_id: str = ""):
+    data = _ui_layout_system.export_layout(layout_id)
+    return {"data": data} if data else {"error": "not found"}
+
+@router.post("/ui-layout/import")
+async def ui_layout_import(data: str = "{}"):
+    import json as _json
+    parsed = _json.loads(data) if isinstance(data, str) else data
+    lid = _ui_layout_system.import_layout(parsed)
+    return {"layout_id": lid}
+
+
+# === Performance Overlay Endpoints ===
+
+@router.get("/performance-overlay/stats")
+async def performance_overlay_stats():
+    return _performance_overlay.get_stats()
+
+@router.post("/performance-overlay/record-frame")
+async def performance_overlay_record(delta_time: float = 16.67,
+                                       draw_calls: int = 100,
+                                       triangle_count: int = 5000,
+                                       memory_used_mb: float = 120.0,
+                                       cpu_time_ms: float = 8.0,
+                                       gpu_time_ms: float = 4.0,
+                                       physics_time_ms: float = 2.0,
+                                       script_time_ms: float = 1.0,
+                                       object_count: int = 200):
+    sample = _performance_overlay.record_frame(delta_time, draw_calls,
+                                                  triangle_count, memory_used_mb,
+                                                  cpu_time_ms, gpu_time_ms,
+                                                  physics_time_ms, script_time_ms,
+                                                  object_count)
+    return {"sample": sample.to_dict()}
+
+@router.get("/performance-overlay/current-fps")
+async def performance_overlay_fps():
+    return {"fps": _performance_overlay.get_current_fps()}
+
+@router.get("/performance-overlay/frame-time-stats")
+async def performance_overlay_frame_times():
+    return _performance_overlay.get_frame_time_stats()
+
+@router.get("/performance-overlay/memory-usage")
+async def performance_overlay_memory():
+    return _performance_overlay.get_memory_usage()
+
+@router.get("/performance-overlay/metric-summary")
+async def performance_overlay_summary(section: str = "all"):
+    from sparkai.engine.performance_overlay import OverlaySection
+    return _performance_overlay.get_metric_summary(OverlaySection(section))
+
+@router.post("/performance-overlay/set-threshold")
+async def performance_overlay_set_threshold(metric_name: str = "",
+                                               warning_threshold: float = 0.0,
+                                               error_threshold: float = 0.0,
+                                               is_enabled: bool = True):
+    _performance_overlay.set_threshold(metric_name, warning_threshold,
+                                        error_threshold, is_enabled)
+    return {"set": True}
+
+@router.get("/performance-overlay/check")
+async def performance_overlay_check():
+    alerts = _performance_overlay.check_thresholds()
+    return {"alerts": alerts}
+
+@router.get("/performance-overlay/generate-text")
+async def performance_overlay_text(sections: str = "fps,memory"):
+    from sparkai.engine.performance_overlay import OverlaySection
+    sec_list = [OverlaySection(s.strip()) for s in sections.split(",") if s.strip()]
+    text = _performance_overlay.generate_overlay_text(sec_list)
+    return {"overlay_text": text}
+
+@router.post("/performance-overlay/start-snapshot")
+async def performance_overlay_start_snapshot(name: str = ""):
+    sid = _performance_overlay.start_snapshot(name)
+    return {"snapshot_id": sid}
+
+@router.post("/performance-overlay/stop-snapshot")
+async def performance_overlay_stop_snapshot():
+    snap = _performance_overlay.stop_snapshot()
+    return snap.to_dict() if hasattr(snap, 'to_dict') else {"snapshot": str(snap)} if snap else {"error": "no snapshot active"}
+
+@router.get("/performance-overlay/recent-snapshots")
+async def performance_overlay_snapshots(limit: int = 10):
+    snaps = _performance_overlay.get_recent_snapshots(limit)
+    return {"snapshots": [s.to_dict() if hasattr(s, 'to_dict') else str(s) for s in snaps]}
+
+@router.post("/performance-overlay/reset")
+async def performance_overlay_reset():
+    _performance_overlay.reset_metrics()
+    return {"reset": True}

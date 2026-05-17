@@ -3867,6 +3867,164 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "pathfinding_error", "error": str(e)})
 
+                elif msg_type == "prompt_optimizer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_prompt_optimizer import get_prompt_optimizer, PromptDomain
+                        po = get_prompt_optimizer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "prompt_opt_stats", "data": po.get_stats()})
+                        elif sub == "create_template":
+                            import json as _json
+                            tmpl = po.create_template(
+                                data.get("name", ""),
+                                data.get("domain", ""),
+                                data.get("template_text", ""),
+                                data.get("variables", []),
+                                data.get("system_prompt", ""),
+                                data.get("temperature", 0.7),
+                                data.get("max_tokens", 2048),
+                            )
+                            await manager.send_to_client(client_id, {"type": "prompt_template_created", "data": tmpl.to_dict()})
+                        elif sub == "fill":
+                            vars_dict = data.get("variable_values", {})
+                            filled = po.fill_template(data.get("template_id", ""), vars_dict)
+                            await manager.send_to_client(client_id, {"type": "prompt_filled", "data": filled})
+                        elif sub == "optimize":
+                            result = po.optimize_template(data.get("template_id", ""))
+                            await manager.send_to_client(client_id, {"type": "prompt_optimized", "data": result})
+                        elif sub == "get_best":
+                            tmpl = po.get_best_template(data.get("domain", ""))
+                            if tmpl:
+                                await manager.send_to_client(client_id, {"type": "best_template", "data": tmpl.to_dict()})
+                        elif sub == "domain_stats":
+                            stats = po.get_domain_stats(data.get("domain", ""))
+                            await manager.send_to_client(client_id, {"type": "prompt_domain_stats", "data": stats})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "prompt_optimizer_error", "error": str(e)})
+
+                elif msg_type == "skill_composer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_skill_composer import get_skill_composer, SkillDomain
+                        sc = get_skill_composer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "skill_composer_stats", "data": sc.get_stats()})
+                        elif sub == "create_chain":
+                            cid = sc.create_chain(
+                                data.get("name", ""),
+                                data.get("description", ""),
+                                SkillDomain(data.get("domain", "game_generation")),
+                                data.get("is_parallel", False),
+                            )
+                            await manager.send_to_client(client_id, {"type": "chain_created", "chain_id": cid})
+                        elif sub == "add_step":
+                            sid = sc.add_step(
+                                data.get("chain_id", ""),
+                                data.get("step_name", ""),
+                                data.get("skill_type", ""),
+                                data.get("agent_name", ""),
+                                data.get("parameters", {}),
+                                data.get("input_spec", {}),
+                                data.get("output_spec", {}),
+                                data.get("timeout_seconds", 60),
+                                data.get("retry_count", 0),
+                            )
+                            await manager.send_to_client(client_id, {"type": "step_added", "step_id": sid})
+                        elif sub == "execute":
+                            result = sc.execute_chain(data.get("chain_id", ""))
+                            await manager.send_to_client(client_id, {"type": "chain_executed", "data": result})
+                        elif sub == "progress":
+                            progress = sc.get_chain_progress(data.get("chain_id", ""))
+                            if progress:
+                                total, done, pct = progress
+                                await manager.send_to_client(client_id, {"type": "chain_progress", "total": total, "done": done, "percent": pct})
+                        elif sub == "list_chains":
+                            await manager.send_to_client(client_id, {"type": "chains_list", "chains": sc.list_chains()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "skill_composer_error", "error": str(e)})
+
+                elif msg_type == "ui_layout":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.ui_layout_system import get_ui_layout_system, ContainerType, AnchorMode
+                        ul = get_ui_layout_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "ui_layout_stats", "data": ul.get_stats()})
+                        elif sub == "create":
+                            lid = ul.create_layout(data.get("name", ""), data.get("theme_name", "default"))
+                            await manager.send_to_client(client_id, {"type": "layout_created", "layout_id": lid})
+                        elif sub == "add_container":
+                            from sparkai.engine.ui_layout_system import SizeMode, AlignmentType
+                            cid = ul.add_container(
+                                data.get("layout_id", ""),
+                                data.get("parent_id", ""),
+                                ContainerType(data.get("container_type", "box")),
+                                data.get("name", ""),
+                                data.get("x", 0), data.get("y", 0),
+                                data.get("width", 100), data.get("height", 100),
+                                SizeMode.FIXED, SizeMode.FIXED,
+                                AlignmentType.START, AlignmentType.START,
+                            )
+                            await manager.send_to_client(client_id, {"type": "container_added", "container_id": cid})
+                        elif sub == "set_anchor":
+                            aid = ul.set_anchor(
+                                data.get("layout_id", ""),
+                                data.get("container_id", ""),
+                                AnchorMode(data.get("anchor_mode", "full_rect")),
+                                data.get("margin_left", 0),
+                                data.get("margin_top", 0),
+                                data.get("margin_right", 0),
+                                data.get("margin_bottom", 0),
+                            )
+                            await manager.send_to_client(client_id, {"type": "anchor_set", "anchor_id": aid})
+                        elif sub == "arrange":
+                            arranged = ul.arrange_children(data.get("layout_id", ""), data.get("container_id", ""))
+                            await manager.send_to_client(client_id, {"type": "children_arranged", "arranged": arranged})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "ui_layout_error", "error": str(e)})
+
+                elif msg_type == "performance_overlay":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.performance_overlay import get_performance_overlay, OverlaySection
+                        po = get_performance_overlay()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "perf_overlay_stats", "data": po.get_stats()})
+                        elif sub == "record_frame":
+                            sample = po.record_frame(
+                                data.get("delta_time", 16.67),
+                                data.get("draw_calls", 100),
+                                data.get("triangle_count", 5000),
+                                data.get("memory_used_mb", 120.0),
+                                data.get("cpu_time_ms", 8.0),
+                                data.get("gpu_time_ms", 4.0),
+                                data.get("physics_time_ms", 2.0),
+                                data.get("script_time_ms", 1.0),
+                                data.get("object_count", 200),
+                            )
+                            await manager.send_to_client(client_id, {"type": "frame_recorded", "data": sample.to_dict() if hasattr(sample, 'to_dict') else str(sample)})
+                        elif sub == "fps":
+                            fps = po.get_current_fps()
+                            await manager.send_to_client(client_id, {"type": "current_fps", "fps": fps})
+                        elif sub == "check_thresholds":
+                            alerts = po.check_thresholds()
+                            await manager.send_to_client(client_id, {"type": "threshold_alerts", "alerts": alerts})
+                        elif sub == "overlay_text":
+                            sections_str = data.get("sections", "fps,memory")
+                            sec_list = [OverlaySection(s.strip()) for s in sections_str.split(",") if s.strip()]
+                            text = po.generate_overlay_text(sec_list)
+                            await manager.send_to_client(client_id, {"type": "overlay_text", "data": text})
+                        elif sub == "start_snapshot":
+                            sid = po.start_snapshot(data.get("name", ""))
+                            await manager.send_to_client(client_id, {"type": "snapshot_started", "snapshot_id": sid})
+                        elif sub == "stop_snapshot":
+                            snap = po.stop_snapshot()
+                            if snap:
+                                await manager.send_to_client(client_id, {"type": "snapshot_stopped", "data": snap.to_dict() if hasattr(snap, 'to_dict') else str(snap)})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "perf_overlay_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
