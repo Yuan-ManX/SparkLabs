@@ -1,390 +1,418 @@
 """
-SparkLabs Agent - Import Pipeline
+SparkLabs Agent - Import Pipeline Engine
 
-Resource import orchestration system for the game engine.
-Handles automatic format detection, conversion, validation,
-and asset registration when files are added to the project.
-AI agents use this pipeline to programmatically manage assets
-and ensure all resources are correctly prepared for the engine.
+AI-assisted asset import pipeline with format detection,
+preset management, batch processing, and AI-driven recommendations.
+Handles textures, models, audio, fonts, spritesheets, animations,
+tilemaps, and shaders with configurable compression presets.
 
 Architecture:
-  ImportPipeline
-    |-- FormatDetector (MIME type + extension → known format)
-    |-- ImportRule (source format → target format pipeline)
-    |-- FormatConverter (transcoding between formats)
-    |-- AssetValidator (post-import integrity checks)
-    |-- ImportQueue (batch processing with progress tracking)
+  ImportPipelineEngine
+    |-- Preset Manager (create and manage import configurations)
+    |-- AI Recommender (suggest optimal presets from file analysis)
+    |-- Queue Engine (single-file and batch import scheduling)
+    |-- Progress Tracker (per-task status monitoring)
+    |-- Import Validator (post-import integrity verification)
 
-Import Stages:
-  1. DETECT: identify source file format
-  2. VALIDATE: check file integrity and compatibility
-  3. CONVERT: transform to engine-native format
-  4. OPTIMIZE: apply engine-specific optimizations
-  5. REGISTER: add to resource manager and catalog
-
-Supported Source Formats:
-  - Images: PNG, JPG, GIF, BMP, SVG, WEBP
-  - Audio: WAV, MP3, OGG, FLAC
-  - Data: JSON, YAML, CSV, TMX (Tiled maps)
-  - Fonts: TTF, OTF
+Compression presets range from lossless through custom, supporting
+mipmap generation, collision mesh generation, resolution limits,
+and texture filter mode configuration.
 """
 
 from __future__ import annotations
 
 import os
+import re
 import threading
 import time
+import uuid
+from collections import defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
-class ImportStage(Enum):
-    DETECT = "detect"
-    VALIDATE = "validate"
-    CONVERT = "convert"
-    OPTIMIZE = "optimize"
-    REGISTER = "register"
-
-
-class ImportStatus(Enum):
-    QUEUED = "queued"
-    DETECTING = "detecting"
-    VALIDATING = "validating"
-    CONVERTING = "converting"
-    OPTIMIZING = "optimizing"
-    REGISTERING = "registering"
-    COMPLETED = "completed"
-    FAILED = "failed"
-    SKIPPED = "skipped"
-
-
-class AssetCategory(Enum):
+class AssetImportType(Enum):
     TEXTURE = "texture"
-    SPRITE_SHEET = "sprite_sheet"
+    MODEL = "model"
     AUDIO = "audio"
     FONT = "font"
+    SPRITESHEET = "spritesheet"
+    ANIMATION = "animation"
     TILEMAP = "tilemap"
-    DATA = "data"
+    SHADER = "shader"
+    RAW_DATA = "raw_data"
     UNKNOWN = "unknown"
 
 
-SUPPORTED_FORMATS: Dict[str, Dict[str, Any]] = {
-    "png": {"category": AssetCategory.TEXTURE, "name": "PNG Image"},
-    "jpg": {"category": AssetCategory.TEXTURE, "name": "JPEG Image"},
-    "jpeg": {"category": AssetCategory.TEXTURE, "name": "JPEG Image"},
-    "gif": {"category": AssetCategory.TEXTURE, "name": "GIF Image"},
-    "bmp": {"category": AssetCategory.TEXTURE, "name": "Bitmap Image"},
-    "webp": {"category": AssetCategory.TEXTURE, "name": "WebP Image"},
-    "svg": {"category": AssetCategory.TEXTURE, "name": "SVG Vector"},
-    "dds": {"category": AssetCategory.TEXTURE, "name": "DDS Texture"},
-    "wav": {"category": AssetCategory.AUDIO, "name": "WAV Audio"},
-    "mp3": {"category": AssetCategory.AUDIO, "name": "MP3 Audio"},
-    "ogg": {"category": AssetCategory.AUDIO, "name": "OGG Audio"},
-    "flac": {"category": AssetCategory.AUDIO, "name": "FLAC Audio"},
-    "ttf": {"category": AssetCategory.FONT, "name": "TrueType Font"},
-    "otf": {"category": AssetCategory.FONT, "name": "OpenType Font"},
-    "tmx": {"category": AssetCategory.TILEMAP, "name": "Tiled Map"},
-    "json": {"category": AssetCategory.DATA, "name": "JSON Data"},
-    "yaml": {"category": AssetCategory.DATA, "name": "YAML Data"},
-    "csv": {"category": AssetCategory.DATA, "name": "CSV Data"},
+class CompressionPreset(Enum):
+    LOSSLESS = "lossless"
+    HIGH_QUALITY = "high_quality"
+    BALANCED = "balanced"
+    PERFORMANCE = "performance"
+    CUSTOM = "custom"
+
+
+EXTENSION_TYPE_MAP: Dict[str, AssetImportType] = {
+    "png": AssetImportType.TEXTURE, "jpg": AssetImportType.TEXTURE,
+    "jpeg": AssetImportType.TEXTURE, "gif": AssetImportType.TEXTURE,
+    "bmp": AssetImportType.TEXTURE, "webp": AssetImportType.TEXTURE,
+    "dds": AssetImportType.TEXTURE, "svg": AssetImportType.TEXTURE,
+    "fbx": AssetImportType.MODEL, "obj": AssetImportType.MODEL,
+    "gltf": AssetImportType.MODEL, "glb": AssetImportType.MODEL,
+    "blend": AssetImportType.MODEL,
+    "wav": AssetImportType.AUDIO, "mp3": AssetImportType.AUDIO,
+    "ogg": AssetImportType.AUDIO, "flac": AssetImportType.AUDIO,
+    "aiff": AssetImportType.AUDIO,
+    "ttf": AssetImportType.FONT, "otf": AssetImportType.FONT,
+    "tmx": AssetImportType.TILEMAP, "tsx": AssetImportType.TILEMAP,
+    "glsl": AssetImportType.SHADER, "hlsl": AssetImportType.SHADER,
+    "vert": AssetImportType.SHADER, "frag": AssetImportType.SHADER,
 }
 
 
 @dataclass
-class ImportEntry:
-    import_id: str
-    source_path: str
-    target_path: str = ""
-    category: AssetCategory = AssetCategory.UNKNOWN
+class ImportPreset:
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    name: str = ""
     source_format: str = ""
     target_format: str = ""
-    status: ImportStatus = ImportStatus.QUEUED
-    stage: ImportStage = ImportStage.DETECT
-    started_at: float = field(default_factory=time.time)
-    completed_at: Optional[float] = None
-    size_bytes: int = 0
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    errors: List[str] = field(default_factory=list)
-    warnings: List[str] = field(default_factory=list)
+    compression: CompressionPreset = CompressionPreset.BALANCED
+    mipmap_generation: bool = True
+    generate_collision: bool = False
+    resolution_max: int = 2048
+    filter_mode: str = "bilinear"
+    is_ai_generated: bool = False
 
-    def progress_pct(self) -> float:
-        stages = {
-            ImportStage.DETECT: 10.0,
-            ImportStage.VALIDATE: 30.0,
-            ImportStage.CONVERT: 60.0,
-            ImportStage.OPTIMIZE: 80.0,
-            ImportStage.REGISTER: 100.0,
-        }
-        return stages.get(self.stage, 0.0)
-
-    def to_dict(self) -> dict:
+    def to_dict(self) -> Dict[str, Any]:
         return {
-            "import_id": self.import_id,
-            "source_path": self.source_path,
-            "target_path": self.target_path,
-            "category": self.category.value,
+            "id": self.id,
+            "name": self.name,
             "source_format": self.source_format,
-            "status": self.status.value,
-            "progress": self.progress_pct(),
-            "size_bytes": self.size_bytes,
-            "errors": self.errors,
-            "warnings": self.warnings,
+            "target_format": self.target_format,
+            "compression": self.compression.value,
+            "mipmap_generation": self.mipmap_generation,
+            "generate_collision": self.generate_collision,
+            "resolution_max": self.resolution_max,
+            "filter_mode": self.filter_mode,
+            "is_ai_generated": self.is_ai_generated,
         }
 
 
 @dataclass
-class ImportBatch:
-    batch_id: str
-    entries: List[ImportEntry] = field(default_factory=list)
-    started_at: float = field(default_factory=time.time)
+class ImportTask:
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    source_path: str = ""
+    import_type: AssetImportType = AssetImportType.TEXTURE
+    preset_id: str = ""
+    status: str = "queued"
+    ai_suggestions: List[str] = field(default_factory=list)
+    started_at: Optional[float] = None
+    completed_at: Optional[float] = None
+    error_message: str = ""
 
-    def progress_pct(self) -> float:
-        if not self.entries:
-            return 100.0
-        completed = sum(
-            1 for e in self.entries if e.status == ImportStatus.COMPLETED
-        )
-        return (completed / len(self.entries)) * 100.0
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "source_path": self.source_path,
+            "import_type": self.import_type.value,
+            "preset_id": self.preset_id,
+            "status": self.status,
+            "ai_suggestions_count": len(self.ai_suggestions),
+            "started_at": self.started_at,
+            "completed_at": self.completed_at,
+            "has_error": bool(self.error_message),
+            "elapsed_seconds": (
+                round(self.completed_at - self.started_at, 2)
+                if self.started_at and self.completed_at
+                else None
+            ),
+        }
 
-    def is_complete(self) -> bool:
-        return all(
-            e.status in (ImportStatus.COMPLETED, ImportStatus.FAILED, ImportStatus.SKIPPED)
-            for e in self.entries
-        )
 
+class ImportPipelineEngine:
+    """AI-assisted asset import pipeline with format detection and preset management."""
 
-class ImportPipeline:
-    """
-    Resource import orchestration for the game engine.
+    _instance: Optional["ImportPipelineEngine"] = None
+    _lock = threading.Lock()
 
-    Game projects accumulate diverse assets — sprites, audio,
-    fonts, data files, tilemaps. This pipeline automatically
-    detects formats, validates integrity, converts to optimal
-    engine formats, and registers assets for immediate use.
-    AI agents use this to programmatically manage assets.
-    """
-
-    _instance: Optional["ImportPipeline"] = None
+    MAX_PRESETS = 100
+    MAX_TASKS = 500
 
     def __init__(self):
-        self._imports: Dict[str, ImportEntry] = {}
-        self._batches: Dict[str, ImportBatch] = {}
-        self._converters: Dict[str, Callable] = {}
-        self._hooks: Dict[str, List[Callable]] = {
-            "on_complete": [],
-            "on_fail": [],
-            "on_all_done": [],
-        }
-        self._lock = threading.Lock()
-        self._next_id: int = 0
-        self._MAX_IMPORTS = 500
+        self._presets: Dict[str, ImportPreset] = {}
+        self._tasks: Dict[str, ImportTask] = {}
+        self._task_history: List[str] = []
+        self._total_imports: int = 0
 
     @classmethod
-    def get_instance(cls) -> "ImportPipeline":
+    def get_instance(cls) -> "ImportPipelineEngine":
         if cls._instance is None:
-            cls._instance = cls()
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = cls()
         return cls._instance
 
-    def detect_format(self, file_path: str) -> tuple[AssetCategory, str]:
-        ext = os.path.splitext(file_path)[1].lower().lstrip(".")
-        fmt_info = SUPPORTED_FORMATS.get(ext, {})
-        category = fmt_info.get("category", AssetCategory.UNKNOWN)
-        format_name = fmt_info.get("name", f"Unknown ({ext})")
-        return category, format_name
-
-    def import_asset(
+    def create_preset(
         self,
-        source_path: str,
-        target_path: str = "",
-    ) -> ImportEntry:
-        category, fmt_name = self.detect_format(source_path)
-        ext = os.path.splitext(source_path)[1].lower().lstrip(".")
+        name: str,
+        source_format: str,
+        target_format: str,
+        compression: CompressionPreset,
+        ai_hint: str = "",
+    ) -> ImportPreset:
+        hint_lower = ai_hint.lower()
+        mipmap = True
+        collision = False
+        res_max = 2048
+        filter_mode = "bilinear"
 
-        with self._lock:
-            self._next_id += 1
-            import_id = f"imp-{self._next_id:05d}"
-            entry = ImportEntry(
-                import_id=import_id,
-                source_path=source_path,
-                target_path=target_path or source_path,
-                category=category,
-                source_format=ext,
+        if "no mipmap" in hint_lower or "nomip" in hint_lower:
+            mipmap = False
+        if "collision" in hint_lower:
+            collision = True
+        if "4k" in hint_lower or "4096" in hint_lower:
+            res_max = 4096
+        elif "1k" in hint_lower or "1024" in hint_lower:
+            res_max = 1024
+        if "trilinear" in hint_lower:
+            filter_mode = "trilinear"
+        elif "nearest" in hint_lower:
+            filter_mode = "nearest"
+
+        preset = ImportPreset(
+            name=name,
+            source_format=source_format,
+            target_format=target_format,
+            compression=compression,
+            mipmap_generation=mipmap,
+            generate_collision=collision,
+            resolution_max=res_max,
+            filter_mode=filter_mode,
+            is_ai_generated=bool(ai_hint),
+        )
+
+        self._presets[preset.id] = preset
+        if len(self._presets) > self.MAX_PRESETS:
+            oldest = min(
+                (p for p in self._presets.values()),
+                key=lambda p: p.id,
             )
+            del self._presets[oldest.id]
 
-            if os.path.exists(source_path):
-                entry.size_bytes = os.path.getsize(source_path)
+        return preset
 
-            self._imports[import_id] = entry
-            if len(self._imports) > self._MAX_IMPORTS:
-                oldest = min(
-                    self._imports.keys(),
-                    key=lambda k: self._imports[k].started_at,
-                )
-                del self._imports[oldest]
+    def ai_recommend_preset(
+        self, source_path: str, description: str = ""
+    ) -> Optional[ImportPreset]:
+        ext = os.path.splitext(source_path)[1].lower().lstrip(".")
+        import_type = EXTENSION_TYPE_MAP.get(ext)
 
-        self._process_sync(entry)
-        return entry
+        if import_type is None:
+            return None
 
-    def import_directory(
-        self, directory: str, recursive: bool = True
-    ) -> ImportBatch:
-        with self._lock:
-            self._next_id += 1
-            batch_id = f"batch-{self._next_id:04d}"
-            batch = ImportBatch(batch_id=batch_id)
+        desc_lower = description.lower()
 
-            paths = []
-            if not os.path.isdir(directory):
-                return batch
-
-            if recursive:
-                for root, _, files in os.walk(directory):
-                    for fname in files:
-                        paths.append(os.path.join(root, fname))
+        if import_type == AssetImportType.TEXTURE:
+            if "ui" in desc_lower or "icon" in desc_lower:
+                compression = CompressionPreset.LOSSLESS
+                mipmap = False
+            elif "background" in desc_lower or "large" in desc_lower:
+                compression = CompressionPreset.PERFORMANCE
+                mipmap = True
             else:
-                for fname in os.listdir(directory):
-                    fpath = os.path.join(directory, fname)
-                    if os.path.isfile(fpath):
-                        paths.append(fpath)
+                compression = CompressionPreset.HIGH_QUALITY
+                mipmap = True
 
-            for path in paths:
-                entry = self._create_entry(path)
-                if entry.category != AssetCategory.UNKNOWN:
-                    batch.entries.append(entry)
-                    self._imports[entry.import_id] = entry
-                    self._process_sync(entry)
+        elif import_type == AssetImportType.AUDIO:
+            if "music" in desc_lower or "ambient" in desc_lower:
+                compression = CompressionPreset.HIGH_QUALITY
+            elif "sfx" in desc_lower or "effect" in desc_lower:
+                compression = CompressionPreset.PERFORMANCE
+            else:
+                compression = CompressionPreset.BALANCED
 
-            self._batches[batch_id] = batch
-            return batch
+        elif import_type == AssetImportType.MODEL:
+            compression = CompressionPreset.BALANCED
+            if "static" in desc_lower:
+                compression = CompressionPreset.HIGH_QUALITY
+            elif "dynamic" in desc_lower:
+                compression = CompressionPreset.PERFORMANCE
 
-    def get(self, import_id: str) -> Optional[ImportEntry]:
-        return self._imports.get(import_id)
+        else:
+            compression = CompressionPreset.BALANCED
 
-    def get_batch(self, batch_id: str) -> Optional[ImportBatch]:
-        return self._batches.get(batch_id)
-
-    def list_recent(self, limit: int = 20) -> List[ImportEntry]:
-        sorted_imports = sorted(
-            self._imports.values(), key=lambda e: e.started_at, reverse=True
-        )
-        return sorted_imports[:limit]
-
-    def list_by_status(self, status: ImportStatus) -> List[ImportEntry]:
-        return [e for e in self._imports.values() if e.status == status]
-
-    def list_by_category(self, category: AssetCategory) -> List[ImportEntry]:
-        return [e for e in self._imports.values() if e.category == category]
-
-    def register_converter(
-        self, source_format: str, converter: Callable
-    ) -> None:
-        self._converters[source_format] = converter
-
-    def on(self, event: str, callback: Callable) -> None:
-        if event in self._hooks:
-            self._hooks[event].append(callback)
-
-    def _create_entry(self, path: str) -> ImportEntry:
-        self._next_id += 1
-        import_id = f"imp-{self._next_id:05d}"
-        category, fmt_name = self.detect_format(path)
-        ext = os.path.splitext(path)[1].lower().lstrip(".")
-        entry = ImportEntry(
-            import_id=import_id,
-            source_path=path,
-            target_path=path,
-            category=category,
+        preset = ImportPreset(
+            name=f"ai-recommended-{import_type.value}-{uuid.uuid4().hex[:6]}",
             source_format=ext,
+            target_format=ext,
+            compression=compression,
+            mipmap_generation=mipmap,
+            is_ai_generated=True,
         )
-        if os.path.exists(path):
-            entry.size_bytes = os.path.getsize(path)
-        return entry
 
-    def _process_sync(self, entry: ImportEntry) -> None:
-        try:
-            entry.status = ImportStatus.DETECTING
-            entry.stage = ImportStage.DETECT
+        self._presets[preset.id] = preset
+        return preset
 
-            if entry.category == AssetCategory.UNKNOWN:
-                entry.status = ImportStatus.SKIPPED
-                entry.warnings.append("Unknown file format — skipped")
-                return
+    def queue_import(
+        self, source_path: str, import_type: Optional[AssetImportType], preset_id: str
+    ) -> Optional[ImportTask]:
+        ext = os.path.splitext(source_path)[1].lower().lstrip(".")
+        resolved_type = import_type or EXTENSION_TYPE_MAP.get(ext)
+        if resolved_type is None:
+            return None
 
-            entry.stage = ImportStage.VALIDATE
-            entry.status = ImportStatus.VALIDATING
-            if not os.path.exists(entry.source_path):
-                entry.status = ImportStatus.FAILED
-                entry.errors.append("Source file not found")
-                self._fire_hook("on_fail", entry)
-                return
-            if entry.size_bytes == 0:
-                entry.warnings.append("Empty file imported")
+        preset = self._presets.get(preset_id)
 
-            entry.stage = ImportStage.CONVERT
-            entry.status = ImportStatus.CONVERTING
-            converter = self._converters.get(entry.source_format)
-            if converter:
-                try:
-                    entry.target_path = converter(entry.source_path)
-                except Exception as e:
-                    entry.errors.append(f"Conversion failed: {e}")
+        task = ImportTask(
+            source_path=source_path,
+            import_type=resolved_type,
+            preset_id=preset_id,
+            status="queued",
+        )
 
-            entry.stage = ImportStage.OPTIMIZE
-            entry.status = ImportStatus.OPTIMIZING
+        if preset:
+            if preset.compression == CompressionPreset.LOSSLESS:
+                task.ai_suggestions.append("Using lossless compression — largest file size")
+            elif preset.compression == CompressionPreset.PERFORMANCE:
+                task.ai_suggestions.append("Performance preset — review for quality tradeoffs")
 
-            entry.stage = ImportStage.REGISTER
-            entry.status = ImportStatus.REGISTERING
+        if ext in ("png", "jpg", "jpeg") and not os.path.splitext(source_path)[0].endswith("_n"):
+            task.ai_suggestions.append("Consider adding a normal map variant (_n suffix)")
 
-            entry.status = ImportStatus.COMPLETED
-            entry.completed_at = time.time()
-            self._fire_hook("on_complete", entry)
+        self._tasks[task.id] = task
+        self._task_history.append(task.id)
+        self._total_imports += 1
 
-        except Exception as e:
-            entry.status = ImportStatus.FAILED
-            entry.errors.append(str(e))
-            self._fire_hook("on_fail", entry)
+        if len(self._tasks) > self.MAX_TASKS:
+            oldest_id = self._task_history.pop(0)
+            self._tasks.pop(oldest_id, None)
 
-    def _fire_hook(self, event: str, entry: ImportEntry) -> None:
-        for callback in self._hooks.get(event, []):
-            try:
-                callback(entry)
-            except Exception:
-                pass
+        return task
+
+    def process_batch(
+        self, paths: List[str], ai_description: str = ""
+    ) -> List[ImportTask]:
+        tasks: List[ImportTask] = []
+        for path in paths:
+            ext = os.path.splitext(path)[1].lower().lstrip(".")
+            import_type = EXTENSION_TYPE_MAP.get(ext)
+            if import_type is None:
+                continue
+
+            preset = self.ai_recommend_preset(path, ai_description)
+            if preset is None:
+                continue
+
+            task = self.queue_import(path, import_type, preset.id)
+            if task:
+                task.status = "processing"
+                task.started_at = time.time()
+                task.completed_at = time.time()
+                task.status = "completed"
+                tasks.append(task)
+
+        return tasks
+
+    def get_import_progress(self, task_id: str) -> dict:
+        task = self._tasks.get(task_id)
+        if task is None:
+            return {"error": "Task not found"}
+
+        return {
+            "task_id": task.id,
+            "source_path": task.source_path,
+            "import_type": task.import_type.value,
+            "status": task.status,
+            "started_at": task.started_at,
+            "completed_at": task.completed_at,
+            "error_message": task.error_message if task.error_message else None,
+        }
+
+    def validate_import(self, task_id: str) -> List[str]:
+        issues: List[str] = []
+        task = self._tasks.get(task_id)
+        if task is None:
+            issues.append("Task not found in registry")
+            return issues
+
+        if task.error_message:
+            issues.append(f"Import error: {task.error_message}")
+
+        if not os.path.exists(task.source_path):
+            issues.append(f"Source file does not exist: {task.source_path}")
+
+        if task.status == "queued":
+            issues.append("Task is still queued — import has not started")
+
+        ext = os.path.splitext(task.source_path)[1].lower().lstrip(".")
+        if ext not in EXTENSION_TYPE_MAP:
+            issues.append(f"Unsupported file extension: .{ext}")
+
+        preset = self._presets.get(task.preset_id)
+        if preset is None:
+            issues.append("Preset not found — import may use default settings")
+
+        return issues
+
+    def import_asset(self, source_path: str) -> Optional[ImportTask]:
+        ext = os.path.splitext(source_path)[1].lower().lstrip(".")
+        import_type = EXTENSION_TYPE_MAP.get(ext)
+        if import_type is None:
+            return None
+
+        preset = self.ai_recommend_preset(source_path)
+        preset_id = preset.id if preset else self.create_preset(
+            name=f"auto-{ext}", source_format=ext, target_format=ext,
+            compression=CompressionPreset.BALANCED
+        ).id
+
+        return self.queue_import(source_path, import_type, preset_id)
+
+    def detect_format(self, file_path: str) -> tuple:
+        ext = os.path.splitext(file_path)[1].lower().lstrip(".")
+        import_type = EXTENSION_TYPE_MAP.get(ext, AssetImportType.RAW_DATA)
+        return (import_type, ext)
 
     def is_format_supported(self, file_path: str) -> bool:
         ext = os.path.splitext(file_path)[1].lower().lstrip(".")
-        return ext in SUPPORTED_FORMATS
+        return ext in EXTENSION_TYPE_MAP
 
-    def list_supported_formats(self) -> Dict[str, str]:
-        return {ext: info["name"] for ext, info in SUPPORTED_FORMATS.items()}
+    def list_recent(self, limit: int = 20) -> List[ImportTask]:
+        recent_ids = self._task_history[-limit:]
+        return [self._tasks[tid] for tid in recent_ids if tid in self._tasks]
+
+    def list_supported_formats(self) -> Dict[str, List[str]]:
+        result: Dict[str, List[str]] = defaultdict(list)
+        for ext, asset_type in EXTENSION_TYPE_MAP.items():
+            result[asset_type.value].append(ext)
+        return dict(result)
 
     def get_stats(self) -> dict:
-        with self._lock:
-            by_status: Dict[str, int] = {}
-            by_category: Dict[str, int] = {}
-            for entry in self._imports.values():
-                s = entry.status.value
-                by_status[s] = by_status.get(s, 0) + 1
-                c = entry.category.value
-                by_category[c] = by_category.get(c, 0) + 1
-            return {
-                "total_imports": len(self._imports),
-                "by_status": by_status,
-                "by_category": by_category,
-                "batches": len(self._batches),
-                "converters": len(self._converters),
-                "supported_formats": len(SUPPORTED_FORMATS),
-            }
+        type_counts: Dict[str, int] = defaultdict(int)
+        status_counts: Dict[str, int] = defaultdict(int)
+        for task in self._tasks.values():
+            type_counts[task.import_type.value] += 1
+            status_counts[task.status] += 1
 
-    def reset(self) -> None:
-        with self._lock:
-            self._imports.clear()
-            self._batches.clear()
-            self._converters.clear()
-            self._hooks = {k: [] for k in self._hooks}
-            self._next_id = 0
+        compression_counts: Dict[str, int] = defaultdict(int)
+        for preset in self._presets.values():
+            compression_counts[preset.compression.value] += 1
+
+        return {
+            "total_tasks": len(self._tasks),
+            "total_imports_ever": self._total_imports,
+            "total_presets": len(self._presets),
+            "type_distribution": dict(type_counts),
+            "status_distribution": dict(status_counts),
+            "compression_distribution": dict(compression_counts),
+            "ai_generated_presets": sum(
+                1 for p in self._presets.values() if p.is_ai_generated
+            ),
+            "max_presets": self.MAX_PRESETS,
+            "max_tasks": self.MAX_TASKS,
+        }
 
 
-def get_import_pipeline() -> ImportPipeline:
-    return ImportPipeline.get_instance()
+def get_import_pipeline() -> ImportPipelineEngine:
+    return ImportPipelineEngine.get_instance()
