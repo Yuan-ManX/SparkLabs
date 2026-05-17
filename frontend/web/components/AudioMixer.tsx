@@ -1,471 +1,294 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { engineApi } from '../utils/api';
 
-interface AudioEffect {
-  effect_id: string;
-  type: string;
-  mixAmount: number;
-}
-
-interface AudioBus {
-  bus_id: string;
+interface AudioTrack {
+  id: string;
   name: string;
+  type: string;
   volume: number;
-  pitch: number;
   pan: number;
   muted: boolean;
   solo: boolean;
-  peakLevel: number;
-  effects: AudioEffect[];
+  looping: boolean;
+  fadeIn: number;
+  fadeOut: number;
+  clip: string;
 }
 
-interface ActiveSound {
-  sound_id: string;
-  name: string;
-  bus: string;
-  volume: number;
-  state: string;
-  duration: string;
-}
+const TRACK_TYPES = ['sfx', 'music', 'ambient', 'voice'];
 
-const EFFECT_TYPES = ['reverb', 'delay', 'compressor', 'eq', 'distortion', 'chorus'] as const;
-
-const BUS_DEFAULTS: { name: string; color: string }[] = [
-  { name: 'master', color: '#fbbf24' },
-  { name: 'music', color: '#3b82f6' },
-  { name: 'sfx', color: '#22c55e' },
-  { name: 'voice', color: '#8b5cf6' },
-  { name: 'ambient', color: '#06b6d4' },
-  { name: 'ui', color: '#ec4899' },
-];
-
-const formatDb = (volume: number): string => {
-  if (volume <= 0) return '-∞ dB';
-  const db = 20 * Math.log10(volume / 100);
-  return `${db.toFixed(1)} dB`;
+const AUDIO_CLIPS: Record<string, string[]> = {
+  sfx: ['explosion_01', 'jump_01', 'collect_coin', 'hit_hurt', 'menu_click', 'power_up', 'footstep_01', 'door_open'],
+  music: ['main_theme', 'battle_theme', 'village_theme', 'boss_theme', 'credits_theme', 'menu_theme'],
+  ambient: ['forest_ambient', 'cave_ambient', 'rain_ambient', 'wind_ambient', 'city_ambient', 'ocean_ambient'],
+  voice: ['dialog_npc_01', 'dialog_npc_02', 'player_grunt', 'player_death', 'narrator_intro', 'tutorial_voice'],
 };
 
 const AudioMixer: React.FC = () => {
-  const [buses, setBuses] = useState<AudioBus[]>([]);
-  const [selectedBusId, setSelectedBusId] = useState('');
-  const [activeSounds, setActiveSounds] = useState<ActiveSound[]>([]);
-  const [message, setMessage] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [tracks, setTracks] = useState<AudioTrack[]>([
+    { id: '1', name: 'Main Theme', type: 'music', volume: 80, pan: 50, muted: false, solo: false, looping: true, fadeIn: 2.0, fadeOut: 3.0, clip: 'main_theme' },
+    { id: '2', name: 'Footsteps', type: 'sfx', volume: 60, pan: 50, muted: false, solo: false, looping: false, fadeIn: 0, fadeOut: 0.2, clip: 'footstep_01' },
+    { id: '3', name: 'Forest Amb.', type: 'ambient', volume: 40, pan: 50, muted: true, solo: false, looping: true, fadeIn: 3.0, fadeOut: 2.0, clip: 'forest_ambient' },
+    { id: '4', name: 'NPC Voice', type: 'voice', volume: 70, pan: 50, muted: false, solo: false, looping: false, fadeIn: 0.1, fadeOut: 0.3, clip: 'dialog_npc_01' },
+  ]);
+  const [masterVolume, setMasterVolume] = useState(85);
+  const [newTrackName, setNewTrackName] = useState('');
+  const [newTrackType, setNewTrackType] = useState('sfx');
+  const [playing, setPlaying] = useState(false);
+  const [waveforms] = useState<number[]>(Array.from({ length: 60 }, () => Math.random() * 0.8 + 0.1));
 
-  const [masterVolume, setMasterVolume] = useState(75);
-  const [newEffectType, setNewEffectType] = useState('reverb');
-  const [newEffectMix, setNewEffectMix] = useState(50);
+  const handleAddTrack = useCallback(() => {
+    if (!newTrackName.trim()) return;
+    const clips = AUDIO_CLIPS[newTrackType] || [];
+    const newTrack: AudioTrack = {
+      id: Date.now().toString(),
+      name: newTrackName.trim(),
+      type: newTrackType,
+      volume: 75,
+      pan: 50,
+      muted: false,
+      solo: false,
+      looping: newTrackType === 'music' || newTrackType === 'ambient',
+      fadeIn: newTrackType === 'music' ? 2.0 : 0,
+      fadeOut: newTrackType === 'music' ? 3.0 : 0.2,
+      clip: clips[0] || '',
+    };
+    setTracks(prev => [...prev, newTrack]);
+    setNewTrackName('');
+  }, [newTrackName, newTrackType]);
 
-  const selectedBus = buses.find(b => b.bus_id === selectedBusId);
-
-  const loadBuses = useCallback(async () => {
-    setLoading(true);
-    try {
-      await engineApi.listScenes();
-      if (buses.length === 0) {
-        const defaults: AudioBus[] = BUS_DEFAULTS.map((d, i) => ({
-          bus_id: `bus_${i}`,
-          name: d.name,
-          volume: 75,
-          pitch: 1.0,
-          pan: 0,
-          muted: false,
-          solo: false,
-          peakLevel: Math.random() * 40,
-          effects: [],
-        }));
-        setBuses(defaults);
-      }
-    } catch {
-      const defaults: AudioBus[] = BUS_DEFAULTS.map((d, i) => ({
-        bus_id: `bus_${i}`,
-        name: d.name,
-        volume: 75,
-        pitch: 1.0,
-        pan: 0,
-        muted: false,
-        solo: false,
-        peakLevel: Math.random() * 40,
-        effects: [],
-      }));
-      setBuses(defaults);
-    }
-    setActiveSounds([
-      { sound_id: 's1', name: 'bgm_main_theme', bus: 'music', volume: 80, state: 'playing', duration: '2:34' },
-      { sound_id: 's2', name: 'footstep_grass', bus: 'sfx', volume: 60, state: 'playing', duration: '0:03' },
-      { sound_id: 's3', name: 'npc_greeting', bus: 'voice', volume: 70, state: 'stopped', duration: '1:20' },
-      { sound_id: 's4', name: 'wind_ambient', bus: 'ambient', volume: 30, state: 'playing', duration: '10:00' },
-      { sound_id: 's5', name: 'ui_click', bus: 'ui', volume: 50, state: 'paused', duration: '0:01' },
-    ]);
-    setLoading(false);
+  const handleDeleteTrack = useCallback((id: string) => {
+    setTracks(prev => prev.filter(t => t.id !== id));
   }, []);
 
-  useEffect(() => { loadBuses(); }, [loadBuses]);
+  const updateTrack = useCallback((id: string, patch: Partial<AudioTrack>) => {
+    setTracks(prev => prev.map(t => t.id === id ? { ...t, ...patch } : t));
+  }, []);
 
-  const updateBus = <K extends keyof AudioBus>(busId: string, key: K, value: AudioBus[K]) => {
-    setBuses(prev => prev.map(b =>
-      b.bus_id === busId ? { ...b, [key]: value } : b
-    ));
-  };
+  const handlePlayStop = useCallback(() => {
+    setPlaying(p => !p);
+  }, []);
 
-  const handleToggleMute = (busId: string) => {
-    setBuses(prev => prev.map(b =>
-      b.bus_id === busId ? { ...b, muted: !b.muted, solo: false } : b
-    ));
-    const bus = buses.find(b => b.bus_id === busId);
-    if (bus) setMessage(`${bus.name} ${!bus.muted ? 'muted' : 'unmuted'}`);
-  };
+  const handleSave = useCallback(() => {
+    engineApi.updateEntity('audio_mixer', 'master', { tracks, masterVolume });
+  }, [tracks, masterVolume]);
 
-  const handleToggleSolo = (busId: string) => {
-    setBuses(prev => prev.map(b =>
-      b.bus_id === busId ? { ...b, solo: !b.solo, muted: false } : b
-    ));
-    const bus = buses.find(b => b.bus_id === busId);
-    if (bus) setMessage(`${bus.name} ${!bus.solo ? 'soloed' : 'unsoloed'}`);
-  };
+  const anySolo = tracks.some(t => t.solo);
 
-  const handleMuteAll = () => {
-    const allMuted = buses.every(b => b.muted);
-    setBuses(prev => prev.map(b => ({ ...b, muted: !allMuted, solo: false })));
-    setMessage(allMuted ? 'All buses unmuted' : 'All buses muted');
-  };
-
-  const handleAddEffect = () => {
-    if (!selectedBus) return;
-    const newEffect: AudioEffect = {
-      effect_id: `eff_${Date.now()}`,
-      type: newEffectType,
-      mixAmount: newEffectMix,
-    };
-    setBuses(prev => prev.map(b =>
-      b.bus_id === selectedBus.bus_id
-        ? { ...b, effects: [...b.effects, newEffect] }
-        : b
-    ));
-    setMessage(`Added ${newEffectType} effect`);
-  };
-
-  const handleRemoveEffect = (effectId: string) => {
-    if (!selectedBus) return;
-    setBuses(prev => prev.map(b =>
-      b.bus_id === selectedBus.bus_id
-        ? { ...b, effects: b.effects.filter(e => e.effect_id !== effectId) }
-        : b
-    ));
-    setMessage('Effect removed');
-  };
-
-  const handleStopSound = (soundId: string) => {
-    setActiveSounds(prev => prev.map(s =>
-      s.sound_id === soundId ? { ...s, state: 'stopped' } : s
-    ));
-    setMessage('Sound stopped');
-  };
-
-  const getPeakColor = (level: number): string => {
-    if (level > 80) return '#ef4444';
-    if (level > 60) return '#fbbf24';
-    return '#10b981';
+  const typeConfig: Record<string, { icon: string; color: string; label: string }> = {
+    sfx: { icon: 'fa-burst', color: '#f97316', label: 'SFX' },
+    music: { icon: 'fa-music', color: '#8b5cf6', label: 'Music' },
+    ambient: { icon: 'fa-wind', color: '#22c55e', label: 'Ambient' },
+    voice: { icon: 'fa-microphone', color: '#3b82f6', label: 'Voice' },
   };
 
   return (
-    <div className="h-full bg-[#111] text-[#e0e0e0] flex flex-col overflow-hidden" style={{ fontFamily: 'monospace' }}>
-      <div className="flex items-center gap-3 px-4 py-2 border-b border-[#1e1e1e]">
-        <h3 className="text-[13px] font-bold text-[#fbbf24] m-0">Audio Mixer</h3>
-        <div className="flex-1" />
-        {loading && <span className="text-[#555] text-[11px]">Loading...</span>}
-        <button
-          onClick={handleMuteAll}
-          className="px-3 py-1 bg-[#ef4444]/20 text-[#ef4444] rounded text-[11px] font-bold border border-[#ef4444]/30 cursor-pointer"
-        >
-          Mute All
-        </button>
-      </div>
-
-      {message && (
-        <div className="mx-4 mt-2 px-3 py-1.5 bg-[#1a2a1a] rounded text-[#10b981] text-[11px] border border-[#1a3a1a]">
-          {message}
+    <div className="h-full flex bg-[#0d0d0d]">
+      <div className="w-48 border-r border-[#1e1e1e] flex flex-col">
+        <div className="px-3 py-3 border-b border-[#1e1e1e]">
+          <div className="flex items-center gap-2 mb-2">
+            <div className="w-6 h-6 bg-gradient-to-br from-cyan-500 to-blue-600 rounded flex items-center justify-center">
+              <i className="fa-solid fa-sliders text-white text-[9px]" />
+            </div>
+            <span className="text-[11px] font-bold text-[#e0e0e0]">Tracks</span>
+          </div>
+          <div className="space-y-1.5">
+            <input
+              type="text" placeholder="Track name" value={newTrackName}
+              onChange={e => setNewTrackName(e.target.value)}
+              className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-cyan-500/50 focus:outline-none"
+            />
+            <select value={newTrackType} onChange={e => setNewTrackType(e.target.value)}
+              className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none">
+              {TRACK_TYPES.map(t => (
+                <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
+              ))}
+            </select>
+            <button
+              onClick={handleAddTrack}
+              className="w-full px-2 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded text-[10px] font-semibold hover:opacity-90"
+            >
+              <i className="fa-solid fa-plus mr-1 text-[8px]" />
+              Add Track
+            </button>
+          </div>
         </div>
-      )}
-
-      <div className="px-4 py-2 border-b border-[#1e1e1e] flex items-center gap-3">
-        <span className="text-[10px] text-[#888]">Master Volume</span>
-        <input
-          type="range"
-          min={0}
-          max={100}
-          value={masterVolume}
-          onChange={e => setMasterVolume(parseInt(e.target.value))}
-          className="flex-1"
-        />
-        <span className="text-[10px] text-[#fbbf24] font-bold">{masterVolume}%</span>
-        <span className="text-[9px] text-[#555]">{formatDb(masterVolume)}</span>
+        <div className="flex-1 overflow-y-auto p-2 space-y-1">
+          {tracks.map(track => {
+            const config = typeConfig[track.type] || typeConfig.sfx;
+            return (
+              <div
+                key={track.id}
+                className={`flex items-center justify-between px-2 py-1.5 rounded ${
+                  anySolo ? (track.solo ? 'bg-cyan-500/10 border border-cyan-500/20' : 'opacity-40') : ''
+                } ${track.muted ? 'opacity-40' : ''} hover:bg-[#1a1a1a]`}
+              >
+                <div className="flex items-center gap-1.5 flex-1 min-w-0">
+                  <i className={`fa-solid ${config.icon} text-[8px]`} style={{ color: config.color }} />
+                  <span className="text-[9px] text-[#ddd] truncate">{track.name}</span>
+                </div>
+                <button
+                  onClick={() => handleDeleteTrack(track.id)}
+                  className="text-[#555] hover:text-red-400 text-[8px]"
+                >
+                  <i className="fa-solid fa-trash" />
+                </button>
+              </div>
+            );
+          })}
+        </div>
       </div>
 
-      <div className="flex-1 flex overflow-hidden">
-        <div className="flex-1 overflow-y-auto p-3">
-          <h4 className="text-[11px] font-bold text-[#888] mb-2">Buses</h4>
-          <div className="space-y-2">
-            {buses.map(bus => {
-              const busColor = BUS_DEFAULTS.find(d => d.name === bus.name)?.color || '#888';
-              return (
-                <div
-                  key={bus.bus_id}
-                  onClick={() => setSelectedBusId(bus.bus_id)}
-                  className="bg-[#16213e] rounded border p-3 cursor-pointer transition-colors"
-                  style={{
-                    borderColor: selectedBusId === bus.bus_id ? '#fbbf24' : '#2a2a2a',
-                    opacity: bus.muted ? 0.4 : 1,
-                  }}
-                >
-                  <div className="flex items-center gap-3 mb-2">
-                    <span
-                      className="text-[10px] font-bold px-2 py-0.5 rounded flex-shrink-0"
-                      style={{
-                        backgroundColor: busColor + '20',
-                        color: busColor,
-                      }}
-                    >
-                      {bus.name.toUpperCase()}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-[#1e1e1e]">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handlePlayStop}
+              className={`px-3 py-1 rounded text-[10px] font-medium ${
+                playing ? 'bg-red-500/20 text-red-400 border border-red-500/30' : 'bg-green-500/20 text-green-400 border border-green-500/30'
+              }`}
+            >
+              <i className={`fa-solid fa-${playing ? 'stop' : 'play'} mr-1 text-[8px]`} />
+              {playing ? 'Stop All' : 'Play All'}
+            </button>
+            <button
+              onClick={handleSave}
+              className="px-3 py-1 rounded text-[10px] font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30"
+            >
+              <i className="fa-solid fa-floppy-disk mr-1 text-[8px]" />
+              Save
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <label className="text-[9px] text-[#666]">Master</label>
+            <div className="flex items-center gap-2">
+              <input
+                type="range" min="0" max="100" value={masterVolume}
+                onChange={e => setMasterVolume(Number(e.target.value))}
+                className="w-24 accent-cyan-500"
+              />
+              <span className="text-[10px] text-[#ddd] w-8 text-right">{masterVolume}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {tracks.map(track => {
+            const config = typeConfig[track.type] || typeConfig.sfx;
+            const clips = AUDIO_CLIPS[track.type] || [];
+
+            return (
+              <div key={track.id} className={`p-3 rounded border ${track.solo ? 'border-cyan-500/30 bg-cyan-500/5' : 'border-[#2a2a2a] bg-[#0a0a0a]'}`}>
+                <div className="flex items-center gap-3 mb-2">
+                  <div className="flex items-center gap-1.5 flex-1">
+                    <i className={`fa-solid ${config.icon} text-[10px]`} style={{ color: config.color }} />
+                    <span className="text-[10px] font-medium text-[#ddd]">{track.name}</span>
+                    <span className="text-[8px] px-1 py-0.5 rounded" style={{ backgroundColor: `${config.color}20`, color: config.color }}>
+                      {config.label}
                     </span>
-                    <div className="flex-1 flex items-center gap-2">
-                      <input
-                        type="range"
-                        min={0}
-                        max={100}
-                        value={bus.volume}
-                        onChange={e => {
-                          e.stopPropagation();
-                          updateBus(bus.bus_id, 'volume', parseInt(e.target.value));
-                        }}
-                        className="flex-1"
-                      />
-                      <span className="text-[9px] text-[#fbbf24] w-8 text-right">{bus.volume}%</span>
-                      <span className="text-[8px] text-[#555] w-14 text-right">{formatDb(bus.volume)}</span>
-                    </div>
+                  </div>
+
+                  <div className="flex items-center gap-1">
                     <button
-                      onClick={e => { e.stopPropagation(); handleToggleMute(bus.bus_id); }}
-                      className="px-2 py-0.5 rounded text-[8px] font-bold border cursor-pointer"
-                      style={{
-                        backgroundColor: bus.muted ? '#ef4444' : '#1a1a2e',
-                        borderColor: bus.muted ? '#ef4444' : '#333',
-                        color: bus.muted ? '#fff' : '#888',
-                      }}
+                      onClick={() => updateTrack(track.id, { muted: !track.muted })}
+                      className={`px-2 py-0.5 rounded text-[8px] font-medium ${track.muted ? 'bg-red-500/20 text-red-400' : 'bg-[#141414] text-[#888]'} border border-[#2a2a2a]`}
                     >
                       M
                     </button>
                     <button
-                      onClick={e => { e.stopPropagation(); handleToggleSolo(bus.bus_id); }}
-                      className="px-2 py-0.5 rounded text-[8px] font-bold border cursor-pointer"
-                      style={{
-                        backgroundColor: bus.solo ? '#fbbf24' : '#1a1a2e',
-                        borderColor: bus.solo ? '#fbbf24' : '#333',
-                        color: bus.solo ? '#111' : '#888',
-                      }}
+                      onClick={() => updateTrack(track.id, { solo: !track.solo })}
+                      className={`px-2 py-0.5 rounded text-[8px] font-medium ${track.solo ? 'bg-cyan-500/20 text-cyan-400' : 'bg-[#141414] text-[#888]'} border border-[#2a2a2a]`}
                     >
                       S
                     </button>
-                  </div>
-                  <div className="relative h-2 bg-[#111] rounded overflow-hidden">
-                    <div
-                      className="absolute top-0 left-0 h-full rounded transition-all"
-                      style={{
-                        width: `${bus.peakLevel}%`,
-                        backgroundColor: getPeakColor(bus.peakLevel),
-                      }}
-                    />
-                  </div>
-                  <div className="flex justify-end mt-0.5">
-                    <span className="text-[7px] text-[#555]">peak: {bus.peakLevel.toFixed(1)}%</span>
-                  </div>
-                </div>
-              );
-            })}
-          </div>
-
-          <h4 className="text-[11px] font-bold text-[#888] mt-4 mb-2">Active Sounds</h4>
-          {activeSounds.length > 0 ? (
-            <div className="overflow-x-auto">
-              <table className="w-full text-[10px]">
-                <thead>
-                  <tr className="text-[#555] text-left">
-                    <th className="pb-1 font-normal">Name</th>
-                    <th className="pb-1 font-normal">Bus</th>
-                    <th className="pb-1 font-normal">Vol</th>
-                    <th className="pb-1 font-normal">State</th>
-                    <th className="pb-1 font-normal">Duration</th>
-                    <th className="pb-1 font-normal"></th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {activeSounds.map(sound => (
-                    <tr key={sound.sound_id} className="border-t border-[#1a1a1a]">
-                      <td className="py-1.5 text-[#e0e0e0]">{sound.name}</td>
-                      <td className="py-1.5 text-[#888]">{sound.bus}</td>
-                      <td className="py-1.5 text-[#fbbf24]">{sound.volume}%</td>
-                      <td className="py-1.5">
-                        <span
-                          className="px-1.5 py-0.5 rounded text-[8px]"
-                          style={{
-                            backgroundColor:
-                              sound.state === 'playing' ? '#10b98120'
-                              : sound.state === 'paused' ? '#fbbf2420'
-                              : '#ef444420',
-                            color:
-                              sound.state === 'playing' ? '#10b981'
-                              : sound.state === 'paused' ? '#fbbf24'
-                              : '#ef4444',
-                          }}
-                        >
-                          {sound.state}
-                        </span>
-                      </td>
-                      <td className="py-1.5 text-[#555]">{sound.duration}</td>
-                      <td className="py-1.5">
-                        <button
-                          onClick={() => handleStopSound(sound.sound_id)}
-                          className="px-2 py-0.5 text-[#ef4444] text-[8px] bg-transparent border border-[#ef4444]/30 rounded cursor-pointer"
-                        >
-                          Stop
-                        </button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          ) : (
-            <p className="text-[#555] text-[10px] text-center py-4">No active sounds</p>
-          )}
-        </div>
-
-        <div className="w-72 border-l border-[#1e1e1e] overflow-y-auto p-3 space-y-3 flex-shrink-0">
-          {selectedBus ? (
-            <>
-              <div className="bg-[#0a0a0a] rounded border border-[#2a2a2a] p-3">
-                <h4 className="text-[11px] font-bold text-[#fbbf24] mb-2">
-                  {selectedBus.name.toUpperCase()} Bus
-                </h4>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] text-[#888] w-12">Pitch</span>
-                    <input
-                      type="range"
-                      min={0.5}
-                      max={2}
-                      step={0.05}
-                      value={selectedBus.pitch}
-                      onChange={e => updateBus(selectedBus.bus_id, 'pitch', parseFloat(e.target.value))}
-                      className="flex-1"
-                    />
-                    <span className="text-[9px] text-[#fbbf24] w-8 text-right">{selectedBus.pitch.toFixed(2)}x</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <span className="text-[9px] text-[#888] w-12">Pan</span>
-                    <input
-                      type="range"
-                      min={-1}
-                      max={1}
-                      step={0.1}
-                      value={selectedBus.pan}
-                      onChange={e => updateBus(selectedBus.bus_id, 'pan', parseFloat(e.target.value))}
-                      className="flex-1"
-                    />
-                    <span className="text-[9px] text-[#fbbf24] w-10 text-right">
-                      {selectedBus.pan === 0 ? 'C' : selectedBus.pan > 0 ? `R${Math.abs(selectedBus.pan * 100)}` : `L${Math.abs(selectedBus.pan * 100)}`}
-                    </span>
-                  </div>
-                </div>
-              </div>
-
-              <div className="bg-[#0a0a0a] rounded border border-[#2a2a2a] p-3">
-                <h4 className="text-[11px] font-bold text-[#888] mb-2">Effects Chain</h4>
-                <div className="space-y-1 mb-2">
-                  {selectedBus.effects.map(eff => (
-                    <div
-                      key={eff.effect_id}
-                      className="flex items-center justify-between p-1.5 bg-[#1a1a2e] rounded"
-                    >
-                      <span className="text-[10px] text-[#e0e0e0]">{eff.type}</span>
-                      <div className="flex items-center gap-1">
-                        <span className="text-[8px] text-[#888]">mix:</span>
-                        <span className="text-[9px] text-[#fbbf24]">{eff.mixAmount}%</span>
-                      </div>
+                    {track.type === 'music' && (
                       <button
-                        onClick={() => handleRemoveEffect(eff.effect_id)}
-                        className="text-[#ef4444] text-[8px] bg-transparent border-none cursor-pointer"
+                        onClick={() => updateTrack(track.id, { looping: !track.looping })}
+                        className={`px-2 py-0.5 rounded text-[8px] font-medium ${track.looping ? 'bg-violet-500/20 text-violet-400' : 'bg-[#141414] text-[#888]'} border border-[#2a2a2a]`}
                       >
-                        ✕
+                        <i className="fa-solid fa-repeat" />
                       </button>
-                    </div>
-                  ))}
-                  {selectedBus.effects.length === 0 && (
-                    <p className="text-[#555] text-[9px] text-center py-1">No effects</p>
-                  )}
+                    )}
+                  </div>
                 </div>
-                <div className="flex items-center gap-1 mb-1">
+
+                <div className="h-6 mb-2 bg-[#141414] rounded overflow-hidden relative">
+                  <div className="absolute inset-0 flex items-end gap-px px-1">
+                    {waveforms.map((v, i) => (
+                      <div
+                        key={i}
+                        className="flex-1 rounded-t-sm transition-all"
+                        style={{
+                          height: `${v * 100 * (track.volume / 100) * (track.muted ? 0.2 : 1)}%`,
+                          backgroundColor: playing ? config.color : `${config.color}60`,
+                          opacity: anySolo && !track.solo ? 0.2 : track.muted ? 0.3 : 1,
+                        }}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block text-[8px] text-[#666] mb-0.5">Volume ({track.volume})</label>
+                    <input
+                      type="range" min="0" max="100" value={track.volume}
+                      onChange={e => updateTrack(track.id, { volume: Number(e.target.value) })}
+                      className="w-full accent-cyan-500 h-1"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8px] text-[#666] mb-0.5">Pan ({track.pan < 50 ? 'L' : track.pan > 50 ? 'R' : 'C'})</label>
+                    <input
+                      type="range" min="0" max="100" value={track.pan}
+                      onChange={e => updateTrack(track.id, { pan: Number(e.target.value) })}
+                      className="w-full accent-cyan-500 h-1"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2 mt-2">
+                  <div>
+                    <label className="block text-[8px] text-[#666] mb-0.5">Fade In (s)</label>
+                    <input
+                      type="number" min="0" max="10" step="0.1" value={track.fadeIn}
+                      onChange={e => updateTrack(track.id, { fadeIn: Number(e.target.value) })}
+                      className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[9px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[8px] text-[#666] mb-0.5">Fade Out (s)</label>
+                    <input
+                      type="number" min="0" max="10" step="0.1" value={track.fadeOut}
+                      onChange={e => updateTrack(track.id, { fadeOut: Number(e.target.value) })}
+                      className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[9px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none"
+                    />
+                  </div>
+                </div>
+
+                <div className="mt-2">
                   <select
-                    value={newEffectType}
-                    onChange={e => setNewEffectType(e.target.value)}
-                    className="flex-1 bg-[#1a1a2e] border border-[#333] text-[#e0e0e0] text-[9px] rounded px-1 py-1 outline-none"
+                    value={track.clip}
+                    onChange={e => updateTrack(track.id, { clip: e.target.value })}
+                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[9px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none"
                   >
-                    {EFFECT_TYPES.map(t => (
-                      <option key={t} value={t}>{t}</option>
+                    {clips.map(c => (
+                      <option key={c} value={c}>{c}</option>
                     ))}
                   </select>
                 </div>
-                <div className="flex items-center gap-1 mb-1">
-                  <span className="text-[8px] text-[#888]">Mix</span>
-                  <input
-                    type="range"
-                    min={0}
-                    max={100}
-                    value={newEffectMix}
-                    onChange={e => setNewEffectMix(parseInt(e.target.value))}
-                    className="flex-1"
-                  />
-                  <span className="text-[8px] text-[#fbbf24] w-6 text-right">{newEffectMix}%</span>
-                </div>
-                <button
-                  onClick={handleAddEffect}
-                  className="w-full py-1 bg-[#fbbf24] text-[#111] rounded text-[10px] font-bold border-none cursor-pointer"
-                >
-                  Add Effect
-                </button>
               </div>
-            </>
-          ) : (
-            <div className="bg-[#0a0a0a] rounded border border-[#2a2a2a] p-3">
-              <h4 className="text-[11px] font-bold text-[#888] mb-2">Bus Detail</h4>
-              <p className="text-[#555] text-[10px] text-center py-4">Select a bus to configure</p>
+            );
+          })}
+
+          {tracks.length === 0 && (
+            <div className="flex items-center justify-center h-full text-[#555]">
+              <div className="text-center">
+                <i className="fa-solid fa-sliders text-2xl mb-2" />
+                <p className="text-[11px]">Add a track to start mixing</p>
+              </div>
             </div>
           )}
-
-          <div className="bg-[#0a0a0a] rounded border border-[#2a2a2a] p-3">
-            <h4 className="text-[11px] font-bold text-[#888] mb-2">Stats</h4>
-            <div className="space-y-2">
-              <div className="flex justify-between text-[10px]">
-                <span className="text-[#888]">Total Buses</span>
-                <span className="text-[#fbbf24] font-bold">{buses.length}</span>
-              </div>
-              <div className="flex justify-between text-[10px]">
-                <span className="text-[#888]">Active Sounds</span>
-                <span className="text-[#fbbf24] font-bold">
-                  {activeSounds.filter(s => s.state === 'playing').length}
-                </span>
-              </div>
-              <div className="flex justify-between text-[10px]">
-                <span className="text-[#888]">Muted Buses</span>
-                <span className="text-[#fbbf24] font-bold">
-                  {buses.filter(b => b.muted).length}
-                </span>
-              </div>
-              <div className="flex justify-between text-[10px]">
-                <span className="text-[#888]">Master Vol</span>
-                <span className="text-[#fbbf24] font-bold">{masterVolume}%</span>
-              </div>
-            </div>
-          </div>
         </div>
       </div>
     </div>

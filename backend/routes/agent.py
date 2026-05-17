@@ -135,6 +135,16 @@ from sparkai.agent.agent_risk_assessment import RiskAssessmentEngine, RiskCatego
 from sparkai.agent.agent_documentation_generator import DocumentationGenerator, DocumentType, ExportFormat, get_documentation_generator
 from sparkai.agent.agent_asset_optimizer import AssetOptimizationEngine, AssetType, QualityPreset, get_asset_optimizer
 from sparkai.agent.agent_cross_platform import CrossPlatformEngine, TargetPlatform, PlatformCapability, get_cross_platform_engine
+from sparkai.engine.shader_graph import ShaderGraph, get_shader_graph
+from sparkai.engine.build_pipeline import BuildPipeline, get_build_pipeline
+from sparkai.engine.tileset_system import TileSetSystem, get_tileset_system
+from sparkai.engine.resource_pack import ResourcePack, get_resource_pack
+from sparkai.engine.input_profile_system import InputProfileSystem, get_input_profile_system
+from sparkai.agent.agent_shader_advisor import ShaderAdvisor, get_shader_advisor
+from sparkai.agent.agent_build_orchestrator import BuildOrchestrator, get_build_orchestrator
+from sparkai.agent.agent_recall_engine import RecallEngine, get_recall_engine
+from sparkai.agent.agent_interaction_designer import InteractionDesigner, get_interaction_designer
+from sparkai.agent.agent_physics_tuner import PhysicsTuner, get_physics_tuner
 
 router = APIRouter()
 
@@ -2011,6 +2021,59 @@ _game_template_library = get_game_template_library()
 _blueprint_engine = get_blueprint_engine()
 _playtest_engine = get_playtest_engine()
 _composer_engine = get_composer_engine()
+_knowledge_graph = get_knowledge_graph()
+_toolchain_engine = get_toolchain_engine()
+_reflex_engine = get_reflex_engine()
+_dialogue_engine = get_dialogue_engine()
+_asset_engine = get_asset_engine()
+_validator_engine = get_validator_engine()
+_orchestrator_engine = get_orchestrator_engine()
+_skill_evolution_engine = get_skill_evolution_engine()
+_game_evaluator = get_game_evaluator()
+_prompt_cache = get_prompt_cache()
+_trajectory_recorder = get_trajectory_recorder()
+_checkpoint_system = get_checkpoint_system()
+_budget_tracker = get_budget_tracker()
+_insights_engine = get_insights_engine()
+_state_sync_mesh = get_state_sync_mesh()
+_dev_loop = get_dev_loop()
+_context_reference_resolver = get_context_reference_resolver()
+_process_registry = get_process_registry()
+_cron_scheduler = get_cron_scheduler()
+_expression_evaluator = get_expression_evaluator()
+_class_registry = get_class_registry()
+_multi_modal_agent = get_multi_modal_agent()
+_import_pipeline = get_import_pipeline()
+_agent_event_bus = get_agent_event_bus()
+_agent_task_queue = get_agent_task_queue()
+_code_review_engine = get_code_review_engine()
+_agent_pipeline = get_agent_pipeline()
+_agent_consensus = get_agent_consensus()
+_game_analyzer = get_game_analyzer()
+_adaptive_prompting = get_adaptive_prompting()
+_entity_extractor = get_entity_extractor()
+_style_transfer = get_style_transfer()
+_curriculum_learning = get_curriculum_learning()
+_game_balancer = get_game_balancer()
+_localization_engine = get_localization_engine()
+_tutorial_designer = get_tutorial_designer()
+_game_tester = get_game_tester()
+_memory_consolidation = get_memory_consolidation()
+_conflict_resolver = get_conflict_resolver()
+_risk_assessor = get_risk_assessor()
+_documentation_generator = get_documentation_generator()
+_asset_optimizer = get_asset_optimizer()
+_cross_platform_engine = get_cross_platform_engine()
+_shader_graph = get_shader_graph()
+_build_pipeline = get_build_pipeline()
+_tileset_system = get_tileset_system()
+_resource_pack = get_resource_pack()
+_input_profile_system = get_input_profile_system()
+_shader_advisor = get_shader_advisor()
+_build_orchestrator = get_build_orchestrator()
+_recall_engine = get_recall_engine()
+_interaction_designer = get_interaction_designer()
+_physics_tuner = get_physics_tuner()
 
 
 # === Blueprint Engine ===
@@ -14401,3 +14464,442 @@ async def fog_reveal(layer_id: str = "", center_x: float = 0.0, center_y: float 
                       radius: float = 5.0, revealer_id: str = "player"):
     count = _fog_of_war.reveal_area(layer_id, center_x, center_y, radius, revealer_id)
     return {"cells_revealed": count}
+
+
+# === Shader Graph Endpoints ===
+
+@router.get("/shader-graph/stats")
+async def shader_graph_stats():
+    return _shader_graph.get_stats()
+
+@router.post("/shader-graph/create")
+async def shader_graph_create(name: str = ""):
+    graph = _shader_graph.create_graph(name)
+    return graph
+
+@router.post("/shader-graph/add-node")
+async def shader_graph_add_node(graph_id: str = "", node_type: str = "", name: str = ""):
+    node = _shader_graph.add_node(graph_id, node_type, name)
+    return node.__dict__ if hasattr(node, '__dict__') else str(node)
+
+@router.post("/shader-graph/connect")
+async def shader_graph_connect(graph_id: str = "", from_node_id: str = "",
+                                from_pin: str = "", to_node_id: str = "", to_pin: str = ""):
+    conn = _shader_graph.add_connection(graph_id, from_node_id, from_pin, to_node_id, to_pin)
+    return str(conn)
+
+@router.post("/shader-graph/compile")
+async def shader_graph_compile(graph_id: str = "", target: str = "glsl"):
+    code = _shader_graph.compile_to_glsl(graph_id) if target == "glsl" else _shader_graph.compile_to_hlsl(graph_id)
+    return {"source": code}
+
+@router.post("/shader-graph/validate")
+async def shader_graph_validate(graph_id: str = ""):
+    valid, errors = _shader_graph.validate_graph(graph_id)
+    return {"valid": valid, "errors": errors}
+
+@router.post("/shader-graph/export")
+async def shader_graph_export(graph_id: str = ""):
+    data = _shader_graph.export_graph(graph_id)
+    return {"export": data}
+
+@router.post("/shader-graph/import")
+async def shader_graph_import(data: str = "{}"):
+    import json
+    graph_id = _shader_graph.import_graph(json.loads(data))
+    return {"graph_id": graph_id}
+
+
+# === Build Pipeline Endpoints ===
+
+@router.get("/build/stats")
+async def build_stats():
+    return _build_pipeline.get_stats()
+
+@router.post("/build/create")
+async def build_create(name: str = "", platform: str = "web"):
+    pipeline = _build_pipeline.create_pipeline(name, platform)
+    return str(pipeline)
+
+@router.post("/build/execute")
+async def build_execute(pipeline_id: str = ""):
+    result = _build_pipeline.execute(pipeline_id)
+    return result
+
+@router.get("/build/status")
+async def build_status(pipeline_id: str = ""):
+    status = _build_pipeline.get_status(pipeline_id)
+    return status
+
+@router.post("/build/cancel")
+async def build_cancel(pipeline_id: str = ""):
+    _build_pipeline.cancel_build(pipeline_id)
+    return {"cancelled": True}
+
+@router.get("/build/artifacts")
+async def build_artifacts(pipeline_id: str = ""):
+    artifacts = _build_pipeline.get_artifacts(pipeline_id)
+    return {"artifacts": artifacts}
+
+@router.post("/build/validate")
+async def build_validate(pipeline_id: str = ""):
+    valid, errors = _build_pipeline.validate_pipeline(pipeline_id)
+    return {"valid": valid, "errors": errors}
+
+
+# === Tileset System Endpoints ===
+
+@router.get("/tileset/stats")
+async def tileset_stats():
+    return _tileset_system.get_stats()
+
+@router.post("/tileset/create")
+async def tileset_create(name: str = "", tile_width: int = 32, tile_height: int = 32,
+                          columns: int = 16, rows: int = 16):
+    tileset = _tileset_system.create_tileset(
+        name=name, tile_size=tile_width, columns=columns, rows=rows
+    )
+    return {"tileset_id": tileset.id}
+
+@router.post("/tileset/add-tile")
+async def tileset_add_tile(tileset_id: str = "", name: str = "", index: int = 0, texture_region: str = ""):
+    tile = _tileset_system.add_tile(tileset_id, name, index, texture_region)
+    return tile.__dict__ if hasattr(tile, '__dict__') else str(tile)
+
+@router.post("/tileset/set-collision")
+async def tileset_set_collision(tileset_id: str = "", tile_id: str = "", shape: str = "full"):
+    _tileset_system.set_tile_collision(tileset_id, tile_id, shape)
+    return {"updated": True}
+
+@router.post("/tileset/import-sheet")
+async def tileset_import_sheet(tileset_id: str = "", file_path: str = "",
+                                tile_width: int = 32, tile_height: int = 32, columns: int = 16, rows: int = 16):
+    count = _tileset_system.import_from_spritesheet(tileset_id, file_path, tile_width, tile_height, columns, rows)
+    return {"tiles_imported": count}
+
+@router.post("/tileset/export")
+async def tileset_export(tileset_id: str = ""):
+    data = _tileset_system.export_to_json(tileset_id)
+    return {"export": data}
+
+@router.post("/tileset/auto-collision")
+async def tileset_auto_collision(tileset_id: str = ""):
+    count = _tileset_system.auto_detect_collisions(tileset_id)
+    return {"collisions_detected": count}
+
+
+# === Resource Pack Endpoints ===
+
+@router.get("/resource-pack/stats")
+async def resource_pack_stats():
+    return _resource_pack.get_stats()
+
+@router.post("/resource-pack/create")
+async def resource_pack_create(name: str = "", version: str = "1.0.0", pack_type: str = "asset"):
+    pack = _resource_pack.create_pack(name, pack_type, version)
+    return {"pack_id": pack.id}
+
+@router.post("/resource-pack/add-entry")
+async def resource_pack_add_entry(pack_id: str = "", file_path: str = "", entry_type: str = "texture"):
+    entry = _resource_pack.add_entry(pack_id, file_path, entry_type)
+    return entry.__dict__ if hasattr(entry, '__dict__') else str(entry)
+
+@router.post("/resource-pack/build")
+async def resource_pack_build(pack_id: str = ""):
+    result = _resource_pack.build(pack_id)
+    return {"built": result is not None}
+
+@router.post("/resource-pack/verify")
+async def resource_pack_verify(pack_id: str = ""):
+    valid, errors = _resource_pack.verify_integrity(pack_id)
+    return {"valid": valid, "errors": errors}
+
+@router.get("/resource-pack/contents")
+async def resource_pack_contents(pack_id: str = ""):
+    contents = _resource_pack.list_contents(pack_id)
+    return {"contents": contents}
+
+@router.post("/resource-pack/merge")
+async def resource_pack_merge(source_pack_id: str = "", target_pack_id: str = ""):
+    result = _resource_pack.merge_packs(source_pack_id, target_pack_id)
+    return {"merged": result}
+
+
+# === Input Profile System Endpoints ===
+
+@router.get("/input-profile/stats")
+async def input_profile_stats():
+    return _input_profile_system.get_stats()
+
+@router.post("/input-profile/create")
+async def input_profile_create(name: str = "", device_type: str = "keyboard_mouse"):
+    from sparkai.engine.input_profile_system import InputDevice
+    profile = _input_profile_system.create_profile(name, InputDevice(device_type))
+    return profile.__dict__ if hasattr(profile, '__dict__') else str(profile)
+
+@router.post("/input-profile/add-binding")
+async def input_profile_add_binding(profile_id: str = "", action_name: str = "",
+                                     key_code: str = "", device_type: str = "keyboard_mouse"):
+    from sparkai.engine.input_profile_system import InputBinding, ActionType
+    binding = InputBinding(action_name=action_name, primary_input=key_code, action_type=ActionType.PRESS)
+    result = _input_profile_system.add_binding(profile_id, binding)
+    return {"added": result}
+
+@router.post("/input-profile/set-active")
+async def input_profile_set_active(profile_id: str = ""):
+    _input_profile_system.set_active_profile(profile_id)
+    return {"active_profile": profile_id}
+
+@router.post("/input-profile/auto-configure")
+async def input_profile_auto_configure(device_type: str = "keyboard_mouse"):
+    from sparkai.engine.input_profile_system import InputDevice
+    profile = _input_profile_system.auto_configure(InputDevice(device_type))
+    return {"profile_id": profile.id if hasattr(profile, 'id') else str(profile)}
+
+@router.post("/input-profile/detect-device")
+async def input_profile_detect_device(hint: str = ""):
+    device = _input_profile_system.detect_device(hint if hint else None)
+    return {"device": device.value if hasattr(device, 'value') else str(device)}
+
+@router.post("/input-profile/export")
+async def input_profile_export(profile_id: str = ""):
+    data = _input_profile_system.export_profile(profile_id)
+    return {"export": data}
+
+@router.post("/input-profile/validate")
+async def input_profile_validate(profile_id: str = ""):
+    valid, errors = _input_profile_system.validate_profile(profile_id)
+    return {"valid": valid, "errors": errors}
+
+
+# === Shader Advisor Endpoints ===
+
+@router.get("/shader-advisor/stats")
+async def shader_advisor_stats():
+    return _shader_advisor.get_stats()
+
+@router.post("/shader-advisor/create-preset")
+async def shader_advisor_create_preset(name: str = "", domain: str = "surface",
+                                        language: str = "glsl", technique: str = "pbr"):
+    preset = _shader_advisor.create_preset(name, domain, language, technique)
+    return preset.__dict__ if hasattr(preset, '__dict__') else str(preset)
+
+@router.post("/shader-advisor/generate")
+async def shader_advisor_generate(description: str = "", language: str = "glsl"):
+    result = _shader_advisor.generate_from_description(description, language)
+    return str(result)
+
+@router.post("/shader-advisor/compile-check")
+async def shader_advisor_compile_check(preset_id: str = ""):
+    result = _shader_advisor.compile_check(preset_id)
+    return result
+
+@router.get("/shader-advisor/presets")
+async def shader_advisor_presets(domain: str = "", technique: str = ""):
+    if domain:
+        return _shader_advisor.get_presets_by_domain(domain)
+    if technique:
+        return _shader_advisor.get_presets_by_technique(technique)
+    return []
+
+@router.post("/shader-advisor/recommend")
+async def shader_advisor_recommend(scene_description: str = ""):
+    result = _shader_advisor.recommend_for_scene(scene_description)
+    return str(result)
+
+
+# === Build Orchestrator Endpoints ===
+
+@router.get("/build-orchestrator/stats")
+async def build_orchestrator_stats():
+    return _build_orchestrator.get_stats()
+
+@router.post("/build-orchestrator/create-config")
+async def build_orchestrator_create_config(name: str = "", platform: str = "web",
+                                            optimization: str = "basic", compression: str = "gzip"):
+    from sparkai.agent.agent_build_orchestrator import TargetPlatform, OptimizationLevel, CompressionMode
+    config = _build_orchestrator.create_config(
+        name=name,
+        platform=TargetPlatform(platform),
+        optimization=OptimizationLevel(optimization),
+        compression=CompressionMode(compression),
+    )
+    return config.__dict__ if hasattr(config, '__dict__') else str(config)
+
+@router.post("/build-orchestrator/create-defaults")
+async def build_orchestrator_create_defaults():
+    configs = _build_orchestrator.create_default_configs()
+    return {"count": len(configs)}
+
+@router.post("/build-orchestrator/queue-build")
+async def build_orchestrator_queue(config_id: str = "", project_path: str = ""):
+    task_id = _build_orchestrator.queue_build(config_id, project_path)
+    return {"task_id": task_id}
+
+@router.post("/build-orchestrator/start-build")
+async def build_orchestrator_start(task_id: str = ""):
+    started = _build_orchestrator.start_build(task_id)
+    return {"started": started}
+
+@router.get("/build-orchestrator/status")
+async def build_orchestrator_build_status(task_id: str = ""):
+    status = _build_orchestrator.get_build_status(task_id)
+    return status
+
+@router.post("/build-orchestrator/cancel")
+async def build_orchestrator_cancel(task_id: str = ""):
+    _build_orchestrator.cancel_build(task_id)
+    return {"cancelled": True}
+
+@router.get("/build-orchestrator/history")
+async def build_orchestrator_history(limit: int = 20):
+    history = _build_orchestrator.get_build_history(limit)
+    return {"history": history}
+
+@router.post("/build-orchestrator/optimize")
+async def build_orchestrator_optimize(config_id: str = ""):
+    optimized = _build_orchestrator.optimize_config(config_id)
+    return optimized.__dict__ if hasattr(optimized, '__dict__') else str(optimized)
+
+
+# === Recall Engine Endpoints ===
+
+@router.get("/recall/stats")
+async def recall_stats():
+    return _recall_engine.get_stats()
+
+@router.post("/recall/ingest")
+async def recall_ingest(content: str = "", domain: str = "game_mechanics", relevance: str = "medium"):
+    from sparkai.agent.agent_recall_engine import RecallDomain, RelevanceScore, KnowledgeFragment
+    fragment = KnowledgeFragment(
+        content=content,
+        domain=RecallDomain(domain),
+        relevance=RelevanceScore(relevance),
+    )
+    frag_id = _recall_engine.ingest_fragment(fragment)
+    return {"fragment_id": frag_id}
+
+@router.post("/recall/ingest-session")
+async def recall_ingest_session(session_id: str = "", summary: str = ""):
+    count = _recall_engine.ingest_from_session(session_id, summary)
+    return {"fragments_ingested": count}
+
+@router.post("/recall/search")
+async def recall_search(query: str = "", domain: str = "", limit: int = 10):
+    from sparkai.agent.agent_recall_engine import RecallDomain, RecallQuery
+    rq = RecallQuery(
+        text=query,
+        domain_filter=RecallDomain(domain) if domain else None,
+        max_results=limit,
+    )
+    results = _recall_engine.search(rq)
+    return {"results": [r.__dict__ for r in results] if results else []}
+
+@router.post("/recall/contextual-search")
+async def recall_contextual(query: str = "", context_domain: str = "", session_id: str = ""):
+    from sparkai.agent.agent_recall_engine import RecallDomain
+    results = _recall_engine.contextual_search(query, RecallDomain(context_domain) if context_domain else None, session_id)
+    return {"results": [r.__dict__ for r in results] if results else []}
+
+@router.get("/recall/trending")
+async def recall_trending(limit: int = 10):
+    topics = _recall_engine.get_trending_topics(limit)
+    return {"trending": topics}
+
+@router.post("/recall/prune")
+async def recall_prune(max_age_days: int = 30):
+    count = _recall_engine.prune_stale(max_age_days)
+    return {"pruned": count}
+
+
+# === Interaction Designer Endpoints ===
+
+@router.get("/interaction/stats")
+async def interaction_stats():
+    return _interaction_designer.get_stats()
+
+@router.post("/interaction/create-flow")
+async def interaction_create_flow(name: str = "", game_genre: str = "", accessibility: str = "none"):
+    from sparkai.agent.agent_interaction_designer import AccessibilityLevel
+    flow = _interaction_designer.create_flow(name, game_genre, AccessibilityLevel(accessibility))
+    return flow.__dict__ if hasattr(flow, '__dict__') else str(flow)
+
+@router.post("/interaction/add-node")
+async def interaction_add_node(flow_id: str = "", node_type: str = "screen", name: str = "", x: float = 0, y: float = 0):
+    from sparkai.agent.agent_interaction_designer import FlowNodeType
+    node = _interaction_designer.add_node(flow_id, name, FlowNodeType(node_type), title=name, position_x=x, position_y=y)
+    return node.__dict__ if hasattr(node, '__dict__') else str(node)
+
+@router.post("/interaction/add-transition")
+async def interaction_add_transition(flow_id: str = "", from_node_id: str = "",
+                                      to_node_id: str = "", trigger: str = "", transition_type: str = "click"):
+    from sparkai.agent.agent_interaction_designer import TransitionType
+    trans = _interaction_designer.add_transition(flow_id, from_node_id, to_node_id,
+                                                   trigger, TransitionType(transition_type))
+    return trans.__dict__ if hasattr(trans, '__dict__') else str(trans)
+
+@router.post("/interaction/generate")
+async def interaction_generate(prompt: str = ""):
+    flow = _interaction_designer.generate_flow_from_prompt(prompt)
+    return flow.__dict__ if hasattr(flow, '__dict__') else str(flow)
+
+@router.post("/interaction/suggest")
+async def interaction_suggest(flow_id: str = ""):
+    suggestions = _interaction_designer.suggest_improvements(flow_id)
+    return {"suggestions": suggestions}
+
+@router.post("/interaction/export")
+async def interaction_export(flow_id: str = ""):
+    data = _interaction_designer.export_to_json(flow_id)
+    return {"export": data}
+
+@router.post("/interaction/validate")
+async def interaction_validate(flow_id: str = ""):
+    valid, errors = _interaction_designer.validate_flow(flow_id)
+    return {"valid": valid, "errors": errors}
+
+
+# === Physics Tuner Endpoints ===
+
+@router.get("/physics-tuner/stats")
+async def physics_tuner_stats():
+    return _physics_tuner.get_stats()
+
+@router.post("/physics-tuner/create-preset")
+async def physics_tuner_create_preset(name: str = "", preset_type: str = "realistic", quality_score: float = 0.8):
+    from sparkai.agent.agent_physics_tuner import TunerPresetType
+    preset = _physics_tuner.create_preset(name, TunerPresetType(preset_type), quality_score=quality_score)
+    return preset.__dict__ if hasattr(preset, '__dict__') else str(preset)
+
+@router.post("/physics-tuner/apply-preset")
+async def physics_tuner_apply_preset(preset_id: str = "", entity_id: str = ""):
+    result = _physics_tuner.apply_preset(preset_id, entity_id)
+    return {"applied": result}
+
+@router.post("/physics-tuner/analyze-entity")
+async def physics_tuner_analyze_entity(entity_id: str = ""):
+    result = _physics_tuner.analyze_entity(entity_id)
+    return str(result)
+
+@router.post("/physics-tuner/tune-gravity")
+async def physics_tuner_tune_gravity(value: float = 980.0, domain: str = "platformer"):
+    from sparkai.agent.agent_physics_tuner import PhysicsDomain
+    result = _physics_tuner.tune_gravity(value, PhysicsDomain(domain))
+    return str(result)
+
+@router.post("/physics-tuner/tune-movement")
+async def physics_tuner_tune_movement(domain: str = "platformer", speed: float = 300.0,
+                                       acceleration: float = 1500.0, friction: float = 0.15):
+    from sparkai.agent.agent_physics_tuner import PhysicsDomain
+    result = _physics_tuner.tune_movement_feel(PhysicsDomain(domain), speed, acceleration, friction)
+    return str(result)
+
+@router.post("/physics-tuner/default-presets")
+async def physics_tuner_default_presets():
+    presets = _physics_tuner.generate_default_presets()
+    return {"presets": [p.__dict__ for p in presets] if presets else []}
+
+@router.post("/physics-tuner/compare")
+async def physics_tuner_compare(preset_id_a: str = "", preset_id_b: str = ""):
+    result = _physics_tuner.compare_presets(preset_id_a, preset_id_b)
+    return str(result)

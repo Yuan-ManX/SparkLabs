@@ -3590,6 +3590,177 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "fog_error", "error": str(e)})
 
+                elif msg_type == "shader_graph":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.shader_graph import get_shader_graph
+                        sg = get_shader_graph()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "shader_graph_stats", "data": sg.get_stats()})
+                        elif sub == "create":
+                            g = sg.create_graph(data.get("name", ""))
+                            await manager.send_to_client(client_id, {"type": "shader_graph_created", "data": g})
+                        elif sub == "compile":
+                            code = sg.compile_to_glsl(data.get("graph_id", "")) if data.get("target") == "glsl" else sg.compile_to_hlsl(data.get("graph_id", ""))
+                            await manager.send_to_client(client_id, {"type": "shader_compiled", "source": code})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "shader_graph_error", "error": str(e)})
+
+                elif msg_type == "build_pipeline":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.build_pipeline import get_build_pipeline
+                        bp = get_build_pipeline()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "build_pipeline_stats", "data": bp.get_stats()})
+                        elif sub == "execute":
+                            result = bp.execute(data.get("pipeline_id", ""))
+                            await manager.broadcast_agent_event("build_executed", {"pipeline_id": data.get("pipeline_id", ""), "result": result})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "build_pipeline_error", "error": str(e)})
+
+                elif msg_type == "tileset_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.tileset_system import get_tileset_system
+                        ts = get_tileset_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "tileset_stats", "data": ts.get_stats()})
+                        elif sub == "create":
+                            tid = ts.create_tileset(data.get("name", ""), data.get("tile_width", 32), data.get("tile_height", 32), data.get("columns", 16), data.get("rows", 16))
+                            await manager.broadcast_engine_status({"tileset_created": tid})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "tileset_error", "error": str(e)})
+
+                elif msg_type == "resource_pack":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.resource_pack import get_resource_pack
+                        rp = get_resource_pack()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "resource_pack_stats", "data": rp.get_stats()})
+                        elif sub == "create":
+                            pid = rp.create_pack(data.get("name", ""), data.get("version", "1.0.0"), data.get("pack_type", "asset"))
+                            await manager.send_to_client(client_id, {"type": "resource_pack_created", "pack_id": pid})
+                        elif sub == "build":
+                            result = rp.build(data.get("pack_id", ""))
+                            await manager.broadcast_agent_event("pack_built", {"pack_id": data.get("pack_id", ""), "result": result is not None})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "resource_pack_error", "error": str(e)})
+
+                elif msg_type == "input_profile":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.input_profile_system import get_input_profile_system
+                        ips = get_input_profile_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "input_profile_stats", "data": ips.get_stats()})
+                        elif sub == "create":
+                            profile = ips.create_profile(data.get("name", ""), data.get("device_type", "keyboard"))
+                            await manager.send_to_client(client_id, {"type": "profile_created", "data": profile.__dict__ if hasattr(profile, '__dict__') else str(profile)})
+                        elif sub == "auto_configure":
+                            pid = ips.auto_configure(data.get("device_type", "keyboard"))
+                            await manager.broadcast_engine_status({"profile_auto_configured": pid})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "input_profile_error", "error": str(e)})
+
+                elif msg_type == "shader_advisor":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_shader_advisor import get_shader_advisor
+                        sa = get_shader_advisor()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "shader_advisor_stats", "data": sa.get_stats()})
+                        elif sub == "generate":
+                            result = sa.generate_from_description(data.get("description", ""), data.get("language", "glsl"))
+                            await manager.send_to_client(client_id, {"type": "shader_generated", "result": str(result)})
+                        elif sub == "recommend":
+                            result = sa.recommend_for_scene(data.get("scene_description", ""))
+                            await manager.send_to_client(client_id, {"type": "shader_recommendation", "result": str(result)})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "shader_advisor_error", "error": str(e)})
+
+                elif msg_type == "build_orchestrator":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_build_orchestrator import get_build_orchestrator
+                        bo = get_build_orchestrator()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "build_orch_stats", "data": bo.get_stats()})
+                        elif sub == "queue":
+                            task_id = bo.queue_build(data.get("config_id", ""), data.get("project_path", ""))
+                            await manager.send_to_client(client_id, {"type": "build_queued", "task_id": task_id})
+                        elif sub == "start":
+                            started = bo.start_build(data.get("task_id", ""))
+                            await manager.broadcast_agent_event("build_started", {"task_id": data.get("task_id", ""), "started": started})
+                        elif sub == "status":
+                            status = bo.get_build_status(data.get("task_id", ""))
+                            await manager.send_to_client(client_id, {"type": "build_status", "data": status})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "build_orch_error", "error": str(e)})
+
+                elif msg_type == "recall_engine":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_recall_engine import get_recall_engine, RecallDomain, RelevanceScore, KnowledgeFragment, RecallQuery
+                        re = get_recall_engine()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "recall_stats", "data": re.get_stats()})
+                        elif sub == "search":
+                            rq = RecallQuery(
+                                text=data.get("query", ""),
+                                domain_filter=RecallDomain(data.get("domain")) if data.get("domain") else None,
+                                max_results=data.get("limit", 10),
+                            )
+                            results = re.search(rq)
+                            await manager.send_to_client(client_id, {"type": "recall_results", "data": [r.__dict__ for r in results] if results else []})
+                        elif sub == "ingest":
+                            fragment = KnowledgeFragment(
+                                content=data.get("content", ""),
+                                domain=RecallDomain(data.get("domain", "game_mechanics")),
+                                relevance=RelevanceScore(data.get("relevance", "medium")),
+                            )
+                            frag_id = re.ingest_fragment(fragment)
+                            await manager.send_to_client(client_id, {"type": "recall_ingested", "fragment_id": frag_id})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "recall_error", "error": str(e)})
+
+                elif msg_type == "interaction_designer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_interaction_designer import get_interaction_designer
+                        ides = get_interaction_designer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "interaction_stats", "data": ides.get_stats()})
+                        elif sub == "generate":
+                            flow = ides.generate_flow_from_prompt(data.get("prompt", ""))
+                            await manager.send_to_client(client_id, {"type": "interaction_flow_generated", "data": flow.__dict__ if hasattr(flow, '__dict__') else str(flow)})
+                        elif sub == "create_flow":
+                            from sparkai.agent.agent_interaction_designer import AccessibilityLevel
+                            flow = ides.create_flow(data.get("name", ""), data.get("game_genre", ""), AccessibilityLevel(data.get("accessibility", "none")))
+                            await manager.send_to_client(client_id, {"type": "interaction_flow_created", "data": flow.__dict__ if hasattr(flow, '__dict__') else str(flow)})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "interaction_error", "error": str(e)})
+
+                elif msg_type == "physics_tuner":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_physics_tuner import get_physics_tuner, PhysicsDomain, TunerPresetType
+                        pt = get_physics_tuner()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "physics_tuner_stats", "data": pt.get_stats()})
+                        elif sub == "tune_gravity":
+                            result = pt.tune_gravity(data.get("value", 980.0), PhysicsDomain(data.get("domain", "platformer")))
+                            await manager.send_to_client(client_id, {"type": "gravity_tuned", "result": str(result)})
+                        elif sub == "tune_movement":
+                            result = pt.tune_movement_feel(PhysicsDomain(data.get("domain", "platformer")), data.get("speed", 300.0), data.get("acceleration", 1500.0), data.get("friction", 0.15))
+                            await manager.send_to_client(client_id, {"type": "movement_tuned", "result": str(result)})
+                        elif sub == "default_presets":
+                            presets = pt.generate_default_presets()
+                            await manager.send_to_client(client_id, {"type": "physics_presets", "data": [p.__dict__ for p in presets] if presets else []})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "physics_tuner_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
