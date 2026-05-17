@@ -276,7 +276,7 @@ from sparkai.agent.agent_cron_scheduler import CronScheduler, ScheduleType, JobS
 from sparkai.agent.agent_expression_evaluator import ExpressionEvaluator, ExpressionError, get_expression_evaluator
 from sparkai.agent.agent_class_registry import ClassRegistry, DataType, TypeDescriptor, get_class_registry
 from sparkai.agent.agent_multi_modal import MultiModalAgent, AnalysisDomain, get_multi_modal_agent
-from sparkai.agent.agent_import_pipeline import ImportPipeline, AssetCategory as ImportAssetCategory, ImportStatus, get_import_pipeline
+from sparkai.agent.agent_import_pipeline import ImportPipelineEngine, AssetImportType, ImportTask, get_import_pipeline
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -338,7 +338,7 @@ from sparkai.agent.agent_tool_composer import ToolComposer, ToolChain, ChainTemp
 from sparkai.agent.agent_feedback_loop import FeedbackLoop, FeedbackEntry, FeedbackSource, get_feedback_loop
 from sparkai.agent.agent_negotiation import AgentNegotiation, NegotiationSession, VoteStance, get_agent_negotiation
 from sparkai.agent.agent_simulation_env import SimulationEnv, SimScenario, SimulationMode, get_simulation_env
-from sparkai.agent.agent_goal_decomposer import GoalDecomposer, GoalTree, GoalNode, GoalLevel, get_goal_decomposer
+from sparkai.agent.agent_goal_decomposer import GoalDecomposer, GoalTree, GoalNode, GoalLevel, ChecklistStatus, GoalDecomposition, get_goal_decomposer
 from sparkai.agent.agent_prompt_template import PromptTemplateLib, TemplateEntry, TemplateDomain, get_prompt_template_lib
 from sparkai.agent.agent_semantic_memory import SemanticMemory, MemoryVector, MemoryCategory, get_semantic_memory
 from sparkai.agent.agent_intent_classifier import IntentClassifier, IntentDomain, ClassificationResult, get_intent_classifier
@@ -374,13 +374,16 @@ from sparkai.agent.agent_asset_harmonizer import AssetHarmonizer, AssetDescripto
 from sparkai.agent.agent_agentic_memory import AgenticMemory, MemoryEntry, MemoryTier, get_agentic_memory
 from sparkai.agent.agent_multi_agent_orchestration import MultiAgentOrchestrator, OrchestrationRole, OrchestrationSession, get_multi_agent_orchestrator
 from sparkai.agent.agent_realtime_collaboration import RealtimeCollaborationEngine, CollaborationMode, CollaborationSession, get_realtime_collaboration
-from sparkai.agent.agent_goal_planner import GoalPlannerEngine, GoalCategory, GoalPlan, get_goal_planner
-from sparkai.agent.agent_behavior_designer import BehaviorDesigner, BehaviorPattern, BehaviorProfile, get_behavior_designer
-from sparkai.agent.agent_game_vision import GameVisionEngine, VisionTaskType, VisionFinding, get_game_vision
-from sparkai.agent.agent_procedural_design import ProceduralDesignEngine, GenerationAlgorithm, ProceduralParams, get_procedural_design
-from sparkai.agent.agent_learning_cycle import LearningCycleEngine, CyclePhase, LearningDomain, get_learning_cycle
-from sparkai.agent.agent_context_sync import ContextSyncEngine, SyncDirection, SyncDelta, get_context_sync
-from sparkai.agent.agent_quality_chain import QualityChainEngine, QualityStage, GateStatus, get_quality_chain
+from sparkai.agent.agent_skill_autonomy import SkillAutonomyEngine, SkillDomain, AutonomousSkill, get_skill_autonomy
+from sparkai.agent.agent_expression_validator import ExpressionValidator, ExpressionType, ExpressionValidationResult, get_expression_validator
+from sparkai.agent.agent_variable_introspection import VariableIntrospectionEngine, VariableScope, VariableDefinition, get_variable_introspection
+from sparkai.agent.agent_theme_designer import ThemeDesigner, StyleMood, ThemeDefinition, get_theme_designer
+from sparkai.agent.agent_performance_advisor import PerformanceAdvisor, PerformanceDomain, PerformanceSnapshot, get_performance_advisor
+from sparkai.agent.agent_shader_advisor import ShaderAdvisor, ShaderDomain, ShaderPreset, get_shader_advisor
+from sparkai.agent.agent_build_orchestrator import BuildOrchestrator, TargetPlatform, BuildConfig, get_build_orchestrator
+from sparkai.agent.agent_recall_engine import RecallEngine, RecallDomain, KnowledgeFragment, get_recall_engine
+from sparkai.agent.agent_interaction_designer import InteractionDesigner, InteractionPattern, InteractionFlow, get_interaction_designer
+from sparkai.agent.agent_physics_tuner import PhysicsTuner, PhysicsDomain as TunerPhysicsDomain, TunerPreset, get_physics_tuner
 from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
@@ -588,7 +591,7 @@ class AgentRuntime:
         self._expression_evaluator: Optional[ExpressionEvaluator] = None
         self._class_registry: Optional[ClassRegistry] = None
         self._multi_modal_agent: Optional[MultiModalAgent] = None
-        self._import_pipeline: Optional[ImportPipeline] = None
+        self._import_pipeline: Optional[ImportPipelineEngine] = None
         self._terrain_system: Optional[TerrainSystem] = None
         self._save_system: Optional[SaveSystem] = None
         self._network_sync: Optional[NetworkSync] = None
@@ -642,13 +645,17 @@ class AgentRuntime:
         self._agentic_memory: Optional[AgenticMemory] = None
         self._multi_agent_orchestrator: Optional[MultiAgentOrchestrator] = None
         self._realtime_collaboration: Optional[RealtimeCollaborationEngine] = None
-        self._goal_planner: Optional[GoalPlannerEngine] = None
-        self._behavior_designer: Optional[BehaviorDesigner] = None
-        self._game_vision: Optional[GameVisionEngine] = None
-        self._procedural_design: Optional[ProceduralDesignEngine] = None
-        self._learning_cycle: Optional[LearningCycleEngine] = None
-        self._context_sync: Optional[ContextSyncEngine] = None
-        self._quality_chain: Optional[QualityChainEngine] = None
+        self._goal_decomposer: Optional[GoalDecomposer] = None
+        self._skill_autonomy: Optional[SkillAutonomyEngine] = None
+        self._expression_validator: Optional[ExpressionValidator] = None
+        self._variable_introspection: Optional[VariableIntrospectionEngine] = None
+        self._theme_designer: Optional[ThemeDesigner] = None
+        self._performance_advisor: Optional[PerformanceAdvisor] = None
+        self._shader_advisor: Optional[ShaderAdvisor] = None
+        self._build_orchestrator: Optional[BuildOrchestrator] = None
+        self._recall_engine: Optional[RecallEngine] = None
+        self._interaction_designer: Optional[InteractionDesigner] = None
+        self._physics_tuner: Optional[PhysicsTuner] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
@@ -868,19 +875,23 @@ class AgentRuntime:
             self._adaptive_difficulty = get_adaptive_difficulty()
             self._content_moderation = get_content_moderation()
             self._game_settings = get_game_settings()
-            self._game_vision = get_game_vision()
-            self._procedural_design = get_procedural_design()
-            self._learning_cycle = get_learning_cycle()
-            self._context_sync = get_context_sync()
-            self._quality_chain = get_quality_chain()
             self._game_progression = get_game_progression()
             self._narrative_graph = get_narrative_graph()
             self._asset_harmonizer = get_asset_harmonizer()
             self._agentic_memory = get_agentic_memory()
             self._multi_agent_orchestrator = get_multi_agent_orchestrator()
             self._realtime_collaboration = get_realtime_collaboration()
-            self._goal_planner = get_goal_planner()
-            self._behavior_designer = get_behavior_designer()
+            self._goal_decomposer = get_goal_decomposer()
+            self._skill_autonomy = get_skill_autonomy()
+            self._expression_validator = get_expression_validator()
+            self._variable_introspection = get_variable_introspection()
+            self._theme_designer = get_theme_designer()
+            self._performance_advisor = get_performance_advisor()
+            self._shader_advisor = get_shader_advisor()
+            self._build_orchestrator = get_build_orchestrator()
+            self._recall_engine = get_recall_engine()
+            self._interaction_designer = get_interaction_designer()
+            self._physics_tuner = get_physics_tuner()
             self._camera_shake_system = get_camera_shake_system()
             self._difficulty_system = get_difficulty_system()
             self._fog_of_war = get_fog_of_war()
@@ -1062,13 +1073,17 @@ class AgentRuntime:
             self._integration.register_subsystem("agentic_memory", self._agentic_memory)
             self._integration.register_subsystem("multi_agent_orchestrator", self._multi_agent_orchestrator)
             self._integration.register_subsystem("realtime_collaboration", self._realtime_collaboration)
-            self._integration.register_subsystem("goal_planner", self._goal_planner)
-            self._integration.register_subsystem("behavior_designer", self._behavior_designer)
-            self._integration.register_subsystem("game_vision", self._game_vision)
-            self._integration.register_subsystem("procedural_design", self._procedural_design)
-            self._integration.register_subsystem("learning_cycle", self._learning_cycle)
-            self._integration.register_subsystem("context_sync", self._context_sync)
-            self._integration.register_subsystem("quality_chain", self._quality_chain)
+            self._integration.register_subsystem("goal_decomposer", self._goal_decomposer)
+            self._integration.register_subsystem("skill_autonomy", self._skill_autonomy)
+            self._integration.register_subsystem("expression_validator", self._expression_validator)
+            self._integration.register_subsystem("variable_introspection", self._variable_introspection)
+            self._integration.register_subsystem("theme_designer", self._theme_designer)
+            self._integration.register_subsystem("performance_advisor", self._performance_advisor)
+            self._integration.register_subsystem("shader_advisor", self._shader_advisor)
+            self._integration.register_subsystem("build_orchestrator", self._build_orchestrator)
+            self._integration.register_subsystem("recall_engine", self._recall_engine)
+            self._integration.register_subsystem("interaction_designer", self._interaction_designer)
+            self._integration.register_subsystem("physics_tuner", self._physics_tuner)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -1916,7 +1931,7 @@ class AgentRuntime:
         return self._multi_modal_agent
 
     @property
-    def import_pipeline(self) -> Optional[ImportPipeline]:
+    def import_pipeline(self) -> Optional[ImportPipelineEngine]:
         return self._import_pipeline
 
     @property
@@ -2289,13 +2304,17 @@ class AgentRuntime:
                 "agentic_memory": self._agentic_memory is not None,
                 "multi_agent_orchestrator": self._multi_agent_orchestrator is not None,
                 "realtime_collaboration": self._realtime_collaboration is not None,
-                "goal_planner": self._goal_planner is not None,
-                "behavior_designer": self._behavior_designer is not None,
-                "game_vision": self._game_vision is not None,
-                "procedural_design": self._procedural_design is not None,
-                "learning_cycle": self._learning_cycle is not None,
-                "context_sync": self._context_sync is not None,
-                "quality_chain": self._quality_chain is not None,
+                "goal_decomposer": self._goal_decomposer is not None,
+                "skill_autonomy": self._skill_autonomy is not None,
+                "expression_validator": self._expression_validator is not None,
+                "variable_introspection": self._variable_introspection is not None,
+                "theme_designer": self._theme_designer is not None,
+                "performance_advisor": self._performance_advisor is not None,
+                "shader_advisor": self._shader_advisor is not None,
+                "build_orchestrator": self._build_orchestrator is not None,
+                "recall_engine": self._recall_engine is not None,
+                "interaction_designer": self._interaction_designer is not None,
+                "physics_tuner": self._physics_tuner is not None,
             },
         }
 
@@ -2685,20 +2704,28 @@ class AgentRuntime:
             status["orchestrator_stats"] = self._multi_agent_orchestrator.get_stats()
         if self._realtime_collaboration:
             status["collaboration_stats"] = self._realtime_collaboration.get_stats()
-        if self._goal_planner:
-            status["goal_planner_stats"] = self._goal_planner.get_stats()
-        if self._behavior_designer:
-            status["behavior_designer_stats"] = self._behavior_designer.get_stats()
-        if self._game_vision:
-            status["game_vision_stats"] = self._game_vision.get_stats()
-        if self._procedural_design:
-            status["procedural_design_stats"] = self._procedural_design.get_stats()
-        if self._learning_cycle:
-            status["learning_cycle_stats"] = self._learning_cycle.get_stats()
-        if self._context_sync:
-            status["context_sync_stats"] = self._context_sync.get_stats()
-        if self._quality_chain:
-            status["quality_chain_stats"] = self._quality_chain.get_stats()
+        if self._goal_decomposer:
+            status["goal_decomposer_stats"] = self._goal_decomposer.get_stats()
+        if self._skill_autonomy:
+            status["skill_autonomy_stats"] = self._skill_autonomy.get_stats()
+        if self._expression_validator:
+            status["expression_validator_stats"] = self._expression_validator.get_stats()
+        if self._variable_introspection:
+            status["variable_introspection_stats"] = self._variable_introspection.get_stats()
+        if self._theme_designer:
+            status["theme_designer_stats"] = self._theme_designer.get_stats()
+        if self._performance_advisor:
+            status["performance_advisor_stats"] = self._performance_advisor.get_stats()
+        if self._shader_advisor:
+            status["shader_advisor_stats"] = self._shader_advisor.get_stats()
+        if self._build_orchestrator:
+            status["build_orchestrator_stats"] = self._build_orchestrator.get_stats()
+        if self._recall_engine:
+            status["recall_engine_stats"] = self._recall_engine.get_stats()
+        if self._interaction_designer:
+            status["interaction_designer_stats"] = self._interaction_designer.get_stats()
+        if self._physics_tuner:
+            status["physics_tuner_stats"] = self._physics_tuner.get_stats()
         return status
 
 
