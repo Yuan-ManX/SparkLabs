@@ -124,6 +124,8 @@ from sparkai.engine.animation_system import AnimationSystem, get_animation_syste
 from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding_system
 from sparkai.engine.ui_layout_system import UILayoutSystem, get_ui_layout_system
 from sparkai.engine.performance_overlay import PerformanceOverlay, get_performance_overlay
+from sparkai.engine.engine_scene_streamer import SceneStreamer, get_scene_streamer
+from sparkai.engine.engine_project_exporter import ProjectExporter, get_project_exporter
 
 
 class SparkEngine:
@@ -253,6 +255,8 @@ class SparkEngine:
         self._pathfinding_system: PathfindingSystem = get_pathfinding_system()
         self._ui_layout_system: UILayoutSystem = get_ui_layout_system()
         self._performance_overlay: PerformanceOverlay = get_performance_overlay()
+        self._scene_streamer: SceneStreamer = get_scene_streamer()
+        self._project_exporter: ProjectExporter = get_project_exporter()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -518,6 +522,8 @@ class SparkEngine:
             "pathfinding_system": self._pathfinding_system.get_stats(),
             "ui_layout_system": self._ui_layout_system.get_stats(),
             "performance_overlay": self._performance_overlay.get_stats(),
+            "scene_streamer": self._scene_streamer.get_stats(),
+            "project_exporter": self._project_exporter.get_stats(),
         }
 
     @property
