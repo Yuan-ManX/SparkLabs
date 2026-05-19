@@ -4025,6 +4025,95 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "perf_overlay_error", "error": str(e)})
 
+                elif msg_type == "developer_assistant":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_developer_assistant import get_developer_assistant, AssistantMode
+                        da = get_developer_assistant()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "dev_asst_stats", "data": da.get_stats()})
+                        elif sub == "start":
+                            session = da.start_session(data.get("name", ""), data.get("focus", "game_logic"))
+                            await manager.send_to_client(client_id, {"type": "dev_session_started", "data": session.to_dict()})
+                        elif sub == "suggestions":
+                            suggestions = da.get_suggestions(
+                                data.get("session_id", ""),
+                                AssistantMode(data.get("mode", "CODE_SUGGESTION")),
+                                data.get("max_count", 5),
+                            )
+                            await manager.send_to_client(client_id, {"type": "dev_suggestions", "data": [s.to_dict() for s in suggestions]})
+                        elif sub == "diagnose":
+                            diagnosis = da.diagnose_error(
+                                data.get("session_id", ""),
+                                data.get("error_message", ""),
+                                data.get("code_context", ""),
+                            )
+                            await manager.send_to_client(client_id, {"type": "dev_diagnosis", "data": diagnosis.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "dev_asst_error", "error": str(e)})
+
+                elif msg_type == "playtest_simulator":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_playtest_simulator import get_playtest_simulator, PlayerStyle
+                        ps = get_playtest_simulator()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "playtest_stats", "data": ps.get_stats()})
+                        elif sub == "create_profile":
+                            profile = ps.create_profile(
+                                data.get("name", ""),
+                                data.get("skill_level", 0.5),
+                                PlayerStyle(data.get("style", "CASUAL")),
+                            )
+                            await manager.send_to_client(client_id, {"type": "playtest_profile", "data": profile.to_dict()})
+                        elif sub == "simulate":
+                            telemetry = ps.simulate_frame(data.get("session_id", ""), data.get("delta_time", 0.016))
+                            await manager.send_to_client(client_id, {"type": "playtest_frame", "data": telemetry})
+                        elif sub == "report":
+                            report = ps.generate_report(data.get("level_id", ""))
+                            await manager.send_to_client(client_id, {"type": "playtest_report", "data": report.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "playtest_error", "error": str(e)})
+
+                elif msg_type == "scene_streamer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.engine_scene_streamer import get_scene_streamer
+                        ss = get_scene_streamer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "streamer_stats", "data": ss.get_stats()})
+                        elif sub == "create_world":
+                            config = ss.create_world(data.get("world_id", ""), data.get("chunk_size", 256))
+                            await manager.send_to_client(client_id, {"type": "world_created", "data": config.to_dict()})
+                        elif sub == "tick":
+                            result = ss.tick(data.get("delta_time", 0.016))
+                            await manager.send_to_client(client_id, {"type": "streamer_tick", "data": result})
+                        elif sub == "loaded_chunks":
+                            chunks = ss.get_loaded_chunks(data.get("world_id", ""))
+                            await manager.send_to_client(client_id, {"type": "loaded_chunks", "chunks": [c.to_dict() for c in chunks]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "streamer_error", "error": str(e)})
+
+                elif msg_type == "project_exporter":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.engine_project_exporter import get_project_exporter, ExportPlatform
+                        pe = get_project_exporter()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "exporter_stats", "data": pe.get_stats()})
+                        elif sub == "export":
+                            job = pe.start_export(data.get("config_id", ""))
+                            await manager.send_to_client(client_id, {"type": "export_started", "data": job.to_dict()})
+                        elif sub == "status":
+                            job = pe.get_job_status(data.get("job_id", ""))
+                            if job:
+                                await manager.send_to_client(client_id, {"type": "export_status", "data": job.to_dict()})
+                        elif sub == "presets":
+                            presets = pe.get_presets()
+                            await manager.send_to_client(client_id, {"type": "exporter_presets", "presets": [p.to_dict() for p in presets]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "exporter_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
