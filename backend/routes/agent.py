@@ -156,6 +156,10 @@ from sparkai.agent.agent_prompt_optimizer import PromptOptimizer, PromptDomain, 
 from sparkai.agent.agent_skill_composer import SkillComposer, SkillDomain, get_skill_composer
 from sparkai.engine.ui_layout_system import UILayoutSystem, get_ui_layout_system
 from sparkai.engine.performance_overlay import PerformanceOverlay, get_performance_overlay
+from sparkai.agent.agent_developer_assistant import DeveloperAssistant, AssistantMode, get_developer_assistant
+from sparkai.agent.agent_playtest_simulator import PlaytestSimulator, PlayerStyle, get_playtest_simulator
+from sparkai.engine.engine_scene_streamer import SceneStreamer, get_scene_streamer
+from sparkai.engine.engine_project_exporter import ProjectExporter, ExportPlatform, get_project_exporter
 
 router = APIRouter()
 
@@ -2096,6 +2100,10 @@ _prompt_optimizer = get_prompt_optimizer()
 _skill_composer = get_skill_composer()
 _ui_layout_system = get_ui_layout_system()
 _performance_overlay = get_performance_overlay()
+_developer_assistant = get_developer_assistant()
+_playtest_simulator = get_playtest_simulator()
+_scene_streamer = get_scene_streamer()
+_project_exporter = get_project_exporter()
 
 
 # === Blueprint Engine ===
@@ -15529,3 +15537,247 @@ async def performance_overlay_snapshots(limit: int = 10):
 async def performance_overlay_reset():
     _performance_overlay.reset_metrics()
     return {"reset": True}
+
+
+# === Developer Assistant Endpoints ===
+
+@router.get("/developer-assistant/stats")
+async def developer_assistant_stats():
+    return _developer_assistant.get_stats()
+
+@router.post("/developer-assistant/start-session")
+async def developer_assistant_start(name: str = "", focus: str = "game_logic"):
+    session = _developer_assistant.start_session(name, focus)
+    return session.to_dict()
+
+@router.post("/developer-assistant/update-context")
+async def developer_assistant_update_context(session_id: str = "", file: str = "",
+                                                line: int = 0, col: int = 0,
+                                                nodes: str = ""):
+    node_list = [n.strip() for n in nodes.split(",") if n.strip()] if nodes else []
+    _developer_assistant.update_context(session_id, file, line, col, node_list)
+    return {"updated": True}
+
+@router.post("/developer-assistant/get-suggestions")
+async def developer_assistant_get_suggestions(session_id: str = "",
+                                                 mode: str = "code_suggestion",
+                                                 max_count: int = 5):
+    try:
+        mode_type = AssistantMode(mode.lower())
+    except ValueError:
+        mode_type = AssistantMode.CODE_SUGGESTION
+    suggestions = _developer_assistant.get_suggestions(session_id, mode_type, max_count)
+    return {"suggestions": [s.to_dict() for s in suggestions]}
+
+@router.post("/developer-assistant/diagnose")
+async def developer_assistant_diagnose(session_id: str = "",
+                                          error_message: str = "",
+                                          code_context: str = ""):
+    diagnosis = _developer_assistant.diagnose_error(session_id, error_message, code_context)
+    return diagnosis.to_dict()
+
+@router.post("/developer-assistant/optimization-advice")
+async def developer_assistant_advice(target_system: str = "", code: str = ""):
+    advice = _developer_assistant.get_optimization_advice(target_system, code)
+    return advice.to_dict() if advice else {"error": "no advice"}
+
+@router.post("/developer-assistant/accept-suggestion")
+async def developer_assistant_accept(id: str = ""):
+    _developer_assistant.accept_suggestion(id)
+    return {"accepted": True}
+
+@router.post("/developer-assistant/record-error")
+async def developer_assistant_record_error(session_id: str = "",
+                                              error_message: str = "",
+                                              code_context: str = ""):
+    _developer_assistant.record_error(session_id, error_message, code_context)
+    return {"recorded": True}
+
+
+# === Playtest Simulator Endpoints ===
+
+@router.get("/playtest-simulator/stats")
+async def playtest_simulator_stats():
+    return _playtest_simulator.get_stats()
+
+@router.post("/playtest-simulator/create-profile")
+async def playtest_create_profile(name: str = "", skill_level: float = 0.5,
+                                     style: str = "CASUAL"):
+    profile = _playtest_simulator.create_profile(name, skill_level,
+                                                   PlayerStyle(style))
+    return profile.to_dict()
+
+@router.get("/playtest-simulator/profiles")
+async def playtest_profiles():
+    profiles = _playtest_simulator.get_all_profiles()
+    return {"profiles": [p.to_dict() for p in profiles]}
+
+@router.post("/playtest-simulator/start-session")
+async def playtest_start_session(profile_id: str = "", level_id: str = ""):
+    profiles = _playtest_simulator.get_all_profiles()
+    if not profile_id and profiles:
+        profile_id = profiles[0].id
+    session = _playtest_simulator.start_session(profile_id, level_id)
+    if session is None and profiles:
+        session = _playtest_simulator.start_session(profiles[0].id, level_id)
+    if session is None:
+        return {"error": "No profiles available"}
+    return session.to_dict()
+
+@router.post("/playtest-simulator/simulate-frame")
+async def playtest_simulate_frame(session_id: str = "", delta_time: float = 0.016):
+    telemetry = _playtest_simulator.simulate_frame(session_id, delta_time)
+    return telemetry
+
+@router.post("/playtest-simulator/complete")
+async def playtest_complete(session_id: str = "", status: str = "completed"):
+    from sparkai.agent.agent_playtest_simulator import CompletionStatus
+    try:
+        st = CompletionStatus(status.lower())
+    except ValueError:
+        st = CompletionStatus.COMPLETED
+    _playtest_simulator.complete_session(session_id, st)
+    return {"completed": True}
+
+@router.get("/playtest-simulator/report")
+async def playtest_report(level_id: str = ""):
+    report = _playtest_simulator.generate_report(level_id)
+    return report.to_dict()
+
+@router.get("/playtest-simulator/difficulty-curve")
+async def playtest_difficulty(level_id: str = ""):
+    curve = _playtest_simulator.get_difficulty_curve(level_id)
+    return {"curve": curve}
+
+@router.get("/playtest-simulator/heat-map")
+async def playtest_heat_map(level_id: str = ""):
+    heat_map = _playtest_simulator.get_heat_map(level_id)
+    return heat_map
+
+@router.post("/playtest-simulator/run-all")
+async def playtest_run_all(level_id: str = ""):
+    reports = _playtest_simulator.run_full_simulation(level_id)
+    return {"reports": reports}
+
+
+# === Scene Streamer Endpoints ===
+
+@router.get("/scene-streamer/stats")
+async def scene_streamer_stats():
+    return _scene_streamer.get_stats()
+
+@router.post("/scene-streamer/create-world")
+async def scene_streamer_create_world(world_id: str = "", chunk_size: int = 256):
+    config = _scene_streamer.create_world(world_id, chunk_size)
+    return config.to_dict()
+
+@router.post("/scene-streamer/add-chunk")
+async def scene_streamer_add_chunk(world_id: str = "", grid_x: int = 0,
+                                      grid_y: int = 0, grid_z: int = 0,
+                                      priority: int = 5):
+    chunk = _scene_streamer.add_chunk(world_id, grid_x, grid_y, grid_z, priority)
+    return chunk.to_dict() if chunk else {"error": "failed"}
+
+@router.post("/scene-streamer/update-camera")
+async def scene_streamer_update_camera(camera_id: str = "", world_id: str = "",
+                                          pos_x: float = 0, pos_y: float = 0,
+                                          pos_z: float = 0,
+                                          fwd_x: float = 1, fwd_y: float = 0,
+                                          fwd_z: float = 0, speed: float = 10):
+    _scene_streamer.update_camera(camera_id, world_id,
+                                    (pos_x, pos_y, pos_z),
+                                    (fwd_x, fwd_y, fwd_z), speed)
+    return {"updated": True}
+
+@router.post("/scene-streamer/tick")
+async def scene_streamer_tick(delta_time: float = 0.016):
+    result = _scene_streamer.tick(delta_time)
+    return result
+
+@router.get("/scene-streamer/loaded-chunks")
+async def scene_streamer_loaded(world_id: str = ""):
+    chunks = _scene_streamer.get_loaded_chunks(world_id)
+    return {"chunks": [c.to_dict() for c in chunks]}
+
+@router.get("/scene-streamer/chunks-in-radius")
+async def scene_streamer_radius(world_id: str = "", x: float = 0, y: float = 0,
+                                   z: float = 0, radius: float = 500):
+    chunks = _scene_streamer.get_chunks_in_radius(world_id, (x, y, z), radius)
+    return {"chunks": [c.to_dict() for c in chunks]}
+
+@router.get("/scene-streamer/predict-preload")
+async def scene_streamer_predict(world_id: str = "", camera_id: str = ""):
+    chunks = _scene_streamer.predict_preload_chunks(world_id, camera_id)
+    return {"chunks": [c.to_dict() for c in chunks]}
+
+@router.get("/scene-streamer/streaming-stats")
+async def scene_streamer_world_stats(world_id: str = ""):
+    return _scene_streamer.get_streaming_stats(world_id)
+
+
+# === Project Exporter Endpoints ===
+
+@router.get("/project-exporter/stats")
+async def project_exporter_stats():
+    return _project_exporter.get_stats()
+
+@router.post("/project-exporter/create-config")
+async def project_exporter_create_config(
+        project_name: str = "", platform: str = "web",
+        resolution_width: int = 1920, resolution_height: int = 1080,
+        fullscreen: str = "False", compression_level: int = 6,
+        include_debug_symbols: str = "False",
+        bundle_id: str = "com.sparklabs.game", version_string: str = "1.0.0"):
+    try:
+        target = ExportPlatform(platform.lower())
+    except ValueError:
+        target = ExportPlatform.WEB
+    config = _project_exporter.create_config(
+        project_name=project_name,
+        platform=target,
+        resolution_width=resolution_width,
+        resolution_height=resolution_height,
+        fullscreen=fullscreen == "True",
+        compression_level=compression_level,
+        include_debug_symbols=include_debug_symbols == "True",
+        bundle_id=bundle_id,
+        version_string=version_string,
+    )
+    return config.to_dict()
+
+@router.post("/project-exporter/start-export")
+async def project_exporter_start(config_id: str = ""):
+    job = _project_exporter.start_export(config_id)
+    return job.to_dict()
+
+@router.get("/project-exporter/status")
+async def project_exporter_status(job_id: str = ""):
+    job = _project_exporter.get_job_status(job_id)
+    return job.to_dict() if job else {"error": "not found"}
+
+@router.get("/project-exporter/history")
+async def project_exporter_history():
+    jobs = _project_exporter.get_export_history()
+    return [j.to_dict() for j in jobs]
+
+@router.post("/project-exporter/cancel")
+async def project_exporter_cancel(job_id: str = ""):
+    cancelled = _project_exporter.cancel_export(job_id)
+    return {"cancelled": cancelled}
+
+@router.post("/project-exporter/validate")
+async def project_exporter_validate(config_id: str = ""):
+    result = _project_exporter.validate_project(config_id)
+    return result
+
+@router.post("/project-exporter/estimate-size")
+async def project_exporter_estimate(config_id: str = ""):
+    result = _project_exporter.estimate_export_size(config_id)
+    if isinstance(result, tuple) and len(result) == 2:
+        return {"total_mb": result[0], "breakdown": result[1]}
+    return {"result": str(result)}
+
+@router.get("/project-exporter/presets")
+async def project_exporter_presets():
+    presets = _project_exporter.get_presets()
+    return {"presets": [p.to_dict() for p in presets]}
