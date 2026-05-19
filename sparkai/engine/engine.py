@@ -126,6 +126,10 @@ from sparkai.engine.ui_layout_system import UILayoutSystem, get_ui_layout_system
 from sparkai.engine.performance_overlay import PerformanceOverlay, get_performance_overlay
 from sparkai.engine.engine_scene_streamer import SceneStreamer, get_scene_streamer
 from sparkai.engine.engine_project_exporter import ProjectExporter, get_project_exporter
+from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
+from sparkai.engine.engine_network_layer import NetworkLayer, get_network_layer
+from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
+from sparkai.engine.engine_save_system import SaveSystem, get_save_system
 
 
 class SparkEngine:
@@ -156,7 +160,7 @@ class SparkEngine:
         self._physics_system: PhysicsSystem = get_physics_system()
         self._particle_system: ParticleSystem = get_particle_system()
         self._pathfinding: PathfindingSystem = get_pathfinding()
-        self._audio_system: AudioSystem = get_audio_system()
+        self._audio_system: GameAudioSystem = get_audio_system()
         self._state_machine: StateMachine = get_state_machine()
         self._engine_resource_manager: EngineResourceManager = get_resource_manager()
         self._behavior_system: BehaviorSystem = get_behavior_system()
@@ -257,6 +261,10 @@ class SparkEngine:
         self._performance_overlay: PerformanceOverlay = get_performance_overlay()
         self._scene_streamer: SceneStreamer = get_scene_streamer()
         self._project_exporter: ProjectExporter = get_project_exporter()
+        self._audio_system = get_audio_system()
+        self._network_layer = get_network_layer()
+        self._behavior_runtime = get_behavior_runtime()
+        self._save_system = get_save_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -524,6 +532,10 @@ class SparkEngine:
             "performance_overlay": self._performance_overlay.get_stats(),
             "scene_streamer": self._scene_streamer.get_stats(),
             "project_exporter": self._project_exporter.get_stats(),
+            "audio_system": self._audio_system is not None,
+            "network_layer": self._network_layer is not None,
+            "behavior_runtime": self._behavior_runtime is not None,
+            "save_system": self._save_system is not None,
         }
 
     @property
@@ -559,7 +571,7 @@ class SparkEngine:
         return self._pathfinding
 
     @property
-    def audio_system(self) -> AudioSystem:
+    def audio_system(self) -> GameAudioSystem:
         return self._audio_system
 
     @property
