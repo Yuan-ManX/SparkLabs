@@ -4114,6 +4114,182 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "exporter_error", "error": str(e)})
 
+                elif msg_type == "game_director":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_game_director import get_game_director
+                        gd = get_game_director()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "game_director_stats", "data": gd.get_stats()})
+                        elif sub == "create_brief":
+                            brief = gd.create_brief(
+                                project_name=data.get("project_name", "Untitled"),
+                                genre=data.get("genre", ""),
+                                target_platform=data.get("target_platform", "PC"),
+                            )
+                            await manager.send_to_client(client_id, {"type": "game_director_brief", "data": brief.to_dict()})
+                        elif sub == "list_briefs":
+                            briefs = gd.list_briefs()
+                            await manager.send_to_client(client_id, {"type": "game_director_briefs", "data": [b.to_dict() for b in briefs]})
+                        elif sub == "delegate_task":
+                            task = gd.delegate_task(
+                                brief_id=data.get("brief_id", ""),
+                                task_type=data.get("task_type", ""),
+                                description=data.get("description", ""),
+                            )
+                            await manager.send_to_client(client_id, {"type": "game_director_task", "data": task.to_dict()})
+                        elif sub == "get_progress":
+                            progress = gd.get_progress(data.get("brief_id", ""))
+                            await manager.send_to_client(client_id, {"type": "game_director_progress", "data": progress.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "game_director_error", "error": str(e)})
+
+                elif msg_type == "balance_analyzer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_balance_analyzer import get_balance_analyzer
+                        ba = get_balance_analyzer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "balance_analyzer_stats", "data": ba.get_stats()})
+                        elif sub == "analyze":
+                            analysis = ba.analyze(
+                                game_id=data.get("game_id", ""),
+                                metrics=data.get("metrics", []),
+                            )
+                            await manager.send_to_client(client_id, {"type": "balance_analyzer_result", "data": analysis.to_dict()})
+                        elif sub == "get_issues":
+                            issues = ba.get_issues(data.get("game_id", ""))
+                            await manager.send_to_client(client_id, {"type": "balance_analyzer_issues", "data": [i.to_dict() for i in issues]})
+                        elif sub == "compare_games":
+                            comparison = ba.compare_games(
+                                game_id_a=data.get("game_id_a", ""),
+                                game_id_b=data.get("game_id_b", ""),
+                            )
+                            await manager.send_to_client(client_id, {"type": "balance_analyzer_comparison", "data": comparison.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "balance_analyzer_error", "error": str(e)})
+
+                elif msg_type == "narrative_composer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_narrative_composer import get_narrative_composer
+                        nc = get_narrative_composer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "narrative_composer_stats", "data": nc.get_stats()})
+                        elif sub == "create_story":
+                            story = nc.create_story(
+                                title=data.get("title", "Untitled"),
+                                genre=data.get("genre", ""),
+                                characters=data.get("characters", []),
+                            )
+                            await manager.send_to_client(client_id, {"type": "narrative_composer_story", "data": story.to_dict()})
+                        elif sub == "get_export":
+                            export_data = nc.get_export(data.get("story_id", ""))
+                            await manager.send_to_client(client_id, {"type": "narrative_composer_export", "data": export_data.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "narrative_composer_error", "error": str(e)})
+
+                elif msg_type == "player_modeler":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.agent.agent_player_modeler import get_player_modeler
+                        pm = get_player_modeler()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "player_modeler_stats", "data": pm.get_stats()})
+                        elif sub == "simulate":
+                            simulation = pm.simulate(
+                                player_profile_id=data.get("player_profile_id", ""),
+                                scenario=data.get("scenario", ""),
+                            )
+                            await manager.send_to_client(client_id, {"type": "player_modeler_simulation", "data": simulation.to_dict()})
+                        elif sub == "get_report":
+                            report = pm.get_report(data.get("simulation_id", ""))
+                            await manager.send_to_client(client_id, {"type": "player_modeler_report", "data": report.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "player_modeler_error", "error": str(e)})
+
+                elif msg_type == "audio_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.engine_audio_system import get_audio_system
+                        audio = get_audio_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "audio_system_stats", "data": audio.get_stats()})
+                        elif sub == "register_asset":
+                            asset = audio.register_asset(
+                                asset_path=data.get("asset_path", ""),
+                                asset_type=data.get("asset_type", "sfx"),
+                            )
+                            await manager.send_to_client(client_id, {"type": "audio_system_asset", "data": asset.to_dict()})
+                        elif sub == "get_mixer":
+                            mixer = audio.get_mixer()
+                            await manager.send_to_client(client_id, {"type": "audio_system_mixer", "data": mixer.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "audio_system_error", "error": str(e)})
+
+                elif msg_type == "network_layer":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.engine_network_layer import get_network_layer
+                        net = get_network_layer()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "network_layer_stats", "data": net.get_stats()})
+                        elif sub == "host":
+                            session = net.host(
+                                session_name=data.get("session_name", "Untitled"),
+                                max_players=data.get("max_players", 4),
+                            )
+                            await manager.send_to_client(client_id, {"type": "network_layer_host", "data": session.to_dict()})
+                        elif sub == "create_lobby":
+                            lobby = net.create_lobby(
+                                lobby_name=data.get("lobby_name", "Untitled"),
+                                password=data.get("password", ""),
+                            )
+                            await manager.send_to_client(client_id, {"type": "network_layer_lobby", "data": lobby.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "network_layer_error", "error": str(e)})
+
+                elif msg_type == "behavior_runtime":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.engine_behavior_runtime import get_behavior_runtime
+                        bt = get_behavior_runtime()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "behavior_runtime_stats", "data": bt.get_stats()})
+                        elif sub == "create_tree":
+                            tree = bt.create_tree(
+                                tree_name=data.get("tree_name", "Untitled"),
+                                root_node=data.get("root_node", "selector"),
+                            )
+                            await manager.send_to_client(client_id, {"type": "behavior_runtime_tree", "data": tree.to_dict()})
+                        elif sub == "load_preset":
+                            preset = bt.load_preset(data.get("preset_name", ""))
+                            await manager.send_to_client(client_id, {"type": "behavior_runtime_preset", "data": preset.to_dict()})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "behavior_runtime_error", "error": str(e)})
+
+                elif msg_type == "save_system":
+                    sub = data.get("subtype", "stats")
+                    try:
+                        from sparkai.engine.engine_save_system import get_save_system
+                        sv = get_save_system()
+                        if sub == "stats":
+                            await manager.send_to_client(client_id, {"type": "save_system_stats", "data": sv.get_stats()})
+                        elif sub == "create_save":
+                            save = sv.create_save(
+                                slot_name=data.get("slot_name", "Auto Save"),
+                                game_state=data.get("game_state", {}),
+                            )
+                            await manager.send_to_client(client_id, {"type": "save_system_save", "data": save.to_dict()})
+                        elif sub == "load_save":
+                            save_data = sv.load_save(data.get("slot_id", ""))
+                            await manager.send_to_client(client_id, {"type": "save_system_load", "data": save_data.to_dict()})
+                        elif sub == "list_slots":
+                            slots = sv.list_slots()
+                            await manager.send_to_client(client_id, {"type": "save_system_slots", "data": [s.to_dict() for s in slots]})
+                    except Exception as e:
+                        await manager.send_to_client(client_id, {"type": "save_system_error", "error": str(e)})
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
