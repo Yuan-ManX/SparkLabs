@@ -160,6 +160,14 @@ from sparkai.agent.agent_developer_assistant import DeveloperAssistant, Assistan
 from sparkai.agent.agent_playtest_simulator import PlaytestSimulator, PlayerStyle, get_playtest_simulator
 from sparkai.engine.engine_scene_streamer import SceneStreamer, get_scene_streamer
 from sparkai.engine.engine_project_exporter import ProjectExporter, ExportPlatform, get_project_exporter
+from sparkai.agent.agent_game_director import GameDirector, get_game_director
+from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_analyzer
+from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
+from sparkai.agent.agent_player_modeler import PlayerModeler, get_player_modeler
+from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
+from sparkai.engine.engine_network_layer import NetworkLayer, get_network_layer
+from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
+from sparkai.engine.engine_save_system import SaveSystem, get_save_system
 
 router = APIRouter()
 
@@ -2104,6 +2112,35 @@ _developer_assistant = get_developer_assistant()
 _playtest_simulator = get_playtest_simulator()
 _scene_streamer = get_scene_streamer()
 _project_exporter = get_project_exporter()
+_game_director = get_game_director()
+_balance_analyzer = get_balance_analyzer()
+_narrative_composer = get_narrative_composer()
+_player_modeler = get_player_modeler()
+_audio_system = get_audio_system()
+_network_layer = get_network_layer()
+_behavior_runtime = get_behavior_runtime()
+_save_system = get_save_system()
+
+
+def _init_new_subsystems():
+    from sparkai.agent.agent_game_director import get_game_director
+    from sparkai.agent.agent_balance_analyzer import get_balance_analyzer
+    from sparkai.agent.agent_narrative_composer import get_narrative_composer
+    from sparkai.agent.agent_player_modeler import get_player_modeler
+    from sparkai.engine.engine_audio_system import get_audio_system
+    from sparkai.engine.engine_network_layer import get_network_layer
+    from sparkai.engine.engine_behavior_runtime import get_behavior_runtime
+    from sparkai.engine.engine_save_system import get_save_system
+    global _game_director, _balance_analyzer, _narrative_composer, _player_modeler
+    global _audio_system, _network_layer, _behavior_runtime, _save_system
+    _game_director = get_game_director()
+    _balance_analyzer = get_balance_analyzer()
+    _narrative_composer = get_narrative_composer()
+    _player_modeler = get_player_modeler()
+    _audio_system = get_audio_system()
+    _network_layer = get_network_layer()
+    _behavior_runtime = get_behavior_runtime()
+    _save_system = get_save_system()
 
 
 # === Blueprint Engine ===
@@ -5324,36 +5361,36 @@ async def pathfinding_block(req: BlockRequest):
 
 # === Audio System ===
 
-from sparkai.engine.audio_system import AudioSystem, get_audio_system, AudioChannel
+from sparkai.engine.audio_system import AudioSystem, get_audio_system as get_legacy_audio, AudioChannel
 
-_audio_system = get_audio_system()
+_legacy_audio_system = get_legacy_audio()
 
 
 @router.get("/audio/stats")
 async def audio_stats():
-    return _audio_system.get_stats()
+    return _legacy_audio_system.get_stats()
 
 
 @router.post("/audio/play/{source_id}")
 async def audio_play(source_id: str):
-    return {"success": _audio_system.play(source_id)}
+    return {"success": _legacy_audio_system.play(source_id)}
 
 
 @router.post("/audio/stop/{source_id}")
 async def audio_stop(source_id: str):
-    return {"success": _audio_system.stop(source_id)}
+    return {"success": _legacy_audio_system.stop(source_id)}
 
 
 @router.post("/audio/stop-all")
 async def audio_stop_all(channel: Optional[str] = None):
     ch = AudioChannel(channel) if channel else None
-    return {"stopped": _audio_system.stop_all(ch)}
+    return {"stopped": _legacy_audio_system.stop_all(ch)}
 
 
 @router.post("/audio/volume/{channel}")
 async def audio_set_volume(channel: str, volume: float = 1.0):
     ch = AudioChannel(channel)
-    _audio_system.set_channel_volume(ch, volume)
+    _legacy_audio_system.set_channel_volume(ch, volume)
     return {"channel": channel, "volume": volume}
 
 
@@ -8763,7 +8800,7 @@ async def save_system_stats():
 @router.post("/save-system/save")
 async def save_system_save(slot_id: int, scene_name: str = "", playtime_seconds: float = 0.0):
     state = {"scene": scene_name, "playtime": playtime_seconds}
-    slot = _save_system.save(slot_id, state, scene_name=scene_name, playtime_seconds=playtime_seconds)
+    slot = _save_system.create_save(slot_number=slot_id, scene_id=scene_name, game_data=state)
     if slot:
         return slot.to_dict()
     return {"error": "Save failed"}
@@ -8771,7 +8808,7 @@ async def save_system_save(slot_id: int, scene_name: str = "", playtime_seconds:
 
 @router.get("/save-system/load/{slot_id}")
 async def save_system_load(slot_id: int):
-    state = _save_system.load(slot_id)
+    state = _save_system.load_save(str(slot_id))
     if state:
         return {"state": state}
     return {"error": "Load failed"}
@@ -8779,12 +8816,152 @@ async def save_system_load(slot_id: int):
 
 @router.delete("/save-system/slot/{slot_id}")
 async def save_system_delete(slot_id: int):
-    return {"deleted": _save_system.delete(slot_id)}
+    return {"deleted": _save_system.delete_save(str(slot_id))}
 
 
 @router.get("/save-system/slots")
 async def save_system_slots():
     return {"slots": [s.to_dict() for s in _save_system.list_slots()]}
+
+
+# ============================================================
+# Behavior Runtime Endpoints
+# ============================================================
+
+@router.get("/behavior-runtime/stats")
+async def behavior_runtime_stats():
+    return _behavior_runtime.get_stats()
+
+
+@router.post("/behavior-runtime/create-tree")
+async def behavior_runtime_create_tree(name: str = "", owner_id: str = ""):
+    tree = _behavior_runtime.create_tree(name, owner_id)
+    return tree.to_dict()
+
+
+@router.post("/behavior-runtime/add-node")
+async def behavior_runtime_add_node(tree_id: str = "", name: str = "",
+                                     category: str = "action", parent_id: str = "",
+                                     priority: int = 0, cooldown: float = 0.0):
+    node = _behavior_runtime.add_node(tree_id, name, category, parent_id, priority=priority, cooldown=cooldown)
+    if node:
+        return node.to_dict()
+    return {"error": "Tree not found"}
+
+
+@router.post("/behavior-runtime/activate-tree")
+async def behavior_runtime_activate_tree(tree_id: str = ""):
+    return {"activated": _behavior_runtime.activate_tree(tree_id)}
+
+
+@router.post("/behavior-runtime/deactivate-tree")
+async def behavior_runtime_deactivate_tree(tree_id: str = ""):
+    return {"deactivated": _behavior_runtime.deactivate_tree(tree_id)}
+
+
+@router.post("/behavior-runtime/tick-tree")
+async def behavior_runtime_tick_tree(tree_id: str = "", delta_time: float = 0.016):
+    return _behavior_runtime.tick_tree(tree_id, delta_time)
+
+
+@router.get("/behavior-runtime/tree/{tree_id}")
+async def behavior_runtime_get_tree(tree_id: str):
+    tree = _behavior_runtime.get_tree(tree_id)
+    if tree:
+        return tree.to_dict()
+    return {"error": "Tree not found"}
+
+
+@router.get("/behavior-runtime/trees")
+async def behavior_runtime_list_trees(owner_id: str = ""):
+    owner = owner_id if owner_id else None
+    return {"trees": [t.to_dict() for t in _behavior_runtime.list_trees(owner)]}
+
+
+@router.post("/behavior-runtime/create-fsm")
+async def behavior_runtime_create_fsm(name: str = "", owner_id: str = ""):
+    fsm = _behavior_runtime.create_fsm(name, owner_id)
+    return fsm.to_dict()
+
+
+@router.post("/behavior-runtime/add-fsm-state")
+async def behavior_runtime_add_fsm_state(fsm_id: str = "", name: str = "",
+                                          is_initial: bool = False):
+    state = _behavior_runtime.add_fsm_state(fsm_id, name, is_initial)
+    if state:
+        return state.to_dict()
+    return {"error": "FSM not found"}
+
+
+@router.post("/behavior-runtime/add-fsm-transition")
+async def behavior_runtime_add_fsm_transition(fsm_id: str = "", from_state_id: str = "",
+                                               to_state_id: str = "", name: str = "",
+                                               trigger: str = "condition", event_name: str = "",
+                                               timer_seconds: float = 0.0):
+    return {"added": _behavior_runtime.add_fsm_transition(
+        fsm_id, from_state_id, to_state_id, name, trigger,
+        event_name=event_name, timer_seconds=timer_seconds)}
+
+
+@router.post("/behavior-runtime/activate-fsm")
+async def behavior_runtime_activate_fsm(fsm_id: str = ""):
+    return {"activated": _behavior_runtime.activate_fsm(fsm_id)}
+
+
+@router.post("/behavior-runtime/trigger-fsm-event")
+async def behavior_runtime_trigger_fsm_event(fsm_id: str = "", event_name: str = ""):
+    return {"triggered": _behavior_runtime.trigger_fsm_event(fsm_id, event_name)}
+
+
+@router.get("/behavior-runtime/fsm/{fsm_id}")
+async def behavior_runtime_get_fsm(fsm_id: str):
+    fsm = _behavior_runtime.get_fsm(fsm_id)
+    if fsm:
+        return fsm.to_dict()
+    return {"error": "FSM not found"}
+
+
+@router.get("/behavior-runtime/fsms")
+async def behavior_runtime_list_fsms(owner_id: str = ""):
+    owner = owner_id if owner_id else None
+    return {"fsms": [f.to_dict() for f in _behavior_runtime.list_fsms(owner)]}
+
+
+@router.post("/behavior-runtime/load-preset-tree")
+async def behavior_runtime_load_preset_tree(preset_key: str = ""):
+    tree = _behavior_runtime.load_preset_tree(preset_key)
+    if tree:
+        return tree.to_dict()
+    return {"error": "Unknown preset"}
+
+
+@router.post("/behavior-runtime/load-preset-fsm")
+async def behavior_runtime_load_preset_fsm(preset_key: str = ""):
+    fsm = _behavior_runtime.load_preset_fsm(preset_key)
+    if fsm:
+        return fsm.to_dict()
+    return {"error": "Unknown preset"}
+
+
+@router.get("/behavior-runtime/presets")
+async def behavior_runtime_list_presets():
+    return _behavior_runtime.list_presets()
+
+
+@router.post("/behavior-runtime/set-blackboard")
+async def behavior_runtime_set_blackboard(owner_id: str = "", key: str = "", value: str = ""):
+    _behavior_runtime.set_blackboard(owner_id, key, value)
+    return {"set": True}
+
+
+@router.get("/behavior-runtime/blackboard/{owner_id}/{key}")
+async def behavior_runtime_get_blackboard(owner_id: str, key: str):
+    return {"value": _behavior_runtime.get_blackboard(owner_id, key)}
+
+
+@router.get("/behavior-runtime/execution-log")
+async def behavior_runtime_execution_log(limit: int = 50):
+    return {"log": _behavior_runtime.get_execution_log(limit)}
 
 
 # ============================================================
@@ -15781,3 +15958,211 @@ async def project_exporter_estimate(config_id: str = ""):
 async def project_exporter_presets():
     presets = _project_exporter.get_presets()
     return {"presets": [p.to_dict() for p in presets]}
+
+
+# === Game Director Endpoints ===
+
+@router.get("/game-director/stats")
+async def game_director_stats():
+    return _game_director.get_stats()
+
+@router.get("/game-director/briefs")
+async def game_director_briefs():
+    return {"briefs": [b.to_dict() for b in _game_director.list_briefs()]}
+
+@router.post("/game-director/create-brief")
+async def game_director_create_brief(project_name: str = "", genre: str = "",
+                                       art_style: str = "", tone: str = "",
+                                       core_pillars: str = "",
+                                       target_audience: str = "",
+                                       scope: str = ""):
+    pillars = [p.strip() for p in core_pillars.split(",") if p.strip()]
+    brief = _game_director.create_brief(project_name, genre, art_style, tone,
+                                          pillars, target_audience, scope)
+    return brief.to_dict()
+
+@router.get("/game-director/brief")
+async def game_director_get_brief(brief_id: str = ""):
+    brief = _game_director.get_brief(brief_id)
+    return brief.to_dict() if brief else {"error": "not found"}
+
+@router.post("/game-director/propose-decision")
+async def game_director_propose_decision(brief_id: str = "", title: str = "",
+                                            description: str = "", role: str = "",
+                                            severity: str = "medium"):
+    decision = _game_director.propose_decision(brief_id, title, description, role, severity)
+    return decision.to_dict() if decision else {"error": "brief not found"}
+
+@router.get("/game-director/decisions")
+async def game_director_decisions(brief_id: str = ""):
+    return {"decisions": [d.to_dict() for d in _game_director.get_decisions(brief_id)]}
+
+@router.post("/game-director/delegate-task")
+async def game_director_delegate_task(brief_id: str = "", agent_name: str = "",
+                                         description: str = "", priority: int = 1):
+    task = _game_director.delegate_task(brief_id, agent_name, description, priority)
+    return task.to_dict() if task else {"error": "brief not found"}
+
+@router.get("/game-director/tasks")
+async def game_director_tasks(brief_id: str = ""):
+    return {"tasks": [t.to_dict() for t in _game_director.get_tasks(brief_id)]}
+
+@router.get("/game-director/progress")
+async def game_director_progress(brief_id: str = ""):
+    return _game_director.get_progress_summary(brief_id)
+
+
+# === Balance Analyzer Endpoints ===
+
+@router.get("/balance-analyzer/stats")
+async def balance_analyzer_stats():
+    return _balance_analyzer.get_stats()
+
+@router.post("/balance-analyzer/analyze")
+async def balance_analyzer_analyze(game_id: str = "", domains: str = ""):
+    domain_list = [d.strip() for d in domains.split(",") if d.strip()]
+    return {"analyses": [a.to_dict() for a in _balance_analyzer.analyze_game(game_id, domain_list)]}
+
+@router.get("/balance-analyzer/analyses")
+async def balance_analyzer_analyses(game_id: str = ""):
+    return {"analyses": [a.to_dict() for a in _balance_analyzer.get_analyses(game_id)]}
+
+@router.get("/balance-analyzer/issues-summary")
+async def balance_analyzer_issues_summary(game_id: str = ""):
+    return _balance_analyzer.get_issues_summary(game_id)
+
+@router.post("/balance-analyzer/analyze-parameter")
+async def balance_analyzer_analyze_param(name: str = "", current_value: float = 0.0,
+                                            domain: str = "", target_min: float = 0.0,
+                                            target_max: float = 100.0, unit: str = ""):
+    metric = _balance_analyzer.analyze_parameter(name, current_value, domain,
+                                                    target_min, target_max, unit)
+    return metric.to_dict()
+
+@router.post("/balance-analyzer/apply-recommendation")
+async def balance_analyzer_apply(recommendation_id: str = ""):
+    applied = _balance_analyzer.apply_recommendation(recommendation_id)
+    return {"applied": applied}
+
+@router.post("/balance-analyzer/compare-games")
+async def balance_analyzer_compare(game_id_a: str = "", game_id_b: str = ""):
+    comparison = _balance_analyzer.compare_games(game_id_a, game_id_b)
+    return comparison
+
+@router.get("/balance-analyzer/applied-recommendations")
+async def balance_analyzer_applied_recommendations():
+    return {"recommendations": [r.to_dict() for r in _balance_analyzer.get_applied_recommendations()]}
+
+
+# === Narrative Composer Endpoints ===
+
+@router.get("/narrative-composer/stats")
+async def narrative_composer_stats():
+    return _narrative_composer.get_stats()
+
+@router.post("/narrative-composer/create-story")
+async def narrative_composer_create_story(title: str = "", genre: str = "",
+                                            tone: str = "", synopsis: str = "",
+                                            structure: str = "",
+                                            target_playtime: str = ""):
+    story = _narrative_composer.create_story(title, genre, tone, synopsis,
+                                               structure, target_playtime)
+    return story.to_dict()
+
+@router.get("/narrative-composer/stories")
+async def narrative_composer_stories():
+    return {"stories": [s.to_dict() for s in _narrative_composer.list_stories()]}
+
+@router.post("/narrative-composer/add-plot-beat")
+async def narrative_composer_add_plot_beat(story_id: str = "", title: str = "",
+                                              act_number: int = 1,
+                                              description: str = ""):
+    beat = _narrative_composer.add_plot_beat(story_id, title, act_number, description)
+    return beat.to_dict() if beat else {"error": "story not found"}
+
+@router.post("/narrative-composer/create-character")
+async def narrative_composer_create_character(story_id: str = "", name: str = "",
+                                                 role: str = "", archetype: str = "",
+                                                 motivation: str = "",
+                                                 backstory: str = ""):
+    character = _narrative_composer.create_character(story_id, name, role,
+                                                       archetype, motivation,
+                                                       backstory)
+    return character.to_dict() if character else {"error": "story not found"}
+
+@router.post("/narrative-composer/build-dialogue-tree")
+async def narrative_composer_build_dialogue(story_id: str = "",
+                                               character_id: str = "",
+                                               opening_line: str = "",
+                                               tone: str = ""):
+    nodes = _narrative_composer.build_dialogue_tree(story_id, character_id,
+                                                      opening_line, tone)
+    return {"nodes": [n.to_dict() for n in nodes]}
+
+@router.get("/narrative-composer/export-story")
+async def narrative_composer_export_story(story_id: str = ""):
+    return _narrative_composer.export_story(story_id)
+
+
+# === Player Modeler Endpoints ===
+
+@router.get("/player-modeler/stats")
+async def player_modeler_stats():
+    return _player_modeler.get_stats()
+
+@router.post("/player-modeler/create-persona")
+async def player_modeler_create_persona(name: str = "", archetype: str = ""):
+    persona = _player_modeler.create_persona(name, archetype)
+    return persona.to_dict()
+
+@router.post("/player-modeler/seed-all-archetypes")
+async def player_modeler_seed_all():
+    return {"personas": [p.to_dict() for p in _player_modeler.seed_all_archetypes()]}
+
+@router.post("/player-modeler/simulate-journey")
+async def player_modeler_simulate_journey(persona_id: str = "", game_id: str = "",
+                                            max_sessions: int = 10):
+    journey = _player_modeler.simulate_journey(persona_id, game_id, max_sessions)
+    return journey.to_dict() if journey else {"error": "persona not found"}
+
+@router.get("/player-modeler/report")
+async def player_modeler_report(game_id: str = ""):
+    report = _player_modeler.generate_report(game_id)
+    return report.to_dict() if report else {"error": "no data for this game"}
+
+@router.get("/player-modeler/compare-archetypes")
+async def player_modeler_compare_archetypes(game_id: str = ""):
+    return _player_modeler.compare_archetypes(game_id)
+
+
+# === Audio System Endpoints ===
+
+@router.get("/audio-system/stats")
+async def audio_system_stats():
+    return _audio_system.get_stats()
+
+@router.post("/audio-system/register-asset")
+async def audio_system_register_asset(name: str = "", category: str = "",
+                                        duration: float = 0.0):
+    asset = _audio_system.register_asset(name, category, duration)
+    return asset.to_dict()
+
+@router.get("/audio-system/mixer-state")
+async def audio_system_mixer_state():
+    return _audio_system.get_mixer_state()
+
+
+# === Network Layer Endpoints ===
+
+@router.get("/network-layer/stats")
+async def network_layer_stats():
+    return _network_layer.get_stats()
+
+@router.post("/network-layer/host-game")
+async def network_layer_host_game(mode: str = "", display_name: str = ""):
+    return _network_layer.host_game(mode, display_name)
+
+@router.post("/network-layer/create-lobby")
+async def network_layer_create_lobby(name: str = "", max_players: int = 4):
+    lobby = _network_layer.create_lobby(name, max_players)
+    return lobby.to_dict()
