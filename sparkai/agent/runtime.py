@@ -281,6 +281,14 @@ from sparkai.agent.agent_prompt_optimizer import PromptOptimizer, PromptDomain, 
 from sparkai.agent.agent_skill_composer import SkillComposer, SkillDomain, SkillStep, SkillChain, get_skill_composer
 from sparkai.agent.agent_developer_assistant import DeveloperAssistant, AssistantMode, DeveloperSession, Suggestion, get_developer_assistant
 from sparkai.agent.agent_playtest_simulator import PlaytestSimulator, PlayerStyle, PlaySession, PlaytestReport, get_playtest_simulator
+from sparkai.agent.agent_game_director import GameDirector, get_game_director
+from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_analyzer
+from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
+from sparkai.agent.agent_player_modeler import PlayerModeler, get_player_modeler
+from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
+from sparkai.engine.engine_network_layer import NetworkLayer, get_network_layer
+from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
+from sparkai.engine.engine_save_system import SaveSystem, get_save_system
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -534,7 +542,7 @@ class AgentRuntime:
         self._physics_system: Optional[PhysicsSystem] = None
         self._particle_system: Optional[ParticleSystem] = None
         self._pathfinding: Optional[PathfindingSystem] = None
-        self._audio_system: Optional[AudioSystem] = None
+        self._audio_system: Optional[GameAudioSystem] = None
         self._state_machine: Optional[StateMachine] = None
         self._resource_manager: Optional[ResourceManager] = None
         self._behavior_system: Optional[BehaviorSystem] = None
@@ -682,6 +690,14 @@ class AgentRuntime:
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
         self._game_mode_system: Optional[GameModeSystem] = None
+        self._game_director: Optional[GameDirector] = None
+        self._balance_analyzer: Optional[BalanceAnalyzer] = None
+        self._narrative_composer: Optional[NarrativeComposer] = None
+        self._player_modeler: Optional[PlayerModeler] = None
+        self._audio_system: Optional[GameAudioSystem] = None
+        self._network_layer: Optional[NetworkLayer] = None
+        self._behavior_runtime: Optional[BehaviorRuntime] = None
+        self._save_system: Optional[SaveSystem] = None
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -927,6 +943,14 @@ class AgentRuntime:
             self._performance_overlay = get_performance_overlay()
             self._developer_assistant = get_developer_assistant()
             self._playtest_simulator = get_playtest_simulator()
+            self._game_director = get_game_director()
+            self._balance_analyzer = get_balance_analyzer()
+            self._narrative_composer = get_narrative_composer()
+            self._player_modeler = get_player_modeler()
+            self._audio_system = get_audio_system()
+            self._network_layer = get_network_layer()
+            self._behavior_runtime = get_behavior_runtime()
+            self._save_system = get_save_system()
             self._scene_streamer = get_scene_streamer()
             self._project_exporter = get_project_exporter()
 
@@ -1126,6 +1150,14 @@ class AgentRuntime:
             self._integration.register_subsystem("performance_overlay", self._performance_overlay)
             self._integration.register_subsystem("developer_assistant", self._developer_assistant)
             self._integration.register_subsystem("playtest_simulator", self._playtest_simulator)
+            self._integration.register_subsystem("game_director", self._game_director)
+            self._integration.register_subsystem("balance_analyzer", self._balance_analyzer)
+            self._integration.register_subsystem("narrative_composer", self._narrative_composer)
+            self._integration.register_subsystem("player_modeler", self._player_modeler)
+            self._integration.register_subsystem("audio_system", self._audio_system)
+            self._integration.register_subsystem("network_layer", self._network_layer)
+            self._integration.register_subsystem("behavior_runtime", self._behavior_runtime)
+            self._integration.register_subsystem("save_system", self._save_system)
             self._integration.register_subsystem("scene_streamer", self._scene_streamer)
             self._integration.register_subsystem("project_exporter", self._project_exporter)
             self._integration.connect_all()
@@ -1156,7 +1188,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 179,
+                    "subsystems": 187,
                 }},
             ))
 
@@ -1703,7 +1735,7 @@ class AgentRuntime:
         return self._pathfinding
 
     @property
-    def audio_system(self) -> Optional[AudioSystem]:
+    def audio_system(self) -> Optional[GameAudioSystem]:
         return self._audio_system
 
     @property
@@ -2370,6 +2402,14 @@ class AgentRuntime:
                 "playtest_simulator": self._playtest_simulator is not None,
                 "scene_streamer": self._scene_streamer is not None,
                 "project_exporter": self._project_exporter is not None,
+                "game_director": self._game_director is not None,
+                "balance_analyzer": self._balance_analyzer is not None,
+                "narrative_composer": self._narrative_composer is not None,
+                "player_modeler": self._player_modeler is not None,
+                "audio_system": self._audio_system is not None,
+                "network_layer": self._network_layer is not None,
+                "behavior_runtime": self._behavior_runtime is not None,
+                "save_system": self._save_system is not None,
             },
         }
 
@@ -2803,6 +2843,22 @@ class AgentRuntime:
             status["scene_streamer_stats"] = self._scene_streamer.get_stats()
         if self._project_exporter:
             status["project_exporter_stats"] = self._project_exporter.get_stats()
+        if self._game_director:
+            status["game_director_stats"] = self._game_director.get_stats()
+        if self._balance_analyzer:
+            status["balance_analyzer_stats"] = self._balance_analyzer.get_stats()
+        if self._narrative_composer:
+            status["narrative_composer_stats"] = self._narrative_composer.get_stats()
+        if self._player_modeler:
+            status["player_modeler_stats"] = self._player_modeler.get_stats()
+        if self._audio_system:
+            status["audio_system_stats"] = self._audio_system.get_stats()
+        if self._network_layer:
+            status["network_layer_stats"] = self._network_layer.get_stats()
+        if self._behavior_runtime:
+            status["behavior_runtime_stats"] = self._behavior_runtime.get_stats()
+        if self._save_system:
+            status["save_system_stats"] = self._save_system.get_stats()
         return status
 
 
