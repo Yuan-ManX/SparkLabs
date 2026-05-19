@@ -279,6 +279,8 @@ from sparkai.agent.agent_multi_modal import MultiModalAgent, AnalysisDomain, get
 from sparkai.agent.agent_import_pipeline import ImportPipelineEngine, AssetImportType, ImportTask, get_import_pipeline
 from sparkai.agent.agent_prompt_optimizer import PromptOptimizer, PromptDomain, PromptTemplate, PromptSession, get_prompt_optimizer
 from sparkai.agent.agent_skill_composer import SkillComposer, SkillDomain, SkillStep, SkillChain, get_skill_composer
+from sparkai.agent.agent_developer_assistant import DeveloperAssistant, AssistantMode, DeveloperSession, Suggestion, get_developer_assistant
+from sparkai.agent.agent_playtest_simulator import PlaytestSimulator, PlayerStyle, PlaySession, PlaytestReport, get_playtest_simulator
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -326,6 +328,8 @@ from sparkai.engine.scene_manager import SceneManager, SceneState, get_scene_man
 from sparkai.engine.terrain_system import TerrainSystem, TerrainType, NoiseAlgorithm, get_terrain_system
 from sparkai.engine.ui_layout_system import UILayoutSystem, UILayout, UIContainer, UIAnchor, get_ui_layout_system
 from sparkai.engine.performance_overlay import PerformanceOverlay, FrameSample, MetricThreshold, get_performance_overlay
+from sparkai.engine.engine_scene_streamer import SceneStreamer, WorldChunk, StreamingConfig, get_scene_streamer
+from sparkai.engine.engine_project_exporter import ProjectExporter, ExportConfig, ExportJob, get_project_exporter
 from sparkai.engine.save_system import SaveSystem, SaveSlot, SaveStatus, get_save_system
 from sparkai.engine.network_sync import NetworkSync, SyncAuthority as NetSyncAuthority, get_network_sync
 from sparkai.engine.behavior_tree import BehaviorTree, NodeStatus, Blackboard, get_behavior_tree
@@ -670,6 +674,10 @@ class AgentRuntime:
         self._skill_composer: Optional[SkillComposer] = None
         self._ui_layout_system: Optional[UILayoutSystem] = None
         self._performance_overlay: Optional[PerformanceOverlay] = None
+        self._developer_assistant: Optional[DeveloperAssistant] = None
+        self._playtest_simulator: Optional[PlaytestSimulator] = None
+        self._scene_streamer: Optional[SceneStreamer] = None
+        self._project_exporter: Optional[ProjectExporter] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
         self._difficulty_system: Optional[DifficultySystem] = None
         self._fog_of_war: Optional[FogOfWarSystem] = None
@@ -917,6 +925,10 @@ class AgentRuntime:
             self._skill_composer = get_skill_composer()
             self._ui_layout_system = get_ui_layout_system()
             self._performance_overlay = get_performance_overlay()
+            self._developer_assistant = get_developer_assistant()
+            self._playtest_simulator = get_playtest_simulator()
+            self._scene_streamer = get_scene_streamer()
+            self._project_exporter = get_project_exporter()
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -1112,6 +1124,10 @@ class AgentRuntime:
             self._integration.register_subsystem("skill_composer", self._skill_composer)
             self._integration.register_subsystem("ui_layout_system", self._ui_layout_system)
             self._integration.register_subsystem("performance_overlay", self._performance_overlay)
+            self._integration.register_subsystem("developer_assistant", self._developer_assistant)
+            self._integration.register_subsystem("playtest_simulator", self._playtest_simulator)
+            self._integration.register_subsystem("scene_streamer", self._scene_streamer)
+            self._integration.register_subsystem("project_exporter", self._project_exporter)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -1140,7 +1156,7 @@ class AgentRuntime:
                 data={"config": {
                     "max_agents": self.config.max_agents,
                     "max_sessions": self.config.max_sessions,
-                    "subsystems": 175,
+                    "subsystems": 179,
                 }},
             ))
 
@@ -2350,6 +2366,10 @@ class AgentRuntime:
                 "skill_composer": self._skill_composer is not None,
                 "ui_layout_system": self._ui_layout_system is not None,
                 "performance_overlay": self._performance_overlay is not None,
+                "developer_assistant": self._developer_assistant is not None,
+                "playtest_simulator": self._playtest_simulator is not None,
+                "scene_streamer": self._scene_streamer is not None,
+                "project_exporter": self._project_exporter is not None,
             },
         }
 
@@ -2775,6 +2795,14 @@ class AgentRuntime:
             status["ui_layout_system_stats"] = self._ui_layout_system.get_stats()
         if self._performance_overlay:
             status["performance_overlay_stats"] = self._performance_overlay.get_stats()
+        if self._developer_assistant:
+            status["developer_assistant_stats"] = self._developer_assistant.get_stats()
+        if self._playtest_simulator:
+            status["playtest_simulator_stats"] = self._playtest_simulator.get_stats()
+        if self._scene_streamer:
+            status["scene_streamer_stats"] = self._scene_streamer.get_stats()
+        if self._project_exporter:
+            status["project_exporter_stats"] = self._project_exporter.get_stats()
         return status
 
 
