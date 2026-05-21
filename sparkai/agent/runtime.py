@@ -272,7 +272,7 @@ from sparkai.agent.agent_state_sync import StateSyncMesh, SyncDomain, get_state_
 from sparkai.agent.agent_dev_loop import DevelopmentLoop, CyclePhase, get_dev_loop
 from sparkai.agent.agent_context_references import ContextReferenceResolver, RefDomain, get_context_reference_resolver
 from sparkai.agent.agent_process_registry import ProcessRegistry, ProcessState as ProcState, ProcessType, get_process_registry
-from sparkai.agent.agent_cron_scheduler import CronScheduler, ScheduleType, JobState, get_cron_scheduler
+from sparkai.agent.agent_cron_scheduler import AgentCronScheduler, CronFrequency, get_cron_scheduler
 from sparkai.agent.agent_expression_evaluator import ExpressionEvaluator, ExpressionError, get_expression_evaluator
 from sparkai.agent.agent_class_registry import ClassRegistry, DataType, TypeDescriptor, get_class_registry
 from sparkai.agent.agent_multi_modal import MultiModalAgent, AnalysisDomain, get_multi_modal_agent
@@ -285,10 +285,21 @@ from sparkai.agent.agent_game_director import GameDirector, get_game_director
 from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_analyzer
 from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
 from sparkai.agent.agent_player_modeler import PlayerModeler, get_player_modeler
+from sparkai.agent.agent_learning_loop import AgentLearningLoop, get_learning_loop
+from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
+from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
+from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
+from sparkai.agent.agent_gateway import AgentGateway, get_gateway
 from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
 from sparkai.engine.engine_network_layer import NetworkLayer, get_network_layer
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
 from sparkai.engine.engine_save_system import SaveSystem, get_save_system
+from sparkai.engine.engine_node_tree import NodeTreeSystem, get_node_tree
+from sparkai.engine.engine_extension_registry import ExtensionRegistry, get_extension_registry
+from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_export_pipeline
+from sparkai.engine.engine_server_architecture import GameServerPool, get_server_pool
+from sparkai.engine.engine_gizmo_system import GizmoSystem, get_gizmo_system
+from sparkai.engine.engine_pivot_system import PivotSystem, get_pivot_system
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -298,7 +309,7 @@ from sparkai.engine.input_manager import InputManager, get_input_manager
 from sparkai.engine.physics_system import PhysicsSystem, get_physics_system
 from sparkai.engine.particle_system import ParticleSystem, get_particle_system
 from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding
-from sparkai.engine.audio_system import AudioSystem, get_audio_system
+from sparkai.engine.audio_system import AudioSystem as LegacyAudioSystem
 from sparkai.engine.state_machine import StateMachine, get_state_machine
 from sparkai.engine.resource_manager import ResourceManager, get_resource_manager
 from sparkai.engine.behavior_system import BehaviorSystem, get_behavior_system
@@ -606,13 +617,19 @@ class AgentRuntime:
         self._game_object_registry: Optional[GameObjectRegistry] = None
         self._scene_manager: Optional[SceneManager] = None
         self._process_registry: Optional[ProcessRegistry] = None
-        self._cron_scheduler: Optional[CronScheduler] = None
+        self._cron_scheduler: Optional[AgentCronScheduler] = None
         self._expression_evaluator: Optional[ExpressionEvaluator] = None
         self._class_registry: Optional[ClassRegistry] = None
         self._multi_modal_agent: Optional[MultiModalAgent] = None
         self._import_pipeline: Optional[ImportPipelineEngine] = None
         self._terrain_system: Optional[TerrainSystem] = None
         self._save_system: Optional[SaveSystem] = None
+        self._node_tree: Optional[NodeTreeSystem] = None
+        self._extension_registry: Optional[ExtensionRegistry] = None
+        self._export_pipeline: Optional[MultiExportPipeline] = None
+        self._server_pool: Optional[GameServerPool] = None
+        self._gizmo_system: Optional[GizmoSystem] = None
+        self._pivot_system: Optional[PivotSystem] = None
         self._network_sync: Optional[NetworkSync] = None
         self._behavior_tree: Optional[BehaviorTree] = None
         self._math_utils: Optional[MathUtils] = None
@@ -694,6 +711,12 @@ class AgentRuntime:
         self._balance_analyzer: Optional[BalanceAnalyzer] = None
         self._narrative_composer: Optional[NarrativeComposer] = None
         self._player_modeler: Optional[PlayerModeler] = None
+        self._learning_loop: Optional[AgentLearningLoop] = None
+        self._cron_scheduler: Optional[AgentCronScheduler] = None
+        self._memory_graph: Optional[AgentMemoryGraph] = None
+        self._context_compressor: Optional[AgentContextCompressor] = None
+        self._tool_forge: Optional[AgentToolForge] = None
+        self._gateway: Optional[AgentGateway] = None
         self._audio_system: Optional[GameAudioSystem] = None
         self._network_layer: Optional[NetworkLayer] = None
         self._behavior_runtime: Optional[BehaviorRuntime] = None
@@ -867,6 +890,12 @@ class AgentRuntime:
             self._import_pipeline = get_import_pipeline()
             self._terrain_system = get_terrain_system()
             self._save_system = get_save_system()
+            self._node_tree = get_node_tree()
+            self._extension_registry = get_extension_registry()
+            self._export_pipeline = get_export_pipeline()
+            self._server_pool = get_server_pool()
+            self._gizmo_system = get_gizmo_system()
+            self._pivot_system = get_pivot_system()
             self._network_sync = get_network_sync()
             self._behavior_tree = get_behavior_tree()
             self._math_utils = get_math_utils()
@@ -947,6 +976,12 @@ class AgentRuntime:
             self._balance_analyzer = get_balance_analyzer()
             self._narrative_composer = get_narrative_composer()
             self._player_modeler = get_player_modeler()
+            self._learning_loop = get_learning_loop()
+            self._cron_scheduler = get_cron_scheduler()
+            self._memory_graph = get_memory_graph()
+            self._context_compressor = get_context_compressor()
+            self._tool_forge = get_tool_forge()
+            self._gateway = get_gateway()
             self._audio_system = get_audio_system()
             self._network_layer = get_network_layer()
             self._behavior_runtime = get_behavior_runtime()
@@ -1081,6 +1116,12 @@ class AgentRuntime:
             self._integration.register_subsystem("import_pipeline", self._import_pipeline)
             self._integration.register_subsystem("terrain_system", self._terrain_system)
             self._integration.register_subsystem("save_system", self._save_system)
+            self._integration.register_subsystem("node_tree", self._node_tree)
+            self._integration.register_subsystem("extension_registry", self._extension_registry)
+            self._integration.register_subsystem("export_pipeline", self._export_pipeline)
+            self._integration.register_subsystem("server_pool", self._server_pool)
+            self._integration.register_subsystem("gizmo_system", self._gizmo_system)
+            self._integration.register_subsystem("pivot_system", self._pivot_system)
             self._integration.register_subsystem("network_sync", self._network_sync)
             self._integration.register_subsystem("behavior_tree", self._behavior_tree)
             self._integration.register_subsystem("math_utils", self._math_utils)
@@ -1154,6 +1195,12 @@ class AgentRuntime:
             self._integration.register_subsystem("balance_analyzer", self._balance_analyzer)
             self._integration.register_subsystem("narrative_composer", self._narrative_composer)
             self._integration.register_subsystem("player_modeler", self._player_modeler)
+            self._integration.register_subsystem("learning_loop", self._learning_loop)
+            self._integration.register_subsystem("cron_scheduler", self._cron_scheduler)
+            self._integration.register_subsystem("memory_graph", self._memory_graph)
+            self._integration.register_subsystem("context_compressor", self._context_compressor)
+            self._integration.register_subsystem("tool_forge", self._tool_forge)
+            self._integration.register_subsystem("gateway", self._gateway)
             self._integration.register_subsystem("audio_system", self._audio_system)
             self._integration.register_subsystem("network_layer", self._network_layer)
             self._integration.register_subsystem("behavior_runtime", self._behavior_runtime)
@@ -1991,7 +2038,7 @@ class AgentRuntime:
         return self._process_registry
 
     @property
-    def cron_scheduler(self) -> Optional[CronScheduler]:
+    def cron_scheduler(self) -> Optional[AgentCronScheduler]:
         return self._cron_scheduler
 
     @property
@@ -2341,6 +2388,12 @@ class AgentRuntime:
                 "import_pipeline": self._import_pipeline is not None,
                 "terrain_system": self._terrain_system is not None,
                 "save_system": self._save_system is not None,
+                "node_tree": self._node_tree is not None,
+                "extension_registry": self._extension_registry is not None,
+                "export_pipeline": self._export_pipeline is not None,
+                "server_pool": self._server_pool is not None,
+                "gizmo_system": self._gizmo_system is not None,
+                "pivot_system": self._pivot_system is not None,
                 "network_sync": self._network_sync is not None,
                 "behavior_tree": self._behavior_tree is not None,
                 "math_utils": self._math_utils is not None,
@@ -2406,6 +2459,12 @@ class AgentRuntime:
                 "balance_analyzer": self._balance_analyzer is not None,
                 "narrative_composer": self._narrative_composer is not None,
                 "player_modeler": self._player_modeler is not None,
+                "learning_loop": self._learning_loop is not None,
+                "cron_scheduler": self._cron_scheduler is not None,
+                "memory_graph": self._memory_graph is not None,
+                "context_compressor": self._context_compressor is not None,
+                "tool_forge": self._tool_forge is not None,
+                "gateway": self._gateway is not None,
                 "audio_system": self._audio_system is not None,
                 "network_layer": self._network_layer is not None,
                 "behavior_runtime": self._behavior_runtime is not None,
@@ -2689,6 +2748,18 @@ class AgentRuntime:
             status["terrain_system_stats"] = self._terrain_system.get_stats()
         if self._save_system:
             status["save_system_stats"] = self._save_system.get_stats()
+        if self._node_tree:
+            status["node_tree_stats"] = self._node_tree.get_stats()
+        if self._extension_registry:
+            status["extension_registry_stats"] = self._extension_registry.get_stats()
+        if self._export_pipeline:
+            status["export_pipeline_stats"] = self._export_pipeline.get_stats()
+        if self._server_pool:
+            status["server_pool_stats"] = self._server_pool.get_stats()
+        if self._gizmo_system:
+            status["gizmo_system_stats"] = self._gizmo_system.get_stats()
+        if self._pivot_system:
+            status["pivot_system_stats"] = self._pivot_system.get_stats()
         if self._network_sync:
             status["network_sync_stats"] = self._network_sync.get_stats()
         if self._behavior_tree:
@@ -2851,6 +2922,18 @@ class AgentRuntime:
             status["narrative_composer_stats"] = self._narrative_composer.get_stats()
         if self._player_modeler:
             status["player_modeler_stats"] = self._player_modeler.get_stats()
+        if self._learning_loop:
+            status["learning_loop_stats"] = self._learning_loop.get_stats()
+        if self._cron_scheduler:
+            status["cron_scheduler_stats"] = self._cron_scheduler.get_stats()
+        if self._memory_graph:
+            status["memory_graph_stats"] = self._memory_graph.get_stats()
+        if self._context_compressor:
+            status["context_compressor_stats"] = self._context_compressor.get_stats()
+        if self._tool_forge:
+            status["tool_forge_stats"] = self._tool_forge.get_stats()
+        if self._gateway:
+            status["gateway_stats"] = self._gateway.get_stats()
         if self._audio_system:
             status["audio_system_stats"] = self._audio_system.get_stats()
         if self._network_layer:
