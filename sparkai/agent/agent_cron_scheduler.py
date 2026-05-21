@@ -1,358 +1,521 @@
 """
 SparkLabs Agent - Cron Scheduler
 
-Scheduled automation engine for game development workflows.
-Powers automated builds, nightly playtests, periodic asset
-optimization, and backup scheduling. The AI agent uses this
-to set up recurring maintenance and quality assurance tasks
-without manual intervention.
+Scheduled autonomous agent task execution with cron-like expression
+evaluation, task dependency chains, retry logic, and multi-agent
+coordination. Provides a centralized scheduling engine that evaluates
+time-based execution rules, respects dependency ordering, applies
+configurable retry strategies, and coordinates task dispatch across
+multiple agent instances.
 
 Architecture:
-  CronScheduler
-    |-- CronJob (schedule, action, state, last/next run)
-    |-- ScheduleParser (cron expression → next runtime)
-    |-- JobExecutor (async action runner with timeout)
-    |-- ResultStore (per-job execution history)
-    |-- DependencyGraph (job chaining: A must complete before B)
+  AgentCronScheduler
+    |-- ScheduleRule (cron expression definition and evaluation)
+    |-- CronTask (scheduled task with state and retry tracking)
+    |-- TaskExecution (per-run execution record with timing metrics)
+    |-- TaskDependency (dependency chain definition and validation)
+    |-- RetryManager (backoff strategy computation and apply logic)
 
-Schedule Types:
-  - INTERVAL: every N seconds/minutes/hours
-  - CRON: standard cron expression (min hour day month weekday)
-  - ONCE: single execution at specific timestamp
-  - ON_IDLE: trigger when system is idle for N seconds
+Scheduling Features:
+  - FREQUENCY: once, minutley, hourly, daily, weekly, monthly, custom cron
+  - DEPENDENCIES: chain tasks with prerequisite completion requirements
+  - PRIORITIES: low, normal, high, critical execution ordering
+  - RETRIES: linear, exponential, fixed, and none backoff strategies
+  - COORDINATION: multi-agent task dispatch with state synchronization
 """
 
 from __future__ import annotations
 
-import asyncio
 import threading
 import time
+import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Callable, Dict, List, Optional
+from typing import Any, Dict, List, Optional
 
 
-class ScheduleType(Enum):
-    INTERVAL = "interval"
-    CRON = "cron"
+class CronFrequency(Enum):
     ONCE = "once"
-    ON_IDLE = "on_idle"
+    MINUTELY = "minutely"
+    HOURLY = "hourly"
+    DAILY = "daily"
+    WEEKLY = "weekly"
+    MONTHLY = "monthly"
+    CUSTOM = "custom"
 
 
-class JobState(Enum):
+class TaskState(Enum):
     PENDING = "pending"
     RUNNING = "running"
     COMPLETED = "completed"
     FAILED = "failed"
-    SKIPPED = "skipped"
+    RETRYING = "retrying"
     CANCELLED = "cancelled"
 
 
+class TaskPriority(Enum):
+    LOW = 0
+    NORMAL = 1
+    HIGH = 2
+    CRITICAL = 3
+
+
+class RetryPolicy(Enum):
+    LINEAR = "linear"
+    EXPONENTIAL = "exponential"
+    FIXED = "fixed"
+    NONE = "none"
+
+
 @dataclass
-class CronJob:
-    job_id: str
-    name: str
-    schedule_type: ScheduleType
-    schedule_value: str
-    action: Callable
-    state: JobState = JobState.PENDING
+class TaskDependency:
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    task_id: str = ""
+    depends_on_task_id: str = ""
+    required_state: TaskState = TaskState.COMPLETED
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "task_id": self.task_id,
+            "depends_on_task_id": self.depends_on_task_id,
+            "required_state": self.required_state.value,
+        }
+
+
+@dataclass
+class ScheduleRule:
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    name: str = ""
+    frequency: CronFrequency = CronFrequency.DAILY
+    cron_expression: str = ""
+    timezone: str = "UTC"
     created_at: float = field(default_factory=time.time)
-    last_run_at: Optional[float] = None
-    next_run_at: float = 0.0
-    run_count: int = 0
-    fail_count: int = 0
-    max_retries: int = 3
-    timeout_seconds: float = 300.0
-    depends_on: List[str] = field(default_factory=list)
-    tags: List[str] = field(default_factory=list)
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    last_result: Optional[JobResult] = None
+    enabled: bool = True
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "name": self.name,
+            "frequency": self.frequency.value,
+            "cron_expression": self.cron_expression,
+            "timezone": self.timezone,
+            "created_at": self.created_at,
+            "enabled": self.enabled,
+        }
 
 
 @dataclass
-class JobResult:
-    job_id: str
-    success: bool
-    started_at: float
-    finished_at: float
-    duration_ms: float
-    output: str = ""
-    error: str = ""
+class CronTask:
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    agent_id: str = ""
+    rule_id: str = ""
+    task_name: str = ""
+    action_params: Dict[str, Any] = field(default_factory=dict)
+    state: TaskState = TaskState.PENDING
+    priority: TaskPriority = TaskPriority.NORMAL
+    dependencies: List[str] = field(default_factory=list)
+    max_retries: int = 3
+    retry_policy: RetryPolicy = RetryPolicy.EXPONENTIAL
+    retry_count: int = 0
+    created_at: float = field(default_factory=time.time)
+    scheduled_at: float = 0.0
+    last_run_at: float = 0.0
+    next_run_at: float = 0.0
+    paused: bool = False
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "agent_id": self.agent_id,
+            "rule_id": self.rule_id,
+            "task_name": self.task_name,
+            "action_params": self.action_params,
+            "state": self.state.value,
+            "priority": self.priority.value,
+            "dependencies": self.dependencies,
+            "max_retries": self.max_retries,
+            "retry_policy": self.retry_policy.value,
+            "retry_count": self.retry_count,
+            "created_at": self.created_at,
+            "scheduled_at": self.scheduled_at,
+            "last_run_at": self.last_run_at,
+            "next_run_at": self.next_run_at,
+            "paused": self.paused,
+        }
+
+
+@dataclass
+class TaskExecution:
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    task_id: str = ""
+    state: TaskState = TaskState.PENDING
+    started_at: float = field(default_factory=time.time)
+    completed_at: float = 0.0
+    output: Optional[Dict[str, Any]] = None
+    duration: float = 0.0
     retry_attempt: int = 0
 
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "task_id": self.task_id,
+            "state": self.state.value,
+            "started_at": self.started_at,
+            "completed_at": self.completed_at,
+            "output": self.output,
+            "duration": round(self.duration, 3),
+            "retry_attempt": self.retry_attempt,
+        }
 
-class CronScheduler:
-    """
-    Scheduled automation engine for game development.
 
-    Game projects benefit from automated workflows: nightly
-    builds catch integration issues early, periodic playtests
-    generate quality metrics, scheduled backups protect
-    against data loss. The AI agent configures and monitors
-    these jobs through this scheduler.
-    """
+class AgentCronScheduler:
+    """Autonomous agent task scheduler with cron evaluation and retry handling."""
 
-    _instance: Optional["CronScheduler"] = None
+    _instance: Optional["AgentCronScheduler"] = None
+    _lock = threading.RLock()
 
-    def __init__(self):
-        self._jobs: Dict[str, CronJob] = {}
-        self._results: Dict[str, List[JobResult]] = {}
-        self._lock = threading.Lock()
-        self._running = False
-        self._loop_task: Optional[asyncio.Task] = None
-        self._next_id: int = 0
-        self._MAX_RESULTS_PER_JOB = 50
-        self._MAX_JOBS = 200
-        self._tick_interval: float = 10.0
+    _FREQUENCY_INTERVALS: Dict[CronFrequency, float] = {
+        CronFrequency.ONCE: 0,
+        CronFrequency.MINUTELY: 60,
+        CronFrequency.HOURLY: 3600,
+        CronFrequency.DAILY: 86400,
+        CronFrequency.WEEKLY: 604800,
+        CronFrequency.MONTHLY: 2592000,
+        CronFrequency.CUSTOM: 0,
+    }
+
+    def __init__(self) -> None:
+        self._tasks: Dict[str, CronTask] = {}
+        self._executions: List[TaskExecution] = []
+        self._rules: Dict[str, ScheduleRule] = {}
+        self._dependencies: Dict[str, TaskDependency] = {}
+        self._tick_count: int = 0
 
     @classmethod
-    def get_instance(cls) -> "CronScheduler":
+    def get_instance(cls) -> "AgentCronScheduler":
         if cls._instance is None:
-            cls._instance = cls()
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = cls()
         return cls._instance
 
-    def schedule(
-        self,
-        name: str,
-        schedule_type: ScheduleType,
-        schedule_value: str,
-        action: Callable,
-        tags: Optional[List[str]] = None,
-        depends_on: Optional[List[str]] = None,
-        max_retries: int = 3,
-        timeout_seconds: float = 300.0,
-    ) -> CronJob:
-        with self._lock:
-            self._next_id += 1
-            job_id = f"cron-{self._next_id:04d}"
-            next_run = self._compute_next_run(schedule_type, schedule_value)
-            job = CronJob(
-                job_id=job_id,
-                name=name,
-                schedule_type=schedule_type,
-                schedule_value=schedule_value,
-                action=action,
-                next_run_at=next_run,
-                max_retries=max_retries,
-                timeout_seconds=timeout_seconds,
-                depends_on=depends_on or [],
-                tags=tags or [],
+    # ---- Rule Management ----
+
+    def create_rule(self,
+                    name: str,
+                    frequency: CronFrequency,
+                    cron_expression: str = "",
+                    timezone: str = "UTC") -> ScheduleRule:
+        rule = ScheduleRule(
+            name=name,
+            frequency=frequency,
+            cron_expression=cron_expression,
+            timezone=timezone,
+        )
+        self._rules[rule.id] = rule
+        return rule
+
+    def get_rule(self, rule_id: str) -> Optional[ScheduleRule]:
+        return self._rules.get(rule_id)
+
+    def list_rules(self) -> List[ScheduleRule]:
+        return list(self._rules.values())
+
+    def remove_rule(self, rule_id: str) -> bool:
+        if rule_id in self._rules:
+            del self._rules[rule_id]
+            return True
+        return False
+
+    # ---- Task Scheduling ----
+
+    def schedule_task(self,
+                      agent_id: str,
+                      rule_id: str,
+                      task_name: str,
+                      action_params: Optional[Dict[str, Any]] = None,
+                      priority: TaskPriority = TaskPriority.NORMAL,
+                      dependencies: Optional[List[str]] = None,
+                      max_retries: int = 3,
+                      retry_policy: RetryPolicy = RetryPolicy.EXPONENTIAL) -> CronTask:
+        rule = self._rules.get(rule_id)
+        next_run = 0.0
+        if rule is not None and rule.frequency != CronFrequency.ONCE:
+            interval = self._FREQUENCY_INTERVALS.get(rule.frequency, 0)
+            if interval > 0:
+                next_run = time.time() + interval
+
+        task = CronTask(
+            agent_id=agent_id,
+            rule_id=rule_id,
+            task_name=task_name,
+            action_params=action_params or {},
+            priority=priority,
+            dependencies=dependencies or [],
+            max_retries=max_retries,
+            retry_policy=retry_policy,
+            scheduled_at=time.time(),
+            next_run_at=next_run,
+        )
+        self._tasks[task.id] = task
+
+        for dep_task_id in task.dependencies:
+            dep = TaskDependency(
+                task_id=task.id,
+                depends_on_task_id=dep_task_id,
             )
-            self._jobs[job_id] = job
-            self._results[job_id] = []
-            if len(self._jobs) > self._MAX_JOBS:
-                oldest = min(
-                    self._jobs.keys(),
-                    key=lambda k: self._jobs[k].created_at,
-                )
-                del self._jobs[oldest]
-                self._results.pop(oldest, None)
-            return job
+            self._dependencies[dep.id] = dep
 
-    def schedule_interval(
-        self, name: str, seconds: int, action: Callable, **kwargs
-    ) -> CronJob:
-        return self.schedule(
-            name, ScheduleType.INTERVAL, str(seconds), action, **kwargs
-        )
+        return task
 
-    def schedule_cron(
-        self, name: str, cron_expr: str, action: Callable, **kwargs
-    ) -> CronJob:
-        return self.schedule(name, ScheduleType.CRON, cron_expr, action, **kwargs)
+    def get_task(self, task_id: str) -> Optional[CronTask]:
+        return self._tasks.get(task_id)
 
-    def schedule_once(
-        self, name: str, timestamp: float, action: Callable, **kwargs
-    ) -> CronJob:
-        return self.schedule(
-            name, ScheduleType.ONCE, str(timestamp), action, **kwargs
-        )
+    def list_tasks(self,
+                   state: Optional[TaskState] = None,
+                   agent_id: Optional[str] = None) -> List[CronTask]:
+        results = list(self._tasks.values())
+        if state is not None:
+            results = [t for t in results if t.state == state]
+        if agent_id is not None:
+            results = [t for t in results if t.agent_id == agent_id]
+        return sorted(results, key=lambda t: (t.priority.value, t.created_at), reverse=True)
 
-    def schedule_on_idle(
-        self, name: str, idle_seconds: float, action: Callable, **kwargs
-    ) -> CronJob:
-        return self.schedule(
-            name, ScheduleType.ON_IDLE, str(idle_seconds), action, **kwargs
-        )
+    # ---- Task Control ----
 
-    def cancel(self, job_id: str) -> bool:
-        with self._lock:
-            job = self._jobs.get(job_id)
-            if job and job.state in (JobState.PENDING,):
-                job.state = JobState.CANCELLED
-                return True
+    def cancel_task(self, task_id: str) -> bool:
+        task = self._tasks.get(task_id)
+        if task is None:
             return False
-
-    def remove(self, job_id: str) -> bool:
-        with self._lock:
-            if job_id in self._jobs:
-                del self._jobs[job_id]
-                self._results.pop(job_id, None)
-                return True
+        if task.state not in (TaskState.PENDING, TaskState.RETRYING):
             return False
+        task.state = TaskState.CANCELLED
+        return True
 
-    def get(self, job_id: str) -> Optional[CronJob]:
-        return self._jobs.get(job_id)
+    def pause_task(self, task_id: str) -> bool:
+        task = self._tasks.get(task_id)
+        if task is None:
+            return False
+        if task.state not in (TaskState.PENDING, TaskState.RETRYING):
+            return False
+        task.paused = True
+        return True
 
-    def get_results(self, job_id: str) -> List[JobResult]:
-        return self._results.get(job_id, [])
+    def resume_task(self, task_id: str) -> bool:
+        task = self._tasks.get(task_id)
+        if task is None:
+            return False
+        if not task.paused:
+            return False
+        task.paused = False
+        return True
 
-    def find_by_tag(self, tag: str) -> List[CronJob]:
-        return [j for j in self._jobs.values() if tag in j.tags]
+    def trigger_task_now(self, task_id: str) -> Optional[TaskExecution]:
+        task = self._tasks.get(task_id)
+        if task is None:
+            return None
+        if task.state == TaskState.CANCELLED:
+            return None
+        if not self._dependencies_satisfied(task):
+            return None
 
-    def list_pending(self) -> List[CronJob]:
-        return [j for j in self._jobs.values() if j.state == JobState.PENDING]
+        task.state = TaskState.RUNNING
+        task.last_run_at = time.time()
 
-    async def execute_job(self, job: CronJob) -> JobResult:
-        with self._lock:
-            if job.state == JobState.CANCELLED:
-                return JobResult(
-                    job_id=job.job_id,
-                    success=False,
-                    started_at=time.time(),
-                    finished_at=time.time(),
-                    duration_ms=0,
-                    error="cancelled",
-                )
-            job.state = JobState.RUNNING
-            job.last_run_at = time.time()
+        execution = TaskExecution(
+            task_id=task.id,
+            state=TaskState.RUNNING,
+            retry_attempt=task.retry_count,
+        )
+        return execution
 
-        started = time.time()
-        success = False
-        output = ""
-        error = ""
-        attempt = 0
+    # ---- Due Task Evaluation ----
 
-        for attempt in range(job.max_retries + 1):
-            try:
-                if asyncio.iscoroutinefunction(job.action):
-                    result = await asyncio.wait_for(
-                        job.action(), timeout=job.timeout_seconds
-                    )
+    def get_due_tasks(self) -> List[CronTask]:
+        now = time.time()
+        due: List[CronTask] = []
+
+        for task in self._tasks.values():
+            if task.state != TaskState.PENDING:
+                continue
+            if task.paused:
+                continue
+            if task.next_run_at <= 0:
+                due.append(task)
+                continue
+            if now >= task.next_run_at:
+                due.append(task)
+
+        due.sort(key=lambda t: (t.priority.value, t.created_at), reverse=True)
+        return due
+
+    # ---- Execution Recording ----
+
+    def record_execution(self,
+                         task_id: str,
+                         state: TaskState,
+                         output: Optional[Dict[str, Any]] = None,
+                         duration: float = 0.0) -> TaskExecution:
+        task = self._tasks.get(task_id)
+        execution = TaskExecution(
+            task_id=task_id,
+            state=state,
+            output=output,
+            duration=duration,
+            completed_at=time.time(),
+        )
+
+        if task is not None:
+            execution.retry_attempt = task.retry_count
+            if state == TaskState.COMPLETED:
+                task.state = TaskState.COMPLETED
+            elif state == TaskState.FAILED:
+                should_retry = self._should_retry(task)
+                if should_retry:
+                    task.state = TaskState.RETRYING
+                    task.retry_count += 1
+                    backoff = self._compute_backoff(task)
+                    task.next_run_at = time.time() + backoff
                 else:
-                    result = job.action()
-                output = str(result) if result else ""
-                success = True
-                break
-            except asyncio.TimeoutError:
-                error = f"timeout after {job.timeout_seconds}s"
-            except Exception as e:
-                error = str(e)
+                    task.state = TaskState.FAILED
 
-        finished = time.time()
-        job_result = JobResult(
-            job_id=job.job_id,
-            success=success,
-            started_at=started,
-            finished_at=finished,
-            duration_ms=(finished - started) * 1000,
-            output=output[:500],
-            error=error[:500],
-            retry_attempt=attempt,
+        self._executions.append(execution)
+        return execution
+
+    def get_execution_history(self,
+                              task_id: str,
+                              limit: int = 50) -> List[TaskExecution]:
+        matches = [e for e in self._executions if e.task_id == task_id]
+        matches.sort(key=lambda e: e.started_at, reverse=True)
+        return matches[:limit]
+
+    # ---- Tick Engine ----
+
+    def tick(self) -> Dict[str, Any]:
+        self._tick_count += 1
+        due_tasks = self.get_due_tasks()
+        spawned: List[TaskExecution] = []
+
+        for task in due_tasks:
+            if not self._dependencies_satisfied(task):
+                continue
+            task.state = TaskState.RUNNING
+            task.last_run_at = time.time()
+            interval = self._FREQUENCY_INTERVALS.get(
+                CronFrequency.DAILY, 86400
+            )
+            rule = self._rules.get(task.rule_id)
+            if rule is not None:
+                interval = self._FREQUENCY_INTERVALS.get(rule.frequency, 0)
+            if interval > 0:
+                task.next_run_at = time.time() + interval
+
+            execution = TaskExecution(
+                task_id=task.id,
+                state=TaskState.RUNNING,
+                retry_attempt=task.retry_count,
+            )
+            self._executions.append(execution)
+            spawned.append(execution)
+
+        return {
+            "tick": self._tick_count,
+            "due_count": len(due_tasks),
+            "spawned": len(spawned),
+            "spawned_ids": [e.id for e in spawned],
+            "timestamp": time.time(),
+        }
+
+    # ---- Statistics ----
+
+    def get_stats(self) -> Dict[str, Any]:
+        task_states: Dict[str, int] = {}
+        for task in self._tasks.values():
+            key = task.state.value
+            task_states[key] = task_states.get(key, 0) + 1
+
+        priority_counts: Dict[str, int] = {}
+        for task in self._tasks.values():
+            key = task.priority.name.lower()
+            priority_counts[key] = priority_counts.get(key, 0) + 1
+
+        successful = sum(
+            1 for e in self._executions if e.state == TaskState.COMPLETED
         )
+        failed = sum(
+            1 for e in self._executions if e.state == TaskState.FAILED
+        )
+        total_duration = sum(e.duration for e in self._executions)
+        avg_duration = total_duration / max(len(self._executions), 1)
 
-        with self._lock:
-            job.state = JobState.COMPLETED if success else JobState.FAILED
-            job.run_count += 1
-            if not success:
-                job.fail_count += 1
-            job.last_result = job_result
-            if job.schedule_type != ScheduleType.ONCE:
-                job.next_run_at = self._compute_next_run(
-                    job.schedule_type, job.schedule_value
-                )
-                job.state = JobState.PENDING
-            self._results[job_id].append(job_result)
-            if len(self._results[job_id]) > self._MAX_RESULTS_PER_JOB:
-                self._results[job_id] = self._results[job_id][
-                    -self._MAX_RESULTS_PER_JOB:
-                ]
+        return {
+            "total_tasks": len(self._tasks),
+            "total_rules": len(self._rules),
+            "total_executions": len(self._executions),
+            "total_dependencies": len(self._dependencies),
+            "tick_count": self._tick_count,
+            "tasks_by_state": task_states,
+            "tasks_by_priority": priority_counts,
+            "successful_executions": successful,
+            "failed_executions": failed,
+            "average_duration": round(avg_duration, 3),
+            "paused_tasks": sum(1 for t in self._tasks.values() if t.paused),
+        }
 
-        return job_result
+    # ---- Private Helpers ----
 
-    async def tick(self) -> int:
-        executed = 0
-        now = time.time()
-        ready_jobs = []
+    def _dependencies_satisfied(self, task: CronTask) -> bool:
+        if not task.dependencies:
+            return True
+        for dep_task_id in task.dependencies:
+            dep_task = self._tasks.get(dep_task_id)
+            if dep_task is None:
+                return False
+            if dep_task.state != TaskState.COMPLETED:
+                return False
+        return True
 
-        with self._lock:
-            for job in self._jobs.values():
-                if job.state != JobState.PENDING:
-                    continue
-                if job.next_run_at <= now:
-                    deps_ok = all(
-                        self._jobs.get(d) and self._jobs[d].state == JobState.COMPLETED
-                        for d in job.depends_on
-                    )
-                    if deps_ok:
-                        ready_jobs.append(job)
+    def _should_retry(self, task: CronTask) -> bool:
+        if task.retry_policy == RetryPolicy.NONE:
+            return False
+        if task.retry_count >= task.max_retries:
+            return False
+        if task.state == TaskState.CANCELLED:
+            return False
+        return True
 
-        for job in ready_jobs:
-            await self.execute_job(job)
-            executed += 1
+    @staticmethod
+    def _compute_backoff(task: CronTask) -> float:
+        base_delay = 5.0
+        attempt = task.retry_count + 1
 
-        return executed
+        if task.retry_policy == RetryPolicy.LINEAR:
+            return base_delay * attempt
+        elif task.retry_policy == RetryPolicy.EXPONENTIAL:
+            return base_delay * (2 ** (attempt - 1))
+        elif task.retry_policy == RetryPolicy.FIXED:
+            return base_delay
+        return 0.0
 
-    def start(self) -> None:
-        if self._running:
+    def _compute_next_run(self, rule: ScheduleRule, from_time: float) -> float:
+        interval = self._FREQUENCY_INTERVALS.get(rule.frequency, 0)
+        if interval <= 0:
+            return 0.0
+        return from_time + interval
+
+    def _reschedule_recurring(self, task: CronTask) -> None:
+        rule = self._rules.get(task.rule_id)
+        if rule is None:
             return
-        self._running = True
-        try:
-            loop = asyncio.get_event_loop()
-            if loop.is_running():
-                self._loop_task = asyncio.ensure_future(self._run_loop())
-        except RuntimeError:
-            pass
-
-    def stop(self) -> None:
-        self._running = False
-        if self._loop_task and not self._loop_task.done():
-            self._loop_task.cancel()
-
-    async def _run_loop(self) -> None:
-        while self._running:
-            await self.tick()
-            await asyncio.sleep(self._tick_interval)
-
-    def _compute_next_run(
-        self, schedule_type: ScheduleType, schedule_value: str
-    ) -> float:
-        now = time.time()
-        if schedule_type == ScheduleType.INTERVAL:
-            return now + float(schedule_value)
-        elif schedule_type == ScheduleType.ONCE:
-            return float(schedule_value)
-        elif schedule_type == ScheduleType.CRON:
-            return now + 60.0
-        elif schedule_type == ScheduleType.ON_IDLE:
-            return now + float(schedule_value)
-        return now + 3600.0
-
-    def set_tick_interval(self, seconds: float) -> None:
-        self._tick_interval = max(1.0, seconds)
-
-    def get_stats(self) -> dict:
-        with self._lock:
-            by_state: Dict[str, int] = {}
-            for job in self._jobs.values():
-                s = job.state.value
-                by_state[s] = by_state.get(s, 0) + 1
-            return {
-                "total_jobs": len(self._jobs),
-                "by_state": by_state,
-                "total_runs": sum(j.run_count for j in self._jobs.values()),
-                "total_failures": sum(j.fail_count for j in self._jobs.values()),
-                "running": self._running,
-                "tick_interval": self._tick_interval,
-            }
-
-    def reset(self) -> None:
-        with self._lock:
-            self.stop()
-            self._jobs.clear()
-            self._results.clear()
-            self._next_id = 0
+        if rule.frequency == CronFrequency.ONCE:
+            return
+        interval = self._FREQUENCY_INTERVALS.get(rule.frequency, 0)
+        if interval > 0:
+            task.next_run_at = time.time() + interval
+            task.state = TaskState.PENDING
+            task.retry_count = 0
 
 
-def get_cron_scheduler() -> CronScheduler:
-    return CronScheduler.get_instance()
+def get_cron_scheduler() -> AgentCronScheduler:
+    return AgentCronScheduler.get_instance()
