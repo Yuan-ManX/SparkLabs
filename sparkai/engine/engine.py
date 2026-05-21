@@ -130,6 +130,12 @@ from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
 from sparkai.engine.engine_network_layer import NetworkLayer, get_network_layer
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
 from sparkai.engine.engine_save_system import SaveSystem, get_save_system
+from sparkai.engine.engine_node_tree import NodeTreeSystem, get_node_tree
+from sparkai.engine.engine_extension_registry import ExtensionRegistry, get_extension_registry
+from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_export_pipeline
+from sparkai.engine.engine_server_architecture import GameServerPool, get_server_pool
+from sparkai.engine.engine_gizmo_system import GizmoSystem, get_gizmo_system
+from sparkai.engine.engine_pivot_system import PivotSystem, get_pivot_system
 
 
 class SparkEngine:
@@ -265,6 +271,12 @@ class SparkEngine:
         self._network_layer = get_network_layer()
         self._behavior_runtime = get_behavior_runtime()
         self._save_system = get_save_system()
+        self._node_tree = get_node_tree()
+        self._extension_registry = get_extension_registry()
+        self._export_pipeline = get_export_pipeline()
+        self._server_pool = get_server_pool()
+        self._gizmo_system = get_gizmo_system()
+        self._pivot_system = get_pivot_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
