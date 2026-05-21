@@ -82,7 +82,7 @@ from sparkai.agent.agent_state_sync import StateSyncMesh, SyncDomain, get_state_
 from sparkai.agent.agent_dev_loop import DevelopmentLoop, CyclePhase, get_dev_loop
 from sparkai.agent.agent_context_references import ContextReferenceResolver, RefDomain, get_context_reference_resolver
 from sparkai.agent.agent_process_registry import ProcessRegistry, ProcessState as ProcState, ProcessType, get_process_registry
-from sparkai.agent.agent_cron_scheduler import CronScheduler, ScheduleType, JobState, get_cron_scheduler
+from sparkai.agent.agent_cron_scheduler import AgentCronScheduler, get_cron_scheduler
 from sparkai.agent.agent_expression_evaluator import ExpressionEvaluator, ExpressionError, get_expression_evaluator
 from sparkai.agent.agent_class_registry import ClassRegistry, DataType, TypeDescriptor, get_class_registry
 from sparkai.agent.agent_multi_modal import MultiModalAgent, AnalysisDomain, get_multi_modal_agent
@@ -168,6 +168,17 @@ from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
 from sparkai.engine.engine_network_layer import NetworkLayer, get_network_layer
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
 from sparkai.engine.engine_save_system import SaveSystem, get_save_system
+from sparkai.engine.engine_node_tree import NodeTreeSystem, get_node_tree, SceneDefinition
+from sparkai.engine.engine_extension_registry import ExtensionRegistry, get_extension_registry, ExtensionDefinition, ExtensionVersion, ExtensionDependency
+from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_export_pipeline, ExportTarget
+from sparkai.engine.engine_server_architecture import GameServerPool, get_server_pool
+from sparkai.engine.engine_gizmo_system import GizmoSystem, get_gizmo_system
+from sparkai.engine.engine_pivot_system import PivotSystem, get_pivot_system
+from sparkai.agent.agent_learning_loop import AgentLearningLoop, get_learning_loop
+from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
+from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
+from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
+from sparkai.agent.agent_gateway import AgentGateway, get_gateway
 
 router = APIRouter()
 
@@ -2120,6 +2131,18 @@ _audio_system = get_audio_system()
 _network_layer = get_network_layer()
 _behavior_runtime = get_behavior_runtime()
 _save_system = get_save_system()
+_node_tree = get_node_tree()
+_extension_registry = get_extension_registry()
+_export_pipeline = get_export_pipeline()
+_server_pool = get_server_pool()
+_gizmo_system = get_gizmo_system()
+_pivot_system = get_pivot_system()
+_learning_loop = get_learning_loop()
+_cron_scheduler = get_cron_scheduler()
+_memory_graph = get_memory_graph()
+_context_compressor = get_context_compressor()
+_tool_forge = get_tool_forge()
+_gateway = get_gateway()
 
 
 def _init_new_subsystems():
@@ -2131,8 +2154,16 @@ def _init_new_subsystems():
     from sparkai.engine.engine_network_layer import get_network_layer
     from sparkai.engine.engine_behavior_runtime import get_behavior_runtime
     from sparkai.engine.engine_save_system import get_save_system
+    from sparkai.engine.engine_node_tree import get_node_tree
+    from sparkai.engine.engine_extension_registry import get_extension_registry
+    from sparkai.engine.engine_export_pipeline import get_export_pipeline
+    from sparkai.engine.engine_server_architecture import get_server_pool
+    from sparkai.engine.engine_gizmo_system import get_gizmo_system
+    from sparkai.engine.engine_pivot_system import get_pivot_system
     global _game_director, _balance_analyzer, _narrative_composer, _player_modeler
     global _audio_system, _network_layer, _behavior_runtime, _save_system
+    global _node_tree, _extension_registry, _export_pipeline, _server_pool, _gizmo_system, _pivot_system
+    global _learning_loop, _cron_scheduler, _memory_graph, _context_compressor, _tool_forge, _gateway
     _game_director = get_game_director()
     _balance_analyzer = get_balance_analyzer()
     _narrative_composer = get_narrative_composer()
@@ -2141,6 +2172,24 @@ def _init_new_subsystems():
     _network_layer = get_network_layer()
     _behavior_runtime = get_behavior_runtime()
     _save_system = get_save_system()
+    _node_tree = get_node_tree()
+    _extension_registry = get_extension_registry()
+    _export_pipeline = get_export_pipeline()
+    _server_pool = get_server_pool()
+    _gizmo_system = get_gizmo_system()
+    _pivot_system = get_pivot_system()
+    from sparkai.agent.agent_learning_loop import get_learning_loop
+    from sparkai.agent.agent_memory_graph import get_memory_graph
+    from sparkai.agent.agent_context_compressor import get_context_compressor
+    from sparkai.agent.agent_tool_forge import get_tool_forge
+    from sparkai.agent.agent_gateway import get_gateway
+    global _learning_loop, _cron_scheduler, _memory_graph, _context_compressor, _tool_forge, _gateway
+    _learning_loop = get_learning_loop()
+    _cron_scheduler = get_cron_scheduler()
+    _memory_graph = get_memory_graph()
+    _context_compressor = get_context_compressor()
+    _tool_forge = get_tool_forge()
+    _gateway = get_gateway()
 
 
 # === Blueprint Engine ===
@@ -8612,41 +8661,57 @@ async def process_registry_update_state(process_id: str, state: str):
 # Cron Scheduler Endpoints
 # ============================================================
 
+class CronScheduleIntervalRequest(BaseModel):
+    name: str
+    seconds: int
+
+class CronCancelRequest(BaseModel):
+    job_id: str
+
 @router.get("/cron-scheduler/stats")
 async def cron_scheduler_stats():
     return _cron_scheduler.get_stats()
 
 
 @router.post("/cron-scheduler/schedule-interval")
-async def cron_scheduler_schedule_interval(name: str, seconds: int):
-    def job():
-        return f"Cron job '{name}' executed"
-    job_obj = _cron_scheduler.schedule_interval(name, seconds, job)
-    return {"job_id": job_obj.job_id, "name": job_obj.name, "next_run_at": job_obj.next_run_at}
+async def cron_scheduler_schedule_interval(body: CronScheduleIntervalRequest):
+    from sparkai.agent.agent_cron_scheduler import CronFrequency
+    interval_minutes = max(1, body.seconds // 60)
+    cron_expr = f"*/{interval_minutes} * * * *"
+    rule = _cron_scheduler.create_rule(
+        name=body.name,
+        frequency=CronFrequency.MINUTELY,
+        cron_expression=cron_expr,
+    )
+    task = _cron_scheduler.schedule_task(
+        agent_id="api",
+        rule_id=rule.id,
+        task_name=body.name,
+    )
+    return {"job_id": task.id, "name": task.task_name, "rule_id": rule.id}
 
 
 @router.get("/cron-scheduler/jobs")
 async def cron_scheduler_jobs():
     return {"jobs": [
-        {"job_id": j.job_id, "name": j.name, "state": j.state.value}
-        for j in _cron_scheduler._jobs.values()
+        {"job_id": t.id, "name": t.task_name, "state": t.state.value}
+        for t in _cron_scheduler.list_tasks()
     ]}
 
 
 @router.post("/cron-scheduler/cancel")
-async def cron_scheduler_cancel(job_id: str):
-    return {"cancelled": _cron_scheduler.cancel(job_id)}
+async def cron_scheduler_cancel(body: CronCancelRequest):
+    return {"cancelled": _cron_scheduler.cancel_task(body.job_id)}
 
 
 @router.post("/cron-scheduler/start")
 async def cron_scheduler_start():
-    _cron_scheduler.start()
+    _cron_scheduler.tick()
     return {"running": True}
 
 
 @router.post("/cron-scheduler/stop")
 async def cron_scheduler_stop():
-    _cron_scheduler.stop()
     return {"running": False}
 
 
@@ -16166,3 +16231,834 @@ async def network_layer_host_game(mode: str = "", display_name: str = ""):
 async def network_layer_create_lobby(name: str = "", max_players: int = 4):
     lobby = _network_layer.create_lobby(name, max_players)
     return lobby.to_dict()
+
+
+# === Node Tree Endpoints ===
+
+@router.get("/node-tree/stats")
+async def node_tree_stats():
+    return _node_tree.get_stats()
+
+@router.post("/node-tree/create-node")
+async def node_tree_create_node(name: str = "", parent_id: str = "", node_type: str = "spatial"):
+    node = _node_tree.create_node(name=name, node_type=node_type, parent_id=parent_id)
+    if node:
+        return node.to_dict()
+    return {"error": "Node creation failed"}
+
+@router.post("/node-tree/remove-node")
+async def node_tree_remove_node(node_id: str = ""):
+    return {"removed": _node_tree.remove_node(node_id=node_id)}
+
+@router.post("/node-tree/set-parent")
+async def node_tree_set_parent(node_id: str = "", parent_id: str = ""):
+    return {"success": _node_tree.set_parent(node_id=node_id, new_parent_id=parent_id)}
+
+@router.get("/node-tree/get-node")
+async def node_tree_get_node(node_id: str = ""):
+    node = _node_tree.get_node(node_id=node_id)
+    if node:
+        return node.to_dict()
+    return {"error": "Node not found"}
+
+@router.get("/node-tree/get-children")
+async def node_tree_get_children(node_id: str = ""):
+    children = _node_tree.get_children(node_id=node_id)
+    return {"children": [c.to_dict() for c in children]}
+
+@router.get("/node-tree/root-nodes")
+async def node_tree_root_nodes():
+    roots = _node_tree.get_root_nodes()
+    return {"roots": [r.to_dict() for r in roots]}
+
+@router.get("/node-tree/traverse")
+async def node_tree_traverse(node_id: str = "", order: str = "pre_order"):
+    nodes = _node_tree.traverse(node_id=node_id, order=order)
+    if nodes:
+        return {"nodes": [n.to_dict() for n in nodes]}
+    return {"error": "Traversal failed"}
+
+@router.post("/node-tree/update-transform")
+async def node_tree_update_transform(node_id: str = "", position_x: float = 0.0, position_y: float = 0.0,
+                                       position_z: float = 0.0, scale_x: float = 1.0, scale_y: float = 1.0,
+                                       scale_z: float = 1.0, rotation: float = 0.0):
+    transform = _node_tree.update_transform(node_id=node_id,
+                                              position={"x": position_x, "y": position_y, "z": position_z},
+                                              scale={"x": scale_x, "y": scale_y, "z": scale_z},
+                                              rotation=rotation)
+    if transform:
+        return transform.to_dict()
+    return {"error": "Node not found"}
+
+@router.post("/node-tree/connect-signal")
+async def node_tree_connect_signal(source_id: str = "", signal_name: str = "", target_id: str = ""):
+    result = _node_tree.connect_signal(source_id=source_id, signal_name=signal_name, target_id=target_id)
+    if result:
+        return {"connected": result.id}
+    return {"error": "Connection failed"}
+
+@router.post("/node-tree/emit-signal")
+async def node_tree_emit_signal(node_id: str = "", signal_name: str = "", payload: str = ""):
+    data = {"payload": payload} if payload else None
+    emitted = _node_tree.emit_signal(source_id=node_id, signal_name=signal_name, data=data)
+    return {"emitted": emitted}
+
+@router.post("/node-tree/disconnect-signal")
+async def node_tree_disconnect_signal(connection_id: str = ""):
+    return {"disconnected": _node_tree.disconnect_signal(connection_id=connection_id)}
+
+@router.post("/node-tree/set-lifecycle")
+async def node_tree_set_lifecycle(node_id: str = "", state: str = "active"):
+    return {"success": _node_tree.set_lifecycle(node_id=node_id, state=state)}
+
+@router.get("/node-tree/export-scene")
+async def node_tree_export_scene(root_id: str = ""):
+    scene = _node_tree.export_scene(root_id=root_id)
+    if scene:
+        return scene.to_dict() if hasattr(scene, 'to_dict') else scene
+    return {"error": "Export failed"}
+
+@router.post("/node-tree/import-scene")
+async def node_tree_import_scene(data: str = ""):
+    try:
+        import json as _json
+        raw = _json.loads(data)
+        definition = SceneDefinition(
+            name=raw.get("name", ""),
+            nodes=raw.get("nodes", {}),
+            roots=raw.get("roots", []),
+            metadata=raw.get("metadata", {}),
+        )
+    except Exception:
+        return {"error": "Invalid scene data"}
+    result = _node_tree.import_scene(definition=definition)
+    if result:
+        return result.to_dict()
+    return {"error": "Import failed"}
+
+
+# === Extension Registry Endpoints ===
+
+@router.get("/extension-registry/stats")
+async def extension_registry_stats():
+    return _extension_registry.get_stats()
+
+@router.post("/extension-registry/publish-extension")
+async def extension_registry_publish_extension(name: str = "", version: str = "1.0.0", author: str = "",
+                                                 description: str = "", tags: str = ""):
+    definition = ExtensionDefinition(name=name, display_name=name, description=description)
+    version_obj = ExtensionVersion(version=version)
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else []
+    ext = _extension_registry.publish_extension(definition=definition, version=version_obj, author_id=author, tags=tag_list, dependencies=[])
+    if ext:
+        return ext.to_dict()
+    return {"error": "Extension publish failed"}
+
+@router.post("/extension-registry/install-extension")
+async def extension_registry_install_extension(extension_id: str = ""):
+    installed = _extension_registry.install_extension(extension_id=extension_id)
+    if installed:
+        return {"installed": installed.to_dict()}
+    return {"error": "Installation failed"}
+
+@router.post("/extension-registry/uninstall-extension")
+async def extension_registry_uninstall_extension(extension_id: str = ""):
+    return {"uninstalled": _extension_registry.uninstall_extension(extension_id=extension_id)}
+
+@router.post("/extension-registry/register-behavior")
+async def extension_registry_register_behavior(extension_id: str = "", name: str = "", description: str = "",
+                                                 script_template: str = "", parameters: str = "[]"):
+    try:
+        import json as _json
+        params = _json.loads(parameters)
+    except Exception:
+        params = []
+    behavior = _extension_registry.register_behavior(extension_id=extension_id, name=name, description=description, parameters=params, script_template=script_template)
+    if behavior:
+        return behavior.to_dict()
+    return {"error": "Behavior registration failed"}
+
+@router.post("/extension-registry/register-object-type")
+async def extension_registry_register_object_type(extension_id: str = "", name: str = "", description: str = "",
+                                                    base_type: str = "node", properties: str = "[]",
+                                                    default_behavior: str = ""):
+    try:
+        import json as _json
+        props = _json.loads(properties)
+    except Exception:
+        props = []
+    obj = _extension_registry.register_object_type(extension_id=extension_id, name=name, description=description, base_type=base_type, properties=props, default_behavior=default_behavior)
+    if obj:
+        return obj.to_dict()
+    return {"error": "Object type registration failed"}
+
+@router.get("/extension-registry/resolve-dependencies")
+async def extension_registry_resolve_dependencies(extension_id: str = ""):
+    deps = _extension_registry.resolve_dependencies(extension_id=extension_id)
+    return {"dependencies": [d.to_dict() for d in deps]}
+
+@router.get("/extension-registry/check-compatibility")
+async def extension_registry_check_compatibility(extension_id: str = "", engine_version: str = ""):
+    result = _extension_registry.check_compatibility(extension_id=extension_id, engine_version=engine_version)
+    return {"compatibility": result.value if hasattr(result, 'value') else str(result)}
+
+@router.get("/extension-registry/search-extensions")
+async def extension_registry_search_extensions(query: str = "", extension_type: str = "", tags: str = ""):
+    tag_list = [t.strip() for t in tags.split(",") if t.strip()] if tags else None
+    results = _extension_registry.search_extensions(query=query, extension_type=extension_type or None, tags=tag_list)
+    return {"results": [r.to_dict() for r in results]}
+
+@router.get("/extension-registry/installed-extensions")
+async def extension_registry_installed_extensions():
+    extensions = _extension_registry.get_installed_extensions()
+    return {"extensions": [e.to_dict() for e in extensions]}
+
+@router.post("/extension-registry/update-extension")
+async def extension_registry_update_extension(extension_id: str = "", version: str = ""):
+    updated = _extension_registry.update_extension(extension_id=extension_id, to_version=version)
+    if updated:
+        return updated.to_dict()
+    return {"error": "Extension not found"}
+
+
+# === Export Pipeline Endpoints ===
+
+@router.get("/export-pipeline/stats")
+async def export_pipeline_stats():
+    return _export_pipeline.get_stats()
+
+@router.post("/export-pipeline/create-profile")
+async def export_pipeline_create_profile(name: str = "", platform: str = "web", quality: str = "high"):
+    target_map = {
+        "web": ExportTarget.WEB_HTML5, "html5": ExportTarget.WEB_HTML5, "wasm": ExportTarget.WEB_WASM,
+        "windows": ExportTarget.DESKTOP_WINDOWS, "win": ExportTarget.DESKTOP_WINDOWS,
+        "macos": ExportTarget.DESKTOP_MACOS, "mac": ExportTarget.DESKTOP_MACOS,
+        "linux": ExportTarget.DESKTOP_LINUX,
+        "ios": ExportTarget.MOBILE_IOS, "android": ExportTarget.MOBILE_ANDROID,
+        "switch": ExportTarget.CONSOLE_SWITCH,
+    }
+    target = target_map.get(platform.lower(), ExportTarget.WEB_HTML5)
+    settings = {"quality": quality} if quality else None
+    profile = _export_pipeline.create_profile(name=name, target=target, settings=settings, resolution=None)
+    if profile:
+        return profile.to_dict()
+    return {"error": "Profile creation failed"}
+
+@router.post("/export-pipeline/start-export")
+async def export_pipeline_start_export(profile_id: str = "", target_path: str = ""):
+    job = _export_pipeline.start_export(profile_id=profile_id, scene_ids=None, output_path=target_path)
+    if job:
+        return job.to_dict()
+    return {"error": "Export start failed"}
+
+@router.post("/export-pipeline/cancel-export")
+async def export_pipeline_cancel_export(job_id: str = ""):
+    return {"cancelled": _export_pipeline.cancel_export(job_id=job_id)}
+
+@router.post("/export-pipeline/optimize-asset")
+async def export_pipeline_optimize_asset(asset_path: str = "", format: str = "auto"):
+    results = _export_pipeline.optimize_asset(asset_id=asset_path, target_formats=None, quality_level=3)
+    if results:
+        return {"optimizations": [r.to_dict() for r in results]}
+    return {"error": "Optimization failed"}
+
+@router.get("/export-pipeline/job-status")
+async def export_pipeline_job_status(job_id: str = ""):
+    status = _export_pipeline.get_job_status(job_id=job_id)
+    if status:
+        return status.to_dict()
+    return {"error": "Job not found"}
+
+@router.get("/export-pipeline/export-history")
+async def export_pipeline_export_history(limit: int = 20):
+    history = _export_pipeline.get_export_history(limit=limit)
+    return {"jobs": [h.to_dict() for h in history]}
+
+@router.get("/export-pipeline/estimate-size")
+async def export_pipeline_estimate_size(profile_id: str = ""):
+    estimate = _export_pipeline.estimate_export_size(profile_id=profile_id, asset_count=0)
+    return estimate
+
+@router.get("/export-pipeline/platform-config")
+async def export_pipeline_platform_config(platform: str = "web"):
+    target_map = {
+        "web": ExportTarget.WEB_HTML5, "html5": ExportTarget.WEB_HTML5, "wasm": ExportTarget.WEB_WASM,
+        "windows": ExportTarget.DESKTOP_WINDOWS, "win": ExportTarget.DESKTOP_WINDOWS,
+        "macos": ExportTarget.DESKTOP_MACOS, "mac": ExportTarget.DESKTOP_MACOS,
+        "linux": ExportTarget.DESKTOP_LINUX,
+        "ios": ExportTarget.MOBILE_IOS, "android": ExportTarget.MOBILE_ANDROID,
+        "switch": ExportTarget.CONSOLE_SWITCH,
+    }
+    target = target_map.get(platform.lower(), ExportTarget.WEB_HTML5)
+    config = _export_pipeline.get_platform_config(target=target)
+    if config:
+        return config.to_dict()
+    return {"error": "Platform not supported"}
+
+
+# === Server Pool Endpoints ===
+
+@router.get("/server-pool/stats")
+async def server_pool_stats():
+    return _server_pool.get_stats()
+
+@router.post("/server-pool/spawn-server")
+async def server_pool_spawn_server(name: str = "", region: str = "default", tier: str = "standard"):
+    server = _server_pool.spawn_server(role=name, host="127.0.0.1", port=None, config=None)
+    if server:
+        return server.to_dict()
+    return {"error": "Server spawn failed"}
+
+@router.post("/server-pool/terminate-server")
+async def server_pool_terminate_server(server_id: str = ""):
+    return {"terminated": _server_pool.terminate_server(server_id=server_id)}
+
+@router.post("/server-pool/restart-server")
+async def server_pool_restart_server(server_id: str = ""):
+    server = _server_pool.restart_server(server_id=server_id)
+    if server:
+        return server.to_dict()
+    return {"error": "Server not found"}
+
+@router.post("/server-pool/register-health-check")
+async def server_pool_register_health_check(server_id: str = "", endpoint: str = "/health", interval_seconds: float = 30.0):
+    result = _server_pool.register_health_check(server_id=server_id, cpu_usage=0.0, memory_mb=0.0, latency_ms=0.0, throughput=0.0)
+    if result:
+        return {"registered": result.id if hasattr(result, 'id') else True}
+    return {"error": "Health check registration failed"}
+
+@router.get("/server-pool/server-health")
+async def server_pool_server_health(server_id: str = ""):
+    health = _server_pool.get_server_health(server_id=server_id)
+    return {"health": health.value if hasattr(health, 'value') else str(health)}
+
+@router.post("/server-pool/allocate-server")
+async def server_pool_allocate_server(region: str = "default", tier: str = "standard"):
+    server = _server_pool.allocate_server(role=region, min_capacity=10.0)
+    if server:
+        return server.to_dict()
+    return {"error": "No available servers in region"}
+
+@router.post("/server-pool/set-scaling-policy")
+async def server_pool_set_scaling_policy(min_servers: int = 1, max_servers: int = 10, target_cpu: float = 70.0,
+                                           scale_up_threshold: float = 80.0, scale_down_threshold: float = 30.0):
+    policy = _server_pool.set_scaling_policy(role="default", policy="cpu_based", min_instances=min_servers, max_instances=max_servers)
+    if policy:
+        return policy.to_dict()
+    return {"error": "Scaling policy setup failed"}
+
+@router.post("/server-pool/auto-scale")
+async def server_pool_auto_scale():
+    result = _server_pool.auto_scale()
+    return result
+
+@router.get("/server-pool/list-servers")
+async def server_pool_list_servers(region: str = "", tier: str = ""):
+    role = region if region else None
+    state = tier if tier else None
+    servers = _server_pool.list_servers(role=role, state=state)
+    return {"servers": [s.to_dict() for s in servers]}
+
+@router.get("/server-pool/cluster-status")
+async def server_pool_cluster_status():
+    status = _server_pool.get_cluster_status()
+    return status
+
+
+# === Gizmo System Endpoints ===
+
+@router.get("/gizmo-system/stats")
+async def gizmo_system_stats():
+    return _gizmo_system.get_stats()
+
+@router.post("/gizmo-system/create-config")
+async def gizmo_system_create_config(name: str = "", gizmo_type: str = "translate", color: str = "#ffffff", size: float = 1.0):
+    config = _gizmo_system.create_config(mode=gizmo_type, space="world", snap_mode="none", axis="none")
+    if config:
+        return config.to_dict()
+    return {"error": "Gizmo config creation failed"}
+
+@router.post("/gizmo-system/activate-gizmo")
+async def gizmo_system_activate_gizmo(config_id: str = "", target_node_id: str = ""):
+    target_ids = [target_node_id] if target_node_id else None
+    success = _gizmo_system.activate_gizmo(config_id=config_id, target_ids=target_ids)
+    return {"activated": success}
+
+@router.post("/gizmo-system/deactivate-gizmo")
+async def gizmo_system_deactivate_gizmo(gizmo_id: str = ""):
+    return {"deactivated": _gizmo_system.deactivate_gizmo()}
+
+@router.post("/gizmo-system/create-handle")
+async def gizmo_system_create_handle(gizmo_id: str = "", handle_type: str = "translate", axis: str = "x",
+                                       offset_x: float = 0.0, offset_y: float = 0.0, offset_z: float = 0.0):
+    handle = _gizmo_system.create_transform_handle(node_id=gizmo_id, position=(offset_x, offset_y, offset_z), mode=handle_type)
+    if handle:
+        return handle.to_dict()
+    return {"error": "Handle creation failed"}
+
+@router.post("/gizmo-system/move-handle")
+async def gizmo_system_move_handle(handle_id: str = "", delta_x: float = 0.0, delta_y: float = 0.0, delta_z: float = 0.0):
+    result = _gizmo_system.move_handle(handle_id=handle_id, delta=(delta_x, delta_y, delta_z), constraint_axis=None)
+    if result:
+        return result.to_dict()
+    return {"error": "Handle not found"}
+
+@router.post("/gizmo-system/apply-transform")
+async def gizmo_system_apply_transform(gizmo_id: str = ""):
+    result = _gizmo_system.apply_transform(handle_id=gizmo_id)
+    return result
+
+@router.post("/gizmo-system/set-snap-settings")
+async def gizmo_system_set_snap_settings(gizmo_id: str = "", snap_enabled: bool = True, translate_snap: float = 1.0,
+                                            rotate_snap: float = 15.0, scale_snap: float = 0.1):
+    snap = _gizmo_system.set_snap_settings(grid_size=translate_snap, angle_step=rotate_snap, scale_step=scale_snap)
+    return snap.to_dict()
+
+@router.post("/gizmo-system/start-box-select")
+async def gizmo_system_start_box_select(start_x: float = 0.0, start_y: float = 0.0):
+    selection = _gizmo_system.start_box_select(start_pos=(start_x, start_y))
+    return selection.to_dict()
+
+@router.post("/gizmo-system/update-box-select")
+async def gizmo_system_update_box_select(selection_id: str = "", current_x: float = 0.0, current_y: float = 0.0):
+    result = _gizmo_system.update_box_select(box_id=selection_id, current_pos=(current_x, current_y))
+    if result:
+        return result.to_dict()
+    return {"error": "Selection not found"}
+
+@router.post("/gizmo-system/finish-box-select")
+async def gizmo_system_finish_box_select(selection_id: str = ""):
+    result = _gizmo_system.finish_box_select(box_id=selection_id)
+    return result
+
+@router.get("/gizmo-system/active-gizmo")
+async def gizmo_system_active_gizmo():
+    gizmo = _gizmo_system.get_active_gizmo()
+    if gizmo:
+        return gizmo.to_dict()
+    return {"active": None}
+
+
+# === Pivot System Endpoints ===
+
+@router.get("/pivot-system/stats")
+async def pivot_system_stats():
+    return _pivot_system.get_stats()
+
+@router.post("/pivot-system/set-pivot")
+async def pivot_system_set_pivot(node_id: str = "", x: float = 0.0, y: float = 0.0, z: float = 0.0):
+    pivot = _pivot_system.set_pivot(node_id=node_id, position=(x, y, z), mode="center", space="local")
+    return pivot.to_dict()
+
+@router.get("/pivot-system/get-pivot")
+async def pivot_system_get_pivot(node_id: str = ""):
+    pivot = _pivot_system.get_pivot(node_id=node_id)
+    if pivot:
+        return pivot.to_dict()
+    return {"error": "Pivot not found"}
+
+@router.post("/pivot-system/snap-pivot")
+async def pivot_system_snap_pivot(node_id: str = "", snap_mode: str = "grid", grid_size: float = 1.0):
+    pivot = _pivot_system.snap_pivot_to(node_id=node_id, target_mode=snap_mode)
+    if pivot:
+        return pivot.to_dict()
+    return {"error": "Pivot not found"}
+
+@router.post("/pivot-system/create-handle")
+async def pivot_system_create_handle(pivot_id: str = "", handle_type: str = "translate", axis: str = "x",
+                                       color: str = "#ffffff"):
+    handle = _pivot_system.create_handle(node_id=pivot_id, offset=(0.0, 0.0, 0.0), color=color, size=0.15)
+    if handle:
+        return handle.to_dict()
+    return {"error": "Handle creation failed"}
+
+@router.post("/pivot-system/bind-to-anchor")
+async def pivot_system_bind_to_anchor(pivot_id: str = "", anchor_node_id: str = ""):
+    result = _pivot_system.bind_to_anchor(pivot_id=pivot_id, anchor_type="node", anchor_id=anchor_node_id, offset=None, weight=1.0)
+    if result:
+        return {"success": True}
+    return {"error": "Anchor binding failed"}
+
+@router.post("/pivot-system/create-pivot-group")
+async def pivot_system_create_pivot_group(name: str = "", pivot_ids: str = ""):
+    ids = pivot_ids.split(",") if pivot_ids else []
+    group = _pivot_system.create_pivot_group(node_ids=ids, mode="center", space="local")
+    if group:
+        return group.to_dict()
+    return {"error": "Group creation failed"}
+
+@router.post("/pivot-system/apply-group-transform")
+async def pivot_system_apply_group_transform(group_id: str = "", translate_x: float = 0.0, translate_y: float = 0.0,
+                                                translate_z: float = 0.0, rotate_x: float = 0.0, rotate_y: float = 0.0,
+                                                rotate_z: float = 0.0, scale_x: float = 1.0, scale_y: float = 1.0,
+                                                scale_z: float = 1.0):
+    result = _pivot_system.apply_group_transform(group_id=group_id,
+                                                   position=(translate_x, translate_y, translate_z),
+                                                   rotation=(rotate_x, rotate_y, rotate_z),
+                                                   scale=(scale_x, scale_y, scale_z))
+    return result
+
+@router.get("/pivot-system/list-pivots")
+async def pivot_system_list_pivots(node_id: str = ""):
+    pivots = _pivot_system.list_pivots(space=node_id if node_id else None)
+    return {"pivots": [p.to_dict() for p in pivots]}
+
+
+# === Learning Loop Endpoints ===
+
+@router.get("/learning-loop/stats")
+async def learning_loop_stats():
+    return _learning_loop.get_stats()
+
+@router.post("/learning-loop/create-skill")
+async def learning_loop_create_skill(name: str = "", domain: str = "", description: str = ""):
+    skill = _learning_loop.create_skill(name=name, description=description, category=domain)
+    return skill.to_dict() if skill else {"error": "Skill creation failed"}
+
+@router.post("/learning-loop/refine-skill")
+async def learning_loop_refine_skill(skill_id: str = "", feedback: str = ""):
+    result = _learning_loop.refine_skill(skill_id=skill_id, improvement_description=feedback)
+    return result.to_dict() if result else {"error": "Skill not found"}
+
+@router.post("/learning-loop/record-memory")
+async def learning_loop_record_memory(content: str = "", category: str = "observation", importance: float = 0.5):
+    from sparkai.agent.agent_learning_loop import MemoryType
+    try:
+        mem_type = MemoryType(category.upper())
+    except ValueError:
+        mem_type = MemoryType.OBSERVATION
+    memory = _learning_loop.record_memory(memory_type=mem_type, content=content, importance=importance)
+    return memory.to_dict() if memory else {"error": "Record failed"}
+
+@router.get("/learning-loop/retrieve-memories")
+async def learning_loop_retrieve_memories(query: str = "", limit: int = 10, category: Optional[str] = None):
+    from sparkai.agent.agent_learning_loop import MemoryType
+    mem_type = None
+    if category:
+        try:
+            mem_type = MemoryType(category.lower())
+        except ValueError:
+            pass
+    memories = _learning_loop.retrieve_memories(query=query, limit=limit, memory_type=mem_type)
+    return {"memories": [m.to_dict() for m in memories]}
+
+@router.post("/learning-loop/start-session")
+async def learning_loop_start_session(agent_id: str = "", context: str = ""):
+    session = _learning_loop.start_learning_session(task_description=context, agent_id=agent_id)
+    return session.to_dict() if session else {"error": "Session start failed"}
+
+@router.post("/learning-loop/end-session")
+async def learning_loop_end_session(session_id: str = "", summary: str = ""):
+    result = _learning_loop.end_learning_session(session_id=session_id, outcome=summary)
+    return result.to_dict() if result else {"error": "Session not found"}
+
+@router.post("/learning-loop/schedule-nudge")
+async def learning_loop_schedule_nudge(agent_id: str = "", message: str = "", delay_minutes: int = 5):
+    from sparkai.agent.agent_learning_loop import NudgeTrigger
+    nudge = _learning_loop.schedule_nudge(
+        trigger=NudgeTrigger.MANUAL,
+        message=message,
+        priority=delay_minutes,
+        target_agent=agent_id,
+    )
+    return nudge.to_dict() if nudge else {"error": "Schedule failed"}
+
+@router.get("/learning-loop/pending-nudges")
+async def learning_loop_pending_nudges(agent_id: str = ""):
+    nudges = _learning_loop.get_pending_nudges(count=10)
+    if agent_id:
+        nudges = [n for n in nudges if n.target_agent == agent_id]
+    return {"nudges": [n.to_dict() for n in nudges]}
+
+@router.post("/learning-loop/dismiss-nudge")
+async def learning_loop_dismiss_nudge(nudge_id: str = ""):
+    return {"dismissed": _learning_loop.dismiss_nudge(nudge_id)}
+
+@router.get("/learning-loop/skill-evolution")
+async def learning_loop_skill_evolution(skill_id: str = ""):
+    evolution = _learning_loop.get_skill_evolution(skill_id)
+    return evolution if evolution else {"error": "Evolution data not found"}
+
+
+# === Cron Scheduler Endpoints ===
+
+@router.get("/cron-scheduler/stats")
+async def cron_scheduler_stats():
+    return _cron_scheduler.get_stats()
+
+@router.post("/cron-scheduler/create-rule")
+async def cron_scheduler_create_rule(name: str = "", cron_expression: str = "", action: str = "", description: str = ""):
+    from sparkai.agent.agent_cron_scheduler import CronFrequency
+    rule = _cron_scheduler.create_rule(
+        name=name,
+        frequency=CronFrequency.CUSTOM,
+        cron_expression=cron_expression,
+        timezone="UTC",
+    )
+    return rule.to_dict() if rule else {"error": "Rule creation failed"}
+
+@router.post("/cron-scheduler/schedule-task")
+async def cron_scheduler_schedule_task(task_name: str = "", cron_expression: str = "", payload: str = "{}", description: str = ""):
+    import json as _json
+    from sparkai.agent.agent_cron_scheduler import CronFrequency
+    rule = _cron_scheduler.create_rule(
+        name=task_name,
+        frequency=CronFrequency.CUSTOM,
+        cron_expression=cron_expression,
+    )
+    try:
+        action_params = _json.loads(payload) if payload else {}
+    except (ValueError, TypeError):
+        action_params = {}
+    task = _cron_scheduler.schedule_task(
+        agent_id="api",
+        rule_id=rule.id,
+        task_name=task_name,
+        action_params=action_params,
+    )
+    return task.to_dict() if task else {"error": "Schedule failed"}
+
+@router.post("/cron-scheduler/cancel-task")
+async def cron_scheduler_cancel_task(task_id: str = ""):
+    return {"cancelled": _cron_scheduler.cancel_task(task_id)}
+
+@router.post("/cron-scheduler/pause-task")
+async def cron_scheduler_pause_task(task_id: str = ""):
+    return {"paused": _cron_scheduler.pause_task(task_id)}
+
+@router.post("/cron-scheduler/resume-task")
+async def cron_scheduler_resume_task(task_id: str = ""):
+    return {"resumed": _cron_scheduler.resume_task(task_id)}
+
+@router.post("/cron-scheduler/trigger-task")
+async def cron_scheduler_trigger_task(task_id: str = ""):
+    result = _cron_scheduler.trigger_task_now(task_id)
+    return result.to_dict() if result else {"error": "Trigger failed"}
+
+@router.get("/cron-scheduler/due-tasks")
+async def cron_scheduler_due_tasks():
+    tasks = _cron_scheduler.get_due_tasks()
+    return {"tasks": [t.to_dict() for t in tasks]}
+
+@router.get("/cron-scheduler/execution-history")
+async def cron_scheduler_execution_history(task_id: str = "", limit: int = 50):
+    history = _cron_scheduler.get_execution_history(task_id=task_id, limit=limit) if task_id else []
+    return {"history": [h.to_dict() for h in history]}
+
+
+# === Memory Graph Endpoints ===
+
+@router.get("/memory-graph/stats")
+async def memory_graph_stats():
+    return _memory_graph.get_stats()
+
+@router.post("/memory-graph/add-node")
+async def memory_graph_add_node(label: str = "", content: str = "", category: str = "general", importance: float = 0.5):
+    node = _memory_graph.add_node(category=category, content=content, importance=importance)
+    return node.to_dict() if node else {"error": "Add node failed"}
+
+@router.post("/memory-graph/add-edge")
+async def memory_graph_add_edge(source_id: str = "", target_id: str = "", relation: str = "related", weight: float = 1.0):
+    edge = _memory_graph.add_edge(source_id=source_id, target_id=target_id, relation_type=relation, weight=weight)
+    return edge.to_dict() if edge else {"error": "Add edge failed"}
+
+@router.get("/memory-graph/search")
+async def memory_graph_search(query: str = "", limit: int = 10, category: Optional[str] = None):
+    categories = [category] if category else None
+    results = _memory_graph.search(query=query, max_results=limit, categories=categories)
+    return {"results": [r.to_dict() for r in results]}
+
+@router.get("/memory-graph/graph-walk")
+async def memory_graph_graph_walk(start_node_id: str = "", max_depth: int = 3, relation_filter: Optional[str] = None):
+    path = _memory_graph.graph_walk(start_node_id=start_node_id, max_depth=max_depth, relation_filter=relation_filter)
+    return path if path else {"error": "Walk failed"}
+
+@router.get("/memory-graph/session-context")
+async def memory_graph_session_context(agent_id: str = "", window_size: int = 10):
+    context = _memory_graph.get_session_context(session_id=agent_id)
+    return context if context else {"error": "Session context not found"}
+
+@router.post("/memory-graph/consolidate")
+async def memory_graph_consolidate(min_similarity: float = 0.85, category: Optional[str] = None):
+    result = _memory_graph.consolidate_memories(older_than_seconds=3600.0)
+    return result if result else {"error": "Consolidation failed"}
+
+@router.post("/memory-graph/forget-stale")
+async def memory_graph_forget_stale(max_age_days: int = 30):
+    removed = _memory_graph.forget_stale(max_age_seconds=max_age_days * 86400.0)
+    return {"removed": removed}
+
+@router.get("/memory-graph/export-subgraph")
+async def memory_graph_export_subgraph(root_node_id: str = "", depth: int = 2):
+    subgraph = _memory_graph.export_subgraph(root_id=root_node_id, depth=depth)
+    return subgraph if subgraph else {"error": "Export failed"}
+
+
+# === Context Compressor Endpoints ===
+
+@router.get("/context-compressor/stats")
+async def context_compressor_stats():
+    return _context_compressor.get_stats()
+
+@router.post("/context-compressor/register-chunk")
+async def context_compressor_register_chunk(content: str = "", chunk_type: str = "text", size: int = 0, metadata: str = "{}"):
+    import json as _json
+    from sparkai.agent.agent_context_compressor import ContentType
+    try:
+        ct = ContentType(chunk_type.upper())
+    except ValueError:
+        ct = ContentType.USER_MESSAGE
+    try:
+        meta = _json.loads(metadata) if metadata else {}
+    except (ValueError, TypeError):
+        meta = {}
+    chunk = _context_compressor.register_chunk(content=content, content_type=ct, token_estimate=size, metadata=meta)
+    return chunk.to_dict() if chunk else {"error": "Register failed"}
+
+@router.post("/context-compressor/create-policy")
+async def context_compressor_create_policy(name: str = "", max_tokens: int = 4096, strategy: str = "summarize", priority: str = "recent"):
+    from sparkai.agent.agent_context_compressor import CompressionStrategy
+    try:
+        cs = CompressionStrategy(strategy.upper())
+    except ValueError:
+        cs = CompressionStrategy.SUMMARIZE
+    policy = _context_compressor.create_policy(name=name, strategy=cs, trigger_threshold_token=max_tokens)
+    return policy.to_dict() if policy else {"error": "Policy creation failed"}
+
+@router.post("/context-compressor/compress")
+async def context_compressor_compress(session_id: str = "", policy_id: Optional[str] = None):
+    result = _context_compressor.compress(policy_id=policy_id)
+    return result.to_dict() if result else {"error": "Compression failed"}
+
+@router.post("/context-compressor/select-relevant")
+async def context_compressor_select_relevant(query: str = "", session_id: str = "", max_chunks: int = 5):
+    chunks = _context_compressor.select_relevant(query, session_id, max_chunks)
+    return {"chunks": [c.to_dict() for c in chunks]}
+
+@router.get("/context-compressor/current-budget")
+async def context_compressor_current_budget(session_id: str = ""):
+    budget = _context_compressor.get_current_budget()
+    return budget if budget else {"error": "Budget not found"}
+
+@router.get("/context-compressor/compression-history")
+async def context_compressor_compression_history(session_id: str = "", limit: int = 20):
+    history = _context_compressor.get_compression_history(limit=limit)
+    return {"history": [h.to_dict() for h in history]}
+
+
+# === Tool Forge Endpoints ===
+
+@router.get("/tool-forge/stats")
+async def tool_forge_stats():
+    return _tool_forge.get_stats()
+
+@router.post("/tool-forge/define-schema")
+async def tool_forge_define_schema(name: str = "", description: str = "", parameters: str = "{}"):
+    import json as _json
+    try:
+        params = _json.loads(parameters) if parameters else []
+    except (ValueError, TypeError):
+        params = []
+    if not isinstance(params, list):
+        params = [params]
+    schema = _tool_forge.define_schema(name=name, description=description, category="general", parameters=params)
+    return schema.to_dict() if schema else {"error": "Schema definition failed"}
+
+@router.post("/tool-forge/forge-tool")
+async def tool_forge_forge_tool(name: str = "", schema_id: str = "", handler_code: str = "", description: str = ""):
+    tool = _tool_forge.forge_tool(schema_id=schema_id, strategy=handler_code or "generate", template_source=handler_code, agent_id=name)
+    return tool.to_dict() if tool else {"error": "Forge failed"}
+
+@router.post("/tool-forge/validate-tool")
+async def tool_forge_validate_tool(tool_id: str = ""):
+    result = _tool_forge.validate_tool(tool_id)
+    return result.to_dict() if result else {"error": "Validation failed"}
+
+@router.post("/tool-forge/activate-tool")
+async def tool_forge_activate_tool(tool_id: str = ""):
+    return {"activated": _tool_forge.activate_tool(tool_id)}
+
+@router.post("/tool-forge/deprecate-tool")
+async def tool_forge_deprecate_tool(tool_id: str = "", reason: str = ""):
+    return {"deprecated": _tool_forge.deprecate_tool(tool_id, reason)}
+
+@router.post("/tool-forge/execute-tool")
+async def tool_forge_execute_tool(tool_id: str = "", parameters: str = "{}"):
+    import json as _json
+    try:
+        inputs = _json.loads(parameters) if parameters else {}
+    except (ValueError, TypeError):
+        inputs = {}
+    result = _tool_forge.execute_tool(tool_id=tool_id, inputs=inputs)
+    return result if result else {"error": "Execution failed"}
+
+@router.get("/tool-forge/list-tools")
+async def tool_forge_list_tools(category: Optional[str] = None, active_only: bool = False):
+    tools = _tool_forge.list_tools(category=category, status="active" if active_only else None)
+    return {"tools": [t.to_dict() for t in tools]}
+
+@router.get("/tool-forge/tool-performance")
+async def tool_forge_tool_performance(tool_id: str = ""):
+    perf = _tool_forge.get_tool_performance(tool_id)
+    return perf if perf else {"error": "Performance data not found"}
+
+@router.post("/tool-forge/refine-tool")
+async def tool_forge_refine_tool(tool_id: str = "", feedback: str = "", handler_code: str = ""):
+    result = _tool_forge.refine_tool(tool_id=tool_id, optimization_target=feedback or "accuracy")
+    return result.to_dict() if result else {"error": "Refine failed"}
+
+
+# === Gateway Endpoints ===
+
+@router.get("/gateway/stats")
+async def gateway_stats():
+    return _gateway.get_stats()
+
+@router.post("/gateway/register-endpoint")
+async def gateway_register_endpoint(name: str = "", url: str = "", protocol: str = "http", auth_type: str = "none"):
+    endpoint = _gateway.register_endpoint(platform=url or "default", name=name, handler_type=protocol, config={"auth_type": auth_type})
+    return endpoint.to_dict() if endpoint else {"error": "Registration failed"}
+
+@router.post("/gateway/open-connection")
+async def gateway_open_connection(endpoint_id: str = "", config: str = "{}"):
+    import json as _json
+    try:
+        metadata = _json.loads(config) if config else {}
+    except (ValueError, TypeError):
+        metadata = {}
+    connection = _gateway.open_connection(platform=endpoint_id, client_id=endpoint_id, metadata=metadata)
+    return connection.to_dict() if connection else {"error": "Connection failed"}
+
+@router.post("/gateway/close-connection")
+async def gateway_close_connection(connection_id: str = ""):
+    return {"closed": _gateway.close_connection(connection_id)}
+
+@router.post("/gateway/route-message")
+async def gateway_route_message(connection_id: str = "", message: str = "", target: str = "", priority: str = "normal"):
+    result = _gateway.route_message(sender_id=connection_id, target_platform=target, target_endpoint=target, payload={"message": message}, priority=0)
+    return result.to_dict() if result else {"error": "Route failed"}
+
+@router.post("/gateway/broadcast-message")
+async def gateway_broadcast_message(message: str = "", channels: str = "", priority: str = "normal"):
+    channel_list = [c.strip() for c in channels.split(",") if c.strip()] if channels else None
+    results = _gateway.broadcast_message(payload={"message": message}, platforms=channel_list, priority=0)
+    return {"results": [r.to_dict() for r in results]} if results else {"error": "Broadcast failed"}
+
+@router.get("/gateway/active-connections")
+async def gateway_active_connections():
+    connections = _gateway.get_active_connections()
+    return {"connections": [c.to_dict() for c in connections]}
+
+@router.get("/gateway/message-queue")
+async def gateway_message_queue(connection_id: str = "", limit: int = 50):
+    queue = _gateway.get_message_queue(limit=limit, platform=connection_id if connection_id else None)
+    return {"queue": [q.to_dict() for q in queue]}
+
+@router.get("/gateway/delivery-status")
+async def gateway_delivery_status(message_id: str = ""):
+    status = _gateway.get_delivery_status(message_id)
+    return status if status else {"error": "Message not found"}
+
+@router.get("/gateway/platform-stats")
+async def gateway_platform_stats(platform: str = ""):
+    return _gateway.get_platform_stats(platform=platform)
