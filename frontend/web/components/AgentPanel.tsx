@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { agentApi, studioApi, commandsApi, loopApi, meshApi, forgeApi, healthApi, protocolApi } from '../utils/api';
+import AgentLearningLoopPanel from './AgentLearningLoopPanel';
+import AgentCronSchedulerPanel from './AgentCronSchedulerPanel';
+import AgentMemoryGraphPanel from './AgentMemoryGraphPanel';
+import AgentContextCompressorPanel from './AgentContextCompressorPanel';
+import AgentToolForgePanel from './AgentToolForgePanel';
+import AgentGatewayPanel from './AgentGatewayPanel';
 
-type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health';
+type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -11,6 +17,12 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'mesh', label: 'Mesh', icon: '🕸' },
   { id: 'forge', label: 'Forge', icon: '⚒' },
   { id: 'health', label: 'Health', icon: '💓' },
+  { id: 'learning_loop', label: 'Learn', icon: '🧠' },
+  { id: 'cron_scheduler', label: 'Cron', icon: '⏰' },
+  { id: 'memory_graph', label: 'Memory', icon: '🕸' },
+  { id: 'context_compressor', label: 'Context', icon: '📦' },
+  { id: 'tool_forge', label: 'Tools', icon: '🔨' },
+  { id: 'gateway', label: 'Gateway', icon: '🌐' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -443,6 +455,12 @@ const AgentPanel: React.FC = () => {
       case 'mesh': return renderMeshTab();
       case 'forge': return renderForgeTab();
       case 'health': return renderHealthTab();
+      case 'learning_loop': return <AgentLearningLoopPanel />;
+      case 'cron_scheduler': return <AgentCronSchedulerPanel />;
+      case 'memory_graph': return <AgentMemoryGraphPanel />;
+      case 'context_compressor': return <AgentContextCompressorPanel />;
+      case 'tool_forge': return <AgentToolForgePanel />;
+      case 'gateway': return <AgentGatewayPanel />;
       default: return null;
     }
   };
