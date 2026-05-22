@@ -4638,6 +4638,20 @@ async def websocket_endpoint(websocket: WebSocket):
                     except Exception as e:
                         await manager.send_to_client(client_id, {"type": "pivot_system_error", "error": str(e)})
 
+                elif msg_type in WS_HANDLERS:
+                    handler = WS_HANDLERS[msg_type]
+                    result = handler(message)
+                    if result.get("error"):
+                        await manager.send_to_client(client_id, {
+                            "type": f"{msg_type}_error",
+                            "error": result["error"],
+                        })
+                    else:
+                        await manager.send_to_client(client_id, {
+                            "type": f"{msg_type}_result",
+                            "data": result,
+                        })
+
                 else:
                     await manager.send_to_client(client_id, {
                         "type": "echo",
@@ -4652,3 +4666,394 @@ async def websocket_endpoint(websocket: WebSocket):
 
     except WebSocketDisconnect:
         manager.disconnect(client_id)
+
+
+WS_HANDLERS = {}
+
+
+def handle_session_snapshot_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.agent.agent_session_snapshot import get_session_snapshot
+        ss = get_session_snapshot()
+        if action == "stats":
+            return {"success": True, "stats": ss.get_stats()}
+        elif action == "create":
+            snap_id = ss.create_snapshot(
+                session_id=data.get("session_id", "default"),
+                label=data.get("label", ""),
+                metadata=data.get("metadata"),
+            )
+            return {"success": True, "snapshot_id": snap_id}
+        elif action == "list":
+            snapshots = ss.list_snapshots(data.get("session_id", "default"))
+            return {"success": True, "snapshots": [s.to_dict() for s in snapshots]}
+        elif action == "restore":
+            restored = ss.restore_snapshot(data.get("snapshot_id", ""))
+            return {"success": True, "restored": restored.to_dict() if restored else None}
+        elif action == "delete":
+            ss.delete_snapshot(data.get("snapshot_id", ""))
+            return {"success": True, "deleted": data.get("snapshot_id")}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_trajectory_compressor_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.agent.agent_trajectory_compressor import get_trajectory_compressor
+        tc = get_trajectory_compressor()
+        if action == "stats":
+            return {"success": True, "stats": tc.get_stats()}
+        elif action == "compress":
+            result = tc.compress(
+                session_id=data.get("session_id", "default"),
+                strategy=data.get("strategy", "auto"),
+                max_steps=data.get("max_steps", 100),
+            )
+            return {"success": True, "result": result}
+        elif action == "list_sessions":
+            sessions = tc.list_sessions()
+            return {"success": True, "sessions": [s.to_dict() for s in sessions]}
+        elif action == "decompress":
+            decompressed = tc.decompress(data.get("session_id", "default"))
+            return {"success": True, "decompressed": decompressed}
+        elif action == "estimate_savings":
+            savings = tc.estimate_compression_savings(data.get("session_id", "default"))
+            return {"success": True, "savings": savings}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_skills_hub_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.agent.agent_skills_hub import get_skills_hub
+        sh = get_skills_hub()
+        if action == "stats":
+            return {"success": True, "stats": sh.get_stats()}
+        elif action == "list_skills":
+            skills = sh.list_skills(
+                category=data.get("category"),
+                domain=data.get("domain"),
+            )
+            return {"success": True, "skills": [s.to_dict() for s in skills]}
+        elif action == "search_skills":
+            results = sh.search_skills(
+                query=data.get("query", ""),
+                limit=data.get("limit", 20),
+            )
+            return {"success": True, "results": [r.to_dict() for r in results]}
+        elif action == "register_skill":
+            skill_id = sh.register_skill(
+                name=data.get("name", ""),
+                description=data.get("description", ""),
+                handler=data.get("handler"),
+                category=data.get("category", "general"),
+            )
+            return {"success": True, "skill_id": skill_id}
+        elif action == "get_skill":
+            skill = sh.get_skill(data.get("skill_id", ""))
+            return {"success": True, "skill": skill.to_dict() if skill else None}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_personality_system_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.agent.agent_personality_system import get_personality_system
+        ps = get_personality_system()
+        if action == "stats":
+            return {"success": True, "stats": ps.get_stats()}
+        elif action == "list_profiles":
+            profiles = ps.list_profiles()
+            return {"success": True, "profiles": [p.to_dict() for p in profiles]}
+        elif action == "create_profile":
+            profile = ps.create_profile(
+                name=data.get("name", ""),
+                traits=data.get("traits", {}),
+                description=data.get("description", ""),
+            )
+            return {"success": True, "profile": profile.to_dict()}
+        elif action == "set_active":
+            ps.set_active_profile(data.get("profile_id", ""))
+            return {"success": True, "active_profile": data.get("profile_id")}
+        elif action == "get_active":
+            active = ps.get_active_profile()
+            return {"success": True, "profile": active.to_dict() if active else None}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_insights_generator_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.agent.agent_insights_generator import get_insights_generator
+        ig = get_insights_generator()
+        if action == "stats":
+            return {"success": True, "stats": ig.get_stats()}
+        elif action == "generate":
+            report = ig.generate(
+                data=data.get("data", {}),
+                context=data.get("context", {}),
+                format=data.get("format", "summary"),
+            )
+            return {"success": True, "report": report.to_dict() if hasattr(report, 'to_dict') else report}
+        elif action == "report":
+            findings = ig.get_report(data.get("report_id", ""))
+            return {"success": True, "findings": findings.to_dict() if findings else None}
+        elif action == "track":
+            ig.track_event(
+                event_type=data.get("event_type", ""),
+                payload=data.get("payload", {}),
+            )
+            return {"success": True, "tracked": data.get("event_type")}
+        elif action == "list_reports":
+            reports = ig.list_reports(limit=data.get("limit", 20))
+            return {"success": True, "reports": [r.to_dict() for r in reports]}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_provider_switch_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.agent.agent_provider_switch import get_provider_switch
+        ps = get_provider_switch()
+        if action == "stats":
+            return {"success": True, "stats": ps.get_stats()}
+        elif action == "list_providers":
+            providers = ps.list_providers()
+            return {"success": True, "providers": [p.to_dict() for p in providers]}
+        elif action == "switch_provider":
+            result = ps.switch_provider(
+                provider_id=data.get("provider_id", ""),
+                reason=data.get("reason", "manual"),
+            )
+            return {"success": True, "switched": result.to_dict() if hasattr(result, 'to_dict') else result}
+        elif action == "get_active":
+            active = ps.get_active_provider()
+            return {"success": True, "provider": active.to_dict() if active else None}
+        elif action == "evaluate_providers":
+            scores = ps.evaluate_providers()
+            return {"success": True, "scores": scores}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_event_sheet_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.engine.event_sheet import get_event_sheet_system
+        es = get_event_sheet_system()
+        if action == "stats":
+            return {"success": True, "stats": es.get_stats()}
+        elif action == "list_sheets":
+            sheets = es.list_sheets()
+            return {"success": True, "sheets": [s.to_dict() for s in sheets]}
+        elif action == "create_sheet":
+            sheet = es.create_sheet(
+                name=data.get("name", ""),
+                event_type=data.get("event_type", "game"),
+                conditions=data.get("conditions", []),
+                actions=data.get("actions", []),
+            )
+            return {"success": True, "sheet": sheet.to_dict()}
+        elif action == "execute_sheet":
+            result = es.execute_sheet(
+                sheet_id=data.get("sheet_id", ""),
+                context=data.get("context", {}),
+            )
+            return {"success": True, "result": result}
+        elif action == "delete_sheet":
+            es.delete_sheet(data.get("sheet_id", ""))
+            return {"success": True, "deleted": data.get("sheet_id")}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_resource_serializer_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.engine.resource_serializer import get_resource_serializer
+        rs = get_resource_serializer()
+        if action == "stats":
+            return {"success": True, "stats": rs.get_stats()}
+        elif action == "serialize":
+            result = rs.serialize(
+                resource_type=data.get("resource_type", ""),
+                data=data.get("data", {}),
+                format=data.get("format", "json"),
+            )
+            return {"success": True, "serialized": result}
+        elif action == "deserialize":
+            result = rs.deserialize(
+                resource_type=data.get("resource_type", ""),
+                payload=data.get("payload", ""),
+                format=data.get("format", "json"),
+            )
+            return {"success": True, "deserialized": result}
+        elif action == "list_formats":
+            formats = rs.list_formats()
+            return {"success": True, "formats": formats}
+        elif action == "validate":
+            valid = rs.validate(data.get("payload", ""), data.get("resource_type", ""))
+            return {"success": True, "valid": valid}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_input_map_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.engine.input_map_system import get_input_map_system
+        im = get_input_map_system()
+        if action == "stats":
+            return {"success": True, "stats": im.get_stats()}
+        elif action == "list_mappings":
+            mappings = im.list_mappings()
+            return {"success": True, "mappings": [m.to_dict() for m in mappings]}
+        elif action == "create_mapping":
+            mapping = im.create_mapping(
+                name=data.get("name", ""),
+                input_keys=data.get("input_keys", []),
+                output_action=data.get("output_action", ""),
+                context=data.get("context", "default"),
+            )
+            return {"success": True, "mapping": mapping.to_dict()}
+        elif action == "get_binding":
+            binding = im.get_binding(data.get("action_name", ""))
+            return {"success": True, "binding": binding.to_dict() if binding else None}
+        elif action == "set_binding":
+            im.set_binding(
+                action_name=data.get("action_name", ""),
+                keys=data.get("keys", []),
+            )
+            return {"success": True, "action": data.get("action_name")}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_animation_tree_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.engine.animation_tree import get_animation_tree_system
+        at = get_animation_tree_system()
+        if action == "stats":
+            return {"success": True, "stats": at.get_stats()}
+        elif action == "list_trees":
+            trees = at.list_trees()
+            return {"success": True, "trees": [t.to_dict() for t in trees]}
+        elif action == "create_tree":
+            tree = at.create_tree(
+                name=data.get("name", ""),
+                root_node=data.get("root_node", {}),
+                nodes=data.get("nodes", []),
+            )
+            return {"success": True, "tree": tree.to_dict()}
+        elif action == "play_node":
+            at.play_node(
+                tree_id=data.get("tree_id", ""),
+                node_id=data.get("node_id", ""),
+                blend_time=data.get("blend_time", 0.2),
+            )
+            return {"success": True, "playing": data.get("node_id")}
+        elif action == "set_parameter":
+            at.set_parameter(
+                tree_id=data.get("tree_id", ""),
+                param_name=data.get("param_name", ""),
+                value=data.get("value", 0.0),
+            )
+            return {"success": True, "parameter_set": data.get("param_name")}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_custom_object_types_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.engine.custom_object_types import get_custom_object_types_system
+        cot = get_custom_object_types_system()
+        if action == "stats":
+            return {"success": True, "stats": cot.get_stats()}
+        elif action == "list_types":
+            types = cot.list_types()
+            return {"success": True, "types": [t.to_dict() for t in types]}
+        elif action == "register_type":
+            type_id = cot.register_type(
+                name=data.get("name", ""),
+                base_type=data.get("base_type", "GameObject"),
+                properties=data.get("properties", {}),
+                methods=data.get("methods", []),
+            )
+            return {"success": True, "type_id": type_id}
+        elif action == "get_type":
+            typ = cot.get_type(data.get("type_id", ""))
+            return {"success": True, "type": typ.to_dict() if typ else None}
+        elif action == "create_instance":
+            instance = cot.create_instance(
+                type_id=data.get("type_id", ""),
+                properties=data.get("properties", {}),
+            )
+            return {"success": True, "instance": instance.to_dict()}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+def handle_tile_map_optimizer_ws(data: Dict) -> Dict:
+    action = data.get("action", "stats")
+    try:
+        from sparkai.engine.tile_map_optimizer import get_tile_map_optimizer
+        tmo = get_tile_map_optimizer()
+        if action == "stats":
+            return {"success": True, "stats": tmo.get_stats()}
+        elif action == "optimize":
+            result = tmo.optimize(
+                map_id=data.get("map_id", "default"),
+                strategy=data.get("strategy", "auto"),
+                aggressive=data.get("aggressive", False),
+            )
+            return {"success": True, "result": result.to_dict() if hasattr(result, 'to_dict') else result}
+        elif action == "analyze_chunks":
+            chunks = tmo.analyze_chunks(
+                map_id=data.get("map_id", "default"),
+                chunk_size=data.get("chunk_size", 16),
+            )
+            return {"success": True, "chunks": chunks}
+        elif action == "list_chunks":
+            chunks = tmo.list_chunks(data.get("map_id", "default"))
+            return {"success": True, "chunks": [c.to_dict() for c in chunks]}
+        elif action == "estimate_memory":
+            usage = tmo.estimate_memory_usage(data.get("map_id", "default"))
+            return {"success": True, "memory_usage": usage}
+        return {"success": False, "error": f"Unknown action: {action}"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+WS_HANDLERS.update({
+    "session_snapshot": handle_session_snapshot_ws,
+    "trajectory_compressor": handle_trajectory_compressor_ws,
+    "skills_hub": handle_skills_hub_ws,
+    "personality_system": handle_personality_system_ws,
+    "insights_generator": handle_insights_generator_ws,
+    "provider_switch": handle_provider_switch_ws,
+    "event_sheet": handle_event_sheet_ws,
+    "resource_serializer": handle_resource_serializer_ws,
+    "input_map": handle_input_map_ws,
+    "animation_tree": handle_animation_tree_ws,
+    "custom_object_types": handle_custom_object_types_ws,
+    "tile_map_optimizer": handle_tile_map_optimizer_ws,
+})
