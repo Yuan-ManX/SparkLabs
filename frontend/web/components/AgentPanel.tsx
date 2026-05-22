@@ -6,8 +6,19 @@ import AgentMemoryGraphPanel from './AgentMemoryGraphPanel';
 import AgentContextCompressorPanel from './AgentContextCompressorPanel';
 import AgentToolForgePanel from './AgentToolForgePanel';
 import AgentGatewayPanel from './AgentGatewayPanel';
+import SessionSnapshotPanel from './SessionSnapshotPanel';
+import TrajectoryCompressorPanel from './TrajectoryCompressorPanel';
+import SkillsHubPanel from './SkillsHubPanel';
+import PersonalitySystemPanel from './PersonalitySystemPanel';
+import InsightsGeneratorPanel from './InsightsGeneratorPanel';
+import ProviderSwitchPanel from './ProviderSwitchPanel';
+import ResourceSerializerPanel from './ResourceSerializerPanel';
+import InputMapPanel from './InputMapPanel';
+import AnimationTreePanel from './AnimationTreePanel';
+import CustomObjectTypesPanel from './CustomObjectTypesPanel';
+import TileMapOptimizerPanel from './TileMapOptimizerPanel';
 
-type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway';
+type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway' | 'session_snapshot' | 'trajectory_compressor' | 'skills_hub' | 'personality_system' | 'insights_generator' | 'provider_switch' | 'resource_serializer' | 'input_map' | 'animation_tree' | 'custom_object_types' | 'tile_map_optimizer';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -23,6 +34,17 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'context_compressor', label: 'Context', icon: '📦' },
   { id: 'tool_forge', label: 'Tools', icon: '🔨' },
   { id: 'gateway', label: 'Gateway', icon: '🌐' },
+  { id: 'session_snapshot', label: 'Snapshots', icon: '💾' },
+  { id: 'trajectory_compressor', label: 'Trajectory', icon: '📐' },
+  { id: 'skills_hub', label: 'Skills Hub', icon: '🏪' },
+  { id: 'personality_system', label: 'Personality', icon: '🎭' },
+  { id: 'insights_generator', label: 'Insights', icon: '📊' },
+  { id: 'provider_switch', label: 'Providers', icon: '🔄' },
+  { id: 'resource_serializer', label: 'Resources', icon: '📦' },
+  { id: 'input_map', label: 'Input Map', icon: '🎮' },
+  { id: 'animation_tree', label: 'Anim Tree', icon: '🌳' },
+  { id: 'custom_object_types', label: 'Obj Types', icon: '🧩' },
+  { id: 'tile_map_optimizer', label: 'Tile Maps', icon: '🗺️' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -461,6 +483,17 @@ const AgentPanel: React.FC = () => {
       case 'context_compressor': return <AgentContextCompressorPanel />;
       case 'tool_forge': return <AgentToolForgePanel />;
       case 'gateway': return <AgentGatewayPanel />;
+      case 'session_snapshot': return <SessionSnapshotPanel />;
+      case 'trajectory_compressor': return <TrajectoryCompressorPanel />;
+      case 'skills_hub': return <SkillsHubPanel />;
+      case 'personality_system': return <PersonalitySystemPanel />;
+      case 'insights_generator': return <InsightsGeneratorPanel />;
+      case 'provider_switch': return <ProviderSwitchPanel />;
+      case 'resource_serializer': return <ResourceSerializerPanel />;
+      case 'input_map': return <InputMapPanel />;
+      case 'animation_tree': return <AnimationTreePanel />;
+      case 'custom_object_types': return <CustomObjectTypesPanel />;
+      case 'tile_map_optimizer': return <TileMapOptimizerPanel />;
       default: return null;
     }
   };
