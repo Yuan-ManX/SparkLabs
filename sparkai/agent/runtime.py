@@ -300,6 +300,18 @@ from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_expor
 from sparkai.engine.engine_server_architecture import GameServerPool, get_server_pool
 from sparkai.engine.engine_gizmo_system import GizmoSystem, get_gizmo_system
 from sparkai.engine.engine_pivot_system import PivotSystem, get_pivot_system
+from sparkai.agent.agent_session_snapshot import SessionSnapshotSystem, get_session_snapshot
+from sparkai.agent.agent_trajectory_compressor import TrajectoryCompressor, get_trajectory_compressor
+from sparkai.agent.agent_skills_hub import SkillsHub, get_skills_hub
+from sparkai.agent.agent_personality_system import PersonalitySystem, get_personality_system
+from sparkai.agent.agent_insights_generator import InsightsGenerator, get_insights_generator
+from sparkai.agent.agent_provider_switch import ProviderSwitch, get_provider_switch
+from sparkai.engine.engine_event_sheet import EventSheetRuntime, get_event_sheet
+from sparkai.engine.engine_resource_serializer import ResourceSerializer, get_resource_serializer
+from sparkai.engine.engine_input_map import InputMapSystem, get_input_map
+from sparkai.engine.engine_animation_tree import AnimationTreeRuntime, get_animation_tree
+from sparkai.engine.engine_custom_object_types import CustomObjectTypeSystem, get_custom_object_types
+from sparkai.engine.engine_tile_map_optimizer import TileMapOptimizer, get_tile_map_optimizer
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -721,6 +733,30 @@ class AgentRuntime:
         self._network_layer: Optional[NetworkLayer] = None
         self._behavior_runtime: Optional[BehaviorRuntime] = None
         self._save_system: Optional[SaveSystem] = None
+        self._session_snapshot: Optional[SessionSnapshotSystem] = None
+        self._trajectory_compressor: Optional[TrajectoryCompressor] = None
+        self._skills_hub: Optional[SkillsHub] = None
+        self._personality_system: Optional[PersonalitySystem] = None
+        self._insights_generator: Optional[InsightsGenerator] = None
+        self._provider_switch: Optional[ProviderSwitch] = None
+        self._event_sheet: Optional[EventSheetRuntime] = None
+        self._resource_serializer: Optional[ResourceSerializer] = None
+        self._input_map: Optional[InputMapSystem] = None
+        self._animation_tree: Optional[AnimationTreeRuntime] = None
+        self._custom_object_types: Optional[CustomObjectTypeSystem] = None
+        self._tile_map_optimizer: Optional[TileMapOptimizer] = None
+        self._session_snapshot_ok: bool = False
+        self._trajectory_compressor_ok: bool = False
+        self._skills_hub_ok: bool = False
+        self._personality_system_ok: bool = False
+        self._insights_generator_ok: bool = False
+        self._provider_switch_ok: bool = False
+        self._event_sheet_ok: bool = False
+        self._resource_serializer_ok: bool = False
+        self._input_map_ok: bool = False
+        self._animation_tree_ok: bool = False
+        self._custom_object_types_ok: bool = False
+        self._tile_map_optimizer_ok: bool = False
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -988,6 +1024,30 @@ class AgentRuntime:
             self._save_system = get_save_system()
             self._scene_streamer = get_scene_streamer()
             self._project_exporter = get_project_exporter()
+            self._session_snapshot = get_session_snapshot()
+            self._trajectory_compressor = get_trajectory_compressor()
+            self._skills_hub = get_skills_hub()
+            self._personality_system = get_personality_system()
+            self._insights_generator = get_insights_generator()
+            self._provider_switch = get_provider_switch()
+            self._event_sheet = get_event_sheet()
+            self._resource_serializer = get_resource_serializer()
+            self._input_map = get_input_map()
+            self._animation_tree = get_animation_tree()
+            self._custom_object_types = get_custom_object_types()
+            self._tile_map_optimizer = get_tile_map_optimizer()
+            self._session_snapshot_ok = self._session_snapshot is not None
+            self._trajectory_compressor_ok = self._trajectory_compressor is not None
+            self._skills_hub_ok = self._skills_hub is not None
+            self._personality_system_ok = self._personality_system is not None
+            self._insights_generator_ok = self._insights_generator is not None
+            self._provider_switch_ok = self._provider_switch is not None
+            self._event_sheet_ok = self._event_sheet is not None
+            self._resource_serializer_ok = self._resource_serializer is not None
+            self._input_map_ok = self._input_map is not None
+            self._animation_tree_ok = self._animation_tree is not None
+            self._custom_object_types_ok = self._custom_object_types is not None
+            self._tile_map_optimizer_ok = self._tile_map_optimizer is not None
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -1207,6 +1267,18 @@ class AgentRuntime:
             self._integration.register_subsystem("save_system", self._save_system)
             self._integration.register_subsystem("scene_streamer", self._scene_streamer)
             self._integration.register_subsystem("project_exporter", self._project_exporter)
+            self._integration.register_subsystem("session_snapshot", self._session_snapshot)
+            self._integration.register_subsystem("trajectory_compressor", self._trajectory_compressor)
+            self._integration.register_subsystem("skills_hub", self._skills_hub)
+            self._integration.register_subsystem("personality_system", self._personality_system)
+            self._integration.register_subsystem("insights_generator", self._insights_generator)
+            self._integration.register_subsystem("provider_switch", self._provider_switch)
+            self._integration.register_subsystem("event_sheet", self._event_sheet)
+            self._integration.register_subsystem("resource_serializer", self._resource_serializer)
+            self._integration.register_subsystem("input_map", self._input_map)
+            self._integration.register_subsystem("animation_tree", self._animation_tree)
+            self._integration.register_subsystem("custom_object_types", self._custom_object_types)
+            self._integration.register_subsystem("tile_map_optimizer", self._tile_map_optimizer)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -2469,6 +2541,18 @@ class AgentRuntime:
                 "network_layer": self._network_layer is not None,
                 "behavior_runtime": self._behavior_runtime is not None,
                 "save_system": self._save_system is not None,
+                "session_snapshot": self._session_snapshot is not None,
+                "trajectory_compressor": self._trajectory_compressor is not None,
+                "skills_hub": self._skills_hub is not None,
+                "personality_system": self._personality_system is not None,
+                "insights_generator": self._insights_generator is not None,
+                "provider_switch": self._provider_switch is not None,
+                "event_sheet": self._event_sheet is not None,
+                "resource_serializer": self._resource_serializer is not None,
+                "input_map": self._input_map is not None,
+                "animation_tree": self._animation_tree is not None,
+                "custom_object_types": self._custom_object_types is not None,
+                "tile_map_optimizer": self._tile_map_optimizer is not None,
             },
         }
 
@@ -2942,6 +3026,30 @@ class AgentRuntime:
             status["behavior_runtime_stats"] = self._behavior_runtime.get_stats()
         if self._save_system:
             status["save_system_stats"] = self._save_system.get_stats()
+        if self._session_snapshot:
+            status["session_snapshot_stats"] = self._session_snapshot.get_stats()
+        if self._trajectory_compressor:
+            status["trajectory_compressor_stats"] = self._trajectory_compressor.get_stats()
+        if self._skills_hub:
+            status["skills_hub_stats"] = self._skills_hub.get_stats()
+        if self._personality_system:
+            status["personality_system_stats"] = self._personality_system.get_stats()
+        if self._insights_generator:
+            status["insights_generator_stats"] = self._insights_generator.get_stats()
+        if self._provider_switch:
+            status["provider_switch_stats"] = self._provider_switch.get_stats()
+        if self._event_sheet:
+            status["event_sheet_stats"] = self._event_sheet.get_stats()
+        if self._resource_serializer:
+            status["resource_serializer_stats"] = self._resource_serializer.get_stats()
+        if self._input_map:
+            status["input_map_stats"] = self._input_map.get_stats()
+        if self._animation_tree:
+            status["animation_tree_stats"] = self._animation_tree.get_stats()
+        if self._custom_object_types:
+            status["custom_object_types_stats"] = self._custom_object_types.get_stats()
+        if self._tile_map_optimizer:
+            status["tile_map_optimizer_stats"] = self._tile_map_optimizer.get_stats()
         return status
 
 
