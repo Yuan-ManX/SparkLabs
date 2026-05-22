@@ -179,6 +179,18 @@ from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
 from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
 from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
 from sparkai.agent.agent_gateway import AgentGateway, get_gateway
+from sparkai.agent.agent_session_snapshot import get_session_snapshot
+from sparkai.agent.agent_trajectory_compressor import get_trajectory_compressor
+from sparkai.agent.agent_skills_hub import get_skills_hub
+from sparkai.agent.agent_personality_system import get_personality_system
+from sparkai.agent.agent_insights_generator import get_insights_generator
+from sparkai.agent.agent_provider_switch import get_provider_switch
+from sparkai.engine.engine_event_sheet import get_event_sheet
+from sparkai.engine.engine_resource_serializer import get_resource_serializer
+from sparkai.engine.engine_input_map import get_input_map
+from sparkai.engine.engine_animation_tree import get_animation_tree
+from sparkai.engine.engine_custom_object_types import get_custom_object_types
+from sparkai.engine.engine_tile_map_optimizer import get_tile_map_optimizer
 
 router = APIRouter()
 
@@ -2143,6 +2155,18 @@ _memory_graph = get_memory_graph()
 _context_compressor = get_context_compressor()
 _tool_forge = get_tool_forge()
 _gateway = get_gateway()
+_session_snapshot = get_session_snapshot()
+_trajectory_compressor = get_trajectory_compressor()
+_skills_hub = get_skills_hub()
+_personality_system = get_personality_system()
+_insights_generator = get_insights_generator()
+_provider_switch = get_provider_switch()
+_event_sheet = get_event_sheet()
+_resource_serializer = get_resource_serializer()
+_input_map = get_input_map()
+_animation_tree = get_animation_tree()
+_custom_object_types = get_custom_object_types()
+_tile_map_optimizer = get_tile_map_optimizer()
 
 
 def _init_new_subsystems():
@@ -17062,3 +17086,615 @@ async def gateway_delivery_status(message_id: str = ""):
 @router.get("/gateway/platform-stats")
 async def gateway_platform_stats(platform: str = ""):
     return _gateway.get_platform_stats(platform=platform)
+
+
+# ============================================================
+# Session Snapshot Endpoints
+# ============================================================
+
+@router.get("/session-snapshot/stats")
+async def session_snapshot_stats():
+    return _session_snapshot.get_stats()
+
+@router.post("/session-snapshot/create-snapshot")
+async def session_snapshot_create_snapshot(session_id: str = "", agent_id: str = "", mode: str = "full", label: str = ""):
+    from sparkai.agent.agent_session_snapshot import SnapshotMode
+    try:
+        mode_enum = SnapshotMode[mode.upper()]
+    except (KeyError, AttributeError):
+        mode_enum = SnapshotMode.FULL
+    result = _session_snapshot.create_snapshot(session_id=session_id, agent_id=agent_id, state_data={}, mode=mode_enum, label=label)
+    return result.to_dict() if result else {"error": "Snapshot creation failed"}
+
+@router.post("/session-snapshot/restore-session")
+async def session_snapshot_restore_session(snapshot_id: str = "", session_id: str = ""):
+    result = _session_snapshot.restore_session(snapshot_id=snapshot_id, target_session_id=session_id)
+    return result.to_dict() if result else {"error": "Session restore failed"}
+
+@router.get("/session-snapshot/list-snapshots")
+async def session_snapshot_list_snapshots(session_id: str = "", agent_id: str = "", limit: int = 50):
+    snapshots = _session_snapshot.list_snapshots(session_id=session_id, agent_id=agent_id, limit=limit)
+    return {"snapshots": [s.to_dict() for s in snapshots]}
+
+@router.post("/session-snapshot/create-checkpoint")
+async def session_snapshot_create_checkpoint(session_id: str = "", checkpoint_type: str = "auto", description: str = ""):
+    result = _session_snapshot.create_checkpoint(session_id=session_id, checkpoint_type=checkpoint_type, description=description)
+    return result.to_dict() if result else {"error": "Checkpoint creation failed"}
+
+@router.get("/session-snapshot/compare-snapshots")
+async def session_snapshot_compare_snapshots(snapshot_id_a: str = "", snapshot_id_b: str = ""):
+    result = _session_snapshot.compare_snapshots(snapshot_id_a=snapshot_id_a, snapshot_id_b=snapshot_id_b)
+    return result if result else {"error": "Comparison failed"}
+
+@router.post("/session-snapshot/prune-snapshots")
+async def session_snapshot_prune_snapshots(session_id: str = "", max_age_days: int = 30, max_count: int = 100):
+    removed = _session_snapshot.prune_snapshots(session_id=session_id, max_age_days=max_age_days, max_count=max_count)
+    return {"removed": removed}
+
+
+# ============================================================
+# Trajectory Compressor Endpoints
+# ============================================================
+
+@router.get("/trajectory-compressor/stats")
+async def trajectory_compressor_stats():
+    return _trajectory_compressor.get_stats()
+
+@router.post("/trajectory-compressor/ingest-trajectory")
+async def trajectory_compressor_ingest_trajectory(agent_id: str = "", session_id: str = "", turns: str = "[]"):
+    import json as _json
+    try:
+        turns_data = _json.loads(turns) if turns else []
+    except (ValueError, TypeError):
+        turns_data = []
+    result = _trajectory_compressor.ingest_trajectory(agent_id=agent_id, session_id=session_id, turns=turns_data)
+    return result.to_dict() if result else {"error": "Ingest failed"}
+
+@router.post("/trajectory-compressor/compress")
+async def trajectory_compressor_compress(trajectory_id: str = "", mode: str = "SUMMARIZE"):
+    result = _trajectory_compressor.compress(trajectory_id=trajectory_id, mode=mode)
+    return result.to_dict() if result else {"error": "Compression failed"}
+
+@router.get("/trajectory-compressor/export-training-data")
+async def trajectory_compressor_export_training_data(trajectory_id: str = "", format: str = "CHATML", max_tokens: int = 4096):
+    result = _trajectory_compressor.export_training_data(trajectory_id=trajectory_id, format=format, max_tokens=max_tokens)
+    return result if result else {"error": "Export failed"}
+
+@router.get("/trajectory-compressor/filter-by-relevance")
+async def trajectory_compressor_filter_by_relevance(trajectory_id: str = "", query: str = "", filter: str = "MODERATE"):
+    result = _trajectory_compressor.filter_by_relevance(trajectory_id=trajectory_id, query=query, filter=filter)
+    return {"filtered": [r.to_dict() for r in result]} if result else {"error": "Filter failed"}
+
+@router.get("/trajectory-compressor/estimate-compression-ratio")
+async def trajectory_compressor_estimate_compression_ratio(trajectory_id: str = ""):
+    result = _trajectory_compressor.estimate_compression_ratio(trajectory_id=trajectory_id)
+    return result if result else {"error": "Estimation failed"}
+
+
+# ============================================================
+# Skills Hub Endpoints
+# ============================================================
+
+@router.get("/skills-hub/stats")
+async def skills_hub_stats():
+    return _skills_hub.get_stats()
+
+@router.post("/skills-hub/publish-skill")
+async def skills_hub_publish_skill(name: str = "", description: str = "", category: str = "utility", source_url: str = "", license: str = "MIT", author: str = "", version: str = "1.0.0", tags: str = "", homepage: str = ""):
+    import json as _json
+    try:
+        tags_list = _json.loads(tags) if tags else []
+    except (ValueError, TypeError):
+        tags_list = []
+    from sparkai.agent.agent_skills_hub import SkillCategory, LicenseType
+    try:
+        cat_enum = SkillCategory[category.upper()]
+    except (KeyError, AttributeError):
+        cat_enum = SkillCategory.UTILITY
+    try:
+        lic_enum = LicenseType[license.upper()]
+    except (KeyError, AttributeError):
+        lic_enum = LicenseType.MIT
+    result = _skills_hub.publish_skill(name=name, description=description, category=cat_enum, source_url=source_url, license=lic_enum, author=author, version=version, tags=tags_list, homepage=homepage)
+    return result.to_dict() if result else {"error": "Publish failed"}
+
+@router.post("/skills-hub/install-skill")
+async def skills_hub_install_skill(skill_id: str = "", version: str = ""):
+    result = _skills_hub.install_skill(skill_id=skill_id, version=version)
+    return result.to_dict() if result else {"error": "Install failed"}
+
+@router.get("/skills-hub/search-skills")
+async def skills_hub_search_skills(query: str = "", category: str = "", limit: int = 20):
+    results = _skills_hub.search_skills(query=query, category=category, limit=limit)
+    return {"skills": [s.to_dict() for s in results]}
+
+@router.post("/skills-hub/rate-skill")
+async def skills_hub_rate_skill(skill_id: str = "", rating: int = 0, review: str = ""):
+    result = _skills_hub.rate_skill(skill_id=skill_id, score=rating, review=review)
+    return result.to_dict() if result else {"error": "Rate failed"}
+
+@router.get("/skills-hub/list-installed")
+async def skills_hub_list_installed(category: str = ""):
+    skills = _skills_hub.list_installed(category=category)
+    return {"skills": [s.to_dict() for s in skills]}
+
+@router.get("/skills-hub/check-updates")
+async def skills_hub_check_updates():
+    updates = _skills_hub.check_updates()
+    return {"updates": updates}
+
+
+# ============================================================
+# Personality System Endpoints
+# ============================================================
+
+@router.get("/personality-system/stats")
+async def personality_system_stats():
+    return _personality_system.get_stats()
+
+@router.post("/personality-system/create-profile")
+async def personality_system_create_profile(name: str = "", description: str = "", traits: str = '[["openness", 0.7], ["creativity", 0.8]]', archetype: str = "generalist", style: str = "casual"):
+    import json as _json
+    try:
+        traits_list = _json.loads(traits) if traits else []
+    except (ValueError, TypeError):
+        traits_list = []
+    from sparkai.agent.agent_personality_system import RoleArchetype, InteractionStyle
+    try:
+        arch_enum = RoleArchetype[archetype.upper()]
+    except (KeyError, AttributeError):
+        arch_enum = RoleArchetype.GENERALIST
+    try:
+        style_enum = InteractionStyle[style.upper()]
+    except (KeyError, AttributeError):
+        style_enum = InteractionStyle.CASUAL
+    result = _personality_system.create_profile(name=name, description=description, traits=traits_list, archetype=arch_enum, style=style_enum)
+    return result.to_dict() if result else {"error": "Profile creation failed"}
+
+@router.post("/personality-system/set-trait-weight")
+async def personality_system_set_trait_weight(profile_id: str = "", trait_name: str = "", weight: float = 0.5):
+    result = _personality_system.set_trait_weight(profile_id=profile_id, trait_name=trait_name, weight=weight)
+    return result.to_dict() if result else {"error": "Trait weight update failed"}
+
+@router.post("/personality-system/activate-profile")
+async def personality_system_activate_profile(profile_id: str = "", agent_id: str = ""):
+    result = _personality_system.activate_profile(profile_id=profile_id, agent_id=agent_id)
+    return {"activated": bool(result)}
+
+@router.post("/personality-system/blend-profiles")
+async def personality_system_blend_profiles(profile_ids: str = "", blend_weights: str = "", name: str = "blended"):
+    import json as _json
+    try:
+        pids = _json.loads(profile_ids) if profile_ids else []
+        weights = _json.loads(blend_weights) if blend_weights else None
+    except (ValueError, TypeError):
+        pids = []
+        weights = None
+    result = _personality_system.blend_profiles(profile_ids=pids, weights=weights, name=name)
+    return result.to_dict() if result else {"error": "Blend failed"}
+
+@router.get("/personality-system/suggest-settings")
+async def personality_system_suggest_settings(task_type: str = "creative", agent_count: int = 1):
+    result = _personality_system.suggest_settings(task_type=task_type, agent_count=agent_count)
+    return result if result else {"error": "Suggestion failed"}
+
+@router.get("/personality-system/evaluate-tone")
+async def personality_system_evaluate_tone(profile_id: str = "", prompt: str = ""):
+    result = _personality_system.evaluate_tone(profile_id=profile_id, input_text=prompt)
+    return result if result else {"error": "Evaluation failed"}
+
+
+# ============================================================
+# Insights Generator Endpoints
+# ============================================================
+
+@router.get("/insights-generator/stats")
+async def insights_generator_stats():
+    return _insights_generator.get_stats()
+
+@router.post("/insights-generator/collect-metrics")
+async def insights_generator_collect_metrics(agent_id: str = "", time_range_days: int = 7):
+    result = _insights_generator.collect_metrics(agent_id=agent_id, time_range_days=time_range_days)
+    return {"metrics": [m.to_dict() for m in result]} if result else {"error": "Metric collection failed"}
+
+@router.post("/insights-generator/generate-insights")
+async def insights_generator_generate_insights(agent_id: str = "", min_confidence: float = 0.3):
+    result = _insights_generator.generate_insights(agent_id=agent_id, min_confidence=min_confidence)
+    return {"insights": [i.to_dict() for i in result]} if result else {"error": "Insight generation failed"}
+
+@router.post("/insights-generator/detect-anomalies")
+async def insights_generator_detect_anomalies(agent_id: str = "", lookback_days: int = 14):
+    result = _insights_generator.detect_anomalies(agent_id=agent_id, lookback_days=lookback_days)
+    return {"anomalies": [a.to_dict() for a in result]} if result else {"error": "Anomaly detection failed"}
+
+@router.get("/insights-generator/analyze-trends")
+async def insights_generator_analyze_trends(agent_id: str = "", metric: str = "performance", granularity: str = "daily"):
+    result = _insights_generator.analyze_trends(agent_id=agent_id, metric=metric, granularity=granularity)
+    return result.to_dict() if result else {"error": "Trend analysis failed"}
+
+@router.post("/insights-generator/create-report")
+async def insights_generator_create_report(agent_id: str = "", format: str = "markdown", include_charts: bool = False):
+    result = _insights_generator.create_report(agent_id=agent_id, format=format, include_charts=include_charts)
+    return result.to_dict() if result else {"error": "Report creation failed"}
+
+@router.get("/insights-generator/compare-agents")
+async def insights_generator_compare_agents(agent_ids: str = "", metric: str = "performance"):
+    import json as _json
+    try:
+        aids = _json.loads(agent_ids) if agent_ids else []
+    except (ValueError, TypeError):
+        aids = []
+    result = _insights_generator.compare_agents(agent_ids=aids, metric=metric)
+    return result if result else {"error": "Comparison failed"}
+
+
+# ============================================================
+# Provider Switch Endpoints
+# ============================================================
+
+@router.get("/provider-switch/stats")
+async def provider_switch_stats():
+    return _provider_switch.get_stats()
+
+@router.post("/provider-switch/register-provider")
+async def provider_switch_register_provider(name: str = "", provider_type: str = "openai", base_url: str = "", api_key_ref: str = ""):
+    from sparkai.agent.agent_provider_switch import ProviderType
+    try:
+        pt_enum = ProviderType[provider_type.upper()]
+    except (KeyError, AttributeError):
+        pt_enum = ProviderType.OPENAI
+    result = _provider_switch.register_provider(name=name, provider_type=pt_enum, base_url=base_url, api_key_ref=api_key_ref)
+    return result.to_dict() if result else {"error": "Provider registration failed"}
+
+@router.post("/provider-switch/configure-model")
+async def provider_switch_configure_model(model_id: str = "", provider_id: str = "", cost_per_1k_input: float = 0.0, cost_per_1k_output: float = 0.0, performance_score: float = 0.0, context_window: int = 4096):
+    result = _provider_switch.configure_model(model_id=model_id, provider_id=provider_id, cost_per_1k_input=cost_per_1k_input, cost_per_1k_output=cost_per_1k_output, performance_score=performance_score, context_window=context_window)
+    return result.to_dict() if result else {"error": "Model configuration failed"}
+
+@router.get("/provider-switch/auto-select-model")
+async def provider_switch_auto_select_model(task_description: str = "", budget: float = 0.0):
+    result = _provider_switch.auto_select_model(task_description=task_description, budget=budget)
+    return result if result else {"error": "Auto-select failed"}
+
+@router.post("/provider-switch/handle-failover")
+async def provider_switch_handle_failover(failed_model_id: str = "", request_id: str = ""):
+    result = _provider_switch.handle_failover(failed_model_id=failed_model_id, request_id=request_id)
+    return result if result else {"error": "Failover failed"}
+
+@router.post("/provider-switch/record-usage")
+async def provider_switch_record_usage(model_id: str = "", tokens_in: int = 0, tokens_out: int = 0, duration: float = 0.0):
+    result = _provider_switch.record_usage(model_id=model_id, tokens_in=tokens_in, tokens_out=tokens_out, duration=duration)
+    return result.to_dict() if result else {"error": "Usage recording failed"}
+
+@router.get("/provider-switch/list-providers")
+async def provider_switch_list_providers(status: str = ""):
+    providers = _provider_switch.list_providers(status=status)
+    return {"providers": [p.to_dict() for p in providers]}
+
+
+# ============================================================
+# Event Sheet Endpoints
+# ============================================================
+
+@router.get("/event-sheet/stats")
+async def event_sheet_stats():
+    return _event_sheet.get_stats()
+
+@router.post("/event-sheet/create-sheet")
+async def event_sheet_create_sheet(name: str = "", description: str = "", linked_scene: str = ""):
+    result = _event_sheet.create_sheet(name=name, description=description, linked_scene=linked_scene)
+    return result.to_dict() if result else {"error": "Sheet creation failed"}
+
+@router.post("/event-sheet/add-event")
+async def event_sheet_add_event(sheet_id: str = "", event_type: str = "trigger", parent_event_id: str = ""):
+    from sparkai.engine.engine_event_sheet import EventType
+    try:
+        et_enum = EventType[event_type.upper()]
+    except (KeyError, AttributeError):
+        et_enum = EventType.TRIGGER
+    result = _event_sheet.add_event(sheet_id=sheet_id, event_type=et_enum, parent_event_id=parent_event_id if parent_event_id else None)
+    return result.to_dict() if result else {"error": "Add event failed"}
+
+@router.post("/event-sheet/add-condition")
+async def event_sheet_add_condition(event_id: str = "", property: str = "", operator: str = "equals", value: str = ""):
+    from sparkai.engine.engine_event_sheet import ConditionOperator
+    try:
+        op_enum = ConditionOperator[operator.upper()]
+    except (KeyError, AttributeError):
+        op_enum = ConditionOperator.EQUALS
+    result = _event_sheet.add_condition(event_id=event_id, property=property, operator=op_enum, value=value)
+    return result.to_dict() if result else {"error": "Add condition failed"}
+
+@router.post("/event-sheet/add-action")
+async def event_sheet_add_action(event_id: str = "", action_type: str = "execute", target: str = "", parameters: str = "{}"):
+    import json as _json
+    try:
+        params = _json.loads(parameters) if parameters else {}
+    except (ValueError, TypeError):
+        params = {}
+    from sparkai.engine.engine_event_sheet import ActionType
+    try:
+        at_enum = ActionType[action_type.upper()]
+    except (KeyError, AttributeError):
+        at_enum = ActionType.EXECUTE
+    result = _event_sheet.add_action(event_id=event_id, action_type=at_enum, target=target, parameters=params)
+    return result.to_dict() if result else {"error": "Add action failed"}
+
+@router.get("/event-sheet/evaluate-sheet")
+async def event_sheet_evaluate_sheet(sheet_id: str = "", game_state: str = "{}"):
+    import json as _json
+    try:
+        ctx = _json.loads(game_state) if game_state else {}
+    except (ValueError, TypeError):
+        ctx = {}
+    result = _event_sheet.evaluate_sheet(sheet_id=sheet_id, game_state=ctx)
+    return result if result else {"error": "Evaluation failed"}
+
+@router.get("/event-sheet/export-sheet")
+async def event_sheet_export_sheet(sheet_id: str = ""):
+    result = _event_sheet.export_event_sheet(sheet_id=sheet_id)
+    return result if result else {"error": "Export failed"}
+
+
+# ============================================================
+# Resource Serializer Endpoints
+# ============================================================
+
+@router.get("/resource-serializer/stats")
+async def resource_serializer_stats():
+    return _resource_serializer.get_stats()
+
+@router.post("/resource-serializer/register-resource")
+async def resource_serializer_register_resource(path: str = "", resource_type: str = "texture", metadata: str = "{}"):
+    import json as _json
+    try:
+        metadata_data = _json.loads(metadata) if metadata else {}
+    except (ValueError, TypeError):
+        metadata_data = {}
+    from sparkai.engine.engine_resource_serializer import ResourceType
+    try:
+        rt_enum = ResourceType[resource_type.upper()]
+    except (KeyError, AttributeError):
+        rt_enum = ResourceType.TEXTURE
+    result = _resource_serializer.register_resource(path=path, resource_type=rt_enum, metadata=metadata_data)
+    return result.to_dict() if result else {"error": "Resource registration failed"}
+
+@router.post("/resource-serializer/serialize")
+async def resource_serializer_serialize(resource_id: str = "", format: str = "json", compress: bool = False):
+    from sparkai.engine.engine_resource_serializer import SerializationFormat
+    try:
+        fmt_enum = SerializationFormat[format.upper()]
+    except (KeyError, AttributeError):
+        fmt_enum = SerializationFormat.JSON
+    result = _resource_serializer.serialize(resource_id=resource_id, format=fmt_enum, compress=compress)
+    return result.to_dict() if result else {"error": "Serialization failed"}
+
+@router.post("/resource-serializer/deserialize")
+async def resource_serializer_deserialize(data: str = "", format: str = "json", compressed: bool = False):
+    encoded = data.encode("utf-8") if data else b"{}"
+    from sparkai.engine.engine_resource_serializer import SerializationFormat
+    try:
+        fmt_enum = SerializationFormat[format.upper()]
+    except (KeyError, AttributeError):
+        fmt_enum = SerializationFormat.JSON
+    result = _resource_serializer.deserialize(data=encoded, format=fmt_enum, compressed=compressed)
+    return result.to_dict() if result else {"error": "Deserialization failed"}
+
+@router.post("/resource-serializer/import-bundle")
+async def resource_serializer_import_bundle(bundle_data: str = "{}"):
+    import json as _json
+    try:
+        bd = _json.loads(bundle_data)
+    except (ValueError, TypeError):
+        bd = {}
+    result = _resource_serializer.import_bundle(bundle_data=bd)
+    return result.to_dict() if result else {"error": "Import failed"}
+
+@router.get("/resource-serializer/export-bundle")
+async def resource_serializer_export_bundle(resource_ids: str = "", name: str = "export", description: str = ""):
+    import json as _json
+    try:
+        rids = _json.loads(resource_ids) if resource_ids else []
+    except (ValueError, TypeError):
+        rids = []
+    result = _resource_serializer.export_bundle(resource_ids=rids, name=name, description=description)
+    return result.to_dict() if result else {"error": "Export failed"}
+
+@router.get("/resource-serializer/build-dependency-graph")
+async def resource_serializer_build_dependency_graph(resource_id: str = ""):
+    result = _resource_serializer.build_dependency_graph(resource_id=resource_id)
+    return result if result else {"error": "Dependency graph build failed"}
+
+
+# ============================================================
+# Input Map Endpoints
+# ============================================================
+
+@router.get("/input-map/stats")
+async def input_map_stats():
+    return _input_map.get_stats()
+
+@router.post("/input-map/define-action")
+async def input_map_define_action(name: str = "", action_type: str = "press", default_bindings: str = ""):
+    import json as _json
+    try:
+        bindings = _json.loads(default_bindings) if default_bindings else []
+    except (ValueError, TypeError):
+        bindings = []
+    from sparkai.engine.engine_input_map import InputActionType
+    try:
+        at_enum = InputActionType[action_type.upper()]
+    except (KeyError, AttributeError):
+        try:
+            at_enum = InputActionType(action_type.lower())
+        except (ValueError, KeyError):
+            at_enum = InputActionType.PRESS
+    result = _input_map.define_action(name=name, action_type=at_enum, default_bindings=bindings if bindings else None)
+    return result.to_dict() if result else {"error": "Action definition failed"}
+
+@router.post("/input-map/bind-action")
+async def input_map_bind_action(action_id: str = "", device: str = "keyboard", input_code: str = "", modifiers: str = "", scale: float = 1.0, invert: bool = False):
+    import json as _json
+    try:
+        mods = _json.loads(modifiers) if modifiers else []
+    except (ValueError, TypeError):
+        mods = []
+    from sparkai.engine.engine_input_map import InputDevice
+    try:
+        dev_enum = InputDevice[device.upper()]
+    except (KeyError, AttributeError):
+        dev_enum = InputDevice.KEYBOARD
+    result = _input_map.bind_action(action_id=action_id, device=dev_enum, input_code=input_code, modifiers=mods, scale=scale, invert=invert)
+    return {"success": result}
+
+@router.post("/input-map/create-context")
+async def input_map_create_context(name: str = "", priority: int = 0):
+    result = _input_map.create_context(name=name, priority=priority)
+    return result.to_dict() if result else {"error": "Context creation failed"}
+
+@router.post("/input-map/push-context")
+async def input_map_push_context(context_id: str = ""):
+    result = _input_map.push_context(context_id=context_id)
+    return {"pushed": result}
+
+@router.get("/input-map/process-input")
+async def input_map_process_input(device: str = "keyboard", input_code: str = "", value: float = 1.0):
+    from sparkai.engine.engine_input_map import InputDevice
+    try:
+        dev_enum = InputDevice[device.upper()]
+    except (KeyError, AttributeError):
+        dev_enum = InputDevice.KEYBOARD
+    result = _input_map.process_raw_input(device=dev_enum, input_code=input_code, value=value)
+    return {"events": result} if result else {"error": "Input processing failed"}
+
+@router.get("/input-map/export-profile")
+async def input_map_export_profile(profile_name: str = "", device: str = "keyboard"):
+    result = _input_map.export_profile(profile_name=profile_name, device=device)
+    return result if result else {"error": "Profile export failed"}
+
+
+# ============================================================
+# Animation Tree Endpoints
+# ============================================================
+
+@router.get("/animation-tree/stats")
+async def animation_tree_stats():
+    return _animation_tree.get_stats()
+
+@router.post("/animation-tree/create-tree")
+async def animation_tree_create_tree(name: str = "", skeleton_ref: str = ""):
+    result = _animation_tree.create_tree(name=name, skeleton_ref=skeleton_ref)
+    return result.to_dict() if result else {"error": "Tree creation failed"}
+
+@router.post("/animation-tree/add-clip")
+async def animation_tree_add_clip(tree_id: str = "", name: str = "", duration: float = 1.0, fps: float = 30.0):
+    result = _animation_tree.add_clip(tree_id=tree_id, name=name, duration=duration, fps=fps)
+    return result.to_dict() if result else {"error": "Add clip failed"}
+
+@router.post("/animation-tree/create-blend-node")
+async def animation_tree_create_blend_node(tree_id: str = "", parent_id: str = "", blend_mode: str = "linear"):
+    result = _animation_tree.create_blend_node(tree_id=tree_id, parent_id=parent_id if parent_id else "", blend_mode=blend_mode)
+    return result.to_dict() if result else {"error": "Blend node creation failed"}
+
+@router.post("/animation-tree/add-transition")
+async def animation_tree_add_transition(from_node_id: str = "", to_node_id: str = "", condition_type: str = "time", duration: float = 0.3):
+    result = _animation_tree.add_transition(from_node_id=from_node_id, to_node_id=to_node_id, condition_type=condition_type, duration=duration)
+    return result.to_dict() if result else {"error": "Transition add failed"}
+
+@router.get("/animation-tree/play")
+async def animation_tree_play(tree_id: str = "", start_node_id: str = ""):
+    result = _animation_tree.play(tree_id=tree_id, start_node_id=start_node_id)
+    return result if result else {"error": "Play failed"}
+
+@router.get("/animation-tree/compute-pose")
+async def animation_tree_compute_pose(tree_id: str = "", delta_time: float = 0.016):
+    result = _animation_tree.compute_pose(tree_id=tree_id, delta_time=delta_time)
+    return result if result else {"error": "Pose computation failed"}
+
+
+# ============================================================
+# Custom Object Types Endpoints
+# ============================================================
+
+@router.get("/custom-object-types/stats")
+async def custom_object_types_stats():
+    return _custom_object_types.get_stats()
+
+@router.post("/custom-object-types/define-type")
+async def custom_object_types_define_type(name: str = "", base_type: str = "sprite", description: str = "", parent_type_id: str = ""):
+    result = _custom_object_types.define_type(name=name, base_type=base_type, description=description, parent_type_id=parent_type_id)
+    return result.to_dict() if result else {"error": "Type definition failed"}
+
+@router.post("/custom-object-types/add-property")
+async def custom_object_types_add_property(type_id: str = "", name: str = "", property_type: str = "string", default_value: str = ""):
+    import json as _json
+    try:
+        dv = _json.loads(default_value) if default_value else ""
+    except (ValueError, TypeError):
+        dv = default_value
+    result = _custom_object_types.add_property(type_id=type_id, name=name, property_type=property_type, default_value=dv)
+    return result.to_dict() if result else {"error": "Add property failed"}
+
+@router.post("/custom-object-types/attach-behavior")
+async def custom_object_types_attach_behavior(type_id: str = "", behavior_name: str = "", parameters: str = "{}"):
+    import json as _json
+    try:
+        params = _json.loads(parameters) if parameters else {}
+    except (ValueError, TypeError):
+        params = {}
+    result = _custom_object_types.attach_behavior(type_id=type_id, behavior_name=behavior_name, parameters=params)
+    return result.to_dict() if result else {"error": "Attach behavior failed"}
+
+@router.post("/custom-object-types/create-instance")
+async def custom_object_types_create_instance(type_id: str = "", scene_id: str = ""):
+    result = _custom_object_types.create_instance(type_id=type_id, scene_id=scene_id)
+    return result.to_dict() if result else {"error": "Instance creation failed"}
+
+@router.get("/custom-object-types/list-types")
+async def custom_object_types_list_types(base_type: str = ""):
+    types = _custom_object_types.list_types(base_type=base_type if base_type else None)
+    return {"types": [t.to_dict() for t in types]}
+
+@router.post("/custom-object-types/clone-type")
+async def custom_object_types_clone_type(type_id: str = "", new_name: str = ""):
+    result = _custom_object_types.clone_type(type_id=type_id, new_name=new_name)
+    return result.to_dict() if result else {"error": "Clone failed"}
+
+
+# ============================================================
+# Tile Map Optimizer Endpoints
+# ============================================================
+
+@router.get("/tile-map-optimizer/stats")
+async def tile_map_optimizer_stats():
+    return _tile_map_optimizer.get_stats()
+
+@router.post("/tile-map-optimizer/create-map")
+async def tile_map_optimizer_create_map(name: str = "", width: int = 32, height: int = 32, tile_size: int = 32, orientation: str = "orthogonal"):
+    result = _tile_map_optimizer.create_map(name=name, width=width, height=height, tile_size=tile_size, orientation=orientation)
+    return result.to_dict() if result else {"error": "Map creation failed"}
+
+@router.post("/tile-map-optimizer/add-layer")
+async def tile_map_optimizer_add_layer(map_id: str = "", name: str = "", depth: int = 0, opacity: float = 1.0):
+    result = _tile_map_optimizer.add_layer(map_id=map_id, name=name, depth=depth, opacity=opacity)
+    return result.to_dict() if result else {"error": "Add layer failed"}
+
+@router.post("/tile-map-optimizer/set-tile")
+async def tile_map_optimizer_set_tile(map_id: str = "", layer_id: str = "", x: int = 0, y: int = 0, tile_id: int = 0):
+    result = _tile_map_optimizer.set_tile(map_id=map_id, layer_id=layer_id, x=x, y=y, tile_id=tile_id)
+    return {"success": result}
+
+@router.post("/tile-map-optimizer/fill-region")
+async def tile_map_optimizer_fill_region(map_id: str = "", layer_id: str = "", x1: int = 0, y1: int = 0, x2: int = 0, y2: int = 0, tile_id: int = 0):
+    result = _tile_map_optimizer.fill_region(map_id=map_id, layer_id=layer_id, x1=x1, y1=y1, x2=x2, y2=y2, tile_id=tile_id)
+    return {"filled_count": result}
+
+@router.get("/tile-map-optimizer/partition-chunks")
+async def tile_map_optimizer_partition_chunks(map_id: str = "", chunk_size: int = 16):
+    result = _tile_map_optimizer.partition_chunks(map_id=map_id, chunk_size=chunk_size)
+    return result if result else {"error": "Partition failed"}
+
+@router.post("/tile-map-optimizer/optimize-atlas")
+async def tile_map_optimizer_optimize_atlas(map_id: str = "", strategy: str = "pack", max_texture_size: int = 2048):
+    result = _tile_map_optimizer.optimize_atlas(map_id=map_id, strategy=strategy, max_texture_size=max_texture_size)
+    return result.to_dict() if result else {"error": "Atlas optimization failed"}
