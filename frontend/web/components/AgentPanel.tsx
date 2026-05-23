@@ -17,8 +17,20 @@ import InputMapPanel from './InputMapPanel';
 import AnimationTreePanel from './AnimationTreePanel';
 import CustomObjectTypesPanel from './CustomObjectTypesPanel';
 import TileMapOptimizerPanel from './TileMapOptimizerPanel';
+import ChainOfThoughtPanel from './ChainOfThoughtPanel';
+import ConversationMemoryPanel from './ConversationMemoryPanel';
+import SelfOptimizationPanel from './SelfOptimizationPanel';
+import CollaborationProtocolPanel from './CollaborationProtocolPanel';
+import KnowledgeSynthesisPanel from './KnowledgeSynthesisPanel';
+import CapabilityRegistryPanel from './CapabilityRegistryPanel';
+import PhysicsMaterialPanel from './PhysicsMaterialPanel';
+import GestureRecognizerPanel from './GestureRecognizerPanel';
+import ShadowCastingPanel from './ShadowCastingPanel';
+import EntityBlueprintPanel from './EntityBlueprintPanel';
+import SceneTransitionPanel from './SceneTransitionPanel';
+import AudioLayeringPanel from './AudioLayeringPanel';
 
-type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway' | 'session_snapshot' | 'trajectory_compressor' | 'skills_hub' | 'personality_system' | 'insights_generator' | 'provider_switch' | 'resource_serializer' | 'input_map' | 'animation_tree' | 'custom_object_types' | 'tile_map_optimizer';
+type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway' | 'session_snapshot' | 'trajectory_compressor' | 'skills_hub' | 'personality_system' | 'insights_generator' | 'provider_switch' | 'resource_serializer' | 'input_map' | 'animation_tree' | 'custom_object_types' | 'tile_map_optimizer' | 'chain_of_thought' | 'conversation_memory' | 'self_optimization' | 'collaboration_protocol' | 'knowledge_synthesis' | 'capability_registry' | 'physics_material' | 'gesture_recognizer' | 'shadow_casting' | 'entity_blueprint' | 'scene_transition' | 'audio_layering';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -45,6 +57,18 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'animation_tree', label: 'Anim Tree', icon: '🌳' },
   { id: 'custom_object_types', label: 'Obj Types', icon: '🧩' },
   { id: 'tile_map_optimizer', label: 'Tile Maps', icon: '🗺️' },
+  { id: 'chain_of_thought', label: 'Chain of Thought', icon: '🧠' },
+  { id: 'conversation_memory', label: 'Conv Memory', icon: '💬' },
+  { id: 'self_optimization', label: 'Optimization', icon: '⚡' },
+  { id: 'collaboration_protocol', label: 'Collaboration', icon: '🤝' },
+  { id: 'knowledge_synthesis', label: 'Knowledge', icon: '📚' },
+  { id: 'capability_registry', label: 'Capabilities', icon: '🏷️' },
+  { id: 'physics_material', label: 'Physics', icon: '⚛️' },
+  { id: 'gesture_recognizer', label: 'Gestures', icon: '👆' },
+  { id: 'shadow_casting', label: 'Shadows', icon: '🔦' },
+  { id: 'entity_blueprint', label: 'Blueprints', icon: '📋' },
+  { id: 'scene_transition', label: 'Transitions', icon: '🎬' },
+  { id: 'audio_layering', label: 'Audio Mix', icon: '🔊' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -494,6 +518,18 @@ const AgentPanel: React.FC = () => {
       case 'animation_tree': return <AnimationTreePanel />;
       case 'custom_object_types': return <CustomObjectTypesPanel />;
       case 'tile_map_optimizer': return <TileMapOptimizerPanel />;
+      case 'chain_of_thought': return <ChainOfThoughtPanel />;
+      case 'conversation_memory': return <ConversationMemoryPanel />;
+      case 'self_optimization': return <SelfOptimizationPanel />;
+      case 'collaboration_protocol': return <CollaborationProtocolPanel />;
+      case 'knowledge_synthesis': return <KnowledgeSynthesisPanel />;
+      case 'capability_registry': return <CapabilityRegistryPanel />;
+      case 'physics_material': return <PhysicsMaterialPanel />;
+      case 'gesture_recognizer': return <GestureRecognizerPanel />;
+      case 'shadow_casting': return <ShadowCastingPanel />;
+      case 'entity_blueprint': return <EntityBlueprintPanel />;
+      case 'scene_transition': return <SceneTransitionPanel />;
+      case 'audio_layering': return <AudioLayeringPanel />;
       default: return null;
     }
   };
