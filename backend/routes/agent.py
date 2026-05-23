@@ -191,6 +191,18 @@ from sparkai.engine.engine_input_map import get_input_map
 from sparkai.engine.engine_animation_tree import get_animation_tree
 from sparkai.engine.engine_custom_object_types import get_custom_object_types
 from sparkai.engine.engine_tile_map_optimizer import get_tile_map_optimizer
+from sparkai.agent.agent_chain_of_thought import get_chain_of_thought
+from sparkai.agent.agent_conversation_memory import get_conversation_memory
+from sparkai.agent.agent_self_optimization import get_self_optimization
+from sparkai.agent.agent_collaboration_protocol import get_collaboration_protocol
+from sparkai.agent.agent_knowledge_synthesis import get_knowledge_synthesis
+from sparkai.agent.agent_capability_registry import get_capability_registry
+from sparkai.engine.engine_physics_material import get_physics_material
+from sparkai.engine.engine_gesture_recognizer import get_gesture_recognizer
+from sparkai.engine.engine_shadow_casting import get_shadow_casting
+from sparkai.engine.engine_entity_blueprint import get_entity_blueprint
+from sparkai.engine.engine_scene_transition import get_scene_transition
+from sparkai.engine.engine_audio_layering import get_audio_layering
 
 router = APIRouter()
 
@@ -2167,6 +2179,42 @@ _input_map = get_input_map()
 _animation_tree = get_animation_tree()
 _custom_object_types = get_custom_object_types()
 _tile_map_optimizer = get_tile_map_optimizer()
+
+# ---- Chain of Thought ----
+_chain_of_thought = get_chain_of_thought()
+
+# ---- Conversation Memory ----
+_conversation_memory = get_conversation_memory()
+
+# ---- Self Optimization ----
+_self_optimization = get_self_optimization()
+
+# ---- Collaboration Protocol ----
+_collaboration_protocol = get_collaboration_protocol()
+
+# ---- Knowledge Synthesis ----
+_knowledge_synthesis = get_knowledge_synthesis()
+
+# ---- Capability Registry ----
+_capability_registry = get_capability_registry()
+
+# ---- Physics Material ----
+_physics_material = get_physics_material()
+
+# ---- Gesture Recognizer ----
+_gesture_recognizer = get_gesture_recognizer()
+
+# ---- Shadow Casting ----
+_shadow_casting = get_shadow_casting()
+
+# ---- Entity Blueprint ----
+_entity_blueprint = get_entity_blueprint()
+
+# ---- Scene Transition ----
+_scene_transition = get_scene_transition()
+
+# ---- Audio Layering ----
+_audio_layering = get_audio_layering()
 
 
 def _init_new_subsystems():
@@ -17698,3 +17746,222 @@ async def tile_map_optimizer_partition_chunks(map_id: str = "", chunk_size: int 
 async def tile_map_optimizer_optimize_atlas(map_id: str = "", strategy: str = "pack", max_texture_size: int = 2048):
     result = _tile_map_optimizer.optimize_atlas(map_id=map_id, strategy=strategy, max_texture_size=max_texture_size)
     return result.to_dict() if result else {"error": "Atlas optimization failed"}
+
+# ============================================================
+# Chain of Thought Engine
+# ============================================================
+
+@router.post("/chain-of-thought/start-chain")
+async def chain_of_thought_start_chain(question: str = "", context: str = "", agent_id: str = ""):
+    if _chain_of_thought is None:
+        return {"error": "Chain of Thought not initialized"}
+    result = _chain_of_thought.start_chain(question=question, context=context, agent_id=agent_id)
+    return result.to_dict() if result else {"error": "Start chain failed"}
+
+@router.get("/chain-of-thought/stats")
+async def chain_of_thought_stats():
+    if _chain_of_thought is None:
+        return {"error": "Chain of Thought not initialized"}
+    return _chain_of_thought.get_stats()
+
+# ============================================================
+# Conversation Memory
+# ============================================================
+
+@router.post("/conversation-memory/start-thread")
+async def conversation_memory_start_thread(agent_id: str = "", title: str = "", system_prompt: str = ""):
+    if _conversation_memory is None:
+        return {"error": "Conversation Memory not initialized"}
+    result = _conversation_memory.start_thread(agent_id=agent_id, title=title, system_prompt=system_prompt)
+    return result.to_dict() if result else {"error": "Start thread failed"}
+
+@router.get("/conversation-memory/stats")
+async def conversation_memory_stats():
+    if _conversation_memory is None:
+        return {"error": "Conversation Memory not initialized"}
+    return _conversation_memory.get_stats()
+
+# ============================================================
+# Self Optimization
+# ============================================================
+
+@router.post("/self-optimization/create-profile")
+async def self_optimization_create_profile(agent_id: str = "", targets: str = "[]"):
+    if _self_optimization is None:
+        return {"error": "Self Optimization not initialized"}
+    import json as _json
+    try:
+        targets_list = _json.loads(targets) if targets else []
+    except (ValueError, TypeError):
+        targets_list = []
+    result = _self_optimization.create_profile(agent_id=agent_id, targets=targets_list)
+    return result.to_dict() if result else {"error": "Create profile failed"}
+
+@router.get("/self-optimization/stats")
+async def self_optimization_stats():
+    if _self_optimization is None:
+        return {"error": "Self Optimization not initialized"}
+    return _self_optimization.get_stats()
+
+# ============================================================
+# Collaboration Protocol
+# ============================================================
+
+@router.post("/collaboration-protocol/propose-collaboration")
+async def collaboration_protocol_propose_collaboration(initiator_id: str = "", task_description: str = "", required_roles: str = "[]"):
+    if _collaboration_protocol is None:
+        return {"error": "Collaboration Protocol not initialized"}
+    import json as _json
+    try:
+        roles = _json.loads(required_roles) if required_roles else []
+    except (ValueError, TypeError):
+        roles = []
+    result = _collaboration_protocol.propose_collaboration(initiator_id=initiator_id, task_description=task_description, required_roles=roles)
+    return result.to_dict() if result else {"error": "Propose collaboration failed"}
+
+@router.get("/collaboration-protocol/stats")
+async def collaboration_protocol_stats():
+    if _collaboration_protocol is None:
+        return {"error": "Collaboration Protocol not initialized"}
+    return _collaboration_protocol.get_stats()
+
+# ============================================================
+# Knowledge Synthesis
+# ============================================================
+
+@router.post("/knowledge-synthesis/ingest-fragment")
+async def knowledge_synthesis_ingest_fragment(source_agent: str = "", content: str = "", domain: str = "game_design", confidence: str = "medium", tags: str = "[]"):
+    if _knowledge_synthesis is None:
+        return {"error": "Knowledge Synthesis not initialized"}
+    import json as _json
+    try:
+        tags_list = _json.loads(tags) if tags else []
+    except (ValueError, TypeError):
+        tags_list = []
+    result = _knowledge_synthesis.ingest_fragment(source_agent=source_agent, content=content, domain=domain, confidence=confidence, tags=tags_list)
+    return result.to_dict() if result else {"error": "Ingest fragment failed"}
+
+@router.get("/knowledge-synthesis/stats")
+async def knowledge_synthesis_stats():
+    if _knowledge_synthesis is None:
+        return {"error": "Knowledge Synthesis not initialized"}
+    return _knowledge_synthesis.get_stats()
+
+# ============================================================
+# Capability Registry
+# ============================================================
+
+@router.post("/capability-registry/register-capability")
+async def capability_registry_register_capability(agent_id: str = "", name: str = "", cap_type: str = "generation", proficiency: str = "competent", scope: str = "local"):
+    if _capability_registry is None:
+        return {"error": "Capability Registry not initialized"}
+    result = _capability_registry.register_capability(agent_id=agent_id, name=name, cap_type=cap_type, proficiency=proficiency, scope=scope)
+    return result.to_dict() if result else {"error": "Register capability failed"}
+
+@router.get("/capability-registry/stats")
+async def capability_registry_stats():
+    if _capability_registry is None:
+        return {"error": "Capability Registry not initialized"}
+    return _capability_registry.get_stats()
+
+# ============================================================
+# Physics Material Library
+# ============================================================
+
+@router.post("/physics-material/define-material")
+async def physics_material_define_material(name: str = "", surface_type: str = "stone", density: float = 1.0, friction: float = 0.5, restitution: float = 0.3):
+    if _physics_material is None:
+        return {"error": "Physics Material not initialized"}
+    result = _physics_material.define_material(name=name, surface_type=surface_type, density=density, friction=friction, restitution=restitution)
+    return result.to_dict() if result else {"error": "Define material failed"}
+
+@router.get("/physics-material/stats")
+async def physics_material_stats():
+    if _physics_material is None:
+        return {"error": "Physics Material not initialized"}
+    return _physics_material.get_stats()
+
+# ============================================================
+# Gesture Recognizer
+# ============================================================
+
+@router.post("/gesture-recognizer/register-pattern")
+async def gesture_recognizer_register_pattern(name: str = "", gesture_type: str = "tap", min_points: int = 1, max_points: int = 10):
+    if _gesture_recognizer is None:
+        return {"error": "Gesture Recognizer not initialized"}
+    result = _gesture_recognizer.register_pattern(name=name, gesture_type=gesture_type, min_points=min_points, max_points=max_points)
+    return result.to_dict() if result else {"error": "Register pattern failed"}
+
+@router.get("/gesture-recognizer/stats")
+async def gesture_recognizer_stats():
+    if _gesture_recognizer is None:
+        return {"error": "Gesture Recognizer not initialized"}
+    return _gesture_recognizer.get_stats()
+
+# ============================================================
+# Shadow Casting
+# ============================================================
+
+@router.post("/shadow-casting/add-light")
+async def shadow_casting_add_light(name: str = "", light_type: str = "point", x: float = 0.0, y: float = 0.0, intensity: float = 1.0, radius: float = 200.0):
+    if _shadow_casting is None:
+        return {"error": "Shadow Casting not initialized"}
+    result = _shadow_casting.add_light(name=name, light_type=light_type, position=(x, y), intensity=intensity, radius=radius)
+    return result.to_dict() if result else {"error": "Add light failed"}
+
+@router.get("/shadow-casting/stats")
+async def shadow_casting_stats():
+    if _shadow_casting is None:
+        return {"error": "Shadow Casting not initialized"}
+    return _shadow_casting.get_stats()
+
+# ============================================================
+# Entity Blueprint
+# ============================================================
+
+@router.post("/entity-blueprint/create-blueprint")
+async def entity_blueprint_create_blueprint(name: str = "", category: str = "character", description: str = ""):
+    if _entity_blueprint is None:
+        return {"error": "Entity Blueprint not initialized"}
+    result = _entity_blueprint.create_blueprint(name=name, category=category, description=description)
+    return result.to_dict() if result else {"error": "Create blueprint failed"}
+
+@router.get("/entity-blueprint/stats")
+async def entity_blueprint_stats():
+    if _entity_blueprint is None:
+        return {"error": "Entity Blueprint not initialized"}
+    return _entity_blueprint.get_stats()
+
+# ============================================================
+# Scene Transition
+# ============================================================
+
+@router.post("/scene-transition/configure-transition")
+async def scene_transition_configure_transition(from_scene: str = "", to_scene: str = "", effect: str = "fade", duration: float = 0.5, easing: str = "ease_in_out"):
+    if _scene_transition is None:
+        return {"error": "Scene Transition not initialized"}
+    result = _scene_transition.configure_transition(from_scene=from_scene, to_scene=to_scene, effect=effect, duration=duration, easing=easing)
+    return result.to_dict() if result else {"error": "Configure transition failed"}
+
+@router.get("/scene-transition/stats")
+async def scene_transition_stats():
+    if _scene_transition is None:
+        return {"error": "Scene Transition not initialized"}
+    return _scene_transition.get_stats()
+
+# ============================================================
+# Audio Layering
+# ============================================================
+
+@router.post("/audio-layering/create-layer")
+async def audio_layering_create_layer(name: str = "", layer_type: str = "music", volume: float = 1.0, pan: float = 0.0, pitch: float = 1.0):
+    if _audio_layering is None:
+        return {"error": "Audio Layering not initialized"}
+    result = _audio_layering.create_layer(name=name, layer_type=layer_type, volume=volume, pan=pan, pitch=pitch)
+    return result.to_dict() if result else {"error": "Create layer failed"}
+
+@router.get("/audio-layering/stats")
+async def audio_layering_stats():
+    if _audio_layering is None:
+        return {"error": "Audio Layering not initialized"}
+    return _audio_layering.get_stats()
