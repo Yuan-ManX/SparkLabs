@@ -306,6 +306,12 @@ from sparkai.agent.agent_skills_hub import SkillsHub, get_skills_hub
 from sparkai.agent.agent_personality_system import PersonalitySystem, get_personality_system
 from sparkai.agent.agent_insights_generator import InsightsGenerator, get_insights_generator
 from sparkai.agent.agent_provider_switch import ProviderSwitch, get_provider_switch
+from sparkai.agent.agent_chain_of_thought import ChainOfThoughtEngine, get_chain_of_thought
+from sparkai.agent.agent_conversation_memory import ConversationMemoryEngine, get_conversation_memory
+from sparkai.agent.agent_self_optimization import SelfOptimizationEngine, get_self_optimization
+from sparkai.agent.agent_collaboration_protocol import CollaborationProtocolEngine, get_collaboration_protocol
+from sparkai.agent.agent_knowledge_synthesis import KnowledgeSynthesisEngine, get_knowledge_synthesis
+from sparkai.agent.agent_capability_registry import CapabilityRegistryEngine, get_capability_registry
 from sparkai.engine.engine_event_sheet import EventSheetRuntime, get_event_sheet
 from sparkai.engine.engine_resource_serializer import ResourceSerializer, get_resource_serializer
 from sparkai.engine.engine_input_map import InputMapSystem, get_input_map
@@ -739,6 +745,12 @@ class AgentRuntime:
         self._personality_system: Optional[PersonalitySystem] = None
         self._insights_generator: Optional[InsightsGenerator] = None
         self._provider_switch: Optional[ProviderSwitch] = None
+        self._chain_of_thought: Optional[ChainOfThoughtEngine] = None
+        self._conversation_memory: Optional[ConversationMemoryEngine] = None
+        self._self_optimization: Optional[SelfOptimizationEngine] = None
+        self._collaboration_protocol: Optional[CollaborationProtocolEngine] = None
+        self._knowledge_synthesis: Optional[KnowledgeSynthesisEngine] = None
+        self._capability_registry: Optional[CapabilityRegistryEngine] = None
         self._event_sheet: Optional[EventSheetRuntime] = None
         self._resource_serializer: Optional[ResourceSerializer] = None
         self._input_map: Optional[InputMapSystem] = None
@@ -751,6 +763,12 @@ class AgentRuntime:
         self._personality_system_ok: bool = False
         self._insights_generator_ok: bool = False
         self._provider_switch_ok: bool = False
+        self._chain_of_thought_ok: bool = False
+        self._conversation_memory_ok: bool = False
+        self._self_optimization_ok: bool = False
+        self._collaboration_protocol_ok: bool = False
+        self._knowledge_synthesis_ok: bool = False
+        self._capability_registry_ok: bool = False
         self._event_sheet_ok: bool = False
         self._resource_serializer_ok: bool = False
         self._input_map_ok: bool = False
@@ -1030,6 +1048,12 @@ class AgentRuntime:
             self._personality_system = get_personality_system()
             self._insights_generator = get_insights_generator()
             self._provider_switch = get_provider_switch()
+            self._chain_of_thought = get_chain_of_thought()
+            self._conversation_memory = get_conversation_memory()
+            self._self_optimization = get_self_optimization()
+            self._collaboration_protocol = get_collaboration_protocol()
+            self._knowledge_synthesis = get_knowledge_synthesis()
+            self._capability_registry = get_capability_registry()
             self._event_sheet = get_event_sheet()
             self._resource_serializer = get_resource_serializer()
             self._input_map = get_input_map()
@@ -1042,6 +1066,12 @@ class AgentRuntime:
             self._personality_system_ok = self._personality_system is not None
             self._insights_generator_ok = self._insights_generator is not None
             self._provider_switch_ok = self._provider_switch is not None
+            self._chain_of_thought_ok = self._chain_of_thought is not None
+            self._conversation_memory_ok = self._conversation_memory is not None
+            self._self_optimization_ok = self._self_optimization is not None
+            self._collaboration_protocol_ok = self._collaboration_protocol is not None
+            self._knowledge_synthesis_ok = self._knowledge_synthesis is not None
+            self._capability_registry_ok = self._capability_registry is not None
             self._event_sheet_ok = self._event_sheet is not None
             self._resource_serializer_ok = self._resource_serializer is not None
             self._input_map_ok = self._input_map is not None
@@ -1273,6 +1303,12 @@ class AgentRuntime:
             self._integration.register_subsystem("personality_system", self._personality_system)
             self._integration.register_subsystem("insights_generator", self._insights_generator)
             self._integration.register_subsystem("provider_switch", self._provider_switch)
+            self._integration.register_subsystem("chain_of_thought", self._chain_of_thought)
+            self._integration.register_subsystem("conversation_memory", self._conversation_memory)
+            self._integration.register_subsystem("self_optimization", self._self_optimization)
+            self._integration.register_subsystem("collaboration_protocol", self._collaboration_protocol)
+            self._integration.register_subsystem("knowledge_synthesis", self._knowledge_synthesis)
+            self._integration.register_subsystem("capability_registry", self._capability_registry)
             self._integration.register_subsystem("event_sheet", self._event_sheet)
             self._integration.register_subsystem("resource_serializer", self._resource_serializer)
             self._integration.register_subsystem("input_map", self._input_map)
@@ -2547,6 +2583,12 @@ class AgentRuntime:
                 "personality_system": self._personality_system is not None,
                 "insights_generator": self._insights_generator is not None,
                 "provider_switch": self._provider_switch is not None,
+                "chain_of_thought": self._chain_of_thought is not None,
+                "conversation_memory": self._conversation_memory is not None,
+                "self_optimization": self._self_optimization is not None,
+                "collaboration_protocol": self._collaboration_protocol is not None,
+                "knowledge_synthesis": self._knowledge_synthesis is not None,
+                "capability_registry": self._capability_registry is not None,
                 "event_sheet": self._event_sheet is not None,
                 "resource_serializer": self._resource_serializer is not None,
                 "input_map": self._input_map is not None,
@@ -3038,6 +3080,18 @@ class AgentRuntime:
             status["insights_generator_stats"] = self._insights_generator.get_stats()
         if self._provider_switch:
             status["provider_switch_stats"] = self._provider_switch.get_stats()
+        if self._chain_of_thought:
+            status["chain_of_thought_stats"] = self._chain_of_thought.get_stats()
+        if self._conversation_memory:
+            status["conversation_memory_stats"] = self._conversation_memory.get_stats()
+        if self._self_optimization:
+            status["self_optimization_stats"] = self._self_optimization.get_stats()
+        if self._collaboration_protocol:
+            status["collaboration_protocol_stats"] = self._collaboration_protocol.get_stats()
+        if self._knowledge_synthesis:
+            status["knowledge_synthesis_stats"] = self._knowledge_synthesis.get_stats()
+        if self._capability_registry:
+            status["capability_registry_stats"] = self._capability_registry.get_stats()
         if self._event_sheet:
             status["event_sheet_stats"] = self._event_sheet.get_stats()
         if self._resource_serializer:
