@@ -142,6 +142,12 @@ from sparkai.engine.engine_input_map import InputMapSystem, get_input_map
 from sparkai.engine.engine_animation_tree import AnimationTreeRuntime, get_animation_tree
 from sparkai.engine.engine_custom_object_types import CustomObjectTypeSystem, get_custom_object_types
 from sparkai.engine.engine_tile_map_optimizer import TileMapOptimizer, get_tile_map_optimizer
+from sparkai.engine.engine_physics_material import PhysicsMaterialLibrary, get_physics_material
+from sparkai.engine.engine_gesture_recognizer import GestureRecognizerSystem, get_gesture_recognizer
+from sparkai.engine.engine_shadow_casting import ShadowCastingSystem, get_shadow_casting
+from sparkai.engine.engine_entity_blueprint import EntityBlueprintSystem, get_entity_blueprint
+from sparkai.engine.engine_scene_transition import SceneTransitionSystem, get_scene_transition
+from sparkai.engine.engine_audio_layering import AudioLayeringEngine, get_audio_layering
 
 
 class SparkEngine:
@@ -289,6 +295,12 @@ class SparkEngine:
         self._animation_tree = get_animation_tree()
         self._custom_object_types = get_custom_object_types()
         self._tile_map_optimizer = get_tile_map_optimizer()
+        self._physics_material = get_physics_material()
+        self._gesture_recognizer = get_gesture_recognizer()
+        self._shadow_casting = get_shadow_casting()
+        self._entity_blueprint = get_entity_blueprint()
+        self._scene_transition = get_scene_transition()
+        self._audio_layering = get_audio_layering()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -566,6 +578,12 @@ class SparkEngine:
             "animation_tree": self._animation_tree.get_stats(),
             "custom_object_types": self._custom_object_types.get_stats(),
             "tile_map_optimizer": self._tile_map_optimizer.get_stats(),
+            "physics_material": self._physics_material.get_stats(),
+            "gesture_recognizer": self._gesture_recognizer.get_stats(),
+            "shadow_casting": self._shadow_casting.get_stats(),
+            "entity_blueprint": self._entity_blueprint.get_stats(),
+            "scene_transition": self._scene_transition.get_stats(),
+            "audio_layering": self._audio_layering.get_stats(),
         }
 
     @property
@@ -839,6 +857,30 @@ class SparkEngine:
     @property
     def tile_map_optimizer(self):
         return self._tile_map_optimizer
+
+    @property
+    def physics_material(self) -> Optional[PhysicsMaterialLibrary]:
+        return self._physics_material
+
+    @property
+    def gesture_recognizer(self) -> Optional[GestureRecognizerSystem]:
+        return self._gesture_recognizer
+
+    @property
+    def shadow_casting(self) -> Optional[ShadowCastingSystem]:
+        return self._shadow_casting
+
+    @property
+    def entity_blueprint(self) -> Optional[EntityBlueprintSystem]:
+        return self._entity_blueprint
+
+    @property
+    def scene_transition(self) -> Optional[SceneTransitionSystem]:
+        return self._scene_transition
+
+    @property
+    def audio_layering(self) -> Optional[AudioLayeringEngine]:
+        return self._audio_layering
 
 
 @dataclass
