@@ -148,6 +148,12 @@ from sparkai.engine.engine_shadow_casting import ShadowCastingSystem, get_shadow
 from sparkai.engine.engine_entity_blueprint import EntityBlueprintSystem, get_entity_blueprint
 from sparkai.engine.engine_scene_transition import SceneTransitionSystem, get_scene_transition
 from sparkai.engine.engine_audio_layering import AudioLayeringEngine, get_audio_layering
+from sparkai.engine.engine_material_graph import MaterialGraphSystem, get_material_graph
+from sparkai.engine.engine_occlusion_culling import OcclusionCullingSystem, get_occlusion_culling
+from sparkai.engine.engine_lod_system import LODSystem, get_lod_system
+from sparkai.engine.engine_decal_system import DecalSystem, get_decal_system
+from sparkai.engine.engine_post_processing import PostProcessingSystem, get_post_processing
+from sparkai.engine.engine_skeleton_deformer import SkeletonDeformerSystem, get_skeleton_deformer
 
 
 class SparkEngine:
@@ -301,6 +307,12 @@ class SparkEngine:
         self._entity_blueprint = get_entity_blueprint()
         self._scene_transition = get_scene_transition()
         self._audio_layering = get_audio_layering()
+        self._material_graph = get_material_graph()
+        self._occlusion_culling = get_occlusion_culling()
+        self._lod_system = get_lod_system()
+        self._decal_system = get_decal_system()
+        self._post_processing = get_post_processing()
+        self._skeleton_deformer = get_skeleton_deformer()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -584,6 +596,12 @@ class SparkEngine:
             "entity_blueprint": self._entity_blueprint.get_stats(),
             "scene_transition": self._scene_transition.get_stats(),
             "audio_layering": self._audio_layering.get_stats(),
+            "material_graph": self._material_graph.get_stats(),
+            "occlusion_culling": self._occlusion_culling.get_stats(),
+            "lod_system": self._lod_system.get_stats(),
+            "decal_system": self._decal_system.get_stats(),
+            "post_processing": self._post_processing.get_stats(),
+            "skeleton_deformer": self._skeleton_deformer.get_stats(),
         }
 
     @property
@@ -881,6 +899,30 @@ class SparkEngine:
     @property
     def audio_layering(self) -> Optional[AudioLayeringEngine]:
         return self._audio_layering
+
+    @property
+    def material_graph(self) -> MaterialGraphSystem:
+        return self._material_graph
+
+    @property
+    def occlusion_culling(self) -> OcclusionCullingSystem:
+        return self._occlusion_culling
+
+    @property
+    def lod_system(self) -> LODSystem:
+        return self._lod_system
+
+    @property
+    def decal_system(self) -> DecalSystem:
+        return self._decal_system
+
+    @property
+    def post_processing(self) -> PostProcessingSystem:
+        return self._post_processing
+
+    @property
+    def skeleton_deformer(self) -> SkeletonDeformerSystem:
+        return self._skeleton_deformer
 
 
 @dataclass
