@@ -203,6 +203,18 @@ from sparkai.engine.engine_shadow_casting import get_shadow_casting
 from sparkai.engine.engine_entity_blueprint import get_entity_blueprint
 from sparkai.engine.engine_scene_transition import get_scene_transition
 from sparkai.engine.engine_audio_layering import get_audio_layering
+from sparkai.agent.agent_experiment_framework import get_experiment_framework
+from sparkai.agent.agent_telemetry_pipeline import get_telemetry_pipeline
+from sparkai.agent.agent_audit_trail import get_audit_trail
+from sparkai.agent.agent_journal_system import get_journal_system
+from sparkai.agent.agent_document_synthesizer import get_document_synthesizer
+from sparkai.agent.agent_simulation_runner import get_simulation_runner
+from sparkai.engine.engine_material_graph import get_material_graph
+from sparkai.engine.engine_occlusion_culling import get_occlusion_culling
+from sparkai.engine.engine_lod_system import get_lod_system
+from sparkai.engine.engine_decal_system import get_decal_system
+from sparkai.engine.engine_post_processing import get_post_processing
+from sparkai.engine.engine_skeleton_deformer import get_skeleton_deformer
 
 router = APIRouter()
 
@@ -2215,6 +2227,42 @@ _scene_transition = get_scene_transition()
 
 # ---- Audio Layering ----
 _audio_layering = get_audio_layering()
+
+# ---- Experiment Framework ----
+_experiment_framework = get_experiment_framework()
+
+# ---- Telemetry Pipeline ----
+_telemetry_pipeline = get_telemetry_pipeline()
+
+# ---- Audit Trail ----
+_audit_trail = get_audit_trail()
+
+# ---- Journal System ----
+_journal_system = get_journal_system()
+
+# ---- Document Synthesizer ----
+_document_synthesizer = get_document_synthesizer()
+
+# ---- Simulation Runner ----
+_simulation_runner = get_simulation_runner()
+
+# ---- Material Graph ----
+_material_graph = get_material_graph()
+
+# ---- Occlusion Culling ----
+_occlusion_culling = get_occlusion_culling()
+
+# ---- LOD System ----
+_lod_system = get_lod_system()
+
+# ---- Decal System ----
+_decal_system = get_decal_system()
+
+# ---- Post Processing ----
+_post_processing_engine = get_post_processing()
+
+# ---- Skeleton Deformer ----
+_skeleton_deformer = get_skeleton_deformer()
 
 
 def _init_new_subsystems():
@@ -17965,3 +18013,374 @@ async def audio_layering_stats():
     if _audio_layering is None:
         return {"error": "Audio Layering not initialized"}
     return _audio_layering.get_stats()
+
+# ============================================================
+# Experiment Framework Endpoints
+# ============================================================
+
+@router.get("/experiment-framework/stats")
+async def experiment_framework_stats():
+    return _experiment_framework.get_stats()
+
+@router.post("/experiment-framework/create-experiment")
+async def experiment_framework_create_experiment(name: str = "", variant_count: int = 2, metrics: str = "", strategy: str = "round_robin"):
+    import json as _json
+    variants = []
+    for i in range(variant_count):
+        variants.append({"name": f"Variant {chr(65+i)}", "description": f"Experiment variant {chr(65+i)}", "parameters": {"temperature": 0.5 + i * 0.2}})
+    metric_names = [m.strip() for m in metrics.split(",") if m.strip()] if metrics else ["latency", "accuracy"]
+    cfg = _experiment_framework.create_experiment(name=name, variants=variants, metrics=metric_names, strategy=strategy)
+    return cfg.to_dict() if cfg else {"error": "Experiment creation failed"}
+
+@router.post("/experiment-framework/start-experiment")
+async def experiment_framework_start_experiment(experiment_id: str = ""):
+    return {"started": _experiment_framework.start_experiment(experiment_id)}
+
+@router.post("/experiment-framework/record-trial")
+async def experiment_framework_record_trial(experiment_id: str = "", variant_id: str = "", prompt: str = "", response: str = "", latency_ms: float = 0, token_usage: int = 0, success: bool = True):
+    metrics = {"latency_ms": latency_ms, "token_usage": token_usage}
+    tags = {"prompt": prompt[:50], "response": response[:50]}
+    result = _experiment_framework.record_trial(experiment_id=experiment_id, variant_id=variant_id, metrics=metrics, tags=tags, success=success)
+    return result.to_dict() if result else {"error": "Trial recording failed"}
+
+@router.post("/experiment-framework/compute-results")
+async def experiment_framework_compute_results(experiment_id: str = ""):
+    report = _experiment_framework.compute_results(experiment_id)
+    return report.to_dict() if report else {"error": "Computation failed"}
+
+@router.get("/experiment-framework/list-experiments")
+async def experiment_framework_list_experiments(status: str = ""):
+    experiments = _experiment_framework.list_experiments(status=status)
+    return {"experiments": [e.to_dict() for e in experiments]}
+
+# ============================================================
+# Telemetry Pipeline Endpoints
+# ============================================================
+
+@router.get("/telemetry-pipeline/stats")
+async def telemetry_pipeline_stats():
+    return _telemetry_pipeline.get_stats()
+
+@router.post("/telemetry-pipeline/register-sink")
+async def telemetry_pipeline_register_sink(name: str = "", sink_type: str = "stdout", endpoint: str = "", format_type: str = "json"):
+    config = {"url": endpoint} if endpoint else {}
+    sink = _telemetry_pipeline.register_sink(name=name, sink_type=sink_type, config=config, format_type=format_type)
+    return sink.to_dict() if sink else {"error": "Sink registration failed"}
+
+@router.post("/telemetry-pipeline/emit-metric")
+async def telemetry_pipeline_emit_metric(agent_id: str = "", name: str = "", value: float = 0, unit: str = "", tags: str = ""):
+    import json as _json
+    try:
+        tag_dict = _json.loads(tags) if tags else {}
+    except (ValueError, TypeError):
+        tag_dict = {}
+    _telemetry_pipeline.emit_metric(agent_id=agent_id, metric_name=name, value=value, tags=tag_dict)
+    return {"emitted": True}
+
+@router.post("/telemetry-pipeline/flush-sink")
+async def telemetry_pipeline_flush_sink(sink_id: str = ""):
+    count = _telemetry_pipeline.flush_sink(sink_id)
+    return {"flushed": count}
+
+@router.get("/telemetry-pipeline/throughput")
+async def telemetry_pipeline_throughput():
+    return {"throughput": _telemetry_pipeline.get_throughput()}
+
+# ============================================================
+# Audit Trail Endpoints
+# ============================================================
+
+@router.get("/audit-trail/stats")
+async def audit_trail_stats():
+    return _audit_trail.get_stats()
+
+@router.post("/audit-trail/log-event")
+async def audit_trail_log_event(agent_id: str = "", event_type: str = "action_executed", description: str = "", details: str = "", severity: str = "info"):
+    import json as _json
+    from sparkai.agent.agent_audit_trail import AuditEventType, SeverityLevel
+    try:
+        et = AuditEventType(event_type)
+    except ValueError:
+        et = AuditEventType.ACTION_EXECUTED
+    try:
+        sv = SeverityLevel(severity)
+    except ValueError:
+        sv = SeverityLevel.INFO
+    try:
+        detail_dict = _json.loads(details) if details else {}
+    except (ValueError, TypeError):
+        detail_dict = {}
+    entry = _audit_trail.log_event(agent_id=agent_id, event_type=et, description=description, severity=sv, metadata=detail_dict)
+    return entry.to_dict() if entry else {"error": "Event logging failed"}
+
+@router.get("/audit-trail/query")
+async def audit_trail_query(agent_id: str = "", event_type: str = "", limit: int = 50):
+    entries = _audit_trail.query_trail(agent_id=agent_id, event_type=event_type, limit=limit)
+    return {"entries": [e.to_dict() for e in entries]}
+
+@router.post("/audit-trail/generate-report")
+async def audit_trail_generate_report(time_range_days: int = 7):
+    report = _audit_trail.generate_report(time_range_days=time_range_days)
+    return report.to_dict()
+
+# ============================================================
+# Journal System Endpoints
+# ============================================================
+
+@router.get("/journal-system/stats")
+async def journal_system_stats():
+    return _journal_system.get_stats()
+
+@router.post("/journal-system/create-entry")
+async def journal_system_create_entry(agent_id: str = "", title: str = "", content: str = "", entry_type: str = "reflection", mood: str = "neutral", tags: str = ""):
+    import json as _json
+    from sparkai.agent.agent_journal_system import JournalEntryType, MoodTone
+    try:
+        et = JournalEntryType(entry_type)
+    except ValueError:
+        et = JournalEntryType.REFLECTION
+    try:
+        mt = MoodTone(mood)
+    except ValueError:
+        mt = MoodTone.NEUTRAL
+    try:
+        tag_list = _json.loads(tags) if tags else []
+    except (ValueError, TypeError):
+        tag_list = []
+    entry = _journal_system.create_entry(agent_id=agent_id, entry_type=et, content=content or title, mood=mt, tags=tag_list)
+    return entry.to_dict() if entry else {"error": "Entry creation failed"}
+
+@router.get("/journal-system/search")
+async def journal_system_search(query: str = "", agent_id: str = "", limit: int = 20):
+    entries = _journal_system.search_entries(query=query, agent_id=agent_id, limit=limit)
+    return {"entries": [e.to_dict() for e in entries]}
+
+@router.post("/journal-system/summarize")
+async def journal_system_summarize(agent_id: str = "", days: int = 7):
+    summary = _journal_system.summarize_journal(agent_id=agent_id, days=days)
+    return summary.to_dict() if summary else {"error": "Summarization failed"}
+
+# ============================================================
+# Document Synthesizer Endpoints
+# ============================================================
+
+@router.get("/document-synthesizer/stats")
+async def document_synthesizer_stats():
+    return _document_synthesizer.get_stats()
+
+@router.post("/document-synthesizer/create-template")
+async def document_synthesizer_create_template(name: str = "", doc_type: str = "gdd", format: str = "markdown"):
+    template = _document_synthesizer.create_template(name=name, doc_type=doc_type)
+    return template.to_dict() if template else {"error": "Template creation failed"}
+
+@router.post("/document-synthesizer/synthesize")
+async def document_synthesizer_synthesize(template_id: str = "", title: str = "", content_data: str = ""):
+    import json as _json
+    try:
+        data = _json.loads(content_data) if content_data else {}
+    except (ValueError, TypeError):
+        data = {}
+    doc = _document_synthesizer.synthesize_from_workflow(template_id=template_id, title=title, content_data=data)
+    return doc.to_dict() if doc else {"error": "Synthesis failed"}
+
+@router.get("/document-synthesizer/render")
+async def document_synthesizer_render(document_id: str = "", format: str = "markdown"):
+    from sparkai.agent.agent_document_synthesizer import DocumentFormat
+    try:
+        df = DocumentFormat(format)
+    except ValueError:
+        df = DocumentFormat.MARKDOWN
+    result = _document_synthesizer.render_document(document_id=document_id, format=df)
+    return result if result else {"error": "Render failed"}
+
+# ============================================================
+# Simulation Runner Endpoints
+# ============================================================
+
+@router.get("/simulation-runner/stats")
+async def simulation_runner_stats():
+    return _simulation_runner.get_stats()
+
+@router.post("/simulation-runner/define-scenario")
+async def simulation_runner_define_scenario(name: str = "", description: str = "", mode: str = "single_run"):
+    import json as _json
+    try:
+        agent_config = _json.loads(description) if description else {}
+    except (ValueError, TypeError):
+        agent_config = {}
+    scenario = _simulation_runner.define_scenario(name=name, agent_config=agent_config)
+    return scenario.to_dict() if scenario else {"error": "Scenario definition failed"}
+
+@router.post("/simulation-runner/run")
+async def simulation_runner_run(scenario_id: str = "", agent_id: str = "", input_data: str = "", mode: str = "single_run", repeat_count: int = 1):
+    run = _simulation_runner.run_simulation(scenario_id=scenario_id, mode=mode, repeat_count=repeat_count)
+    return run.to_dict() if run else {"error": "Simulation run failed"}
+
+@router.get("/simulation-runner/list-runs")
+async def simulation_runner_list_runs(scenario_id: str = ""):
+    runs = _simulation_runner.list_runs(scenario_id=scenario_id)
+    return {"runs": [r.to_dict() for r in runs]}
+
+@router.get("/simulation-runner/evaluate")
+async def simulation_runner_evaluate(run_id: str = ""):
+    report = _simulation_runner.evaluate_results(run_id)
+    return report.to_dict() if report else {"error": "Evaluation failed"}
+
+# ============================================================
+# Material Graph Endpoints
+# ============================================================
+
+@router.get("/material-graph/stats")
+async def material_graph_stats():
+    return _material_graph.get_stats()
+
+@router.post("/material-graph/create-graph")
+async def material_graph_create_graph(name: str = "", description: str = ""):
+    graph = _material_graph.create_graph(name=name, description=description)
+    return graph.to_dict() if graph else {"error": "Graph creation failed"}
+
+@router.post("/material-graph/add-node")
+async def material_graph_add_node(graph_id: str = "", node_type: str = "color_constant", x: float = 0, y: float = 0):
+    node = _material_graph.add_node(graph_id=graph_id, node_type=node_type, position=(x, y))
+    return node.to_dict() if node else {"error": "Node addition failed"}
+
+@router.post("/material-graph/connect-nodes")
+async def material_graph_connect_nodes(graph_id: str = "", source_node_id: str = "", source_port: str = "output", target_node_id: str = "", target_port: str = "input"):
+    conn = _material_graph.connect_nodes(graph_id=graph_id, from_node_id=source_node_id, from_port=source_port, to_node_id=target_node_id, to_port=target_port)
+    return conn.to_dict() if conn else {"error": "Connection failed"}
+
+@router.get("/material-graph/compile-shader")
+async def material_graph_compile_shader(graph_id: str = "", target: str = "glsl"):
+    shader = _material_graph.compile_shader(graph_id=graph_id, target=target)
+    return shader.to_dict() if shader else {"error": "Shader compilation failed"}
+
+# ============================================================
+# Occlusion Culling Endpoints
+# ============================================================
+
+@router.get("/occlusion-culling/stats")
+async def occlusion_culling_stats():
+    return _occlusion_culling.get_stats()
+
+@router.post("/occlusion-culling/register-occluder")
+async def occlusion_culling_register_occluder(entity_id: str = "", x: float = 0, y: float = 0, z: float = 0, width: float = 1, height: float = 1, depth: float = 1, occluder_type: str = "box"):
+    bounds = {"x": x, "y": y, "z": z, "width": width, "height": height, "depth": depth}
+    occluder = _occlusion_culling.register_occluder(entity_id=entity_id, occluder_type=occluder_type, bounds=bounds)
+    return occluder.to_dict() if occluder else {"error": "Occluder registration failed"}
+
+@router.post("/occlusion-culling/update-camera")
+async def occlusion_culling_update_camera(camera_id: str = "", x: float = 0, y: float = 0, z: float = 0, dir_x: float = 0, dir_y: float = 0, dir_z: float = -1, fov: float = 60):
+    camera = _occlusion_culling.update_camera(camera_id=camera_id, position=(x, y, z), direction=(dir_x, dir_y, dir_z), fov=fov)
+    return camera.to_dict() if camera else {"error": "Camera update failed"}
+
+@router.get("/occlusion-culling/query")
+async def occlusion_culling_query(camera_id: str = ""):
+    visible = _occlusion_culling.get_visible_entities(camera_id)
+    return {"visible": visible}
+
+# ============================================================
+# LOD System Endpoints
+# ============================================================
+
+@router.get("/lod-system/stats")
+async def lod_system_stats():
+    return _lod_system.get_stats()
+
+@router.post("/lod-system/create-group")
+async def lod_system_create_group(entity_id: str = ""):
+    group = _lod_system.create_lod_group(entity_id=entity_id)
+    return group.to_dict() if group else {"error": "LOD group creation failed"}
+
+@router.post("/lod-system/add-level")
+async def lod_system_add_level(group_id: str = "", level: str = "LOD0_ULTRA", mesh_ref: str = "", distance_threshold: float = 50):
+    entry = _lod_system.add_lod_level(group_id=group_id, level=level, mesh_ref=mesh_ref, distance_threshold=distance_threshold)
+    return entry.to_dict() if entry else {"error": "LOD level addition failed"}
+
+@router.get("/lod-system/evaluate")
+async def lod_system_evaluate(entity_id: str = "", camera_distance: float = 0):
+    result = _lod_system.evaluate_lod(entity_id=entity_id, camera_distance=camera_distance)
+    return result if result else {"error": "Evaluation failed"}
+
+# ============================================================
+# Decal System Endpoints
+# ============================================================
+
+@router.get("/decal-system/stats")
+async def decal_system_stats():
+    return _decal_system.get_stats()
+
+@router.post("/decal-system/create-projector")
+async def decal_system_create_projector(name: str = "", width: float = 1, height: float = 1, projection: str = "planar"):
+    projector = _decal_system.create_projector(name=name, projection=projection, size=(width, height))
+    return projector.to_dict() if projector else {"error": "Projector creation failed"}
+
+@router.post("/decal-system/place-decal")
+async def decal_system_place_decal(projector_id: str = "", x: float = 0, y: float = 0, z: float = 0):
+    instance = _decal_system.place_decal(projector_id=projector_id, position=(x, y, z))
+    return instance.to_dict() if instance else {"error": "Decal placement failed"}
+
+@router.post("/decal-system/gather-batch")
+async def decal_system_gather_batch(camera_x: float = 0, camera_y: float = 0, camera_z: float = 0, max_distance: float = 100):
+    batch = _decal_system.gather_batch(camera_position=(camera_x, camera_y, camera_z), max_count=int(max_distance))
+    return batch.to_dict() if batch else {"error": "Batch gathering failed"}
+
+# ============================================================
+# Post Processing Endpoints
+# ============================================================
+
+@router.get("/post-processing/stats")
+async def post_processing_stats():
+    return _post_processing_engine.get_stats()
+
+@router.post("/post-processing/add-effect")
+async def post_processing_add_effect(name: str = "", effect_type: str = "bloom", enabled: bool = True, quality: str = "high"):
+    effect = _post_processing_engine.add_effect(effect_type=effect_type, quality=quality)
+    return effect.to_dict() if effect else {"error": "Effect addition failed"}
+
+@router.post("/post-processing/create-chain")
+async def post_processing_create_chain(name: str = ""):
+    chain = _post_processing_engine.create_chain(name=name)
+    return chain.to_dict() if chain else {"error": "Chain creation failed"}
+
+@router.post("/post-processing/create-profile")
+async def post_processing_create_profile(name: str = "", description: str = ""):
+    profile = _post_processing_engine.create_profile(name=name)
+    return profile.to_dict() if profile else {"error": "Profile creation failed"}
+
+@router.post("/post-processing/apply-profile")
+async def post_processing_apply_profile(profile_id: str = ""):
+    return {"applied": _post_processing_engine.apply_profile(profile_id)}
+
+# ============================================================
+# Skeleton Deformer Endpoints
+# ============================================================
+
+@router.get("/skeleton-deformer/stats")
+async def skeleton_deformer_stats():
+    return _skeleton_deformer.get_stats()
+
+@router.post("/skeleton-deformer/create-skeleton")
+async def skeleton_deformer_create_skeleton(name: str = "", x: float = 0, y: float = 0, z: float = 0):
+    skeleton = _skeleton_deformer.create_skeleton(name=name, root_position=(x, y, z))
+    return skeleton.to_dict() if skeleton else {"error": "Skeleton creation failed"}
+
+@router.post("/skeleton-deformer/add-joint")
+async def skeleton_deformer_add_joint(skeleton_id: str = "", name: str = "", joint_type: str = "hinge", parent_id: str = "", x: float = 0, y: float = 0, z: float = 0):
+    joint = _skeleton_deformer.add_joint(
+        skeleton_id=skeleton_id,
+        name=name,
+        parent_id=parent_id,
+        joint_type=joint_type,
+        local_transform={"position": [x, y, z]},
+    )
+    return joint.to_dict() if joint else {"error": "Joint addition failed"}
+
+@router.post("/skeleton-deformer/compute-pose")
+async def skeleton_deformer_compute_pose(skeleton_id: str = ""):
+    pose = _skeleton_deformer.compute_pose(skeleton_id)
+    return pose.to_dict() if pose else {"error": "Pose computation failed"}
+
+@router.post("/skeleton-deformer/deform-mesh")
+async def skeleton_deformer_deform_mesh(skeleton_id: str = "", mesh_id: str = ""):
+    result = _skeleton_deformer.deform_mesh(skeleton_id=skeleton_id, mesh_id=mesh_id)
+    return result.to_dict() if result else {"error": "Mesh deformation failed"}
