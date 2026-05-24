@@ -29,8 +29,20 @@ import ShadowCastingPanel from './ShadowCastingPanel';
 import EntityBlueprintPanel from './EntityBlueprintPanel';
 import SceneTransitionPanel from './SceneTransitionPanel';
 import AudioLayeringPanel from './AudioLayeringPanel';
+import ExperimentFrameworkPanel from './ExperimentFrameworkPanel';
+import TelemetryPipelinePanel from './TelemetryPipelinePanel';
+import AuditTrailPanel from './AuditTrailPanel';
+import JournalSystemPanel from './JournalSystemPanel';
+import DocumentSynthesizerPanel from './DocumentSynthesizerPanel';
+import SimulationRunnerPanel from './SimulationRunnerPanel';
+import MaterialGraphPanel from './MaterialGraphPanel';
+import OcclusionCullingPanel from './OcclusionCullingPanel';
+import LODSystemPanel from './LODSystemPanel';
+import DecalSystemPanel from './DecalSystemPanel';
+import PostProcessingPanel from './PostProcessingPanel';
+import SkeletonDeformerPanel from './SkeletonDeformerPanel';
 
-type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway' | 'session_snapshot' | 'trajectory_compressor' | 'skills_hub' | 'personality_system' | 'insights_generator' | 'provider_switch' | 'resource_serializer' | 'input_map' | 'animation_tree' | 'custom_object_types' | 'tile_map_optimizer' | 'chain_of_thought' | 'conversation_memory' | 'self_optimization' | 'collaboration_protocol' | 'knowledge_synthesis' | 'capability_registry' | 'physics_material' | 'gesture_recognizer' | 'shadow_casting' | 'entity_blueprint' | 'scene_transition' | 'audio_layering';
+type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway' | 'session_snapshot' | 'trajectory_compressor' | 'skills_hub' | 'personality_system' | 'insights_generator' | 'provider_switch' | 'resource_serializer' | 'input_map' | 'animation_tree' | 'custom_object_types' | 'tile_map_optimizer' | 'chain_of_thought' | 'conversation_memory' | 'self_optimization' | 'collaboration_protocol' | 'knowledge_synthesis' | 'capability_registry' | 'physics_material' | 'gesture_recognizer' | 'shadow_casting' | 'entity_blueprint' | 'scene_transition' | 'audio_layering' | 'experiment_framework' | 'telemetry_pipeline' | 'audit_trail' | 'journal_system' | 'document_synthesizer' | 'simulation_runner' | 'material_graph' | 'occlusion_culling' | 'lod_system' | 'decal_system' | 'post_processing' | 'skeleton_deformer';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -69,6 +81,18 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'entity_blueprint', label: 'Blueprints', icon: '📋' },
   { id: 'scene_transition', label: 'Transitions', icon: '🎬' },
   { id: 'audio_layering', label: 'Audio Mix', icon: '🔊' },
+  { id: 'experiment_framework', label: 'Experiments', icon: '🧪' },
+  { id: 'telemetry_pipeline', label: 'Telemetry', icon: '📡' },
+  { id: 'audit_trail', label: 'Audit Trail', icon: '📝' },
+  { id: 'journal_system', label: 'Journal', icon: '📓' },
+  { id: 'document_synthesizer', label: 'Documents', icon: '📄' },
+  { id: 'simulation_runner', label: 'Simulation', icon: '🔬' },
+  { id: 'material_graph', label: 'Material Graph', icon: '🎨' },
+  { id: 'occlusion_culling', label: 'Occlusion', icon: '👁️' },
+  { id: 'lod_system', label: 'LOD System', icon: '📐' },
+  { id: 'decal_system', label: 'Decals', icon: '🖼️' },
+  { id: 'post_processing', label: 'Post FX', icon: '✨' },
+  { id: 'skeleton_deformer', label: 'Skeleton', icon: '🦴' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -530,6 +554,18 @@ const AgentPanel: React.FC = () => {
       case 'entity_blueprint': return <EntityBlueprintPanel />;
       case 'scene_transition': return <SceneTransitionPanel />;
       case 'audio_layering': return <AudioLayeringPanel />;
+      case 'experiment_framework': return <ExperimentFrameworkPanel />;
+      case 'telemetry_pipeline': return <TelemetryPipelinePanel />;
+      case 'audit_trail': return <AuditTrailPanel />;
+      case 'journal_system': return <JournalSystemPanel />;
+      case 'document_synthesizer': return <DocumentSynthesizerPanel />;
+      case 'simulation_runner': return <SimulationRunnerPanel />;
+      case 'material_graph': return <MaterialGraphPanel />;
+      case 'occlusion_culling': return <OcclusionCullingPanel />;
+      case 'lod_system': return <LODSystemPanel />;
+      case 'decal_system': return <DecalSystemPanel />;
+      case 'post_processing': return <PostProcessingPanel />;
+      case 'skeleton_deformer': return <SkeletonDeformerPanel />;
       default: return null;
     }
   };
