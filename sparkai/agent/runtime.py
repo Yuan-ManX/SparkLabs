@@ -319,6 +319,13 @@ from sparkai.engine.engine_animation_tree import AnimationTreeRuntime, get_anima
 from sparkai.engine.engine_custom_object_types import CustomObjectTypeSystem, get_custom_object_types
 from sparkai.engine.engine_tile_map_optimizer import TileMapOptimizer, get_tile_map_optimizer
 
+from sparkai.agent.agent_experiment_framework import AgentExperimentFramework, get_experiment_framework
+from sparkai.agent.agent_telemetry_pipeline import AgentTelemetryPipeline, get_telemetry_pipeline
+from sparkai.agent.agent_audit_trail import AgentAuditTrail, get_audit_trail
+from sparkai.agent.agent_journal_system import AgentJournalSystem, get_journal_system
+from sparkai.agent.agent_document_synthesizer import AgentDocumentSynthesizer, get_document_synthesizer
+from sparkai.agent.agent_simulation_runner import AgentSimulationRunner, get_simulation_runner
+
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
 from sparkai.engine.animation_system import AnimationPlayer, get_animation_player
@@ -757,6 +764,12 @@ class AgentRuntime:
         self._animation_tree: Optional[AnimationTreeRuntime] = None
         self._custom_object_types: Optional[CustomObjectTypeSystem] = None
         self._tile_map_optimizer: Optional[TileMapOptimizer] = None
+        self._experiment_framework: Optional[AgentExperimentFramework] = None
+        self._telemetry_pipeline: Optional[AgentTelemetryPipeline] = None
+        self._audit_trail: Optional[AgentAuditTrail] = None
+        self._journal_system: Optional[AgentJournalSystem] = None
+        self._document_synthesizer: Optional[AgentDocumentSynthesizer] = None
+        self._simulation_runner: Optional[AgentSimulationRunner] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -775,6 +788,12 @@ class AgentRuntime:
         self._animation_tree_ok: bool = False
         self._custom_object_types_ok: bool = False
         self._tile_map_optimizer_ok: bool = False
+        self._experiment_framework_ok: bool = False
+        self._telemetry_pipeline_ok: bool = False
+        self._audit_trail_ok: bool = False
+        self._journal_system_ok: bool = False
+        self._document_synthesizer_ok: bool = False
+        self._simulation_runner_ok: bool = False
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -1060,6 +1079,12 @@ class AgentRuntime:
             self._animation_tree = get_animation_tree()
             self._custom_object_types = get_custom_object_types()
             self._tile_map_optimizer = get_tile_map_optimizer()
+            self._experiment_framework = get_experiment_framework()
+            self._telemetry_pipeline = get_telemetry_pipeline()
+            self._audit_trail = get_audit_trail()
+            self._journal_system = get_journal_system()
+            self._document_synthesizer = get_document_synthesizer()
+            self._simulation_runner = get_simulation_runner()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1078,6 +1103,12 @@ class AgentRuntime:
             self._animation_tree_ok = self._animation_tree is not None
             self._custom_object_types_ok = self._custom_object_types is not None
             self._tile_map_optimizer_ok = self._tile_map_optimizer is not None
+            self._experiment_framework_ok = self._experiment_framework is not None
+            self._telemetry_pipeline_ok = self._telemetry_pipeline is not None
+            self._audit_trail_ok = self._audit_trail is not None
+            self._journal_system_ok = self._journal_system is not None
+            self._document_synthesizer_ok = self._document_synthesizer is not None
+            self._simulation_runner_ok = self._simulation_runner is not None
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -1315,6 +1346,12 @@ class AgentRuntime:
             self._integration.register_subsystem("animation_tree", self._animation_tree)
             self._integration.register_subsystem("custom_object_types", self._custom_object_types)
             self._integration.register_subsystem("tile_map_optimizer", self._tile_map_optimizer)
+            self._integration.register_subsystem("experiment_framework", self._experiment_framework)
+            self._integration.register_subsystem("telemetry_pipeline", self._telemetry_pipeline)
+            self._integration.register_subsystem("audit_trail", self._audit_trail)
+            self._integration.register_subsystem("journal_system", self._journal_system)
+            self._integration.register_subsystem("document_synthesizer", self._document_synthesizer)
+            self._integration.register_subsystem("simulation_runner", self._simulation_runner)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -2595,6 +2632,12 @@ class AgentRuntime:
                 "animation_tree": self._animation_tree is not None,
                 "custom_object_types": self._custom_object_types is not None,
                 "tile_map_optimizer": self._tile_map_optimizer is not None,
+                "experiment_framework": self._experiment_framework is not None,
+                "telemetry_pipeline": self._telemetry_pipeline is not None,
+                "audit_trail": self._audit_trail is not None,
+                "journal_system": self._journal_system is not None,
+                "document_synthesizer": self._document_synthesizer is not None,
+                "simulation_runner": self._simulation_runner is not None,
             },
         }
 
@@ -3104,6 +3147,18 @@ class AgentRuntime:
             status["custom_object_types_stats"] = self._custom_object_types.get_stats()
         if self._tile_map_optimizer:
             status["tile_map_optimizer_stats"] = self._tile_map_optimizer.get_stats()
+        if self._experiment_framework:
+            status["experiment_framework_stats"] = self._experiment_framework.get_stats()
+        if self._telemetry_pipeline:
+            status["telemetry_pipeline_stats"] = self._telemetry_pipeline.get_stats()
+        if self._audit_trail:
+            status["audit_trail_stats"] = self._audit_trail.get_stats()
+        if self._journal_system:
+            status["journal_system_stats"] = self._journal_system.get_stats()
+        if self._document_synthesizer:
+            status["document_synthesizer_stats"] = self._document_synthesizer.get_stats()
+        if self._simulation_runner:
+            status["simulation_runner_stats"] = self._simulation_runner.get_stats()
         return status
 
 
