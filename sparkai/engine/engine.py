@@ -154,6 +154,12 @@ from sparkai.engine.engine_lod_system import LODSystem, get_lod_system
 from sparkai.engine.engine_decal_system import DecalSystem, get_decal_system
 from sparkai.engine.engine_post_processing import PostProcessingSystem, get_post_processing
 from sparkai.engine.engine_skeleton_deformer import SkeletonDeformerSystem, get_skeleton_deformer
+from sparkai.engine.engine_lighting_2d import Lighting2DEngine, get_lighting_2d
+from sparkai.engine.engine_parallax_background import ParallaxBackgroundSystem, get_parallax_background
+from sparkai.engine.engine_behavior_library import ObjectBehaviorLibrary, get_behavior_library
+from sparkai.engine.engine_animation_curve import AnimationCurveEditor, get_animation_curve
+from sparkai.engine.engine_render_layer import RenderLayerSystem, get_render_layer
+from sparkai.engine.engine_state_synchronizer import GameStateSynchronizer, get_state_synchronizer
 
 
 class SparkEngine:
@@ -313,6 +319,12 @@ class SparkEngine:
         self._decal_system = get_decal_system()
         self._post_processing = get_post_processing()
         self._skeleton_deformer = get_skeleton_deformer()
+        self._lighting_2d = get_lighting_2d()
+        self._parallax_background = get_parallax_background()
+        self._behavior_library = get_behavior_library()
+        self._animation_curve = get_animation_curve()
+        self._render_layer = get_render_layer()
+        self._state_synchronizer = get_state_synchronizer()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -602,6 +614,12 @@ class SparkEngine:
             "decal_system": self._decal_system.get_stats(),
             "post_processing": self._post_processing.get_stats(),
             "skeleton_deformer": self._skeleton_deformer.get_stats(),
+            "lighting_2d": self._lighting_2d.get_stats(),
+            "parallax_background": self._parallax_background.get_stats(),
+            "behavior_library": self._behavior_library.get_stats(),
+            "animation_curve": self._animation_curve.get_stats(),
+            "render_layer": self._render_layer.get_stats(),
+            "state_synchronizer": self._state_synchronizer.get_stats(),
         }
 
     @property
@@ -923,6 +941,30 @@ class SparkEngine:
     @property
     def skeleton_deformer(self) -> SkeletonDeformerSystem:
         return self._skeleton_deformer
+
+    @property
+    def lighting_2d(self) -> Lighting2DEngine:
+        return self._lighting_2d
+
+    @property
+    def parallax_background(self) -> ParallaxBackgroundSystem:
+        return self._parallax_background
+
+    @property
+    def behavior_library(self) -> ObjectBehaviorLibrary:
+        return self._behavior_library
+
+    @property
+    def animation_curve(self) -> AnimationCurveEditor:
+        return self._animation_curve
+
+    @property
+    def render_layer(self) -> RenderLayerSystem:
+        return self._render_layer
+
+    @property
+    def state_synchronizer(self) -> GameStateSynchronizer:
+        return self._state_synchronizer
 
 
 @dataclass
