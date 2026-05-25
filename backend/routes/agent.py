@@ -6,7 +6,7 @@ studio hierarchy, toolsets, hooks, rules, teams,
 bench evaluation, and session management.
 """
 
-from fastapi import APIRouter, Query
+from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 
@@ -157,7 +157,7 @@ from sparkai.agent.agent_skill_composer import SkillComposer, SkillDomain, get_s
 from sparkai.engine.ui_layout_system import UILayoutSystem, get_ui_layout_system
 from sparkai.engine.performance_overlay import PerformanceOverlay, get_performance_overlay
 from sparkai.agent.agent_developer_assistant import DeveloperAssistant, AssistantMode, get_developer_assistant
-from sparkai.agent.agent_playtest_simulator import PlaytestSimulator, PlayerStyle, get_playtest_simulator
+from sparkai.agent.agent_playtest_simulator import AgenticPlaytestSimulator, PlayerProfile, get_playtest_simulator
 from sparkai.engine.engine_scene_streamer import SceneStreamer, get_scene_streamer
 from sparkai.engine.engine_project_exporter import ProjectExporter, ExportPlatform, get_project_exporter
 from sparkai.agent.agent_game_director import GameDirector, get_game_director
@@ -215,6 +215,18 @@ from sparkai.engine.engine_lod_system import get_lod_system
 from sparkai.engine.engine_decal_system import get_decal_system
 from sparkai.engine.engine_post_processing import get_post_processing
 from sparkai.engine.engine_skeleton_deformer import get_skeleton_deformer
+from sparkai.agent.agent_agentic_coding import get_agentic_coding, CodingTask, CodeLanguage
+from sparkai.agent.agent_game_reasoner import get_game_reasoner
+from sparkai.agent.agent_narrative_branch import get_narrative_branch
+from sparkai.agent.agent_concurrency_manager import get_concurrency_manager
+from sparkai.agent.agent_verification_pipeline import get_verification_pipeline
+from sparkai.agent.agent_playtest_simulator import get_playtest_simulator, PlaytestMode
+from sparkai.engine.engine_lighting_2d import get_lighting_2d
+from sparkai.engine.engine_parallax_background import get_parallax_background
+from sparkai.engine.engine_behavior_library import get_behavior_library, BehaviorCategory, BehaviorExecutionMode
+from sparkai.engine.engine_animation_curve import get_animation_curve, CurveType, EasingFunction
+from sparkai.engine.engine_render_layer import get_render_layer
+from sparkai.engine.engine_state_synchronizer import get_state_synchronizer
 
 router = APIRouter()
 
@@ -2263,6 +2275,18 @@ _post_processing_engine = get_post_processing()
 
 # ---- Skeleton Deformer ----
 _skeleton_deformer = get_skeleton_deformer()
+_agentic_coding = get_agentic_coding()
+_game_reasoner = get_game_reasoner()
+_narrative_branch = get_narrative_branch()
+_concurrency_manager = get_concurrency_manager()
+_verification_pipeline = get_verification_pipeline()
+_playtest_simulator = get_playtest_simulator()
+_lighting_2d = get_lighting_2d()
+_parallax_background = get_parallax_background()
+_behavior_library = get_behavior_library()
+_animation_curve = get_animation_curve()
+_render_layer = get_render_layer()
+_state_synchronizer = get_state_synchronizer()
 
 
 def _init_new_subsystems():
@@ -15956,72 +15980,6 @@ async def developer_assistant_record_error(session_id: str = "",
     return {"recorded": True}
 
 
-# === Playtest Simulator Endpoints ===
-
-@router.get("/playtest-simulator/stats")
-async def playtest_simulator_stats():
-    return _playtest_simulator.get_stats()
-
-@router.post("/playtest-simulator/create-profile")
-async def playtest_create_profile(name: str = "", skill_level: float = 0.5,
-                                     style: str = "CASUAL"):
-    profile = _playtest_simulator.create_profile(name, skill_level,
-                                                   PlayerStyle(style))
-    return profile.to_dict()
-
-@router.get("/playtest-simulator/profiles")
-async def playtest_profiles():
-    profiles = _playtest_simulator.get_all_profiles()
-    return {"profiles": [p.to_dict() for p in profiles]}
-
-@router.post("/playtest-simulator/start-session")
-async def playtest_start_session(profile_id: str = "", level_id: str = ""):
-    profiles = _playtest_simulator.get_all_profiles()
-    if not profile_id and profiles:
-        profile_id = profiles[0].id
-    session = _playtest_simulator.start_session(profile_id, level_id)
-    if session is None and profiles:
-        session = _playtest_simulator.start_session(profiles[0].id, level_id)
-    if session is None:
-        return {"error": "No profiles available"}
-    return session.to_dict()
-
-@router.post("/playtest-simulator/simulate-frame")
-async def playtest_simulate_frame(session_id: str = "", delta_time: float = 0.016):
-    telemetry = _playtest_simulator.simulate_frame(session_id, delta_time)
-    return telemetry
-
-@router.post("/playtest-simulator/complete")
-async def playtest_complete(session_id: str = "", status: str = "completed"):
-    from sparkai.agent.agent_playtest_simulator import CompletionStatus
-    try:
-        st = CompletionStatus(status.lower())
-    except ValueError:
-        st = CompletionStatus.COMPLETED
-    _playtest_simulator.complete_session(session_id, st)
-    return {"completed": True}
-
-@router.get("/playtest-simulator/report")
-async def playtest_report(level_id: str = ""):
-    report = _playtest_simulator.generate_report(level_id)
-    return report.to_dict()
-
-@router.get("/playtest-simulator/difficulty-curve")
-async def playtest_difficulty(level_id: str = ""):
-    curve = _playtest_simulator.get_difficulty_curve(level_id)
-    return {"curve": curve}
-
-@router.get("/playtest-simulator/heat-map")
-async def playtest_heat_map(level_id: str = ""):
-    heat_map = _playtest_simulator.get_heat_map(level_id)
-    return heat_map
-
-@router.post("/playtest-simulator/run-all")
-async def playtest_run_all(level_id: str = ""):
-    reports = _playtest_simulator.run_full_simulation(level_id)
-    return {"reports": reports}
-
-
 # === Scene Streamer Endpoints ===
 
 @router.get("/scene-streamer/stats")
@@ -18384,3 +18342,842 @@ async def skeleton_deformer_compute_pose(skeleton_id: str = ""):
 async def skeleton_deformer_deform_mesh(skeleton_id: str = "", mesh_id: str = ""):
     result = _skeleton_deformer.deform_mesh(skeleton_id=skeleton_id, mesh_id=mesh_id)
     return result.to_dict() if result else {"error": "Mesh deformation failed"}
+
+# ============================================================
+# Agentic Coding Endpoints
+# ============================================================
+
+@router.get("/agentic-coding/stats")
+async def agentic_coding_stats():
+    try:
+        return _agentic_coding.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/agentic-coding/start-session")
+async def agentic_coding_start_session(request: Request):
+    try:
+        import json
+        body = await request.json()
+        task = body.get("task", "generate_script")
+        language = body.get("language", "gdscript")
+        context = body.get("context", {})
+        if isinstance(context, str):
+            context = json.loads(context) if context else {}
+        try:
+            ct = CodingTask(task)
+        except ValueError:
+            ct = CodingTask.GENERATE_SCRIPT
+        try:
+            cl = CodeLanguage(language)
+        except ValueError:
+            cl = CodeLanguage.GDScript
+        session = _agentic_coding.start_coding_session(task=ct, language=cl, context=context)
+        result = session.to_dict()
+        print("DEBUG agentic_coding result type:", type(result), "keys:", list(result.keys()) if isinstance(result, dict) else "NOT DICT")
+        return result
+    except Exception as e:
+        import traceback
+        traceback.print_exc()
+        return {"error": str(e)}
+
+@router.post("/agentic-coding/generate-code")
+async def agentic_coding_generate_code(request: Request):
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "")
+        specification = body.get("specification", "")
+        artifact = _agentic_coding.generate_code(session_id=session_id, specification=specification)
+        return artifact.to_dict() if artifact else {"error": "Code generation failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/agentic-coding/compile-test")
+async def agentic_coding_compile_test(request: Request):
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "")
+        artifact_id = body.get("artifact_id", "")
+        artifact = _agentic_coding.compile_and_test(session_id=session_id, artifact_id=artifact_id)
+        return artifact.to_dict() if artifact else {"error": "Compilation/test failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/agentic-coding/auto-fix")
+async def agentic_coding_auto_fix(request: Request):
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "")
+        artifact_id = body.get("artifact_id", "")
+        error_log = body.get("error_log", "")
+        artifact = _agentic_coding.auto_fix(session_id=session_id, artifact_id=artifact_id, error_log=error_log)
+        return artifact.to_dict() if artifact else {"error": "Auto-fix failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/agentic-coding/session-summary")
+async def agentic_coding_session_summary(session_id: str = ""):
+    try:
+        summary = _agentic_coding.get_session_summary(session_id)
+        return summary.to_dict() if summary else {"error": "Session not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Game Reasoner Endpoints
+# ============================================================
+
+@router.get("/game-reasoner/stats")
+async def game_reasoner_stats():
+    try:
+        return _game_reasoner.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-reasoner/analyze-design")
+async def game_reasoner_analyze_design(request: Request):
+    try:
+        import json
+        body = await request.json()
+        game_state = body.get("game_state", {})
+        if isinstance(game_state, str):
+            game_state = json.loads(game_state) if game_state else {}
+        aspects = body.get("aspects", "")
+        aspect_list = aspects.split(",") if aspects else None
+        results = _game_reasoner.analyze_game_design(game_state=game_state, aspects=aspect_list)
+        return [r.to_dict() for r in results]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-reasoner/suggest-balancing")
+async def game_reasoner_suggest_balancing(request: Request):
+    try:
+        body = await request.json()
+        parameter_name = body.get("parameter_name", "")
+        current_value = body.get("current_value", 0.0)
+        target_experience = body.get("target_experience", "")
+        suggestions = _game_reasoner.suggest_balancing(
+            parameter_name=parameter_name,
+            current_value=current_value,
+            target_experience=target_experience,
+        )
+        return [s.to_dict() for s in suggestions]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-reasoner/model-curve")
+async def game_reasoner_model_curve(request: Request):
+    try:
+        import json
+        body = await request.json()
+        curve_name = body.get("curve_name", "")
+        data_points = body.get("data_points", [])
+        if isinstance(data_points, str):
+            data_points = json.loads(data_points) if data_points else []
+        target_shape = body.get("target_shape", "linear")
+        pts = [(float(p[0]), float(p[1])) for p in data_points]
+        curve = _game_reasoner.model_progression_curve(
+            curve_name=curve_name, data_points=pts, target_shape=target_shape,
+        )
+        return curve.to_dict() if hasattr(curve, "to_dict") else curve
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-reasoner/evaluate-difficulty")
+async def game_reasoner_evaluate_difficulty(request: Request):
+    try:
+        import json
+        body = await request.json()
+        game_state = body.get("game_state", {})
+        if isinstance(game_state, str):
+            game_state = json.loads(game_state) if game_state else {}
+        player_skill = body.get("player_skill", 0.5)
+        analysis = _game_reasoner.evaluate_difficulty(game_state=game_state, player_skill=player_skill)
+        return analysis.to_dict() if hasattr(analysis, "to_dict") else analysis
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Narrative Branch Endpoints
+# ============================================================
+
+@router.get("/narrative-branch/stats")
+async def narrative_branch_stats():
+    try:
+        return _narrative_branch.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/narrative-branch/create-branch")
+async def narrative_branch_create(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        strategy = body.get("strategy", "binary")
+        root_content = body.get("root_content", "")
+        branch = _narrative_branch.create_branch(name=name, strategy=strategy, root_content=root_content)
+        return branch.to_dict() if branch else {"error": "Branch creation failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/narrative-branch/add-node")
+async def narrative_branch_add_node(request: Request):
+    try:
+        body = await request.json()
+        branch_id = body.get("branch_id", "")
+        node_type = body.get("node_type", "dialogue")
+        content = body.get("content", "")
+        parent_node_ids = body.get("parent_node_ids", "")
+        choices = body.get("choices", "")
+        parent_ids = parent_node_ids.split(",") if parent_node_ids else None
+        choice_list = choices.split(",") if choices else None
+        node = _narrative_branch.add_node(
+            branch_id=branch_id, node_type=node_type, content=content,
+            parent_node_ids=parent_ids, choices=choice_list,
+        )
+        return node.to_dict() if node else {"error": "Node addition failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/narrative-branch/check-consistency")
+async def narrative_branch_check_consistency(request: Request):
+    try:
+        body = await request.json()
+        branch_id = body.get("branch_id", "")
+        level = body.get("level", "strict")
+        report = _narrative_branch.check_consistency(branch_id=branch_id, level=level)
+        return report.to_dict() if report else {"error": "Branch not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/narrative-branch/generate-character")
+async def narrative_branch_generate_character(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        role = body.get("role", "neutral")
+        traits = body.get("traits", "")
+        trait_list = traits.split(",") if traits else None
+        profile = _narrative_branch.generate_character(name=name, role=role, traits=trait_list)
+        return profile.to_dict() if hasattr(profile, "to_dict") else profile
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Concurrency Manager Endpoints
+# ============================================================
+
+@router.get("/concurrency-manager/stats")
+async def concurrency_manager_stats():
+    try:
+        return _concurrency_manager.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/concurrency-manager/create-queue")
+async def concurrency_manager_create_queue(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        strategy = body.get("strategy", "parallel")
+        max_concurrent = body.get("max_concurrent", 10)
+        queue = _concurrency_manager.create_queue(name=name, strategy=strategy, max_concurrent=max_concurrent)
+        return queue.to_dict() if hasattr(queue, "to_dict") else queue
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/concurrency-manager/enqueue-task")
+async def concurrency_manager_enqueue(request: Request):
+    try:
+        import json
+        body = await request.json()
+        queue_id = body.get("queue_id", "")
+        agent_id = body.get("agent_id", "")
+        task_type = body.get("task_type", "")
+        payload = body.get("payload", {})
+        if isinstance(payload, str):
+            payload = json.loads(payload) if payload else {}
+        priority = body.get("priority", "normal")
+        timeout_seconds = body.get("timeout_seconds", 60.0)
+        task = _concurrency_manager.enqueue_task(
+            queue_id=queue_id, agent_id=agent_id, task_type=task_type,
+            payload=payload, priority=priority, timeout_seconds=timeout_seconds,
+        )
+        return task.to_dict() if task else {"error": "Enqueue failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/concurrency-manager/execute-task")
+async def concurrency_manager_execute(request: Request):
+    try:
+        body = await request.json()
+        task_id = body.get("task_id", "")
+        task = _concurrency_manager.execute_task(task_id)
+        return task.to_dict() if task else {"error": "Task not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/concurrency-manager/queue-stats")
+async def concurrency_manager_queue_stats(queue_id: str = ""):
+    try:
+        stats = _concurrency_manager.get_queue_stats(queue_id)
+        return stats if stats else {"error": "Queue not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Verification Pipeline Endpoints
+# ============================================================
+
+@router.get("/verification-pipeline/stats")
+async def verification_pipeline_stats():
+    try:
+        return _verification_pipeline.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/verification-pipeline/verify-artifact")
+async def verification_pipeline_verify(request: Request):
+    try:
+        body = await request.json()
+        artifact_id = body.get("artifact_id", "")
+        artifact_content = body.get("artifact_content", "")
+        artifact_type = body.get("artifact_type", "gdscript")
+        config_id = body.get("config_id", "")
+        report = _verification_pipeline.verify_artifact(
+            artifact_id=artifact_id, artifact_content=artifact_content,
+            artifact_type=artifact_type, config_id=config_id,
+        )
+        return report.to_dict() if report else {"error": "Verification failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/verification-pipeline/add-rule")
+async def verification_pipeline_add_rule(request: Request):
+    try:
+        from sparkai.agent.agent_verification_pipeline import VerificationStage, Severity, CheckType
+        body = await request.json()
+        config_id = body.get("config_id", "")
+        stage = body.get("stage", "syntax_check")
+        rule_name = body.get("rule_name", "")
+        condition = body.get("condition", "")
+        severity = body.get("severity", "warning")
+        try:
+            vs = VerificationStage(stage)
+        except ValueError:
+            vs = VerificationStage.SYNTAX_CHECK
+        try:
+            sv = Severity(severity)
+        except ValueError:
+            sv = Severity.WARNING
+
+        if not config_id:
+            config = _verification_pipeline.create_pipeline_config(
+                "default", list(VerificationStage)
+            )
+            config_id = config.id
+
+        try:
+            ct = CheckType.STATIC_ANALYSIS
+        except ValueError:
+            ct = CheckType.STATIC_ANALYSIS
+
+        rule = _verification_pipeline.add_rule(
+            config_id=config_id, stage=vs, rule_name=rule_name,
+            condition=condition, severity=sv, check_type=ct,
+        )
+        return rule.to_dict() if rule else {"error": "Rule addition failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/verification-pipeline/auto-fix")
+async def verification_pipeline_auto_fix(request: Request):
+    try:
+        body = await request.json()
+        report_id = body.get("report_id", "")
+        report = _verification_pipeline.auto_fix_issues(report_id)
+        return report.to_dict() if report else {"error": "Auto-fix failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/verification-pipeline/blocking-issues")
+async def verification_pipeline_blocking_issues(report_id: str = ""):
+    try:
+        issues = _verification_pipeline.get_blocking_issues(report_id)
+        return [i.to_dict() for i in issues]
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Playtest Simulator Endpoints
+# ============================================================
+
+@router.get("/playtest-simulator/stats")
+async def playtest_simulator_stats():
+    try:
+        return _playtest_simulator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/playtest-simulator/start-session")
+async def playtest_simulator_start_session(request: Request):
+    try:
+        body = await request.json()
+        game_scene = body.get("game_scene", "")
+        mode = body.get("mode", "full_playthrough")
+        player_profile = body.get("player_profile", "explorer")
+        try:
+            pm = PlaytestMode(mode)
+        except ValueError:
+            pm = PlaytestMode.FULL_PLAYTHROUGH
+        try:
+            pp = PlayerProfile(player_profile)
+        except ValueError:
+            pp = PlayerProfile.EXPLORER
+        session = _playtest_simulator.start_session(
+            game_scene=game_scene, mode=pm, player_profile=pp,
+        )
+        return session.to_dict() if hasattr(session, "to_dict") else session
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/playtest-simulator/simulate-action")
+async def playtest_simulator_simulate_action(request: Request):
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "")
+        action_type = body.get("action_type", "move_forward")
+        target = body.get("target", "")
+        action = _playtest_simulator.simulate_action(
+            session_id=session_id, action_type=action_type, target=target,
+        )
+        return action.to_dict() if action else {"error": "Simulation failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/playtest-simulator/auto-explore")
+async def playtest_simulator_auto_explore(request: Request):
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "")
+        max_actions = body.get("max_actions", 0)
+        session = _playtest_simulator.auto_explore(session_id=session_id, max_actions=max_actions)
+        return session.to_dict() if session else {"error": "Auto-explore failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/playtest-simulator/generate-summary")
+async def playtest_simulator_generate_summary(session_id: str = ""):
+    try:
+        summary = _playtest_simulator.generate_summary(session_id)
+        return summary.to_dict() if summary else {"error": "Session not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Lighting 2D Endpoints
+# ============================================================
+
+@router.get("/lighting-2d/stats")
+async def lighting_2d_stats():
+    try:
+        return _lighting_2d.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/lighting-2d/create-light")
+async def lighting_2d_create_light(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        light_type = body.get("light_type", "point")
+        pos_x = body.get("pos_x", 0.0)
+        pos_y = body.get("pos_y", 0.0)
+        color_r = body.get("color_r", 1.0)
+        color_g = body.get("color_g", 1.0)
+        color_b = body.get("color_b", 1.0)
+        intensity = body.get("intensity", 1.0)
+        radius = body.get("radius", 100.0)
+        light = _lighting_2d.create_light(
+            name=name, light_type=light_type, position=(pos_x, pos_y),
+            color=(color_r, color_g, color_b), intensity=intensity, radius=radius,
+        )
+        return light.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/lighting-2d/create-layer")
+async def lighting_2d_create_layer(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        blend_mode = body.get("blend_mode", "additive")
+        ambient_r = body.get("ambient_r", 0.05)
+        ambient_g = body.get("ambient_g", 0.05)
+        ambient_b = body.get("ambient_b", 0.05)
+        layer = _lighting_2d.create_layer(
+            name=name, blend_mode=blend_mode,
+            ambient_color=(ambient_r, ambient_g, ambient_b),
+        )
+        return layer.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/lighting-2d/configure-light")
+async def lighting_2d_configure_light(request: Request):
+    try:
+        body = await request.json()
+        light_id = body.get("light_id", "")
+        config = {k: v for k, v in body.items() if k != "light_id"}
+        result = _lighting_2d.configure_light(light_id=light_id, **config)
+        return result.to_dict() if result else {"error": "Light not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/lighting-2d/calculate")
+async def lighting_2d_calculate(request: Request):
+    try:
+        body = await request.json()
+        bound_min_x = body.get("bound_min_x", 0.0)
+        bound_min_y = body.get("bound_min_y", 0.0)
+        bound_max_x = body.get("bound_max_x", 640.0)
+        bound_max_y = body.get("bound_max_y", 480.0)
+        entities = body.get("entities", "")
+        entity_list = entities.split(",") if entities else []
+        result = _lighting_2d.calculate_lighting(
+            scene_bounds=(bound_min_x, bound_min_y, bound_max_x, bound_max_y),
+            visible_entities=entity_list,
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Parallax Background Endpoints
+# ============================================================
+
+@router.get("/parallax-background/stats")
+async def parallax_background_stats():
+    try:
+        return _parallax_background.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/parallax-background/create-layer")
+async def parallax_background_create_layer(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        texture_ref = body.get("texture_ref", "")
+        parallax_factor = body.get("parallax_factor", 0.5)
+        scroll_direction = body.get("scroll_direction", "horizontal")
+        layer = _parallax_background.create_layer(
+            name=name, texture_ref=texture_ref,
+            parallax_factor=parallax_factor, scroll_direction=scroll_direction,
+        )
+        return layer.to_dict() if hasattr(layer, "to_dict") else layer
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/parallax-background/create-scene")
+async def parallax_background_create_scene(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        camera_entity_id = body.get("camera_entity_id", "")
+        width = body.get("width", 1920.0)
+        height = body.get("height", 1080.0)
+        scene = _parallax_background.create_scene(
+            name=name, camera_entity_id=camera_entity_id, width=width, height=height,
+        )
+        return scene.to_dict() if hasattr(scene, "to_dict") else scene
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/parallax-background/update-scroll")
+async def parallax_background_update_scroll(request: Request):
+    try:
+        body = await request.json()
+        camera_x = body.get("camera_x", 0.0)
+        camera_y = body.get("camera_y", 0.0)
+        scene_id = body.get("scene_id", "")
+        offsets = _parallax_background.update_scroll(
+            camera_position=(camera_x, camera_y), scene_id=scene_id,
+        )
+        return offsets
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/parallax-background/transition-scene")
+async def parallax_background_transition(request: Request):
+    try:
+        body = await request.json()
+        current_scene_id = body.get("current_scene_id", "")
+        next_scene_id = body.get("next_scene_id", "")
+        transition_type = body.get("transition_type", "fade")
+        duration = body.get("duration", 1.0)
+        success = _parallax_background.transition_scene(
+            current_scene_id=current_scene_id, next_scene_id=next_scene_id,
+            transition_type=transition_type, duration=duration,
+        )
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Behavior Library Endpoints
+# ============================================================
+
+@router.get("/behavior-library/stats")
+async def behavior_library_stats():
+    try:
+        return _behavior_library.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-library/register-template")
+async def behavior_library_register_template(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        category = body.get("category", "movement")
+        description = body.get("description", "")
+        execution_mode = body.get("execution_mode", "update")
+        try:
+            bc = BehaviorCategory(category)
+        except ValueError:
+            bc = BehaviorCategory.MOVEMENT
+        try:
+            bem = BehaviorExecutionMode(execution_mode)
+        except ValueError:
+            bem = BehaviorExecutionMode.UPDATE
+        template = _behavior_library.register_template(
+            name=name, category=bc, description=description,
+            execution_mode=bem,
+        )
+        return template.to_dict() if hasattr(template, "to_dict") else template
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-library/instantiate")
+async def behavior_library_instantiate(request: Request):
+    try:
+        import json
+        body = await request.json()
+        template_id = body.get("template_id", "")
+        entity_id = body.get("entity_id", "")
+        parameter_overrides = body.get("parameter_overrides", {})
+        if isinstance(parameter_overrides, str):
+            parameter_overrides = json.loads(parameter_overrides) if parameter_overrides else None
+        instance = _behavior_library.instantiate_behavior(
+            template_id=template_id, entity_id=entity_id, parameter_overrides=parameter_overrides,
+        )
+        return instance.to_dict() if instance else {"error": "Instantiation failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-library/toggle")
+async def behavior_library_toggle(request: Request):
+    try:
+        body = await request.json()
+        instance_id = body.get("instance_id", "")
+        enabled = body.get("enabled", True)
+        success = _behavior_library.toggle_behavior(instance_id=instance_id, enabled=enabled)
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/behavior-library/entity-behaviors")
+async def behavior_library_entity_behaviors(entity_id: str = ""):
+    try:
+        behaviors = _behavior_library.get_entity_behaviors(entity_id)
+        return [b.to_dict() for b in behaviors]
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Animation Curve Endpoints
+# ============================================================
+
+@router.get("/animation-curve/stats")
+async def animation_curve_stats():
+    try:
+        return _animation_curve.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/animation-curve/create")
+async def animation_curve_create(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        curve_type = body.get("curve_type", "bezier")
+        easing = body.get("easing", "linear")
+        try:
+            ct = CurveType(curve_type)
+        except ValueError:
+            ct = CurveType.BEZIER
+        try:
+            ef = EasingFunction(easing)
+        except ValueError:
+            ef = EasingFunction.LINEAR
+        curve = _animation_curve.create_curve(name=name, curve_type=ct, easing=ef)
+        return curve.to_dict() if hasattr(curve, "to_dict") else curve
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/animation-curve/add-keyframe")
+async def animation_curve_add_keyframe(request: Request):
+    try:
+        body = await request.json()
+        curve_id = body.get("curve_id", "")
+        time = body.get("time", 0.0)
+        value = body.get("value", 0.0)
+        in_tangent_x = body.get("in_tangent_x", -0.2)
+        in_tangent_y = body.get("in_tangent_y", 0.0)
+        out_tangent_x = body.get("out_tangent_x", 0.2)
+        out_tangent_y = body.get("out_tangent_y", 0.0)
+        kf = _animation_curve.add_keyframe(
+            curve_id=curve_id, time=time, value=value,
+            in_tangent=(in_tangent_x, in_tangent_y),
+            out_tangent=(out_tangent_x, out_tangent_y),
+        )
+        return kf.to_dict() if kf else {"error": "Keyframe addition failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/animation-curve/evaluate")
+async def animation_curve_evaluate(curve_id: str = "", time: float = 0.0):
+    try:
+        value = _animation_curve.evaluate_curve(curve_id=curve_id, time=time)
+        return {"curve_id": curve_id, "time": time, "value": value}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/animation-curve/create-sequence")
+async def animation_curve_create_sequence(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        track_ids = body.get("track_ids", "")
+        duration = body.get("duration", 1.0)
+        loop = body.get("loop", False)
+        playback_speed = body.get("playback_speed", 1.0)
+        tids = track_ids.split(",") if track_ids else []
+        sequence = _animation_curve.create_sequence(
+            name=name, track_ids=tids, duration=duration,
+            loop=loop, playback_speed=playback_speed,
+        )
+        return sequence.to_dict() if hasattr(sequence, "to_dict") else sequence
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Render Layer Endpoints
+# ============================================================
+
+@router.get("/render-layer/stats")
+async def render_layer_stats():
+    try:
+        return _render_layer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-layer/create-layer")
+async def render_layer_create(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        z_index = body.get("z_index", 0)
+        sort_strategy = body.get("sort_strategy", "by_z_order")
+        layer = _render_layer.create_layer(name=name, z_index=z_index, sort_strategy=sort_strategy)
+        return layer.to_dict() if hasattr(layer, "to_dict") else layer
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-layer/create-group")
+async def render_layer_create_group(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        group = _render_layer.create_group(name=name)
+        return group.to_dict() if hasattr(group, "to_dict") else group
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-layer/assign-entity")
+async def render_layer_assign_entity(request: Request):
+    try:
+        body = await request.json()
+        entity_id = body.get("entity_id", "")
+        layer_id = body.get("layer_id", "")
+        success = _render_layer.assign_entity_to_layer(entity_id=entity_id, layer_id=layer_id)
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-layer/reorder")
+async def render_layer_reorder(request: Request):
+    try:
+        body = await request.json()
+        group_id = body.get("group_id", "")
+        layer_order = body.get("layer_order", "")
+        order_list = layer_order.split(",") if layer_order else []
+        success = _render_layer.reorder_layers(group_id=group_id, layer_order=order_list)
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# State Synchronizer Endpoints
+# ============================================================
+
+@router.get("/state-synchronizer/stats")
+async def state_synchronizer_stats():
+    try:
+        return _state_synchronizer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/state-synchronizer/take-snapshot")
+async def state_synchronizer_take_snapshot(request: Request):
+    try:
+        body = await request.json()
+        entity_id = body.get("entity_id", "")
+        state_data = body.get("state_data", {})
+        sd = state_data if state_data else {}
+        snapshot = _state_synchronizer.take_snapshot(entity_id=entity_id, state_data=sd)
+        return snapshot.to_dict() if hasattr(snapshot, "to_dict") else snapshot
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/state-synchronizer/compute-delta")
+async def state_synchronizer_compute_delta(request: Request):
+    try:
+        body = await request.json()
+        from_snapshot_id = body.get("from_snapshot_id", "")
+        to_snapshot_id = body.get("to_snapshot_id", "")
+        delta = _state_synchronizer.compute_delta(
+            from_snapshot_id=from_snapshot_id, to_snapshot_id=to_snapshot_id,
+        )
+        return delta.to_dict() if delta else {"error": "Delta computation failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/state-synchronizer/start-recording")
+async def state_synchronizer_start_recording(request: Request):
+    try:
+        body = await request.json()
+        entity_id = body.get("entity_id", "")
+        session = _state_synchronizer.start_replay_recording(entity_id)
+        return session.to_dict() if session else {"error": "Recording start failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/state-synchronizer/replay-summary")
+async def state_synchronizer_replay_summary(session_id: str = ""):
+    try:
+        session = _state_synchronizer.get_replay_session(session_id)
+        return session.to_dict() if session else {"error": "Session not found"}
+    except Exception as e:
+        return {"error": str(e)}
