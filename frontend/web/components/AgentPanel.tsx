@@ -41,8 +41,20 @@ import LODSystemPanel from './LODSystemPanel';
 import DecalSystemPanel from './DecalSystemPanel';
 import PostProcessingPanel from './PostProcessingPanel';
 import SkeletonDeformerPanel from './SkeletonDeformerPanel';
+import AgenticCodingPanel from './AgenticCodingPanel';
+import GameReasonerPanel from './GameReasonerPanel';
+import NarrativeBranchPanel from './NarrativeBranchPanel';
+import ConcurrencyManagerPanel from './ConcurrencyManagerPanel';
+import VerificationPipelinePanel from './VerificationPipelinePanel';
+import PlaytestSimulatorPanel from './PlaytestSimulatorPanel';
+import Lighting2DPanel from './Lighting2DPanel';
+import ParallaxBackgroundPanel from './ParallaxBackgroundPanel';
+import BehaviorLibraryPanel from './BehaviorLibraryPanel';
+import AnimationCurvePanel from './AnimationCurvePanel';
+import RenderLayerPanel from './RenderLayerPanel';
+import StateSynchronizerPanel from './StateSynchronizerPanel';
 
-type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway' | 'session_snapshot' | 'trajectory_compressor' | 'skills_hub' | 'personality_system' | 'insights_generator' | 'provider_switch' | 'resource_serializer' | 'input_map' | 'animation_tree' | 'custom_object_types' | 'tile_map_optimizer' | 'chain_of_thought' | 'conversation_memory' | 'self_optimization' | 'collaboration_protocol' | 'knowledge_synthesis' | 'capability_registry' | 'physics_material' | 'gesture_recognizer' | 'shadow_casting' | 'entity_blueprint' | 'scene_transition' | 'audio_layering' | 'experiment_framework' | 'telemetry_pipeline' | 'audit_trail' | 'journal_system' | 'document_synthesizer' | 'simulation_runner' | 'material_graph' | 'occlusion_culling' | 'lod_system' | 'decal_system' | 'post_processing' | 'skeleton_deformer';
+type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway' | 'session_snapshot' | 'trajectory_compressor' | 'skills_hub' | 'personality_system' | 'insights_generator' | 'provider_switch' | 'resource_serializer' | 'input_map' | 'animation_tree' | 'custom_object_types' | 'tile_map_optimizer' | 'chain_of_thought' | 'conversation_memory' | 'self_optimization' | 'collaboration_protocol' | 'knowledge_synthesis' | 'capability_registry' | 'physics_material' | 'gesture_recognizer' | 'shadow_casting' | 'entity_blueprint' | 'scene_transition' | 'audio_layering' | 'experiment_framework' | 'telemetry_pipeline' | 'audit_trail' | 'journal_system' | 'document_synthesizer' | 'simulation_runner' | 'material_graph' | 'occlusion_culling' | 'lod_system' | 'decal_system' | 'post_processing' | 'skeleton_deformer' | 'agentic_coding' | 'game_reasoner' | 'narrative_branch' | 'concurrency_manager' | 'verification_pipeline' | 'playtest_simulator' | 'lighting_2d' | 'parallax_background' | 'behavior_library' | 'animation_curve' | 'render_layer' | 'state_synchronizer';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -93,6 +105,18 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'decal_system', label: 'Decals', icon: '🖼️' },
   { id: 'post_processing', label: 'Post FX', icon: '✨' },
   { id: 'skeleton_deformer', label: 'Skeleton', icon: '🦴' },
+  { id: 'agentic_coding', label: 'AI Coding', icon: '🤖' },
+  { id: 'game_reasoner', label: 'Game Reason', icon: '🎮' },
+  { id: 'narrative_branch', label: 'Narrative', icon: '📖' },
+  { id: 'concurrency_manager', label: 'Concurrency', icon: '🔄' },
+  { id: 'verification_pipeline', label: 'Verify', icon: '🔍' },
+  { id: 'playtest_simulator', label: 'Playtest', icon: '🕹️' },
+  { id: 'lighting_2d', label: 'Lighting 2D', icon: '💡' },
+  { id: 'parallax_background', label: 'Parallax', icon: '🌄' },
+  { id: 'behavior_library', label: 'Behaviors', icon: '📚' },
+  { id: 'animation_curve', label: 'Anim Curve', icon: '📈' },
+  { id: 'render_layer', label: 'Render Layers', icon: '🎭' },
+  { id: 'state_synchronizer', label: 'Sync', icon: '🔄' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -566,6 +590,18 @@ const AgentPanel: React.FC = () => {
       case 'decal_system': return <DecalSystemPanel />;
       case 'post_processing': return <PostProcessingPanel />;
       case 'skeleton_deformer': return <SkeletonDeformerPanel />;
+      case 'agentic_coding': return <AgenticCodingPanel />;
+      case 'game_reasoner': return <GameReasonerPanel />;
+      case 'narrative_branch': return <NarrativeBranchPanel />;
+      case 'concurrency_manager': return <ConcurrencyManagerPanel />;
+      case 'verification_pipeline': return <VerificationPipelinePanel />;
+      case 'playtest_simulator': return <PlaytestSimulatorPanel />;
+      case 'lighting_2d': return <Lighting2DPanel />;
+      case 'parallax_background': return <ParallaxBackgroundPanel />;
+      case 'behavior_library': return <BehaviorLibraryPanel />;
+      case 'animation_curve': return <AnimationCurvePanel />;
+      case 'render_layer': return <RenderLayerPanel />;
+      case 'state_synchronizer': return <StateSynchronizerPanel />;
       default: return null;
     }
   };
