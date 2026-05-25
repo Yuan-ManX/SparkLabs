@@ -280,7 +280,6 @@ from sparkai.agent.agent_import_pipeline import ImportPipelineEngine, AssetImpor
 from sparkai.agent.agent_prompt_optimizer import PromptOptimizer, PromptDomain, PromptTemplate, PromptSession, get_prompt_optimizer
 from sparkai.agent.agent_skill_composer import SkillComposer, SkillDomain, SkillStep, SkillChain, get_skill_composer
 from sparkai.agent.agent_developer_assistant import DeveloperAssistant, AssistantMode, DeveloperSession, Suggestion, get_developer_assistant
-from sparkai.agent.agent_playtest_simulator import PlaytestSimulator, PlayerStyle, PlaySession, PlaytestReport, get_playtest_simulator
 from sparkai.agent.agent_game_director import GameDirector, get_game_director
 from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_analyzer
 from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
@@ -325,6 +324,12 @@ from sparkai.agent.agent_audit_trail import AgentAuditTrail, get_audit_trail
 from sparkai.agent.agent_journal_system import AgentJournalSystem, get_journal_system
 from sparkai.agent.agent_document_synthesizer import AgentDocumentSynthesizer, get_document_synthesizer
 from sparkai.agent.agent_simulation_runner import AgentSimulationRunner, get_simulation_runner
+from sparkai.agent.agent_agentic_coding import AgenticCodingFramework, get_agentic_coding
+from sparkai.agent.agent_game_reasoner import GameDesignReasoner, get_game_reasoner
+from sparkai.agent.agent_narrative_branch import NarrativeBranchSystem, get_narrative_branch
+from sparkai.agent.agent_concurrency_manager import AgentConcurrencyManager, get_concurrency_manager
+from sparkai.agent.agent_verification_pipeline import AgentVerificationPipeline, get_verification_pipeline
+from sparkai.agent.agent_playtest_simulator import AgenticPlaytestSimulator, get_playtest_simulator
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -725,7 +730,7 @@ class AgentRuntime:
         self._ui_layout_system: Optional[UILayoutSystem] = None
         self._performance_overlay: Optional[PerformanceOverlay] = None
         self._developer_assistant: Optional[DeveloperAssistant] = None
-        self._playtest_simulator: Optional[PlaytestSimulator] = None
+        self._playtest_simulator: Optional[AgenticPlaytestSimulator] = None
         self._scene_streamer: Optional[SceneStreamer] = None
         self._project_exporter: Optional[ProjectExporter] = None
         self._camera_shake_system: Optional[CameraShakeSystem] = None
@@ -770,6 +775,12 @@ class AgentRuntime:
         self._journal_system: Optional[AgentJournalSystem] = None
         self._document_synthesizer: Optional[AgentDocumentSynthesizer] = None
         self._simulation_runner: Optional[AgentSimulationRunner] = None
+        self._agentic_coding: Optional[AgenticCodingFramework] = None
+        self._game_reasoner: Optional[GameDesignReasoner] = None
+        self._narrative_branch: Optional[NarrativeBranchSystem] = None
+        self._concurrency_manager: Optional[AgentConcurrencyManager] = None
+        self._verification_pipeline: Optional[AgentVerificationPipeline] = None
+        self._playtest_simulator: Optional[AgenticPlaytestSimulator] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -794,6 +805,12 @@ class AgentRuntime:
         self._journal_system_ok: bool = False
         self._document_synthesizer_ok: bool = False
         self._simulation_runner_ok: bool = False
+        self._agentic_coding_ok: bool = False
+        self._game_reasoner_ok: bool = False
+        self._narrative_branch_ok: bool = False
+        self._concurrency_manager_ok: bool = False
+        self._verification_pipeline_ok: bool = False
+        self._playtest_simulator_ok: bool = False
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -1085,6 +1102,12 @@ class AgentRuntime:
             self._journal_system = get_journal_system()
             self._document_synthesizer = get_document_synthesizer()
             self._simulation_runner = get_simulation_runner()
+            self._agentic_coding = get_agentic_coding()
+            self._game_reasoner = get_game_reasoner()
+            self._narrative_branch = get_narrative_branch()
+            self._concurrency_manager = get_concurrency_manager()
+            self._verification_pipeline = get_verification_pipeline()
+            self._playtest_simulator = get_playtest_simulator()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1109,6 +1132,12 @@ class AgentRuntime:
             self._journal_system_ok = self._journal_system is not None
             self._document_synthesizer_ok = self._document_synthesizer is not None
             self._simulation_runner_ok = self._simulation_runner is not None
+            self._agentic_coding_ok = self._agentic_coding is not None
+            self._game_reasoner_ok = self._game_reasoner is not None
+            self._narrative_branch_ok = self._narrative_branch is not None
+            self._concurrency_manager_ok = self._concurrency_manager is not None
+            self._verification_pipeline_ok = self._verification_pipeline is not None
+            self._playtest_simulator_ok = self._playtest_simulator is not None
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -1352,6 +1381,12 @@ class AgentRuntime:
             self._integration.register_subsystem("journal_system", self._journal_system)
             self._integration.register_subsystem("document_synthesizer", self._document_synthesizer)
             self._integration.register_subsystem("simulation_runner", self._simulation_runner)
+            self._integration.register_subsystem("agentic_coding", self._agentic_coding)
+            self._integration.register_subsystem("game_reasoner", self._game_reasoner)
+            self._integration.register_subsystem("narrative_branch", self._narrative_branch)
+            self._integration.register_subsystem("concurrency_manager", self._concurrency_manager)
+            self._integration.register_subsystem("verification_pipeline", self._verification_pipeline)
+            self._integration.register_subsystem("playtest_simulator", self._playtest_simulator)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -2638,6 +2673,12 @@ class AgentRuntime:
                 "journal_system": self._journal_system is not None,
                 "document_synthesizer": self._document_synthesizer is not None,
                 "simulation_runner": self._simulation_runner is not None,
+                "agentic_coding": self._agentic_coding is not None,
+                "game_reasoner": self._game_reasoner is not None,
+                "narrative_branch": self._narrative_branch is not None,
+                "concurrency_manager": self._concurrency_manager is not None,
+                "verification_pipeline": self._verification_pipeline is not None,
+                "playtest_simulator": self._playtest_simulator is not None,
             },
         }
 
@@ -3159,6 +3200,18 @@ class AgentRuntime:
             status["document_synthesizer_stats"] = self._document_synthesizer.get_stats()
         if self._simulation_runner:
             status["simulation_runner_stats"] = self._simulation_runner.get_stats()
+        if self._agentic_coding:
+            status["agentic_coding_stats"] = self._agentic_coding.get_stats()
+        if self._game_reasoner:
+            status["game_reasoner_stats"] = self._game_reasoner.get_stats()
+        if self._narrative_branch:
+            status["narrative_branch_stats"] = self._narrative_branch.get_stats()
+        if self._concurrency_manager:
+            status["concurrency_manager_stats"] = self._concurrency_manager.get_stats()
+        if self._verification_pipeline:
+            status["verification_pipeline_stats"] = self._verification_pipeline.get_stats()
+        if self._playtest_simulator:
+            status["playtest_simulator_stats"] = self._playtest_simulator.get_stats()
         return status
 
 
