@@ -227,6 +227,18 @@ from sparkai.engine.engine_behavior_library import get_behavior_library, Behavio
 from sparkai.engine.engine_animation_curve import get_animation_curve, CurveType, EasingFunction
 from sparkai.engine.engine_render_layer import get_render_layer
 from sparkai.engine.engine_state_synchronizer import get_state_synchronizer
+from sparkai.agent.agent_skill_synthesizer import get_skill_synthesizer, SynthesisTrigger, SkillMaturity, SynthesisStatus, PatternCategory
+from sparkai.agent.agent_security_scanner import get_security_scanner, ThreatCategory, ScanResult, SeverityLevel, ContentSource
+from sparkai.agent.agent_delegation_framework import get_delegation_framework, ChildRole, ChildStatus, DelegationStrategy, IsolationLevel
+from sparkai.agent.agent_kanban_coordinator import get_kanban_coordinator, KanbanColumn, TaskType, BlockReason, HandoffType
+from sparkai.agent.agent_streaming_scrubber import get_streaming_scrubber, ScrubState, BlockType as ScrubBlockType, VisibilityMode, ScrubberMode
+from sparkai.agent.agent_trajectory_generator import get_trajectory_generator, TrajectoryFormat, CompressionStrategy, TurnRole, QualityLabel
+from sparkai.engine.engine_visual_script_runtime import get_visual_script_runtime, NodeType, ParameterType, TargetLanguage, ValidationResult
+from sparkai.engine.engine_extension_sdk import get_extension_sdk, ExtensionType, ExtensionStatus, ExtensionSource, CapabilityScope
+from sparkai.engine.engine_signal_bus import get_signal_bus, SignalPriority, SignalScope, DeliveryMode, ConnectionState
+from sparkai.engine.engine_prefab_composer import get_prefab_composer, PrefabType, VariantSelection, PrefabStatus, CompositionMode
+from sparkai.engine.engine_interactive_audio import get_interactive_audio, AudioLayer, TransitionType, PlaybackState, IntensityLevel, AudioCategory
+from sparkai.engine.engine_import_pipeline import get_import_pipeline, AssetType, ImportStatus, CompressionLevel, OptimizationTarget
 
 router = APIRouter()
 
@@ -2287,6 +2299,33 @@ _behavior_library = get_behavior_library()
 _animation_curve = get_animation_curve()
 _render_layer = get_render_layer()
 _state_synchronizer = get_state_synchronizer()
+_SKILL_SYNTHESIZER = get_skill_synthesizer()
+_SECURITY_SCANNER = get_security_scanner()
+_DELEGATION_FRAMEWORK = get_delegation_framework()
+_KANBAN_COORDINATOR = get_kanban_coordinator()
+_STREAMING_SCRUBBER = get_streaming_scrubber()
+_TRAJECTORY_GENERATOR = get_trajectory_generator()
+_VISUAL_SCRIPT_RUNTIME = get_visual_script_runtime()
+_EXTENSION_SDK = get_extension_sdk()
+_SIGNAL_BUS = get_signal_bus()
+_PREFAB_COMPOSER = get_prefab_composer()
+_INTERACTIVE_AUDIO = get_interactive_audio()
+_IMPORT_PIPELINE = get_import_pipeline()
+
+_skill_synthesizer = get_skill_synthesizer()
+_security_scanner = get_security_scanner()
+_delegation_framework = get_delegation_framework()
+_kanban_coordinator = get_kanban_coordinator()
+_streaming_scrubber = get_streaming_scrubber()
+_trajectory_generator = get_trajectory_generator()
+_visual_script_runtime = get_visual_script_runtime()
+_extension_sdk = get_extension_sdk()
+_engine_signal_bus = get_signal_bus()
+_prefab_composer = get_prefab_composer()
+_interactive_audio = get_interactive_audio()
+_engine_import_pipeline = get_import_pipeline()
+_signal_bus: Any = None
+_import_pipeline: Any = None
 
 
 def _init_new_subsystems():
@@ -2334,6 +2373,36 @@ def _init_new_subsystems():
     _context_compressor = get_context_compressor()
     _tool_forge = get_tool_forge()
     _gateway = get_gateway()
+
+    from sparkai.agent.agent_skill_synthesizer import get_skill_synthesizer
+    from sparkai.agent.agent_security_scanner import get_security_scanner
+    from sparkai.agent.agent_delegation_framework import get_delegation_framework
+    from sparkai.agent.agent_kanban_coordinator import get_kanban_coordinator
+    from sparkai.agent.agent_streaming_scrubber import get_streaming_scrubber
+    from sparkai.agent.agent_trajectory_generator import get_trajectory_generator
+    from sparkai.engine.engine_visual_script_runtime import get_visual_script_runtime
+    from sparkai.engine.engine_extension_sdk import get_extension_sdk
+    from sparkai.engine.engine_signal_bus import get_signal_bus
+    from sparkai.engine.engine_prefab_composer import get_prefab_composer
+    from sparkai.engine.engine_interactive_audio import get_interactive_audio
+    from sparkai.engine.engine_import_pipeline import get_import_pipeline
+
+    global _skill_synthesizer, _security_scanner, _delegation_framework
+    global _kanban_coordinator, _streaming_scrubber, _trajectory_generator
+    global _visual_script_runtime, _extension_sdk, _engine_signal_bus
+    global _prefab_composer, _interactive_audio, _engine_import_pipeline
+    _skill_synthesizer = get_skill_synthesizer()
+    _security_scanner = get_security_scanner()
+    _delegation_framework = get_delegation_framework()
+    _kanban_coordinator = get_kanban_coordinator()
+    _streaming_scrubber = get_streaming_scrubber()
+    _trajectory_generator = get_trajectory_generator()
+    _visual_script_runtime = get_visual_script_runtime()
+    _extension_sdk = get_extension_sdk()
+    _engine_signal_bus = get_signal_bus()
+    _prefab_composer = get_prefab_composer()
+    _interactive_audio = get_interactive_audio()
+    _engine_import_pipeline = get_import_pipeline()
 
 
 # === Blueprint Engine ===
@@ -19179,5 +19248,564 @@ async def state_synchronizer_replay_summary(session_id: str = ""):
     try:
         session = _state_synchronizer.get_replay_session(session_id)
         return session.to_dict() if session else {"error": "Session not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Skill Synthesizer Endpoints
+# ============================================================
+
+@router.get("/skill-synthesizer/stats")
+async def skill_synthesizer_stats():
+    try:
+        return _skill_synthesizer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-synthesizer/observe-trajectory")
+async def skill_synthesizer_observe_trajectory(request: Request):
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "")
+        tool_sequence = body.get("tool_sequence", [])
+        success = body.get("success", True)
+        metadata = body.get("metadata", {})
+        _skill_synthesizer.observe_trajectory(session_id, tool_sequence, success, metadata)
+        return {"observed": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-synthesizer/analyze-patterns")
+async def skill_synthesizer_analyze_patterns(request: Request):
+    try:
+        body = await request.json()
+        session_ids = body.get("session_ids", [])
+        min_frequency = body.get("min_frequency", 2)
+        result = _skill_synthesizer.analyze_patterns(session_ids, min_frequency)
+        return result.to_dict() if hasattr(result, "to_dict") else {"patterns": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-synthesizer/synthesize-skill")
+async def skill_synthesizer_synthesize(request: Request):
+    try:
+        body = await request.json()
+        pattern_id = body.get("pattern_id", "")
+        skill_name = body.get("skill_name", "")
+        description = body.get("description", "")
+        result = _skill_synthesizer.synthesize_skill(pattern_id, skill_name, description)
+        return result.to_dict() if result else {"error": "Synthesis failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/skill-synthesizer/catalog")
+async def skill_synthesizer_catalog():
+    try:
+        return _skill_synthesizer.get_skill_catalog()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Security Scanner Endpoints
+# ============================================================
+
+@router.get("/security-scanner/stats")
+async def security_scanner_stats():
+    try:
+        return _security_scanner.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/security-scanner/scan-content")
+async def security_scanner_scan_content(request: Request):
+    try:
+        body = await request.json()
+        content = body.get("content", "")
+        source_type = body.get("source_type", "unknown")
+        context = body.get("context", {})
+        result = _security_scanner.scan_content(content, source_type, context)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/security-scanner/add-rule")
+async def security_scanner_add_rule(request: Request):
+    try:
+        body = await request.json()
+        rule_name = body.get("rule_name", "")
+        pattern = body.get("pattern", "")
+        category = body.get("category", "custom")
+        severity = body.get("severity", "medium")
+        result = _security_scanner.add_rule(rule_name, pattern, category, severity)
+        return result.to_dict() if hasattr(result, "to_dict") else {"added": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/security-scanner/active-rules")
+async def security_scanner_active_rules():
+    try:
+        return _security_scanner.get_active_rules()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Delegation Framework Endpoints
+# ============================================================
+
+@router.get("/delegation-framework/stats")
+async def delegation_framework_stats():
+    try:
+        return _delegation_framework.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/delegation-framework/register-child")
+async def delegation_framework_register_child(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        role = body.get("role", "worker")
+        capabilities = body.get("capabilities", [])
+        result = _delegation_framework.register_child(name, role, capabilities)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/delegation-framework/create-pool")
+async def delegation_framework_create_pool(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        strategy = body.get("strategy", "round_robin")
+        child_ids = body.get("child_ids", [])
+        result = _delegation_framework.create_pool(name, strategy, child_ids)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/delegation-framework/delegate-task")
+async def delegation_framework_delegate_task(request: Request):
+    try:
+        body = await request.json()
+        task_description = body.get("task_description", "")
+        pool_id = body.get("pool_id", "")
+        target_child_id = body.get("target_child_id", "")
+        priority = body.get("priority", "normal")
+        result = _delegation_framework.delegate_task(task_description, pool_id, target_child_id, priority)
+        return result.to_dict() if result else {"error": "Delegation failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Kanban Coordinator Endpoints
+# ============================================================
+
+@router.get("/kanban-coordinator/stats")
+async def kanban_coordinator_stats():
+    try:
+        return _kanban_coordinator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/kanban-coordinator/create-board")
+async def kanban_coordinator_create_board(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        columns = body.get("columns", [])
+        result = _kanban_coordinator.create_board(name, columns)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/kanban-coordinator/create-task")
+async def kanban_coordinator_create_task(request: Request):
+    try:
+        body = await request.json()
+        board_id = body.get("board_id", "")
+        title = body.get("title", "")
+        description = body.get("description", "")
+        task_type = body.get("task_type", "feature")
+        assignee = body.get("assignee", "")
+        result = _kanban_coordinator.create_task(board_id, title, description, task_type, assignee)
+        return result.to_dict() if result else {"error": "Task creation failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/kanban-coordinator/move-task")
+async def kanban_coordinator_move_task(request: Request):
+    try:
+        body = await request.json()
+        task_id = body.get("task_id", "")
+        target_column = body.get("target_column", "")
+        result = _kanban_coordinator.move_task(task_id, target_column)
+        return result.to_dict() if hasattr(result, "to_dict") else {"moved": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Streaming Scrubber Endpoints
+# ============================================================
+
+@router.get("/streaming-scrubber/stats")
+async def streaming_scrubber_stats():
+    try:
+        return _streaming_scrubber.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/streaming-scrubber/create-session")
+async def streaming_scrubber_create_session(request: Request):
+    try:
+        body = await request.json()
+        source = body.get("source", "")
+        mode = body.get("mode", "auto")
+        visibility = body.get("visibility", "public")
+        result = _streaming_scrubber.create_session(source, mode, visibility)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/streaming-scrubber/process-chunk")
+async def streaming_scrubber_process_chunk(request: Request):
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "")
+        chunk = body.get("chunk", "")
+        metadata = body.get("metadata", {})
+        result = _streaming_scrubber.process_chunk(session_id, chunk, metadata)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/streaming-scrubber/add-rule")
+async def streaming_scrubber_add_rule(request: Request):
+    try:
+        body = await request.json()
+        rule_name = body.get("rule_name", "")
+        block_type = body.get("block_type", "keyword")
+        pattern = body.get("pattern", "")
+        replacement = body.get("replacement", "")
+        result = _streaming_scrubber.add_rule(rule_name, block_type, pattern, replacement)
+        return result.to_dict() if hasattr(result, "to_dict") else {"added": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Trajectory Generator Endpoints
+# ============================================================
+
+@router.get("/trajectory-generator/stats")
+async def trajectory_generator_stats():
+    try:
+        return _trajectory_generator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/trajectory-generator/start-session")
+async def trajectory_generator_start_session(request: Request):
+    try:
+        body = await request.json()
+        source = body.get("source", "")
+        format_type = body.get("format", "json")
+        compress = body.get("compress", False)
+        result = _trajectory_generator.start_session(source, format_type, compress)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/trajectory-generator/record-turn")
+async def trajectory_generator_record_turn(request: Request):
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "")
+        role = body.get("role", "user")
+        content = body.get("content", "")
+        metadata = body.get("metadata", {})
+        result = _trajectory_generator.record_turn(session_id, role, content, metadata)
+        return result.to_dict() if hasattr(result, "to_dict") else {"recorded": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/trajectory-generator/end-session")
+async def trajectory_generator_end_session(request: Request):
+    try:
+        body = await request.json()
+        session_id = body.get("session_id", "")
+        result = _trajectory_generator.end_session(session_id)
+        return result.to_dict() if result else {"error": "Session not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Visual Script Runtime Endpoints
+# ============================================================
+
+@router.get("/visual-script-runtime/stats")
+async def visual_script_runtime_stats():
+    try:
+        return _visual_script_runtime.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/visual-script-runtime/create-graph")
+async def visual_script_runtime_create_graph(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        graph_type = body.get("graph_type", "behavior")
+        result = _visual_script_runtime.create_graph(name, graph_type)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/visual-script-runtime/add-node")
+async def visual_script_runtime_add_node(request: Request):
+    try:
+        body = await request.json()
+        graph_id = body.get("graph_id", "")
+        node_type = body.get("node_type", "action")
+        name = body.get("name", "")
+        position = body.get("position", [0, 0])
+        parameters = body.get("parameters", {})
+        result = _visual_script_runtime.add_node(graph_id, node_type, name, position, parameters)
+        return result.to_dict() if result else {"error": "Node addition failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/visual-script-runtime/transpile")
+async def visual_script_runtime_transpile(request: Request):
+    try:
+        body = await request.json()
+        graph_id = body.get("graph_id", "")
+        target_language = body.get("target_language", "gdscript")
+        result = _visual_script_runtime.transpile(graph_id, target_language)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Extension SDK Endpoints
+# ============================================================
+
+@router.get("/extension-sdk/stats")
+async def extension_sdk_stats():
+    try:
+        return _extension_sdk.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/extension-sdk/register-extension")
+async def extension_sdk_register_extension(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        version = body.get("version", "1.0.0")
+        extension_type = body.get("extension_type", "tool")
+        source = body.get("source", "local")
+        result = _extension_sdk.register_extension(name, version, extension_type, source)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/extension-sdk/search-extensions")
+async def extension_sdk_search_extensions(request: Request):
+    try:
+        body = await request.json()
+        query = body.get("query", "")
+        extension_type = body.get("extension_type", "")
+        limit = body.get("limit", 20)
+        result = _extension_sdk.search_extensions(query, extension_type, limit)
+        return {"results": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/extension-sdk/capabilities")
+async def extension_sdk_capabilities():
+    try:
+        return _extension_sdk.get_capabilities()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Signal Bus Endpoints
+# ============================================================
+
+@router.get("/signal-bus/stats")
+async def signal_bus_stats():
+    try:
+        return _engine_signal_bus.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/signal-bus/define-signal")
+async def signal_bus_define_signal(request: Request):
+    try:
+        body = await request.json()
+        signal_name = body.get("signal_name", "")
+        signal_type = body.get("signal_type", "")
+        parameters = body.get("parameters", [])
+        result = _engine_signal_bus.define_signal(signal_name, signal_type, parameters)
+        return result.to_dict() if hasattr(result, "to_dict") else {"defined": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/signal-bus/emit-signal")
+async def signal_bus_emit_signal(request: Request):
+    try:
+        body = await request.json()
+        signal_name = body.get("signal_name", "")
+        data = body.get("data", {})
+        priority = body.get("priority", "normal")
+        result = _engine_signal_bus.emit_signal(signal_name, data, priority)
+        return {"emitted": True, "listeners": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/signal-bus/history")
+async def signal_bus_history(limit: int = 100):
+    try:
+        return _engine_signal_bus.get_history(limit)
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Prefab Composer Endpoints
+# ============================================================
+
+@router.get("/prefab-composer/stats")
+async def prefab_composer_stats():
+    try:
+        return _prefab_composer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/prefab-composer/create-prefab")
+async def prefab_composer_create_prefab(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        prefab_type = body.get("prefab_type", "scene")
+        components = body.get("components", [])
+        result = _prefab_composer.create_prefab(name, prefab_type, components)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/prefab-composer/add-component")
+async def prefab_composer_add_component(request: Request):
+    try:
+        body = await request.json()
+        prefab_id = body.get("prefab_id", "")
+        component_type = body.get("component_type", "")
+        properties = body.get("properties", {})
+        result = _prefab_composer.add_component(prefab_id, component_type, properties)
+        return result.to_dict() if result else {"error": "Component addition failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/prefab-composer/instantiate")
+async def prefab_composer_instantiate(request: Request):
+    try:
+        body = await request.json()
+        prefab_id = body.get("prefab_id", "")
+        parent_scene_id = body.get("parent_scene_id", "")
+        position = body.get("position", None)
+        variant_id = body.get("variant_id", "")
+        overrides = body.get("overrides", None)
+        result = _prefab_composer.instantiate_prefab(prefab_id, parent_scene_id, position, variant_id, overrides)
+        return result.to_dict() if result else {"error": "Instantiation failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Interactive Audio Endpoints
+# ============================================================
+
+@router.get("/interactive-audio/stats")
+async def interactive_audio_stats():
+    try:
+        return _interactive_audio.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/interactive-audio/create-stem")
+async def interactive_audio_create_stem(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        audio_path = body.get("audio_path", "")
+        category = body.get("category", "music")
+        layer = body.get("layer", "base")
+        result = _interactive_audio.create_stem(name, audio_path, category, layer)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/interactive-audio/create-playlist")
+async def interactive_audio_create_playlist(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        stem_ids = body.get("stem_ids", [])
+        transition = body.get("transition", "crossfade")
+        result = _interactive_audio.create_playlist(name, stem_ids, transition)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/interactive-audio/start-playlist")
+async def interactive_audio_start_playlist(request: Request):
+    try:
+        body = await request.json()
+        playlist_id = body.get("playlist_id", "")
+        intensity = body.get("intensity", 0.5)
+        loop = body.get("loop", True)
+        result = _interactive_audio.start_playlist(playlist_id, intensity, loop)
+        return result.to_dict() if hasattr(result, "to_dict") else {"started": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Import Pipeline (v2) Endpoints
+# ============================================================
+
+@router.get("/import-pipeline/stats")
+async def import_pipeline_v2_stats():
+    try:
+        return _engine_import_pipeline.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/import-pipeline/import-asset")
+async def import_pipeline_v2_import_asset(request: Request):
+    try:
+        body = await request.json()
+        source_path = body.get("source_path", "")
+        asset_type = body.get("asset_type", "texture")
+        compression = body.get("compression", "default")
+        result = _engine_import_pipeline.import_asset(source_path, asset_type, compression)
+        return result.to_dict() if result else {"error": "Import failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/import-pipeline/create-profile")
+async def import_pipeline_v2_create_profile(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        asset_type = body.get("asset_type", "")
+        compression = body.get("compression", "default")
+        optimization = body.get("optimization", "balanced")
+        result = _engine_import_pipeline.create_profile(name, asset_type, compression, optimization)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/import-pipeline/import-history")
+async def import_pipeline_v2_import_history(limit: int = 20):
+    try:
+        result = _engine_import_pipeline.get_import_history()
+        return {"imports": result[:limit]}
     except Exception as e:
         return {"error": str(e)}
