@@ -53,8 +53,20 @@ import BehaviorLibraryPanel from './BehaviorLibraryPanel';
 import AnimationCurvePanel from './AnimationCurvePanel';
 import RenderLayerPanel from './RenderLayerPanel';
 import StateSynchronizerPanel from './StateSynchronizerPanel';
+import SkillSynthesizerPanel from './SkillSynthesizerPanel';
+import SecurityScannerPanel from './SecurityScannerPanel';
+import DelegationFrameworkPanel from './DelegationFrameworkPanel';
+import KanbanCoordinatorPanel from './KanbanCoordinatorPanel';
+import StreamingScrubberPanel from './StreamingScrubberPanel';
+import TrajectoryGeneratorPanel from './TrajectoryGeneratorPanel';
+import VisualScriptRuntimePanel from './VisualScriptRuntimePanel';
+import ExtensionSdkPanel from './ExtensionSdkPanel';
+import SignalBusPanel from './SignalBusPanel';
+import PrefabComposerPanel from './PrefabComposerPanel';
+import InteractiveAudioPanel from './InteractiveAudioPanel';
+import ImportPipelinePanel from './ImportPipelinePanel';
 
-type TabId = 'commands' | 'agents' | 'studio' | 'pipeline' | 'mesh' | 'forge' | 'health' | 'learning_loop' | 'cron_scheduler' | 'memory_graph' | 'context_compressor' | 'tool_forge' | 'gateway' | 'session_snapshot' | 'trajectory_compressor' | 'skills_hub' | 'personality_system' | 'insights_generator' | 'provider_switch' | 'resource_serializer' | 'input_map' | 'animation_tree' | 'custom_object_types' | 'tile_map_optimizer' | 'chain_of_thought' | 'conversation_memory' | 'self_optimization' | 'collaboration_protocol' | 'knowledge_synthesis' | 'capability_registry' | 'physics_material' | 'gesture_recognizer' | 'shadow_casting' | 'entity_blueprint' | 'scene_transition' | 'audio_layering' | 'experiment_framework' | 'telemetry_pipeline' | 'audit_trail' | 'journal_system' | 'document_synthesizer' | 'simulation_runner' | 'material_graph' | 'occlusion_culling' | 'lod_system' | 'decal_system' | 'post_processing' | 'skeleton_deformer' | 'agentic_coding' | 'game_reasoner' | 'narrative_branch' | 'concurrency_manager' | 'verification_pipeline' | 'playtest_simulator' | 'lighting_2d' | 'parallax_background' | 'behavior_library' | 'animation_curve' | 'render_layer' | 'state_synchronizer';
+type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -117,6 +129,18 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'animation_curve', label: 'Anim Curve', icon: '📈' },
   { id: 'render_layer', label: 'Render Layers', icon: '🎭' },
   { id: 'state_synchronizer', label: 'Sync', icon: '🔄' },
+  { id: 'skill-synthesizer', label: 'Skill Synth', icon: '🧠' },
+  { id: 'security-scanner', label: 'Security', icon: '🔒' },
+  { id: 'delegation-framework', label: 'Delegate', icon: '🤝' },
+  { id: 'kanban-coordinator', label: 'Kanban', icon: '📋' },
+  { id: 'streaming-scrubber', label: 'Scrubber', icon: '🧹' },
+  { id: 'trajectory-generator', label: 'Trajectory', icon: '📊' },
+  { id: 'visual-script-runtime', label: 'Visual Script', icon: '📐' },
+  { id: 'extension-sdk', label: 'Extensions', icon: '🔌' },
+  { id: 'signal-bus', label: 'Signals', icon: '📡' },
+  { id: 'prefab-composer', label: 'Prefabs', icon: '🧩' },
+  { id: 'interactive-audio', label: 'Interactive Audio', icon: '🎵' },
+  { id: 'import-pipeline', label: 'Import', icon: '📥' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -602,6 +626,18 @@ const AgentPanel: React.FC = () => {
       case 'animation_curve': return <AnimationCurvePanel />;
       case 'render_layer': return <RenderLayerPanel />;
       case 'state_synchronizer': return <StateSynchronizerPanel />;
+      case 'skill-synthesizer': return <SkillSynthesizerPanel />;
+      case 'security-scanner': return <SecurityScannerPanel />;
+      case 'delegation-framework': return <DelegationFrameworkPanel />;
+      case 'kanban-coordinator': return <KanbanCoordinatorPanel />;
+      case 'streaming-scrubber': return <StreamingScrubberPanel />;
+      case 'trajectory-generator': return <TrajectoryGeneratorPanel />;
+      case 'visual-script-runtime': return <VisualScriptRuntimePanel />;
+      case 'extension-sdk': return <ExtensionSdkPanel />;
+      case 'signal-bus': return <SignalBusPanel />;
+      case 'prefab-composer': return <PrefabComposerPanel />;
+      case 'interactive-audio': return <InteractiveAudioPanel />;
+      case 'import-pipeline': return <ImportPipelinePanel />;
       default: return null;
     }
   };
