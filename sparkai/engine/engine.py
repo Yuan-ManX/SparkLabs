@@ -160,6 +160,12 @@ from sparkai.engine.engine_behavior_library import ObjectBehaviorLibrary, get_be
 from sparkai.engine.engine_animation_curve import AnimationCurveEditor, get_animation_curve
 from sparkai.engine.engine_render_layer import RenderLayerSystem, get_render_layer
 from sparkai.engine.engine_state_synchronizer import GameStateSynchronizer, get_state_synchronizer
+from sparkai.engine.engine_visual_script_runtime import VisualScriptRuntime, get_visual_script_runtime
+from sparkai.engine.engine_extension_sdk import ExtensionSDK, get_extension_sdk
+from sparkai.engine.engine_signal_bus import SignalBus as EngineSignalBus, get_signal_bus as get_engine_signal_bus
+from sparkai.engine.engine_prefab_composer import PrefabComposer, get_prefab_composer
+from sparkai.engine.engine_interactive_audio import InteractiveAudio, get_interactive_audio
+from sparkai.engine.engine_import_pipeline import ImportPipeline, get_import_pipeline
 
 
 class SparkEngine:
@@ -325,6 +331,12 @@ class SparkEngine:
         self._animation_curve = get_animation_curve()
         self._render_layer = get_render_layer()
         self._state_synchronizer = get_state_synchronizer()
+        self._visual_script_runtime = get_visual_script_runtime()
+        self._extension_sdk = get_extension_sdk()
+        self._engine_signal_bus = get_engine_signal_bus()
+        self._prefab_composer = get_prefab_composer()
+        self._interactive_audio = get_interactive_audio()
+        self._import_pipeline = get_import_pipeline()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -620,6 +632,12 @@ class SparkEngine:
             "animation_curve": self._animation_curve.get_stats(),
             "render_layer": self._render_layer.get_stats(),
             "state_synchronizer": self._state_synchronizer.get_stats(),
+            "visual_script_runtime": self._visual_script_runtime.get_stats(),
+            "extension_sdk": self._extension_sdk.get_stats(),
+            "engine_signal_bus": self._engine_signal_bus.get_stats(),
+            "prefab_composer": self._prefab_composer.get_stats(),
+            "interactive_audio": self._interactive_audio.get_stats(),
+            "import_pipeline": self._import_pipeline.get_stats(),
         }
 
     @property
@@ -965,6 +983,30 @@ class SparkEngine:
     @property
     def state_synchronizer(self) -> GameStateSynchronizer:
         return self._state_synchronizer
+
+    @property
+    def visual_script_runtime(self) -> VisualScriptRuntime:
+        return self._visual_script_runtime
+
+    @property
+    def extension_sdk(self) -> ExtensionSDK:
+        return self._extension_sdk
+
+    @property
+    def engine_signal_bus(self) -> EngineSignalBus:
+        return self._engine_signal_bus
+
+    @property
+    def prefab_composer(self) -> PrefabComposer:
+        return self._prefab_composer
+
+    @property
+    def interactive_audio(self) -> InteractiveAudio:
+        return self._interactive_audio
+
+    @property
+    def import_pipeline(self) -> ImportPipeline:
+        return self._import_pipeline
 
 
 @dataclass

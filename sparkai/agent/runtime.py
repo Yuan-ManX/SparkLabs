@@ -330,6 +330,12 @@ from sparkai.agent.agent_narrative_branch import NarrativeBranchSystem, get_narr
 from sparkai.agent.agent_concurrency_manager import AgentConcurrencyManager, get_concurrency_manager
 from sparkai.agent.agent_verification_pipeline import AgentVerificationPipeline, get_verification_pipeline
 from sparkai.agent.agent_playtest_simulator import AgenticPlaytestSimulator, get_playtest_simulator
+from sparkai.agent.agent_skill_synthesizer import SkillSynthesizer, get_skill_synthesizer
+from sparkai.agent.agent_security_scanner import SecurityScanner, get_security_scanner
+from sparkai.agent.agent_delegation_framework import DelegationFramework, get_delegation_framework
+from sparkai.agent.agent_kanban_coordinator import KanbanCoordinator, get_kanban_coordinator
+from sparkai.agent.agent_streaming_scrubber import StreamingScrubber, get_streaming_scrubber
+from sparkai.agent.agent_trajectory_generator import TrajectoryGenerator, get_trajectory_generator
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -781,6 +787,12 @@ class AgentRuntime:
         self._concurrency_manager: Optional[AgentConcurrencyManager] = None
         self._verification_pipeline: Optional[AgentVerificationPipeline] = None
         self._playtest_simulator: Optional[AgenticPlaytestSimulator] = None
+        self._skill_synthesizer: Optional[SkillSynthesizer] = None
+        self._security_scanner: Optional[SecurityScanner] = None
+        self._delegation_framework: Optional[DelegationFramework] = None
+        self._kanban_coordinator: Optional[KanbanCoordinator] = None
+        self._streaming_scrubber: Optional[StreamingScrubber] = None
+        self._trajectory_generator: Optional[TrajectoryGenerator] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -811,6 +823,12 @@ class AgentRuntime:
         self._concurrency_manager_ok: bool = False
         self._verification_pipeline_ok: bool = False
         self._playtest_simulator_ok: bool = False
+        self._skill_synthesizer_ok: bool = False
+        self._security_scanner_ok: bool = False
+        self._delegation_framework_ok: bool = False
+        self._kanban_coordinator_ok: bool = False
+        self._streaming_scrubber_ok: bool = False
+        self._trajectory_generator_ok: bool = False
 
         self._agents: Dict[str, SparkAgent] = {}
         self._operation_count: int = 0
@@ -1108,6 +1126,12 @@ class AgentRuntime:
             self._concurrency_manager = get_concurrency_manager()
             self._verification_pipeline = get_verification_pipeline()
             self._playtest_simulator = get_playtest_simulator()
+            self._skill_synthesizer = get_skill_synthesizer()
+            self._security_scanner = get_security_scanner()
+            self._delegation_framework = get_delegation_framework()
+            self._kanban_coordinator = get_kanban_coordinator()
+            self._streaming_scrubber = get_streaming_scrubber()
+            self._trajectory_generator = get_trajectory_generator()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1138,6 +1162,12 @@ class AgentRuntime:
             self._concurrency_manager_ok = self._concurrency_manager is not None
             self._verification_pipeline_ok = self._verification_pipeline is not None
             self._playtest_simulator_ok = self._playtest_simulator is not None
+            self._skill_synthesizer_ok = self._skill_synthesizer is not None
+            self._security_scanner_ok = self._security_scanner is not None
+            self._delegation_framework_ok = self._delegation_framework is not None
+            self._kanban_coordinator_ok = self._kanban_coordinator is not None
+            self._streaming_scrubber_ok = self._streaming_scrubber is not None
+            self._trajectory_generator_ok = self._trajectory_generator is not None
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2679,6 +2709,12 @@ class AgentRuntime:
                 "concurrency_manager": self._concurrency_manager is not None,
                 "verification_pipeline": self._verification_pipeline is not None,
                 "playtest_simulator": self._playtest_simulator is not None,
+                "skill_synthesizer": self._skill_synthesizer is not None,
+                "security_scanner": self._security_scanner is not None,
+                "delegation_framework": self._delegation_framework is not None,
+                "kanban_coordinator": self._kanban_coordinator is not None,
+                "streaming_scrubber": self._streaming_scrubber is not None,
+                "trajectory_generator": self._trajectory_generator is not None,
             },
         }
 
@@ -3212,6 +3248,18 @@ class AgentRuntime:
             status["verification_pipeline_stats"] = self._verification_pipeline.get_stats()
         if self._playtest_simulator:
             status["playtest_simulator_stats"] = self._playtest_simulator.get_stats()
+        if self._skill_synthesizer:
+            status["skill_synthesizer_stats"] = self._skill_synthesizer.get_stats()
+        if self._security_scanner:
+            status["security_scanner_stats"] = self._security_scanner.get_stats()
+        if self._delegation_framework:
+            status["delegation_framework_stats"] = self._delegation_framework.get_stats()
+        if self._kanban_coordinator:
+            status["kanban_coordinator_stats"] = self._kanban_coordinator.get_stats()
+        if self._streaming_scrubber:
+            status["streaming_scrubber_stats"] = self._streaming_scrubber.get_stats()
+        if self._trajectory_generator:
+            status["trajectory_generator_stats"] = self._trajectory_generator.get_stats()
         return status
 
 
