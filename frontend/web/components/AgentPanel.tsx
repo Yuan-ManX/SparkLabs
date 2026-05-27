@@ -65,8 +65,20 @@ import SignalBusPanel from './SignalBusPanel';
 import PrefabComposerPanel from './PrefabComposerPanel';
 import InteractiveAudioPanel from './InteractiveAudioPanel';
 import ImportPipelinePanel from './ImportPipelinePanel';
+import DeveloperOraclePanel from './DeveloperOraclePanel';
+import ContextWeaverPanel from './ContextWeaverPanel';
+import SessionNexusPanel from './SessionNexusPanel';
+import PersonaVaultPanel from './PersonaVaultPanel';
+import VoiceBridgePanel from './VoiceBridgePanel';
+import EcosystemHubPanel from './EcosystemHubPanel';
+import FrameComposerPanel from './FrameComposerPanel';
+import SpatialClusterPanel from './SpatialClusterPanel';
+import AssetStreamerPanel from './AssetStreamerPanel';
+import DeterministicReplayPanel from './DeterministicReplayPanel';
+import InputAbstractionPanel from './InputAbstractionPanel';
+import ProfileLoaderPanel from './ProfileLoaderPanel';
 
-type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime';
+type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime' | 'developer-oracle' | 'context-weaver' | 'session-nexus' | 'persona-vault' | 'voice-bridge' | 'ecosystem-hub' | 'frame-composer' | 'spatial-cluster' | 'asset-streamer' | 'deterministic-replay' | 'input-abstraction' | 'profile-loader';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -141,6 +153,18 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'prefab-composer', label: 'Prefabs', icon: '🧩' },
   { id: 'interactive-audio', label: 'Interactive Audio', icon: '🎵' },
   { id: 'import-pipeline', label: 'Import', icon: '📥' },
+  { id: 'developer-oracle', label: 'Dev Oracle 🔮', icon: '🔮' },
+  { id: 'context-weaver', label: 'Context Weave 🕸️', icon: '🕸️' },
+  { id: 'session-nexus', label: 'Session Nexus 🔗', icon: '🔗' },
+  { id: 'persona-vault', label: 'Persona Vault 🎭', icon: '🎭' },
+  { id: 'voice-bridge', label: 'Voice Bridge 🎤', icon: '🎤' },
+  { id: 'ecosystem-hub', label: 'Ecosystem Hub 🌐', icon: '🌐' },
+  { id: 'frame-composer', label: 'Frame Composer 🎬', icon: '🎬' },
+  { id: 'spatial-cluster', label: 'Spatial Cluster 📦', icon: '📦' },
+  { id: 'asset-streamer', label: 'Asset Streamer 📡', icon: '📡' },
+  { id: 'deterministic-replay', label: 'Replay System ⏪', icon: '⏪' },
+  { id: 'input-abstraction', label: 'Input Layer 🎮', icon: '🎮' },
+  { id: 'profile-loader', label: 'Profile Config ⚙️', icon: '⚙️' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -638,6 +662,18 @@ const AgentPanel: React.FC = () => {
       case 'prefab-composer': return <PrefabComposerPanel />;
       case 'interactive-audio': return <InteractiveAudioPanel />;
       case 'import-pipeline': return <ImportPipelinePanel />;
+      case 'developer-oracle': return <DeveloperOraclePanel />;
+      case 'context-weaver': return <ContextWeaverPanel />;
+      case 'session-nexus': return <SessionNexusPanel />;
+      case 'persona-vault': return <PersonaVaultPanel />;
+      case 'voice-bridge': return <VoiceBridgePanel />;
+      case 'ecosystem-hub': return <EcosystemHubPanel />;
+      case 'frame-composer': return <FrameComposerPanel />;
+      case 'spatial-cluster': return <SpatialClusterPanel />;
+      case 'asset-streamer': return <AssetStreamerPanel />;
+      case 'deterministic-replay': return <DeterministicReplayPanel />;
+      case 'input-abstraction': return <InputAbstractionPanel />;
+      case 'profile-loader': return <ProfileLoaderPanel />;
       default: return null;
     }
   };
