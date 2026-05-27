@@ -239,6 +239,18 @@ from sparkai.engine.engine_signal_bus import get_signal_bus, SignalPriority, Sig
 from sparkai.engine.engine_prefab_composer import get_prefab_composer, PrefabType, VariantSelection, PrefabStatus, CompositionMode
 from sparkai.engine.engine_interactive_audio import get_interactive_audio, AudioLayer, TransitionType, PlaybackState, IntensityLevel, AudioCategory
 from sparkai.engine.engine_import_pipeline import get_import_pipeline, AssetType, ImportStatus, CompressionLevel, OptimizationTarget
+from sparkai.agent.agent_developer_oracle import get_developer_oracle
+from sparkai.agent.agent_context_weaver import get_context_weaver
+from sparkai.agent.agent_session_nexus import get_session_nexus
+from sparkai.agent.agent_persona_vault import get_persona_vault
+from sparkai.agent.agent_voice_bridge import get_voice_bridge
+from sparkai.agent.agent_ecosystem_hub import get_ecosystem_hub
+from sparkai.engine.engine_frame_composer import get_frame_composer
+from sparkai.engine.engine_spatial_cluster import get_spatial_cluster
+from sparkai.engine.engine_asset_streamer import get_asset_streamer
+from sparkai.engine.engine_deterministic_replay import get_deterministic_replay
+from sparkai.engine.engine_input_abstraction import get_input_abstraction
+from sparkai.engine.engine_profile_loader import get_profile_loader
 
 router = APIRouter()
 
@@ -2324,6 +2336,18 @@ _engine_signal_bus = get_signal_bus()
 _prefab_composer = get_prefab_composer()
 _interactive_audio = get_interactive_audio()
 _engine_import_pipeline = get_import_pipeline()
+_developer_oracle = get_developer_oracle()
+_context_weaver = get_context_weaver()
+_session_nexus = get_session_nexus()
+_persona_vault = get_persona_vault()
+_voice_bridge = get_voice_bridge()
+_ecosystem_hub = get_ecosystem_hub()
+_frame_composer = get_frame_composer()
+_spatial_cluster = get_spatial_cluster()
+_asset_streamer = get_asset_streamer()
+_deterministic_replay = get_deterministic_replay()
+_input_abstraction = get_input_abstraction()
+_profile_loader = get_profile_loader()
 _signal_bus: Any = None
 _import_pipeline: Any = None
 
@@ -19807,5 +19831,450 @@ async def import_pipeline_v2_import_history(limit: int = 20):
     try:
         result = _engine_import_pipeline.get_import_history()
         return {"imports": result[:limit]}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Developer Oracle Endpoints
+# ============================================================
+
+@router.get("/developer-oracle/stats")
+async def developer_oracle_stats():
+    try:
+        return _developer_oracle.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/developer-oracle/create-profile")
+async def developer_oracle_create_profile(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        expertise = body.get("expertise", [])
+        preferences = body.get("preferences", {})
+        result = _developer_oracle.create_profile(name, expertise, preferences)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/developer-oracle/analyze-patterns")
+async def developer_oracle_analyze_patterns(request: Request):
+    try:
+        body = await request.json()
+        code_snippets = body.get("code_snippets", [])
+        analysis_depth = body.get("analysis_depth", "standard")
+        result = _developer_oracle.analyze_patterns(code_snippets, analysis_depth)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Context Weaver Endpoints
+# ============================================================
+
+@router.get("/context-weaver/stats")
+async def context_weaver_stats():
+    try:
+        return _context_weaver.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/context-weaver/create-document")
+async def context_weaver_create_document(request: Request):
+    try:
+        body = await request.json()
+        title = body.get("title", "")
+        content = body.get("content", "")
+        doc_type = body.get("doc_type", "specification")
+        tags = body.get("tags", [])
+        result = _context_weaver.create_document(title, content, doc_type, tags)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/context-weaver/weave-context")
+async def context_weaver_weave_context(request: Request):
+    try:
+        body = await request.json()
+        source_ids = body.get("source_ids", [])
+        target_format = body.get("target_format", "summary")
+        weave_config = body.get("weave_config", {})
+        result = _context_weaver.weave_context(source_ids, target_format, weave_config)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Session Nexus Endpoints
+# ============================================================
+
+@router.get("/session-nexus/stats")
+async def session_nexus_stats():
+    try:
+        return _session_nexus.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/session-nexus/create-session")
+async def session_nexus_create_session(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        participant_ids = body.get("participant_ids", [])
+        session_type = body.get("session_type", "collaborative")
+        result = _session_nexus.create_session(name, participant_ids, session_type)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/session-nexus/create-bridge")
+async def session_nexus_create_bridge(request: Request):
+    try:
+        body = await request.json()
+        source_session_id = body.get("source_session_id", "")
+        target_session_id = body.get("target_session_id", "")
+        bridge_type = body.get("bridge_type", "shared-context")
+        result = _session_nexus.create_bridge(source_session_id, target_session_id, bridge_type)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Persona Vault Endpoints
+# ============================================================
+
+@router.get("/persona-vault/stats")
+async def persona_vault_stats():
+    try:
+        return _persona_vault.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/persona-vault/create-persona")
+async def persona_vault_create_persona(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        traits = body.get("traits", {})
+        background = body.get("background", "")
+        voice_style = body.get("voice_style", "neutral")
+        result = _persona_vault.create_persona(name, traits, background, voice_style)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/persona-vault/export-persona")
+async def persona_vault_export_persona(request: Request):
+    try:
+        body = await request.json()
+        persona_id = body.get("persona_id", "")
+        export_format = body.get("export_format", "json")
+        result = _persona_vault.export_persona(persona_id, export_format)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Voice Bridge Endpoints
+# ============================================================
+
+@router.get("/voice-bridge/stats")
+async def voice_bridge_stats():
+    try:
+        return _voice_bridge.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/voice-bridge/process-text")
+async def voice_bridge_process_text(request: Request):
+    try:
+        body = await request.json()
+        text = body.get("text", "")
+        voice_style = body.get("voice_style", "neutral")
+        speed = body.get("speed", 1.0)
+        result = _voice_bridge.process_text(text, voice_style, speed)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/voice-bridge/start-session")
+async def voice_bridge_start_session(request: Request):
+    try:
+        body = await request.json()
+        persona_id = body.get("persona_id", "")
+        input_mode = body.get("input_mode", "text")
+        result = _voice_bridge.start_session(persona_id, input_mode)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/voice-bridge/register-template")
+async def voice_bridge_register_template(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        voice_config = body.get("voice_config", {})
+        tts_engine = body.get("tts_engine", "default")
+        result = _voice_bridge.register_template(name, voice_config, tts_engine)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Ecosystem Hub Endpoints
+# ============================================================
+
+@router.get("/ecosystem-hub/stats")
+async def ecosystem_hub_stats():
+    try:
+        return _ecosystem_hub.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ecosystem-hub/register-service")
+async def ecosystem_hub_register_service(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        service_type = body.get("service_type", "")
+        endpoint = body.get("endpoint", "")
+        capabilities = body.get("capabilities", [])
+        result = _ecosystem_hub.register_service(name, service_type, endpoint, capabilities)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ecosystem-hub/discover-services")
+async def ecosystem_hub_discover_services(request: Request):
+    try:
+        body = await request.json()
+        filters = body.get("filters", {})
+        max_results = body.get("max_results", 50)
+        result = _ecosystem_hub.discover_services(filters, max_results)
+        return result.to_dict() if hasattr(result, "to_dict") else {"services": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Frame Composer Endpoints
+# ============================================================
+
+@router.get("/frame-composer/stats")
+async def frame_composer_stats():
+    try:
+        return _frame_composer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/frame-composer/submit-command")
+async def frame_composer_submit_command(request: Request):
+    try:
+        body = await request.json()
+        command = body.get("command", "")
+        parameters = body.get("parameters", {})
+        priority = body.get("priority", "normal")
+        result = _frame_composer.submit_command(command, parameters, priority)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/frame-composer/compose-frame")
+async def frame_composer_compose_frame(request: Request):
+    try:
+        body = await request.json()
+        frame_layout = body.get("frame_layout", {})
+        dependencies = body.get("dependencies", [])
+        target_profile = body.get("target_profile", "default")
+        result = _frame_composer.compose_frame(frame_layout, dependencies, target_profile)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Spatial Cluster Endpoints
+# ============================================================
+
+@router.get("/spatial-cluster/stats")
+async def spatial_cluster_stats():
+    try:
+        return _spatial_cluster.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/spatial-cluster/initialize-grid")
+async def spatial_cluster_initialize_grid(request: Request):
+    try:
+        body = await request.json()
+        grid_size = body.get("grid_size", [100, 100])
+        cell_size = body.get("cell_size", 1.0)
+        coordinate_system = body.get("coordinate_system", "cartesian")
+        result = _spatial_cluster.initialize_grid(grid_size, cell_size, coordinate_system)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/spatial-cluster/register-body")
+async def spatial_cluster_register_body(request: Request):
+    try:
+        body = await request.json()
+        body_id = body.get("body_id", "")
+        position = body.get("position", [0, 0])
+        dimensions = body.get("dimensions", [1, 1])
+        body_type = body.get("body_type", "entity")
+        result = _spatial_cluster.register_body(body_id, position, dimensions, body_type)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Asset Streamer Endpoints
+# ============================================================
+
+@router.get("/asset-streamer/stats")
+async def asset_streamer_stats():
+    try:
+        return _asset_streamer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/asset-streamer/register-asset")
+async def asset_streamer_register_asset(request: Request):
+    try:
+        body = await request.json()
+        asset_name = body.get("asset_name", "")
+        asset_path = body.get("asset_path", "")
+        asset_type = body.get("asset_type", "texture")
+        metadata = body.get("metadata", {})
+        result = _asset_streamer.register_asset(asset_name, asset_path, asset_type, metadata)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/asset-streamer/update-streaming")
+async def asset_streamer_update_streaming(request: Request):
+    try:
+        body = await request.json()
+        asset_id = body.get("asset_id", "")
+        streaming_config = body.get("streaming_config", {})
+        priority = body.get("priority", "normal")
+        result = _asset_streamer.update_streaming(asset_id, streaming_config, priority)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Deterministic Replay Endpoints
+# ============================================================
+
+@router.get("/deterministic-replay/stats")
+async def deterministic_replay_stats():
+    try:
+        return _deterministic_replay.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/deterministic-replay/start-recording")
+async def deterministic_replay_start_recording(request: Request):
+    try:
+        body = await request.json()
+        session_name = body.get("session_name", "")
+        record_inputs = body.get("record_inputs", True)
+        record_delta = body.get("record_delta", True)
+        result = _deterministic_replay.start_recording(session_name, record_inputs, record_delta)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/deterministic-replay/start-playback")
+async def deterministic_replay_start_playback(request: Request):
+    try:
+        body = await request.json()
+        recording_id = body.get("recording_id", "")
+        speed = body.get("speed", 1.0)
+        loop = body.get("loop", False)
+        result = _deterministic_replay.start_playback(recording_id, speed, loop)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Input Abstraction Endpoints
+# ============================================================
+
+@router.get("/input-abstraction/stats")
+async def input_abstraction_stats():
+    try:
+        return _input_abstraction.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/input-abstraction/create-binding")
+async def input_abstraction_create_binding(request: Request):
+    try:
+        body = await request.json()
+        action_name = body.get("action_name", "")
+        input_source = body.get("input_source", "keyboard")
+        input_code = body.get("input_code", "")
+        modifiers = body.get("modifiers", [])
+        result = _input_abstraction.create_binding(action_name, input_source, input_code, modifiers)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/input-abstraction/process-input")
+async def input_abstraction_process_input(request: Request):
+    try:
+        body = await request.json()
+        input_event = body.get("input_event", {})
+        context = body.get("context", {})
+        result = _input_abstraction.process_input(input_event, context)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Profile Loader Endpoints
+# ============================================================
+
+@router.get("/profile-loader/stats")
+async def profile_loader_stats():
+    try:
+        return _profile_loader.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/profile-loader/create-profile")
+async def profile_loader_create_profile(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        profile_type = body.get("profile_type", "default")
+        base_settings = body.get("base_settings", {})
+        result = _profile_loader.create_profile(name, profile_type, base_settings)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/profile-loader/add-entry")
+async def profile_loader_add_entry(request: Request):
+    try:
+        body = await request.json()
+        profile_id = body.get("profile_id", "")
+        key = body.get("key", "")
+        value = body.get("value", None)
+        entry_type = body.get("entry_type", "setting")
+        result = _profile_loader.add_entry(profile_id, key, value, entry_type)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/profile-loader/resolve-profile")
+async def profile_loader_resolve_profile(request: Request):
+    try:
+        body = await request.json()
+        profile_id = body.get("profile_id", "")
+        resolution_context = body.get("resolution_context", {})
+        result = _profile_loader.resolve_profile(profile_id, resolution_context)
+        return result.to_dict() if hasattr(result, "to_dict") else result
     except Exception as e:
         return {"error": str(e)}
