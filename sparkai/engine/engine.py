@@ -166,6 +166,12 @@ from sparkai.engine.engine_signal_bus import SignalBus as EngineSignalBus, get_s
 from sparkai.engine.engine_prefab_composer import PrefabComposer, get_prefab_composer
 from sparkai.engine.engine_interactive_audio import InteractiveAudio, get_interactive_audio
 from sparkai.engine.engine_import_pipeline import ImportPipeline, get_import_pipeline
+from sparkai.engine.engine_frame_composer import FrameComposer, get_frame_composer
+from sparkai.engine.engine_spatial_cluster import SpatialCluster, get_spatial_cluster
+from sparkai.engine.engine_asset_streamer import AssetStreamer, get_asset_streamer
+from sparkai.engine.engine_deterministic_replay import DeterministicReplay, get_deterministic_replay
+from sparkai.engine.engine_input_abstraction import InputAbstraction, get_input_abstraction
+from sparkai.engine.engine_profile_loader import ProfileLoader, get_profile_loader
 
 
 class SparkEngine:
@@ -337,6 +343,12 @@ class SparkEngine:
         self._prefab_composer = get_prefab_composer()
         self._interactive_audio = get_interactive_audio()
         self._import_pipeline = get_import_pipeline()
+        self._frame_composer = get_frame_composer()
+        self._spatial_cluster = get_spatial_cluster()
+        self._asset_streamer = get_asset_streamer()
+        self._deterministic_replay = get_deterministic_replay()
+        self._input_abstraction = get_input_abstraction()
+        self._profile_loader = get_profile_loader()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -638,6 +650,12 @@ class SparkEngine:
             "prefab_composer": self._prefab_composer.get_stats(),
             "interactive_audio": self._interactive_audio.get_stats(),
             "import_pipeline": self._import_pipeline.get_stats(),
+            "frame_composer": self._frame_composer.get_stats(),
+            "spatial_cluster": self._spatial_cluster.get_stats(),
+            "asset_streamer": self._asset_streamer.get_stats(),
+            "deterministic_replay": self._deterministic_replay.get_stats(),
+            "input_abstraction": self._input_abstraction.get_stats(),
+            "profile_loader": self._profile_loader.get_stats(),
         }
 
     @property
@@ -1007,6 +1025,30 @@ class SparkEngine:
     @property
     def import_pipeline(self) -> ImportPipeline:
         return self._import_pipeline
+
+    @property
+    def frame_composer(self) -> FrameComposer:
+        return self._frame_composer
+
+    @property
+    def spatial_cluster(self) -> SpatialCluster:
+        return self._spatial_cluster
+
+    @property
+    def asset_streamer(self) -> AssetStreamer:
+        return self._asset_streamer
+
+    @property
+    def deterministic_replay(self) -> DeterministicReplay:
+        return self._deterministic_replay
+
+    @property
+    def input_abstraction(self) -> InputAbstraction:
+        return self._input_abstraction
+
+    @property
+    def profile_loader(self) -> ProfileLoader:
+        return self._profile_loader
 
 
 @dataclass
