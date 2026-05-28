@@ -342,6 +342,10 @@ from sparkai.agent.agent_session_nexus import SessionNexus, get_session_nexus
 from sparkai.agent.agent_persona_vault import PersonaVault, get_persona_vault
 from sparkai.agent.agent_voice_bridge import VoiceBridge, get_voice_bridge
 from sparkai.agent.agent_ecosystem_hub import EcosystemHub, get_ecosystem_hub
+from sparkai.agent.agent_intent_cascade import IntentCascade, get_intent_cascade
+from sparkai.agent.agent_game_forecaster import GameForecaster, get_game_forecaster
+from sparkai.agent.agent_asset_synthesizer import AssetSynthesizer, get_asset_synthesizer
+from sparkai.agent.agent_tutorial_orchestrator import TutorialOrchestrator, get_tutorial_orchestrator
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -805,6 +809,10 @@ class AgentRuntime:
         self._persona_vault: Optional[PersonaVault] = None
         self._voice_bridge: Optional[VoiceBridge] = None
         self._ecosystem_hub: Optional[EcosystemHub] = None
+        self._intent_cascade: Optional[IntentCascade] = None
+        self._game_forecaster: Optional[GameForecaster] = None
+        self._asset_synthesizer: Optional[AssetSynthesizer] = None
+        self._tutorial_orchestrator: Optional[TutorialOrchestrator] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1150,6 +1158,10 @@ class AgentRuntime:
             self._persona_vault = get_persona_vault()
             self._voice_bridge = get_voice_bridge()
             self._ecosystem_hub = get_ecosystem_hub()
+            self._intent_cascade = get_intent_cascade()
+            self._game_forecaster = get_game_forecaster()
+            self._asset_synthesizer = get_asset_synthesizer()
+            self._tutorial_orchestrator = get_tutorial_orchestrator()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1192,6 +1204,10 @@ class AgentRuntime:
             self._persona_vault_ok = self._persona_vault is not None
             self._voice_bridge_ok = self._voice_bridge is not None
             self._ecosystem_hub_ok = self._ecosystem_hub is not None
+            self._intent_cascade_ok = self._intent_cascade is not None
+            self._game_forecaster_ok = self._game_forecaster is not None
+            self._asset_synthesizer_ok = self._asset_synthesizer is not None
+            self._tutorial_orchestrator_ok = self._tutorial_orchestrator is not None
 
             # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2745,6 +2761,10 @@ class AgentRuntime:
                 "persona_vault": self._persona_vault is not None,
                 "voice_bridge": self._voice_bridge is not None,
                 "ecosystem_hub": self._ecosystem_hub is not None,
+                "intent_cascade": self._intent_cascade is not None,
+                "game_forecaster": self._game_forecaster is not None,
+                "asset_synthesizer": self._asset_synthesizer is not None,
+                "tutorial_orchestrator": self._tutorial_orchestrator is not None,
             },
         }
 
@@ -3302,6 +3322,14 @@ class AgentRuntime:
             status["voice_bridge_stats"] = self._voice_bridge.get_stats()
         if self._ecosystem_hub:
             status["ecosystem_hub_stats"] = self._ecosystem_hub.get_stats()
+        if self._intent_cascade:
+            status["intent_cascade_stats"] = self._intent_cascade.get_stats()
+        if self._game_forecaster:
+            status["game_forecaster_stats"] = self._game_forecaster.get_stats()
+        if self._asset_synthesizer:
+            status["asset_synthesizer_stats"] = self._asset_synthesizer.get_stats()
+        if self._tutorial_orchestrator:
+            status["tutorial_orchestrator_stats"] = self._tutorial_orchestrator.get_stats()
         return status
 
 

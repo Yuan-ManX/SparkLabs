@@ -172,6 +172,10 @@ from sparkai.engine.engine_asset_streamer import AssetStreamer, get_asset_stream
 from sparkai.engine.engine_deterministic_replay import DeterministicReplay, get_deterministic_replay
 from sparkai.engine.engine_input_abstraction import InputAbstraction, get_input_abstraction
 from sparkai.engine.engine_profile_loader import ProfileLoader, get_profile_loader
+from sparkai.engine.engine_skybox_renderer import SkyboxRenderer, get_skybox_renderer
+from sparkai.engine.engine_trail_renderer import TrailRenderer, get_trail_renderer
+from sparkai.engine.engine_procedural_audio import ProceduralAudio, get_procedural_audio
+from sparkai.engine.engine_texture_atlas import TextureAtlas, get_texture_atlas
 
 
 class SparkEngine:
@@ -349,6 +353,10 @@ class SparkEngine:
         self._deterministic_replay = get_deterministic_replay()
         self._input_abstraction = get_input_abstraction()
         self._profile_loader = get_profile_loader()
+        self._skybox_renderer = get_skybox_renderer()
+        self._trail_renderer = get_trail_renderer()
+        self._procedural_audio = get_procedural_audio()
+        self._texture_atlas = get_texture_atlas()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -656,6 +664,10 @@ class SparkEngine:
             "deterministic_replay": self._deterministic_replay.get_stats(),
             "input_abstraction": self._input_abstraction.get_stats(),
             "profile_loader": self._profile_loader.get_stats(),
+            "skybox_renderer": self._skybox_renderer.get_stats(),
+            "trail_renderer": self._trail_renderer.get_stats(),
+            "procedural_audio": self._procedural_audio.get_stats(),
+            "texture_atlas": self._texture_atlas.get_stats(),
         }
 
     @property
@@ -1049,6 +1061,22 @@ class SparkEngine:
     @property
     def profile_loader(self) -> ProfileLoader:
         return self._profile_loader
+
+    @property
+    def skybox_renderer(self) -> SkyboxRenderer:
+        return self._skybox_renderer
+
+    @property
+    def trail_renderer(self) -> TrailRenderer:
+        return self._trail_renderer
+
+    @property
+    def procedural_audio(self) -> ProceduralAudio:
+        return self._procedural_audio
+
+    @property
+    def texture_atlas(self) -> TextureAtlas:
+        return self._texture_atlas
 
 
 @dataclass
