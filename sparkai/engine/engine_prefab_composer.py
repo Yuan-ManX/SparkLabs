@@ -636,7 +636,7 @@ class PrefabComposer:
         del self._instances[instance_id]
         return True
 
-    def get_instance(self, instance_id: str) -> Optional[PrefabInstance]:
+    def get_prefab_instance(self, instance_id: str) -> Optional[PrefabInstance]:
         return self._instances.get(instance_id)
 
     def get_scene_instances(self, scene_id: str) -> List[PrefabInstance]:
