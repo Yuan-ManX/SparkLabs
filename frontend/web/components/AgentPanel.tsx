@@ -77,8 +77,16 @@ import AssetStreamerPanel from './AssetStreamerPanel';
 import DeterministicReplayPanel from './DeterministicReplayPanel';
 import InputAbstractionPanel from './InputAbstractionPanel';
 import ProfileLoaderPanel from './ProfileLoaderPanel';
+import IntentCascadePanel from './IntentCascadePanel';
+import GameForecasterPanel from './GameForecasterPanel';
+import AssetSynthesizerPanel from './AssetSynthesizerPanel';
+import TutorialOrchestratorPanel from './TutorialOrchestratorPanel';
+import SkyboxRendererPanel from './SkyboxRendererPanel';
+import TrailRendererPanel from './TrailRendererPanel';
+import ProceduralAudioPanel from './ProceduralAudioPanel';
+import TextureAtlasPanel from './TextureAtlasPanel';
 
-type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime' | 'developer-oracle' | 'context-weaver' | 'session-nexus' | 'persona-vault' | 'voice-bridge' | 'ecosystem-hub' | 'frame-composer' | 'spatial-cluster' | 'asset-streamer' | 'deterministic-replay' | 'input-abstraction' | 'profile-loader';
+type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime' | 'developer-oracle' | 'context-weaver' | 'session-nexus' | 'persona-vault' | 'voice-bridge' | 'ecosystem-hub' | 'frame-composer' | 'spatial-cluster' | 'asset-streamer' | 'deterministic-replay' | 'input-abstraction' | 'profile-loader' | 'intent-cascade' | 'game-forecaster' | 'asset-synthesizer' | 'tutorial-orchestrator' | 'skybox-renderer' | 'trail-renderer' | 'procedural-audio' | 'texture-atlas';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -165,6 +173,14 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'deterministic-replay', label: 'Replay System ⏪', icon: '⏪' },
   { id: 'input-abstraction', label: 'Input Layer 🎮', icon: '🎮' },
   { id: 'profile-loader', label: 'Profile Config ⚙️', icon: '⚙️' },
+  { id: 'intent-cascade', label: 'Intent Cascade 🎯', icon: '🎯' },
+  { id: 'game-forecaster', label: 'Game Forecaster 🔮', icon: '🔮' },
+  { id: 'asset-synthesizer', label: 'Asset Synthesizer 🎨', icon: '🎨' },
+  { id: 'tutorial-orchestrator', label: 'Tutorial Creator 📚', icon: '📚' },
+  { id: 'skybox-renderer', label: 'Skybox Renderer 🌌', icon: '🌌' },
+  { id: 'trail-renderer', label: 'Trail Renderer ✨', icon: '✨' },
+  { id: 'procedural-audio', label: 'Procedural Audio 🔊', icon: '🔊' },
+  { id: 'texture-atlas', label: 'Texture Atlas 🗺️', icon: '🗺️' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -674,6 +690,14 @@ const AgentPanel: React.FC = () => {
       case 'deterministic-replay': return <DeterministicReplayPanel />;
       case 'input-abstraction': return <InputAbstractionPanel />;
       case 'profile-loader': return <ProfileLoaderPanel />;
+      case 'intent-cascade': return <IntentCascadePanel />;
+      case 'game-forecaster': return <GameForecasterPanel />;
+      case 'asset-synthesizer': return <AssetSynthesizerPanel />;
+      case 'tutorial-orchestrator': return <TutorialOrchestratorPanel />;
+      case 'skybox-renderer': return <SkyboxRendererPanel />;
+      case 'trail-renderer': return <TrailRendererPanel />;
+      case 'procedural-audio': return <ProceduralAudioPanel />;
+      case 'texture-atlas': return <TextureAtlasPanel />;
       default: return null;
     }
   };

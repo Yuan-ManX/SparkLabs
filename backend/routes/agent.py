@@ -251,6 +251,14 @@ from sparkai.engine.engine_asset_streamer import get_asset_streamer
 from sparkai.engine.engine_deterministic_replay import get_deterministic_replay
 from sparkai.engine.engine_input_abstraction import get_input_abstraction
 from sparkai.engine.engine_profile_loader import get_profile_loader
+from sparkai.agent.agent_intent_cascade import get_intent_cascade
+from sparkai.agent.agent_game_forecaster import get_game_forecaster
+from sparkai.agent.agent_asset_synthesizer import get_asset_synthesizer
+from sparkai.agent.agent_tutorial_orchestrator import get_tutorial_orchestrator
+from sparkai.engine.engine_skybox_renderer import get_skybox_renderer
+from sparkai.engine.engine_trail_renderer import get_trail_renderer
+from sparkai.engine.engine_procedural_audio import get_procedural_audio
+from sparkai.engine.engine_texture_atlas import get_texture_atlas
 
 router = APIRouter()
 
@@ -2348,6 +2356,14 @@ _asset_streamer = get_asset_streamer()
 _deterministic_replay = get_deterministic_replay()
 _input_abstraction = get_input_abstraction()
 _profile_loader = get_profile_loader()
+_intent_cascade = get_intent_cascade()
+_game_forecaster = get_game_forecaster()
+_asset_synthesizer = get_asset_synthesizer()
+_tutorial_orchestrator = get_tutorial_orchestrator()
+_skybox_renderer = get_skybox_renderer()
+_trail_renderer = get_trail_renderer()
+_procedural_audio = get_procedural_audio()
+_texture_atlas = get_texture_atlas()
 _signal_bus: Any = None
 _import_pipeline: Any = None
 
@@ -20275,6 +20291,285 @@ async def profile_loader_resolve_profile(request: Request):
         profile_id = body.get("profile_id", "")
         resolution_context = body.get("resolution_context", {})
         result = _profile_loader.resolve_profile(profile_id, resolution_context)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Intent Cascade Endpoints
+# ============================================================
+
+@router.get("/intent-cascade/stats")
+async def intent_cascade_stats():
+    try:
+        return _intent_cascade.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intent-cascade/resolve")
+async def intent_cascade_resolve(request: Request):
+    try:
+        body = await request.json()
+        text = body.get("text", "")
+        context = body.get("context", {})
+        strategy = body.get("strategy", "default")
+        result = _intent_cascade.resolve_intent(text, context, strategy)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intent-cascade/rules")
+async def intent_cascade_rules(request: Request):
+    try:
+        body = await request.json()
+        domain = body.get("domain", "")
+        patterns = body.get("patterns", [])
+        action = body.get("action", "")
+        result = _intent_cascade.register_intent_rule(domain, patterns, action)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Game Forecaster Endpoints
+# ============================================================
+
+@router.get("/game-forecaster/stats")
+async def game_forecaster_stats():
+    try:
+        return _game_forecaster.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-forecaster/simulate")
+async def game_forecaster_simulate(request: Request):
+    try:
+        body = await request.json()
+        current_state = body.get("current_state", {})
+        parameters = body.get("parameters", {})
+        depth = body.get("depth", 10)
+        horizon = body.get("horizon", 100)
+        result = _game_forecaster.simulate_progression(current_state, parameters, depth, horizon)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-forecaster/analyze")
+async def game_forecaster_analyze(request: Request):
+    try:
+        body = await request.json()
+        parameter_name = body.get("parameter_name", "")
+        current_value = body.get("current_value", None)
+        constraints = body.get("constraints", {})
+        result = _game_forecaster.analyze_balance(parameter_name, current_value, constraints)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Asset Synthesizer Endpoints
+# ============================================================
+
+@router.get("/asset-synthesizer/stats")
+async def asset_synthesizer_stats():
+    try:
+        return _asset_synthesizer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/asset-synthesizer/synthesize")
+async def asset_synthesizer_synthesize(request: Request):
+    try:
+        body = await request.json()
+        description = body.get("description", "")
+        category = body.get("category", "general")
+        style = body.get("style", "default")
+        result = _asset_synthesizer.synthesize_asset(description, category, style)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/asset-synthesizer/pack")
+async def asset_synthesizer_pack(request: Request):
+    try:
+        body = await request.json()
+        theme = body.get("theme", "")
+        categories = body.get("categories", [])
+        style = body.get("style", "default")
+        result = _asset_synthesizer.generate_asset_pack(theme, categories, style)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Tutorial Orchestrator Endpoints
+# ============================================================
+
+@router.get("/tutorial-orchestrator/stats")
+async def tutorial_orchestrator_stats():
+    try:
+        return _tutorial_orchestrator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tutorial-orchestrator/generate")
+async def tutorial_orchestrator_generate(request: Request):
+    try:
+        body = await request.json()
+        user_id = body.get("user_id", "")
+        objective = body.get("objective", "")
+        tutorial_type = body.get("tutorial_type", "interactive")
+        result = _tutorial_orchestrator.generate_tutorial(user_id, objective, tutorial_type)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tutorial-orchestrator/track")
+async def tutorial_orchestrator_track(request: Request):
+    try:
+        body = await request.json()
+        user_id = body.get("user_id", "")
+        action = body.get("action", "")
+        context = body.get("context", {})
+        result = _tutorial_orchestrator.track_behavior(user_id, action, context)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Skybox Renderer Endpoints
+# ============================================================
+
+@router.get("/skybox-renderer/stats")
+async def skybox_renderer_stats():
+    try:
+        return _skybox_renderer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skybox-renderer/config")
+async def skybox_renderer_config(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        preset = body.get("preset", "default")
+        result = _skybox_renderer.create_config(name, preset)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skybox-renderer/transition")
+async def skybox_renderer_transition(request: Request):
+    try:
+        body = await request.json()
+        config_id = body.get("config_id", "")
+        duration_seconds = body.get("duration_seconds", 2.0)
+        result = _skybox_renderer.transition_to(config_id, duration_seconds)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Trail Renderer Endpoints
+# ============================================================
+
+@router.get("/trail-renderer/stats")
+async def trail_renderer_stats():
+    try:
+        return _trail_renderer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/trail-renderer/attach")
+async def trail_renderer_attach(request: Request):
+    try:
+        body = await request.json()
+        object_id = body.get("object_id", "")
+        config_name = body.get("config_name", "default")
+        color_start = body.get("color_start", "#ffffff")
+        color_end = body.get("color_end", "#000000")
+        mode = body.get("mode", "continuous")
+        config_result = _trail_renderer.create_config(config_name, color_start, color_end, mode)
+        result = _trail_renderer.attach_trail(object_id, config_result)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/trail-renderer/clear")
+async def trail_renderer_clear(request: Request):
+    try:
+        result = _trail_renderer.clear_all()
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Procedural Audio Endpoints
+# ============================================================
+
+@router.get("/procedural-audio/stats")
+async def procedural_audio_stats():
+    try:
+        return _procedural_audio.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/procedural-audio/preset")
+async def procedural_audio_preset(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        category = body.get("category", "sfx")
+        base_frequency = body.get("base_frequency", 440.0)
+        waveform = body.get("waveform", "sine")
+        result = _procedural_audio.create_preset(name, category, base_frequency, waveform)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/procedural-audio/play")
+async def procedural_audio_play(request: Request):
+    try:
+        body = await request.json()
+        category = body.get("category", "sfx")
+        position = body.get("position", [0, 0, 0])
+        volume = body.get("volume", 1.0)
+        result = _procedural_audio.play_sound(category, position, volume)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Texture Atlas Endpoints
+# ============================================================
+
+@router.get("/texture-atlas/stats")
+async def texture_atlas_stats():
+    try:
+        return _texture_atlas.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/texture-atlas/create")
+async def texture_atlas_create(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        width = body.get("width", 1024)
+        height = body.get("height", 1024)
+        format = body.get("format", "png")
+        result = _texture_atlas.create_atlas(name, width, height, format)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/texture-atlas/pack")
+async def texture_atlas_pack(request: Request):
+    try:
+        body = await request.json()
+        atlas_id = body.get("atlas_id", "")
+        algorithm = body.get("algorithm", "greedy")
+        result = _texture_atlas.pack_atlas(atlas_id, algorithm)
         return result.to_dict() if hasattr(result, "to_dict") else result
     except Exception as e:
         return {"error": str(e)}
