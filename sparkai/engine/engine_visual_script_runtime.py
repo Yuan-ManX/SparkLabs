@@ -391,8 +391,8 @@ class VisualScriptRuntime:
         self,
         graph_id: str,
         source_node_id: str,
-        source_port: str = "output",
         target_node_id: str,
+        source_port: str = "output",
         target_port: str = "input",
         condition: str = "",
     ) -> Optional[NodeConnection]:
