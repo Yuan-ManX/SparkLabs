@@ -176,6 +176,10 @@ from sparkai.engine.engine_skybox_renderer import SkyboxRenderer, get_skybox_ren
 from sparkai.engine.engine_trail_renderer import TrailRenderer, get_trail_renderer
 from sparkai.engine.engine_procedural_audio import ProceduralAudio, get_procedural_audio
 from sparkai.engine.engine_texture_atlas import TextureAtlas, get_texture_atlas
+from sparkai.engine.engine_tile_brush import TileBrush, get_tile_brush
+from sparkai.engine.engine_sprite_animator import SpriteAnimator, get_sprite_animator
+from sparkai.engine.engine_light_culling import LightCulling, get_light_culling
+from sparkai.engine.engine_render_pass import RenderPass, get_render_pass
 
 
 class SparkEngine:
@@ -357,6 +361,10 @@ class SparkEngine:
         self._trail_renderer = get_trail_renderer()
         self._procedural_audio = get_procedural_audio()
         self._texture_atlas = get_texture_atlas()
+        self._tile_brush = get_tile_brush()
+        self._sprite_animator = get_sprite_animator()
+        self._light_culling = get_light_culling()
+        self._render_pass = get_render_pass()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -668,6 +676,10 @@ class SparkEngine:
             "trail_renderer": self._trail_renderer.get_stats(),
             "procedural_audio": self._procedural_audio.get_stats(),
             "texture_atlas": self._texture_atlas.get_stats(),
+            "tile_brush": self._tile_brush.get_stats(),
+            "sprite_animator": self._sprite_animator.get_stats(),
+            "light_culling": self._light_culling.get_stats(),
+            "render_pass": self._render_pass.get_stats(),
         }
 
     @property
@@ -1077,6 +1089,22 @@ class SparkEngine:
     @property
     def texture_atlas(self) -> TextureAtlas:
         return self._texture_atlas
+
+    @property
+    def tile_brush(self) -> TileBrush:
+        return self._tile_brush
+
+    @property
+    def sprite_animator(self) -> SpriteAnimator:
+        return self._sprite_animator
+
+    @property
+    def light_culling(self) -> LightCulling:
+        return self._light_culling
+
+    @property
+    def render_pass(self) -> RenderPass:
+        return self._render_pass
 
 
 @dataclass
