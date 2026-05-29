@@ -85,8 +85,18 @@ import SkyboxRendererPanel from './SkyboxRendererPanel';
 import TrailRendererPanel from './TrailRendererPanel';
 import ProceduralAudioPanel from './ProceduralAudioPanel';
 import TextureAtlasPanel from './TextureAtlasPanel';
+import ABTestRunnerPanel from './ABTestRunnerPanel';
+import HeatmapAnalyzerPanel from './HeatmapAnalyzerPanel';
+import BugForensicsPanel from './BugForensicsPanel';
+import AccessibilityAuditorPanel from './AccessibilityAuditorPanel';
+import TileBrushPanel from './TileBrushPanel';
+import SpriteAnimatorPanel from './SpriteAnimatorPanel';
+import LightCullingPanel from './LightCullingPanel';
+import RenderPassPanel from './RenderPassPanel';
 
-type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime' | 'developer-oracle' | 'context-weaver' | 'session-nexus' | 'persona-vault' | 'voice-bridge' | 'ecosystem-hub' | 'frame-composer' | 'spatial-cluster' | 'asset-streamer' | 'deterministic-replay' | 'input-abstraction' | 'profile-loader' | 'intent-cascade' | 'game-forecaster' | 'asset-synthesizer' | 'tutorial-orchestrator' | 'skybox-renderer' | 'trail-renderer' | 'procedural-audio' | 'texture-atlas';
+type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime' | 'developer-oracle' | 'context-weaver' | 'session-nexus' | 'persona-vault' | 'voice-bridge' | 'ecosystem-hub' | 'frame-composer' | 'spatial-cluster' | 'asset-streamer' | 'deterministic-replay' | 'input-abstraction' | 'profile-loader' | 'intent-cascade' | 'game-forecaster' | 'asset-synthesizer' | 'tutorial-orchestrator' | 'skybox-renderer' | 'trail-renderer' | 'procedural-audio' | 'texture-atlas'
+  | 'ab-test-runner' | 'heatmap-analyzer' | 'bug-forensics' | 'accessibility-auditor'
+  | 'tile-brush' | 'sprite-animator' | 'light-culling' | 'render-pass';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -181,6 +191,14 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'trail-renderer', label: 'Trail Renderer ✨', icon: '✨' },
   { id: 'procedural-audio', label: 'Procedural Audio 🔊', icon: '🔊' },
   { id: 'texture-atlas', label: 'Texture Atlas 🗺️', icon: '🗺️' },
+  { id: 'ab-test-runner', label: 'AB Test 🔬', icon: '🔬' },
+  { id: 'heatmap-analyzer', label: 'Heatmap 📊', icon: '📊' },
+  { id: 'bug-forensics', label: 'Bug Forensics 🪲', icon: '🪲' },
+  { id: 'accessibility-auditor', label: 'Accessibility ♿', icon: '♿' },
+  { id: 'tile-brush', label: 'Tile Brush 🖌️', icon: '🖌️' },
+  { id: 'sprite-animator', label: 'Sprite Anim 🎞️', icon: '🎞️' },
+  { id: 'light-culling', label: 'Light Culling 💡', icon: '💡' },
+  { id: 'render-pass', label: 'Render Pass 🎨', icon: '🎨' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -698,6 +716,14 @@ const AgentPanel: React.FC = () => {
       case 'trail-renderer': return <TrailRendererPanel />;
       case 'procedural-audio': return <ProceduralAudioPanel />;
       case 'texture-atlas': return <TextureAtlasPanel />;
+      case 'ab-test-runner': return <ABTestRunnerPanel />;
+      case 'heatmap-analyzer': return <HeatmapAnalyzerPanel />;
+      case 'bug-forensics': return <BugForensicsPanel />;
+      case 'accessibility-auditor': return <AccessibilityAuditorPanel />;
+      case 'tile-brush': return <TileBrushPanel />;
+      case 'sprite-animator': return <SpriteAnimatorPanel />;
+      case 'light-culling': return <LightCullingPanel />;
+      case 'render-pass': return <RenderPassPanel />;
       default: return null;
     }
   };
