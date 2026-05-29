@@ -346,6 +346,10 @@ from sparkai.agent.agent_intent_cascade import IntentCascade, get_intent_cascade
 from sparkai.agent.agent_game_forecaster import GameForecaster, get_game_forecaster
 from sparkai.agent.agent_asset_synthesizer import AssetSynthesizer, get_asset_synthesizer
 from sparkai.agent.agent_tutorial_orchestrator import TutorialOrchestrator, get_tutorial_orchestrator
+from sparkai.agent.agent_ab_test_runner import ABTestRunner, get_ab_test_runner
+from sparkai.agent.agent_heatmap_analyzer import HeatmapAnalyzer, get_heatmap_analyzer
+from sparkai.agent.agent_bug_forensics import BugForensics, get_bug_forensics
+from sparkai.agent.agent_accessibility_auditor import AccessibilityAuditor, get_accessibility_auditor
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -813,6 +817,10 @@ class AgentRuntime:
         self._game_forecaster: Optional[GameForecaster] = None
         self._asset_synthesizer: Optional[AssetSynthesizer] = None
         self._tutorial_orchestrator: Optional[TutorialOrchestrator] = None
+        self._ab_test_runner: Optional[ABTestRunner] = None
+        self._heatmap_analyzer: Optional[HeatmapAnalyzer] = None
+        self._bug_forensics: Optional[BugForensics] = None
+        self._accessibility_auditor: Optional[AccessibilityAuditor] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1162,6 +1170,10 @@ class AgentRuntime:
             self._game_forecaster = get_game_forecaster()
             self._asset_synthesizer = get_asset_synthesizer()
             self._tutorial_orchestrator = get_tutorial_orchestrator()
+            self._ab_test_runner = get_ab_test_runner()
+            self._heatmap_analyzer = get_heatmap_analyzer()
+            self._bug_forensics = get_bug_forensics()
+            self._accessibility_auditor = get_accessibility_auditor()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1208,8 +1220,12 @@ class AgentRuntime:
             self._game_forecaster_ok = self._game_forecaster is not None
             self._asset_synthesizer_ok = self._asset_synthesizer is not None
             self._tutorial_orchestrator_ok = self._tutorial_orchestrator is not None
+        self._ab_test_runner_ok = self._ab_test_runner is not None
+        self._heatmap_analyzer_ok = self._heatmap_analyzer is not None
+        self._bug_forensics_ok = self._bug_forensics is not None
+        self._accessibility_auditor_ok = self._accessibility_auditor is not None
 
-            # Wire credential manager into LLM router for key rotation on API failures
+        # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
                 self._llm_router.set_credential_manager(self._credential_manager)
 
@@ -2765,6 +2781,10 @@ class AgentRuntime:
                 "game_forecaster": self._game_forecaster is not None,
                 "asset_synthesizer": self._asset_synthesizer is not None,
                 "tutorial_orchestrator": self._tutorial_orchestrator is not None,
+                "ab_test_runner": self._ab_test_runner is not None,
+                "heatmap_analyzer": self._heatmap_analyzer is not None,
+                "bug_forensics": self._bug_forensics is not None,
+                "accessibility_auditor": self._accessibility_auditor is not None,
             },
         }
 
@@ -3330,6 +3350,14 @@ class AgentRuntime:
             status["asset_synthesizer_stats"] = self._asset_synthesizer.get_stats()
         if self._tutorial_orchestrator:
             status["tutorial_orchestrator_stats"] = self._tutorial_orchestrator.get_stats()
+        if self._ab_test_runner:
+            status["ab_test_runner_stats"] = self._ab_test_runner.get_stats()
+        if self._heatmap_analyzer:
+            status["heatmap_analyzer_stats"] = self._heatmap_analyzer.get_stats()
+        if self._bug_forensics:
+            status["bug_forensics_stats"] = self._bug_forensics.get_stats()
+        if self._accessibility_auditor:
+            status["accessibility_auditor_stats"] = self._accessibility_auditor.get_stats()
         return status
 
 
