@@ -259,6 +259,14 @@ from sparkai.engine.engine_skybox_renderer import get_skybox_renderer
 from sparkai.engine.engine_trail_renderer import get_trail_renderer
 from sparkai.engine.engine_procedural_audio import get_procedural_audio
 from sparkai.engine.engine_texture_atlas import get_texture_atlas
+from sparkai.agent.agent_ab_test_runner import get_ab_test_runner
+from sparkai.agent.agent_heatmap_analyzer import get_heatmap_analyzer
+from sparkai.agent.agent_bug_forensics import get_bug_forensics
+from sparkai.agent.agent_accessibility_auditor import get_accessibility_auditor
+from sparkai.engine.engine_tile_brush import get_tile_brush
+from sparkai.engine.engine_sprite_animator import get_sprite_animator
+from sparkai.engine.engine_light_culling import get_light_culling
+from sparkai.engine.engine_render_pass import get_render_pass
 
 router = APIRouter()
 
@@ -2364,6 +2372,14 @@ _skybox_renderer = get_skybox_renderer()
 _trail_renderer = get_trail_renderer()
 _procedural_audio = get_procedural_audio()
 _texture_atlas = get_texture_atlas()
+_ab_test_runner = get_ab_test_runner()
+_heatmap_analyzer = get_heatmap_analyzer()
+_bug_forensics = get_bug_forensics()
+_accessibility_auditor = get_accessibility_auditor()
+_tile_brush = get_tile_brush()
+_sprite_animator = get_sprite_animator()
+_light_culling = get_light_culling()
+_render_pass = get_render_pass()
 _signal_bus: Any = None
 _import_pipeline: Any = None
 
@@ -19364,6 +19380,291 @@ async def security_scanner_scan_content(request: Request):
         source_type = body.get("source_type", "unknown")
         context = body.get("context", {})
         result = _security_scanner.scan_content(content, source_type, context)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# --- AB Test Runner ---
+
+@router.get("/ab-test-runner/stats")
+async def ab_test_runner_stats():
+    try:
+        return _ab_test_runner.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ab-test-runner/create-experiment")
+async def ab_test_runner_create_experiment(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        variant_a = body.get("variant_a", "control")
+        variant_b = body.get("variant_b", "treatment")
+        metric_type = body.get("metric_type", "retention")
+        result = _ab_test_runner.create_experiment(name, variant_a, variant_b, metric_type)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ab-test-runner/analyze-results")
+async def ab_test_runner_analyze_results(request: Request):
+    try:
+        body = await request.json()
+        experiment_id = body.get("experiment_id", "")
+        result = _ab_test_runner.analyze_results(experiment_id)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# --- Heatmap Analyzer ---
+
+@router.get("/heatmap-analyzer/stats")
+async def heatmap_analyzer_stats():
+    try:
+        return _heatmap_analyzer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/heatmap-analyzer/create-grid")
+async def heatmap_analyzer_create_grid(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        width = body.get("width", 100)
+        height = body.get("height", 100)
+        resolution = body.get("resolution", "medium")
+        result = _heatmap_analyzer.create_grid(name, width, height, resolution)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/heatmap-analyzer/record-event")
+async def heatmap_analyzer_record_event(request: Request):
+    try:
+        body = await request.json()
+        grid_id = body.get("grid_id", "")
+        x = body.get("x", 0.0)
+        y = body.get("y", 0.0)
+        weight = body.get("weight", 1.0)
+        _heatmap_analyzer.record_event(grid_id, x, y, weight)
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/heatmap-analyzer/analyze-pathing")
+async def heatmap_analyzer_analyze_pathing(request: Request):
+    try:
+        body = await request.json()
+        grid_id = body.get("grid_id", "")
+        result = _heatmap_analyzer.analyze_pathing(grid_id)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# --- Bug Forensics ---
+
+@router.get("/bug-forensics/stats")
+async def bug_forensics_stats():
+    try:
+        return _bug_forensics.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/bug-forensics/submit-crash")
+async def bug_forensics_submit_crash(request: Request):
+    try:
+        body = await request.json()
+        build = body.get("build", "")
+        stack_trace = body.get("stack_trace", "")
+        platform = body.get("platform", "windows")
+        result = _bug_forensics.submit_crash(build, stack_trace, platform)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/bug-forensics/analyze-crash")
+async def bug_forensics_analyze_crash(request: Request):
+    try:
+        body = await request.json()
+        report_id = body.get("report_id", "")
+        result = _bug_forensics.analyze_crash(report_id)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# --- Accessibility Auditor ---
+
+@router.get("/accessibility-auditor/stats")
+async def accessibility_auditor_stats():
+    try:
+        return _accessibility_auditor.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/accessibility-auditor/run-audit")
+async def accessibility_auditor_run_audit(request: Request):
+    try:
+        body = await request.json()
+        scene_id = body.get("scene_id", "")
+        target_level = body.get("target_level", "AA")
+        category = body.get("category", "all")
+        game_config = {
+            "target_level": target_level,
+            "category": category,
+        }
+        result = _accessibility_auditor.run_audit(scene_id, game_config)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/accessibility-auditor/generate-plan")
+async def accessibility_auditor_generate_plan(request: Request):
+    try:
+        body = await request.json()
+        report_id = body.get("report_id", "")
+        result = _accessibility_auditor.generate_improvement_plan(report_id)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# --- Tile Brush ---
+
+@router.get("/tile-brush/stats")
+async def tile_brush_stats():
+    try:
+        return _tile_brush.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tile-brush/paint-tile")
+async def tile_brush_paint_tile(request: Request):
+    try:
+        body = await request.json()
+        tilemap_id = body.get("tilemap_id", "")
+        x = body.get("x", 0)
+        y = body.get("y", 0)
+        tileset_id = body.get("tileset_id", "")
+        tile_index = body.get("tile_index", 0)
+        result = _tile_brush.paint_tile(tilemap_id, x, y, tileset_id, tile_index)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tile-brush/auto-border")
+async def tile_brush_auto_border(request: Request):
+    try:
+        body = await request.json()
+        tilemap_id = body.get("tilemap_id", "")
+        neighbor_mode = body.get("neighbor_mode", "moore")
+        terrain_set = body.get("terrain_set", "default")
+        result = _tile_brush.auto_border(tilemap_id, neighbor_mode, terrain_set)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# --- Sprite Animator ---
+
+@router.get("/sprite-animator/stats")
+async def sprite_animator_stats():
+    try:
+        return _sprite_animator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/sprite-animator/create-clip")
+async def sprite_animator_create_clip(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        frame_count = body.get("frame_count", 8)
+        frame_rate = body.get("frame_rate", 12.0)
+        loop_mode = body.get("loop_mode", "loop")
+        result = _sprite_animator.create_clip(name, frame_count, frame_rate, loop_mode)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/sprite-animator/play")
+async def sprite_animator_play(request: Request):
+    try:
+        body = await request.json()
+        entity_id = body.get("entity_id", "")
+        clip_id = body.get("clip_id", "")
+        result = _sprite_animator.play(entity_id, clip_id)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# --- Light Culling ---
+
+@router.get("/light-culling/stats")
+async def light_culling_stats():
+    try:
+        return _light_culling.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/light-culling/register-light")
+async def light_culling_register_light(request: Request):
+    try:
+        body = await request.json()
+        type = body.get("type", "point")
+        position = body.get("position", [0.0, 0.0, 0.0])
+        range = body.get("range", 10.0)
+        intensity = body.get("intensity", 1.0)
+        result = _light_culling.register_light(type, position, range, intensity)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/light-culling/assign-lights")
+async def light_culling_assign_lights(request: Request):
+    try:
+        body = await request.json()
+        object_id = body.get("object_id", "")
+        position = body.get("position", [0.0, 0.0, 0.0])
+        max_lights = body.get("max_lights", 8)
+        result = _light_culling.assign_lights(object_id, position, max_lights)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# --- Render Pass ---
+
+@router.get("/render-pass/stats")
+async def render_pass_stats():
+    try:
+        return _render_pass.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-pass/create-pass")
+async def render_pass_create_pass(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        pass_type = body.get("pass_type", "custom")
+        priority = body.get("priority", 0)
+        enabled = body.get("enabled", True)
+        result = _render_pass.create_pass(name, pass_type, priority, enabled)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-pass/execute-pipeline")
+async def render_pass_execute_pipeline(request: Request):
+    try:
+        body = await request.json()
+        pipeline_name = body.get("pipeline_name", "default")
+        result = _render_pass.execute_pipeline(pipeline_name)
         return result.to_dict() if hasattr(result, "to_dict") else result
     except Exception as e:
         return {"error": str(e)}
