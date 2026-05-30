@@ -350,6 +350,10 @@ from sparkai.agent.agent_ab_test_runner import ABTestRunner, get_ab_test_runner
 from sparkai.agent.agent_heatmap_analyzer import HeatmapAnalyzer, get_heatmap_analyzer
 from sparkai.agent.agent_bug_forensics import BugForensics, get_bug_forensics
 from sparkai.agent.agent_accessibility_auditor import AccessibilityAuditor, get_accessibility_auditor
+from sparkai.agent.agent_federated_learner import FederatedLearner, get_federated_learner
+from sparkai.agent.agent_swarm_planner import SwarmPlanner, get_swarm_planner
+from sparkai.agent.agent_world_composer import WorldComposer, get_world_composer
+from sparkai.agent.agent_playtest_orchestrator import PlaytestOrchestrator, get_playtest_orchestrator
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -821,6 +825,10 @@ class AgentRuntime:
         self._heatmap_analyzer: Optional[HeatmapAnalyzer] = None
         self._bug_forensics: Optional[BugForensics] = None
         self._accessibility_auditor: Optional[AccessibilityAuditor] = None
+        self._federated_learner: Optional[FederatedLearner] = None
+        self._swarm_planner: Optional[SwarmPlanner] = None
+        self._world_composer: Optional[WorldComposer] = None
+        self._playtest_orchestrator: Optional[PlaytestOrchestrator] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1174,6 +1182,10 @@ class AgentRuntime:
             self._heatmap_analyzer = get_heatmap_analyzer()
             self._bug_forensics = get_bug_forensics()
             self._accessibility_auditor = get_accessibility_auditor()
+            self._federated_learner = get_federated_learner()
+            self._swarm_planner = get_swarm_planner()
+            self._world_composer = get_world_composer()
+            self._playtest_orchestrator = get_playtest_orchestrator()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1220,10 +1232,14 @@ class AgentRuntime:
             self._game_forecaster_ok = self._game_forecaster is not None
             self._asset_synthesizer_ok = self._asset_synthesizer is not None
             self._tutorial_orchestrator_ok = self._tutorial_orchestrator is not None
-        self._ab_test_runner_ok = self._ab_test_runner is not None
-        self._heatmap_analyzer_ok = self._heatmap_analyzer is not None
-        self._bug_forensics_ok = self._bug_forensics is not None
-        self._accessibility_auditor_ok = self._accessibility_auditor is not None
+            self._ab_test_runner_ok = self._ab_test_runner is not None
+            self._heatmap_analyzer_ok = self._heatmap_analyzer is not None
+            self._bug_forensics_ok = self._bug_forensics is not None
+            self._accessibility_auditor_ok = self._accessibility_auditor is not None
+            self._federated_learner_ok = self._federated_learner is not None
+            self._swarm_planner_ok = self._swarm_planner is not None
+            self._world_composer_ok = self._world_composer is not None
+            self._playtest_orchestrator_ok = self._playtest_orchestrator is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2785,6 +2801,10 @@ class AgentRuntime:
                 "heatmap_analyzer": self._heatmap_analyzer is not None,
                 "bug_forensics": self._bug_forensics is not None,
                 "accessibility_auditor": self._accessibility_auditor is not None,
+                "federated_learner": self._federated_learner is not None,
+                "swarm_planner": self._swarm_planner is not None,
+                "world_composer": self._world_composer is not None,
+                "playtest_orchestrator": self._playtest_orchestrator is not None,
             },
         }
 
@@ -3358,6 +3378,14 @@ class AgentRuntime:
             status["bug_forensics_stats"] = self._bug_forensics.get_stats()
         if self._accessibility_auditor:
             status["accessibility_auditor_stats"] = self._accessibility_auditor.get_stats()
+        if self._federated_learner:
+            status["federated_learner_stats"] = self._federated_learner.get_stats()
+        if self._swarm_planner:
+            status["swarm_planner_stats"] = self._swarm_planner.get_stats()
+        if self._world_composer:
+            status["world_composer_stats"] = self._world_composer.get_stats()
+        if self._playtest_orchestrator:
+            status["playtest_orchestrator_stats"] = self._playtest_orchestrator.get_stats()
         return status
 
 
