@@ -174,7 +174,7 @@ from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_expor
 from sparkai.engine.engine_server_architecture import GameServerPool, get_server_pool
 from sparkai.engine.engine_gizmo_system import GizmoSystem, get_gizmo_system
 from sparkai.engine.engine_pivot_system import PivotSystem, get_pivot_system
-from sparkai.agent.agent_learning_loop import AgentLearningLoop, get_learning_loop
+from sparkai.agent.agent_learning_loop import LearningLoop, get_learning_loop
 from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
 from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
 from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
@@ -223,7 +223,7 @@ from sparkai.agent.agent_verification_pipeline import get_verification_pipeline
 from sparkai.agent.agent_playtest_simulator import get_playtest_simulator, PlaytestMode
 from sparkai.engine.engine_lighting_2d import get_lighting_2d
 from sparkai.engine.engine_parallax_background import get_parallax_background
-from sparkai.engine.engine_behavior_library import get_behavior_library, BehaviorCategory, BehaviorExecutionMode
+from sparkai.engine.engine_behavior_library import get_behavior_library, BehaviorCategory
 from sparkai.engine.engine_animation_curve import get_animation_curve, CurveType, EasingFunction
 from sparkai.engine.engine_render_layer import get_render_layer
 from sparkai.engine.engine_state_synchronizer import get_state_synchronizer
@@ -279,7 +279,6 @@ from sparkai.agent.agent_reasoning_chain import get_reasoning_chain
 from sparkai.agent.agent_memory_hierarchy import get_memory_hierarchy
 from sparkai.agent.agent_tool_registry import get_tool_registry
 from sparkai.agent.agent_prompt_templates import get_prompt_library
-from sparkai.agent.agent_reflection_loop import get_reflection_loop
 from sparkai.engine.engine_procedural_synthesis import get_procedural_synthesis
 from sparkai.engine.engine_asset_bundler import get_asset_bundler
 from sparkai.engine.engine_deterministic_recorder import get_deterministic_recorder
@@ -2215,7 +2214,6 @@ _interaction_designer = get_interaction_designer()
 _physics_tuner = get_physics_tuner()
 _rag_pipeline = get_rag_pipeline()
 _tree_of_thought = get_tree_of_thought()
-_reflection_loop = get_reflection_loop()
 _scene_tree = get_scene_tree()
 _event_system = get_event_system()
 _animation_system = get_animation_system()
@@ -21510,5 +21508,271 @@ async def localization_hub_translate(request: Request):
         body = await request.json()
         result = _localization_hub.translate(body["key"], body.get("language", "en_us"), body.get("variables"))
         return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Agent Subsystem & Engine Routes (v2)
+# ============================================================
+
+from sparkai.agent.agent_memory_consolidator import get_memory_consolidator
+from sparkai.agent.agent_delegation_broker import get_delegation_broker
+from sparkai.engine.engine_event_scripting import get_event_scripting
+from sparkai.engine.engine_component_assembler import get_component_assembler
+from sparkai.engine.engine_signal_bus import get_signal_bus as get_engine_signal_bus_v2
+from sparkai.agent.agent_skill_forge import get_skill_forge as get_agent_skill_forge
+
+_skill_forge = get_agent_skill_forge()
+_memory_consolidator = get_memory_consolidator()
+_delegation_broker = get_delegation_broker()
+_component_assembler = get_component_assembler()
+_event_scripting = get_event_scripting()
+_signal_bus_runtime = get_engine_signal_bus_v2()
+
+# ============================================================
+# SkillForge Endpoints
+# ============================================================
+
+@router.get("/skill-forge/stats")
+async def skill_forge_stats():
+    try:
+        return _skill_forge.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-forge/create-skill")
+async def skill_forge_create_skill(request: Request):
+    try:
+        body = await request.json()
+        result = _skill_forge.create_skill(
+            description=body.get("description", ""),
+            result_json=body.get("result_json"),
+            category=body.get("category", ""),
+            tags=body.get("tags", []),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-forge/execute-skill")
+async def skill_forge_execute_skill(request: Request):
+    try:
+        body = await request.json()
+        result = _skill_forge.execute_skill(
+            skill_id=body.get("skill_id", ""),
+            dry_run=body.get("dry_run", False),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# LearningLoop Endpoints
+# ============================================================
+
+@router.post("/learning-loop/start")
+async def learning_loop_start(request: Request):
+    try:
+        body = await request.json()
+        result = _learning_loop.start_loop(query=body.get("query", ""))
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/learning-loop/advance")
+async def learning_loop_advance(request: Request):
+    try:
+        body = await request.json()
+        _learning_loop.advance_phase(
+            session_id=body.get("session_id", ""),
+            state=body.get("state", {}),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# MemoryConsolidator Endpoints
+# ============================================================
+
+@router.get("/memory-consolidator/stats")
+async def memory_consolidator_stats():
+    try:
+        return _memory_consolidator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-consolidator/add")
+async def memory_consolidator_add(request: Request):
+    try:
+        body = await request.json()
+        result = _memory_consolidator.add_fragment(
+            content=body.get("content", ""),
+            fragment_type=body.get("fragment_type", ""),
+            source_session=body.get("source_session", ""),
+            keywords=body.get("keywords", []),
+            importance_score=body.get("importance_score", 0.5),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-consolidator/consolidate")
+async def memory_consolidator_consolidate(request: Request):
+    try:
+        body = await request.json()
+        result = _memory_consolidator.consolidate(strategy=body.get("strategy", ""))
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# DelegationBroker Endpoints
+# ============================================================
+
+@router.get("/delegation-broker/stats")
+async def delegation_broker_stats():
+    try:
+        return _delegation_broker.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/delegation-broker/register")
+async def delegation_broker_register(request: Request):
+    try:
+        body = await request.json()
+        result = _delegation_broker.register_agent(
+            name=body.get("name", ""),
+            role=body.get("role", ""),
+            capabilities=body.get("capabilities", []),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/delegation-broker/assign")
+async def delegation_broker_assign(request: Request):
+    try:
+        body = await request.json()
+        result = _delegation_broker.assign_task(
+            task_description=body.get("task_description", ""),
+            strategy=body.get("strategy", ""),
+        )
+        if result is None:
+            return {"error": "No suitable agent found for the task"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# EventScripting Endpoints
+# ============================================================
+
+@router.get("/event-scripting-runtime/stats")
+async def event_scripting_runtime_stats():
+    try:
+        return _event_scripting.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/event-scripting-runtime/create-rule")
+async def event_scripting_runtime_create_rule(request: Request):
+    try:
+        body = await request.json()
+        result = _event_scripting.create_rule(
+            name=body.get("name", ""),
+            sheet_id=body.get("sheet_id", ""),
+        )
+        if result is None:
+            return {"error": "Rule creation failed - sheet not found or full"}
+        if body.get("conditions"):
+            for cond in body["conditions"]:
+                _event_scripting.add_condition(
+                    rule_id=result.id,
+                    condition_type=cond.get("type", ""),
+                    target=cond.get("target", ""),
+                    property=cond.get("field", cond.get("property", "")),
+                    operator=cond.get("operator", ""),
+                    value=cond.get("value", ""),
+                )
+        if body.get("actions"):
+            for act in body["actions"]:
+                _event_scripting.add_action(
+                    rule_id=result.id,
+                    action_type=act.get("type", ""),
+                    target=act.get("target", ""),
+                    parameters=act.get("parameters", {}),
+                )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/event-scripting-runtime/evaluate")
+async def event_scripting_runtime_evaluate(request: Request):
+    try:
+        body = await request.json()
+        result = _event_scripting.process_event_sheet(
+            sheet_id=body.get("sheet_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# ComponentAssembler Endpoints
+# ============================================================
+
+@router.get("/component-assembler/stats")
+async def component_assembler_stats():
+    try:
+        return _component_assembler.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/component-assembler/register-component")
+async def component_assembler_register_component(request: Request):
+    try:
+        body = await request.json()
+        result = _component_assembler.register_component(
+            name=body.get("name", ""),
+            component_type=body.get("component_type", ""),
+            properties=body.get("properties", {}),
+            dependencies=body.get("dependencies", []),
+            provides=body.get("provides", []),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/component-assembler/assemble")
+async def component_assembler_assemble(request: Request):
+    try:
+        body = await request.json()
+        result = _component_assembler.assemble_entity(
+            archetype_id=body.get("archetype_id", ""),
+            parent_entity_id=body.get("entity_name", ""),
+            state_overrides=body.get("state_overrides", {}),
+        )
+        if result is None:
+            return {"error": "Assembly failed - archetype not found or invalid dependencies"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# SignalBus Engine Endpoints
+# ============================================================
+
+@router.post("/signal-bus/define")
+async def signal_bus_runtime_define(request: Request):
+    try:
+        body = await request.json()
+        signal_id = _signal_bus_runtime.define_signal(
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            parameters=body.get("parameters", {}),
+            category=body.get("category", ""),
+        )
+        return {"success": True, "signal_id": signal_id}
     except Exception as e:
         return {"error": str(e)}
