@@ -93,10 +93,20 @@ import TileBrushPanel from './TileBrushPanel';
 import SpriteAnimatorPanel from './SpriteAnimatorPanel';
 import LightCullingPanel from './LightCullingPanel';
 import RenderPassPanel from './RenderPassPanel';
+import FederatedLearnerPanel from './FederatedLearnerPanel';
+import SwarmPlannerPanel from './SwarmPlannerPanel';
+import WorldComposerPanel from './WorldComposerPanel';
+import PlaytestOrchestratorPanel from './PlaytestOrchestratorPanel';
+import ParticleEmitterPanel from './ParticleEmitterPanel';
+import LODGatePanel from './LODGatePanel';
+import SceneStackPanel from './SceneStackPanel';
+import NavMeshForgePanel from './NavMeshForgePanel';
 
 type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime' | 'developer-oracle' | 'context-weaver' | 'session-nexus' | 'persona-vault' | 'voice-bridge' | 'ecosystem-hub' | 'frame-composer' | 'spatial-cluster' | 'asset-streamer' | 'deterministic-replay' | 'input-abstraction' | 'profile-loader' | 'intent-cascade' | 'game-forecaster' | 'asset-synthesizer' | 'tutorial-orchestrator' | 'skybox-renderer' | 'trail-renderer' | 'procedural-audio' | 'texture-atlas'
   | 'ab-test-runner' | 'heatmap-analyzer' | 'bug-forensics' | 'accessibility-auditor'
-  | 'tile-brush' | 'sprite-animator' | 'light-culling' | 'render-pass';
+  | 'tile-brush' | 'sprite-animator' | 'light-culling' | 'render-pass'
+  | 'federated-learner' | 'swarm-planner' | 'world-composer' | 'playtest-orchestrator'
+  | 'particle-emitter' | 'lod-gate' | 'scene-stack' | 'navmesh-forge';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -199,6 +209,14 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'sprite-animator', label: 'Sprite Anim 🎞️', icon: '🎞️' },
   { id: 'light-culling', label: 'Light Culling 💡', icon: '💡' },
   { id: 'render-pass', label: 'Render Pass 🎨', icon: '🎨' },
+  { id: 'federated-learner', label: 'Fed Learner 🤖', icon: '🤖' },
+  { id: 'swarm-planner', label: 'Swarm 🐝', icon: '🐝' },
+  { id: 'world-composer', label: 'World Comp 🌍', icon: '🌍' },
+  { id: 'playtest-orchestrator', label: 'Play Orch 🎭', icon: '🎭' },
+  { id: 'particle-emitter', label: 'Particles ✨', icon: '✨' },
+  { id: 'lod-gate', label: 'LOD Gate 🚪', icon: '🚪' },
+  { id: 'scene-stack', label: 'Scene Stack 📚', icon: '📚' },
+  { id: 'navmesh-forge', label: 'NavMesh 🧭', icon: '🧭' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -724,6 +742,14 @@ const AgentPanel: React.FC = () => {
       case 'sprite-animator': return <SpriteAnimatorPanel />;
       case 'light-culling': return <LightCullingPanel />;
       case 'render-pass': return <RenderPassPanel />;
+      case 'federated-learner': return <FederatedLearnerPanel />;
+      case 'swarm-planner': return <SwarmPlannerPanel />;
+      case 'world-composer': return <WorldComposerPanel />;
+      case 'playtest-orchestrator': return <PlaytestOrchestratorPanel />;
+      case 'particle-emitter': return <ParticleEmitterPanel />;
+      case 'lod-gate': return <LODGatePanel />;
+      case 'scene-stack': return <SceneStackPanel />;
+      case 'navmesh-forge': return <NavMeshForgePanel />;
       default: return null;
     }
   };
