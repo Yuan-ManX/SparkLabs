@@ -275,6 +275,15 @@ from sparkai.engine.engine_particle_emitter import get_particle_emitter
 from sparkai.engine.engine_lod_gate import get_lod_gate
 from sparkai.engine.engine_scene_stack import get_scene_stack
 from sparkai.engine.engine_navmesh_forge import get_navmesh_forge
+from sparkai.agent.agent_reasoning_chain import get_reasoning_chain
+from sparkai.agent.agent_memory_hierarchy import get_memory_hierarchy
+from sparkai.agent.agent_tool_registry import get_tool_registry
+from sparkai.agent.agent_prompt_templates import get_prompt_library
+from sparkai.agent.agent_reflection_loop import get_reflection_loop
+from sparkai.engine.engine_procedural_synthesis import get_procedural_synthesis
+from sparkai.engine.engine_asset_bundler import get_asset_bundler
+from sparkai.engine.engine_deterministic_recorder import get_deterministic_recorder
+from sparkai.engine.engine_localization_hub import get_localization_hub
 
 router = APIRouter()
 
@@ -2396,6 +2405,15 @@ _particle_emitter = get_particle_emitter()
 _lod_gate = get_lod_gate()
 _scene_stack = get_scene_stack()
 _navmesh_forge = get_navmesh_forge()
+_reasoning_chain = get_reasoning_chain()
+_memory_hierarchy = get_memory_hierarchy()
+_tool_registry = get_tool_registry()
+_prompt_library = get_prompt_library()
+_reflection_loop = get_reflection_loop()
+_procedural_synthesis = get_procedural_synthesis()
+_asset_bundler = get_asset_bundler()
+_deterministic_recorder = get_deterministic_recorder()
+_localization_hub = get_localization_hub()
 _signal_bus: Any = None
 _import_pipeline: Any = None
 
@@ -10016,60 +10034,6 @@ async def platform_bridge_register_handler(platform: str, callback_url: str = ""
 
 
 # ============================================================
-# Reasoning Chain Endpoints
-# ============================================================
-
-from sparkai.agent.agent_reasoning_chain import ReasoningChain, ReasoningTrace, ReasoningPhase, DecisionConfidence, get_reasoning_chain
-
-_reasoning_chain = get_reasoning_chain()
-
-
-@router.get("/reasoning/stats")
-async def reasoning_stats():
-    return _reasoning_chain.get_stats()
-
-
-@router.post("/reasoning/begin")
-async def reasoning_begin(goal: str):
-    trace = _reasoning_chain.begin(goal)
-    return trace.to_dict()
-
-
-@router.get("/reasoning/active")
-async def reasoning_active():
-    active = _reasoning_chain.active
-    if active:
-        return active.to_full_dict()
-    return {"active": False}
-
-
-@router.post("/reasoning/think")
-async def reasoning_think(thought: str, phase: str = "analyze"):
-    p = ReasoningPhase(phase) if phase in [ph.value for ph in ReasoningPhase] else ReasoningPhase.ANALYZE
-    step = _reasoning_chain.think(thought, p)
-    return step.to_dict() if step else {"error": "No active trace"}
-
-
-@router.post("/reasoning/decide")
-async def reasoning_decide(question: str, chosen: str, rationale: str, alternatives: str = "", confidence: str = "medium"):
-    alts = [a.strip() for a in alternatives.split(",")] if alternatives else []
-    conf = DecisionConfidence(confidence) if confidence in [c.value for c in DecisionConfidence] else DecisionConfidence.MEDIUM
-    decision = _reasoning_chain.decide(question, chosen, rationale, alts, conf)
-    return decision.to_dict() if decision else {"error": "No active trace"}
-
-
-@router.post("/reasoning/finish")
-async def reasoning_finish(outcome: str = "", success: bool = True):
-    trace = _reasoning_chain.finish(outcome, success)
-    return trace.to_dict() if trace else {"error": "No active trace"}
-
-
-@router.get("/reasoning/history")
-async def reasoning_history(limit: int = 10):
-    return {"traces": [t.to_dict() for t in _reasoning_chain.get_history(limit)]}
-
-
-# ============================================================
 # Tool Composer Endpoints
 # ============================================================
 
@@ -15543,40 +15507,6 @@ async def thought_best_path(session_id: str = ""):
 async def thought_reasoning_trace(session_id: str = ""):
     trace = _tree_of_thought.get_reasoning_trace(session_id)
     return {"trace": trace}
-
-
-# === Reflection Loop Endpoints ===
-
-@router.get("/reflection/stats")
-async def reflection_stats():
-    return _reflection_loop.get_stats()
-
-@router.post("/reflection/start")
-async def reflection_start(task: str = "", domain: str = "code_generation", max_iterations: int = 5):
-    from sparkai.agent.agent_reflection_loop import ReflectionDomain
-    session = _reflection_loop.start_session(task, ReflectionDomain(domain), max_iterations)
-    return session.__dict__ if hasattr(session, '__dict__') else str(session)
-
-@router.post("/reflection/reflect")
-async def reflection_reflect(session_id: str = "", action: str = "",
-                               observation: str = "", confidence: float = 0.7):
-    entry = _reflection_loop.reflect(session_id, action, observation, confidence)
-    return entry.__dict__ if hasattr(entry, '__dict__') else str(entry)
-
-@router.post("/reflection/learn")
-async def reflection_learn(session_id: str = ""):
-    patterns = _reflection_loop.learn_from_session(session_id)
-    return {"patterns_found": len(patterns) if patterns else 0}
-
-@router.get("/reflection/summary")
-async def reflection_summary(session_id: str = ""):
-    summary = _reflection_loop.get_session_summary(session_id)
-    return summary
-
-@router.post("/reflection/match-pattern")
-async def reflection_match_pattern(observation: str = ""):
-    pattern = _reflection_loop.match_error_pattern(observation)
-    return pattern.__dict__ if hasattr(pattern, '__dict__') else str(pattern) if pattern else {"matched": False}
 
 
 # === Scene Tree Endpoints ===
@@ -21318,6 +21248,267 @@ async def navmesh_forge_add_obstacle(request: Request):
         position = body.get("position", [0, 0, 0])
         size = body.get("size", [1, 1, 1])
         result = _navmesh_forge.add_obstacle(mesh_id, obstacle_id, position, size)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Reasoning Chain Endpoints
+# ============================================================
+
+@router.get("/reasoning-chain/stats")
+async def reasoning_chain_stats():
+    try:
+        return _reasoning_chain.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/reasoning-chain/start-chain")
+async def reasoning_chain_start_chain(request: Request):
+    try:
+        body = await request.json()
+        result = _reasoning_chain.start_chain(body["query"], body.get("mode", "chain_of_thought"), body.get("max_steps", 10))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/reasoning-chain/verify")
+async def reasoning_chain_verify(request: Request):
+    try:
+        body = await request.json()
+        result = _reasoning_chain.verify_chain(body["chain_id"])
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Memory Hierarchy Endpoints
+# ============================================================
+
+@router.get("/memory-hierarchy/stats")
+async def memory_hierarchy_stats():
+    try:
+        return _memory_hierarchy.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-hierarchy/store")
+async def memory_hierarchy_store(request: Request):
+    try:
+        body = await request.json()
+        result = _memory_hierarchy.store(body["tier"], body["content"], body.get("priority", "medium"), body.get("tags"))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-hierarchy/retrieve")
+async def memory_hierarchy_retrieve(request: Request):
+    try:
+        body = await request.json()
+        result = _memory_hierarchy.retrieve(body["query_text"], body.get("strategy", "hybrid"), body.get("top_k", 5))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Tool Registry Endpoints
+# ============================================================
+
+@router.get("/tool-registry/stats")
+async def tool_registry_stats():
+    try:
+        return _tool_registry.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tool-registry/register")
+async def tool_registry_register(request: Request):
+    try:
+        body = await request.json()
+        result = _tool_registry.register_tool(body["name"], body["description"], body.get("category", "utility"), body.get("parameters", []))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tool-registry/invoke")
+async def tool_registry_invoke(request: Request):
+    try:
+        body = await request.json()
+        result = _tool_registry.record_invocation(body["tool_name"], body.get("parameters", {}), body.get("result"), body.get("error"), body.get("duration_ms", 0))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Prompt Library Endpoints
+# ============================================================
+
+@router.get("/prompt-library/stats")
+async def prompt_library_stats():
+    try:
+        return _prompt_library.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/prompt-library/create")
+async def prompt_library_create(request: Request):
+    try:
+        body = await request.json()
+        result = _prompt_library.create_template(body["name"], body.get("category", "custom"), body["content"], body.get("variables"))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/prompt-library/assemble")
+async def prompt_library_assemble(request: Request):
+    try:
+        body = await request.json()
+        result = _prompt_library.assemble_prompt(body.get("template_names", []), body.get("variables", {}))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Reflection Loop Endpoints
+# ============================================================
+
+@router.get("/reflection-loop/stats")
+async def reflection_loop_stats():
+    try:
+        return _reflection_loop.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/reflection-loop/record")
+async def reflection_loop_record(request: Request):
+    try:
+        body = await request.json()
+        result = _reflection_loop.record_outcome(body["reflection_type"], body.get("context", {}), body["decision_summary"], body["outcome"])
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/reflection-loop/insights")
+async def reflection_loop_insights(request: Request):
+    try:
+        body = await request.json()
+        result = _reflection_loop.generate_insights(body.get("min_confidence", 0.6))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Procedural Synthesis Endpoints
+# ============================================================
+
+@router.get("/procedural-synthesis/stats")
+async def procedural_synthesis_stats():
+    try:
+        return _procedural_synthesis.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/procedural-synthesis/terrain")
+async def procedural_synthesis_terrain(request: Request):
+    try:
+        body = await request.json()
+        result = _procedural_synthesis.generate_terrain(body.get("width", 256), body.get("height", 256), body.get("seed", 42), body.get("algorithm", "perlin_noise"))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/procedural-synthesis/layout")
+async def procedural_synthesis_layout(request: Request):
+    try:
+        body = await request.json()
+        result = _procedural_synthesis.generate_layout(body.get("algorithm", "wave_function_collapse"), body.get("width", 64), body.get("height", 64), body.get("seed", 42), body.get("room_count", 8))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Asset Bundler Endpoints
+# ============================================================
+
+@router.get("/asset-bundler/stats")
+async def asset_bundler_stats():
+    try:
+        return _asset_bundler.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/asset-bundler/register")
+async def asset_bundler_register(request: Request):
+    try:
+        body = await request.json()
+        result = _asset_bundler.register_asset(body["path"], body.get("asset_type", "data"), body["size_bytes"], body["hash"])
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/asset-bundler/create-bundle")
+async def asset_bundler_create_bundle(request: Request):
+    try:
+        body = await request.json()
+        result = _asset_bundler.create_bundle(body["name"], body.get("asset_ids", []), body.get("compression", "lz4"))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Deterministic Recorder Endpoints
+# ============================================================
+
+@router.get("/deterministic-recorder/stats")
+async def deterministic_recorder_stats():
+    try:
+        return _deterministic_recorder.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/deterministic-recorder/start")
+async def deterministic_recorder_start(request: Request):
+    try:
+        body = await request.json()
+        result = _deterministic_recorder.start_recording(body.get("name", ""), body.get("mode", "hybrid"))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/deterministic-recorder/stop")
+async def deterministic_recorder_stop(request: Request):
+    try:
+        body = await request.json()
+        result = _deterministic_recorder.stop_recording()
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Localization Hub Endpoints
+# ============================================================
+
+@router.get("/localization-hub/stats")
+async def localization_hub_stats():
+    try:
+        return _localization_hub.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/localization-hub/add")
+async def localization_hub_add(request: Request):
+    try:
+        body = await request.json()
+        result = _localization_hub.add_translation(body["key"], body["text"], body.get("language", "en_us"))
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/localization-hub/translate")
+async def localization_hub_translate(request: Request):
+    try:
+        body = await request.json()
+        result = _localization_hub.translate(body["key"], body.get("language", "en_us"), body.get("variables"))
         return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
     except Exception as e:
         return {"error": str(e)}
