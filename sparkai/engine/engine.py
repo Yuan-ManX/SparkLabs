@@ -180,6 +180,10 @@ from sparkai.engine.engine_tile_brush import TileBrush, get_tile_brush
 from sparkai.engine.engine_sprite_animator import SpriteAnimator, get_sprite_animator
 from sparkai.engine.engine_light_culling import LightCulling, get_light_culling
 from sparkai.engine.engine_render_pass import RenderPass, get_render_pass
+from sparkai.engine.engine_particle_emitter import ParticleEmitter, get_particle_emitter
+from sparkai.engine.engine_lod_gate import LODGate, get_lod_gate
+from sparkai.engine.engine_scene_stack import SceneStack, get_scene_stack
+from sparkai.engine.engine_navmesh_forge import NavMeshForge, get_navmesh_forge
 
 
 class SparkEngine:
@@ -365,6 +369,10 @@ class SparkEngine:
         self._sprite_animator = get_sprite_animator()
         self._light_culling = get_light_culling()
         self._render_pass = get_render_pass()
+        self._particle_emitter = get_particle_emitter()
+        self._lod_gate = get_lod_gate()
+        self._scene_stack = get_scene_stack()
+        self._navmesh_forge = get_navmesh_forge()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -680,6 +688,10 @@ class SparkEngine:
             "sprite_animator": self._sprite_animator.get_stats(),
             "light_culling": self._light_culling.get_stats(),
             "render_pass": self._render_pass.get_stats(),
+            "particle_emitter": self._particle_emitter.get_stats(),
+            "lod_gate": self._lod_gate.get_stats(),
+            "scene_stack": self._scene_stack.get_stats(),
+            "navmesh_forge": self._navmesh_forge.get_stats(),
         }
 
     @property
@@ -1105,6 +1117,22 @@ class SparkEngine:
     @property
     def render_pass(self) -> RenderPass:
         return self._render_pass
+
+    @property
+    def particle_emitter(self) -> ParticleEmitter:
+        return self._particle_emitter
+
+    @property
+    def lod_gate(self) -> LODGate:
+        return self._lod_gate
+
+    @property
+    def scene_stack(self) -> SceneStack:
+        return self._scene_stack
+
+    @property
+    def navmesh_forge(self) -> NavMeshForge:
+        return self._navmesh_forge
 
 
 @dataclass
