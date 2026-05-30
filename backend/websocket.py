@@ -3853,7 +3853,6 @@ async def websocket_endpoint(websocket: WebSocket):
                         if sub == "stats":
                             await manager.send_to_client(client_id, {"type": "event_system_stats", "data": es.get_stats()})
                         elif sub == "evaluate":
-                            import json
                             context = json.loads(data.get("context_json", "{}")) if data.get("context_json") else {}
                             results = es.evaluate_sheet(data.get("sheet_id", ""), context)
                             await manager.send_to_client(client_id, {"type": "event_sheet_evaluated", "data": results})
