@@ -184,6 +184,10 @@ from sparkai.engine.engine_particle_emitter import ParticleEmitter, get_particle
 from sparkai.engine.engine_lod_gate import LODGate, get_lod_gate
 from sparkai.engine.engine_scene_stack import SceneStack, get_scene_stack
 from sparkai.engine.engine_navmesh_forge import NavMeshForge, get_navmesh_forge
+from sparkai.engine.engine_procedural_synthesis import ProceduralSynthesis, get_procedural_synthesis
+from sparkai.engine.engine_asset_bundler import AssetBundler, get_asset_bundler
+from sparkai.engine.engine_deterministic_recorder import DeterministicRecorder, get_deterministic_recorder
+from sparkai.engine.engine_localization_hub import LocalizationHub, get_localization_hub
 
 
 class SparkEngine:
@@ -373,6 +377,10 @@ class SparkEngine:
         self._lod_gate = get_lod_gate()
         self._scene_stack = get_scene_stack()
         self._navmesh_forge = get_navmesh_forge()
+        self._procedural_synthesis = get_procedural_synthesis()
+        self._asset_bundler = get_asset_bundler()
+        self._deterministic_recorder = get_deterministic_recorder()
+        self._localization_hub = get_localization_hub()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -692,6 +700,10 @@ class SparkEngine:
             "lod_gate": self._lod_gate.get_stats(),
             "scene_stack": self._scene_stack.get_stats(),
             "navmesh_forge": self._navmesh_forge.get_stats(),
+            "procedural_synthesis": self._procedural_synthesis.get_stats(),
+            "asset_bundler": self._asset_bundler.get_stats(),
+            "deterministic_recorder": self._deterministic_recorder.get_stats(),
+            "localization_hub": self._localization_hub.get_stats(),
         }
 
     @property
@@ -1133,6 +1145,22 @@ class SparkEngine:
     @property
     def navmesh_forge(self) -> NavMeshForge:
         return self._navmesh_forge
+
+    @property
+    def procedural_synthesis(self) -> ProceduralSynthesis:
+        return self._procedural_synthesis
+
+    @property
+    def asset_bundler(self) -> AssetBundler:
+        return self._asset_bundler
+
+    @property
+    def deterministic_recorder(self) -> DeterministicRecorder:
+        return self._deterministic_recorder
+
+    @property
+    def localization_hub(self) -> LocalizationHub:
+        return self._localization_hub
 
 
 @dataclass
