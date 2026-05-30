@@ -267,6 +267,14 @@ from sparkai.engine.engine_tile_brush import get_tile_brush
 from sparkai.engine.engine_sprite_animator import get_sprite_animator
 from sparkai.engine.engine_light_culling import get_light_culling
 from sparkai.engine.engine_render_pass import get_render_pass
+from sparkai.agent.agent_federated_learner import get_federated_learner
+from sparkai.agent.agent_swarm_planner import get_swarm_planner
+from sparkai.agent.agent_world_composer import get_world_composer
+from sparkai.agent.agent_playtest_orchestrator import get_playtest_orchestrator
+from sparkai.engine.engine_particle_emitter import get_particle_emitter
+from sparkai.engine.engine_lod_gate import get_lod_gate
+from sparkai.engine.engine_scene_stack import get_scene_stack
+from sparkai.engine.engine_navmesh_forge import get_navmesh_forge
 
 router = APIRouter()
 
@@ -2380,6 +2388,14 @@ _tile_brush = get_tile_brush()
 _sprite_animator = get_sprite_animator()
 _light_culling = get_light_culling()
 _render_pass = get_render_pass()
+_federated_learner = get_federated_learner()
+_swarm_planner = get_swarm_planner()
+_world_composer = get_world_composer()
+_playtest_orchestrator = get_playtest_orchestrator()
+_particle_emitter = get_particle_emitter()
+_lod_gate = get_lod_gate()
+_scene_stack = get_scene_stack()
+_navmesh_forge = get_navmesh_forge()
 _signal_bus: Any = None
 _import_pipeline: Any = None
 
@@ -20872,5 +20888,436 @@ async def texture_atlas_pack(request: Request):
         algorithm = body.get("algorithm", "greedy")
         result = _texture_atlas.pack_atlas(atlas_id, algorithm)
         return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Federated Learner Endpoints
+# ============================================================
+
+@router.get("/federated-learner/stats")
+async def federated_learner_stats():
+    try:
+        return _federated_learner.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/federated-learner/start-round")
+async def federated_learner_start_round(request: Request):
+    try:
+        body = await request.json()
+        model_domain = body.get("model_domain", "npc_behavior")
+        aggregation = body.get("aggregation", "fed_avg")
+        privacy = body.get("privacy", "basic_dp")
+        min_clients = body.get("min_clients", 5)
+        result = _federated_learner.start_round(model_domain, aggregation, privacy, min_clients)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/federated-learner/submit-update")
+async def federated_learner_submit_update(request: Request):
+    try:
+        body = await request.json()
+        round_id = body.get("round_id", "")
+        client_id = body.get("client_id", "")
+        model_update = body.get("model_update", {})
+        data_size = body.get("data_size", 1)
+        result = _federated_learner.submit_client_update(round_id, client_id, model_update, data_size)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/federated-learner/aggregate-round")
+async def federated_learner_aggregate_round(request: Request):
+    try:
+        body = await request.json()
+        round_id = body.get("round_id", "")
+        result = _federated_learner.aggregate_round(round_id)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Swarm Planner Endpoints
+# ============================================================
+
+@router.get("/swarm-planner/stats")
+async def swarm_planner_stats():
+    try:
+        return _swarm_planner.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/swarm-planner/create-formation")
+async def swarm_planner_create_formation(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        formation_type = body.get("formation_type", "circle")
+        slot_count = body.get("slot_count", 10)
+        spacing = body.get("spacing", 2.0)
+        result = _swarm_planner.create_formation(name, formation_type, slot_count, spacing)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/swarm-planner/compute-flock")
+async def swarm_planner_compute_flock(request: Request):
+    try:
+        body = await request.json()
+        group_id = body.get("group_id", "")
+        agent_position = tuple(body.get("agent_position", [0, 0, 0]))
+        neighbor_positions = [tuple(p) for p in body.get("neighbor_positions", [])]
+        goal_position = body.get("goal_position")
+        if goal_position:
+            goal_position = tuple(goal_position)
+        result = _swarm_planner.compute_flock_velocity(group_id, agent_position, neighbor_positions, goal_position)
+        return {"velocity": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/swarm-planner/create-group")
+async def swarm_planner_create_group(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        max_agents = body.get("max_agents", 50)
+        behavior = body.get("behavior", "flock")
+        world_bounds = body.get("world_bounds", [0, 0, 1024, 1024])
+        result = _swarm_planner.create_group(name, max_agents, behavior, world_bounds)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/swarm-planner/create-tactic")
+async def swarm_planner_create_tactic(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        tactic_type = body.get("tactic_type", "ambush")
+        target_id = body.get("target_id", "")
+        parameters = body.get("parameters", {})
+        result = _swarm_planner.create_tactic(name, tactic_type, target_id, parameters)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# World Composer Endpoints
+# ============================================================
+
+@router.get("/world-composer/stats")
+async def world_composer_stats():
+    try:
+        return _world_composer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-composer/create-blueprint")
+async def world_composer_create_blueprint(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        world_size = body.get("world_size", [1024, 1024])
+        seed = body.get("seed", 0)
+        biome_count = body.get("biome_count", 5)
+        result = _world_composer.create_blueprint(name, world_size, seed, biome_count)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-composer/generate-terrain")
+async def world_composer_generate_terrain(request: Request):
+    try:
+        body = await request.json()
+        blueprint_id = body.get("blueprint_id", "")
+        resolution = body.get("resolution", 256)
+        noise_seed = body.get("noise_seed", 42)
+        result = _world_composer.generate_terrain(blueprint_id, resolution, noise_seed)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-composer/create-biome")
+async def world_composer_create_biome(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        biome_type = body.get("biome_type", "forest")
+        temperature = body.get("temperature", 0.5)
+        humidity = body.get("humidity", 0.5)
+        elevation = body.get("elevation", 0.5)
+        result = _world_composer.create_biome(name, biome_type, temperature, humidity, elevation)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Playtest Orchestrator Endpoints
+# ============================================================
+
+@router.get("/playtest-orchestrator/stats")
+async def playtest_orchestrator_stats():
+    try:
+        return _playtest_orchestrator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/playtest-orchestrator/create-batch")
+async def playtest_orchestrator_create_batch(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        session_count = body.get("session_count", 10)
+        duration_seconds = body.get("duration_seconds", 300)
+        result = _playtest_orchestrator.create_batch(name, session_count, duration_seconds)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/playtest-orchestrator/run-batch")
+async def playtest_orchestrator_run_batch(request: Request):
+    try:
+        body = await request.json()
+        batch_id = body.get("batch_id", "")
+        result = _playtest_orchestrator.run_batch(batch_id)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/playtest-orchestrator/generate-report")
+async def playtest_orchestrator_generate_report(request: Request):
+    try:
+        body = await request.json()
+        batch_id = body.get("batch_id", "")
+        result = _playtest_orchestrator.generate_batch_report(batch_id)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Particle Emitter Endpoints
+# ============================================================
+
+@router.get("/particle-emitter/stats")
+async def particle_emitter_stats():
+    try:
+        return _particle_emitter.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/particle-emitter/create-config")
+async def particle_emitter_create_config(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        max_particles = body.get("max_particles", 1000)
+        emission_rate = body.get("emission_rate", 100)
+        lifetime = body.get("lifetime", 2.0)
+        result = _particle_emitter.create_config(name, max_particles, emission_rate, lifetime)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/particle-emitter/spawn")
+async def particle_emitter_spawn(request: Request):
+    try:
+        body = await request.json()
+        config_name = body.get("config_name", "")
+        position = body.get("position", [0, 0, 0])
+        preset = body.get("preset", "default")
+        result = _particle_emitter.spawn_emitter(config_name, position, preset)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/particle-emitter/spawn-preset")
+async def particle_emitter_spawn_preset(request: Request):
+    try:
+        body = await request.json()
+        preset_name = body.get("preset_name", "fire")
+        position = body.get("position", [0, 0, 0])
+        result = _particle_emitter.spawn_preset(preset_name, position)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# LOD Gate Endpoints
+# ============================================================
+
+@router.get("/lod-gate/stats")
+async def lod_gate_stats():
+    try:
+        return _lod_gate.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/lod-gate/create-profile")
+async def lod_gate_create_profile(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        max_distance = body.get("max_distance", 1000.0)
+        level_count = body.get("level_count", 3)
+        result = _lod_gate.create_profile(name, max_distance, level_count)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/lod-gate/compute-lod")
+async def lod_gate_compute_lod(request: Request):
+    try:
+        body = await request.json()
+        object_id = body.get("object_id", "")
+        camera_position = body.get("camera_position", [0, 0, 0])
+        screen_height = body.get("screen_height", 1080)
+        result = _lod_gate.compute_lod(object_id, camera_position, screen_height)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/lod-gate/register-group")
+async def lod_gate_register_group(request: Request):
+    try:
+        body = await request.json()
+        group_name = body.get("group_name", "")
+        mesh_ids = body.get("mesh_ids", [])
+        result = _lod_gate.register_group(group_name, mesh_ids)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/lod-gate/add-level")
+async def lod_gate_add_level(request: Request):
+    try:
+        body = await request.json()
+        profile_name = body.get("profile_name", "")
+        distance = body.get("distance", 100.0)
+        reduction = body.get("reduction", 0.5)
+        result = _lod_gate.add_lod_level(profile_name, distance, reduction)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/lod-gate/update-camera")
+async def lod_gate_update_camera(request: Request):
+    try:
+        body = await request.json()
+        camera_position = body.get("camera_position", [0, 0, 0])
+        camera_fov = body.get("camera_fov", 60.0)
+        screen_height = body.get("screen_height", 1080)
+        result = _lod_gate.compute_lod("all", camera_position, screen_height)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Scene Stack Endpoints
+# ============================================================
+
+@router.get("/scene-stack/stats")
+async def scene_stack_stats():
+    try:
+        return _scene_stack.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-stack/register-scene")
+async def scene_stack_register_scene(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        scene_type = body.get("scene_type", "level")
+        persistent = body.get("persistent", False)
+        result = _scene_stack.register_scene(name, scene_type, persistent)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-stack/load-scene")
+async def scene_stack_load_scene(request: Request):
+    try:
+        body = await request.json()
+        scene_id = body.get("scene_id", "")
+        additive = body.get("additive", False)
+        result = _scene_stack.load_scene(scene_id, additive)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-stack/push-overlay")
+async def scene_stack_push_overlay(request: Request):
+    try:
+        body = await request.json()
+        scene_id = body.get("scene_id", "")
+        overlay_type = body.get("overlay_type", "modal")
+        duration = body.get("duration", 0.5)
+        result = _scene_stack.create_transition(scene_id, overlay_type, duration, 0)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# NavMesh Forge Endpoints
+# ============================================================
+
+@router.get("/navmesh-forge/stats")
+async def navmesh_forge_stats():
+    try:
+        return _navmesh_forge.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/navmesh-forge/create-mesh")
+async def navmesh_forge_create_mesh(request: Request):
+    try:
+        body = await request.json()
+        name = body.get("name", "")
+        bounds = body.get("bounds", [0, 0, 1024, 1024])
+        cell_size = body.get("cell_size", 1.0)
+        agent_radius = body.get("agent_radius", 0.5)
+        result = _navmesh_forge.create_mesh(name, bounds, cell_size, agent_radius)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/navmesh-forge/find-path")
+async def navmesh_forge_find_path(request: Request):
+    try:
+        body = await request.json()
+        mesh_id = body.get("mesh_id", "")
+        start = body.get("start", [0, 0, 0])
+        end = body.get("end", [10, 0, 10])
+        algorithm = body.get("algorithm", "astar")
+        result = _navmesh_forge.find_path(mesh_id, start, end, algorithm)
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/navmesh-forge/add-region")
+async def navmesh_forge_add_region(request: Request):
+    try:
+        body = await request.json()
+        mesh_id = body.get("mesh_id", "")
+        region_id = body.get("region_id", "")
+        vertices = body.get("vertices", [])
+        area_type = body.get("area_type", "walkable")
+        result = _navmesh_forge.add_region(mesh_id, region_id, vertices, area_type)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/navmesh-forge/add-obstacle")
+async def navmesh_forge_add_obstacle(request: Request):
+    try:
+        body = await request.json()
+        mesh_id = body.get("mesh_id", "")
+        obstacle_id = body.get("obstacle_id", "")
+        position = body.get("position", [0, 0, 0])
+        size = body.get("size", [1, 1, 1])
+        result = _navmesh_forge.add_obstacle(mesh_id, obstacle_id, position, size)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
     except Exception as e:
         return {"error": str(e)}
