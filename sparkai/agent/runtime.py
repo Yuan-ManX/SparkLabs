@@ -354,6 +354,11 @@ from sparkai.agent.agent_federated_learner import FederatedLearner, get_federate
 from sparkai.agent.agent_swarm_planner import SwarmPlanner, get_swarm_planner
 from sparkai.agent.agent_world_composer import WorldComposer, get_world_composer
 from sparkai.agent.agent_playtest_orchestrator import PlaytestOrchestrator, get_playtest_orchestrator
+from sparkai.agent.agent_reasoning_chain import ReasoningChain, get_reasoning_chain
+from sparkai.agent.agent_memory_hierarchy import MemoryHierarchy, get_memory_hierarchy
+from sparkai.agent.agent_tool_registry import ToolRegistry, get_tool_registry
+from sparkai.agent.agent_prompt_templates import PromptLibrary, get_prompt_library
+from sparkai.agent.agent_reflection_loop import ReflectionLoop, get_reflection_loop
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -414,7 +419,7 @@ from sparkai.agent.agent_trajectory import TrajectoryRecorder, TrajectoryPhase, 
 from sparkai.agent.agent_skill_commands import SkillCommandRegistry, CommandCategory, CommandDef, get_skill_command_registry
 from sparkai.agent.agent_session_persistence import SessionStore, SessionStatus, SessionRecord, get_session_store
 from sparkai.agent.agent_platform_bridge import PlatformBridge, PlatformType, PlatformMessage, get_platform_bridge
-from sparkai.agent.agent_reasoning_chain import ReasoningChain, ReasoningTrace, ReasoningPhase, get_reasoning_chain
+from sparkai.agent.agent_reasoning_chain import ReasoningChain, get_reasoning_chain
 from sparkai.agent.agent_tool_composer import ToolComposer, ToolChain, ChainTemplate, get_tool_composer
 from sparkai.agent.agent_feedback_loop import FeedbackLoop, FeedbackEntry, FeedbackSource, get_feedback_loop
 from sparkai.agent.agent_negotiation import AgentNegotiation, NegotiationSession, VoteStance, get_agent_negotiation
@@ -467,7 +472,6 @@ from sparkai.agent.agent_interaction_designer import InteractionDesigner, Intera
 from sparkai.agent.agent_physics_tuner import PhysicsTuner, PhysicsDomain as TunerPhysicsDomain, TunerPreset, get_physics_tuner
 from sparkai.agent.agent_rag_pipeline import RAGPipeline, get_rag_pipeline
 from sparkai.agent.agent_tree_of_thought import TreeOfThought, get_tree_of_thought
-from sparkai.agent.agent_reflection_loop import ReflectionLoop, get_reflection_loop
 from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMode, get_camera_shake_system
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
@@ -829,6 +833,11 @@ class AgentRuntime:
         self._swarm_planner: Optional[SwarmPlanner] = None
         self._world_composer: Optional[WorldComposer] = None
         self._playtest_orchestrator: Optional[PlaytestOrchestrator] = None
+        self._reasoning_chain: Optional[ReasoningChain] = None
+        self._memory_hierarchy: Optional[MemoryHierarchy] = None
+        self._tool_registry: Optional[ToolRegistry] = None
+        self._prompt_library: Optional[PromptLibrary] = None
+        self._reflection_loop: Optional[ReflectionLoop] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1186,6 +1195,11 @@ class AgentRuntime:
             self._swarm_planner = get_swarm_planner()
             self._world_composer = get_world_composer()
             self._playtest_orchestrator = get_playtest_orchestrator()
+            self._reasoning_chain = get_reasoning_chain()
+            self._memory_hierarchy = get_memory_hierarchy()
+            self._tool_registry = get_tool_registry()
+            self._prompt_library = get_prompt_library()
+            self._reflection_loop = get_reflection_loop()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1240,6 +1254,11 @@ class AgentRuntime:
             self._swarm_planner_ok = self._swarm_planner is not None
             self._world_composer_ok = self._world_composer is not None
             self._playtest_orchestrator_ok = self._playtest_orchestrator is not None
+            self._reasoning_chain_ok = self._reasoning_chain is not None
+            self._memory_hierarchy_ok = self._memory_hierarchy is not None
+            self._tool_registry_ok = self._tool_registry is not None
+            self._prompt_library_ok = self._prompt_library is not None
+            self._reflection_loop_ok = self._reflection_loop is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2805,6 +2824,11 @@ class AgentRuntime:
                 "swarm_planner": self._swarm_planner is not None,
                 "world_composer": self._world_composer is not None,
                 "playtest_orchestrator": self._playtest_orchestrator is not None,
+                "reasoning_chain": self._reasoning_chain is not None,
+                "memory_hierarchy": self._memory_hierarchy is not None,
+                "tool_registry": self._tool_registry is not None,
+                "prompt_library": self._prompt_library is not None,
+                "reflection_loop": self._reflection_loop is not None,
             },
         }
 
@@ -3386,6 +3410,16 @@ class AgentRuntime:
             status["world_composer_stats"] = self._world_composer.get_stats()
         if self._playtest_orchestrator:
             status["playtest_orchestrator_stats"] = self._playtest_orchestrator.get_stats()
+        if self._reasoning_chain:
+            status["reasoning_chain_stats"] = self._reasoning_chain.get_stats()
+        if self._memory_hierarchy:
+            status["memory_hierarchy_stats"] = self._memory_hierarchy.get_stats()
+        if self._tool_registry:
+            status["tool_registry_stats"] = self._tool_registry.get_stats()
+        if self._prompt_library:
+            status["prompt_library_stats"] = self._prompt_library.get_stats()
+        if self._reflection_loop:
+            status["reflection_loop_stats"] = self._reflection_loop.get_stats()
         return status
 
 
