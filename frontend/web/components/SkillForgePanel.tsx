@@ -5,33 +5,34 @@ import { useState, useEffect, useCallback } from "react";
 const API_BASE = "http://localhost:8000/api/agent";
 
 interface SubsystemStats {
-  defined_signals: number;
-  emissions: number;
-  subscribers: number;
-  categories: number;
+  total_skills: number;
+  active_skills: number;
+  executions: number;
+  success_rate: number;
   [key: string]: any;
 }
 
 const CATEGORIES = [
-  "GAMEPLAY", "PHYSICS", "INPUT", "UI", "AUDIO", "NETWORK", "ANIMATION", "LIFECYCLE", "CUSTOM"
+  "GAME_LOGIC", "ASSET_GENERATION", "LEVEL_DESIGN", "UI_LAYOUT",
+  "AI_BEHAVIOR", "ANIMATION", "PHYSICS", "AUDIO", "NETWORKING", "UTILITY"
 ] as const;
 
-export default function SignalBusPanel() {
+export default function SkillForgePanel() {
   const [stats, setStats] = useState<SubsystemStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [message, setMessage] = useState("");
 
-  const [signalName, setSignalName] = useState("");
-  const [signalDescription, setSignalDescription] = useState("");
-  const [parametersJson, setParametersJson] = useState("[]");
-  const [category, setCategory] = useState("CUSTOM");
+  const [description, setDescription] = useState("");
+  const [resultJson, setResultJson] = useState("");
+  const [category, setCategory] = useState("UTILITY");
+  const [tags, setTags] = useState("");
 
-  const [emitSignalName, setEmitSignalName] = useState("");
-  const [payloadJson, setPayloadJson] = useState("");
+  const [skillId, setSkillId] = useState("");
+  const [dryRun, setDryRun] = useState(false);
 
   const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}/signal-bus/stats`);
+      const res = await fetch(`${API_BASE}/skill-forge/stats`);
       const data = await res.json();
       if (!data.error) setStats(data);
       else setStats(null);
@@ -53,85 +54,69 @@ export default function SignalBusPanel() {
     setTimeout(() => setMessage(""), 3000);
   };
 
-  const handleDefine = async () => {
-    if (!signalName.trim()) {
-      showMessage("Signal name is required");
-      return;
-    }
-    let parsedParams;
-    try {
-      parsedParams = JSON.parse(parametersJson);
-    } catch {
-      showMessage("Invalid JSON in parameters");
+  const handleCreateSkill = async () => {
+    if (!description.trim()) {
+      showMessage("Description is required");
       return;
     }
     try {
-      const res = await fetch(`${API_BASE}/signal-bus/define`, {
+      const res = await fetch(`${API_BASE}/skill-forge/create-skill`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: signalName.trim(),
-          description: signalDescription.trim(),
-          parameters_json: parsedParams,
+          description: description.trim(),
+          result_json: resultJson.trim() || "{}",
           category,
+          tags: tags.trim() ? tags.split(",").map(t => t.trim()) : [],
         }),
       });
       const data = await res.json();
       if (data.error) {
         showMessage(`Error: ${data.error}`);
       } else {
-        showMessage("Signal defined successfully");
-        setSignalName("");
-        setSignalDescription("");
-        setParametersJson("[]");
+        showMessage("Skill created successfully");
+        setDescription("");
+        setResultJson("");
+        setTags("");
         fetchStats();
       }
     } catch {
-      showMessage("Failed to define signal");
+      showMessage("Failed to create skill");
     }
   };
 
-  const handleEmit = async () => {
-    if (!emitSignalName.trim()) {
-      showMessage("Signal name is required");
+  const handleExecuteSkill = async () => {
+    if (!skillId.trim()) {
+      showMessage("Skill ID is required");
       return;
     }
-    let parsedPayload;
-    if (payloadJson.trim()) {
-      try {
-        parsedPayload = JSON.parse(payloadJson);
-      } catch {
-        showMessage("Invalid JSON in payload");
-        return;
-      }
-    }
     try {
-      const res = await fetch(`${API_BASE}/signal-bus/emit`, {
+      const res = await fetch(`${API_BASE}/skill-forge/execute-skill`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          signal_name: emitSignalName.trim(),
-          payload_json: parsedPayload || {},
+          skill_id: skillId.trim(),
+          dry_run: dryRun,
         }),
       });
       const data = await res.json();
       if (data.error) {
         showMessage(`Error: ${data.error}`);
       } else {
-        showMessage("Signal emitted successfully");
-        setEmitSignalName("");
-        setPayloadJson("");
+        showMessage(`Skill executed${dryRun ? " (dry run)" : ""} successfully`);
+        setSkillId("");
+        setDryRun(false);
         fetchStats();
       }
     } catch {
-      showMessage("Failed to emit signal");
+      showMessage("Failed to execute skill");
     }
   };
 
   return (
     <div style={{ padding: "1.5rem", color: "#e0e0e0" }}>
       <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1rem", color: "#ffffff" }}>
-        Signal Bus 📡
+        Skill Forge ⚒️
       </h2>
       {message && (
         <div style={{
@@ -183,20 +168,31 @@ export default function SignalBusPanel() {
               background: "#1a1a2e", borderRadius: "0.5rem", padding: "0.75rem",
               marginBottom: "0.75rem", border: "1px solid #2a2a4a"
             }}>
-              <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Define Signal</h4>
+              <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Create Skill</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
+                <textarea
+                  placeholder="Skill description"
+                  value={description}
+                  onChange={(e) => setDescription(e.target.value)}
+                  rows={3}
+                  style={{
+                    padding: "0.5rem", borderRadius: "0.375rem",
+                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    fontSize: "0.8rem", resize: "vertical"
+                  }}
+                />
+                <textarea
+                  placeholder="Result JSON"
+                  value={resultJson}
+                  onChange={(e) => setResultJson(e.target.value)}
+                  rows={2}
+                  style={{
+                    padding: "0.5rem", borderRadius: "0.375rem",
+                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    fontSize: "0.8rem", resize: "vertical"
+                  }}
+                />
                 <div style={{ display: "flex", gap: "0.5rem" }}>
-                  <input
-                    type="text"
-                    placeholder="Signal name"
-                    value={signalName}
-                    onChange={(e) => setSignalName(e.target.value)}
-                    style={{
-                      flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
-                      fontSize: "0.8rem"
-                    }}
-                  />
                   <select
                     value={category}
                     onChange={(e) => setCategory(e.target.value)}
@@ -210,31 +206,20 @@ export default function SignalBusPanel() {
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
+                  <input
+                    type="text"
+                    placeholder="Tags (comma separated)"
+                    value={tags}
+                    onChange={(e) => setTags(e.target.value)}
+                    style={{
+                      flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
+                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      fontSize: "0.8rem"
+                    }}
+                  />
                 </div>
-                <input
-                  type="text"
-                  placeholder="Description"
-                  value={signalDescription}
-                  onChange={(e) => setSignalDescription(e.target.value)}
-                  style={{
-                    padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
-                    fontSize: "0.8rem"
-                  }}
-                />
-                <textarea
-                  placeholder='Parameters JSON (array of {"name","type","default"})'
-                  value={parametersJson}
-                  onChange={(e) => setParametersJson(e.target.value)}
-                  rows={3}
-                  style={{
-                    padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
-                    fontSize: "0.8rem", resize: "vertical"
-                  }}
-                />
                 <button
-                  onClick={handleDefine}
+                  onClick={handleCreateSkill}
                   style={{
                     padding: "0.5rem 1rem", borderRadius: "0.375rem",
                     border: "none", background: "#e94560", color: "#fff",
@@ -242,7 +227,7 @@ export default function SignalBusPanel() {
                     alignSelf: "flex-start"
                   }}
                 >
-                  Define Signal
+                  Create Skill
                 </button>
               </div>
             </div>
@@ -251,32 +236,30 @@ export default function SignalBusPanel() {
               background: "#1a1a2e", borderRadius: "0.5rem", padding: "0.75rem",
               border: "1px solid #2a2a4a"
             }}>
-              <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Emit Signal</h4>
+              <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Execute Skill</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <input
                   type="text"
-                  placeholder="Signal name"
-                  value={emitSignalName}
-                  onChange={(e) => setEmitSignalName(e.target.value)}
+                  placeholder="Skill ID"
+                  value={skillId}
+                  onChange={(e) => setSkillId(e.target.value)}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
                     border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 />
-                <textarea
-                  placeholder="Payload JSON"
-                  value={payloadJson}
-                  onChange={(e) => setPayloadJson(e.target.value)}
-                  rows={3}
-                  style={{
-                    padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
-                    fontSize: "0.8rem", resize: "vertical"
-                  }}
-                />
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", fontSize: "0.8rem", color: "#aaa", cursor: "pointer" }}>
+                  <input
+                    type="checkbox"
+                    checked={dryRun}
+                    onChange={(e) => setDryRun(e.target.checked)}
+                    style={{ accentColor: "#e94560" }}
+                  />
+                  Dry Run
+                </label>
                 <button
-                  onClick={handleEmit}
+                  onClick={handleExecuteSkill}
                   style={{
                     padding: "0.5rem 1rem", borderRadius: "0.375rem",
                     border: "none", background: "#e94560", color: "#fff",
@@ -284,7 +267,7 @@ export default function SignalBusPanel() {
                     alignSelf: "flex-start"
                   }}
                 >
-                  Emit Signal
+                  Execute Skill
                 </button>
               </div>
             </div>
