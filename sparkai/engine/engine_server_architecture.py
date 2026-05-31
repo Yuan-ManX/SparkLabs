@@ -1,9 +1,9 @@
 """
 SparkLabs Engine - Game Server Architecture
 
-Godot-style dedicated server process pool managing isolated server
-instances for rendering, physics, audio, networking, and AI subsystems.
-Provides server lifecycle orchestration, health monitoring, load-aware
+Dedicated server process pool managing isolated server instances for
+rendering, physics, audio, networking, and AI subsystems. Provides
+server lifecycle orchestration, health monitoring, load-aware
 allocation, elastic scaling policies, and inter-server communication
 coordination.
 
