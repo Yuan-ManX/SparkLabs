@@ -3,8 +3,8 @@ SparkLabs Engine - Collision Layers
 
 Layer-based collision filtering system that controls which game
 objects can interact with each other. Enables selective physics
-interactions using bitmask-based layer checks, inspired by
-modern game engines' collision management patterns.
+interactions using bitmask-based layer checks, implementing
+industry-standard collision management patterns.
 
 Architecture:
   CollisionLayerManager
