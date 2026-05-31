@@ -34,7 +34,7 @@ npm run preview
 | Feature | Description |
 |---------|-------------|
 | AI Prompt Bar | Natural language game creation with Ctrl+K shortcut |
-| 3D Viewport | THREE.js scene with Scene/Game/Wireframe modes |
+| 3D Viewport | Spark3D scene with Scene/Game/Wireframe modes |
 | Scene Outliner | Hierarchical entity tree with visibility/lock toggles |
 | Property Editor | Transform, Neural, Rendering, Physics sections |
 | Node Graph | Visual programming for game logic |
