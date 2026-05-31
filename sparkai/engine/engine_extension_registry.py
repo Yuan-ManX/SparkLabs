@@ -1,11 +1,10 @@
 """
 SparkLabs Engine - Extension Registry
 
-GDevelop-style extension ecosystem that manages modular behaviors,
-object types, and feature extensions with versioning, dependency
-resolution, and marketplace-style discovery. Provides a unified
-system for publishing, installing, updating, and querying extensions
-across the engine.
+Modular extension ecosystem that manages behaviors, object types,
+and feature extensions with versioning, dependency resolution, and
+marketplace-style discovery. Provides a unified system for publishing,
+installing, updating, and querying extensions across the engine.
 
 Architecture:
   ExtensionRegistry
@@ -228,7 +227,7 @@ class ExtensionDependency:
 
 
 class ExtensionRegistry:
-    """GDevelop-style extension ecosystem managing modular behaviors,
+    """Modular extension ecosystem managing behaviors,
     object types, and feature extensions with dependency resolution."""
 
     _instance: Optional["ExtensionRegistry"] = None

@@ -1,7 +1,7 @@
 """
 SparkLabs Engine - Node Tree System
 
-Godot-style hierarchical scene node tree system providing parent-child
+Hierarchical scene node tree system providing parent-child
 spatial transforms, signal propagation with configurable scope, lifecycle
 state management, and flexible tree traversal patterns. Designed as the
 core scene graph backbone for all visual and logical game objects.
@@ -174,7 +174,7 @@ class SceneDefinition:
 
 
 class NodeTreeSystem:
-    """Godot-style hierarchical scene node tree with signals and lifecycle."""
+    """Hierarchical scene node tree with signals and lifecycle management."""
 
     _instance: Optional["NodeTreeSystem"] = None
     _lock = threading.RLock()
