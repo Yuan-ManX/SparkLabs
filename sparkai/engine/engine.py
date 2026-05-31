@@ -156,7 +156,7 @@ from sparkai.engine.engine_post_processing import PostProcessingSystem, get_post
 from sparkai.engine.engine_skeleton_deformer import SkeletonDeformerSystem, get_skeleton_deformer
 from sparkai.engine.engine_lighting_2d import Lighting2DEngine, get_lighting_2d
 from sparkai.engine.engine_parallax_background import ParallaxBackgroundSystem, get_parallax_background
-from sparkai.engine.engine_behavior_library import ObjectBehaviorLibrary, get_behavior_library
+from sparkai.engine.engine_behavior_library import BehaviorLibrary, get_behavior_library
 from sparkai.engine.engine_animation_curve import AnimationCurveEditor, get_animation_curve
 from sparkai.engine.engine_render_layer import RenderLayerSystem, get_render_layer
 from sparkai.engine.engine_state_synchronizer import GameStateSynchronizer, get_state_synchronizer
@@ -188,6 +188,8 @@ from sparkai.engine.engine_procedural_synthesis import ProceduralSynthesis, get_
 from sparkai.engine.engine_asset_bundler import AssetBundler, get_asset_bundler
 from sparkai.engine.engine_deterministic_recorder import DeterministicRecorder, get_deterministic_recorder
 from sparkai.engine.engine_localization_hub import LocalizationHub, get_localization_hub
+from sparkai.engine.engine_event_scripting import EventScripting, get_event_scripting
+from sparkai.engine.engine_component_assembler import ComponentAssembler, get_component_assembler
 
 
 class SparkEngine:
@@ -304,14 +306,11 @@ class SparkEngine:
         self._profiler_system: ProfilerSystem = get_profiler_system()
         self._expression_engine: ExpressionEngine = get_expression_engine()
         self._extension_runtime: ExtensionRuntime = get_extension_runtime()
-        self._terrain_system: TerrainSystem = get_terrain_system()
-        self._fog_of_war: FogOfWarSystem = get_fog_of_war()
         self._shader_graph: ShaderGraph = get_shader_graph()
         self._build_pipeline: BuildPipeline = get_build_pipeline()
         self._tileset_system: TileSetSystem = get_tileset_system()
         self._resource_pack: ResourcePack = get_resource_pack()
         self._input_profile_system: InputProfileSystem = get_input_profile_system()
-        self._scene_tree: SceneTree = get_scene_tree()
         self._event_system: EventSystem = get_event_system()
         self._animation_system: AnimationSystem = get_animation_system()
         self._pathfinding_system: PathfindingSystem = get_pathfinding_system()
@@ -319,10 +318,8 @@ class SparkEngine:
         self._performance_overlay: PerformanceOverlay = get_performance_overlay()
         self._scene_streamer: SceneStreamer = get_scene_streamer()
         self._project_exporter: ProjectExporter = get_project_exporter()
-        self._audio_system = get_audio_system()
         self._network_layer = get_network_layer()
         self._behavior_runtime = get_behavior_runtime()
-        self._save_system = get_save_system()
         self._node_tree = get_node_tree()
         self._extension_registry = get_extension_registry()
         self._export_pipeline = get_export_pipeline()
@@ -345,7 +342,6 @@ class SparkEngine:
         self._occlusion_culling = get_occlusion_culling()
         self._lod_system = get_lod_system()
         self._decal_system = get_decal_system()
-        self._post_processing = get_post_processing()
         self._skeleton_deformer = get_skeleton_deformer()
         self._lighting_2d = get_lighting_2d()
         self._parallax_background = get_parallax_background()
@@ -381,6 +377,8 @@ class SparkEngine:
         self._asset_bundler = get_asset_bundler()
         self._deterministic_recorder = get_deterministic_recorder()
         self._localization_hub = get_localization_hub()
+        self._event_scripting_runtime = get_event_scripting()
+        self._component_assembler = get_component_assembler()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -633,14 +631,11 @@ class SparkEngine:
             "profiler_system": self._profiler_system.get_stats(),
             "expression_engine": self._expression_engine.get_stats(),
             "extension_runtime": self._extension_runtime.get_stats(),
-            "terrain_system": self._terrain_system.get_stats(),
-            "fog_of_war": self._fog_of_war.get_stats(),
             "shader_graph": self._shader_graph.get_stats(),
             "build_pipeline": self._build_pipeline.get_stats(),
             "tileset_system": self._tileset_system.get_stats(),
             "resource_pack": self._resource_pack.get_stats(),
             "input_profile_system": self._input_profile_system.get_stats(),
-            "scene_tree": self._scene_tree.get_stats(),
             "event_system": self._event_system.get_stats(),
             "animation_system": self._animation_system.get_stats(),
             "pathfinding_system": self._pathfinding_system.get_stats(),
@@ -648,10 +643,8 @@ class SparkEngine:
             "performance_overlay": self._performance_overlay.get_stats(),
             "scene_streamer": self._scene_streamer.get_stats(),
             "project_exporter": self._project_exporter.get_stats(),
-            "audio_system": self._audio_system is not None,
             "network_layer": self._network_layer is not None,
             "behavior_runtime": self._behavior_runtime is not None,
-            "save_system": self._save_system is not None,
             "event_sheet": self._event_sheet.get_stats(),
             "resource_serializer": self._resource_serializer.get_stats(),
             "input_map": self._input_map.get_stats(),
@@ -668,11 +661,10 @@ class SparkEngine:
             "occlusion_culling": self._occlusion_culling.get_stats(),
             "lod_system": self._lod_system.get_stats(),
             "decal_system": self._decal_system.get_stats(),
-            "post_processing": self._post_processing.get_stats(),
             "skeleton_deformer": self._skeleton_deformer.get_stats(),
             "lighting_2d": self._lighting_2d.get_stats(),
             "parallax_background": self._parallax_background.get_stats(),
-            "behavior_library": self._behavior_library.get_stats(),
+            "behavior_library": self._behavior_library.get_behavior_library_stats(),
             "animation_curve": self._animation_curve.get_stats(),
             "render_layer": self._render_layer.get_stats(),
             "state_synchronizer": self._state_synchronizer.get_stats(),
@@ -704,6 +696,8 @@ class SparkEngine:
             "asset_bundler": self._asset_bundler.get_stats(),
             "deterministic_recorder": self._deterministic_recorder.get_stats(),
             "localization_hub": self._localization_hub.get_stats(),
+            "event_scripting_runtime": self._event_scripting_runtime.get_stats(),
+            "component_assembler": self._component_assembler.get_stats(),
         }
 
     @property
@@ -1035,7 +1029,7 @@ class SparkEngine:
         return self._parallax_background
 
     @property
-    def behavior_library(self) -> ObjectBehaviorLibrary:
+    def behavior_library(self) -> BehaviorLibrary:
         return self._behavior_library
 
     @property
@@ -1161,6 +1155,14 @@ class SparkEngine:
     @property
     def localization_hub(self) -> LocalizationHub:
         return self._localization_hub
+
+    @property
+    def event_scripting_runtime(self) -> EventScripting:
+        return self._event_scripting_runtime
+
+    @property
+    def component_assembler(self) -> ComponentAssembler:
+        return self._component_assembler
 
 
 @dataclass
