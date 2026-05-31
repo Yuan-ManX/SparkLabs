@@ -1,7 +1,7 @@
 """
 SparkLabs Engine - Event Scripting System
 
-Visual event-based scripting system inspired by GDevelop's
+Visual event-based scripting system using a declarative
 event-driven architecture. Enables no-code game logic creation
 through conditions, actions, and sub-events — making AI-generated
 game behavior accessible through a structured, composable model.

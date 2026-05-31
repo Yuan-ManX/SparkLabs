@@ -1,11 +1,11 @@
 """
 SparkLabs Engine - Event System
 
-Combines GDevelop-style event sheets (visual behavior programming)
-with Godot-style signal/slot communication. Event sheets are ordered
-lists of conditions and actions evaluated top-down each frame. The
-signal bus provides decoupled node-to-node communication via
-named signals.
+Declarative event sheet and signal/slot engine combining
+visual event-driven programming with decoupled signal-based
+communication. Event sheets are ordered lists of conditions and
+actions evaluated top-down each frame. The signal bus provides
+decoupled node-to-node communication via named signals.
 
 Architecture:
   EventSystem
@@ -551,8 +551,8 @@ class EventSystem:
 
     Manages event sheets (ordered condition-action lists evaluated
     each frame) and signal connections (decoupled node-to-node
-    communication). Integrates both GDevelop-style visual scripting
-    and Godot-style observer patterns into one system.
+    communication), integrating visual scripting and observer
+    patterns into one system.
 
     Usage:
         es = EventSystem.get_instance()
