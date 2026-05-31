@@ -13,7 +13,7 @@ Architecture:
     |     |-- SceneNode (individual node in the tree)
     |     |-- root_node_id → SceneNode (entry point for tree traversal)
     |-- Node Lifecycle: ENTER_TREE → READY → PROCESS/PHYSICS_PROCESS → EXIT_TREE → IDLE
-    |-- Node Types: 20 Godot-inspired node classifications
+    |-- Node Types: 20 categorized node classifications
 
 Usage:
     st = get_scene_tree()

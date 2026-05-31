@@ -14,8 +14,8 @@ namespace sparkai {
 // Game engine template types
 enum class GameEngineType {
     Canvas2D,
-    Phaser,
-    ThreeJS,
+    Spark2D,
+    Spark3D,
     WebGL,
     Custom
 };
