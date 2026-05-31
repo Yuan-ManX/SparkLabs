@@ -38,7 +38,7 @@ class CodeLanguage(Enum):
     PYTHON = "python"
     CPP = "cpp"
     LUA = "lua"
-    GDSCRIPT = "gdscript"
+    SPARKSCRIPT = "sparkscript"
     JSON = "json"
     CONFIG = "config"
 
@@ -207,7 +207,7 @@ class CodeGenProject:
 
 
 _GENRE_KEYWORDS: Dict[str, List[str]] = {
-    "platformer": ["platform", "jump", "runner", "mario", "sonic"],
+    "platformer": ["platform", "jump", "runner", "side_scroll", "hop"],
     "rpg": ["rpg", "role", "quest", "dungeon", "dragon", "fantasy", "level up"],
     "shooter": ["shoot", "gun", "fps", "bullet", "weapon", "combat"],
     "puzzle": ["puzzle", "match", "tile", "2048", "sudoku", "logic"],
