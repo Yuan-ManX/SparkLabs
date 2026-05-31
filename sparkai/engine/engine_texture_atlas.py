@@ -878,7 +878,7 @@ class TextureAtlas:
         Maintains a skyline profile representing the top edge of packed
         regions. Each new region is placed at the lowest available point
         on the skyline where it fits horizontally. This produces tightly
-        packed, "Tetris-like" layouts.
+        packed, bottom-left-optimized layouts.
 
         Returns:
             A tuple of (placements dict, list of rejected region IDs).

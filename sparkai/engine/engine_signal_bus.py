@@ -1,31 +1,28 @@
 """
 SparkLabs Engine - Signal Bus
 
-Typed, decoupled event communication system where game systems
-communicate via signals without direct references. Inspired by Godot's
-signal system but designed for the SparkLabs AI-native engine,
-providing priority-based delivery, scoped emission, and multiple
-delivery strategies.
+Decoupled signal/event communication system providing a unified
+signal bus and observer pattern communication layer. Game systems
+communicate via typed signals without direct references, using
+namespace-isolated signal definitions, priority-ordered listener
+connections, and multiple emission strategies including synchronous,
+asynchronous, and batched atomic delivery.
 
 Architecture:
   SignalBus
-    |-- SignalRegistry (signal type definitions and metadata)
-    |-- ConnectionManager (listener registration and lifecycle)
-    |-- EmissionEngine (immediate, deferred, queued, batched delivery)
-    |-- SignalHistory (emission tracking for debugging and replay)
-    |-- BusMonitor (aggregate statistics and health metrics)
+    |-- SignalDefinition (typed signal metadata with parameter schema)
+    |-- SignalConnection (listener binding with priority and lifecycle)
+    |-- SignalEmission (discrete emission record with payload tracking)
+    |-- NamespaceRegistry (isolated signal spaces for modularity)
+    |-- EmissionRouter (priority-sorted, one-shot-aware delivery engine)
 
-Signal Scopes:
-  - LOCAL: confined to the emitting system
-  - SCENE: broadcast within the current scene
-  - GLOBAL: reach all systems across all scenes
-  - PERSISTENT: survive scene transitions, always active
-
-Delivery Modes:
-  - IMMEDIATE: synchronous delivery during the current frame
-  - DEFERRED: scheduled for a later frame after a delay
-  - QUEUED: placed in a FIFO queue for ordered processing
-  - BATCHED: grouped and emitted atomically as a unit
+Signal Flow:
+  1. define_signal(name, parameters, category, namespace) → signal_id
+  2. connect(signal_id, listener_id, callback, priority) → connection_id
+  3. emit(signal_id, payload, emitted_by) → delivery to all listeners
+  4. One-shot connections auto-disconnect after first successful delivery
+  5. emit_async dispatches non-blocking emission on a worker thread
+  6. batch_emit delivers multiple signals atomically under a single lock
 """
 
 from __future__ import annotations
@@ -33,7 +30,7 @@ from __future__ import annotations
 import threading
 import time
 import uuid
-from collections import deque
+from collections import defaultdict, deque
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Set, Tuple
@@ -41,52 +38,33 @@ from typing import Any, Callable, Dict, List, Optional, Set, Tuple
 _time_module = time
 
 
-class SignalPriority(Enum):
-    LOWEST = -2
-    LOW = -1
-    NORMAL = 0
-    HIGH = 1
-    HIGHEST = 2
-    CRITICAL = 3
+# ---------------------------------------------------------------------------
+# Domain Enumerations
+# ---------------------------------------------------------------------------
 
 
-class SignalScope(Enum):
-    LOCAL = "local"
-    SCENE = "scene"
-    GLOBAL = "global"
-    PERSISTENT = "persistent"
-
-
-class DeliveryMode(Enum):
-    IMMEDIATE = "immediate"
-    DEFERRED = "deferred"
-    QUEUED = "queued"
-    BATCHED = "batched"
+class SignalCategory(Enum):
+    GAMEPLAY = "gameplay"
+    PHYSICS = "physics"
+    INPUT = "input"
+    UI = "ui"
+    AUDIO = "audio"
+    NETWORK = "network"
+    ANIMATION = "animation"
+    LIFECYCLE = "lifecycle"
+    CUSTOM = "custom"
 
 
 class ConnectionState(Enum):
     ACTIVE = "active"
     PAUSED = "paused"
-    ONE_SHOT = "one_shot"
+    ONE_SHOT_PENDING = "one_shot_pending"
     DISCONNECTED = "disconnected"
 
 
-@dataclass
-class SignalStats:
-    total_emitted: int = 0
-    total_received: int = 0
-    total_dropped: int = 0
-    peak_queue_size: int = 0
-    avg_delivery_ms: float = 0.0
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "total_emitted": self.total_emitted,
-            "total_received": self.total_received,
-            "total_dropped": self.total_dropped,
-            "peak_queue_size": self.peak_queue_size,
-            "avg_delivery_ms": round(self.avg_delivery_ms, 3),
-        }
+# ---------------------------------------------------------------------------
+# Data Classes
+# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -94,10 +72,9 @@ class SignalDefinition:
     id: str = field(default_factory=lambda: uuid.uuid4().hex)
     name: str = ""
     description: str = ""
-    parameters: List[str] = field(default_factory=list)
-    scope: SignalScope = SignalScope.LOCAL
-    delivery: DeliveryMode = DeliveryMode.IMMEDIATE
-    category: str = "general"
+    parameters: List[Dict[str, Any]] = field(default_factory=list)
+    category: SignalCategory = SignalCategory.CUSTOM
+    namespace: str = "default"
     created_at: float = field(default_factory=_time_module.time)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -105,10 +82,12 @@ class SignalDefinition:
             "id": self.id,
             "name": self.name,
             "description": self.description,
-            "parameters": self.parameters,
-            "scope": self.scope.value,
-            "delivery": self.delivery.value,
-            "category": self.category,
+            "parameters": [
+                {"name": p.get("name", ""), "type": p.get("type", "any"), "default": p.get("default")}
+                for p in self.parameters
+            ],
+            "category": self.category.value,
+            "namespace": self.namespace,
             "created_at": self.created_at,
         }
 
@@ -118,11 +97,10 @@ class SignalConnection:
     id: str = field(default_factory=lambda: uuid.uuid4().hex)
     signal_id: str = ""
     listener_id: str = ""
-    callback: Callable[..., Any] = lambda *args, **kwargs: None
-    priority: SignalPriority = SignalPriority.NORMAL
-    state: ConnectionState = ConnectionState.ACTIVE
-    filter_condition: Optional[Callable[..., bool]] = None
-    connection_count: int = 0
+    callback_name: str = ""
+    priority: int = 0
+    one_shot: bool = False
+    enabled: bool = True
     created_at: float = field(default_factory=_time_module.time)
 
     def to_dict(self) -> Dict[str, Any]:
@@ -130,10 +108,10 @@ class SignalConnection:
             "id": self.id,
             "signal_id": self.signal_id,
             "listener_id": self.listener_id,
-            "priority": self.priority.value,
-            "state": self.state.value,
-            "has_filter": self.filter_condition is not None,
-            "connection_count": self.connection_count,
+            "callback_name": self.callback_name,
+            "priority": self.priority,
+            "one_shot": self.one_shot,
+            "enabled": self.enabled,
             "created_at": self.created_at,
         }
 
@@ -142,108 +120,94 @@ class SignalConnection:
 class SignalEmission:
     id: str = field(default_factory=lambda: uuid.uuid4().hex)
     signal_id: str = ""
-    emitter_id: str = ""
-    parameters: Dict[str, Any] = field(default_factory=dict)
+    payload: Dict[str, Any] = field(default_factory=dict)
+    emitted_by: str = ""
     timestamp: float = field(default_factory=_time_module.time)
-    scope: SignalScope = SignalScope.LOCAL
-    emission_id: str = ""
-    batch_id: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
             "signal_id": self.signal_id,
-            "emitter_id": self.emitter_id,
-            "parameters_summary": {k: str(v)[:60] for k, v in list(self.parameters.items())[:5]},
+            "payload_summary": {k: str(v)[:80] for k, v in list(self.payload.items())[:8]},
+            "emitted_by": self.emitted_by,
             "timestamp": self.timestamp,
-            "scope": self.scope.value,
-            "emission_id": self.emission_id,
-            "batch_id": self.batch_id,
         }
 
 
-@dataclass
-class SignalListener:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = ""
-    owner_system: str = ""
-    is_async: bool = False
-    max_queue_size: int = 100
-    stats: SignalStats = field(default_factory=SignalStats)
-    created_at: float = field(default_factory=_time_module.time)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "owner_system": self.owner_system,
-            "is_async": self.is_async,
-            "max_queue_size": self.max_queue_size,
-            "stats": self.stats.to_dict(),
-            "created_at": self.created_at,
-        }
-
-
-PRIORITY_SORT_ORDER: Dict[SignalPriority, int] = {
-    SignalPriority.CRITICAL: 0,
-    SignalPriority.HIGHEST: 1,
-    SignalPriority.HIGH: 2,
-    SignalPriority.NORMAL: 3,
-    SignalPriority.LOW: 4,
-    SignalPriority.LOWEST: 5,
-}
+# ---------------------------------------------------------------------------
+# SignalBus — Thread-Safe Singleton
+# ---------------------------------------------------------------------------
 
 
 class SignalBus:
     """
-    Typed event communication bus with priority-based delivery,
-    scoped emission, and multiple delivery strategies.
+    Decoupled signal/event communication bus with priority-based delivery,
+    namespace isolation, one-shot auto-disconnect, and asynchronous emission.
 
-    Game systems register signals and connect listeners through
-    this central bus, enabling fully decoupled communication
-    without direct object references.
+    Systems register typed signal definitions and connect listeners via
+    named callbacks. Emissions are routed to all connected listeners in
+    descending priority order. One-shot connections automatically
+    disconnect after their first successful invocation.
+
+    Thread-safe via a reentrant lock. Use get_signal_bus() or
+    SignalBus.get_instance() to obtain the singleton instance.
 
     Usage:
         bus = get_signal_bus()
-        sig_id = bus.define_signal("entity_damaged", "Fires when entity takes damage",
-                                    ["entity_id", "amount", "source"], SignalScope.SCENE, DeliveryMode.IMMEDIATE)
-        conn_id = bus.register_listener(sig_id, "health_system_listener", handle_damage,
-                                         SignalPriority.HIGH, ConnectionState.ACTIVE)
-        bus.emit_signal(sig_id, "combat_system", {"entity_id": "ent_1", "amount": 25, "source": "fire"}, SignalScope.SCENE)
+        sig_id = bus.define_signal(
+            "entity_damaged",
+            "Fires when an entity takes damage",
+            [{"name": "entity_id", "type": "str", "default": ""},
+             {"name": "amount", "type": "float", "default": 0.0},
+             {"name": "source", "type": "str", "default": "unknown"}],
+            SignalCategory.GAMEPLAY,
+            namespace="combat",
+        )
+        conn_id = bus.connect(sig_id, "health_system", "on_entity_damaged", callback, priority=10)
+        bus.emit(sig_id, {"entity_id": "ent_1", "amount": 25.0, "source": "fire"}, "combat_system")
     """
 
     _instance: Optional["SignalBus"] = None
     _lock: threading.RLock = threading.RLock()
 
-    MAX_HISTORY = 500
-    MAX_DEFERRED = 1000
-    MAX_BATCH_SIZE = 50
+    MAX_HISTORY_PER_SIGNAL = 500
     MAX_CONNECTIONS_PER_SIGNAL = 200
+    MAX_BATCH_SIZE = 100
+    DEFAULT_NAMESPACE = "default"
 
-    def __init__(self):
-        self._definitions: Dict[str, SignalDefinition] = {}
-        self._connections: Dict[str, SignalConnection] = {}
-        self._listeners: Dict[str, SignalListener] = {}
-        self._emissions: Dict[str, SignalEmission] = {}
-        self._signal_history: Dict[str, deque] = {}
-        self._deferred_queue: deque = deque()
-        self._queued_emissions: Dict[str, deque] = {}
-        self._active_batches: Dict[str, List[Tuple[str, str, Dict[str, Any], SignalScope]]] = {}
-        self._connection_index: Dict[str, Set[str]] = {}
-        self._listener_index: Dict[str, Set[str]] = {}
-        self._stats: SignalStats = SignalStats()
-        self._total_delivery_ms: float = 0.0
-        self._total_deliveries: int = 0
-        self._paused_signals: Set[str] = set()
-        self._global_listeners: Set[str] = set()
-
-    @classmethod
-    def get_instance(cls) -> "SignalBus":
+    def __new__(cls) -> "SignalBus":
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    cls._instance = cls()
+                    instance = super().__new__(cls)
+                    instance._initialized = False
+                    cls._instance = instance
         return cls._instance
+
+    def __init__(self) -> None:
+        if self._initialized:
+            return
+        self._definitions: Dict[str, SignalDefinition] = {}
+        self._connections: Dict[str, SignalConnection] = {}
+        self._emission_history: Dict[str, deque] = defaultdict(
+            lambda: deque(maxlen=self.MAX_HISTORY_PER_SIGNAL)
+        )
+        self._callback_registry: Dict[Tuple[str, str], Callable[..., Any]] = {}
+        self._listener_connections: Dict[str, Set[str]] = defaultdict(set)
+        self._signal_connections: Dict[str, Set[str]] = defaultdict(set)
+        self._namespace_index: Dict[str, Set[str]] = defaultdict(set)
+        self._batches: Dict[str, List[Tuple[str, Dict[str, Any], str]]] = {}
+        self._total_emissions: int = 0
+        self._total_deliveries: int = 0
+        self._total_drops: int = 0
+        self._cumulative_delivery_ms: float = 0.0
+        self._delivery_samples: int = 0
+        self._paused_signals: Set[str] = set()
+        self._initialized = True
+
+    @classmethod
+    def get_instance(cls) -> "SignalBus":
+        return cls()
 
     # ------------------------------------------------------------------
     # Signal Definition
@@ -253,710 +217,556 @@ class SignalBus:
         self,
         name: str,
         description: str = "",
-        parameters: Optional[List[str]] = None,
-        scope: SignalScope = SignalScope.LOCAL,
-        delivery: DeliveryMode = DeliveryMode.IMMEDIATE,
-        category: str = "general",
+        parameters: Optional[List[Dict[str, Any]]] = None,
+        category: SignalCategory = SignalCategory.CUSTOM,
+        namespace: str = DEFAULT_NAMESPACE,
     ) -> str:
-        definition = SignalDefinition(
-            name=name,
-            description=description,
-            parameters=parameters or [],
-            scope=scope,
-            delivery=delivery,
-            category=category,
-        )
         with self._lock:
+            definition = SignalDefinition(
+                name=name,
+                description=description,
+                parameters=parameters or [],
+                category=category,
+                namespace=namespace or self.DEFAULT_NAMESPACE,
+            )
             self._definitions[definition.id] = definition
-            self._connection_index[definition.id] = set()
-            self._signal_history[definition.id] = deque(maxlen=self.MAX_HISTORY)
-            if delivery == DeliveryMode.QUEUED:
-                self._queued_emissions[definition.id] = deque()
-        return definition.id
+            self._signal_connections[definition.id] = set()
+            self._namespace_index[definition.namespace].add(definition.id)
+            return definition.id
 
     def get_signal_definition(self, signal_id: str) -> Optional[SignalDefinition]:
-        return self._definitions.get(signal_id)
+        with self._lock:
+            return self._definitions.get(signal_id)
 
-    def list_signal_definitions(
+    def find_signals_by_name(self, name: str, namespace: Optional[str] = None) -> List[SignalDefinition]:
+        with self._lock:
+            results = [d for d in self._definitions.values() if d.name == name]
+            if namespace is not None:
+                results = [d for d in results if d.namespace == namespace]
+            return results
+
+    def list_definitions(
         self,
-        scope: Optional[SignalScope] = None,
-        category: Optional[str] = None,
+        namespace: Optional[str] = None,
+        category: Optional[SignalCategory] = None,
     ) -> List[SignalDefinition]:
-        results = list(self._definitions.values())
-        if scope is not None:
-            results = [s for s in results if s.scope == scope]
-        if category is not None:
-            results = [s for s in results if s.category == category]
-        return results
+        with self._lock:
+            results = list(self._definitions.values())
+            if namespace is not None:
+                results = [d for d in results if d.namespace == namespace]
+            if category is not None:
+                results = [d for d in results if d.category == category]
+            return results
 
     def remove_signal_definition(self, signal_id: str) -> bool:
         with self._lock:
-            if signal_id not in self._definitions:
+            definition = self._definitions.pop(signal_id, None)
+            if definition is None:
                 return False
-            connection_ids = list(self._connection_index.get(signal_id, set()))
-            for conn_id in connection_ids:
-                self._connections.pop(conn_id, None)
-            del self._connection_index[signal_id]
-            self._signal_history.pop(signal_id, None)
-            self._queued_emissions.pop(signal_id, None)
-            del self._definitions[signal_id]
-        return True
+            self._namespace_index[definition.namespace].discard(signal_id)
+            conn_ids = list(self._signal_connections.get(signal_id, set()))
+            for conn_id in conn_ids:
+                connection = self._connections.pop(conn_id, None)
+                if connection is not None:
+                    self._listener_connections[connection.listener_id].discard(conn_id)
+            self._signal_connections.pop(signal_id, None)
+            self._emission_history.pop(signal_id, None)
+            self._paused_signals.discard(signal_id)
+            return True
 
     # ------------------------------------------------------------------
-    # Listener Management
+    # Connection Management
     # ------------------------------------------------------------------
 
-    def create_listener(
-        self,
-        name: str,
-        owner_system: str = "",
-        max_queue_size: int = 100,
-        is_async: bool = False,
-    ) -> str:
-        listener = SignalListener(
-            name=name,
-            owner_system=owner_system,
-            is_async=is_async,
-            max_queue_size=max_queue_size,
-        )
-        with self._lock:
-            self._listeners[listener.id] = listener
-            self._listener_index[listener.id] = set()
-        return listener.id
-
-    def get_listener(self, listener_id: str) -> Optional[SignalListener]:
-        return self._listeners.get(listener_id)
-
-    def list_listeners(self, owner_system: Optional[str] = None) -> List[SignalListener]:
-        results = list(self._listeners.values())
-        if owner_system is not None:
-            results = [l for l in results if l.owner_system == owner_system]
-        return results
-
-    def remove_listener(self, listener_id: str) -> bool:
-        with self._lock:
-            if listener_id not in self._listeners:
-                return False
-            connection_ids = list(self._listener_index.get(listener_id, set()))
-            for conn_id in connection_ids:
-                self._connections.pop(conn_id, None)
-                for sig_connections in self._connection_index.values():
-                    sig_connections.discard(conn_id)
-            del self._listener_index[listener_id]
-            del self._listeners[listener_id]
-        return True
-
-    # ------------------------------------------------------------------
-    # Connection Registration
-    # ------------------------------------------------------------------
-
-    def register_listener(
-        self,
-        signal_id: str,
-        listener_name: str,
-        callback: Callable[..., Any],
-        priority: SignalPriority = SignalPriority.NORMAL,
-        state: ConnectionState = ConnectionState.ACTIVE,
-        filter_condition: Optional[Callable[..., bool]] = None,
-    ) -> Optional[str]:
-        if signal_id not in self._definitions:
-            return None
-
-        existing = self._connection_index.get(signal_id, set())
-        if len(existing) >= self.MAX_CONNECTIONS_PER_SIGNAL:
-            return None
-
-        listener = SignalListener(name=listener_name)
-        self._listeners[listener.id] = listener
-        self._listener_index[listener.id] = set()
-
-        connection = SignalConnection(
-            signal_id=signal_id,
-            listener_id=listener.id,
-            callback=callback,
-            priority=priority,
-            state=state,
-            filter_condition=filter_condition,
-        )
-
-        with self._lock:
-            self._connections[connection.id] = connection
-            self._connection_index[signal_id].add(connection.id)
-            self._listener_index[listener.id].add(connection.id)
-
-        return connection.id
-
-    def connect_listener(
+    def connect(
         self,
         signal_id: str,
         listener_id: str,
+        callback_name: str,
         callback: Callable[..., Any],
-        priority: SignalPriority = SignalPriority.NORMAL,
-        state: ConnectionState = ConnectionState.ACTIVE,
-        filter_condition: Optional[Callable[..., bool]] = None,
+        priority: int = 0,
+        one_shot: bool = False,
+        enabled: bool = True,
     ) -> Optional[str]:
-        if signal_id not in self._definitions:
-            return None
-        if listener_id not in self._listeners:
-            return None
-
-        existing = self._connection_index.get(signal_id, set())
-        if len(existing) >= self.MAX_CONNECTIONS_PER_SIGNAL:
-            return None
-
-        connection = SignalConnection(
-            signal_id=signal_id,
-            listener_id=listener_id,
-            callback=callback,
-            priority=priority,
-            state=state,
-            filter_condition=filter_condition,
-        )
-
         with self._lock:
+            if signal_id not in self._definitions:
+                return None
+
+            existing_connections = self._signal_connections.get(signal_id, set())
+            if len(existing_connections) >= self.MAX_CONNECTIONS_PER_SIGNAL:
+                return None
+
+            connection = SignalConnection(
+                signal_id=signal_id,
+                listener_id=listener_id,
+                callback_name=callback_name,
+                priority=priority,
+                one_shot=one_shot,
+                enabled=enabled,
+            )
             self._connections[connection.id] = connection
-            self._connection_index[signal_id].add(connection.id)
-            self._listener_index[listener_id].add(connection.id)
+            self._signal_connections[signal_id].add(connection.id)
+            self._listener_connections[listener_id].add(connection.id)
+            self._callback_registry[(listener_id, callback_name)] = callback
+            return connection.id
 
-        return connection.id
-
-    def disconnect_listener(self, connection_id: str) -> bool:
+    def disconnect(self, connection_id: str) -> bool:
         with self._lock:
-            connection = self._connections.get(connection_id)
+            connection = self._connections.pop(connection_id, None)
             if connection is None:
                 return False
-            connection.state = ConnectionState.DISCONNECTED
-            signal_connections = self._connection_index.get(connection.signal_id, set())
-            signal_connections.discard(connection_id)
-            listener_connections = self._listener_index.get(connection.listener_id, set())
-            listener_connections.discard(connection_id)
-            del self._connections[connection_id]
-        return True
+            self._signal_connections.get(connection.signal_id, set()).discard(connection_id)
+            self._listener_connections.get(connection.listener_id, set()).discard(connection_id)
+            remaining = any(
+                conn_id in self._signal_connections.get(connection.signal_id, set())
+                for conn_id in self._listener_connections.get(connection.listener_id, set())
+            )
+            if not remaining:
+                self._callback_registry.pop((connection.listener_id, connection.callback_name), None)
+            return True
+
+    def disconnect_group(self, listener_id: str) -> int:
+        with self._lock:
+            conn_ids = list(self._listener_connections.get(listener_id, set()))
+            count = 0
+            for conn_id in conn_ids:
+                connection = self._connections.pop(conn_id, None)
+                if connection is not None:
+                    self._signal_connections.get(connection.signal_id, set()).discard(conn_id)
+                    count += 1
+            self._listener_connections.pop(listener_id, None)
+            keys_to_remove = [
+                key for key in self._callback_registry if key[0] == listener_id
+            ]
+            for key in keys_to_remove:
+                del self._callback_registry[key]
+            return count
 
     def pause_connection(self, connection_id: str) -> bool:
-        connection = self._connections.get(connection_id)
-        if connection is None:
+        with self._lock:
+            connection = self._connections.get(connection_id)
+            if connection is not None and connection.enabled:
+                connection.enabled = False
+                return True
             return False
-        if connection.state == ConnectionState.ACTIVE:
-            connection.state = ConnectionState.PAUSED
-            return True
-        return False
 
     def resume_connection(self, connection_id: str) -> bool:
-        connection = self._connections.get(connection_id)
-        if connection is None:
+        with self._lock:
+            connection = self._connections.get(connection_id)
+            if connection is not None and not connection.enabled:
+                connection.enabled = True
+                return True
             return False
-        if connection.state == ConnectionState.PAUSED:
-            connection.state = ConnectionState.ACTIVE
-            return True
-        return False
 
     def get_connection(self, connection_id: str) -> Optional[SignalConnection]:
-        return self._connections.get(connection_id)
+        with self._lock:
+            return self._connections.get(connection_id)
 
-    def list_connections(
-        self,
-        signal_id: Optional[str] = None,
-        listener_id: Optional[str] = None,
-    ) -> List[SignalConnection]:
-        results = list(self._connections.values())
-        if signal_id is not None:
-            results = [c for c in results if c.signal_id == signal_id]
-        if listener_id is not None:
-            results = [c for c in results if c.listener_id == listener_id]
-        return results
+    # ------------------------------------------------------------------
+    # Listener Querying
+    # ------------------------------------------------------------------
+
+    def get_listeners(self, signal_id: str) -> List[Dict[str, Any]]:
+        with self._lock:
+            conn_ids = self._signal_connections.get(signal_id, set())
+            listeners: List[Dict[str, Any]] = []
+            for conn_id in conn_ids:
+                connection = self._connections.get(conn_id)
+                if connection is not None:
+                    listeners.append(connection.to_dict())
+            listeners.sort(key=lambda l: -l["priority"])
+            return listeners
+
+    def get_listener_connections(self, listener_id: str) -> List[SignalConnection]:
+        with self._lock:
+            conn_ids = self._listener_connections.get(listener_id, set())
+            return [self._connections[cid] for cid in conn_ids if cid in self._connections]
 
     # ------------------------------------------------------------------
     # Signal Emission
     # ------------------------------------------------------------------
 
-    def emit_signal(
+    def emit(
         self,
         signal_id: str,
-        emitter_id: str,
-        parameters: Optional[Dict[str, Any]] = None,
-        scope: Optional[SignalScope] = None,
+        payload: Optional[Dict[str, Any]] = None,
+        emitted_by: str = "",
     ) -> Dict[str, Any]:
-        params = parameters or {}
-        definition = self._definitions.get(signal_id)
+        data = payload or {}
+        with self._lock:
+            definition = self._definitions.get(signal_id)
+            if definition is None:
+                return {"success": False, "error": "unknown_signal", "signal_id": signal_id}
 
-        if definition is None:
-            return {"success": False, "error": "Unknown signal", "signal_id": signal_id}
+            if signal_id in self._paused_signals:
+                return {"success": False, "error": "signal_paused", "signal_id": signal_id}
 
-        if signal_id in self._paused_signals:
-            return {"success": False, "error": "Signal paused", "signal_id": signal_id}
+            if not self._validate_payload(definition, data):
+                return {"success": False, "error": "payload_validation_failed", "signal_id": signal_id}
 
-        emission_scope = scope if scope is not None else definition.scope
-        effective_delivery = definition.delivery
+            return self._deliver(signal_id, data, emitted_by)
+
+    def emit_async(
+        self,
+        signal_id: str,
+        payload: Optional[Dict[str, Any]] = None,
+        emitted_by: str = "",
+    ) -> Dict[str, Any]:
+        with self._lock:
+            definition = self._definitions.get(signal_id)
+            if definition is None:
+                return {"success": False, "error": "unknown_signal", "signal_id": signal_id}
+
+        thread = threading.Thread(
+            target=self._emit_async_target,
+            args=(signal_id, payload or {}, emitted_by),
+            daemon=True,
+        )
+        thread.start()
+        return {"success": True, "delivery": "async_dispatched", "signal_id": signal_id}
+
+    def _emit_async_target(
+        self,
+        signal_id: str,
+        payload: Dict[str, Any],
+        emitted_by: str,
+    ) -> None:
+        with self._lock:
+            definition = self._definitions.get(signal_id)
+            if definition is None:
+                return
+            if signal_id in self._paused_signals:
+                return
+            if not self._validate_payload(definition, payload):
+                return
+            self._deliver(signal_id, payload, emitted_by)
+
+    def batch_emit(
+        self,
+        emissions: List[Tuple[str, Dict[str, Any], str]],
+        batch_id: Optional[str] = None,
+    ) -> Dict[str, Any]:
+        if len(emissions) > self.MAX_BATCH_SIZE:
+            return {"success": False, "error": "batch_too_large", "max_size": self.MAX_BATCH_SIZE}
+
+        batch_id = batch_id or uuid.uuid4().hex
+        delivered_total = 0
+        dropped_total = 0
+        errors: List[Dict[str, Any]] = []
+
+        with self._lock:
+            for signal_id, payload, emitted_by in emissions:
+                definition = self._definitions.get(signal_id)
+                if definition is None:
+                    errors.append({"signal_id": signal_id, "error": "unknown_signal"})
+                    continue
+                if signal_id in self._paused_signals:
+                    errors.append({"signal_id": signal_id, "error": "signal_paused"})
+                    continue
+                if not self._validate_payload(definition, payload):
+                    errors.append({"signal_id": signal_id, "error": "payload_validation_failed"})
+                    continue
+                result = self._deliver(signal_id, payload, emitted_by)
+                delivered_total += result.get("delivered", 0)
+                dropped_total += result.get("dropped", 0)
+
+        return {
+            "success": True,
+            "batch_id": batch_id,
+            "signals_in_batch": len(emissions),
+            "delivered": delivered_total,
+            "dropped": dropped_total,
+            "errors": errors,
+        }
+
+    def _deliver(
+        self,
+        signal_id: str,
+        payload: Dict[str, Any],
+        emitted_by: str,
+    ) -> Dict[str, Any]:
+        start = _time_module.perf_counter()
 
         emission = SignalEmission(
             signal_id=signal_id,
-            emitter_id=emitter_id,
-            parameters=params,
-            scope=emission_scope,
-            emission_id=uuid.uuid4().hex,
+            payload=payload,
+            emitted_by=emitted_by,
         )
+        self._emission_history[signal_id].append(emission)
+        self._total_emissions += 1
 
-        self._emissions[emission.emission_id] = emission
-
-        history = self._signal_history.get(signal_id)
-        if history is not None:
-            history.append(emission)
-
-        if effective_delivery == DeliveryMode.DEFERRED:
-            self._deferred_queue.append((signal_id, emitter_id, params, emission_scope, _time_module.time()))
-            if len(self._deferred_queue) > self.MAX_DEFERRED:
-                self._deferred_queue.popleft()
-            return {"success": True, "delivery": "deferred", "emission_id": emission.emission_id}
-
-        if effective_delivery == DeliveryMode.QUEUED:
-            queue = self._queued_emissions.get(signal_id)
-            if queue is not None:
-                queue.append(emission)
-                peak = max(self._stats.peak_queue_size, len(queue))
-                self._stats.peak_queue_size = peak
-            return {"success": True, "delivery": "queued", "emission_id": emission.emission_id}
-
-        if effective_delivery == DeliveryMode.BATCHED:
-            batch_key = emission_scope.value
-            if batch_key not in self._active_batches:
-                self._active_batches[batch_key] = []
-            batch = self._active_batches[batch_key]
-            if len(batch) < self.MAX_BATCH_SIZE:
-                batch.append((signal_id, emitter_id, params, emission_scope))
-            return {"success": True, "delivery": "batched", "emission_id": emission.emission_id}
-
-        return self._deliver_immediate(signal_id, emitter_id, params, emission_scope, emission.emission_id)
-
-    def _deliver_immediate(
-        self,
-        signal_id: str,
-        emitter_id: str,
-        parameters: Dict[str, Any],
-        scope: SignalScope,
-        emission_id: str,
-    ) -> Dict[str, Any]:
-        start = _time_module.time()
-        connection_ids = self._connection_index.get(signal_id, set()).copy()
-
-        connections: List[Tuple[SignalPriority, SignalConnection]] = []
-        for conn_id in connection_ids:
+        conn_ids = list(self._signal_connections.get(signal_id, set()))
+        connections: List[SignalConnection] = []
+        for conn_id in conn_ids:
             conn = self._connections.get(conn_id)
             if conn is None:
                 continue
-            if conn.state not in (ConnectionState.ACTIVE, ConnectionState.ONE_SHOT):
+            if not conn.enabled:
                 continue
-            connections.append((conn.priority, conn))
+            connections.append(conn)
 
-        connections.sort(key=lambda item: PRIORITY_SORT_ORDER.get(item[0], 99))
+        connections.sort(key=lambda c: -c.priority)
 
         delivered = 0
         dropped = 0
+        disconnected: List[str] = []
 
-        for _, conn in connections:
-            if conn.filter_condition is not None:
-                try:
-                    if not conn.filter_condition(**parameters):
-                        dropped += 1
-                        continue
-                except Exception:
-                    dropped += 1
-                    continue
-
+        for conn in connections:
+            callback = self._callback_registry.get((conn.listener_id, conn.callback_name))
+            if callback is None:
+                dropped += 1
+                continue
             try:
-                conn.callback(**parameters)
-                conn.connection_count += 1
+                callback(**payload)
                 delivered += 1
-                if conn.state == ConnectionState.ONE_SHOT:
-                    conn.state = ConnectionState.DISCONNECTED
-                    self._connection_index.get(signal_id, set()).discard(conn.id)
-                    self._listener_index.get(conn.listener_id, set()).discard(conn.id)
+                if conn.one_shot:
+                    disconnected.append(conn.id)
             except Exception:
                 dropped += 1
 
-        elapsed = (_time_module.time() - start) * 1000
-        self._total_deliveries += 1
-        self._total_delivery_ms += elapsed
-        self._stats.total_emitted += 1
-        self._stats.total_received += delivered
-        self._stats.total_dropped += dropped
-        if self._total_deliveries > 0:
-            self._stats.avg_delivery_ms = self._total_delivery_ms / self._total_deliveries
+        for conn_id in disconnected:
+            conn = self._connections.pop(conn_id, None)
+            if conn is not None:
+                self._signal_connections.get(conn.signal_id, set()).discard(conn_id)
+                self._listener_connections.get(conn.listener_id, set()).discard(conn_id)
+
+        elapsed = (_time_module.perf_counter() - start) * 1000.0
+        self._total_deliveries += delivered
+        self._total_drops += dropped
+        self._cumulative_delivery_ms += elapsed
+        self._delivery_samples += 1
 
         return {
             "success": True,
             "delivery": "immediate",
-            "emission_id": emission_id,
+            "emission_id": emission.id,
             "delivered": delivered,
             "dropped": dropped,
             "delivery_ms": round(elapsed, 3),
         }
 
-    def defer_emission(
-        self,
-        signal_id: str,
-        emitter_id: str,
-        parameters: Optional[Dict[str, Any]] = None,
-        delay_ms: float = 0.0,
-    ) -> Optional[str]:
-        if signal_id not in self._definitions:
-            return None
-        if len(self._deferred_queue) >= self.MAX_DEFERRED:
-            return None
-
-        params = parameters or {}
-        target_time = _time_module.time() + (delay_ms / 1000.0)
-        emission_id = uuid.uuid4().hex
-
-        self._deferred_queue.append((signal_id, emitter_id, params, SignalScope.LOCAL, target_time, emission_id))
-
-        return emission_id
-
-    def process_deferred(self, max_count: int = 50) -> int:
-        now = _time_module.time()
-        processed = 0
-
-        for _ in range(min(max_count, len(self._deferred_queue))):
-            if not self._deferred_queue:
-                break
-
-            entry = self._deferred_queue[0]
-            if len(entry) == 6:
-                signal_id, emitter_id, params, scope, target_time, _ = entry
-            else:
-                signal_id, emitter_id, params, scope, target_time = entry
-
-            if now < target_time:
-                break
-
-            self._deferred_queue.popleft()
-            self._deliver_immediate(signal_id, emitter_id, params, scope, uuid.uuid4().hex)
-            processed += 1
-
-        return processed
-
-    def batch_emit(self, signals: List[Tuple[str, str, Dict[str, Any], SignalScope]], batch_id: Optional[str] = None) -> Optional[str]:
-        if len(signals) > self.MAX_BATCH_SIZE:
-            return None
-
-        batch_id = batch_id or uuid.uuid4().hex
-        self._active_batches[batch_id] = []
-
-        for signal_id, emitter_id, params, scope in signals:
-            if signal_id not in self._definitions:
-                continue
-            emission = SignalEmission(
-                signal_id=signal_id,
-                emitter_id=emitter_id,
-                parameters=params,
-                scope=scope,
-                batch_id=batch_id,
-            )
-            self._active_batches[batch_id].append((signal_id, emitter_id, params, scope))
-            history = self._signal_history.get(signal_id)
-            if history is not None:
-                history.append(emission)
-
-        return batch_id
-
-    def flush_batch(self, batch_id: str) -> Dict[str, Any]:
-        batch = self._active_batches.pop(batch_id, None)
-        if batch is None:
-            return {"success": False, "error": "Batch not found"}
-
-        delivered = 0
-        dropped = 0
-
-        for signal_id, emitter_id, params, scope in batch:
-            result = self._deliver_immediate(signal_id, emitter_id, params, scope, uuid.uuid4().hex)
-            delivered += result.get("delivered", 0)
-            dropped += result.get("dropped", 0)
-
-        return {
-            "success": True,
-            "batch_id": batch_id,
-            "signals_in_batch": len(batch),
-            "delivered": delivered,
-            "dropped": dropped,
-        }
-
-    def cancel_batch(self, batch_id: str) -> bool:
-        if batch_id in self._active_batches:
-            del self._active_batches[batch_id]
+    def _validate_payload(self, definition: SignalDefinition, payload: Dict[str, Any]) -> bool:
+        if not definition.parameters:
             return True
-        return False
+        for param in definition.parameters:
+            param_name = param.get("name", "")
+            param_type = param.get("type", "any")
+            default = param.get("default")
+            if param_name not in payload:
+                if default is not None:
+                    payload[param_name] = default
+                else:
+                    return False
+            if param_type != "any":
+                value = payload[param_name]
+                if not self._check_type(value, param_type):
+                    if default is not None:
+                        payload[param_name] = default
+                    else:
+                        return False
+        return True
 
-    def flush_signal_queue(self, signal_id: Optional[str] = None) -> Dict[str, Any]:
-        if signal_id is not None:
-            queue = self._queued_emissions.get(signal_id)
-            if queue is None:
-                return {"success": False, "error": "No queue for signal"}
-            flushed = len(queue)
-            while queue:
-                emission = queue.popleft()
-                self._deliver_immediate(
-                    emission.signal_id, emission.emitter_id,
-                    emission.parameters, emission.scope, emission.emission_id,
-                )
-            return {"success": True, "signal_id": signal_id, "flushed": flushed}
-
-        total_flushed = 0
-        for q_signal_id, queue in list(self._queued_emissions.items()):
-            while queue:
-                emission = queue.popleft()
-                self._deliver_immediate(
-                    emission.signal_id, emission.emitter_id,
-                    emission.parameters, emission.scope, emission.emission_id,
-                )
-                total_flushed += 1
-
-        return {"success": True, "flushed": total_flushed, "queues_cleared": len(self._queued_emissions)}
+    @staticmethod
+    def _check_type(value: Any, expected_type: str) -> bool:
+        type_map = {
+            "str": str, "string": str,
+            "int": int, "integer": int,
+            "float": float, "number": float,
+            "bool": bool, "boolean": bool,
+            "list": list, "array": list,
+            "dict": dict, "object": dict,
+        }
+        python_type = type_map.get(expected_type.lower())
+        if python_type is None:
+            return True
+        return isinstance(value, python_type)
 
     # ------------------------------------------------------------------
     # Signal Pausing
     # ------------------------------------------------------------------
 
     def pause_signal(self, signal_id: str) -> bool:
-        if signal_id in self._definitions:
-            self._paused_signals.add(signal_id)
-            return True
-        return False
+        with self._lock:
+            if signal_id in self._definitions:
+                self._paused_signals.add(signal_id)
+                return True
+            return False
 
     def resume_signal(self, signal_id: str) -> bool:
-        if signal_id in self._paused_signals:
-            self._paused_signals.discard(signal_id)
-            return True
-        return False
+        with self._lock:
+            if signal_id in self._paused_signals:
+                self._paused_signals.discard(signal_id)
+                return True
+            return False
 
     def is_signal_paused(self, signal_id: str) -> bool:
-        return signal_id in self._paused_signals
+        with self._lock:
+            return signal_id in self._paused_signals
 
     # ------------------------------------------------------------------
-    # Global Listeners
+    # Namespace Management
     # ------------------------------------------------------------------
 
-    def add_global_listener(
-        self,
-        listener_id: str,
-        callback: Callable[..., Any],
-    ) -> bool:
-        if listener_id not in self._listeners:
-            return False
-        self._global_listeners.add(listener_id)
-        for sig_id in self._definitions:
-            self.connect_listener(sig_id, listener_id, callback)
-        return True
+    def clear_namespace(self, namespace: str) -> Dict[str, Any]:
+        with self._lock:
+            signal_ids = list(self._namespace_index.get(namespace, set()))
+            definitions_removed = 0
+            connections_removed = 0
 
-    def remove_global_listener(self, listener_id: str) -> bool:
-        if listener_id not in self._global_listeners:
-            return False
-        self._global_listeners.discard(listener_id)
-        conn_ids = list(self._listener_index.get(listener_id, set()))
-        for conn_id in conn_ids:
-            self.disconnect_listener(conn_id)
-        return True
+            for sig_id in signal_ids:
+                self._definitions.pop(sig_id, None)
+                definitions_removed += 1
+
+                conn_ids = list(self._signal_connections.pop(sig_id, set()))
+                for conn_id in conn_ids:
+                    conn = self._connections.pop(conn_id, None)
+                    if conn is not None:
+                        self._listener_connections.get(conn.listener_id, set()).discard(conn_id)
+                        connections_removed += 1
+
+                self._emission_history.pop(sig_id, None)
+                self._paused_signals.discard(sig_id)
+
+            self._namespace_index.pop(namespace, None)
+
+            return {
+                "success": True,
+                "namespace": namespace,
+                "definitions_removed": definitions_removed,
+                "connections_removed": connections_removed,
+            }
+
+    def get_namespace_signals(self, namespace: str) -> List[SignalDefinition]:
+        with self._lock:
+            signal_ids = self._namespace_index.get(namespace, set())
+            return [self._definitions[sid] for sid in signal_ids if sid in self._definitions]
+
+    def list_namespaces(self) -> List[str]:
+        with self._lock:
+            return sorted(self._namespace_index.keys())
 
     # ------------------------------------------------------------------
     # Signal History
     # ------------------------------------------------------------------
 
-    def get_signal_history(self, signal_id: str, limit: int = 100) -> List[Dict[str, Any]]:
-        history = self._signal_history.get(signal_id)
-        if history is None:
-            return []
-        recent = list(history)[-limit:]
-        return [e.to_dict() for e in recent]
-
-    def get_emission(self, emission_id: str) -> Optional[Dict[str, Any]]:
-        emission = self._emissions.get(emission_id)
-        if emission:
-            return emission.to_dict()
-        return None
-
-    def get_batch_status(self, batch_id: str) -> Optional[Dict[str, Any]]:
-        batch = self._active_batches.get(batch_id)
-        if batch is None:
-            return None
-        return {
-            "batch_id": batch_id,
-            "pending_count": len(batch),
-            "signals": [s[0] for s in batch[:20]],
-        }
-
-    def list_active_batches(self) -> List[Dict[str, Any]]:
-        return [
-            {"batch_id": bid, "pending_count": len(b)}
-            for bid, b in self._active_batches.items()
-        ]
+    def get_emission_history(self, signal_id: str, limit: int = 100) -> List[Dict[str, Any]]:
+        with self._lock:
+            history = self._emission_history.get(signal_id)
+            if history is None:
+                return []
+            items = list(history)[-limit:]
+            return [e.to_dict() for e in items]
 
     # ------------------------------------------------------------------
     # Bus Statistics
     # ------------------------------------------------------------------
 
-    def get_bus_stats(self) -> Dict[str, Any]:
-        deferred_count = len(self._deferred_queue)
-        queue_sizes = {}
-        for sig_id, queue in self._queued_emissions.items():
-            if queue:
-                queue_sizes[sig_id] = len(queue)
+    def get_signal_bus_stats(self) -> Dict[str, Any]:
+        with self._lock:
+            namespace_counts: Dict[str, int] = {}
+            for ns, sig_ids in self._namespace_index.items():
+                namespace_counts[ns] = len(sig_ids)
 
-        total_connections = len(self._connections)
-        scope_counts: Dict[str, int] = {}
-        category_counts: Dict[str, int] = {}
-        for definition in self._definitions.values():
-            scope_key = definition.scope.value
-            scope_counts[scope_key] = scope_counts.get(scope_key, 0) + 1
-            cat = definition.category
-            category_counts[cat] = category_counts.get(cat, 0) + 1
+            category_counts: Dict[str, int] = {}
+            for definition in self._definitions.values():
+                cat = definition.category.value
+                category_counts[cat] = category_counts.get(cat, 0) + 1
 
-        return {
-            "total_definitions": len(self._definitions),
-            "total_listeners": len(self._listeners),
-            "total_connections": total_connections,
-            "active_connections": sum(
-                1 for c in self._connections.values()
-                if c.state == ConnectionState.ACTIVE
-            ),
-            "paused_connections": sum(
-                1 for c in self._connections.values()
-                if c.state == ConnectionState.PAUSED
-            ),
-            "disconnected_connections": sum(
-                1 for c in self._connections.values()
-                if c.state == ConnectionState.DISCONNECTED
-            ),
-            "paused_signals": len(self._paused_signals),
-            "deferred_queued": deferred_count,
-            "queued_emissions": {k: v for k, v in queue_sizes.items() if v > 0},
-            "active_batches": len(self._active_batches),
-            "global_listeners": len(self._global_listeners),
-            "emission_stats": self._stats.to_dict(),
-            "scope_distribution": scope_counts,
-            "category_distribution": category_counts,
-            "max_history": self.MAX_HISTORY,
-            "max_deferred": self.MAX_DEFERRED,
-            "max_batch_size": self.MAX_BATCH_SIZE,
-        }
+            avg_delivery_ms = (
+                round(self._cumulative_delivery_ms / self._delivery_samples, 3)
+                if self._delivery_samples > 0
+                else 0.0
+            )
 
-    def get_listener_stats(self, listener_id: str) -> Optional[Dict[str, Any]]:
-        listener = self._listeners.get(listener_id)
-        if listener is None:
-            return None
+            active_connections = sum(
+                1 for conn in self._connections.values() if conn.enabled
+            )
+            one_shot_connections = sum(
+                1 for conn in self._connections.values() if conn.one_shot and conn.enabled
+            )
 
-        connection_count = len(self._listener_index.get(listener_id, set()))
-        return {
-            "listener": listener.to_dict(),
-            "active_connections": connection_count,
-            "connection_ids": list(self._listener_index.get(listener_id, set())),
-        }
+            return {
+                "total_definitions": len(self._definitions),
+                "total_connections": len(self._connections),
+                "active_connections": active_connections,
+                "one_shot_connections": one_shot_connections,
+                "total_listeners": len(self._listener_connections),
+                "unique_namespaces": len(self._namespace_index),
+                "namespace_distribution": namespace_counts,
+                "category_distribution": category_counts,
+                "total_emissions": self._total_emissions,
+                "total_deliveries": self._total_deliveries,
+                "total_drops": self._total_drops,
+                "avg_delivery_ms": avg_delivery_ms,
+                "delivery_samples": self._delivery_samples,
+                "paused_signals": len(self._paused_signals),
+                "max_history_per_signal": self.MAX_HISTORY_PER_SIGNAL,
+                "max_connections_per_signal": self.MAX_CONNECTIONS_PER_SIGNAL,
+                "max_batch_size": self.MAX_BATCH_SIZE,
+            }
 
-    def get_signal_connections_detail(self, signal_id: str) -> Optional[Dict[str, Any]]:
-        definition = self._definitions.get(signal_id)
-        if definition is None:
-            return None
-
-        connection_ids = self._connection_index.get(signal_id, set())
-        connections = []
-        for conn_id in connection_ids:
-            conn = self._connections.get(conn_id)
-            if conn is not None:
-                connections.append(conn.to_dict())
-
-        return {
-            "signal": definition.to_dict(),
-            "connection_count": len(connections),
-            "connections": connections,
-            "history_size": len(self._signal_history.get(signal_id, deque())),
-        }
+    def get_bus_summary(self) -> Dict[str, Any]:
+        with self._lock:
+            return {
+                "version": "1.0",
+                "definitions": len(self._definitions),
+                "listeners": len(self._listener_connections),
+                "connections": len(self._connections),
+                "namespaces": len(self._namespace_index),
+                "total_emissions": self._total_emissions,
+                "total_deliveries": self._total_deliveries,
+                "total_drops": self._total_drops,
+            }
 
     # ------------------------------------------------------------------
     # Bus Lifecycle
     # ------------------------------------------------------------------
 
-    def clear_signal(self, signal_id: str) -> Dict[str, Any]:
-        if signal_id not in self._definitions:
-            return {"success": False, "error": "Unknown signal"}
-
-        connection_ids = list(self._connection_index.get(signal_id, set()))
-        for conn_id in connection_ids:
-            conn = self._connections.pop(conn_id, None)
-            if conn is not None:
-                self._listener_index.get(conn.listener_id, set()).discard(conn_id)
-
-        self._connection_index[signal_id].clear()
-        self._signal_history[signal_id].clear()
-        if signal_id in self._queued_emissions:
-            self._queued_emissions[signal_id].clear()
-        self._paused_signals.discard(signal_id)
-
-        return {"success": True, "connections_removed": len(connection_ids)}
-
     def clear_bus(self) -> Dict[str, Any]:
         with self._lock:
             def_count = len(self._definitions)
             conn_count = len(self._connections)
-            listener_count = len(self._listeners)
-            deferred_count = len(self._deferred_queue)
-            batch_count = len(self._active_batches)
+            listener_count = len(self._listener_connections)
 
             self._definitions.clear()
             self._connections.clear()
-            self._listeners.clear()
-            self._emissions.clear()
-            self._signal_history.clear()
-            self._deferred_queue.clear()
-            self._queued_emissions.clear()
-            self._active_batches.clear()
-            self._connection_index.clear()
-            self._listener_index.clear()
+            self._emission_history.clear()
+            self._callback_registry.clear()
+            self._listener_connections.clear()
+            self._signal_connections.clear()
+            self._namespace_index.clear()
+            self._batches.clear()
             self._paused_signals.clear()
-            self._global_listeners.clear()
 
-            self._stats = SignalStats()
-            self._total_delivery_ms = 0.0
+            self._total_emissions = 0
             self._total_deliveries = 0
+            self._total_drops = 0
+            self._cumulative_delivery_ms = 0.0
+            self._delivery_samples = 0
 
-        return {
-            "success": True,
-            "definitions_cleared": def_count,
-            "connections_cleared": conn_count,
-            "listeners_cleared": listener_count,
-            "deferred_cleared": deferred_count,
-            "batches_cancelled": batch_count,
-        }
-
-    def get_bus_summary(self) -> Dict[str, Any]:
-        return {
-            "version": "1.0",
-            "definitions": len(self._definitions),
-            "listeners": len(self._listeners),
-            "connections": len(self._connections),
-            "total_emitted": self._stats.total_emitted,
-            "total_received": self._stats.total_received,
-            "total_dropped": self._stats.total_dropped,
-            "avg_delivery_ms": round(self._stats.avg_delivery_ms, 3),
-            "deferred_pending": len(self._deferred_queue),
-            "active_batches": len(self._active_batches),
-            "paused_signals": len(self._paused_signals),
-        }
-
-    def get_history(self, limit: int = 100) -> List[Dict[str, Any]]:
-        emissions = list(self._emissions.values())
-        emissions.sort(key=lambda e: e.timestamp, reverse=True)
-        return [e.to_dict() for e in emissions[:limit]]
+            return {
+                "success": True,
+                "definitions_cleared": def_count,
+                "connections_cleared": conn_count,
+                "listeners_cleared": listener_count,
+            }
 
     def get_stats(self) -> Dict[str, Any]:
-        active_connections = sum(
-            1 for conn in self._connections.values()
-            if conn.state == ConnectionState.ACTIVE
-        )
-
+        """Return comprehensive SignalBus subsystem statistics."""
         return {
-            "total_signals": len(self._definitions),
-            "active_connections": active_connections,
-            "total_emissions": self._stats.total_emitted,
-            "listener_count": len(self._listeners),
+            "total_definitions": len(self._definitions),
+            "total_connections": len(self._connections),
+            "total_listeners": sum(len(c.listeners) for c in self._connections.values()),
+            "total_emissions": self._delivery_samples if hasattr(self, '_delivery_samples') else 0,
+            "definitions_by_category": {
+                d.category.value: d.name for d in self._definitions.values()
+            } if self._definitions else {},
         }
+
+
+# ---------------------------------------------------------------------------
+# Module-Level Accessor
+# ---------------------------------------------------------------------------
 
 
 def get_signal_bus() -> SignalBus:
