@@ -2,7 +2,7 @@
 SparkLabs Engine - Console System
 
 In-game developer console for runtime debugging, command
-execution, and live system inspection. Provides a Godot-style
+execution, and live system inspection. Provides an interactive
 command interface with auto-completion, command history,
 variable inspection, and system control during gameplay.
 
