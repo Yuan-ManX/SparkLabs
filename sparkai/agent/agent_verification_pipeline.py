@@ -14,7 +14,7 @@ Architecture:
     |-- VerificationIssue (individual finding)
 
 Verification Stages:
-  - SYNTAX_CHECK: validates game script syntax (GDScript/C#/Lua)
+  - SYNTAX_CHECK: validates game script syntax (SparkScript/SparkCS/Lua)
   - TYPE_CHECK: type system consistency verification
   - SANITY_CHECK: logical coherence and completeness
   - SECURITY_SCAN: detects dangerous operations and patterns
@@ -33,7 +33,7 @@ Usage:
         [VerificationStage.SYNTAX_CHECK, VerificationStage.SECURITY_SCAN, VerificationStage.GAME_RULES_CHECK])
     pipeline.add_rule(config.id, VerificationStage.SECURITY_SCAN,
         "no_file_access", "result.is_dangerous == False", Severity.CRITICAL)
-    report = pipeline.verify_artifact("script_001", source_code, "gdscript", config.id)
+    report = pipeline.verify_artifact("script_001", source_code, "sparkscript", config.id)
 """
 
 from __future__ import annotations
@@ -100,7 +100,7 @@ _DANGEROUS_PATTERNS: List[str] = [
     r"\bcompile\s*\(",
 ]
 
-_GDScript_SYNTAX_TOKENS: List[str] = [
+_SPARKSCRIPT_SYNTAX_TOKENS: List[str] = [
     r"\bfunc\s+\w+\s*\(.*\)\s*:",
     r"\bextends\s+\w+",
     r"\bvar\s+\w+",
@@ -299,7 +299,7 @@ class AgentVerificationPipeline:
         pipeline = get_verification_pipeline()
         config = pipeline.create_pipeline_config(
             "Default", [VerificationStage.SYNTAX_CHECK, VerificationStage.SECURITY_SCAN])
-        report = pipeline.verify_artifact("art_001", code, "gdscript", config.id)
+        report = pipeline.verify_artifact("art_001", code, "sparkscript", config.id)
         if report.execution_blocked:
             blocking = pipeline.get_blocking_issues(report.id)
     """
@@ -582,7 +582,7 @@ class AgentVerificationPipeline:
         issues: List[VerificationIssue] = []
 
         languages = {
-            "gdscript": _GDScript_SYNTAX_TOKENS,
+            "sparkscript": _SPARKSCRIPT_SYNTAX_TOKENS,
             "csharp": _CSHARP_SYNTAX_TOKENS,
             "lua": _LUA_SYNTAX_TOKENS,
         }
@@ -601,25 +601,25 @@ class AgentVerificationPipeline:
                 stage=VerificationStage.SYNTAX_CHECK.value,
                 severity=Severity.ERROR.value,
                 message="Unrecognized script language; no syntax tokens matched",
-                suggestion="Ensure code uses valid GDScript, C#, or Lua syntax",
+                suggestion="Ensure code uses valid SparkScript, SparkCS, or Lua syntax",
             ))
             return issues
 
-        if best_match == "gdscript":
+        if best_match == "sparkscript":
             has_func = bool(re.search(r"\bfunc\s+\w+\s*\(.*\)\s*:", code))
             has_extend = bool(re.search(r"\bextends\s+\w+", code))
             if not has_func and len(code.strip()) > 0:
                 issues.append(VerificationIssue(
                     stage=VerificationStage.SYNTAX_CHECK.value,
                     severity=Severity.WARNING.value,
-                    message="No function definition found in GDScript code",
+                    message="No function definition found in SparkScript code",
                     suggestion="Define at least one func block for entry point logic",
                 ))
             if not has_extend and "func" in code:
                 issues.append(VerificationIssue(
                     stage=VerificationStage.SYNTAX_CHECK.value,
                     severity=Severity.INFO.value,
-                    message="GDScript function defined without extends clause",
+                    message="SparkScript function defined without extends clause",
                     suggestion="Add extends declaration to specify the base class",
                 ))
 
