@@ -284,7 +284,7 @@ from sparkai.agent.agent_game_director import GameDirector, get_game_director
 from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_analyzer
 from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
 from sparkai.agent.agent_player_modeler import PlayerModeler, get_player_modeler
-from sparkai.agent.agent_learning_loop import AgentLearningLoop, get_learning_loop
+from sparkai.agent.agent_learning_loop import LearningLoop, get_learning_loop
 from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
 from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
 from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
@@ -359,6 +359,10 @@ from sparkai.agent.agent_memory_hierarchy import MemoryHierarchy, get_memory_hie
 from sparkai.agent.agent_tool_registry import ToolRegistry, get_tool_registry
 from sparkai.agent.agent_prompt_templates import PromptLibrary, get_prompt_library
 from sparkai.agent.agent_reflection_loop import ReflectionLoop, get_reflection_loop
+from sparkai.agent.agent_skill_forge import SkillForge, get_skill_forge
+from sparkai.agent.agent_learning_loop import LearningLoop, get_learning_loop
+from sparkai.agent.agent_memory_consolidator import MemoryConsolidator, get_memory_consolidator
+from sparkai.agent.agent_delegation_broker import DelegationBroker, get_delegation_broker
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -419,7 +423,6 @@ from sparkai.agent.agent_trajectory import TrajectoryRecorder, TrajectoryPhase, 
 from sparkai.agent.agent_skill_commands import SkillCommandRegistry, CommandCategory, CommandDef, get_skill_command_registry
 from sparkai.agent.agent_session_persistence import SessionStore, SessionStatus, SessionRecord, get_session_store
 from sparkai.agent.agent_platform_bridge import PlatformBridge, PlatformType, PlatformMessage, get_platform_bridge
-from sparkai.agent.agent_reasoning_chain import ReasoningChain, get_reasoning_chain
 from sparkai.agent.agent_tool_composer import ToolComposer, ToolChain, ChainTemplate, get_tool_composer
 from sparkai.agent.agent_feedback_loop import FeedbackLoop, FeedbackEntry, FeedbackSource, get_feedback_loop
 from sparkai.agent.agent_negotiation import AgentNegotiation, NegotiationSession, VoteStance, get_agent_negotiation
@@ -698,7 +701,6 @@ class AgentRuntime:
         self._skill_command_registry: Optional[SkillCommandRegistry] = None
         self._session_store: Optional[SessionStore] = None
         self._platform_bridge: Optional[PlatformBridge] = None
-        self._reasoning_chain: Optional[ReasoningChain] = None
         self._tool_composer: Optional[ToolComposer] = None
         self._feedback_loop: Optional[FeedbackLoop] = None
         self._agent_negotiation: Optional[AgentNegotiation] = None
@@ -752,7 +754,6 @@ class AgentRuntime:
         self._physics_tuner: Optional[PhysicsTuner] = None
         self._rag_pipeline: Optional[RAGPipeline] = None
         self._tree_of_thought: Optional[TreeOfThought] = None
-        self._reflection_loop: Optional[ReflectionLoop] = None
         self._prompt_optimizer: Optional[PromptOptimizer] = None
         self._skill_composer: Optional[SkillComposer] = None
         self._ui_layout_system: Optional[UILayoutSystem] = None
@@ -769,7 +770,7 @@ class AgentRuntime:
         self._balance_analyzer: Optional[BalanceAnalyzer] = None
         self._narrative_composer: Optional[NarrativeComposer] = None
         self._player_modeler: Optional[PlayerModeler] = None
-        self._learning_loop: Optional[AgentLearningLoop] = None
+        self._learning_loop: Optional[LearningLoop] = None
         self._cron_scheduler: Optional[AgentCronScheduler] = None
         self._memory_graph: Optional[AgentMemoryGraph] = None
         self._context_compressor: Optional[AgentContextCompressor] = None
@@ -838,6 +839,10 @@ class AgentRuntime:
         self._tool_registry: Optional[ToolRegistry] = None
         self._prompt_library: Optional[PromptLibrary] = None
         self._reflection_loop: Optional[ReflectionLoop] = None
+        self._skill_forge: Optional[SkillForge] = None
+        self._learning_loop: Optional[LearningLoop] = None
+        self._memory_consolidator: Optional[MemoryConsolidator] = None
+        self._delegation_broker: Optional[DelegationBroker] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1059,7 +1064,6 @@ class AgentRuntime:
             self._skill_command_registry = get_skill_command_registry()
             self._session_store = get_session_store()
             self._platform_bridge = get_platform_bridge()
-            self._reasoning_chain = get_reasoning_chain()
             self._tool_composer = get_tool_composer()
             self._feedback_loop = get_feedback_loop()
             self._agent_negotiation = get_agent_negotiation()
@@ -1118,7 +1122,6 @@ class AgentRuntime:
             self._game_mode_system = get_game_mode_system()
             self._rag_pipeline = get_rag_pipeline()
             self._tree_of_thought = get_tree_of_thought()
-            self._reflection_loop = get_reflection_loop()
             self._prompt_optimizer = get_prompt_optimizer()
             self._skill_composer = get_skill_composer()
             self._ui_layout_system = get_ui_layout_system()
@@ -1200,6 +1203,10 @@ class AgentRuntime:
             self._tool_registry = get_tool_registry()
             self._prompt_library = get_prompt_library()
             self._reflection_loop = get_reflection_loop()
+            self._skill_forge = get_skill_forge()
+            self._learning_loop = get_learning_loop()
+            self._memory_consolidator = get_memory_consolidator()
+            self._delegation_broker = get_delegation_broker()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1259,6 +1266,10 @@ class AgentRuntime:
             self._tool_registry_ok = self._tool_registry is not None
             self._prompt_library_ok = self._prompt_library is not None
             self._reflection_loop_ok = self._reflection_loop is not None
+            self._skill_forge_ok = self._skill_forge is not None
+            self._learning_loop_ok = self._learning_loop is not None
+            self._memory_consolidator_ok = self._memory_consolidator is not None
+            self._delegation_broker_ok = self._delegation_broker is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2705,7 +2716,6 @@ class AgentRuntime:
                 "skill_command_registry": self._skill_command_registry is not None,
                 "session_store": self._session_store is not None,
                 "platform_bridge": self._platform_bridge is not None,
-                "reasoning_chain": self._reasoning_chain is not None,
                 "tool_composer": self._tool_composer is not None,
                 "feedback_loop": self._feedback_loop is not None,
                 "agent_negotiation": self._agent_negotiation is not None,
@@ -2747,7 +2757,6 @@ class AgentRuntime:
                 "physics_tuner": self._physics_tuner is not None,
                 "rag_pipeline": self._rag_pipeline is not None,
                 "tree_of_thought": self._tree_of_thought is not None,
-                "reflection_loop": self._reflection_loop is not None,
                 "prompt_optimizer": self._prompt_optimizer is not None,
                 "skill_composer": self._skill_composer is not None,
                 "ui_layout_system": self._ui_layout_system is not None,
@@ -2829,6 +2838,10 @@ class AgentRuntime:
                 "tool_registry": self._tool_registry is not None,
                 "prompt_library": self._prompt_library is not None,
                 "reflection_loop": self._reflection_loop is not None,
+            "skill_forge": self._skill_forge is not None,
+            "learning_loop": self._learning_loop is not None,
+            "memory_consolidator": self._memory_consolidator is not None,
+            "delegation_broker": self._delegation_broker is not None,
             },
         }
 
@@ -3140,8 +3153,6 @@ class AgentRuntime:
             status["session_store_stats"] = self._session_store.get_stats()
         if self._platform_bridge:
             status["platform_bridge_stats"] = self._platform_bridge.get_stats()
-        if self._reasoning_chain:
-            status["reasoning_chain_stats"] = self._reasoning_chain.get_stats()
         if self._tool_composer:
             status["tool_composer_stats"] = self._tool_composer.get_stats()
         if self._feedback_loop:
@@ -3256,8 +3267,6 @@ class AgentRuntime:
             status["rag_pipeline_stats"] = self._rag_pipeline.get_stats()
         if self._tree_of_thought:
             status["tree_of_thought_stats"] = self._tree_of_thought.get_stats()
-        if self._reflection_loop:
-            status["reflection_loop_stats"] = self._reflection_loop.get_stats()
         if self._prompt_optimizer:
             status["prompt_optimizer_stats"] = self._prompt_optimizer.get_stats()
         if self._skill_composer:
@@ -3420,6 +3429,14 @@ class AgentRuntime:
             status["prompt_library_stats"] = self._prompt_library.get_stats()
         if self._reflection_loop:
             status["reflection_loop_stats"] = self._reflection_loop.get_stats()
+        if self._skill_forge:
+            status["skill_forge_stats"] = self._skill_forge.get_stats()
+        if self._learning_loop:
+            status["learning_loop_stats"] = self._learning_loop.get_stats()
+        if self._memory_consolidator:
+            status["memory_consolidator_stats"] = self._memory_consolidator.get_stats()
+        if self._delegation_broker:
+            status["delegation_broker_stats"] = self._delegation_broker.get_stats()
         return status
 
 
