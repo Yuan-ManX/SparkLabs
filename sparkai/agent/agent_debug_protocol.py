@@ -237,7 +237,7 @@ class ErrorClassifier:
 
     REGIME_KEYWORDS: Dict[PhysicsRegime, List[str]] = {
         PhysicsRegime.SIDE_GRAVITY: ["platformer", "jump", "gravity", "side-scroll", "fall"],
-        PhysicsRegime.TOP_DOWN_FREE: ["top-down", "overhead", "rpg", "zelda-like", "isometric"],
+        PhysicsRegime.TOP_DOWN_FREE: ["top-down", "overhead", "rpg", "adventure", "isometric"],
         PhysicsRegime.GRID_DISCRETE: ["puzzle", "grid", "tile", "match-3", "sokoban", "turn-based"],
         PhysicsRegime.PATH_WAVES: ["tower defense", "td", "wave", "path", "enemy route"],
         PhysicsRegime.UI_NO_PHYSICS: ["card", "visual novel", "quiz", "dialogue", "menu"],
@@ -375,9 +375,9 @@ class DebugProtocolEngine:
                 error_signature="scene_not_registered",
                 error_message="Scene start target not registered in main",
                 error_category=ErrorCategory.SCENE_MANAGEMENT,
-                diagnosis="Scene class exists but is not added to Phaser config",
+                diagnosis="Scene class exists but is not registered in the game config",
                 root_cause="Missing scene registration in main.ts",
-                fix_description="Add scene to Phaser.GameConfig.scenes array",
+                fix_description="Add scene to the game configuration scenes array",
                 fix_strategy="register_scene",
                 verification_steps=["Check scene class exists", "Verify registration in config"],
                 applies_to=["scene_management", "configuration"],
