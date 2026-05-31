@@ -431,7 +431,7 @@ SparkLabs/
 │       │   ├── SparkLabsEditor.tsx  # Editor main layout
 │       │   ├── EditorToolbar.tsx    # Top toolbar
 │       │   ├── SceneHierarchy.tsx   # Left panel - scene tree
-│       │   ├── Viewport3D.tsx       # Center - Three.js viewport
+│       │   ├── Viewport3D.tsx       # Center - Spark3D viewport
 │       │   ├── InspectorPanel.tsx   # Right panel - properties
 │       │   ├── ConsolePanel.tsx     # Bottom - console/AI assistant
 │       │   ├── SparkLabsHome.tsx    # Landing page
