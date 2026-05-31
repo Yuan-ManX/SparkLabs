@@ -18429,7 +18429,7 @@ async def agentic_coding_start_session(request: Request):
         import json
         body = await request.json()
         task = body.get("task", "generate_script")
-        language = body.get("language", "gdscript")
+        language = body.get("language", "sparkscript")
         context = body.get("context", {})
         if isinstance(context, str):
             context = json.loads(context) if context else {}
@@ -18440,7 +18440,7 @@ async def agentic_coding_start_session(request: Request):
         try:
             cl = CodeLanguage(language)
         except ValueError:
-            cl = CodeLanguage.GDScript
+            cl = CodeLanguage.SparkScript
         session = _agentic_coding.start_coding_session(task=ct, language=cl, context=context)
         result = session.to_dict()
         print("DEBUG agentic_coding result type:", type(result), "keys:", list(result.keys()) if isinstance(result, dict) else "NOT DICT")
@@ -18711,7 +18711,7 @@ async def verification_pipeline_verify(request: Request):
         body = await request.json()
         artifact_id = body.get("artifact_id", "")
         artifact_content = body.get("artifact_content", "")
-        artifact_type = body.get("artifact_type", "gdscript")
+        artifact_type = body.get("artifact_type", "sparkscript")
         config_id = body.get("config_id", "")
         report = _verification_pipeline.verify_artifact(
             artifact_id=artifact_id, artifact_content=artifact_content,
@@ -19863,7 +19863,7 @@ async def visual_script_runtime_transpile(request: Request):
     try:
         body = await request.json()
         graph_id = body.get("graph_id", "")
-        target_language = body.get("target_language", "gdscript")
+        target_language = body.get("target_language", "sparkscript")
         result = _visual_script_runtime.transpile(graph_id, target_language)
         return result.to_dict() if hasattr(result, "to_dict") else result
     except Exception as e:
