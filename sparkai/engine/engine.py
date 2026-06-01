@@ -191,6 +191,7 @@ from sparkai.engine.engine_localization_hub import LocalizationHub, get_localiza
 from sparkai.engine.engine_event_scripting import EventScripting, get_event_scripting
 from sparkai.engine.engine_component_assembler import ComponentAssembler, get_component_assembler
 from sparkai.engine.engine_game_state_analyzer import GameStateAnalyzer, get_game_state_analyzer
+from sparkai.engine.engine_game_runtime_orchestrator import GameRuntimeOrchestrator, get_game_runtime_orchestrator
 
 
 class SparkEngine:
@@ -381,6 +382,7 @@ class SparkEngine:
         self._event_scripting_runtime = get_event_scripting()
         self._component_assembler = get_component_assembler()
         self._game_state_analyzer = get_game_state_analyzer()
+        self._game_runtime_orchestrator = get_game_runtime_orchestrator()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -701,6 +703,7 @@ class SparkEngine:
             "event_scripting_runtime": self._event_scripting_runtime.get_stats(),
             "component_assembler": self._component_assembler.get_stats(),
             "game_state_analyzer": self._game_state_analyzer.get_stats(),
+            "game_runtime_orchestrator": self._game_runtime_orchestrator.get_stats(),
         }
 
     @property
@@ -1170,6 +1173,10 @@ class SparkEngine:
     @property
     def game_state_analyzer(self) -> GameStateAnalyzer:
         return self._game_state_analyzer
+
+    @property
+    def game_runtime_orchestrator(self) -> GameRuntimeOrchestrator:
+        return self._game_runtime_orchestrator
 
 
 @dataclass
