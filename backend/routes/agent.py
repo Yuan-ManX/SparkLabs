@@ -215,7 +215,7 @@ from sparkai.engine.engine_lod_system import get_lod_system
 from sparkai.engine.engine_decal_system import get_decal_system
 from sparkai.engine.engine_post_processing import get_post_processing
 from sparkai.engine.engine_skeleton_deformer import get_skeleton_deformer
-from sparkai.agent.agent_agentic_coding import get_agentic_coding, CodingTask, CodeLanguage
+from sparkai.agent.agent_agentic_coding import get_agentic_coding, CodingTask, CodeLanguage as AgenticCodeLanguage
 from sparkai.agent.agent_game_reasoner import get_game_reasoner
 from sparkai.agent.agent_narrative_branch import get_narrative_branch
 from sparkai.agent.agent_concurrency_manager import get_concurrency_manager
@@ -235,7 +235,7 @@ from sparkai.agent.agent_streaming_scrubber import get_streaming_scrubber, Scrub
 from sparkai.agent.agent_trajectory_generator import get_trajectory_generator, TrajectoryFormat, CompressionStrategy, TurnRole, QualityLabel
 from sparkai.engine.engine_visual_script_runtime import get_visual_script_runtime, NodeType, ParameterType, TargetLanguage, ValidationResult
 from sparkai.engine.engine_extension_sdk import get_extension_sdk, ExtensionType, ExtensionStatus, ExtensionSource, CapabilityScope
-from sparkai.engine.engine_signal_bus import get_signal_bus, SignalPriority, SignalScope, DeliveryMode, ConnectionState
+from sparkai.engine.engine_signal_bus import get_signal_bus, SignalCategory, SignalDefinition, SignalConnection, SignalEmission, ConnectionState
 from sparkai.engine.engine_prefab_composer import get_prefab_composer, PrefabType, VariantSelection, PrefabStatus, CompositionMode
 from sparkai.engine.engine_interactive_audio import get_interactive_audio, AudioLayer, TransitionType, PlaybackState, IntensityLevel, AudioCategory
 from sparkai.engine.engine_import_pipeline import get_import_pipeline, AssetType, ImportStatus, CompressionLevel, OptimizationTarget
@@ -1535,6 +1535,150 @@ async def forge_compose(request: ForgeComposeRequest):
         )
         return composed.to_dict()
     except ValueError as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Game Design Intelligence Endpoints
+# ============================================================
+
+@router.get("/game-design-intelligence/stats")
+async def game_design_intelligence_stats():
+    try:
+        return _game_design_intelligence.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-design-intelligence/start-session")
+async def game_design_intelligence_start_session(request: Request):
+    try:
+        body = await request.json()
+        result = _game_design_intelligence.start_session(
+            topic=body.get("topic", ""),
+            domain=body.get("domain", "core_loop"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-design-intelligence/brainstorm")
+async def game_design_intelligence_brainstorm(request: Request):
+    try:
+        body = await request.json()
+        result = _game_design_intelligence.brainstorm_mechanics(
+            seed_concept=body.get("seed_concept", ""),
+            genre=body.get("genre", "action"),
+            count=body.get("count", 5),
+            innovation_level=body.get("innovation_level", 0.7),
+        )
+        return {"concepts": [c.to_dict() for c in result], "count": len(result)}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-design-intelligence/analyze-mechanic")
+async def game_design_intelligence_analyze_mechanic(request: Request):
+    try:
+        body = await request.json()
+        result = _game_design_intelligence.analyze_mechanic(
+            mechanic_name=body.get("mechanic_name", ""),
+            context=body.get("context"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-design-intelligence/evaluate-fun")
+async def game_design_intelligence_evaluate_fun(request: Request):
+    try:
+        body = await request.json()
+        result = _game_design_intelligence.evaluate_fun_factor(
+            concept_id=body.get("concept_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-design-intelligence/iterate-concept")
+async def game_design_intelligence_iterate_concept(request: Request):
+    try:
+        body = await request.json()
+        result = _game_design_intelligence.iterate_concept(
+            concept_id=body.get("concept_id", ""),
+            iteration_direction=body.get("direction", "deepen"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-design-intelligence/generate-pitch")
+async def game_design_intelligence_generate_pitch(request: Request):
+    try:
+        body = await request.json()
+        result = _game_design_intelligence.generate_pitch(
+            concept_id=body.get("concept_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Game State Analyzer Endpoints
+# ============================================================
+
+@router.get("/game-state-analyzer/stats")
+async def game_state_analyzer_stats():
+    try:
+        return _game_state_analyzer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-state-analyzer/register-scene")
+async def game_state_analyzer_register_scene(request: Request):
+    try:
+        body = await request.json()
+        result = _game_state_analyzer.register_scene(
+            scene_id=body.get("scene_id", ""),
+            scene_name=body.get("scene_name", ""),
+            entities=body.get("entities"),
+            active_systems=body.get("active_systems"),
+            metadata=body.get("metadata"),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-state-analyzer/analyze-scene")
+async def game_state_analyzer_analyze_scene(request: Request):
+    try:
+        body = await request.json()
+        result = _game_state_analyzer.analyze_scene(
+            scene_id=body.get("scene_id", ""),
+            entities=body.get("entities"),
+            analysis_domains=body.get("analysis_domains"),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-state-analyzer/optimization-hints")
+async def game_state_analyzer_optimization_hints(request: Request):
+    try:
+        body = await request.json()
+        result = _game_state_analyzer.generate_optimization_hints(
+            scene_id=body.get("scene_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/game-state-analyzer/validate-scene")
+async def game_state_analyzer_validate_scene(request: Request):
+    try:
+        body = await request.json()
+        result = _game_state_analyzer.validate_scene_integrity(
+            scene_id=body.get("scene_id", ""),
+        )
+        return result
+    except Exception as e:
         return {"error": str(e)}
 
 
@@ -18438,9 +18582,9 @@ async def agentic_coding_start_session(request: Request):
         except ValueError:
             ct = CodingTask.GENERATE_SCRIPT
         try:
-            cl = CodeLanguage(language)
+            cl = AgenticCodeLanguage(language)
         except ValueError:
-            cl = CodeLanguage.SparkScript
+            cl = AgenticCodeLanguage.SparkScript
         session = _agentic_coding.start_coding_session(task=ct, language=cl, context=context)
         result = session.to_dict()
         print("DEBUG agentic_coding result type:", type(result), "keys:", list(result.keys()) if isinstance(result, dict) else "NOT DICT")
@@ -21521,6 +21665,8 @@ from sparkai.engine.engine_event_scripting import get_event_scripting
 from sparkai.engine.engine_component_assembler import get_component_assembler
 from sparkai.engine.engine_signal_bus import get_signal_bus as get_engine_signal_bus_v2
 from sparkai.agent.agent_skill_forge import get_skill_forge as get_agent_skill_forge
+from sparkai.agent.agent_game_design_intelligence import get_game_design_intelligence
+from sparkai.engine.engine_game_state_analyzer import get_game_state_analyzer
 
 _skill_forge = get_agent_skill_forge()
 _memory_consolidator = get_memory_consolidator()
@@ -21528,6 +21674,8 @@ _delegation_broker = get_delegation_broker()
 _component_assembler = get_component_assembler()
 _event_scripting = get_event_scripting()
 _signal_bus_runtime = get_engine_signal_bus_v2()
+_game_design_intelligence = get_game_design_intelligence()
+_game_state_analyzer = get_game_state_analyzer()
 
 # ============================================================
 # SkillForge Endpoints
