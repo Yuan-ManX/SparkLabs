@@ -921,6 +921,9 @@ class BehaviorLibrary:
             ],
         }
 
+    def get_stats(self) -> Dict[str, Any]:
+        return self.get_behavior_library_stats()
+
 
 # ---------------------------------------------------------------------------
 # Module Accessor
