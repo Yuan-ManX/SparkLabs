@@ -1682,6 +1682,198 @@ async def game_state_analyzer_validate_scene(request: Request):
         return {"error": str(e)}
 
 
+# ============================================================
+# Interaction Synthesis Engine Endpoints
+# ============================================================
+
+@router.get("/interaction-synthesis/stats")
+async def interaction_synthesis_stats():
+    try:
+        return _interaction_synthesis_engine.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/interaction-synthesis/synthesize")
+async def interaction_synthesis_synthesize(request: Request):
+    try:
+        body = await request.json()
+        result = _interaction_synthesis_engine.synthesize_interaction_network(
+            description=body.get("description", ""),
+            domains=body.get("domains"),
+            interaction_count=body.get("interaction_count", 8),
+            complexity_target=body.get("complexity_target", 0.6),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/interaction-synthesis/compute-progression")
+async def interaction_synthesis_progression(request: Request):
+    try:
+        body = await request.json()
+        result = _interaction_synthesis_engine.compute_progression_curve(
+            interaction_id=body.get("interaction_id", ""),
+            scaling_type=body.get("scaling_type", "linear"),
+            initial_difficulty=body.get("initial_difficulty", 0.3),
+            final_difficulty=body.get("final_difficulty", 0.9),
+            step_count=body.get("step_count", 10),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/interaction-synthesis/detect-conflicts")
+async def interaction_synthesis_conflicts(request: Request):
+    try:
+        body = await request.json()
+        result = _interaction_synthesis_engine.detect_interaction_conflicts(
+            network_id=body.get("network_id", ""),
+            tolerance=body.get("tolerance", 0.4),
+        )
+        return {"conflicts": [c.to_dict() for c in result], "count": len(result)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/interaction-synthesis/generate-feedback")
+async def interaction_synthesis_feedback(request: Request):
+    try:
+        body = await request.json()
+        result = _interaction_synthesis_engine.generate_feedback_spec(
+            interaction_id=body.get("interaction_id", ""),
+            channels=body.get("channels"),
+            intensity=body.get("intensity", 0.7),
+        )
+        return {"specs": [s.to_dict() for s in result], "count": len(result)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/interaction-synthesis/validate-loop")
+async def interaction_synthesis_validate_loop(request: Request):
+    try:
+        body = await request.json()
+        result = _interaction_synthesis_engine.validate_loop_integrity(
+            network_id=body.get("network_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/interaction-synthesis/networks")
+async def interaction_synthesis_networks():
+    try:
+        return {"networks": _interaction_synthesis_engine.list_networks()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Game Runtime Orchestrator Endpoints
+# ============================================================
+
+@router.get("/runtime-orchestrator/stats")
+async def runtime_orchestrator_stats():
+    try:
+        return _game_runtime_orchestrator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/runtime-orchestrator/register-system")
+async def runtime_orchestrator_register_system(request: Request):
+    try:
+        body = await request.json()
+        result = _game_runtime_orchestrator.register_managed_system(
+            name=body.get("name", ""),
+            priority=body.get("priority", "MEDIUM"),
+            execution_phases=body.get("execution_phases"),
+            dependencies=body.get("dependencies"),
+            frame_budget_ms=body.get("frame_budget_ms", 2.0),
+            metadata=body.get("metadata"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/runtime-orchestrator/initialize-system")
+async def runtime_orchestrator_init_system(request: Request):
+    try:
+        body = await request.json()
+        result = _game_runtime_orchestrator.initialize_system(
+            system_id=body.get("system_id", ""),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/runtime-orchestrator/orchestrate-frame")
+async def runtime_orchestrator_frame():
+    try:
+        result = _game_runtime_orchestrator.orchestrate_frame()
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/runtime-orchestrator/create-scene")
+async def runtime_orchestrator_create_scene(request: Request):
+    try:
+        body = await request.json()
+        result = _game_runtime_orchestrator.create_scene(
+            name=body.get("name", ""),
+            entity_count=body.get("entity_count", 0),
+            entity_types=body.get("entity_types"),
+            parent_scene_id=body.get("parent_scene_id"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/runtime-orchestrator/transition-scene")
+async def runtime_orchestrator_transition_scene(request: Request):
+    try:
+        body = await request.json()
+        result = _game_runtime_orchestrator.transition_scene(
+            target_scene_id=body.get("target_scene_id", ""),
+            unload_current=body.get("unload_current", True),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/runtime-orchestrator/state")
+async def runtime_orchestrator_state():
+    try:
+        return _game_runtime_orchestrator.query_runtime_state()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/runtime-orchestrator/systems")
+async def runtime_orchestrator_systems():
+    try:
+        return {"systems": _game_runtime_orchestrator.list_systems()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/runtime-orchestrator/scenes")
+async def runtime_orchestrator_scenes():
+    try:
+        return {"scenes": _game_runtime_orchestrator.list_scenes()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @router.post("/forge/record-execution")
 async def forge_record_execution(request: ForgeExecutionRequest):
     evolution = _forge.record_execution(
@@ -21667,6 +21859,8 @@ from sparkai.engine.engine_signal_bus import get_signal_bus as get_engine_signal
 from sparkai.agent.agent_skill_forge import get_skill_forge as get_agent_skill_forge
 from sparkai.agent.agent_game_design_intelligence import get_game_design_intelligence
 from sparkai.engine.engine_game_state_analyzer import get_game_state_analyzer
+from sparkai.agent.agent_interaction_synthesis import get_interaction_synthesis_engine
+from sparkai.engine.engine_game_runtime_orchestrator import get_game_runtime_orchestrator
 
 _skill_forge = get_agent_skill_forge()
 _memory_consolidator = get_memory_consolidator()
@@ -21676,6 +21870,8 @@ _event_scripting = get_event_scripting()
 _signal_bus_runtime = get_engine_signal_bus_v2()
 _game_design_intelligence = get_game_design_intelligence()
 _game_state_analyzer = get_game_state_analyzer()
+_interaction_synthesis_engine = get_interaction_synthesis_engine()
+_game_runtime_orchestrator = get_game_runtime_orchestrator()
 
 # ============================================================
 # SkillForge Endpoints
