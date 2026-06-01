@@ -810,13 +810,19 @@ class MemoryConsolidator:
 
     def get_stats(self) -> Dict[str, Any]:
         """Return comprehensive MemoryConsolidator subsystem statistics."""
+        all_fragments = {
+            **{f"working_{k}": v for k, v in self._working.items()},
+            **{f"episodic_{k}": v for k, v in self._episodic.items()},
+            **{f"semantic_{k}": v for k, v in self._semantic_store.items()},
+            **{f"archival_{k}": v for k, v in self._archival.items()},
+        }
         return {
-            "total_fragments": len(self._fragments),
-            "total_consolidations": self._consolidation_count,
-            "fragments_by_type": {
-                ft.value: sum(1 for f in self._fragments.values() if f.fragment_type == ft)
-                for ft in FragmentType
-            },
+            "total_fragments": len(all_fragments),
+            "working_count": len(self._working),
+            "episodic_count": len(self._episodic),
+            "semantic_count": len(self._semantic_store),
+            "archival_count": len(self._archival),
+            "total_consolidations": self._total_consolidations,
             "consolidation_history_size": len(self._consolidation_history),
         }
 
