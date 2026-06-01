@@ -8,7 +8,6 @@
 ### 点燃你的无限游戏想象！ 🎮
 
 ![版本](https://img.shields.io/badge/version-2.0.0-blue)
-![Python Version](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 
