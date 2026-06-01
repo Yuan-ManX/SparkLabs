@@ -366,6 +366,9 @@ from sparkai.agent.agent_delegation_broker import DelegationBroker, get_delegati
 from sparkai.agent.agent_game_design_intelligence import GameDesignIntelligence, get_game_design_intelligence
 from sparkai.agent.agent_interaction_synthesis import InteractionSynthesisEngine, get_interaction_synthesis_engine
 from sparkai.agent.agent_gameplay_ecosystem import GameplayEcosystemSimulator, get_gameplay_ecosystem_simulator
+from sparkai.agent.agent_creative_director import AgentCreativeDirector, get_creative_director
+from sparkai.agent.agent_social_simulation import AgentSocialSimulation, get_agent_social_simulation
+from sparkai.agent.agent_monetization_designer import AgentMonetizationDesigner, get_monetization_designer
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -849,6 +852,9 @@ class AgentRuntime:
         self._game_design_intelligence: Optional[GameDesignIntelligence] = None
         self._interaction_synthesis_engine: Optional[InteractionSynthesisEngine] = None
         self._gameplay_ecosystem: Optional[GameplayEcosystemSimulator] = None
+        self._creative_director: Optional[AgentCreativeDirector] = None
+        self._social_simulation: Optional[AgentSocialSimulation] = None
+        self._monetization_designer: Optional[AgentMonetizationDesigner] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1216,6 +1222,9 @@ class AgentRuntime:
             self._game_design_intelligence = get_game_design_intelligence()
             self._interaction_synthesis_engine = get_interaction_synthesis_engine()
             self._gameplay_ecosystem = get_gameplay_ecosystem_simulator()
+            self._creative_director = get_creative_director()
+            self._social_simulation = get_agent_social_simulation()
+            self._monetization_designer = get_monetization_designer()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1282,6 +1291,9 @@ class AgentRuntime:
             self._game_design_intelligence_ok = self._game_design_intelligence is not None
             self._interaction_synthesis_engine_ok = self._interaction_synthesis_engine is not None
             self._gameplay_ecosystem_ok = self._gameplay_ecosystem is not None
+            self._creative_director_ok = self._creative_director is not None
+            self._social_simulation_ok = self._social_simulation is not None
+            self._monetization_designer_ok = self._monetization_designer is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2857,6 +2869,9 @@ class AgentRuntime:
             "game_design_intelligence": self._game_design_intelligence is not None,
             "interaction_synthesis_engine": self._interaction_synthesis_engine is not None,
             "gameplay_ecosystem": self._gameplay_ecosystem is not None,
+            "creative_director": self._creative_director is not None,
+            "social_simulation": self._social_simulation is not None,
+            "monetization_designer": self._monetization_designer is not None,
             },
         }
 
@@ -3458,6 +3473,12 @@ class AgentRuntime:
             status["interaction_synthesis_engine_stats"] = self._interaction_synthesis_engine.get_stats()
         if self._gameplay_ecosystem:
             status["gameplay_ecosystem_stats"] = self._gameplay_ecosystem.get_stats()
+        if self._creative_director:
+            status["creative_director_stats"] = self._creative_director.get_stats()
+        if self._social_simulation:
+            status["social_simulation_stats"] = self._social_simulation.get_stats()
+        if self._monetization_designer:
+            status["monetization_designer_stats"] = self._monetization_designer.get_stats()
         return status
 
 
