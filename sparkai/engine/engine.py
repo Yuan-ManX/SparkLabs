@@ -193,6 +193,9 @@ from sparkai.engine.engine_component_assembler import ComponentAssembler, get_co
 from sparkai.engine.engine_game_state_analyzer import GameStateAnalyzer, get_game_state_analyzer
 from sparkai.engine.engine_game_runtime_orchestrator import GameRuntimeOrchestrator, get_game_runtime_orchestrator
 from sparkai.engine.engine_biome_generation import BiomeGenerationPipeline, get_biome_generation_pipeline
+from sparkai.engine.engine_procedural_dungeon import EngineProceduralDungeon, get_procedural_dungeon_generator
+from sparkai.engine.engine_adaptive_content import EngineAdaptiveContent, get_adaptive_content_engine
+from sparkai.engine.engine_progressive_loading import EngineProgressiveLoading, get_progressive_loading
 
 
 class SparkEngine:
@@ -385,6 +388,9 @@ class SparkEngine:
         self._game_state_analyzer = get_game_state_analyzer()
         self._game_runtime_orchestrator = get_game_runtime_orchestrator()
         self._biome_generation_pipeline = get_biome_generation_pipeline()
+        self._procedural_dungeon = get_procedural_dungeon_generator()
+        self._adaptive_content = get_adaptive_content_engine()
+        self._progressive_loading = get_progressive_loading()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -707,6 +713,9 @@ class SparkEngine:
             "game_state_analyzer": self._game_state_analyzer.get_stats(),
             "game_runtime_orchestrator": self._game_runtime_orchestrator.get_stats(),
             "biome_generation_pipeline": self._biome_generation_pipeline.get_stats(),
+            "procedural_dungeon": self._procedural_dungeon.get_stats(),
+            "adaptive_content": self._adaptive_content.get_stats(),
+            "progressive_loading": self._progressive_loading.get_stats(),
         }
 
     @property
@@ -1184,6 +1193,18 @@ class SparkEngine:
     @property
     def biome_generation_pipeline(self) -> BiomeGenerationPipeline:
         return self._biome_generation_pipeline
+
+    @property
+    def procedural_dungeon(self) -> EngineProceduralDungeon:
+        return self._procedural_dungeon
+
+    @property
+    def adaptive_content(self) -> EngineAdaptiveContent:
+        return self._adaptive_content
+
+    @property
+    def progressive_loading(self) -> EngineProgressiveLoading:
+        return self._progressive_loading
 
 
 @dataclass
