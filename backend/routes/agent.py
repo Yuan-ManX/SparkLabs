@@ -2167,6 +2167,214 @@ async def biome_generation_worlds():
         return {"error": str(e)}
 
 
+# ============================================================
+# CreativeDirector Endpoints
+# ============================================================
+
+@router.get("/creative-director/stats")
+async def creative_director_stats():
+    try:
+        return _creative_director.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/generate-brief")
+async def creative_director_generate_brief(request: Request):
+    try:
+        body = await request.json()
+        result = _creative_director.generate_creative_brief(
+            project_name=body.get("project_name", ""),
+            genre=body.get("genre"),
+            target_audience=body.get("target_audience"),
+            visual_style=body.get("visual_style"),
+            emotional_tone=body.get("emotional_tone"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/define-pillars")
+async def creative_director_define_pillars(request: Request):
+    try:
+        body = await request.json()
+        result = _creative_director.define_gameplay_pillars(
+            brief_id=body.get("brief_id", ""),
+            custom_pillars=body.get("custom_pillars"),
+        )
+        return {"pillars": [p.to_dict() for p in result]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/synthesize-art")
+async def creative_director_synthesize_art(request: Request):
+    try:
+        body = await request.json()
+        result = _creative_director.synthesize_art_direction(
+            brief_id=body.get("brief_id", ""),
+            style_override=body.get("style_override"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/compile-mood")
+async def creative_director_compile_mood(request: Request):
+    try:
+        body = await request.json()
+        result = _creative_director.compile_mood_board(
+            brief_id=body.get("brief_id", ""),
+            mood_name=body.get("mood_name"),
+        )
+        return {"moods": [m.to_dict() for m in result]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/explore-narrative")
+async def creative_director_explore_narrative(request: Request):
+    try:
+        body = await request.json()
+        result = _creative_director.explore_narrative_themes(
+            brief_id=body.get("brief_id", ""),
+            central_conflict=body.get("central_conflict", ""),
+            protagonist_archetype=body.get("protagonist_archetype", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/design-audio")
+async def creative_director_design_audio(request: Request):
+    try:
+        body = await request.json()
+        result = _creative_director.design_audio_direction(
+            brief_id=body.get("brief_id", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/map-experience")
+async def creative_director_map_experience(request: Request):
+    try:
+        body = await request.json()
+        result = _creative_director.map_player_experience(
+            brief_id=body.get("brief_id", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# ProceduralDungeon Endpoints
+# ============================================================
+
+@router.get("/procedural-dungeon/stats")
+async def procedural_dungeon_stats():
+    try:
+        return _procedural_dungeon.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/procedural-dungeon/generate")
+async def procedural_dungeon_generate(request: Request):
+    try:
+        body = await request.json()
+        layout = _procedural_dungeon.generate_dungeon_layout(
+            name=body.get("name", ""),
+            seed=body.get("seed", 0),
+            algorithm=body.get("algorithm"),
+            theme_name=body.get("theme_name", "castle"),
+            room_count=body.get("room_count", 12),
+            map_width=body.get("map_width", 100),
+            map_height=body.get("map_height", 100),
+        )
+        rooms = _procedural_dungeon.list_rooms_for_layout(layout.id)
+        return {"layout": layout.to_dict(), "rooms": rooms}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/procedural-dungeon/distribute-encounters")
+async def procedural_dungeon_distribute_encounters(request: Request):
+    try:
+        body = await request.json()
+        result = _procedural_dungeon.distribute_encounters(
+            layout_id=body.get("layout_id", ""),
+            theme_name=body.get("theme_name", "castle"),
+        )
+        return {"encounters": [e.to_dict() for e in result]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/procedural-dungeon/place-treasures")
+async def procedural_dungeon_place_treasures(request: Request):
+    try:
+        body = await request.json()
+        result = _procedural_dungeon.place_treasures(
+            layout_id=body.get("layout_id", ""),
+            theme_name=body.get("theme_name", "castle"),
+        )
+        return {"treasures": [t.to_dict() for t in result]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/procedural-dungeon/difficulty-curve")
+async def procedural_dungeon_difficulty_curve(request: Request):
+    try:
+        body = await request.json()
+        return _procedural_dungeon.compute_difficulty_curve(
+            layout_id=body.get("layout_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/procedural-dungeon/layouts")
+async def procedural_dungeon_layouts():
+    try:
+        return {"layouts": _procedural_dungeon.list_layouts()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/procedural-dungeon/rooms")
+async def procedural_dungeon_rooms(request: Request):
+    try:
+        body = await request.json()
+        return {"rooms": _procedural_dungeon.list_rooms_for_layout(body.get("layout_id", ""))}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/procedural-dungeon/encounters")
+async def procedural_dungeon_encounters(request: Request):
+    try:
+        body = await request.json()
+        return {"encounters": _procedural_dungeon.list_encounters_for_layout(body.get("layout_id", ""))}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/procedural-dungeon/treasures")
+async def procedural_dungeon_treasures(request: Request):
+    try:
+        body = await request.json()
+        return {"treasures": _procedural_dungeon.list_treasures_for_layout(body.get("layout_id", ""))}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @router.post("/forge/record-execution")
 async def forge_record_execution(request: ForgeExecutionRequest):
     evolution = _forge.record_execution(
@@ -22156,6 +22364,12 @@ from sparkai.agent.agent_interaction_synthesis import get_interaction_synthesis_
 from sparkai.engine.engine_game_runtime_orchestrator import get_game_runtime_orchestrator
 from sparkai.agent.agent_gameplay_ecosystem import get_gameplay_ecosystem_simulator
 from sparkai.engine.engine_biome_generation import get_biome_generation_pipeline
+from sparkai.agent.agent_creative_director import get_creative_director
+from sparkai.engine.engine_procedural_dungeon import get_procedural_dungeon_generator
+from sparkai.agent.agent_social_simulation import get_agent_social_simulation
+from sparkai.agent.agent_monetization_designer import get_monetization_designer
+from sparkai.engine.engine_adaptive_content import get_adaptive_content_engine
+from sparkai.engine.engine_progressive_loading import get_progressive_loading
 
 _skill_forge = get_agent_skill_forge()
 _memory_consolidator = get_memory_consolidator()
@@ -22169,6 +22383,12 @@ _interaction_synthesis_engine = get_interaction_synthesis_engine()
 _game_runtime_orchestrator = get_game_runtime_orchestrator()
 _gameplay_ecosystem = get_gameplay_ecosystem_simulator()
 _biome_generation_pipeline = get_biome_generation_pipeline()
+_creative_director = get_creative_director()
+_procedural_dungeon = get_procedural_dungeon_generator()
+_social_simulation = get_agent_social_simulation()
+_monetization_designer = get_monetization_designer()
+_adaptive_content = get_adaptive_content_engine()
+_progressive_loading = get_progressive_loading()
 
 # ============================================================
 # SkillForge Endpoints
@@ -22415,5 +22635,440 @@ async def signal_bus_runtime_define(request: Request):
             category=body.get("category", ""),
         )
         return {"success": True, "signal_id": signal_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Social Simulation Endpoints
+# ============================================================
+
+@router.get("/social-simulation/stats")
+async def social_simulation_stats():
+    try:
+        return _social_simulation.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-simulation/characters")
+async def social_simulation_characters():
+    try:
+        return {"characters": _social_simulation.list_characters()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-simulation/create-character")
+async def social_simulation_create_character(request: Request):
+    try:
+        body = await request.json()
+        result = _social_simulation.create_character_profile(
+            name=body.get("name", ""),
+            faction_id=body.get("faction", ""),
+            backstory_hook=body.get("backstory", ""),
+            social_goals=body.get("social_goals", []),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-simulation/relationships")
+async def social_simulation_relationships():
+    try:
+        return {"relationships": _social_simulation.list_relationships()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-simulation/simulate-relationship")
+async def social_simulation_simulate_relationship(request: Request):
+    try:
+        body = await request.json()
+        npc_a_id = body.get("npc_a_id", "")
+        npc_b_id = body.get("npc_b_id", "")
+        profile_a = _social_simulation._profiles.get(npc_a_id)
+        if profile_a is None:
+            profile_a = _social_simulation.create_character_profile(name=npc_a_id)
+        profile_b = _social_simulation._profiles.get(npc_b_id)
+        if profile_b is None:
+            profile_b = _social_simulation.create_character_profile(name=npc_b_id)
+        result = _social_simulation.simulate_relationship_pair(
+            profile_a=profile_a,
+            profile_b=profile_b,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-simulation/build-network")
+async def social_simulation_build_network():
+    try:
+        result = _social_simulation.build_social_network()
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-simulation/network")
+async def social_simulation_network():
+    try:
+        return _social_simulation.get_network_summary()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-simulation/generate-event")
+async def social_simulation_generate_event():
+    try:
+        result = _social_simulation.generate_social_event()
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-simulation/events")
+async def social_simulation_events():
+    try:
+        return {"events": _social_simulation.list_events()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-simulation/influence-map")
+async def social_simulation_influence_map(request: Request):
+    try:
+        body = await request.json()
+        result = _social_simulation.compute_influence_map(
+            source_npc_id=body.get("source_npc_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-simulation/predict-faction")
+async def social_simulation_predict_faction(request: Request):
+    try:
+        body = await request.json()
+        result = _social_simulation.predict_faction_behavior(
+            faction_name=body.get("faction_name", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-simulation/resolve-conflict")
+async def social_simulation_resolve_conflict(request: Request):
+    try:
+        body = await request.json()
+        result = _social_simulation.resolve_social_conflict(
+            faction_a=body.get("faction_a", ""),
+            faction_b=body.get("faction_b", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Monetization Designer Endpoints
+# ============================================================
+
+@router.get("/monetization-designer/stats")
+async def monetization_designer_stats():
+    try:
+        return _monetization_designer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/monetization-designer/revenue-models")
+async def monetization_designer_revenue_models():
+    try:
+        return {"models": _monetization_designer.list_revenue_models()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/monetization-designer/design-revenue-model")
+async def monetization_designer_design_model(request: Request):
+    try:
+        body = await request.json()
+        result = _monetization_designer.design_revenue_model(
+            genre=body.get("genre", ""),
+            game_id=body.get("game_id", body.get("model_type", "")),
+            target_arpu=float(body.get("target_arpu", 0)),
+            player_base=int(body.get("player_base", 0)),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/monetization-designer/configure-pricing")
+async def monetization_designer_configure_pricing(request: Request):
+    try:
+        body = await request.json()
+        model_id = body.get("model_id", "")
+        revenue_model = _monetization_designer.get_revenue_model(model_id)
+        if revenue_model is None:
+            revenue_model = _monetization_designer.design_revenue_model(
+                genre=body.get("genre", ""),
+                game_id=body.get("game_id", ""),
+            )
+        target_regions = body.get("target_regions")
+        result = _monetization_designer.configure_pricing_structure(
+            revenue_model=revenue_model,
+            target_regions=target_regions,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/monetization-designer/iap-catalogs")
+async def monetization_designer_iap_catalogs():
+    try:
+        return {"catalogs": _monetization_designer.list_iap_catalogs()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/monetization-designer/design-iap-catalog")
+async def monetization_designer_design_iap(request: Request):
+    try:
+        body = await request.json()
+        game_id = body.get("game_id", "")
+        model_id = body.get("model_id", "")
+        revenue_model = _monetization_designer.get_revenue_model(model_id)
+        if revenue_model is None:
+            revenue_model = _monetization_designer.design_revenue_model(
+                genre=body.get("genre", ""),
+                game_id=game_id,
+            )
+        result = _monetization_designer.design_iap_catalog(
+            game_id=game_id,
+            revenue_model=revenue_model,
+            item_count=int(body.get("item_count", 20)),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/monetization-designer/audit-fairness")
+async def monetization_designer_audit(request: Request):
+    try:
+        body = await request.json()
+        game_id = body.get("game_id", "")
+        model_id = body.get("model_id", "")
+        revenue_model = _monetization_designer.get_revenue_model(model_id) if model_id else None
+        if not revenue_model and model_id:
+            revenue_model = _monetization_designer.design_revenue_model(
+                genre=body.get("genre", ""),
+                game_id=game_id,
+            )
+        iap_catalog = _monetization_designer.get_iap_catalog(game_id)
+        result = _monetization_designer.audit_monetization_fairness(
+            game_id=game_id,
+            revenue_model=revenue_model,
+            iap_catalog=iap_catalog,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/monetization-designer/forecast-revenue")
+async def monetization_designer_forecast(request: Request):
+    try:
+        body = await request.json()
+        model_id = body.get("model_id", "")
+        revenue_model = _monetization_designer.get_revenue_model(model_id)
+        if revenue_model is None:
+            revenue_model = _monetization_designer.design_revenue_model(
+                genre=body.get("genre", ""),
+                game_id=body.get("game_id", ""),
+            )
+        pricing_strategy_id = body.get("pricing_strategy_id")
+        pricing_strategy = _monetization_designer.get_pricing_strategy(pricing_strategy_id) if pricing_strategy_id else None
+        result = _monetization_designer.forecast_revenue(
+            revenue_model=revenue_model,
+            pricing_strategy=pricing_strategy,
+            months=int(body.get("months", 0)),
+            player_base=int(body.get("player_base", 0)),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Adaptive Content Endpoints
+# ============================================================
+
+@router.get("/adaptive-content/stats")
+async def adaptive_content_stats():
+    try:
+        return _adaptive_content.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/adaptive-content/analyze-profile")
+async def adaptive_content_analyze_profile(request: Request):
+    try:
+        body = await request.json()
+        result = _adaptive_content.analyze_player_profile(
+            player_id=body.get("player_id", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/adaptive-content/profile/{player_id}")
+async def adaptive_content_profile(player_id: str):
+    try:
+        return _adaptive_content.get_player_profile(player_id)
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/adaptive-content/compute-difficulty")
+async def adaptive_content_compute_difficulty(request: Request):
+    try:
+        body = await request.json()
+        result = _adaptive_content.compute_adaptive_difficulty(
+            player_id=body.get("player_id", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/adaptive-content/difficulty/{player_id}")
+async def adaptive_content_difficulty(player_id: str):
+    try:
+        return _adaptive_content.get_difficulty_state(player_id)
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/adaptive-content/select-content")
+async def adaptive_content_select_content(request: Request):
+    try:
+        body = await request.json()
+        result = _adaptive_content.select_content_variant(
+            player_id=body.get("player_id", ""),
+            content_type=body.get("content_type"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/adaptive-content/balance-economy")
+async def adaptive_content_balance_economy(request: Request):
+    try:
+        body = await request.json()
+        result = _adaptive_content.balance_game_economy(
+            player_id=body.get("player_id", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Progressive Loading Endpoints
+# ============================================================
+
+@router.get("/progressive-loading/stats")
+async def progressive_loading_stats():
+    try:
+        return _progressive_loading.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/progressive-loading/chunks")
+async def progressive_loading_chunks():
+    try:
+        return {"chunks": _progressive_loading.list_chunks()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/progressive-loading/queue")
+async def progressive_loading_queue():
+    try:
+        return _progressive_loading.get_queue_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/progressive-loading/apply-preset")
+async def progressive_loading_apply_preset(request: Request):
+    try:
+        body = await request.json()
+        result = _progressive_loading.apply_preset(
+            world_id=body.get("world_id", "default"),
+            preset_name=body.get("preset", "balanced"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/progressive-loading/create-chunk")
+async def progressive_loading_create_chunk(request: Request):
+    try:
+        body = await request.json()
+        result = _progressive_loading.create_chunk(
+            world_id=body.get("world_id", "default"),
+            grid_x=int(body.get("x", 0)),
+            grid_y=int(body.get("y", 0)),
+            grid_z=int(body.get("z", 0)),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/progressive-loading/load-chunk")
+async def progressive_loading_load_chunk(request: Request):
+    try:
+        body = await request.json()
+        priority = body.get("priority")
+        target_lod = body.get("target_lod")
+        result = _progressive_loading.load_chunk(
+            chunk_id=body.get("chunk_id", ""),
+            priority=priority,
+            target_lod=target_lod,
+        )
+        if result is None:
+            return {"error": "chunk not found"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/progressive-loading/unload-chunk")
+async def progressive_loading_unload_chunk(request: Request):
+    try:
+        body = await request.json()
+        result = _progressive_loading.unload_chunk(
+            chunk_id=body.get("chunk_id", ""),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/progressive-loading/prioritize-chunks")
+async def progressive_loading_prioritize_chunks(request: Request):
+    try:
+        body = await request.json()
+        camera_position = (
+            float(body.get("camera_x", 0)),
+            float(body.get("camera_y", 0)),
+            float(body.get("camera_z", 0)),
+        )
+        dir_x = body.get("direction_x")
+        if dir_x is not None:
+            camera_direction = (
+                float(dir_x),
+                float(body.get("direction_y", 0)),
+                float(body.get("direction_z", 0)),
+            )
+        else:
+            camera_direction = None
+        result = _progressive_loading.prioritize_chunks(
+            world_id=body.get("world_id", "default"),
+            camera_position=camera_position,
+            camera_direction=camera_direction,
+        )
+        return {"chunks": [c.to_dict() for c in result]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/progressive-loading/manage-memory")
+async def progressive_loading_manage_memory(request: Request):
+    try:
+        body = await request.json()
+        result = _progressive_loading.manage_memory_budget(
+            world_id=body.get("world_id", "default"),
+        )
+        return result
     except Exception as e:
         return {"error": str(e)}
