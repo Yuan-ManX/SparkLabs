@@ -363,6 +363,7 @@ from sparkai.agent.agent_skill_forge import SkillForge, get_skill_forge
 from sparkai.agent.agent_learning_loop import LearningLoop, get_learning_loop
 from sparkai.agent.agent_memory_consolidator import MemoryConsolidator, get_memory_consolidator
 from sparkai.agent.agent_delegation_broker import DelegationBroker, get_delegation_broker
+from sparkai.agent.agent_game_design_intelligence import GameDesignIntelligence, get_game_design_intelligence
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -843,6 +844,7 @@ class AgentRuntime:
         self._learning_loop: Optional[LearningLoop] = None
         self._memory_consolidator: Optional[MemoryConsolidator] = None
         self._delegation_broker: Optional[DelegationBroker] = None
+        self._game_design_intelligence: Optional[GameDesignIntelligence] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1207,6 +1209,7 @@ class AgentRuntime:
             self._learning_loop = get_learning_loop()
             self._memory_consolidator = get_memory_consolidator()
             self._delegation_broker = get_delegation_broker()
+            self._game_design_intelligence = get_game_design_intelligence()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1270,6 +1273,7 @@ class AgentRuntime:
             self._learning_loop_ok = self._learning_loop is not None
             self._memory_consolidator_ok = self._memory_consolidator is not None
             self._delegation_broker_ok = self._delegation_broker is not None
+            self._game_design_intelligence_ok = self._game_design_intelligence is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2842,6 +2846,7 @@ class AgentRuntime:
             "learning_loop": self._learning_loop is not None,
             "memory_consolidator": self._memory_consolidator is not None,
             "delegation_broker": self._delegation_broker is not None,
+            "game_design_intelligence": self._game_design_intelligence is not None,
             },
         }
 
@@ -3437,6 +3442,8 @@ class AgentRuntime:
             status["memory_consolidator_stats"] = self._memory_consolidator.get_stats()
         if self._delegation_broker:
             status["delegation_broker_stats"] = self._delegation_broker.get_stats()
+        if self._game_design_intelligence:
+            status["game_design_intelligence_stats"] = self._game_design_intelligence.get_stats()
         return status
 
 
