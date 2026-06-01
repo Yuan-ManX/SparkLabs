@@ -119,6 +119,8 @@ import GameDesignIntelligencePanel from './GameDesignIntelligencePanel';
 import GameStateAnalyzerPanel from './GameStateAnalyzerPanel';
 import InteractionSynthesisPanel from './InteractionSynthesisPanel';
 import GameRuntimeOrchestratorPanel from './GameRuntimeOrchestratorPanel';
+import GameplayEcosystemPanel from './GameplayEcosystemPanel';
+import BiomeGenerationPanel from './BiomeGenerationPanel';
 
 type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime' | 'developer-oracle' | 'context-weaver' | 'session-nexus' | 'persona-vault' | 'voice-bridge' | 'ecosystem-hub' | 'frame-composer' | 'spatial-cluster' | 'asset-streamer' | 'deterministic-replay' | 'input-abstraction' | 'profile-loader' | 'intent-cascade' | 'game-forecaster' | 'asset-synthesizer' | 'tutorial-orchestrator' | 'skybox-renderer' | 'trail-renderer' | 'procedural-audio' | 'texture-atlas'
   | 'ab-test-runner' | 'heatmap-analyzer' | 'bug-forensics' | 'accessibility-auditor'
@@ -128,7 +130,8 @@ type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' 
   | 'reasoning-chain' | 'memory-hierarchy' | 'tool-registry' | 'prompt-library' | 'reflection-loop' | 'procedural-synthesis' | 'asset-bundler' | 'deterministic-recorder' | 'localization-hub'
   | 'skill-forge' | 'memory-consolidator' | 'delegation-broker' | 'event-scripting-runtime' | 'component-assembler'
   | 'game-design-intelligence' | 'game-state-analyzer'
-  | 'interaction-synthesis' | 'runtime-orchestrator';
+  | 'interaction-synthesis' | 'runtime-orchestrator'
+  | 'gameplay-ecosystem' | 'biome-generation';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -257,6 +260,8 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'game-state-analyzer', label: 'State Analyzer 🔧', icon: '🔧' },
   { id: 'interaction-synthesis', label: 'Interaction Synthesis 🔗', icon: '🔗' },
   { id: 'runtime-orchestrator', label: 'Runtime Orchestrator ⚙️', icon: '⚙️' },
+  { id: 'gameplay-ecosystem', label: 'Ecosystem Simulator 🌍', icon: '🌍' },
+  { id: 'biome-generation', label: 'Biome Generation 🏔️', icon: '🏔️' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -808,6 +813,8 @@ const AgentPanel: React.FC = () => {
       case 'game-state-analyzer': return <GameStateAnalyzerPanel />;
       case 'interaction-synthesis': return <InteractionSynthesisPanel />;
       case 'runtime-orchestrator': return <GameRuntimeOrchestratorPanel />;
+      case 'gameplay-ecosystem': return <GameplayEcosystemPanel />;
+      case 'biome-generation': return <BiomeGenerationPanel />;
       default: return null;
     }
   };
