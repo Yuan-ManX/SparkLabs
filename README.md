@@ -100,21 +100,6 @@ The engine features an AI Agent foundation that provides a comprehensive multi-a
 - NPC personality designer with trait visualization
 - Story editor with branching narrative support
 
-## System Requirements
-
-### Minimum Requirements
-- **OS**: Windows 10, macOS 10.14, Linux (Ubuntu 18.04+)
-- **Compiler**: GCC 9+, Clang 10+, MSVC 2019+
-- **Python**: 3.10+
-- **Node.js**: 18+
-- **RAM**: 8 GB
-- **Disk**: 2 GB free space
-
-### Recommended Requirements
-- **OS**: Windows 11, macOS 12+, Linux (Ubuntu 20.04+)
-- **Compiler**: GCC 11+, Clang 14+, MSVC 2022+
-- **RAM**: 16 GB or more
-- **GPU**: NVIDIA GPU with CUDA support (for GPU acceleration)
 
 ## Installation
 
@@ -174,14 +159,6 @@ pip install -r backend/requirements.txt
 python -m uvicorn backend.app:app --host 0.0.0.0 --port 8091 --reload
 ```
 
-### CMake Options
-
-- `SPARKLABS_ORT_ENABLED`: Enable ONNX Runtime support (default: ON)
-- `SPARKLABS_GPU_SUPPORT`: Enable GPU acceleration (default: ON)
-
-```bash
-cmake .. -DSPARKLABS_ORT_ENABLED=ON -DSPARKLABS_GPU_SUPPORT=ON
-```
 
 ## Quick Start
 
@@ -364,100 +341,6 @@ dialogue = await brain.generate_dialogue("Tell me about the ancient artifact")
 │         Windows | macOS | Linux | Web | Mobile                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
-
-## Project Structure
-
-```
-SparkLabs/
-├── sparkai/                 # Python AI Agent Foundation
-│   ├── __init__.py          # Package exports
-│   ├── config.py            # Configuration system
-│   ├── agent/               # Agent core
-│   │   ├── base.py          # SparkAgent with observe-think-act loop
-│   │   ├── llm.py           # Multi-provider LLM integration
-│   │   ├── memory.py        # Hierarchical memory system
-│   │   ├── toolkit.py       # Tool registry and execution
-│   │   └── orchestrator.py  # Multi-agent orchestration
-│   ├── engine/              # Python engine interface
-│   │   ├── engine.py        # SparkEngine, Scene, Entity
-│   │   └── scene.py         # Scene management
-│   ├── workflow/            # AI Workflow system
-│   │   ├── graph.py         # WorkflowGraph, WorkflowNode, PinType
-│   │   ├── executor.py      # Topological execution engine
-│   │   └── registry.py      # Node type registry with 20+ types
-│   ├── npc/                 # Intelligent NPC system
-│   │   ├── brain.py         # NPCBrain with dual-network
-│   │   ├── personality.py   # 10-dimensional personality traits
-│   │   └── behavior.py      # Behavior tree system
-│   ├── narrative/           # AI Narrative engine
-│   │   ├── story.py         # Branching story graph
-│   │   └── quest.py         # Procedural quest generation
-│   ├── team/                # Team collaboration
-│   │   ├── director.py      # Director agents (Tier 1)
-│   │   ├── lead.py          # Lead agents (Tier 2)
-│   │   ├── specialist.py    # Specialist agents (Tier 3)
-│   │   └── quality.py       # Quality gate system
-│   ├── ai/                  # C++ AI runtime (headers)
-│   ├── asset/               # Smart asset management (C++)
-│   ├── audio/               # Audio system (C++)
-│   ├── gameplay/            # Adaptive gameplay (C++)
-│   ├── neural/              # Neural rendering (C++)
-│   └── editor/              # Editor integration (C++)
-├── backend/                 # FastAPI Backend
-│   ├── app.py               # Application entry point
-│   ├── websocket.py         # WebSocket handler
-│   ├── requirements.txt     # Python dependencies
-│   └── routes/              # API routes
-│       ├── engine.py        # Engine control endpoints
-│       ├── agent.py         # Agent management endpoints
-│       ├── scene.py         # Scene/entity endpoints
-│       ├── workflow.py      # Workflow endpoints
-│       ├── narrative.py     # Story/quest endpoints
-│       └── npc.py           # NPC management endpoints
-├── frontend/                # SparkLabs Frontend
-│   ├── website/             # Official Website (Static HTML)
-│   │   ├── index.html       # Main homepage
-│   │   ├── sparklabs.html   # SparkLabs homepage
-│   │   ├── editor.html      # Original editor page
-│   │   └── package.json     # Website server config
-│   └── web/                 # AI-Native Game Engine Editor (React)
-│       ├── index.html       # Vite entry
-│       ├── App.tsx          # Main application
-│       ├── main.tsx         # Entry point
-│       ├── index.css        # Global styles
-│       ├── package.json     # Editor dependencies
-│       ├── vite.config.ts   # Vite configuration
-│       ├── components/      # UI components
-│       │   ├── SparkLabsEditor.tsx  # Editor main layout
-│       │   ├── EditorToolbar.tsx    # Top toolbar
-│       │   ├── SceneHierarchy.tsx   # Left panel - scene tree
-│       │   ├── Viewport3D.tsx       # Center - Spark3D viewport
-│       │   ├── InspectorPanel.tsx   # Right panel - properties
-│       │   ├── ConsolePanel.tsx     # Bottom - console/AI assistant
-│       │   ├── SparkLabsHome.tsx    # Landing page
-│       │   ├── WelcomeDashboard.tsx # Editor dashboard
-│       │   ├── GameEditor.tsx       # Game studio
-│       │   ├── GameGenerator.tsx    # Template generator
-│       │   ├── StoryEditor.tsx      # Story editor
-│       │   ├── AssetGenerator.tsx   # Asset generator
-│       │   ├── VoiceSynthesizer.tsx # Voice synthesis
-│       │   ├── StoryboardEditor.tsx # Storyboard editor
-│       │   ├── VideoRenderer.tsx    # Video renderer
-│       │   ├── WorkflowEditor.tsx   # Workflow canvas
-│       │   ├── NPCDesigner.tsx      # NPC designer
-│       │   └── AgentPanel.tsx       # Agent chat panel
-│       ├── hooks/           # Custom React hooks
-│       ├── utils/           # API client and utilities
-│       └── types/           # TypeScript type definitions
-├── core/                    # Core C++ utilities
-├── engine/                  # C++ Engine core
-├── render/                  # Rendering system
-├── platform/                # Platform abstraction
-├── docs/                    # Documentation
-├── scripts/                 # Build scripts
-└── tests/                   # Unit tests
-```
-
 
 ## Documentation
 
