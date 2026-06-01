@@ -1874,6 +1874,299 @@ async def runtime_orchestrator_scenes():
         return {"error": str(e)}
 
 
+# ============================================================
+# GameplayEcosystemSimulator Endpoints
+# ============================================================
+
+@router.get("/gameplay-ecosystem/stats")
+async def gameplay_ecosystem_stats():
+    try:
+        return _gameplay_ecosystem.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/gameplay-ecosystem/introduce-species")
+async def gameplay_ecosystem_introduce_species(request: Request):
+    try:
+        body = await request.json()
+        result = _gameplay_ecosystem.introduce_species(
+            name=body.get("name", ""),
+            role=body.get("role"),
+            population=body.get("population", 100),
+            max_population=body.get("max_population"),
+            growth_rate=body.get("growth_rate"),
+            death_rate=body.get("death_rate"),
+            preferred_biomes=body.get("preferred_biomes"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/gameplay-ecosystem/define-resource")
+async def gameplay_ecosystem_define_resource(request: Request):
+    try:
+        body = await request.json()
+        result = _gameplay_ecosystem.define_resource(
+            name=body.get("name", ""),
+            resource_type=body.get("resource_type"),
+            quantity=body.get("quantity", 1000.0),
+            max_quantity=body.get("max_quantity"),
+            regeneration_rate=body.get("regeneration_rate"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/gameplay-ecosystem/simulate")
+async def gameplay_ecosystem_simulate(request: Request):
+    try:
+        body = await request.json()
+        result = _gameplay_ecosystem.simulate_tick(
+            ticks=body.get("ticks", 1),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/gameplay-ecosystem/trigger-event")
+async def gameplay_ecosystem_trigger_event(request: Request):
+    try:
+        body = await request.json()
+        result = _gameplay_ecosystem.trigger_environmental_event(
+            name=body.get("name", ""),
+            category=body.get("category"),
+            severity=body.get("severity", 0.5),
+            duration_ticks=body.get("duration_ticks", 10),
+            affected_species=body.get("affected_species"),
+            affected_resources=body.get("affected_resources"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/gameplay-ecosystem/analyze-stability")
+async def gameplay_ecosystem_analyze():
+    try:
+        result = _gameplay_ecosystem.analyze_stability()
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/gameplay-ecosystem/trophic-web")
+async def gameplay_ecosystem_trophic_web():
+    try:
+        return _gameplay_ecosystem.construct_trophic_web()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/gameplay-ecosystem/biome-transition")
+async def gameplay_ecosystem_biome_transition(request: Request):
+    try:
+        body = await request.json()
+        return _gameplay_ecosystem.compute_biome_transition(
+            from_biome=body.get("from_biome", ""),
+            to_biome=body.get("to_biome", ""),
+            transition_factor=body.get("transition_factor", 0.5),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/gameplay-ecosystem/species")
+async def gameplay_ecosystem_species():
+    try:
+        return {"species": _gameplay_ecosystem.list_species()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/gameplay-ecosystem/resources")
+async def gameplay_ecosystem_resources():
+    try:
+        return {"resources": _gameplay_ecosystem.list_resources()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/gameplay-ecosystem/events")
+async def gameplay_ecosystem_events():
+    try:
+        return {"events": _gameplay_ecosystem.list_events()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/gameplay-ecosystem/snapshots")
+async def gameplay_ecosystem_snapshots(limit: int = 20):
+    try:
+        return {"snapshots": _gameplay_ecosystem.list_snapshots(limit=limit)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/gameplay-ecosystem/latest-report")
+async def gameplay_ecosystem_latest_report():
+    try:
+        result = _gameplay_ecosystem.get_latest_report()
+        return result if result else {"error": "No reports available"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# BiomeGenerationPipeline Endpoints
+# ============================================================
+
+@router.get("/biome-generation/stats")
+async def biome_generation_stats():
+    try:
+        return _biome_generation_pipeline.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/biome-generation/define-biome")
+async def biome_generation_define_biome(request: Request):
+    try:
+        body = await request.json()
+        result = _biome_generation_pipeline.define_biome(
+            name=body.get("name", ""),
+            terrain_category=body.get("terrain_category"),
+            climate_band=body.get("climate_band"),
+            soil_type=body.get("soil_type"),
+            elevation_min=body.get("elevation_min"),
+            elevation_max=body.get("elevation_max"),
+            temperature_min=body.get("temperature_min"),
+            temperature_max=body.get("temperature_max"),
+            precipitation_min=body.get("precipitation_min"),
+            precipitation_max=body.get("precipitation_max"),
+            flora_density=body.get("flora_density"),
+            dominant_colors=body.get("dominant_colors"),
+            tags=body.get("tags"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/biome-generation/compute-climate")
+async def biome_generation_climate(request: Request):
+    try:
+        body = await request.json()
+        result = _biome_generation_pipeline.compute_climate_zones(
+            world_seed=body.get("world_seed", 0),
+            zone_count=body.get("zone_count", 5),
+        )
+        return {"zones": [z.to_dict() for z in result]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/biome-generation/generate-terrain")
+async def biome_generation_terrain(request: Request):
+    try:
+        body = await request.json()
+        result = _biome_generation_pipeline.generate_terrain(
+            biome_id=body.get("biome_id", ""),
+            resolution=body.get("resolution", 256),
+            seed=body.get("seed", 0),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/biome-generation/distribute-flora")
+async def biome_generation_flora(request: Request):
+    try:
+        body = await request.json()
+        result = _biome_generation_pipeline.distribute_flora(
+            biome_id=body.get("biome_id", ""),
+            terrain_layer_id=body.get("terrain_layer_id", ""),
+            density=body.get("density"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/biome-generation/blend-transitions")
+async def biome_generation_blend(request: Request):
+    try:
+        body = await request.json()
+        return _biome_generation_pipeline.blend_biome_transitions(
+            biome_a_id=body.get("biome_a_id", ""),
+            biome_b_id=body.get("biome_b_id", ""),
+            blend_width=body.get("blend_width"),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/biome-generation/create-world")
+async def biome_generation_create_world(request: Request):
+    try:
+        body = await request.json()
+        result = _biome_generation_pipeline.create_world_config(
+            name=body.get("name", "Untitled World"),
+            seed=body.get("seed", 0),
+            resolution=body.get("resolution", 256),
+            world_width=body.get("world_width", 10000.0),
+            world_height=body.get("world_height", 10000.0),
+            biome_names=body.get("biome_names"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/biome-generation/biomes")
+async def biome_generation_biomes():
+    try:
+        return {"biomes": _biome_generation_pipeline.list_biomes()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/biome-generation/climate-zones")
+async def biome_generation_climate_zones():
+    try:
+        return {"climate_zones": _biome_generation_pipeline.list_climate_zones()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/biome-generation/terrains")
+async def biome_generation_terrains():
+    try:
+        return {"terrains": _biome_generation_pipeline.list_terrains()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/biome-generation/flora")
+async def biome_generation_flora_list():
+    try:
+        return {"flora_templates": _biome_generation_pipeline.list_flora_templates()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/biome-generation/worlds")
+async def biome_generation_worlds():
+    try:
+        return {"world_configs": _biome_generation_pipeline.list_world_configs()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 @router.post("/forge/record-execution")
 async def forge_record_execution(request: ForgeExecutionRequest):
     evolution = _forge.record_execution(
@@ -21861,6 +22154,8 @@ from sparkai.agent.agent_game_design_intelligence import get_game_design_intelli
 from sparkai.engine.engine_game_state_analyzer import get_game_state_analyzer
 from sparkai.agent.agent_interaction_synthesis import get_interaction_synthesis_engine
 from sparkai.engine.engine_game_runtime_orchestrator import get_game_runtime_orchestrator
+from sparkai.agent.agent_gameplay_ecosystem import get_gameplay_ecosystem_simulator
+from sparkai.engine.engine_biome_generation import get_biome_generation_pipeline
 
 _skill_forge = get_agent_skill_forge()
 _memory_consolidator = get_memory_consolidator()
@@ -21872,6 +22167,8 @@ _game_design_intelligence = get_game_design_intelligence()
 _game_state_analyzer = get_game_state_analyzer()
 _interaction_synthesis_engine = get_interaction_synthesis_engine()
 _game_runtime_orchestrator = get_game_runtime_orchestrator()
+_gameplay_ecosystem = get_gameplay_ecosystem_simulator()
+_biome_generation_pipeline = get_biome_generation_pipeline()
 
 # ============================================================
 # SkillForge Endpoints
