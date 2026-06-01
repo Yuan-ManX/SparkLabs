@@ -194,7 +194,7 @@ async def main():
     # 配置LLM提供商
     llm = LLMProvider(LLMConfig(
         provider="openai",
-        model="gpt-4",
+        model="gpt-5.5",
         api_key="your-api-key",
     ))
     await llm.initialize()
