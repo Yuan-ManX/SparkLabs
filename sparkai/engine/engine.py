@@ -190,6 +190,7 @@ from sparkai.engine.engine_deterministic_recorder import DeterministicRecorder, 
 from sparkai.engine.engine_localization_hub import LocalizationHub, get_localization_hub
 from sparkai.engine.engine_event_scripting import EventScripting, get_event_scripting
 from sparkai.engine.engine_component_assembler import ComponentAssembler, get_component_assembler
+from sparkai.engine.engine_game_state_analyzer import GameStateAnalyzer, get_game_state_analyzer
 
 
 class SparkEngine:
@@ -379,6 +380,7 @@ class SparkEngine:
         self._localization_hub = get_localization_hub()
         self._event_scripting_runtime = get_event_scripting()
         self._component_assembler = get_component_assembler()
+        self._game_state_analyzer = get_game_state_analyzer()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -698,6 +700,7 @@ class SparkEngine:
             "localization_hub": self._localization_hub.get_stats(),
             "event_scripting_runtime": self._event_scripting_runtime.get_stats(),
             "component_assembler": self._component_assembler.get_stats(),
+            "game_state_analyzer": self._game_state_analyzer.get_stats(),
         }
 
     @property
@@ -1163,6 +1166,10 @@ class SparkEngine:
     @property
     def component_assembler(self) -> ComponentAssembler:
         return self._component_assembler
+
+    @property
+    def game_state_analyzer(self) -> GameStateAnalyzer:
+        return self._game_state_analyzer
 
 
 @dataclass
