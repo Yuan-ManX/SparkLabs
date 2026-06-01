@@ -875,7 +875,7 @@ class DelegationBroker:
                 ar.value: sum(1 for a in self._agents.values() if a.role == ar)
                 for ar in AgentRole
             },
-            "pipelines_executed": len(self._pipeline_history),
+            "pipelines_executed": len(self._pipeline_results),
             "round_robin_index": self._round_robin_index,
         }
 
