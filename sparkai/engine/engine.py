@@ -192,6 +192,7 @@ from sparkai.engine.engine_event_scripting import EventScripting, get_event_scri
 from sparkai.engine.engine_component_assembler import ComponentAssembler, get_component_assembler
 from sparkai.engine.engine_game_state_analyzer import GameStateAnalyzer, get_game_state_analyzer
 from sparkai.engine.engine_game_runtime_orchestrator import GameRuntimeOrchestrator, get_game_runtime_orchestrator
+from sparkai.engine.engine_biome_generation import BiomeGenerationPipeline, get_biome_generation_pipeline
 
 
 class SparkEngine:
@@ -383,6 +384,7 @@ class SparkEngine:
         self._component_assembler = get_component_assembler()
         self._game_state_analyzer = get_game_state_analyzer()
         self._game_runtime_orchestrator = get_game_runtime_orchestrator()
+        self._biome_generation_pipeline = get_biome_generation_pipeline()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -704,6 +706,7 @@ class SparkEngine:
             "component_assembler": self._component_assembler.get_stats(),
             "game_state_analyzer": self._game_state_analyzer.get_stats(),
             "game_runtime_orchestrator": self._game_runtime_orchestrator.get_stats(),
+            "biome_generation_pipeline": self._biome_generation_pipeline.get_stats(),
         }
 
     @property
@@ -1177,6 +1180,10 @@ class SparkEngine:
     @property
     def game_runtime_orchestrator(self) -> GameRuntimeOrchestrator:
         return self._game_runtime_orchestrator
+
+    @property
+    def biome_generation_pipeline(self) -> BiomeGenerationPipeline:
+        return self._biome_generation_pipeline
 
 
 @dataclass
