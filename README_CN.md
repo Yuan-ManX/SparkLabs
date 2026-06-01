@@ -101,21 +101,6 @@ AI Agent基础层（sparkai）提供了完整的多Agent编排系统、分层记
 - NPC人格设计器，特质可视化
 - 故事编辑器，分支叙事支持
 
-## 系统要求
-
-### 最低要求
-- **操作系统**：Windows 10、macOS 10.14、Linux（Ubuntu 18.04+）
-- **编译器**：GCC 9+、Clang 10+、MSVC 2019+
-- **Python**：3.10+
-- **Node.js**：18+
-- **内存**：8 GB
-- **磁盘**：2 GB 可用空间
-
-### 推荐配置
-- **操作系统**：Windows 11、macOS 12+、Linux（Ubuntu 20.04+）
-- **编译器**：GCC 11+、Clang 14+、MSVC 2022+
-- **内存**：16 GB 或更多
-- **GPU**：支持CUDA的NVIDIA GPU（用于GPU加速）
 
 ## 安装
 
@@ -157,15 +142,6 @@ npm install
 
 # 启动开发服务器
 npm run dev
-```
-
-### CMake选项
-
-- `SPARKLABS_ORT_ENABLED`：启用ONNX Runtime支持（默认：ON）
-- `SPARKLABS_GPU_SUPPORT`：启用GPU加速（默认：ON）
-
-```bash
-cmake .. -DSPARKLABS_ORT_ENABLED=ON -DSPARKLABS_GPU_SUPPORT=ON
 ```
 
 ## 快速开始
@@ -349,86 +325,6 @@ dialogue = await brain.generate_dialogue("告诉我关于古代神器的事")
 │         Windows | macOS | Linux | Web | 移动端                  │
 └─────────────────────────────────────────────────────────────────┘
 ```
-
-## 项目结构
-
-```
-SparkLabs/
-├── sparkai/                 # Python AI Agent基础层
-│   ├── __init__.py          # 包导出
-│   ├── config.py            # 配置系统
-│   ├── agent/               # Agent核心
-│   │   ├── base.py          # SparkAgent，观察-思考-行动循环
-│   │   ├── llm.py           # 多提供商LLM集成
-│   │   ├── memory.py        # 分层记忆系统
-│   │   ├── toolkit.py       # 工具注册表和执行
-│   │   └── orchestrator.py  # 多Agent编排
-│   ├── engine/              # Python引擎接口
-│   │   ├── engine.py        # SparkEngine、Scene、Entity
-│   │   └── scene.py         # 场景管理
-│   ├── workflow/            # AI工作流系统
-│   │   ├── graph.py         # WorkflowGraph、WorkflowNode、PinType
-│   │   ├── executor.py      # 拓扑执行引擎
-│   │   └── registry.py      # 节点类型注册表，20+类型
-│   ├── npc/                 # 智能NPC系统
-│   │   ├── brain.py         # NPCBrain，双网络架构
-│   │   ├── personality.py   # 10维人格特质
-│   │   └── behavior.py      # 行为树系统
-│   ├── narrative/           # AI叙事引擎
-│   │   ├── story.py         # 分支故事图
-│   │   └── quest.py         # 程序化任务生成
-│   ├── team/                # 团队协作
-│   │   ├── director.py      # 总监Agent（第一层）
-│   │   ├── lead.py          # 主管Agent（第二层）
-│   │   ├── specialist.py    # 专家Agent（第三层）
-│   │   └── quality.py       # 质量门系统
-│   ├── ai/                  # C++ AI运行时（头文件）
-│   ├── asset/               # 智能资产管理（C++）
-│   ├── audio/               # 音频系统（C++）
-│   ├── gameplay/            # 自适应游戏玩法（C++）
-│   ├── neural/              # 神经渲染（C++）
-│   └── editor/              # 编辑器集成（C++）
-├── backend/                 # FastAPI后端
-│   ├── app.py               # 应用入口
-│   ├── websocket.py         # WebSocket处理器
-│   ├── requirements.txt     # Python依赖
-│   └── routes/              # API路由
-│       ├── engine.py        # 引擎控制端点
-│       ├── agent.py         # Agent管理端点
-│       ├── scene.py         # 场景/实体端点
-│       ├── workflow.py      # 工作流端点
-│       ├── narrative.py     # 故事/任务端点
-│       └── npc.py           # NPC管理端点
-├── frontend/                # SparkLabs Web编辑器
-│   ├── App.tsx              # 主应用
-│   ├── main.tsx             # 入口点
-│   ├── index.html           # HTML模板
-│   ├── index.css            # 全局样式
-│   ├── components/          # UI组件
-│   │   ├── SparkLabsHome.tsx      # 着陆页
-│   │   ├── WelcomeDashboard.tsx   # 编辑器仪表盘
-│   │   ├── GameEditor.tsx         # 游戏工作室
-│   │   ├── GameGenerator.tsx      # 模板生成器
-│   │   ├── StoryEditor.tsx        # 故事编辑器
-│   │   ├── AssetGenerator.tsx     # 资产生成器
-│   │   ├── VoiceSynthesizer.tsx   # 语音合成
-│   │   ├── StoryboardEditor.tsx   # 分镜编辑器
-│   │   ├── VideoRenderer.tsx      # 视频渲染器
-│   │   ├── WorkflowEditor.tsx     # 工作流画布
-│   │   ├── NPCDesigner.tsx        # NPC设计器
-│   │   └── AgentPanel.tsx         # Agent聊天面板
-│   ├── hooks/               # 自定义React钩子
-│   ├── utils/               # API客户端和工具
-│   └── types/               # TypeScript类型定义
-├── core/                    # 核心C++工具
-├── engine/                  # C++引擎核心
-├── render/                  # 渲染系统
-├── platform/                # 平台抽象
-├── docs/                    # 文档
-├── scripts/                 # 构建脚本
-└── tests/                   # 单元测试
-```
-
 
 ## 文档
 
