@@ -9,7 +9,6 @@
 ### Ignite Your Infinite Play! 🎮
 
 ![Version](https://img.shields.io/badge/version-2.0.0-blue)
-![Python Version](https://img.shields.io/badge/Python-3.10+-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 
