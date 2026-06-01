@@ -365,6 +365,7 @@ from sparkai.agent.agent_memory_consolidator import MemoryConsolidator, get_memo
 from sparkai.agent.agent_delegation_broker import DelegationBroker, get_delegation_broker
 from sparkai.agent.agent_game_design_intelligence import GameDesignIntelligence, get_game_design_intelligence
 from sparkai.agent.agent_interaction_synthesis import InteractionSynthesisEngine, get_interaction_synthesis_engine
+from sparkai.agent.agent_gameplay_ecosystem import GameplayEcosystemSimulator, get_gameplay_ecosystem_simulator
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -847,6 +848,7 @@ class AgentRuntime:
         self._delegation_broker: Optional[DelegationBroker] = None
         self._game_design_intelligence: Optional[GameDesignIntelligence] = None
         self._interaction_synthesis_engine: Optional[InteractionSynthesisEngine] = None
+        self._gameplay_ecosystem: Optional[GameplayEcosystemSimulator] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1213,6 +1215,7 @@ class AgentRuntime:
             self._delegation_broker = get_delegation_broker()
             self._game_design_intelligence = get_game_design_intelligence()
             self._interaction_synthesis_engine = get_interaction_synthesis_engine()
+            self._gameplay_ecosystem = get_gameplay_ecosystem_simulator()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1278,6 +1281,7 @@ class AgentRuntime:
             self._delegation_broker_ok = self._delegation_broker is not None
             self._game_design_intelligence_ok = self._game_design_intelligence is not None
             self._interaction_synthesis_engine_ok = self._interaction_synthesis_engine is not None
+            self._gameplay_ecosystem_ok = self._gameplay_ecosystem is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2852,6 +2856,7 @@ class AgentRuntime:
             "delegation_broker": self._delegation_broker is not None,
             "game_design_intelligence": self._game_design_intelligence is not None,
             "interaction_synthesis_engine": self._interaction_synthesis_engine is not None,
+            "gameplay_ecosystem": self._gameplay_ecosystem is not None,
             },
         }
 
@@ -3451,6 +3456,8 @@ class AgentRuntime:
             status["game_design_intelligence_stats"] = self._game_design_intelligence.get_stats()
         if self._interaction_synthesis_engine:
             status["interaction_synthesis_engine_stats"] = self._interaction_synthesis_engine.get_stats()
+        if self._gameplay_ecosystem:
+            status["gameplay_ecosystem_stats"] = self._gameplay_ecosystem.get_stats()
         return status
 
 
