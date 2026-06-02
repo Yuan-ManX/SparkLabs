@@ -196,6 +196,10 @@ from sparkai.engine.engine_biome_generation import BiomeGenerationPipeline, get_
 from sparkai.engine.engine_procedural_dungeon import EngineProceduralDungeon, get_procedural_dungeon_generator
 from sparkai.engine.engine_adaptive_content import EngineAdaptiveContent, get_adaptive_content_engine
 from sparkai.engine.engine_progressive_loading import EngineProgressiveLoading, get_progressive_loading
+from sparkai.engine.engine_tilemap_runtime import EngineTileMapRuntime, get_tilemap_runtime
+from sparkai.engine.engine_entity_component_system import EngineEntityComponentSystem, get_entity_component_system
+from sparkai.engine.engine_physics_world_2d import EnginePhysicsWorld2D, get_engine_physics_world_2d
+from sparkai.engine.engine_visual_scripting import EngineVisualScripting, get_engine_visual_scripting
 
 
 class SparkEngine:
@@ -391,6 +395,10 @@ class SparkEngine:
         self._procedural_dungeon = get_procedural_dungeon_generator()
         self._adaptive_content = get_adaptive_content_engine()
         self._progressive_loading = get_progressive_loading()
+        self._tilemap_runtime = get_tilemap_runtime()
+        self._ecs = get_entity_component_system()
+        self._physics_world_2d = get_engine_physics_world_2d()
+        self._visual_scripting = get_engine_visual_scripting()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -716,6 +724,10 @@ class SparkEngine:
             "procedural_dungeon": self._procedural_dungeon.get_stats(),
             "adaptive_content": self._adaptive_content.get_stats(),
             "progressive_loading": self._progressive_loading.get_stats(),
+            "tilemap_runtime": self._tilemap_runtime.get_stats(),
+            "ecs": self._ecs.get_stats(),
+            "physics_world_2d": self._physics_world_2d.get_stats(),
+            "visual_scripting": self._visual_scripting.get_stats(),
         }
 
     @property
@@ -1205,6 +1217,22 @@ class SparkEngine:
     @property
     def progressive_loading(self) -> EngineProgressiveLoading:
         return self._progressive_loading
+
+    @property
+    def tilemap_runtime(self) -> EngineTileMapRuntime:
+        return self._tilemap_runtime
+
+    @property
+    def ecs(self) -> EngineEntityComponentSystem:
+        return self._ecs
+
+    @property
+    def physics_world_2d(self) -> EnginePhysicsWorld2D:
+        return self._physics_world_2d
+
+    @property
+    def visual_scripting(self) -> EngineVisualScripting:
+        return self._visual_scripting
 
 
 @dataclass
