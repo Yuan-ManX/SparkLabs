@@ -22370,6 +22370,14 @@ from sparkai.agent.agent_social_simulation import get_agent_social_simulation
 from sparkai.agent.agent_monetization_designer import get_monetization_designer
 from sparkai.engine.engine_adaptive_content import get_adaptive_content_engine
 from sparkai.engine.engine_progressive_loading import get_progressive_loading
+from sparkai.agent.agent_world_builder import get_agent_world_builder
+from sparkai.agent.agent_behavior_designer import get_agent_behavior_designer
+from sparkai.agent.agent_quest_composer import get_agent_quest_composer
+from sparkai.agent.agent_multi_agent_coordinator import get_multi_agent_coordinator
+from sparkai.engine.engine_tilemap_runtime import get_tilemap_runtime
+from sparkai.engine.engine_entity_component_system import get_entity_component_system
+from sparkai.engine.engine_physics_world_2d import get_engine_physics_world_2d
+from sparkai.engine.engine_visual_scripting import get_engine_visual_scripting
 
 _skill_forge = get_agent_skill_forge()
 _memory_consolidator = get_memory_consolidator()
@@ -22389,6 +22397,14 @@ _social_simulation = get_agent_social_simulation()
 _monetization_designer = get_monetization_designer()
 _adaptive_content = get_adaptive_content_engine()
 _progressive_loading = get_progressive_loading()
+_world_builder = get_agent_world_builder()
+_behavior_designer = get_agent_behavior_designer()
+_quest_composer = get_agent_quest_composer()
+_multi_agent_coordinator = get_multi_agent_coordinator()
+_tilemap_runtime = get_tilemap_runtime()
+_ecs = get_entity_component_system()
+_physics_world_2d = get_engine_physics_world_2d()
+_visual_scripting = get_engine_visual_scripting()
 
 # ============================================================
 # SkillForge Endpoints
@@ -23070,5 +23086,903 @@ async def progressive_loading_manage_memory(request: Request):
             world_id=body.get("world_id", "default"),
         )
         return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# World Builder Endpoints
+# ============================================================
+
+@router.get("/world-builder/stats")
+async def world_builder_new_stats():
+    try:
+        return _world_builder.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-builder/generate-world")
+async def world_builder_generate_world(request: Request):
+    try:
+        body = await request.json()
+        result = _world_builder.generate_world_map(
+            name=body.get("name", ""),
+            width=int(body.get("width", 64)),
+            height=int(body.get("height", 64)),
+            seed=body.get("seed"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-builder/define-region")
+async def world_builder_define_region(request: Request):
+    try:
+        from sparkai.agent.agent_world_builder import TerrainType, ClimateZone
+        body = await request.json()
+        terrain_str = body.get("terrain", "plains")
+        climate_str = body.get("climate", "temperate")
+        try:
+            terrain = TerrainType(terrain_str)
+        except ValueError:
+            terrain = TerrainType.PLAINS
+        try:
+            climate = ClimateZone(climate_str)
+        except ValueError:
+            climate = ClimateZone.TEMPERATE
+        result = _world_builder.define_region(
+            name=body.get("name", ""),
+            terrain=terrain,
+            climate=climate,
+            size=float(body.get("size", 1.0)),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-builder/place-settlements")
+async def world_builder_place_settlements(request: Request):
+    try:
+        body = await request.json()
+        world_id = body.get("world_id", "")
+        density = float(body.get("density", 0.5))
+        settlements = _world_builder.place_settlements(
+            world_id=world_id,
+            density=density,
+        )
+        return {"settlements": [s.to_dict() for s in settlements]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-builder/place-landmarks")
+async def world_builder_place_landmarks(request: Request):
+    try:
+        body = await request.json()
+        world_id = body.get("world_id", "")
+        count = int(body.get("count", 5))
+        landmarks = _world_builder.place_landmarks(
+            world_id=world_id,
+            count=count,
+        )
+        return {"landmarks": [l.to_dict() for l in landmarks]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-builder/worlds")
+async def world_builder_new_worlds():
+    try:
+        return {"worlds": [w.to_dict() for w in _world_builder._world_maps.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-builder/regions")
+async def world_builder_regions():
+    try:
+        return {"regions": [r.to_dict() for r in _world_builder._regions.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-builder/settlements")
+async def world_builder_settlements():
+    try:
+        return {"settlements": [s.to_dict() for s in _world_builder._settlements.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-builder/landmarks")
+async def world_builder_landmarks():
+    try:
+        return {"landmarks": [l.to_dict() for l in _world_builder._landmarks.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Behavior Designer Endpoints
+# ============================================================
+
+@router.get("/behavior-designer/stats")
+async def behavior_designer_stats():
+    try:
+        return _behavior_designer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-designer/design-behavior-tree")
+async def behavior_designer_design_behavior_tree(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_behavior_designer import NPCBehaviorProfile, BehaviorArchetype
+        npc_id = body.get("npc_id", "")
+        archetype_str = body.get("archetype", "solitary")
+        try:
+            archetype = BehaviorArchetype(archetype_str.lower())
+        except ValueError:
+            archetype = BehaviorArchetype.SOLITARY
+        profile = NPCBehaviorProfile(npc_id=npc_id)
+        result = _behavior_designer.design_behavior_tree(
+            npc_profile=profile,
+            archetype=archetype,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-designer/design-state-machine")
+async def behavior_designer_design_state_machine(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_behavior_designer import NPCBehaviorProfile, BehaviorArchetype
+        npc_id = body.get("npc_id", "")
+        archetype_str = body.get("archetype", "solitary")
+        try:
+            archetype = BehaviorArchetype(archetype_str.lower())
+        except ValueError:
+            archetype = BehaviorArchetype.SOLITARY
+        profile = NPCBehaviorProfile(npc_id=npc_id)
+        result = _behavior_designer.design_state_machine(
+            npc_profile=profile,
+            archetype=archetype,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-designer/generate-action-patterns")
+async def behavior_designer_generate_action_patterns(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_behavior_designer import BehaviorArchetype
+        archetype_str = body.get("archetype", "solitary")
+        try:
+            archetype = BehaviorArchetype(archetype_str.lower())
+        except ValueError:
+            archetype = BehaviorArchetype.SOLITARY
+        result = _behavior_designer.generate_action_patterns(archetype=archetype)
+        return {"action_patterns": [p.to_dict() for p in result]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-designer/simulate-execution")
+async def behavior_designer_simulate_execution(request: Request):
+    try:
+        body = await request.json()
+        result = _behavior_designer.simulate_behavior_execution(
+            tree_id=body.get("tree_id", ""),
+            scenario=body.get("scenario", {}),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/behavior-designer/behavior-trees")
+async def behavior_designer_behavior_trees():
+    try:
+        return {"behavior_trees": [t.to_dict() for t in _behavior_designer._behavior_trees.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/behavior-designer/state-machines")
+async def behavior_designer_state_machines():
+    try:
+        return {"state_machines": [m.to_dict() for m in _behavior_designer._state_machines.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/behavior-designer/action-patterns")
+async def behavior_designer_action_patterns():
+    try:
+        return {"action_patterns": [p.to_dict() for p in _behavior_designer._action_patterns.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Quest Composer Endpoints
+# ============================================================
+
+@router.get("/quest-composer/stats")
+async def quest_composer_stats():
+    try:
+        return _quest_composer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/quest-composer/compose-quest")
+async def quest_composer_compose_quest(request: Request):
+    try:
+        from sparkai.agent.agent_quest_composer import QuestType
+        body = await request.json()
+        quest_type_str = body.get("quest_type", "side_quest")
+        quest_type_map = {
+            "main": QuestType.MAIN_STORY,
+            "side": QuestType.SIDE_QUEST,
+            "faction": QuestType.FACTION_QUEST,
+            "companion": QuestType.COMPANION_QUEST,
+            "random": QuestType.RANDOM_ENCOUNTER,
+            "daily": QuestType.DAILY_CHALLENGE,
+            "guild": QuestType.GUILD_CONTRACT,
+            "world": QuestType.WORLD_EVENT,
+            "hidden": QuestType.HIDDEN_QUEST,
+            "escort": QuestType.ESCORT,
+        }
+        try:
+            quest_type = QuestType(quest_type_str)
+        except ValueError:
+            quest_type = quest_type_map.get(quest_type_str, QuestType.SIDE_QUEST)
+        objectives = body.get("objectives", [])
+        rewards_raw = body.get("rewards", [])
+        if isinstance(rewards_raw, dict):
+            rewards_raw = [rewards_raw]
+        result = _quest_composer.compose_quest(
+            title=body.get("title", ""),
+            quest_type=quest_type,
+            objectives=objectives,
+            rewards=rewards_raw,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/quest-composer/compose-chain")
+async def quest_composer_compose_chain(request: Request):
+    try:
+        body = await request.json()
+        result = _quest_composer.compose_quest_chain(
+            name=body.get("name", ""),
+            theme=body.get("theme", "discovery"),
+            quest_count=int(body.get("quest_count", 3)),
+            narrative_arc=body.get("narrative_arc", "hero_journey"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/quest-composer/add-branching")
+async def quest_composer_add_branching(request: Request):
+    try:
+        body = await request.json()
+        result = _quest_composer.add_branching_point(
+            quest_id=body.get("quest_id", ""),
+            branch_config=body.get("branch_config", {}),
+        )
+        if result is None:
+            return {"error": "quest not found"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/quest-composer/compute-reward-balance")
+async def quest_composer_compute_reward_balance(request: Request):
+    try:
+        body = await request.json()
+        result = _quest_composer.compute_reward_balance(
+            quest_chain_id=body.get("chain_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/quest-composer/quests")
+async def quest_composer_quests():
+    try:
+        return {"quests": [q.to_dict() for q in _quest_composer._quests.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/quest-composer/chains")
+async def quest_composer_chains():
+    try:
+        return {"chains": [c.to_dict() for c in _quest_composer._quest_chains.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Multi-Agent Coordinator Endpoints
+# ============================================================
+
+@router.get("/multi-agent-coordinator/stats")
+async def multi_agent_coordinator_stats():
+    try:
+        return _multi_agent_coordinator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-agent-coordinator/form-team")
+async def multi_agent_coordinator_form_team(request: Request):
+    try:
+        body = await request.json()
+        members_raw = body.get("members", [])
+        if members_raw and isinstance(members_raw[0], str):
+            members_raw = [{"agent_id": m, "role": "support"} for m in members_raw]
+        result = _multi_agent_coordinator.form_team(
+            name=body.get("name", ""),
+            members=members_raw,
+            coordination_mode=body.get("coordination_mode", "hierarchical"),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-agent-coordinator/allocate-task")
+async def multi_agent_coordinator_allocate_task(request: Request):
+    try:
+        body = await request.json()
+        result = _multi_agent_coordinator.allocate_task(
+            team_id=body.get("team_id", ""),
+            task=body.get("task", {}),
+            capabilities_needed=body.get("capabilities_needed", []),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-agent-coordinator/calculate-synergy")
+async def multi_agent_coordinator_calculate_synergy(request: Request):
+    try:
+        body = await request.json()
+        result = _multi_agent_coordinator.calculate_synergy(
+            agent_a=body.get("agent_a", ""),
+            agent_b=body.get("agent_b", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-agent-coordinator/broadcast-message")
+async def multi_agent_coordinator_broadcast_message(request: Request):
+    try:
+        body = await request.json()
+        result = _multi_agent_coordinator.broadcast_message(
+            channel=body.get("channel", ""),
+            message=body.get("message", {}),
+            targets=body.get("targets", []),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-agent-coordinator/optimize-team")
+async def multi_agent_coordinator_optimize_team(request: Request):
+    try:
+        body = await request.json()
+        result = _multi_agent_coordinator.optimize_team_composition(
+            mission_type=body.get("mission_type", "assault"),
+            available_agents=body.get("available_agents", []),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/multi-agent-coordinator/teams")
+async def multi_agent_coordinator_teams():
+    try:
+        return {"teams": [t.to_dict() for t in _multi_agent_coordinator._teams.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/multi-agent-coordinator/tasks")
+async def multi_agent_coordinator_tasks():
+    try:
+        return {"tasks": [t.to_dict() for t in _multi_agent_coordinator._tasks.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# TileMap Runtime Endpoints
+# ============================================================
+
+@router.get("/tilemap-runtime/stats")
+async def tilemap_runtime_stats():
+    try:
+        return _tilemap_runtime.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tilemap-runtime/create-tilemap")
+async def tilemap_runtime_create_tilemap(request: Request):
+    try:
+        body = await request.json()
+        map_id = _tilemap_runtime.create_tilemap(
+            name=body.get("name", ""),
+            width=int(body.get("width", 32)),
+            height=int(body.get("height", 32)),
+            tile_width=int(body.get("tile_width", 16)),
+            tile_height=int(body.get("tile_height", 16)),
+        )
+        tilemap = _tilemap_runtime.get_tilemap(map_id)
+        if tilemap is None:
+            return {"error": "failed to create tilemap"}
+        return tilemap.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tilemap-runtime/add-layer")
+async def tilemap_runtime_add_layer(request: Request):
+    try:
+        body = await request.json()
+        layer_id = _tilemap_runtime.add_layer(
+            map_id=body.get("map_id", ""),
+            name=body.get("name", ""),
+            layer_type=body.get("layer_type", "terrain"),
+            width=int(body.get("width", 32)),
+            height=int(body.get("height", 32)),
+        )
+        return {"layer_id": layer_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tilemap-runtime/load-tileset")
+async def tilemap_runtime_load_tileset(request: Request):
+    try:
+        body = await request.json()
+        tileset_id = _tilemap_runtime.load_tileset(
+            name=body.get("name", ""),
+            image_key=body.get("image_key", ""),
+            tile_width=int(body.get("tile_width", 16)),
+            tile_height=int(body.get("tile_height", 16)),
+            columns=int(body.get("columns", 8)),
+        )
+        tileset = _tilemap_runtime.get_tileset(tileset_id)
+        if tileset is None:
+            return {"error": "failed to load tileset"}
+        return tileset.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tilemap-runtime/set-tile")
+async def tilemap_runtime_set_tile(request: Request):
+    try:
+        body = await request.json()
+        success = _tilemap_runtime.set_tile(
+            map_id=body.get("map_id", ""),
+            layer_id=body.get("layer_id", ""),
+            x=int(body.get("x", 0)),
+            y=int(body.get("y", 0)),
+            tile_index=int(body.get("tile_index", 0)),
+        )
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/tilemap-runtime/fill-region")
+async def tilemap_runtime_fill_region(request: Request):
+    try:
+        body = await request.json()
+        filled = _tilemap_runtime.fill_region(
+            map_id=body.get("map_id", ""),
+            layer_id=body.get("layer_id", ""),
+            x=int(body.get("x", 0)),
+            y=int(body.get("y", 0)),
+            width=int(body.get("width", 1)),
+            height=int(body.get("height", 1)),
+            tile_index=int(body.get("tile_index", 0)),
+        )
+        return {"filled": filled}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/tilemap-runtime/tilemaps")
+async def tilemap_runtime_tilemaps():
+    try:
+        return {"tilemaps": [t.to_dict() for t in _tilemap_runtime._tilemaps.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/tilemap-runtime/layers/{map_id}")
+async def tilemap_runtime_layers(map_id: str):
+    try:
+        tilemap = _tilemap_runtime._tilemaps.get(map_id)
+        if tilemap is None:
+            return {"error": "tilemap not found"}
+        return {"layers": [l.to_dict() for l in tilemap.layers]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/tilemap-runtime/tilesets")
+async def tilemap_runtime_tilesets():
+    try:
+        return {"tilesets": [t.to_dict() for t in _tilemap_runtime._tilesets.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# ECS Endpoints
+# ============================================================
+
+@router.get("/ecs/stats")
+async def ecs_stats():
+    try:
+        return _ecs.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ecs/create-entity")
+async def ecs_create_entity(request: Request):
+    try:
+        body = await request.json()
+        entity_id = _ecs.create_entity(
+            name=body.get("name", ""),
+            tag=body.get("tag", ""),
+            parent_id=body.get("parent_id", ""),
+        )
+        entity = _ecs.get_entity(entity_id)
+        if entity is None:
+            return {"error": "failed to create entity"}
+        return entity.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ecs/add-component")
+async def ecs_add_component(request: Request):
+    try:
+        from sparkai.engine.ecs.component import ComponentCategory
+        body = await request.json()
+        category_str = body.get("category", "")
+        try:
+            category = ComponentCategory(category_str.lower())
+        except ValueError:
+            return {"error": f"invalid component category: {category_str}"}
+        component_id = _ecs.add_component(
+            entity_id=body.get("entity_id", ""),
+            component_category=category,
+            data=body.get("data"),
+        )
+        if component_id is None:
+            return {"error": "entity not found or component already exists"}
+        return {"component_id": component_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ecs/register-blueprint")
+async def ecs_register_blueprint(request: Request):
+    try:
+        from sparkai.engine.ecs.component import ComponentCategory
+        body = await request.json()
+        category_str = body.get("category", "")
+        try:
+            category = ComponentCategory(category_str.lower())
+        except ValueError:
+            return {"error": f"invalid component category: {category_str}"}
+        blueprint_id = _ecs.register_blueprint(
+            name=body.get("name", ""),
+            category=category,
+            default_data=body.get("default_data"),
+        )
+        return {"blueprint_id": blueprint_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ecs/create-from-blueprint")
+async def ecs_create_from_blueprint(request: Request):
+    try:
+        body = await request.json()
+        success = _ecs.create_from_blueprint(
+            entity_id=body.get("entity_id", ""),
+            blueprint_id=body.get("blueprint_id", ""),
+        )
+        if not success:
+            return {"error": "entity or blueprint not found"}
+        entity = _ecs.get_entity(body.get("entity_id", ""))
+        if entity is None:
+            return {"error": "entity not found after creation"}
+        return {"components": [c.to_dict() for c in entity.get_components().values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ecs/register-system")
+async def ecs_register_system(request: Request):
+    try:
+        body = await request.json()
+        system_id = _ecs.register_system(
+            name=body.get("name", ""),
+            required_components=body.get("required_components", []),
+            update_phase=body.get("update_phase", "update"),
+        )
+        return {"system_id": system_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ecs/process-system")
+async def ecs_process_system(request: Request):
+    try:
+        body = await request.json()
+        result = _ecs.process_system(
+            system_id=body.get("system_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/ecs/entities")
+async def ecs_entities():
+    try:
+        return {"entities": [e.to_dict() for e in _ecs._world.entities.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/ecs/components/{entity_id}")
+async def ecs_components(entity_id: str):
+    try:
+        entity = _ecs._world.entities.get(entity_id)
+        if entity is None:
+            return {"error": "entity not found"}
+        return {"components": [c.to_dict() for c in entity.get_components().values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/ecs/blueprints")
+async def ecs_blueprints():
+    try:
+        return {"blueprints": [b.to_dict() for b in _ecs._world.blueprint_registry.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/ecs/systems")
+async def ecs_systems():
+    try:
+        return {"systems": [s.to_dict() for s in _ecs._world.systems.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Physics World 2D Endpoints
+# ============================================================
+
+@router.get("/physics-world-2d/stats")
+async def physics_world_2d_stats():
+    try:
+        return _physics_world_2d.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-world-2d/create-world")
+async def physics_world_2d_create_world(request: Request):
+    try:
+        body = await request.json()
+        result = _physics_world_2d.create_world(
+            name=body.get("name", ""),
+            gravity_x=float(body.get("gravity_x", 0.0)),
+            gravity_y=float(body.get("gravity_y", 9.81)),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-world-2d/create-body")
+async def physics_world_2d_create_body(request: Request):
+    try:
+        from sparkai.engine.engine_physics_world_2d import BodyType, CollisionShape
+        body = await request.json()
+        body_type_str = body.get("body_type", "dynamic")
+        try:
+            body_type = BodyType(body_type_str.lower())
+        except ValueError:
+            body_type = BodyType.DYNAMIC
+        shape_str = body.get("shape", "box")
+        try:
+            shape = CollisionShape(shape_str.lower())
+        except ValueError:
+            shape = CollisionShape.BOX
+        position_x = float(body.get("position", {}).get("x", 0))
+        position_y = float(body.get("position", {}).get("y", 0))
+        result = _physics_world_2d.create_body(
+            world_id=body.get("world_id", ""),
+            body_type=body_type,
+            position=(position_x, position_y),
+            shape=shape,
+            mass=float(body.get("mass", 1.0)),
+        )
+        if result is None:
+            return {"error": "world not found or body limit reached"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-world-2d/apply-force")
+async def physics_world_2d_apply_force(request: Request):
+    try:
+        from sparkai.engine.engine_physics_world_2d import ForceMode
+        body = await request.json()
+        mode_str = body.get("mode", "constant")
+        try:
+            mode = ForceMode(mode_str.lower())
+        except ValueError:
+            mode = ForceMode.CONSTANT
+        point_data = body.get("point")
+        point = (float(point_data.get("x", 0)), float(point_data.get("y", 0))) if point_data else None
+        success = _physics_world_2d.apply_force(
+            world_id=body.get("world_id", body.get("body_id", "")),
+            body_id=body.get("body_id", ""),
+            force_x=float(body.get("force_x", 0)),
+            force_y=float(body.get("force_y", 0)),
+            mode=mode,
+            point=point,
+        )
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-world-2d/step-simulation")
+async def physics_world_2d_step_simulation(request: Request):
+    try:
+        body = await request.json()
+        result = _physics_world_2d.step_simulation(
+            world_id=body.get("world_id", ""),
+            delta_time=float(body.get("delta_time", 0.016)),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-world-2d/perform-raycast")
+async def physics_world_2d_perform_raycast(request: Request):
+    try:
+        body = await request.json()
+        results = _physics_world_2d.perform_raycast(
+            world_id=body.get("world_id", ""),
+            origin_x=float(body.get("origin_x", 0)),
+            origin_y=float(body.get("origin_y", 0)),
+            dir_x=float(body.get("dir_x", 0)),
+            dir_y=float(body.get("dir_y", 0)),
+            max_dist=float(body.get("max_dist", 100.0)),
+        )
+        return {"hits": [r.to_dict() for r in results]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/physics-world-2d/worlds")
+async def physics_world_2d_worlds():
+    try:
+        return {"worlds": [w.to_dict() for w in _physics_world_2d._worlds.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/physics-world-2d/bodies/{world_id}")
+async def physics_world_2d_bodies(world_id: str):
+    try:
+        world = _physics_world_2d._worlds.get(world_id)
+        if world is None:
+            return {"error": "world not found"}
+        return {"bodies": [b.to_dict() for b in world.bodies.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/physics-world-2d/collisions/{world_id}")
+async def physics_world_2d_collisions(world_id: str):
+    try:
+        world = _physics_world_2d._worlds.get(world_id)
+        if world is None:
+            return {"error": "world not found"}
+        return {"collisions": [e.to_dict() for e in world.collision_events]}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Visual Scripting Endpoints
+# ============================================================
+
+@router.get("/visual-scripting/stats")
+async def visual_scripting_stats():
+    try:
+        return _visual_scripting.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/visual-scripting/create-graph")
+async def visual_scripting_create_graph(request: Request):
+    try:
+        body = await request.json()
+        result = _visual_scripting.create_graph(
+            name=body.get("name", ""),
+            execution_mode=body.get("execution_mode", "sequential"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/visual-scripting/add-node")
+async def visual_scripting_add_node(request: Request):
+    try:
+        body = await request.json()
+        result = _visual_scripting.add_node(
+            graph_id=body.get("graph_id", ""),
+            category=body.get("category", ""),
+            name=body.get("name", ""),
+            position_x=float(body.get("position_x", 0)),
+            position_y=float(body.get("position_y", 0)),
+        )
+        if result is None:
+            return {"error": "graph not found or node limit reached"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/visual-scripting/connect-nodes")
+async def visual_scripting_connect_nodes(request: Request):
+    try:
+        body = await request.json()
+        result = _visual_scripting.connect_nodes(
+            source_port_id=body.get("source_port_id", ""),
+            target_port_id=body.get("target_port_id", ""),
+            connection_type=body.get("connection_type", "execution"),
+        )
+        if result is None:
+            return {"error": "ports not found or invalid connection"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/visual-scripting/create-variable")
+async def visual_scripting_create_variable(request: Request):
+    try:
+        body = await request.json()
+        result = _visual_scripting.create_variable(
+            graph_id=body.get("graph_id", ""),
+            name=body.get("name", ""),
+            data_type=body.get("data_type", "string"),
+            initial_value=body.get("initial_value"),
+        )
+        if result is None:
+            return {"error": "graph not found"}
+        return {"variable_name": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/visual-scripting/execute-graph")
+async def visual_scripting_execute_graph(request: Request):
+    try:
+        body = await request.json()
+        result = _visual_scripting.execute_graph(
+            graph_id=body.get("graph_id", ""),
+            initial_variables=body.get("initial_variables"),
+        )
+        if result is None:
+            return {"error": "graph not found or not active"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/visual-scripting/graphs")
+async def visual_scripting_graphs():
+    try:
+        return {"graphs": [g.to_dict() for g in _visual_scripting._graphs.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/visual-scripting/nodes/{graph_id}")
+async def visual_scripting_nodes(graph_id: str):
+    try:
+        graph = _visual_scripting._graphs.get(graph_id)
+        if graph is None:
+            return {"error": "graph not found"}
+        return {"nodes": [n.to_dict() for n in graph.nodes]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/visual-scripting/variables/{graph_id}")
+async def visual_scripting_variables(graph_id: str):
+    try:
+        graph = _visual_scripting._graphs.get(graph_id)
+        if graph is None:
+            return {"error": "graph not found"}
+        return {"variables": graph.variables}
     except Exception as e:
         return {"error": str(e)}
