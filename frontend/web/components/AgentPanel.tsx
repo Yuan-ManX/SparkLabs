@@ -127,6 +127,14 @@ import SocialSimulationPanel from './SocialSimulationPanel';
 import AdaptiveContentPanel from './AdaptiveContentPanel';
 import MonetizationDesignerPanel from './MonetizationDesignerPanel';
 import ProgressiveLoadingPanel from './ProgressiveLoadingPanel';
+import WorldBuilderPanel from './WorldBuilderPanel';
+import BehaviorDesignerPanel from './BehaviorDesignerPanel';
+import QuestComposerPanel from './QuestComposerPanel';
+import MultiAgentCoordinatorPanel from './MultiAgentCoordinatorPanel';
+import TileMapRuntimePanel from './TileMapRuntimePanel';
+import ECSPanel from './ECSPanel';
+import PhysicsWorld2DPanel from './PhysicsWorld2DPanel';
+import VisualScriptingPanel from './VisualScriptingPanel';
 
 type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime' | 'developer-oracle' | 'context-weaver' | 'session-nexus' | 'persona-vault' | 'voice-bridge' | 'ecosystem-hub' | 'frame-composer' | 'spatial-cluster' | 'asset-streamer' | 'deterministic-replay' | 'input-abstraction' | 'profile-loader' | 'intent-cascade' | 'game-forecaster' | 'asset-synthesizer' | 'tutorial-orchestrator' | 'skybox-renderer' | 'trail-renderer' | 'procedural-audio' | 'texture-atlas'
   | 'ab-test-runner' | 'heatmap-analyzer' | 'bug-forensics' | 'accessibility-auditor'
@@ -139,7 +147,9 @@ type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' 
   | 'interaction-synthesis' | 'runtime-orchestrator'
   | 'gameplay-ecosystem' | 'biome-generation'
   | 'creative-director' | 'procedural-dungeon'
-  | 'social-simulation' | 'adaptive-content' | 'monetization-designer' | 'progressive-loading';
+  | 'social-simulation' | 'adaptive-content' | 'monetization-designer' | 'progressive-loading'
+  | 'world-builder' | 'behavior-designer' | 'quest-composer' | 'multi-agent-coordinator'
+  | 'tilemap-runtime' | 'ecs' | 'physics-world-2d' | 'visual-scripting';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -276,6 +286,14 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'adaptive-content', label: 'Adaptive Content 🎯', icon: '🎯' },
   { id: 'monetization-designer', label: 'Monetization Designer 💰', icon: '💰' },
   { id: 'progressive-loading', label: 'Progressive Loading 📦', icon: '📦' },
+  { id: 'world-builder', label: 'World Builder 🗺️', icon: '🗺️' },
+  { id: 'behavior-designer', label: 'Behavior Designer 🧠', icon: '🧠' },
+  { id: 'quest-composer', label: 'Quest Composer 📜', icon: '📜' },
+  { id: 'multi-agent-coordinator', label: 'Multi-Agent Coordinator 🤝', icon: '🤝' },
+  { id: 'tilemap-runtime', label: 'TileMap Runtime 🗾', icon: '🗾' },
+  { id: 'ecs', label: 'ECS ⚙️', icon: '⚙️' },
+  { id: 'physics-world-2d', label: 'Physics World 2D ⚡', icon: '⚡' },
+  { id: 'visual-scripting', label: 'Visual Scripting 📊', icon: '📊' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -835,6 +853,14 @@ const AgentPanel: React.FC = () => {
       case 'adaptive-content': return <AdaptiveContentPanel />;
       case 'monetization-designer': return <MonetizationDesignerPanel />;
       case 'progressive-loading': return <ProgressiveLoadingPanel />;
+      case 'world-builder': return <WorldBuilderPanel />;
+      case 'behavior-designer': return <BehaviorDesignerPanel />;
+      case 'quest-composer': return <QuestComposerPanel />;
+      case 'multi-agent-coordinator': return <MultiAgentCoordinatorPanel />;
+      case 'tilemap-runtime': return <TileMapRuntimePanel />;
+      case 'ecs': return <ECSPanel />;
+      case 'physics-world-2d': return <PhysicsWorld2DPanel />;
+      case 'visual-scripting': return <VisualScriptingPanel />;
       default: return null;
     }
   };
