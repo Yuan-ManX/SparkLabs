@@ -369,6 +369,10 @@ from sparkai.agent.agent_gameplay_ecosystem import GameplayEcosystemSimulator, g
 from sparkai.agent.agent_creative_director import AgentCreativeDirector, get_creative_director
 from sparkai.agent.agent_social_simulation import AgentSocialSimulation, get_agent_social_simulation
 from sparkai.agent.agent_monetization_designer import AgentMonetizationDesigner, get_monetization_designer
+from sparkai.agent.agent_world_builder import AgentWorldBuilder, get_agent_world_builder
+from sparkai.agent.agent_behavior_designer import AgentBehaviorDesigner, get_agent_behavior_designer
+from sparkai.agent.agent_quest_composer import AgentQuestComposer, get_agent_quest_composer
+from sparkai.agent.agent_multi_agent_coordinator import AgentMultiAgentCoordinator, get_multi_agent_coordinator
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -855,6 +859,10 @@ class AgentRuntime:
         self._creative_director: Optional[AgentCreativeDirector] = None
         self._social_simulation: Optional[AgentSocialSimulation] = None
         self._monetization_designer: Optional[AgentMonetizationDesigner] = None
+        self._world_builder: Optional[AgentWorldBuilder] = None
+        self._behavior_designer: Optional[AgentBehaviorDesigner] = None
+        self._quest_composer: Optional[AgentQuestComposer] = None
+        self._multi_agent_coordinator: Optional[AgentMultiAgentCoordinator] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1225,6 +1233,10 @@ class AgentRuntime:
             self._creative_director = get_creative_director()
             self._social_simulation = get_agent_social_simulation()
             self._monetization_designer = get_monetization_designer()
+            self._world_builder = get_agent_world_builder()
+            self._behavior_designer = get_agent_behavior_designer()
+            self._quest_composer = get_agent_quest_composer()
+            self._multi_agent_coordinator = get_multi_agent_coordinator()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1294,6 +1306,10 @@ class AgentRuntime:
             self._creative_director_ok = self._creative_director is not None
             self._social_simulation_ok = self._social_simulation is not None
             self._monetization_designer_ok = self._monetization_designer is not None
+            self._world_builder_ok = self._world_builder is not None
+            self._behavior_designer_ok = self._behavior_designer is not None
+            self._quest_composer_ok = self._quest_composer is not None
+            self._multi_agent_coordinator_ok = self._multi_agent_coordinator is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2872,6 +2888,10 @@ class AgentRuntime:
             "creative_director": self._creative_director is not None,
             "social_simulation": self._social_simulation is not None,
             "monetization_designer": self._monetization_designer is not None,
+            "world_builder": self._world_builder is not None,
+            "behavior_designer": self._behavior_designer is not None,
+            "quest_composer": self._quest_composer is not None,
+            "multi_agent_coordinator": self._multi_agent_coordinator is not None,
             },
         }
 
@@ -3479,6 +3499,14 @@ class AgentRuntime:
             status["social_simulation_stats"] = self._social_simulation.get_stats()
         if self._monetization_designer:
             status["monetization_designer_stats"] = self._monetization_designer.get_stats()
+        if self._world_builder:
+            status["world_builder_stats"] = self._world_builder.get_stats()
+        if self._behavior_designer:
+            status["behavior_designer_stats"] = self._behavior_designer.get_stats()
+        if self._quest_composer:
+            status["quest_composer_stats"] = self._quest_composer.get_stats()
+        if self._multi_agent_coordinator:
+            status["multi_agent_coordinator_stats"] = self._multi_agent_coordinator.get_stats()
         return status
 
 
