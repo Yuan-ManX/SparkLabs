@@ -44,14 +44,14 @@ const EconomyDashboard: React.FC = () => {
   const loadWallet = useCallback(async () => {
     try {
       const data = await engineApi.economyWallet(ownerId);
-      setWallet((data.currencies || data.balances || data) as WalletEntry[]);
+      setWallet(((data as any).currencies || (data as any).balances || data) as WalletEntry[]);
     } catch { setWallet([]); }
   }, [ownerId]);
 
   const loadMarket = useCallback(async () => {
     try {
       const data = await engineApi.economyMarket();
-      setMarket((data.market || data.items || data) as MarketItem[]);
+      setMarket(((data as any).market || (data as any).items || data) as MarketItem[]);
     } catch { setMarket([]); }
   }, []);
 
