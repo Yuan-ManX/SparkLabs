@@ -54,7 +54,7 @@ const SkillTreeDesigner: React.FC = () => {
     if (!characterId) return;
     try {
       const data = await engineApi.skillTreeAvailable(characterId);
-      setAvailableNodes((data.nodes || data) as SkillNode[]);
+      setAvailableNodes(((data as any).nodes || data) as SkillNode[]);
     } catch { setAvailableNodes([]); }
   }, [characterId]);
 
