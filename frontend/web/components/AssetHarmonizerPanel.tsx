@@ -64,7 +64,7 @@ const AssetHarmonizerPanel: React.FC = () => {
   const loadAssets = useCallback(async () => {
     try {
       const data = await engineApi.harmonizerList();
-      const list = data.assets || data || [];
+      const list = (data as any).assets || data || [];
       setAssets(list as AssetDescriptor[]);
     } catch {}
   }, []);
