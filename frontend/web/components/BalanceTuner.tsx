@@ -44,7 +44,7 @@ const BalanceTuner: React.FC = () => {
   const loadParameters = useCallback(async () => {
     try {
       const data = await agentApi.balancerParameters(selectedDomain);
-      setParameters((data.parameters as BalanceParameter[]) || []);
+      setParameters(((data as any).parameters as BalanceParameter[]) || []);
     } catch {
       setParameters([]);
     }
