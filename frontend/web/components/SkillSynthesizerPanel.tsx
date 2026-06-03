@@ -5,7 +5,7 @@ type TabId = 'observe' | 'analyze' | 'synthesize' | 'catalog';
 interface SkillPattern {
   id: string;
   name: string;
-  tool_sequence: string[];
+  tool_sequences: string[];
   success_rate: number;
   occurrences: number;
 }
@@ -226,7 +226,7 @@ const SkillSynthesizerPanel: React.FC = () => {
                     </div>
                     <div style={{ display: 'flex', gap: 12, fontSize: 10, color: '#888' }}>
                       <span>Occurrences: <span style={{ color: '#aaa' }}>{p.occurrences}</span></span>
-                      <span>Tools: <span style={{ color: '#a29bfe' }}>{(p as any).tool_sequences?.length || p.tool_sequence?.length || 0}</span></span>
+                      <span>Tools: <span style={{ color: '#a29bfe' }}>{p.tool_sequences?.length || 0}</span></span>
                     </div>
                   </div>
                 ))}
