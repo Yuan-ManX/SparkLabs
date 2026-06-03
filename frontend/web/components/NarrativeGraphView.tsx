@@ -66,7 +66,7 @@ const NarrativeGraphView: React.FC = () => {
   const loadGraphs = useCallback(async () => {
     try {
       const data = await engineApi.narrativeList();
-      const list = data.graphs || data || [];
+      const list = (data as any).graphs || data || [];
       setGraphs(list as NarrativeGraph[]);
     } catch {}
   }, []);
