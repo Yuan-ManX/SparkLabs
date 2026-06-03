@@ -1631,3 +1631,85 @@ export const trajectoryApi = {
   recommendation: (goal: string) => api.get(`/agent/trajectory/recommendation?goal=${encodeURIComponent(goal)}`),
   stats: () => api.get('/agent/trajectory/stats'),
 };
+
+export const learningLoopApi = {
+  stats: () => api.get('/agent/learning-loop/stats'),
+  recordSuccess: (data: { category: string; context: string; action: string; outcome: string }) =>
+    api.post('/agent/learning-loop/record-success', data),
+  recordFailure: (data: { category: string; context: string; action: string; outcome: string }) =>
+    api.post('/agent/learning-loop/record-failure', data),
+  extractPatterns: (category?: string) => {
+    const query = category ? `?category=${category}` : '';
+    return api.post(`/agent/learning-loop/extract-patterns${query}`);
+  },
+  createSkill: (patternId: string, skillName: string, skillDescription?: string) =>
+    api.post('/agent/learning-loop/create-skill', { pattern_id: patternId, skill_name: skillName, skill_description: skillDescription || '' }),
+  nudge: () => api.post('/agent/learning-loop/nudge'),
+  reports: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/learning-loop/reports${query}`);
+  },
+};
+
+export const socialDynamicsApi = {
+  stats: () => api.get('/agent/social-dynamics/stats'),
+  createProfile: (data: { agent_name: string; archetype?: string; openness?: number; conscientiousness?: number; extraversion?: number; agreeableness?: number; neuroticism?: number }) =>
+    api.post('/agent/social-dynamics/create-profile', data),
+  simulateInteraction: (data: { initiator_id: string; target_id: string; interaction_type: string; location?: string; content?: string }) =>
+    api.post('/agent/social-dynamics/interact', data),
+  updateEmotion: (data: { profile_id: string; valence_delta?: number; arousal_delta?: number }) =>
+    api.post('/agent/social-dynamics/update-emotion', data),
+  createRumor: (data: { source_agent_id: string; content: string; topic?: string }) =>
+    api.post('/agent/social-dynamics/start-rumor', data),
+  profiles: () => api.get('/agent/social-dynamics/profiles'),
+  getProfile: (profileId: string) => api.get(`/agent/social-dynamics/profiles/${profileId}`),
+  relationships: (profileId: string) => api.get(`/agent/social-dynamics/relationships/${profileId}`),
+  rumors: (topic?: string) => {
+    const query = topic ? `?topic=${topic}` : '';
+    return api.get(`/agent/social-dynamics/rumors${query}`);
+  },
+};
+
+export const emergentNarrativeApi = {
+  stats: () => api.get('/agent/emergent-narrative/stats'),
+  recordEvent: (data: { event_type: string; description: string; involved_agents?: string[]; location?: string }) =>
+    api.post('/agent/emergent-narrative/record-event', data),
+  createArc: (data: { arc_type: string; title: string; description?: string }) =>
+    api.post('/agent/emergent-narrative/create-arc', data),
+  events: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/emergent-narrative/events${query}`);
+  },
+  arcs: () => api.get('/agent/emergent-narrative/arcs'),
+  getArc: (arcId: string) => api.get(`/agent/emergent-narrative/arcs/${arcId}`),
+  themes: () => api.get('/agent/emergent-narrative/themes'),
+  conflicts: () => api.get('/agent/emergent-narrative/conflicts'),
+  summary: () => api.post('/agent/emergent-narrative/summary'),
+};
+
+export const proceduralWorldApi = {
+  stats: () => api.get('/agent/procedural-world/stats'),
+  generate: (data: { name?: string; size?: number; seed?: number }) =>
+    api.post('/agent/procedural-world/generate', data),
+  list: () => api.get('/agent/procedural-world/list'),
+  getWorld: (worldId: string) => api.get(`/agent/procedural-world/${worldId}`),
+  generateDungeon: (data: { name?: string; rooms?: number; max_room_size?: number; seed?: number }) =>
+    api.post('/agent/procedural-world/generate-dungeon', data),
+  dungeons: () => api.get('/agent/procedural-world/dungeons'),
+  getDungeon: (dungeonId: string) => api.get(`/agent/procedural-world/dungeons/${dungeonId}`),
+};
+
+export const renderPipelineApi = {
+  stats: () => api.get('/agent/render-pipeline/stats'),
+  renderFrame: () => api.post('/agent/render-pipeline/render-frame'),
+  setQuality: (quality: string) =>
+    api.post('/agent/render-pipeline/set-quality', { quality }),
+  passes: () => api.get('/agent/render-pipeline/passes'),
+  postProcesses: () => api.get('/agent/render-pipeline/post-processes'),
+  setPostProcess: (data: { effect_type: string; enabled: boolean; intensity?: number }) =>
+    api.post('/agent/render-pipeline/set-post-process', data),
+  frameStats: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/render-pipeline/frame-stats${query}`);
+  },
+};
