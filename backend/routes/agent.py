@@ -174,7 +174,7 @@ from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_expor
 from sparkai.engine.engine_server_architecture import GameServerPool, get_server_pool
 from sparkai.engine.engine_gizmo_system import GizmoSystem, get_gizmo_system
 from sparkai.engine.engine_pivot_system import PivotSystem, get_pivot_system
-from sparkai.agent.agent_learning_loop import LearningLoop, get_learning_loop
+from sparkai.agent.agent_learning_loop import AgentLearningLoop, get_learning_loop
 from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
 from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
 from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
@@ -22374,10 +22374,23 @@ from sparkai.agent.agent_world_builder import get_agent_world_builder
 from sparkai.agent.agent_behavior_designer import get_agent_behavior_designer
 from sparkai.agent.agent_quest_composer import get_agent_quest_composer
 from sparkai.agent.agent_multi_agent_coordinator import get_multi_agent_coordinator
+from sparkai.agent.agent_memory_orchestrator import get_memory_orchestrator
+from sparkai.agent.agent_simulation_controller import get_simulation_controller, AgentState
+from sparkai.agent.agent_timeline_manager import get_timeline_manager, EventType
+from sparkai.agent.agent_skill_generator import get_skill_generator
+from sparkai.agent.agent_learning_loop import get_learning_loop
+from sparkai.agent.agent_social_dynamics import get_social_dynamics
+from sparkai.agent.agent_emergent_narrative import get_emergent_narrative
+from sparkai.engine.engine_procedural_world import get_procedural_world
+from sparkai.engine.engine_render_pipeline import get_render_pipeline
 from sparkai.engine.engine_tilemap_runtime import get_tilemap_runtime
 from sparkai.engine.engine_entity_component_system import get_entity_component_system
 from sparkai.engine.engine_physics_world_2d import get_engine_physics_world_2d
 from sparkai.engine.engine_visual_scripting import get_engine_visual_scripting
+from sparkai.engine.engine_scene_manager import get_scene_manager
+from sparkai.engine.engine_animation_system import get_animation_system
+from sparkai.engine.engine_particle_system import get_particle_system as get_engine_particle_system
+from sparkai.engine.engine_navigation_system import get_navigation_system
 
 _skill_forge = get_agent_skill_forge()
 _memory_consolidator = get_memory_consolidator()
@@ -22401,10 +22414,23 @@ _world_builder = get_agent_world_builder()
 _behavior_designer = get_agent_behavior_designer()
 _quest_composer = get_agent_quest_composer()
 _multi_agent_coordinator = get_multi_agent_coordinator()
+_memory_orchestrator = get_memory_orchestrator()
+_simulation_controller = get_simulation_controller()
+_timeline_manager = get_timeline_manager()
+_skill_generator = get_skill_generator()
 _tilemap_runtime = get_tilemap_runtime()
 _ecs = get_entity_component_system()
 _physics_world_2d = get_engine_physics_world_2d()
 _visual_scripting = get_engine_visual_scripting()
+_scene_manager = get_scene_manager()
+_animation_system = get_animation_system()
+_engine_particle_system = get_engine_particle_system()
+_navigation_system = get_navigation_system()
+_learning_loop = get_learning_loop()
+_social_dynamics = get_social_dynamics()
+_emergent_narrative = get_emergent_narrative()
+_procedural_world = get_procedural_world()
+_render_pipeline = get_render_pipeline()
 
 # ============================================================
 # SkillForge Endpoints
@@ -23984,5 +24010,1276 @@ async def visual_scripting_variables(graph_id: str):
         if graph is None:
             return {"error": "graph not found"}
         return {"variables": graph.variables}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Memory Orchestrator Endpoints
+# ============================================================
+
+@router.get("/memory-orchestrator/stats")
+async def memory_orchestrator_stats():
+    try:
+        return _memory_orchestrator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-orchestrator/store-memory")
+async def memory_orchestrator_store_memory(request: Request):
+    try:
+        body = await request.json()
+        result = _memory_orchestrator.store_memory(
+            content=body.get("content", ""),
+            category=body.get("category", "short_term"),
+            priority=body.get("priority", "medium"),
+            context=body.get("context"),
+            tags=body.get("tags"),
+            ttl=body.get("ttl"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-orchestrator/retrieve-memories")
+async def memory_orchestrator_retrieve(request: Request):
+    try:
+        body = await request.json()
+        results = _memory_orchestrator.retrieve_memories(
+            query_tags=body.get("query_tags"),
+            category=body.get("category"),
+            priority=body.get("priority"),
+            min_confidence=body.get("min_confidence", 0.5),
+            limit=body.get("limit", 50),
+        )
+        return {"memories": [r.to_dict() for r in results]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-orchestrator/create-skill")
+async def memory_orchestrator_create_skill(request: Request):
+    try:
+        body = await request.json()
+        result = _memory_orchestrator.create_skill(
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            trigger_patterns=body.get("trigger_patterns"),
+            action_sequence=body.get("action_sequence"),
+            preconditions=body.get("preconditions"),
+            postconditions=body.get("postconditions"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-orchestrator/improve-skill")
+async def memory_orchestrator_improve_skill(request: Request):
+    try:
+        body = await request.json()
+        result = _memory_orchestrator.improve_skill(
+            skill_id=body.get("skill_id", ""),
+            success=body.get("success", True),
+            improvement_notes=body.get("improvement_notes", ""),
+            new_action_sequence=body.get("new_action_sequence"),
+        )
+        if result is None:
+            return {"error": "skill not found"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-orchestrator/record-experience")
+async def memory_orchestrator_record_experience(request: Request):
+    try:
+        body = await request.json()
+        result = _memory_orchestrator.record_experience(
+            session_id=body.get("session_id", ""),
+            summary=body.get("summary", ""),
+            patterns=body.get("patterns"),
+            lessons=body.get("lessons"),
+            skill_ids=body.get("skill_ids"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/memory-orchestrator/memories")
+async def memory_orchestrator_memories():
+    try:
+        return {"memories": _memory_orchestrator.list_memories()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/memory-orchestrator/skill-list")
+async def memory_orchestrator_skills():
+    try:
+        return {"skills": _memory_orchestrator.list_skills()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/memory-orchestrator/experiences")
+async def memory_orchestrator_experiences():
+    try:
+        return {"experiences": _memory_orchestrator.list_experiences()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/memory-orchestrator/nudges")
+async def memory_orchestrator_nudges():
+    try:
+        return {"nudges": _memory_orchestrator.list_nudges()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-orchestrator/schedule-nudge")
+async def memory_orchestrator_schedule_nudge(request: Request):
+    try:
+        body = await request.json()
+        result = _memory_orchestrator.schedule_nudge(
+            trigger_type=body.get("trigger_type", "time_based"),
+            target_memory_ids=body.get("target_memory_ids"),
+            target_skill_ids=body.get("target_skill_ids"),
+            interval_seconds=body.get("interval_seconds", 3600.0),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Simulation Controller Endpoints
+# ============================================================
+
+@router.get("/simulation-controller/stats")
+async def simulation_controller_stats():
+    try:
+        return _simulation_controller.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/simulation-controller/create-agent")
+async def simulation_controller_create_agent(request: Request):
+    try:
+        body = await request.json()
+        state_str = body.get("initial_state", "idle")
+        try:
+            state = AgentState(state_str)
+        except ValueError:
+            state = AgentState.IDLE
+        result = _simulation_controller.create_agent(
+            name=body.get("name", ""),
+            personality_profile=body.get("personality_profile"),
+            starting_state=state,
+            position=body.get("position"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/simulation-controller/simulate-tick")
+async def simulation_controller_simulate_tick(request: Request):
+    try:
+        body = await request.json()
+        result = _simulation_controller.simulate_tick()
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/simulation-controller/broadcast-event")
+async def simulation_controller_broadcast_event(request: Request):
+    try:
+        body = await request.json()
+        event_type = body.get("event_type", "global")
+        event_params = {
+            "description": body.get("event_description", ""),
+            "world_id": body.get("world_id", ""),
+        }
+        result = _simulation_controller.broadcast_event(
+            event_type=event_type,
+            event_params=event_params,
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/simulation-controller/world-snapshot")
+async def simulation_controller_world_snapshot():
+    try:
+        result = _simulation_controller.get_world_snapshot()
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/simulation-controller/agents")
+async def simulation_controller_agents():
+    try:
+        return {"agents": _simulation_controller.list_agents()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/simulation-controller/spawn-population")
+async def simulation_controller_spawn_population(request: Request):
+    try:
+        body = await request.json()
+        results = _simulation_controller.spawn_agent_population(
+            count=body.get("count", 10),
+            personality_distribution=body.get("personality_distribution"),
+        )
+        return {"agents": [r.to_dict() for r in results]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Timeline Manager Endpoints
+# ============================================================
+
+@router.get("/timeline-manager/stats")
+async def timeline_manager_stats():
+    try:
+        return _timeline_manager.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/timeline-manager/create-timeline")
+async def timeline_manager_create_timeline(request: Request):
+    try:
+        body = await request.json()
+        result = _timeline_manager.create_timeline(
+            name=body.get("name", ""),
+            world_id=body.get("world_id", ""),
+            description=body.get("description", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/timeline-manager/branch-timeline")
+async def timeline_manager_branch_timeline(request: Request):
+    try:
+        body = await request.json()
+        result = _timeline_manager.branch_timeline(
+            parent_timeline_id=body.get("parent_id", ""),
+            branch_name=body.get("name", ""),
+            branch_description=body.get("branch_description", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/timeline-manager/record-event")
+async def timeline_manager_record_event(request: Request):
+    try:
+        body = await request.json()
+        event_type_str = body.get("event_type", "world_event")
+        try:
+            event_type = EventType(event_type_str)
+        except ValueError:
+            event_type = EventType.WORLD_EVENT
+        result = _timeline_manager.record_event(
+            timeline_id=body.get("timeline_id", ""),
+            title=body.get("title", ""),
+            description=body.get("description", ""),
+            event_type=event_type,
+            impact_score=body.get("impact_score", 0),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/timeline-manager/advance-timeline")
+async def timeline_manager_advance_timeline(request: Request):
+    try:
+        body = await request.json()
+        results = _timeline_manager.advance_timeline(
+            timeline_id=body.get("timeline_id", ""),
+            num_events=body.get("steps", 1),
+        )
+        return {"events": [r.to_dict() for r in results]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/timeline-manager/merge-timelines")
+async def timeline_manager_merge_timelines(request: Request):
+    try:
+        body = await request.json()
+        result = _timeline_manager.merge_timeline(
+            timeline_id_a=body.get("timeline_id_a", ""),
+            timeline_id_b=body.get("timeline_id_b", ""),
+            strategy=body.get("strategy", "interleave"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/timeline-manager/compare-timelines")
+async def timeline_manager_compare_timelines(request: Request):
+    try:
+        body = await request.json()
+        result = _timeline_manager.compare_timelines(
+            timeline_id_a=body.get("timeline_id_a", ""),
+            timeline_id_b=body.get("timeline_id_b", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/timeline-manager/timelines")
+async def timeline_manager_timelines():
+    try:
+        return {"timelines": _timeline_manager.list_timelines()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Skill Generator Endpoints
+# ============================================================
+
+@router.get("/skill-generator/stats")
+async def skill_generator_stats():
+    try:
+        return _skill_generator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-generator/generate-skill")
+async def skill_generator_generate_skill(request: Request):
+    try:
+        from sparkai.agent.agent_skill_generator import SkillCategory, ComplexityLevel
+        body = await request.json()
+        category_str = body.get("category", "combat")
+        complexity_str = body.get("complexity", "intermediate")
+        try:
+            category = SkillCategory(category_str)
+        except ValueError:
+            category = SkillCategory.COMBAT
+        try:
+            complexity = ComplexityLevel(complexity_str)
+        except ValueError:
+            complexity = ComplexityLevel.INTERMEDIATE
+        result = _skill_generator.generate_skill(
+            name=body.get("name"),
+            description=body.get("description", ""),
+            category=category,
+            complexity=complexity,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-generator/create-template")
+async def skill_generator_create_template(request: Request):
+    try:
+        from sparkai.agent.agent_skill_generator import SkillCategory
+        body = await request.json()
+        category_str = body.get("category", "combat")
+        try:
+            category = SkillCategory(category_str)
+        except ValueError:
+            category = SkillCategory.COMBAT
+        result = _skill_generator.create_template(
+            name=body.get("name", ""),
+            category=category,
+            parameter_schema=body.get("parameter_schema", {}),
+            default_actions=body.get("default_actions", []),
+            constraints=body.get("constraints", []),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-generator/compose-skills")
+async def skill_generator_compose_skills(request: Request):
+    try:
+        body = await request.json()
+        result = _skill_generator.compose_skills(
+            skill_ids=body.get("component_skills", []),
+            composition_name=body.get("name", ""),
+            composition_strategy=body.get("composition_logic", "merge"),
+        )
+        if result is None:
+            return {"error": "composition failed"}
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-generator/generate-skill-tree")
+async def skill_generator_generate_skill_tree(request: Request):
+    try:
+        from sparkai.agent.agent_skill_generator import SkillCategory
+        body = await request.json()
+        category_str = body.get("category", "combat")
+        try:
+            category = SkillCategory(category_str)
+        except ValueError:
+            category = SkillCategory.COMBAT
+        result = _skill_generator.generate_skill_tree(
+            root_category=category,
+            depth=body.get("depth", 3),
+            breadth=body.get("branching", 3),
+            root_description=body.get("root_skill_name", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-generator/batch-generate")
+async def skill_generator_batch_generate(request: Request):
+    try:
+        body = await request.json()
+        results = _skill_generator.batch_generate_skills(
+            count=body.get("count", 5),
+        )
+        return {"skills": [r.to_dict() for r in results]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/skill-generator/evaluate-skill")
+async def skill_generator_evaluate_skill(request: Request):
+    try:
+        body = await request.json()
+        result = _skill_generator.evaluate_skill(
+            skill_id=body.get("skill_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/skill-generator/skill-list")
+async def skill_generator_skills():
+    try:
+        return {"skills": _skill_generator.list_skills()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/skill-generator/templates")
+async def skill_generator_templates():
+    try:
+        return {"templates": _skill_generator.list_templates()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Scene Manager Endpoints
+# ============================================================
+
+@router.get("/engine-scene-manager/stats")
+async def engine_scene_manager_stats():
+    try:
+        return _scene_manager.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/engine-scene-manager/create-scene")
+async def engine_scene_manager_create_scene(request: Request):
+    try:
+        body = await request.json()
+        result = _scene_manager.create_scene(
+            name=body.get("name", ""),
+            scene_type=body.get("scene_type", "gameplay"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/engine-scene-manager/create-layer")
+async def engine_scene_manager_create_layer(request: Request):
+    try:
+        body = await request.json()
+        result = _scene_manager.create_layer(
+            name=body.get("name", ""),
+            z_index=body.get("z_index", 0),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/engine-scene-manager/switch-scene")
+async def engine_scene_manager_switch_scene(request: Request):
+    try:
+        body = await request.json()
+        result = _scene_manager.switch_scene(
+            from_scene_id=body.get("from_scene_id", ""),
+            to_scene_id=body.get("to_scene_id", ""),
+            transition_type=body.get("transition_type", "fade"),
+            duration=body.get("duration", 0.5),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/engine-scene-manager/scenes")
+async def engine_scene_manager_scenes():
+    try:
+        return {"scenes": _scene_manager.list_scenes()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Animation System Endpoints
+# ============================================================
+
+@router.get("/engine-animation-system/stats")
+async def engine_animation_system_stats():
+    try:
+        return _animation_system.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/engine-animation-system/create-clip")
+async def engine_animation_system_create_clip(request: Request):
+    try:
+        body = await request.json()
+        result = _animation_system.create_animation_clip(
+            name=body.get("name", ""),
+            frame_rate=body.get("frame_rate", 24),
+            loop=body.get("loop", True),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/engine-animation-system/create-tween")
+async def engine_animation_system_create_tween(request: Request):
+    try:
+        body = await request.json()
+        result = _animation_system.create_tween(
+            target_id=body.get("target_id", ""),
+            property_name=body.get("property_name", ""),
+            from_value=body.get("from_value", 0),
+            to_value=body.get("to_value", 0),
+            duration=body.get("duration", 1.0),
+            easing=body.get("easing", "linear"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/engine-animation-system/play-animation")
+async def engine_animation_system_play_animation(request: Request):
+    try:
+        body = await request.json()
+        result = _animation_system.play_animation(
+            clip_id=body.get("clip_id", ""),
+            mode=body.get("mode", "once"),
+        )
+        return {"status": "success" if result else "not_found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/engine-animation-system/clips")
+async def engine_animation_system_clips():
+    try:
+        return {"clips": _animation_system.list_clips()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Particle System Endpoints
+# ============================================================
+
+@router.get("/engine-particle-system/stats")
+async def engine_particle_system_stats():
+    try:
+        return _engine_particle_system.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/engine-particle-system/create-emitter")
+async def engine_particle_system_create_emitter(request: Request):
+    try:
+        body = await request.json()
+        position = body.get("position", [0, 0])
+        if len(position) == 2:
+            position = (position[0], position[1], 0.0)
+        else:
+            position = tuple(position) if len(position) == 3 else (0.0, 0.0, 0.0)
+        lifetime = body.get("particle_lifetime", 2.0)
+        if isinstance(lifetime, (int, float)):
+            lifetime = (lifetime * 0.5, lifetime)
+        result = _engine_particle_system.create_emitter(
+            name=body.get("name", ""),
+            position=position,
+            emission_shape=body.get("emission_shape", "point"),
+            emission_rate=body.get("emission_rate", 10),
+            max_particles=body.get("max_particles", 100),
+            particle_lifetime=lifetime,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/engine-particle-system/create-effect")
+async def engine_particle_system_create_effect(request: Request):
+    try:
+        body = await request.json()
+        emitter_ids = body.get("emitters", [])
+        emitters = []
+        for eid in emitter_ids:
+            # Look up emitter by ID from the system's internal storage
+            emitter = _engine_particle_system._emitters.get(eid)
+            if emitter:
+                emitters.append(emitter)
+        result = _engine_particle_system.create_effect(
+            name=body.get("name", ""),
+            emitters=emitters if emitters else None,
+            duration=body.get("duration", 0),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/engine-particle-system/burst-emit")
+async def engine_particle_system_burst_emit(request: Request):
+    try:
+        body = await request.json()
+        count = _engine_particle_system.burst_emit(
+            emitter_id=body.get("emitter_id", ""),
+            count=body.get("count", 50),
+        )
+        return {"particles_spawned": count}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/engine-particle-system/emitters")
+async def engine_particle_system_emitters():
+    try:
+        return {"emitters": _engine_particle_system.list_emitters()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Navigation System Endpoints
+# ============================================================
+
+@router.get("/navigation-system/stats")
+async def navigation_system_stats():
+    try:
+        return _navigation_system.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/navigation-system/create-navmesh")
+async def navigation_system_create_navmesh(request: Request):
+    try:
+        body = await request.json()
+        nm_id = _navigation_system.create_navmesh(
+            name=body.get("name", ""),
+            cell_size=body.get("cell_size", 1.0),
+            agent_radius=body.get("agent_radius", 0.5),
+        )
+        return {"navmesh_id": nm_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/navigation-system/find-path")
+async def navigation_system_find_path(request: Request):
+    try:
+        body = await request.json()
+        start = body.get("start_point", [0, 0])
+        end = body.get("end_point", [0, 0])
+        if len(start) == 2:
+            start = (start[0], 0.0, start[1])
+        else:
+            start = tuple(start) if len(start) == 3 else (0.0, 0.0, 0.0)
+        if len(end) == 2:
+            end = (end[0], 0.0, end[1])
+        else:
+            end = tuple(end) if len(end) == 3 else (0.0, 0.0, 0.0)
+        result = _navigation_system.find_path(
+            mesh_id=body.get("navmesh_id", ""),
+            start_point=start,
+            end_point=end,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/navigation-system/create-agent")
+async def navigation_system_create_agent(request: Request):
+    try:
+        body = await request.json()
+        pos = body.get("position", [0, 0])
+        if len(pos) == 2:
+            pos = (pos[0], 0.0, pos[1])
+        else:
+            pos = tuple(pos) if len(pos) == 3 else (0.0, 0.0, 0.0)
+        agent_id = _navigation_system.create_agent(
+            mesh_id=body.get("navmesh_id", ""),
+            position=pos,
+            speed=body.get("speed", 5.0),
+        )
+        return {"agent_id": agent_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/navigation-system/move-agent")
+async def navigation_system_move_agent(request: Request):
+    try:
+        body = await request.json()
+        target = body.get("target_position", [0, 0])
+        if len(target) == 2:
+            target = (target[0], 0.0, target[1])
+        else:
+            target = tuple(target) if len(target) == 3 else (0.0, 0.0, 0.0)
+        path_id = _navigation_system.move_agent(
+            agent_id=body.get("agent_id", ""),
+            target_position=target,
+        )
+        return {"path_id": path_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/navigation-system/navmeshes")
+async def navigation_system_navmeshes():
+    try:
+        return {"navmeshes": _navigation_system.list_navmeshes()}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Learning Loop Endpoints
+# ============================================================
+
+@router.get("/learning-loop/stats")
+async def learning_loop_stats():
+    try:
+        return _learning_loop.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/learning-loop/experiences")
+async def learning_loop_experiences(
+    experience_type: str = "",
+    category: str = "",
+    limit: int = 100,
+):
+    try:
+        from sparkai.agent.agent_learning_loop import ExperienceType, PatternCategory
+        exp_type = ExperienceType(experience_type) if experience_type else None
+        cat = PatternCategory(category) if category else None
+        return {"experiences": _learning_loop.get_experiences(experience_type=exp_type, category=cat, limit=limit)}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/learning-loop/patterns")
+async def learning_loop_patterns(
+    category: str = "",
+    min_confidence: float = 0.0,
+):
+    try:
+        from sparkai.agent.agent_learning_loop import PatternCategory
+        cat = PatternCategory(category) if category else None
+        return {"patterns": _learning_loop.get_patterns(category=cat, min_confidence=min_confidence)}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/learning-loop/record-success")
+async def learning_loop_record_success(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_learning_loop import PatternCategory
+        cat_str = body.get("category", "workflow")
+        try:
+            cat = PatternCategory(cat_str)
+        except ValueError:
+            cat = PatternCategory.WORKFLOW
+        exp = _learning_loop.record_success(
+            category=cat,
+            context=body.get("context", ""),
+            action=body.get("action", ""),
+            outcome=body.get("outcome", ""),
+        )
+        return exp.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/learning-loop/record-failure")
+async def learning_loop_record_failure(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_learning_loop import PatternCategory
+        cat_str = body.get("category", "workflow")
+        try:
+            cat = PatternCategory(cat_str)
+        except ValueError:
+            cat = PatternCategory.WORKFLOW
+        exp = _learning_loop.record_failure(
+            category=cat,
+            context=body.get("context", ""),
+            action=body.get("action", ""),
+            outcome=body.get("outcome", ""),
+        )
+        return exp.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/learning-loop/extract-patterns")
+async def learning_loop_extract_patterns(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_learning_loop import PatternCategory
+        cat_str = body.get("category", "")
+        cat = PatternCategory(cat_str) if cat_str else None
+        patterns = _learning_loop.extract_patterns(category=cat)
+        return {"patterns": [p.to_dict() for p in patterns]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/learning-loop/create-skill")
+async def learning_loop_create_skill(request: Request):
+    try:
+        body = await request.json()
+        pattern = _learning_loop.create_skill_from_pattern(
+            pattern_id=body.get("pattern_id", ""),
+            skill_name=body.get("skill_name", ""),
+            skill_description=body.get("skill_description", ""),
+        )
+        return pattern.to_dict() if pattern else {"error": "Pattern not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/learning-loop/nudge")
+async def learning_loop_nudge():
+    try:
+        report = _learning_loop.nudge()
+        return report.to_dict() if report else {"error": "Nudge failed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/learning-loop/evaluate")
+async def learning_loop_evaluate():
+    try:
+        report = _learning_loop.evaluate()
+        return report.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Social Dynamics Endpoints
+# ============================================================
+
+@router.get("/social-dynamics/stats")
+async def social_dynamics_stats():
+    try:
+        return _social_dynamics.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-dynamics/create-profile")
+async def social_dynamics_create_profile(request: Request):
+    try:
+        body = await request.json()
+        profile = _social_dynamics.create_profile(
+            agent_name=body.get("agent_name", ""),
+            archetype=body.get("archetype", ""),
+            openness=body.get("openness", 0.5),
+            conscientiousness=body.get("conscientiousness", 0.5),
+            extraversion=body.get("extraversion", 0.5),
+            agreeableness=body.get("agreeableness", 0.5),
+            neuroticism=body.get("neuroticism", 0.5),
+            core_motivation=body.get("core_motivation", ""),
+            speaking_style=body.get("speaking_style", ""),
+        )
+        return profile.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-dynamics/profiles")
+async def social_dynamics_profiles():
+    try:
+        return {"profiles": [p.to_dict() for p in _social_dynamics._profiles.values()]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-dynamics/simulate-interaction")
+async def social_dynamics_simulate_interaction(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_social_dynamics import InteractionType
+        it_str = body.get("interaction_type", "greeting")
+        try:
+            it = InteractionType(it_str)
+        except ValueError:
+            it = InteractionType.GREETING
+        interaction = _social_dynamics.simulate_interaction(
+            initiator_id=body.get("initiator_id", ""),
+            target_id=body.get("target_id", ""),
+            interaction_type=it,
+            location=body.get("location", ""),
+            content=body.get("content", ""),
+        )
+        return interaction.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-dynamics/relationships/{agent_id}")
+async def social_dynamics_relationships(agent_id: str):
+    try:
+        return {"relationships": _social_dynamics.get_relationships(agent_id)}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-dynamics/network")
+async def social_dynamics_network():
+    try:
+        return _social_dynamics.get_relationship_network()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-dynamics/emotion/{profile_id}")
+async def social_dynamics_emotion(profile_id: str):
+    try:
+        state = _social_dynamics.get_emotion(profile_id)
+        return state.to_dict() if state else {"error": "Profile not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-dynamics/update-emotion")
+async def social_dynamics_update_emotion(request: Request):
+    try:
+        body = await request.json()
+        state = _social_dynamics.update_emotion(
+            profile_id=body.get("profile_id", ""),
+            valence_delta=body.get("valence_delta", 0.0),
+            arousal_delta=body.get("arousal_delta", 0.0),
+        )
+        return state.to_dict() if state else {"error": "Profile not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/social-dynamics/create-rumor")
+async def social_dynamics_create_rumor(request: Request):
+    try:
+        body = await request.json()
+        rumor = _social_dynamics.create_rumor(
+            source_agent_id=body.get("source_agent_id", ""),
+            content=body.get("content", ""),
+            topic=body.get("topic", ""),
+        )
+        return rumor.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-dynamics/groups")
+async def social_dynamics_groups():
+    try:
+        return {"groups": _social_dynamics.find_natural_groups()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/social-dynamics/interactions")
+async def social_dynamics_interactions(
+    agent_id: str = "",
+    interaction_type: str = "",
+    limit: int = 100,
+):
+    try:
+        from sparkai.agent.agent_social_dynamics import InteractionType
+        it = InteractionType(interaction_type) if interaction_type else None
+        return {"interactions": _social_dynamics.get_interaction_history(agent_id=agent_id, interaction_type=it, limit=limit)}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Emergent Narrative Endpoints
+# ============================================================
+
+@router.get("/emergent-narrative/stats")
+async def emergent_narrative_stats():
+    try:
+        return _emergent_narrative.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/emergent-narrative/record-event")
+async def emergent_narrative_record_event(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_emergent_narrative import EventSignificance, NarrativeTheme
+        sig_str = body.get("significance", "minor")
+        try:
+            sig = EventSignificance(sig_str)
+        except ValueError:
+            sig = EventSignificance.MINOR
+        themes_str = body.get("themes", [])
+        themes = []
+        for t in themes_str:
+            try:
+                themes.append(NarrativeTheme(t))
+            except ValueError:
+                pass
+        event = _emergent_narrative.record_event(
+            event_type=body.get("event_type", ""),
+            description=body.get("description", ""),
+            involved_agents=body.get("involved_agents", []),
+            location=body.get("location", ""),
+            significance=sig,
+            themes=themes,
+            emotional_weight=body.get("emotional_weight", 0.0),
+        )
+        return event.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/emergent-narrative/create-arc")
+async def emergent_narrative_create_arc(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_emergent_narrative import StoryArcType, NarrativeTheme
+        at_str = body.get("arc_type", "conflict")
+        try:
+            at = StoryArcType(at_str)
+        except ValueError:
+            at = StoryArcType.CONFLICT
+        arc = _emergent_narrative.create_arc(
+            arc_type=at,
+            title=body.get("title", ""),
+            description=body.get("description", ""),
+            protagonist_id=body.get("protagonist_id", ""),
+            antagonist_id=body.get("antagonist_id", ""),
+        )
+        return arc.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/emergent-narrative/arcs")
+async def emergent_narrative_arcs():
+    try:
+        return {
+            "active": _emergent_narrative.get_active_arcs(),
+            "completed": _emergent_narrative.get_completed_arcs(),
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/emergent-narrative/arc/{arc_id}")
+async def emergent_narrative_arc(arc_id: str):
+    try:
+        arc = _emergent_narrative.get_arc(arc_id)
+        return arc if arc else {"error": "Arc not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/emergent-narrative/advance-arc/{arc_id}")
+async def emergent_narrative_advance_arc(arc_id: str):
+    try:
+        arc = _emergent_narrative.advance_arc_phase(arc_id)
+        return arc.to_dict() if arc else {"error": "Arc not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/emergent-narrative/themes")
+async def emergent_narrative_themes():
+    try:
+        return {"themes": _emergent_narrative.analyze_themes()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/emergent-narrative/conflicts")
+async def emergent_narrative_conflicts():
+    try:
+        return {"conflicts": _emergent_narrative.detect_emerging_conflicts()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/emergent-narrative/events")
+async def emergent_narrative_events(
+    arc_id: str = "",
+    significance: str = "",
+    limit: int = 100,
+):
+    try:
+        from sparkai.agent.agent_emergent_narrative import EventSignificance
+        sig = EventSignificance(significance) if significance else None
+        return {"events": _emergent_narrative.get_events(arc_id=arc_id, significance=sig, limit=limit)}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/emergent-narrative/agent-arcs/{agent_id}")
+async def emergent_narrative_agent_arcs(agent_id: str):
+    try:
+        return {"arcs": _emergent_narrative.get_agent_arcs(agent_id)}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/emergent-narrative/summary")
+async def emergent_narrative_summary():
+    try:
+        summary = _emergent_narrative.generate_summary()
+        return summary.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Procedural World Endpoints
+# ============================================================
+
+@router.get("/procedural-world/stats")
+async def procedural_world_stats():
+    try:
+        return _procedural_world.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/procedural-world/generate")
+async def procedural_world_generate(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_procedural_world import WorldConfig, GenerationAlgorithm
+        config = WorldConfig(
+            world_name=body.get("world_name", "Generated World"),
+            seed=body.get("seed", 0),
+            world_width=body.get("world_width", 256),
+            world_height=body.get("world_height", 256),
+            ocean_level=body.get("ocean_level", 0.3),
+            mountain_level=body.get("mountain_level", 0.7),
+            settlement_count=body.get("settlement_count", 8),
+            dungeon_count=body.get("dungeon_count", 5),
+            river_count=body.get("river_count", 3),
+        )
+        world = _procedural_world.generate_world(config=config)
+        return world.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/procedural-world/list")
+async def procedural_world_list():
+    try:
+        return {"worlds": _procedural_world.list_worlds()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/procedural-world/{world_id}")
+async def procedural_world_get(world_id: str):
+    try:
+        world = _procedural_world.get_world(world_id)
+        return world if world else {"error": "World not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/procedural-world/generate-dungeon")
+async def procedural_world_generate_dungeon(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_procedural_world import DungeonStyle
+        style_str = body.get("style", "dungeon")
+        try:
+            style = DungeonStyle(style_str)
+        except ValueError:
+            style = DungeonStyle.DUNGEON
+        dungeon = _procedural_world.generate_dungeon(
+            style=style,
+            num_rooms=body.get("num_rooms", 10),
+            max_width=body.get("max_width", 40),
+            max_height=body.get("max_height", 40),
+        )
+        return dungeon.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Render Pipeline Endpoints
+# ============================================================
+
+@router.get("/render-pipeline/stats")
+async def render_pipeline_stats():
+    try:
+        return _render_pipeline.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/render-pipeline/passes")
+async def render_pipeline_passes():
+    try:
+        return {"passes": _render_pipeline.get_passes()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/render-pipeline/post-processes")
+async def render_pipeline_post_processes():
+    try:
+        return {"post_processes": _render_pipeline.get_post_processes()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-pipeline/set-post-process")
+async def render_pipeline_set_post_process(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_render_pipeline import PostProcessEffect
+        effect_str = body.get("effect", "")
+        try:
+            effect = PostProcessEffect(effect_str)
+        except ValueError:
+            return {"error": f"Invalid effect: {effect_str}"}
+        _render_pipeline.set_post_process(
+            effect=effect,
+            enabled=body.get("enabled", True),
+            intensity=body.get("intensity"),
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-pipeline/set-quality")
+async def render_pipeline_set_quality(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_render_pipeline import RenderQuality
+        quality_str = body.get("quality", "high")
+        try:
+            quality = RenderQuality(quality_str)
+        except ValueError:
+            quality = RenderQuality.HIGH
+        _render_pipeline.set_quality(quality)
+        return {"status": "ok", "quality": _render_pipeline.get_quality()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-pipeline/render-frame")
+async def render_pipeline_render_frame():
+    try:
+        stats = _render_pipeline.render_frame()
+        return stats.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/render-pipeline/latest-stats")
+async def render_pipeline_latest_stats():
+    try:
+        stats = _render_pipeline.get_latest_stats()
+        return stats if stats else {"error": "No frames rendered"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/render-pipeline/average-stats")
+async def render_pipeline_average_stats():
+    try:
+        return _render_pipeline.get_average_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-pipeline/add-pass")
+async def render_pipeline_add_pass(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_render_pipeline import RenderPassType, BlendMode, CullingMode
+        pt_str = body.get("pass_type", "geometry")
+        try:
+            pt = RenderPassType(pt_str)
+        except ValueError:
+            pt = RenderPassType.CUSTOM
+        rp = _render_pipeline.add_pass(
+            pass_type=pt,
+            name=body.get("name", "Custom Pass"),
+            order=body.get("order", -1),
+        )
+        return rp.to_dict()
     except Exception as e:
         return {"error": str(e)}
