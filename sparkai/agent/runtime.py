@@ -284,7 +284,6 @@ from sparkai.agent.agent_game_director import GameDirector, get_game_director
 from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_analyzer
 from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
 from sparkai.agent.agent_player_modeler import PlayerModeler, get_player_modeler
-from sparkai.agent.agent_learning_loop import LearningLoop, get_learning_loop
 from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
 from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
 from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
@@ -360,7 +359,6 @@ from sparkai.agent.agent_tool_registry import ToolRegistry, get_tool_registry
 from sparkai.agent.agent_prompt_templates import PromptLibrary, get_prompt_library
 from sparkai.agent.agent_reflection_loop import ReflectionLoop, get_reflection_loop
 from sparkai.agent.agent_skill_forge import SkillForge, get_skill_forge
-from sparkai.agent.agent_learning_loop import LearningLoop, get_learning_loop
 from sparkai.agent.agent_memory_consolidator import MemoryConsolidator, get_memory_consolidator
 from sparkai.agent.agent_delegation_broker import DelegationBroker, get_delegation_broker
 from sparkai.agent.agent_game_design_intelligence import GameDesignIntelligence, get_game_design_intelligence
@@ -373,6 +371,15 @@ from sparkai.agent.agent_world_builder import AgentWorldBuilder, get_agent_world
 from sparkai.agent.agent_behavior_designer import AgentBehaviorDesigner, get_agent_behavior_designer
 from sparkai.agent.agent_quest_composer import AgentQuestComposer, get_agent_quest_composer
 from sparkai.agent.agent_multi_agent_coordinator import AgentMultiAgentCoordinator, get_multi_agent_coordinator
+from sparkai.agent.agent_memory_orchestrator import AgentMemoryOrchestrator, get_memory_orchestrator
+from sparkai.agent.agent_simulation_controller import AgentSimulationController, get_simulation_controller
+from sparkai.agent.agent_timeline_manager import AgentTimelineManager, get_timeline_manager
+from sparkai.agent.agent_skill_generator import AgentSkillGenerator, get_skill_generator
+from sparkai.agent.agent_learning_loop import AgentLearningLoop, get_learning_loop
+from sparkai.agent.agent_social_dynamics import AgentSocialDynamics, get_social_dynamics
+from sparkai.agent.agent_emergent_narrative import AgentEmergentNarrative, get_emergent_narrative
+from sparkai.engine.engine_procedural_world import EngineProceduralWorld, get_procedural_world
+from sparkai.engine.engine_render_pipeline import EngineRenderPipeline, get_render_pipeline
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -863,6 +870,15 @@ class AgentRuntime:
         self._behavior_designer: Optional[AgentBehaviorDesigner] = None
         self._quest_composer: Optional[AgentQuestComposer] = None
         self._multi_agent_coordinator: Optional[AgentMultiAgentCoordinator] = None
+        self._memory_orchestrator: Optional[AgentMemoryOrchestrator] = None
+        self._simulation_controller: Optional[AgentSimulationController] = None
+        self._timeline_manager: Optional[AgentTimelineManager] = None
+        self._skill_generator: Optional[AgentSkillGenerator] = None
+        self._learning_loop: Optional[AgentLearningLoop] = None
+        self._social_dynamics: Optional[AgentSocialDynamics] = None
+        self._emergent_narrative: Optional[AgentEmergentNarrative] = None
+        self._procedural_world: Optional[EngineProceduralWorld] = None
+        self._render_pipeline: Optional[EngineRenderPipeline] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1237,6 +1253,15 @@ class AgentRuntime:
             self._behavior_designer = get_agent_behavior_designer()
             self._quest_composer = get_agent_quest_composer()
             self._multi_agent_coordinator = get_multi_agent_coordinator()
+            self._memory_orchestrator = get_memory_orchestrator()
+            self._simulation_controller = get_simulation_controller()
+            self._timeline_manager = get_timeline_manager()
+            self._skill_generator = get_skill_generator()
+            self._learning_loop = get_learning_loop()
+            self._social_dynamics = get_social_dynamics()
+            self._emergent_narrative = get_emergent_narrative()
+            self._procedural_world = get_procedural_world()
+            self._render_pipeline = get_render_pipeline()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1310,6 +1335,15 @@ class AgentRuntime:
             self._behavior_designer_ok = self._behavior_designer is not None
             self._quest_composer_ok = self._quest_composer is not None
             self._multi_agent_coordinator_ok = self._multi_agent_coordinator is not None
+            self._memory_orchestrator_ok = self._memory_orchestrator is not None
+            self._simulation_controller_ok = self._simulation_controller is not None
+            self._timeline_manager_ok = self._timeline_manager is not None
+            self._skill_generator_ok = self._skill_generator is not None
+            self._learning_loop_ok = self._learning_loop is not None
+            self._social_dynamics_ok = self._social_dynamics is not None
+            self._emergent_narrative_ok = self._emergent_narrative is not None
+            self._procedural_world_ok = self._procedural_world is not None
+            self._render_pipeline_ok = self._render_pipeline is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -2892,6 +2926,15 @@ class AgentRuntime:
             "behavior_designer": self._behavior_designer is not None,
             "quest_composer": self._quest_composer is not None,
             "multi_agent_coordinator": self._multi_agent_coordinator is not None,
+            "memory_orchestrator": self._memory_orchestrator is not None,
+            "simulation_controller": self._simulation_controller is not None,
+            "timeline_manager": self._timeline_manager is not None,
+            "skill_generator": self._skill_generator is not None,
+            "learning_loop": self._learning_loop is not None,
+            "social_dynamics": self._social_dynamics is not None,
+            "emergent_narrative": self._emergent_narrative is not None,
+            "procedural_world": self._procedural_world is not None,
+            "render_pipeline": self._render_pipeline is not None,
             },
         }
 
@@ -3507,6 +3550,24 @@ class AgentRuntime:
             status["quest_composer_stats"] = self._quest_composer.get_stats()
         if self._multi_agent_coordinator:
             status["multi_agent_coordinator_stats"] = self._multi_agent_coordinator.get_stats()
+        if self._memory_orchestrator:
+            status["memory_orchestrator_stats"] = self._memory_orchestrator.get_stats()
+        if self._simulation_controller:
+            status["simulation_controller_stats"] = self._simulation_controller.get_stats()
+        if self._timeline_manager:
+            status["timeline_manager_stats"] = self._timeline_manager.get_stats()
+        if self._skill_generator:
+            status["skill_generator_stats"] = self._skill_generator.get_stats()
+        if self._learning_loop:
+            status["learning_loop_stats"] = self._learning_loop.get_stats()
+        if self._social_dynamics:
+            status["social_dynamics_stats"] = self._social_dynamics.get_stats()
+        if self._emergent_narrative:
+            status["emergent_narrative_stats"] = self._emergent_narrative.get_stats()
+        if self._procedural_world:
+            status["procedural_world_stats"] = self._procedural_world.get_stats()
+        if self._render_pipeline:
+            status["render_pipeline_stats"] = self._render_pipeline.get_stats()
         return status
 
 
