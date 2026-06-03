@@ -28,6 +28,7 @@ interface OptimizationHint {
 }
 
 interface ValidationResult {
+  scene_id: string;
   valid: boolean;
   issues: string[];
   warnings: string[];
