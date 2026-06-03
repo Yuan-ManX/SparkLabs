@@ -247,7 +247,7 @@ const EventSheetEditor: React.FC = () => {
     log(`Simulated run of "${selectedSheet.name}" (${count} events evaluated)`);
   }, [selectedSheet, log]);
 
-  const s: Record<string, React.CSSProperties> = {
+  const s: Record<string, any> = {
     bg: { backgroundColor: '#1e1e2e', minHeight: '100vh', display: 'flex', flexDirection: 'column' },
     toolbar: { display: 'flex', alignItems: 'center', gap: 8, padding: '8px 16px', borderBottom: '1px solid #333', backgroundColor: '#222233' },
     btn: { background: '#6c5ce7', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 14px', cursor: 'pointer', fontSize: 12, fontWeight: 600, display: 'flex', alignItems: 'center', gap: 5 },
@@ -372,7 +372,7 @@ const EventSheetEditor: React.FC = () => {
                     No events yet. Click "New Event" to add one.
                   </div>
                 )}
-                {renderEventList(events, selectedSheetId!, 0)}
+                {renderEventList(events, 0)}
               </>
             )}
           </div>
