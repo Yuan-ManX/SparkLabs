@@ -139,6 +139,9 @@ import MemoryOrchestratorPanel from './MemoryOrchestratorPanel';
 import SimulationControllerPanel from './SimulationControllerPanel';
 import TimelineManagerPanel from './TimelineManagerPanel';
 import SkillGeneratorPanel from './SkillGeneratorPanel';
+import AgentEmergentNarrativePanel from './AgentEmergentNarrativePanel';
+import ProceduralWorldPanel from './ProceduralWorldPanel';
+import RenderPipelinePanel from './RenderPipelinePanel';
 
 type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' | 'audio_layering' | 'audit_trail' | 'behavior_library' | 'capability_registry' | 'chain_of_thought' | 'collaboration_protocol' | 'commands' | 'concurrency_manager' | 'context_compressor' | 'conversation_memory' | 'cron_scheduler' | 'custom_object_types' | 'decal_system' | 'delegation-framework' | 'document_synthesizer' | 'entity_blueprint' | 'experiment_framework' | 'extension-sdk' | 'forge' | 'game_reasoner' | 'gateway' | 'gesture_recognizer' | 'health' | 'import-pipeline' | 'input_map' | 'insights_generator' | 'interactive-audio' | 'journal_system' | 'kanban-coordinator' | 'knowledge_synthesis' | 'learning_loop' | 'lighting_2d' | 'lod_system' | 'material_graph' | 'memory_graph' | 'mesh' | 'narrative_branch' | 'occlusion_culling' | 'parallax_background' | 'personality_system' | 'physics_material' | 'pipeline' | 'playtest_simulator' | 'post_processing' | 'prefab-composer' | 'provider_switch' | 'render_layer' | 'resource_serializer' | 'scene_transition' | 'security-scanner' | 'self_optimization' | 'session_snapshot' | 'shadow_casting' | 'signal-bus' | 'simulation_runner' | 'skeleton_deformer' | 'skill-synthesizer' | 'skills_hub' | 'state_synchronizer' | 'streaming-scrubber' | 'studio' | 'telemetry_pipeline' | 'tile_map_optimizer' | 'tool_forge' | 'trajectory-generator' | 'trajectory_compressor' | 'verification_pipeline' | 'visual-script-runtime' | 'developer-oracle' | 'context-weaver' | 'session-nexus' | 'persona-vault' | 'voice-bridge' | 'ecosystem-hub' | 'frame-composer' | 'spatial-cluster' | 'asset-streamer' | 'deterministic-replay' | 'input-abstraction' | 'profile-loader' | 'intent-cascade' | 'game-forecaster' | 'asset-synthesizer' | 'tutorial-orchestrator' | 'skybox-renderer' | 'trail-renderer' | 'procedural-audio' | 'texture-atlas'
   | 'ab-test-runner' | 'heatmap-analyzer' | 'bug-forensics' | 'accessibility-auditor'
@@ -154,7 +157,8 @@ type TabId = 'agents' | 'agentic_coding' | 'animation_curve' | 'animation_tree' 
   | 'social-simulation' | 'adaptive-content' | 'monetization-designer' | 'progressive-loading'
   | 'world-builder' | 'behavior-designer' | 'quest-composer' | 'multi-agent-coordinator'
   | 'tilemap-runtime' | 'ecs' | 'physics-world-2d' | 'visual-scripting'
-  | 'memory-orchestrator' | 'simulation-controller' | 'timeline-manager' | 'skill-generator';
+  | 'memory-orchestrator' | 'simulation-controller' | 'timeline-manager' | 'skill-generator'
+  | 'emergent-narrative' | 'procedural-world' | 'render-pipeline';
 
 const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'commands', label: 'Commands', icon: '⌨' },
@@ -302,7 +306,10 @@ const TAB_CONFIG: { id: TabId; label: string; icon: string }[] = [
   { id: 'memory-orchestrator', label: 'Memory Orch 🧠', icon: '🧠' },
   { id: 'simulation-controller', label: 'Simulation 🌐', icon: '🌐' },
   { id: 'timeline-manager', label: 'Timeline ⏳', icon: '⏳' },
-  { id: 'skill-generator', label: 'Skill Gen ⚡', icon: '⚡' },
+  { id: 'skill-generator', label: 'Skill Gen', icon: '⚡' },
+  { id: 'emergent-narrative', label: 'Narrative', icon: '🌀' },
+  { id: 'procedural-world', label: 'World Gen', icon: '🌍' },
+  { id: 'render-pipeline', label: 'Render', icon: '🎬' },
 ];
 
 const STUDIO_TIERS: { tier: string; agents: { type: string; label: string }[] }[] = [
@@ -874,6 +881,9 @@ const AgentPanel: React.FC = () => {
       case 'simulation-controller': return <SimulationControllerPanel />;
       case 'timeline-manager': return <TimelineManagerPanel />;
       case 'skill-generator': return <SkillGeneratorPanel />;
+      case 'emergent-narrative': return <AgentEmergentNarrativePanel />;
+      case 'procedural-world': return <ProceduralWorldPanel />;
+      case 'render-pipeline': return <RenderPipelinePanel />;
       default: return null;
     }
   };
