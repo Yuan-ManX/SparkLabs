@@ -41,7 +41,7 @@ const CraftingEditor: React.FC = () => {
   const loadRecipes = useCallback(async () => {
     try {
       const data = await engineApi.craftingRecipes(characterId);
-      setRecipes((data.recipes || data) as Recipe[]);
+      setRecipes(((data as any).recipes || data) as Recipe[]);
     } catch {}
   }, [characterId]);
 
@@ -50,7 +50,7 @@ const CraftingEditor: React.FC = () => {
   const handleCraft = async (recipeId: string) => {
     try {
       const result = await engineApi.craftingCraft(characterId, recipeId);
-      setMessage(`Crafted: ${result.result_item || 'item'}`);
+      setMessage(`Crafted: ${(result as any).result_item || 'item'}`);
       loadStats();
     } catch { setMessage('Crafting failed.'); }
   };
