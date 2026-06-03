@@ -54,7 +54,7 @@ const TRANSITION_TYPES: TransitionType[] = ['fade', 'slide', 'scale'];
 /*  Styles (dark theme, #1e1e2e base)                                  */
 /* ------------------------------------------------------------------ */
 
-const styles: Record<string, React.CSSProperties> = {
+const styles: Record<string, any> = {
   container: {
     display: 'flex',
     height: '100%',
