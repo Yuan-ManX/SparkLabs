@@ -200,6 +200,10 @@ from sparkai.engine.engine_tilemap_runtime import EngineTileMapRuntime, get_tile
 from sparkai.engine.engine_entity_component_system import EngineEntityComponentSystem, get_entity_component_system
 from sparkai.engine.engine_physics_world_2d import EnginePhysicsWorld2D, get_engine_physics_world_2d
 from sparkai.engine.engine_visual_scripting import EngineVisualScripting, get_engine_visual_scripting
+from sparkai.engine.engine_scene_manager import EngineSceneManager, get_scene_manager
+from sparkai.engine.engine_animation_system import EngineAnimationSystem, get_animation_system
+from sparkai.engine.engine_particle_system import EngineParticleSystem, get_particle_system
+from sparkai.engine.engine_navigation_system import EngineNavigationSystem, get_navigation_system
 
 
 class SparkEngine:
@@ -399,6 +403,10 @@ class SparkEngine:
         self._ecs = get_entity_component_system()
         self._physics_world_2d = get_engine_physics_world_2d()
         self._visual_scripting = get_engine_visual_scripting()
+        self._scene_manager = get_scene_manager()
+        self._animation_system = get_animation_system()
+        self._particle_engine = get_particle_system()
+        self._navigation_system = get_navigation_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -728,6 +736,10 @@ class SparkEngine:
             "ecs": self._ecs.get_stats(),
             "physics_world_2d": self._physics_world_2d.get_stats(),
             "visual_scripting": self._visual_scripting.get_stats(),
+            "scene_manager": self._scene_manager.get_stats(),
+            "animation_engine": self._animation_system.get_stats(),
+            "particle_engine": self._particle_engine.get_stats(),
+            "navigation_system": self._navigation_system.get_stats(),
         }
 
     @property
@@ -1233,6 +1245,22 @@ class SparkEngine:
     @property
     def visual_scripting(self) -> EngineVisualScripting:
         return self._visual_scripting
+
+    @property
+    def scene_manager(self) -> EngineSceneManager:
+        return self._scene_manager
+
+    @property
+    def animation_engine(self) -> EngineAnimationSystem:
+        return self._animation_system
+
+    @property
+    def particle_engine(self) -> EngineParticleSystem:
+        return self._particle_engine
+
+    @property
+    def navigation_system(self) -> EngineNavigationSystem:
+        return self._navigation_system
 
 
 @dataclass
