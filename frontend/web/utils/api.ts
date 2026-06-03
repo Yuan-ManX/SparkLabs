@@ -96,6 +96,87 @@ export const engineApi = {
     api.post(`/engine/query/${queryType}`, params as Record<string, unknown> | undefined),
   command: (commandType: string, params?: unknown) =>
     api.post(`/engine/command/${commandType}`, params as Record<string, unknown> | undefined),
+  // Asset Harmonizer
+  harmonizerStats: () => api.get('/engine/asset-harmonizer/stats'),
+  harmonizerList: () => api.get('/engine/asset-harmonizer/assets'),
+  harmonizerRegister: (name: string, assetType: string, category: string, dimensions: Record<string, string>) =>
+    api.post('/engine/asset-harmonizer/register', { name, asset_type: assetType, category, dimensions }),
+  harmonizerCheck: (assetAId: string, assetBId: string) =>
+    api.post('/engine/asset-harmonizer/check', { asset_a_id: assetAId, asset_b_id: assetBId }),
+  // Crafting
+  craftingStats: () => api.get('/engine/crafting/stats'),
+  craftingRecipes: (characterId: string) => api.get(`/engine/crafting/recipes/${characterId}`),
+  craftingCraft: (characterId: string, recipeId: string) =>
+    api.post('/engine/crafting/craft', { character_id: characterId, recipe_id: recipeId }),
+  // Economy
+  economyStats: () => api.get('/engine/economy/stats'),
+  economyWallet: (ownerId: string) => api.get(`/engine/economy/wallet/${ownerId}`),
+  economyMarket: () => api.get('/engine/economy/market'),
+  economyAdd: (ownerId: string, currency: string, amount: number) =>
+    api.post('/engine/economy/add', { owner_id: ownerId, currency, amount }),
+  // Material
+  materialStats: () => api.get('/engine/material/stats'),
+  materialList: () => api.get('/engine/material/list'),
+  materialCreate: (name: string, domain: string, blendMode: string, shaderSource: string) =>
+    api.post('/engine/material/create', { name, domain, blend_mode: blendMode, shader_source: shaderSource }),
+  materialAddProperty: (materialId: string, propName: string, propType: string, value: any, min?: number | null, max?: number | null, desc?: string) =>
+    api.post(`/engine/material/${materialId}/properties`, { name: propName, prop_type: propType, value, min, max, description: desc }),
+  materialRemoveProperty: (materialId: string, propName: string) =>
+    api.delete(`/engine/material/${materialId}/properties/${propName}`),
+  materialSetProperty: (materialId: string, propName: string, value: number) =>
+    api.put(`/engine/material/${materialId}/properties/${propName}`, { value }),
+  materialAddTexture: (materialId: string, textureRef: string) =>
+    api.post(`/engine/material/${materialId}/textures`, { texture_ref: textureRef }),
+  materialRemoveTexture: (materialId: string, textureRef: string) =>
+    api.delete(`/engine/material/${materialId}/textures/${textureRef}`),
+  materialCompile: (materialId: string) =>
+    api.post(`/engine/material/${materialId}/compile`),
+  materialUpdate: (materialId: string, data: Record<string, unknown>) =>
+    api.put(`/engine/material/${materialId}`, data),
+  materialClone: (materialId: string, newName: string) =>
+    api.post(`/engine/material/${materialId}/clone`, { name: newName }),
+  // Narrative Graph
+  narrativeStats: () => api.get('/engine/narrative/stats'),
+  narrativeList: () => api.get('/engine/narrative/list'),
+  narrativeCreate: (title: string, data: Record<string, unknown>) =>
+    api.post('/engine/narrative/create', { title, ...data }),
+  narrativeAddNode: (graphId: string, data: Record<string, unknown>) =>
+    api.post(`/engine/narrative/${graphId}/nodes`, data),
+  narrativeAddEdge: (graphId: string, data: Record<string, unknown>) =>
+    api.post(`/engine/narrative/${graphId}/edges`, data),
+  narrativeRemoveNode: (graphId: string, nodeId: string) =>
+    api.delete(`/engine/narrative/${graphId}/nodes/${nodeId}`),
+  narrativeValidate: (graphId: string) =>
+    api.post(`/engine/narrative/${graphId}/validate`),
+  narrativeSave: (graphId: string, data: Record<string, unknown>) =>
+    api.put(`/engine/narrative/${graphId}`, data),
+  // Progression
+  progressionStats: () => api.get('/engine/progression/stats'),
+  progressionList: () => api.get('/engine/progression/list'),
+  progressionCreate: (name: string, curveType: string, maxLevel: number) =>
+    api.post('/engine/progression/create', { name, curve_type: curveType, max_level: maxLevel }),
+  progressionAddNode: (curveId: string, data: Record<string, unknown>) =>
+    api.post(`/engine/progression/${curveId}/nodes`, data),
+  progressionRemoveNode: (curveId: string, nodeId: string) =>
+    api.delete(`/engine/progression/${curveId}/nodes/${nodeId}`),
+  progressionSave: (curveId: string, data: Record<string, unknown>) =>
+    api.put(`/engine/progression/${curveId}`, data),
+  // Skill Tree
+  skillTreeStats: () => api.get('/engine/skill-tree/stats'),
+  skillTreeAvailable: (characterId: string) => api.get(`/engine/skill-tree/available/${characterId}`),
+  skillTreeSummary: (treeId: string) => api.get(`/engine/skill-tree/summary?tree_id=${treeId}`),
+  skillTreeCreateCharacter: (characterId: string, startingPoints: number) =>
+    api.post('/engine/skill-tree/create-character', { character_id: characterId, starting_points: startingPoints }),
+  skillTreeUnlock: (characterId: string, nodeId: string) =>
+    api.post('/engine/skill-tree/unlock', { character_id: characterId, node_id: nodeId }),
+  // Weather
+  weatherStats: () => api.get('/engine/weather/stats'),
+  weatherSet: (zone: string, state: string) =>
+    api.post('/engine/weather/set', { zone, state }),
+  weatherRandomize: (zone: string) =>
+    api.post('/engine/weather/randomize', { zone }),
+  // Scene get (for CutsceneTimeline)
+  get: (id: string) => api.get(`/engine/scenes/${id}`),
 };
 
 export const agentApi = {
@@ -111,6 +192,16 @@ export const agentApi = {
   orchestratorStatus: () => api.get('/agent/orchestrator/status'),
   getSkills: (agentId: string) => api.get(`/agent/${agentId}/skills`),
   getToolsets: (agentId: string) => api.get(`/agent/${agentId}/toolsets`),
+  // Game Balancer
+  balancerStats: () => api.get('/agent/balancer/stats'),
+  balancerParameters: (domain: string) => api.get(`/agent/balancer/parameters?domain=${domain}`),
+  balancerAnalyze: (domain: string) => api.post(`/agent/balancer/analyze?domain=${domain}`),
+  // Game Testing
+  gameTestingStats: () => api.get('/agent/game-testing/stats'),
+  gameTestingResults: () => api.get('/agent/game-testing/results'),
+  gameTestingCoverage: () => api.get('/agent/game-testing/coverage'),
+  gameTestingRun: (testTypes: string[]) =>
+    api.post('/agent/game-testing/run', { test_types: testTypes }),
 };
 
 export const studioApi = {
