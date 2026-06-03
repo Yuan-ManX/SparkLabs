@@ -67,7 +67,7 @@ const MaterialEditor: React.FC = () => {
   const loadMaterials = useCallback(async () => {
     try {
       const data = await engineApi.materialList();
-      setMaterials((data.materials || data || []) as MaterialDef[]);
+      setMaterials(((data as any).materials || data || []) as MaterialDef[]);
     } catch {}
   }, []);
 
@@ -153,7 +153,7 @@ const MaterialEditor: React.FC = () => {
     if (!selectedId) return;
     try {
       const result = await engineApi.materialCompile(selectedId);
-      setMessage(result.success ? 'Shader compiled successfully' : `Error: ${result.error}`);
+      setMessage((result as any).success ? 'Shader compiled successfully' : `Error: ${(result as any).error}`);
       loadMaterials();
     } catch { setMessage('Compilation failed.'); }
   };
