@@ -380,6 +380,10 @@ from sparkai.agent.agent_social_dynamics import AgentSocialDynamics, get_social_
 from sparkai.agent.agent_emergent_narrative import AgentEmergentNarrative, get_emergent_narrative
 from sparkai.engine.engine_procedural_world import EngineProceduralWorld, get_procedural_world
 from sparkai.engine.engine_render_pipeline import EngineRenderPipeline, get_render_pipeline
+from sparkai.engine.engine_physics_dynamics import EnginePhysicsDynamics, get_engine_physics_dynamics
+from sparkai.engine.engine_audio_spatial import EngineAudioSpatial, get_audio_spatial
+from sparkai.engine.engine_behavior_orchestrator import EngineBehaviorOrchestrator, get_engine_behavior_orchestrator
+from sparkai.agent.agent_cross_module_orchestrator import AgentCrossModuleOrchestrator, get_cross_module_orchestrator
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -879,6 +883,10 @@ class AgentRuntime:
         self._emergent_narrative: Optional[AgentEmergentNarrative] = None
         self._procedural_world: Optional[EngineProceduralWorld] = None
         self._render_pipeline: Optional[EngineRenderPipeline] = None
+        self._physics_dynamics: Optional[EnginePhysicsDynamics] = None
+        self._audio_spatial: Optional[EngineAudioSpatial] = None
+        self._behavior_orchestrator: Optional[EngineBehaviorOrchestrator] = None
+        self._cross_module_orchestrator: Optional[AgentCrossModuleOrchestrator] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1262,6 +1270,10 @@ class AgentRuntime:
             self._emergent_narrative = get_emergent_narrative()
             self._procedural_world = get_procedural_world()
             self._render_pipeline = get_render_pipeline()
+            self._physics_dynamics = get_engine_physics_dynamics()
+            self._audio_spatial = get_audio_spatial()
+            self._behavior_orchestrator = get_engine_behavior_orchestrator()
+            self._cross_module_orchestrator = get_cross_module_orchestrator()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
