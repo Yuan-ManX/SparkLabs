@@ -59,7 +59,7 @@ const ProgressionDesigner: React.FC = () => {
   const loadCurves = useCallback(async () => {
     try {
       const data = await engineApi.progressionList();
-      const list = data.curves || data || [];
+      const list = (data as any).curves || data || [];
       setCurves(list as ProgressionCurve[]);
     } catch {}
   }, []);
