@@ -282,7 +282,7 @@ const AnimationTimeline: React.FC = () => {
     setTracks((prev) =>
       prev.map((t) =>
         t.id === trackId
-          ? { ...t, keyframes: [...t.keyframes, { id, time: currentTime, value: defaultValue, easing: 'LINEAR', interpolation: 'linear' }].sort((a, b) => a.time - b.time) }
+          ? { ...t, keyframes: [...t.keyframes, { id, time: currentTime, value: defaultValue, easing: 'LINEAR' as EasingMode, interpolation: 'linear' as InterpolationMode }].sort((a, b) => a.time - b.time) }
           : t
       )
     );
@@ -783,7 +783,7 @@ const AnimationTimeline: React.FC = () => {
                   <input
                     type="color"
                     value={String(selectedKeyframe.value)}
-                    onChange={(e) => updateSelectedKeyframe({ value: e.target.value })}
+                    onChange={(e) => updateSelectedKeyframe({ value: e.target.value as any })}
                     style={{
                       width: 30,
                       height: 22,
