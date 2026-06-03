@@ -22383,6 +22383,10 @@ from sparkai.agent.agent_social_dynamics import get_social_dynamics
 from sparkai.agent.agent_emergent_narrative import get_emergent_narrative
 from sparkai.engine.engine_procedural_world import get_procedural_world
 from sparkai.engine.engine_render_pipeline import get_render_pipeline
+from sparkai.engine.engine_physics_dynamics import get_engine_physics_dynamics
+from sparkai.engine.engine_audio_spatial import get_audio_spatial
+from sparkai.engine.engine_behavior_orchestrator import get_engine_behavior_orchestrator
+from sparkai.agent.agent_cross_module_orchestrator import get_cross_module_orchestrator
 from sparkai.engine.engine_tilemap_runtime import get_tilemap_runtime
 from sparkai.engine.engine_entity_component_system import get_entity_component_system
 from sparkai.engine.engine_physics_world_2d import get_engine_physics_world_2d
@@ -22431,6 +22435,10 @@ _social_dynamics = get_social_dynamics()
 _emergent_narrative = get_emergent_narrative()
 _procedural_world = get_procedural_world()
 _render_pipeline = get_render_pipeline()
+_physics_dynamics = get_engine_physics_dynamics()
+_audio_spatial = get_audio_spatial()
+_behavior_orchestrator = get_engine_behavior_orchestrator()
+_cross_module_orchestrator = get_cross_module_orchestrator()
 
 # ============================================================
 # SkillForge Endpoints
@@ -25281,5 +25289,305 @@ async def render_pipeline_add_pass(request: Request):
             order=body.get("order", -1),
         )
         return rp.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Physics Dynamics Endpoints
+# ============================================================
+
+@router.get("/physics-dynamics/stats")
+async def physics_dynamics_stats():
+    try:
+        return _physics_dynamics.get_physics_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-dynamics/create-body")
+async def physics_dynamics_create_body(request: Request):
+    try:
+        body = await request.json()
+        rb = _physics_dynamics.create_rigid_body(
+            name=body.get("name", "body"),
+            body_type=body.get("body_type", "dynamic"),
+            mass=body.get("mass", 1.0),
+            position=body.get("position", (0.0, 0.0, 0.0)),
+            collision_shape=body.get("collision_shape", (0.5, 0.5, 0.5)),
+            collision_shape_type=body.get("collision_shape_type", "sphere"),
+        )
+        return rb.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-dynamics/apply-force")
+async def physics_dynamics_apply_force(request: Request):
+    try:
+        body = await request.json()
+        result = _physics_dynamics.apply_force(
+            body.get("body_id", ""),
+            body.get("force_vector", (0.0, 0.0, 0.0)),
+            body.get("force_mode", "force"),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-dynamics/ray-cast")
+async def physics_dynamics_ray_cast(request: Request):
+    try:
+        body = await request.json()
+        result = _physics_dynamics.ray_cast(
+            body.get("origin", (0.0, 0.0, 0.0)),
+            body.get("direction", (0.0, 0.0, -1.0)),
+            body.get("max_distance", 100.0),
+        )
+        return result or {}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-dynamics/simulate")
+async def physics_dynamics_simulate(request: Request):
+    try:
+        body = await request.json()
+        collisions = _physics_dynamics.simulate_step(
+            body.get("delta_time", 0.016),
+            body.get("substeps", 4),
+        )
+        return {"collisions": [c.to_dict() for c in collisions]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-dynamics/set-gravity")
+async def physics_dynamics_set_gravity(request: Request):
+    try:
+        body = await request.json()
+        _physics_dynamics.set_gravity(body.get("gravity", (0.0, -9.81, 0.0)))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Audio Spatial Endpoints
+# ============================================================
+
+@router.get("/audio-spatial/stats")
+async def audio_spatial_stats():
+    try:
+        return _audio_spatial.get_audio_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/audio-spatial/create-source")
+async def audio_spatial_create_source(request: Request):
+    try:
+        body = await request.json()
+        src = _audio_spatial.create_audio_source(
+            name=body.get("name", "source"),
+            source_type=body.get("source_type", "point"),
+            audio_clip=body.get("audio_clip", ""),
+            position=body.get("position", (0.0, 0.0, 0.0)),
+            is_looping=body.get("is_looping", False),
+            volume=body.get("volume", 1.0),
+            pitch=body.get("pitch", 1.0),
+        )
+        return src.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/audio-spatial/play")
+async def audio_spatial_play(request: Request):
+    try:
+        body = await request.json()
+        result = _audio_spatial.play_source(
+            body.get("source_id", ""),
+            body.get("fade_in_time", 0.0),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/audio-spatial/stop")
+async def audio_spatial_stop(request: Request):
+    try:
+        body = await request.json()
+        result = _audio_spatial.stop_source(
+            body.get("source_id", ""),
+            body.get("fade_out_time", 0.0),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/audio-spatial/calculate-occlusion")
+async def audio_spatial_calculate_occlusion(request: Request):
+    try:
+        body = await request.json()
+        result = _audio_spatial.calculate_occlusion(
+            body.get("source_id", ""),
+            body.get("listener_id", "main"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/audio-spatial/set-master-volume")
+async def audio_spatial_set_master_volume(request: Request):
+    try:
+        body = await request.json()
+        _audio_spatial.set_master_volume(body.get("volume", 1.0))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Behavior Orchestrator Endpoints
+# ============================================================
+
+@router.get("/behavior-orchestrator/stats")
+async def behavior_orchestrator_stats():
+    try:
+        return _behavior_orchestrator.get_orchestration_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-orchestrator/create-tree")
+async def behavior_orchestrator_create_tree(request: Request):
+    try:
+        body = await request.json()
+        tree = _behavior_orchestrator.create_behavior_tree(
+            name=body.get("name", "tree"),
+            description=body.get("description", ""),
+            agent_id=body.get("agent_id", ""),
+            tick_rate=body.get("tick_rate", 30.0),
+        )
+        return tree.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-orchestrator/create-node")
+async def behavior_orchestrator_create_node(request: Request):
+    try:
+        body = await request.json()
+        node = _behavior_orchestrator.create_behavior_node(
+            tree_id=body.get("tree_id", ""),
+            node_type=body.get("node_type", "selector"),
+            name=body.get("name", "node"),
+            description=body.get("description", ""),
+            parent_id=body.get("parent_id", ""),
+            condition=body.get("condition", ""),
+            action=body.get("action", ""),
+            params=body.get("params", {}),
+        )
+        return node.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-orchestrator/tick")
+async def behavior_orchestrator_tick(request: Request):
+    try:
+        body = await request.json()
+        context = _behavior_orchestrator.tick_tree(
+            body.get("tree_id", ""),
+            body.get("context", {}),
+        )
+        return {"result": context.name if hasattr(context, 'name') else str(context)}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/behavior-orchestrator/active-trees")
+async def behavior_orchestrator_active_trees():
+    try:
+        return {"active_trees": _behavior_orchestrator.get_active_trees()}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-orchestrator/export")
+async def behavior_orchestrator_export(request: Request):
+    try:
+        body = await request.json()
+        graph = _behavior_orchestrator.export_to_graph(
+            body.get("tree_id", ""),
+            body.get("format", "json"),
+        )
+        return {"graph": graph}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Cross-Module Orchestrator Endpoints
+# ============================================================
+
+@router.get("/cross-module-orchestrator/stats")
+async def cross_module_orchestrator_stats():
+    try:
+        return _cross_module_orchestrator.get_orchestration_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/cross-module-orchestrator/register-module")
+async def cross_module_register_module(request: Request):
+    try:
+        body = await request.json()
+        module_id = _cross_module_orchestrator.register_module(
+            module_name=body.get("module_name", ""),
+            module_type=body.get("module_type", "agent"),
+            capabilities=body.get("capabilities", []),
+            dependencies=body.get("dependencies", []),
+            max_concurrent_tasks=body.get("max_concurrent_tasks", 5),
+            health_check_endpoint=body.get("health_check_endpoint", ""),
+        )
+        return {"module_id": module_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/cross-module-orchestrator/create-pipeline")
+async def cross_module_create_pipeline(request: Request):
+    try:
+        body = await request.json()
+        pipeline = _cross_module_orchestrator.create_pipeline(
+            name=body.get("name", "pipeline"),
+            module_sequence=body.get("module_sequence", []),
+            entry_condition=body.get("entry_condition", ""),
+            exit_condition=body.get("exit_condition", ""),
+            timeout=body.get("timeout", 300.0),
+            retry_policy=body.get("retry_policy", "none"),
+        )
+        return pipeline.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/cross-module-orchestrator/execute")
+async def cross_module_execute_pipeline(request: Request):
+    try:
+        body = await request.json()
+        task = _cross_module_orchestrator.execute_pipeline(
+            pipeline_id=body.get("pipeline_id", ""),
+            input_context=body.get("input_context", {}),
+            priority=body.get("priority", "medium"),
+        )
+        return task.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/cross-module-orchestrator/health/{module_name}")
+async def cross_module_get_health(module_name: str):
+    try:
+        report = _cross_module_orchestrator.check_module_health(module_name)
+        return report.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/cross-module-orchestrator/health-check")
+async def cross_module_health_check_all():
+    try:
+        reports = _cross_module_orchestrator.check_all_health()
+        return {"reports": [r.to_dict() for r in reports]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/cross-module-orchestrator/dependency-graph")
+async def cross_module_dependency_graph():
+    try:
+        return _cross_module_orchestrator.get_dependency_graph()
     except Exception as e:
         return {"error": str(e)}
