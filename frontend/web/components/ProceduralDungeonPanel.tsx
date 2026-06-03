@@ -48,6 +48,7 @@ interface DifficultyCurve {
   average_difficulty: number;
   peak_difficulty: number;
   recommended_player_level: number;
+  room_count?: number;
 }
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
