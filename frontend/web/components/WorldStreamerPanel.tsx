@@ -1,379 +1,558 @@
 import React, { useState, useEffect, useCallback } from 'react';
 
-type ChunkStatus = 'loaded' | 'loading' | 'unloading' | 'unloaded';
+const API_BASE = 'http://localhost:8000/api/agent';
 
 interface ChunkData {
-  id: string;
+  chunk_id: string;
   grid_x: number;
-  grid_z: number;
-  status: ChunkStatus;
+  grid_y: number;
+  world_x: number;
+  world_y: number;
+  chunk_size: number;
+  state: string;
+  detail_level: string;
+  priority: string;
   entity_count: number;
-  memory_kb: number;
+  memory_usage_bytes: number;
+  load_time_ms: number;
+  distance_to_camera: number | null;
+  contained_biomes: string[];
+  tags: string[];
 }
 
-interface StreamingStats {
-  loaded_count: number;
-  loading_count: number;
-  unloading_count: number;
-  total_memory_mb: number;
-  queue_size: number;
-  fps_impact: number;
+interface RegionData {
+  region_id: string;
+  name: string;
+  chunk_ids: string[];
+  chunk_count: number;
+  center_x: number;
+  center_y: number;
+  radius: number;
+  is_active: boolean;
+  priority: string;
 }
-
-interface CameraPosition {
-  x: number;
-  y: number;
-  z: number;
-}
-
-const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-
-const CHUNK_COLORS: Record<ChunkStatus, string> = {
-  loaded: '#6bcb77',
-  loading: '#0984e3',
-  unloading: '#e17055',
-  unloaded: '#444',
-};
-
-const CHUNK_LABELS: Record<ChunkStatus, string> = {
-  loaded: 'Loaded',
-  loading: 'Loading',
-  unloading: 'Unloading',
-  unloaded: 'Unloaded',
-};
-
-const generateSampleChunks = (cx: number, cz: number, radius: number): ChunkData[] => {
-  const chunks: ChunkData[] = [];
-  for (let x = cx - radius; x <= cx + radius; x++) {
-    for (let z = cz - radius; z <= cz + radius; z++) {
-      const dist = Math.sqrt((x - cx) ** 2 + (z - cz) ** 2);
-      let status: ChunkStatus;
-      if (dist <= radius * 0.4) status = 'loaded';
-      else if (dist <= radius * 0.7) status = 'loading';
-      else if (dist <= radius * 0.9) status = 'unloading';
-      else status = 'unloaded';
-      chunks.push({
-        id: uid(),
-        grid_x: x,
-        grid_z: z,
-        status,
-        entity_count: status === 'loaded' ? Math.floor(Math.random() * 50) + 10 : 0,
-        memory_kb: status === 'loaded' ? Math.floor(Math.random() * 200) + 50 : 0,
-      });
-    }
-  }
-  return chunks;
-};
 
 const WorldStreamerPanel: React.FC = () => {
+  const [stats, setStats] = useState<any>(null);
   const [chunks, setChunks] = useState<ChunkData[]>([]);
-  const [camera, setCamera] = useState<CameraPosition>({ x: 0, y: 15, z: 0 });
-  const [chunkRadius, setChunkRadius] = useState(4);
-  const [stats, setStats] = useState<StreamingStats>({
-    loaded_count: 0,
-    loading_count: 0,
-    unloading_count: 0,
-    total_memory_mb: 0,
-    queue_size: 0,
-    fps_impact: 0,
-  });
-  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
-  const [camXInput, setCamXInput] = useState('0');
-  const [camYInput, setCamYInput] = useState('15');
-  const [camZInput, setCamZInput] = useState('0');
+  const [loadedChunks, setLoadedChunks] = useState<ChunkData[]>([]);
+  const [regions, setRegions] = useState<RegionData[]>([]);
+  const [config, setConfig] = useState<any>(null);
+  const [activeTab, setActiveTab] = useState<'chunks' | 'loaded' | 'regions' | 'config'>('chunks');
+  const [gridRadius, setGridRadius] = useState('3');
+  const [centerX, setCenterX] = useState('0');
+  const [centerY, setCenterY] = useState('0');
+  const [singleChunkX, setSingleChunkX] = useState('0');
+  const [singleChunkY, setSingleChunkY] = useState('0');
+  const [regionName, setRegionName] = useState('');
+  const [regionRadius, setRegionRadius] = useState('500');
+  const [regionCX, setRegionCX] = useState('0');
+  const [regionCY, setRegionCY] = useState('0');
+  const [cameraX, setCameraX] = useState('0');
+  const [cameraY, setCameraY] = useState('0');
+  const [message, setMessage] = useState<string | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
-
-  const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage(null), 4000);
-  };
-
-  const computeStats = (chunkList: ChunkData[]): StreamingStats => {
-    const loaded = chunkList.filter(c => c.status === 'loaded');
-    const loading = chunkList.filter(c => c.status === 'loading');
-    const unloading = chunkList.filter(c => c.status === 'unloading');
-    const totalMem = chunkList.reduce((sum, c) => sum + c.memory_kb, 0);
-    return {
-      loaded_count: loaded.length,
-      loading_count: loading.length,
-      unloading_count: unloading.length,
-      total_memory_mb: totalMem / 1024,
-      queue_size: loading.length + unloading.length,
-      fps_impact: Math.max(0, 60 - loaded.length * 0.5),
-    };
-  };
-
-  const fetchLoadedChunks = useCallback(async () => {
+  const fetchData = useCallback(async () => {
     try {
-      const res = await fetch(`${apiBase}/scene-streamer/loaded-chunks`);
-      const data = await res.json();
-      if (data.chunks) setChunks(data.chunks);
-      if (data.stats) setStats(data.stats);
-    } catch {}
-  }, []);
-
-  const updateCamera = useCallback(async (pos: CameraPosition) => {
-    try {
-      await fetch(`${apiBase}/scene-streamer/update-camera`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(pos),
-      });
+      const [statsRes, chunksRes, loadedRes, regionsRes, configRes] = await Promise.all([
+        fetch(`${API_BASE}/world-streamer/stats`).then(r => r.json()),
+        fetch(`${API_BASE}/world-streamer/chunks`).then(r => r.json()),
+        fetch(`${API_BASE}/world-streamer/loaded`).then(r => r.json()),
+        fetch(`${API_BASE}/world-streamer/regions`).then(r => r.json()),
+        fetch(`${API_BASE}/world-streamer/config`).then(r => r.json()),
+      ]);
+      setStats(statsRes);
+      setChunks(Array.isArray(chunksRes) ? chunksRes : []);
+      setLoadedChunks(Array.isArray(loadedRes) ? loadedRes : []);
+      setRegions(Array.isArray(regionsRes) ? regionsRes : []);
+      setConfig(configRes);
     } catch {}
   }, []);
 
   useEffect(() => {
-    const cx = Math.round(camera.x / 16);
-    const cz = Math.round(camera.z / 16);
-    const sampleChunks = generateSampleChunks(cx, cz, chunkRadius);
-    setChunks(sampleChunks);
-    setStats(computeStats(sampleChunks));
-    fetchLoadedChunks();
-  }, [camera, chunkRadius, fetchLoadedChunks]);
+    fetchData();
+    const interval = setInterval(fetchData, 15000);
+    return () => clearInterval(interval);
+  }, [fetchData]);
 
-  const handleCameraUpdate = () => {
-    const x = parseFloat(camXInput) || 0;
-    const y = parseFloat(camYInput) || 0;
-    const z = parseFloat(camZInput) || 0;
-    const pos: CameraPosition = { x, y, z };
-    setCamera(pos);
-    updateCamera(pos);
-    showMessage(`Camera moved to (${x}, ${y}, ${z})`, 'info');
+  const generateGrid = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/world-streamer/generate-grid`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          center_x: parseFloat(centerX),
+          center_y: parseFloat(centerY),
+          grid_radius: parseInt(gridRadius),
+        }),
+      });
+      const data = await res.json();
+      if (data.error) setMessage(`Error: ${data.error}`);
+      else setMessage(`Generated ${data.length} chunks`);
+      fetchData();
+    } catch {}
   };
 
-  const getWorldGrid = () => {
-    const cx = Math.round(camera.x / 16);
-    const cz = Math.round(camera.z / 16);
-    const size = chunkRadius * 2 + 1;
-    const grid: (ChunkData | null)[][] = Array.from({ length: size }, () => Array(size).fill(null));
-    const chunkMap = new Map<string, ChunkData>();
-    chunks.forEach(c => chunkMap.set(`${c.grid_x},${c.grid_z}`, c));
-    for (let gx = 0; gx < size; gx++) {
-      for (let gz = 0; gz < size; gz++) {
-        const wx = cx - chunkRadius + gx;
-        const wz = cz - chunkRadius + gz;
-        const key = `${wx},${wz}`;
-        if (chunkMap.has(key)) {
-          grid[gz][gx] = chunkMap.get(key)!;
-        }
-      }
-    }
-    return grid;
+  const createSingleChunk = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/world-streamer/create-chunk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          grid_x: parseInt(singleChunkX),
+          grid_y: parseInt(singleChunkY),
+          priority: 'normal',
+        }),
+      });
+      const data = await res.json();
+      if (data.error) setMessage(`Error: ${data.error}`);
+      else setMessage(`Chunk (${data.grid_x}, ${data.grid_y}) created`);
+      fetchData();
+    } catch {}
   };
 
-  const grid = getWorldGrid();
-  const cellSize = Math.max(8, Math.min(24, 280 / (chunkRadius * 2 + 1)));
+  const loadChunk = async (chunkId: string) => {
+    try {
+      await fetch(`${API_BASE}/world-streamer/load-chunk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chunk_id: chunkId, priority: 'normal' }),
+      });
+      fetchData();
+    } catch {}
+  };
+
+  const unloadChunk = async (chunkId: string) => {
+    try {
+      await fetch(`${API_BASE}/world-streamer/unload-chunk`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ chunk_id: chunkId }),
+      });
+      fetchData();
+    } catch {}
+  };
+
+  const tickStreamer = async () => {
+    try {
+      await fetch(`${API_BASE}/world-streamer/tick`, { method: 'POST' });
+      fetchData();
+      setMessage('Streaming tick processed');
+    } catch {}
+  };
+
+  const setCamera = async () => {
+    try {
+      await fetch(`${API_BASE}/world-streamer/set-camera`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ x: parseFloat(cameraX), y: parseFloat(cameraY) }),
+      });
+      fetchData();
+      setMessage(`Camera moved to (${cameraX}, ${cameraY})`);
+    } catch {}
+  };
+
+  const createRegion = async () => {
+    if (!regionName.trim()) return;
+    try {
+      const res = await fetch(`${API_BASE}/world-streamer/create-region`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: regionName,
+          center_x: parseFloat(regionCX),
+          center_y: parseFloat(regionCY),
+          radius: parseFloat(regionRadius),
+        }),
+      });
+      const data = await res.json();
+      if (data.error) setMessage(`Error: ${data.error}`);
+      else { setMessage(`Region "${data.name}" created`); setRegionName(''); }
+      fetchData();
+    } catch {}
+  };
+
+  const activateRegion = async (regionId: string) => {
+    try {
+      await fetch(`${API_BASE}/world-streamer/activate-region`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ region_id: regionId }),
+      });
+      fetchData();
+      setMessage('Region activated');
+    } catch {}
+  };
+
+  const stateColors: Record<string, string> = {
+    unloaded: '#666', loading: '#f39c12', loaded: '#2ecc71',
+    active: '#3498db', unloading: '#e74c3c', frozen: '#8e44ad', error: '#e74c3c',
+  };
+
+  const detailColors: Record<string, string> = {
+    low: '#888', medium: '#aaa', high: '#2ecc71', ultra: '#3498db', cinematic: '#e94560',
+  };
 
   return (
-    <div style={{
-      display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
-      fontFamily: 'system-ui, sans-serif', fontSize: 13,
-    }}>
-      <div style={{
-        padding: '12px 16px', borderBottom: '1px solid #2a2a3e',
-        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <i className="fa-solid fa-globe" style={{ color: '#6c5ce7', fontSize: 16 }} />
-          <span style={{ fontWeight: 700, fontSize: 15 }}>World Streamer</span>
-        </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-          <span style={{ fontSize: 10, color: '#888' }}>
-            {stats.loaded_count} loaded | {stats.total_memory_mb.toFixed(1)} MB
+    <div style={{ padding: 16, color: '#eee', fontFamily: 'monospace', fontSize: 13 }}>
+      <h2 style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 12, color: '#3498db' }}>
+        World Streamer
+      </h2>
+
+      {/* Stats Bar */}
+      {stats && (
+        <div style={{ display: 'flex', gap: 16, marginBottom: 16, flexWrap: 'wrap' }}>
+          <span style={{ background: '#1a1a2e', padding: '6px 12px', borderRadius: 6 }}>
+            Chunks: <b>{stats.total_chunks}</b>
           </span>
-          <button onClick={fetchLoadedChunks} style={{
-            background: 'none', border: '1px solid #333', color: '#aaa',
-            borderRadius: 4, padding: '4px 8px', cursor: 'pointer', fontSize: 11,
-          }}>
-            <i className="fa-solid fa-rotate" />
+          <span style={{ background: '#1a1a2e', padding: '6px 12px', borderRadius: 6 }}>
+            Loaded: <b>{stats.total_loaded}/{stats.config?.max_loaded_chunks || 64}</b>
+          </span>
+          <span style={{ background: '#1a1a2e', padding: '6px 12px', borderRadius: 6 }}>
+            Memory: <b>{stats.total_memory_mb} MB</b>
+          </span>
+          <span style={{ background: '#1a1a2e', padding: '6px 12px', borderRadius: 6 }}>
+            Queue: <b>{stats.load_queue_size}L / {stats.unload_queue_size}U</b>
+          </span>
+          <span style={{ background: '#1a1a2e', padding: '6px 12px', borderRadius: 6 }}>
+            Camera: <b>({stats.camera_position?.[0]?.toFixed(0)}, {stats.camera_position?.[1]?.toFixed(0)})</b>
+          </span>
+        </div>
+      )}
+
+      {/* Message */}
+      {message && (
+        <div style={{
+          background: message.startsWith('Error') ? '#e74c3c33' : '#2ecc7133',
+          padding: '8px 12px', borderRadius: 6, marginBottom: 12,
+          color: message.startsWith('Error') ? '#e74c3c' : '#2ecc71',
+        }}>
+          {message}
+          <button onClick={() => setMessage(null)} style={{ marginLeft: 12, color: '#888', cursor: 'pointer', background: 'none', border: 'none' }}>x</button>
+        </div>
+      )}
+
+      {/* Tab Navigation */}
+      <div style={{ display: 'flex', gap: 0, marginBottom: 16, borderBottom: '1px solid #333' }}>
+        {(['chunks', 'loaded', 'regions', 'config'] as const).map(tab => (
+          <button
+            key={tab}
+            onClick={() => setActiveTab(tab)}
+            style={{
+              padding: '8px 16px',
+              cursor: 'pointer',
+              background: 'none',
+              border: 'none',
+              borderBottom: activeTab === tab ? '2px solid #3498db' : '2px solid transparent',
+              color: activeTab === tab ? '#3498db' : '#888',
+              fontFamily: 'monospace',
+              fontSize: 13,
+              textTransform: 'capitalize',
+            }}
+          >
+            {tab}
+          </button>
+        ))}
+      </div>
+
+      {/* Controls */}
+      <div style={{ background: '#1a1a2e', padding: 12, borderRadius: 8, marginBottom: 16 }}>
+        <div style={{ display: 'flex', gap: 12, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <div>
+            <label style={{ display: 'block', color: '#888', fontSize: 11, marginBottom: 2 }}>Grid Radius</label>
+            <input
+              type="number"
+              value={gridRadius}
+              onChange={e => setGridRadius(e.target.value)}
+              style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+            />
+          </div>
+          <div>
+            <label style={{ display: 'block', color: '#888', fontSize: 11, marginBottom: 2 }}>Center X/Y</label>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <input
+                type="number"
+                value={centerX}
+                onChange={e => setCenterX(e.target.value)}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+              />
+              <input
+                type="number"
+                value={centerY}
+                onChange={e => setCenterY(e.target.value)}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+              />
+            </div>
+          </div>
+          <button
+            onClick={generateGrid}
+            style={{ padding: '8px 16px', background: '#3498db', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontSize: 12 }}
+          >
+            Generate Grid
+          </button>
+          <button
+            onClick={tickStreamer}
+            style={{ padding: '8px 16px', background: '#2ecc71', color: '#000', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontSize: 12 }}
+          >
+            Tick
+          </button>
+        </div>
+
+        <div style={{ display: 'flex', gap: 12, marginTop: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <div>
+            <label style={{ display: 'block', color: '#888', fontSize: 11, marginBottom: 2 }}>Single Chunk X/Y</label>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <input
+                type="number"
+                value={singleChunkX}
+                onChange={e => setSingleChunkX(e.target.value)}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+              />
+              <input
+                type="number"
+                value={singleChunkY}
+                onChange={e => setSingleChunkY(e.target.value)}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+              />
+            </div>
+          </div>
+          <button
+            onClick={createSingleChunk}
+            style={{ padding: '8px 16px', background: '#8e44ad', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontSize: 12 }}
+          >
+            Create Chunk
+          </button>
+
+          <div style={{ marginLeft: 16 }}>
+            <label style={{ display: 'block', color: '#888', fontSize: 11, marginBottom: 2 }}>Camera X/Y</label>
+            <div style={{ display: 'flex', gap: 4 }}>
+              <input
+                type="number"
+                value={cameraX}
+                onChange={e => setCameraX(e.target.value)}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+              />
+              <input
+                type="number"
+                value={cameraY}
+                onChange={e => setCameraY(e.target.value)}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+              />
+            </div>
+          </div>
+          <button
+            onClick={setCamera}
+            style={{ padding: '8px 16px', background: '#f39c12', color: '#000', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontSize: 12 }}
+          >
+            Move Camera
           </button>
         </div>
       </div>
 
-      {message && (
-        <div style={{
-          padding: '8px 16px', fontSize: 12,
-          backgroundColor: message.type === 'success' ? '#1a3a1a' : message.type === 'error' ? '#3a1a1a' : '#1a2a3a',
-          borderBottom: `1px solid ${message.type === 'success' ? '#2d5a2d' : message.type === 'error' ? '#5a2d2d' : '#2a3a4a'}`,
-          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#74b9ff',
-        }}>
-          {message.text}
+      {/* Create Region */}
+      <div style={{ background: '#1a1a2e', padding: 12, borderRadius: 8, marginBottom: 16 }}>
+        <h4 style={{ fontSize: 13, color: '#888', marginBottom: 8 }}>Create Region</h4>
+        <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
+          <input
+            value={regionName}
+            onChange={e => setRegionName(e.target.value)}
+            placeholder="Region name..."
+            style={{ width: 140, padding: '6px 10px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+          />
+          <input
+            type="number"
+            value={regionCX}
+            onChange={e => setRegionCX(e.target.value)}
+            placeholder="Center X"
+            style={{ width: 70, padding: '6px 10px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+          />
+          <input
+            type="number"
+            value={regionCY}
+            onChange={e => setRegionCY(e.target.value)}
+            placeholder="Center Y"
+            style={{ width: 70, padding: '6px 10px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+          />
+          <input
+            type="number"
+            value={regionRadius}
+            onChange={e => setRegionRadius(e.target.value)}
+            placeholder="Radius"
+            style={{ width: 70, padding: '6px 10px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+          />
+          <button
+            onClick={createRegion}
+            style={{ padding: '8px 16px', background: '#e94560', color: '#fff', border: 'none', borderRadius: 6, cursor: 'pointer', fontFamily: 'monospace', fontSize: 12 }}
+          >
+            Create Region
+          </button>
+        </div>
+      </div>
+
+      {/* All Chunks Tab */}
+      {activeTab === 'chunks' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 400, overflowY: 'auto' }}>
+          {chunks.map(chunk => (
+            <div key={chunk.chunk_id} style={{
+              background: '#1a1a2e', padding: 10, borderRadius: 6,
+              border: '1px solid #333', display: 'flex', justifyContent: 'space-between',
+              alignItems: 'center',
+            }}>
+              <div>
+                <span style={{ fontWeight: 'bold' }}>({chunk.grid_x}, {chunk.grid_y})</span>
+                <span style={{
+                  marginLeft: 8, padding: '1px 6px', borderRadius: 3, fontSize: 10,
+                  background: stateColors[chunk.state] || '#666', color: '#fff',
+                }}>
+                  {chunk.state}
+                </span>
+                <span style={{
+                  marginLeft: 4, padding: '1px 6px', borderRadius: 3, fontSize: 10,
+                  background: detailColors[chunk.detail_level] || '#666', color: '#000',
+                }}>
+                  {chunk.detail_level}
+                </span>
+                {chunk.distance_to_camera !== null && (
+                  <span style={{ marginLeft: 8, fontSize: 11, color: '#888' }}>
+                    {chunk.distance_to_camera} units
+                  </span>
+                )}
+              </div>
+              <div style={{ display: 'flex', gap: 4 }}>
+                {chunk.state === 'unloaded' && (
+                  <button
+                    onClick={() => loadChunk(chunk.chunk_id)}
+                    style={{ padding: '3px 10px', background: '#2ecc71', color: '#000', border: 'none', borderRadius: 4, cursor: 'pointer', fontFamily: 'monospace', fontSize: 11 }}
+                  >
+                    Load
+                  </button>
+                )}
+                {(chunk.state === 'loaded' || chunk.state === 'active') && (
+                  <button
+                    onClick={() => unloadChunk(chunk.chunk_id)}
+                    style={{ padding: '3px 10px', background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontFamily: 'monospace', fontSize: 11 }}
+                  >
+                    Unload
+                  </button>
+                )}
+              </div>
+            </div>
+          ))}
+          {chunks.length === 0 && (
+            <div style={{ color: '#666', textAlign: 'center', padding: 24 }}>No chunks created yet</div>
+          )}
         </div>
       )}
 
-      <div style={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-        <div style={{
-          flex: 1, overflow: 'auto', padding: 12,
-          display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 12,
-        }}>
-          <div style={{ fontSize: 10, color: '#888', textAlign: 'center' }}>
-            World Map - Chunk Grid ({chunkRadius * 2 + 1}&times;{chunkRadius * 2 + 1})
-          </div>
-
-          <div style={{
-            display: 'flex', flexDirection: 'column', gap: 1,
-            backgroundColor: '#141428', padding: 2, borderRadius: 4,
-            border: '1px solid #2a2a3e',
-          }}>
-            {grid.map((row, rz) => (
-              <div key={rz} style={{ display: 'flex', gap: 1 }}>
-                {row.map((chunk, cx) => {
-                  const status = chunk?.status || 'unloaded';
-                  return (
-                    <div key={cx} title={chunk ? `Chunk (${chunk.grid_x}, ${chunk.grid_z}): ${CHUNK_LABELS[chunk.status]} | ${chunk.entity_count} entities | ${chunk.memory_kb}KB` : 'Unloaded'}
-                      style={{
-                        width: cellSize, height: cellSize,
-                        backgroundColor: CHUNK_COLORS[status],
-                        borderRadius: 1,
-                        opacity: status === 'unloaded' ? 0.3 : 0.85,
-                        border: status === 'loaded' ? '1px solid rgba(107, 203, 119, 0.5)' : 'none',
-                        transition: 'background-color 0.3s',
-                      }}
-                    />
-                  );
-                })}
-              </div>
-            ))}
-          </div>
-
-          <div style={{ display: 'flex', gap: 12, fontSize: 10, color: '#888' }}>
-            {(Object.keys(CHUNK_COLORS) as ChunkStatus[]).map(status => (
-              <div key={status} style={{ display: 'flex', alignItems: 'center', gap: 4 }}>
-                <div style={{
-                  width: 8, height: 8,
-                  backgroundColor: CHUNK_COLORS[status],
-                  borderRadius: 1,
-                }} />
-                {CHUNK_LABELS[status]}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div style={{
-          width: 260, borderLeft: '1px solid #2a2a3e',
-          overflow: 'auto', padding: 12, display: 'flex', flexDirection: 'column', gap: 10,
-        }}>
-          <div style={{
-            padding: 10, backgroundColor: '#22223a', borderRadius: 8, border: '1px solid #2a2a3e',
-          }}>
-            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10 }}>
-              <i className="fa-solid fa-camera" style={{ marginRight: 6, color: '#a29bfe' }} />
-              Camera Position
-            </div>
-
-            <label style={{ display: 'block', fontSize: 11, color: '#888', marginBottom: 2 }}>X</label>
-            <input value={camXInput} onChange={e => setCamXInput(e.target.value)}
-              style={{
-                width: '100%', padding: '5px 8px', marginBottom: 6, boxSizing: 'border-box',
-                backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #333',
-                borderRadius: 4, fontSize: 12,
-              }}
-            />
-
-            <label style={{ display: 'block', fontSize: 11, color: '#888', marginBottom: 2 }}>Y</label>
-            <input value={camYInput} onChange={e => setCamYInput(e.target.value)}
-              style={{
-                width: '100%', padding: '5px 8px', marginBottom: 6, boxSizing: 'border-box',
-                backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #333',
-                borderRadius: 4, fontSize: 12,
-              }}
-            />
-
-            <label style={{ display: 'block', fontSize: 11, color: '#888', marginBottom: 2 }}>Z</label>
-            <input value={camZInput} onChange={e => setCamZInput(e.target.value)}
-              style={{
-                width: '100%', padding: '5px 8px', marginBottom: 10, boxSizing: 'border-box',
-                backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #333',
-                borderRadius: 4, fontSize: 12,
-              }}
-            />
-
-            <button onClick={handleCameraUpdate} style={{
-              width: '100%', padding: '6px 12px',
-              backgroundColor: '#2d2d4a', color: '#a29bfe',
-              border: '1px solid #3d3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11,
+      {/* Loaded Chunks Tab */}
+      {activeTab === 'loaded' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxHeight: 400, overflowY: 'auto' }}>
+          {loadedChunks.map(chunk => (
+            <div key={chunk.chunk_id} style={{
+              background: '#1a1a2e', padding: 10, borderRadius: 6, border: '1px solid #333',
+              display: 'flex', justifyContent: 'space-between', alignItems: 'center',
             }}>
-              <i className="fa-solid fa-location-dot" style={{ marginRight: 4 }} />
-              Update Camera
-            </button>
-          </div>
-
-          <div style={{
-            padding: 10, backgroundColor: '#22223a', borderRadius: 8, border: '1px solid #2a2a3e',
-          }}>
-            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8 }}>
-              <i className="fa-solid fa-radar" style={{ marginRight: 6, color: '#fdcb6e' }} />
-              Chunk Radius
+              <div>
+                <span style={{ fontWeight: 'bold' }}>({chunk.grid_x}, {chunk.grid_y})</span>
+                <span style={{ marginLeft: 8, fontSize: 11, color: '#888' }}>
+                  {((chunk.memory_usage_bytes || 0) / 1024).toFixed(1)} KB
+                </span>
+                <span style={{
+                  marginLeft: 4, padding: '1px 6px', borderRadius: 3, fontSize: 10,
+                  background: detailColors[chunk.detail_level] || '#666', color: '#000',
+                }}>
+                  {chunk.detail_level}
+                </span>
+              </div>
+              <button
+                onClick={() => unloadChunk(chunk.chunk_id)}
+                style={{ padding: '3px 10px', background: '#e74c3c', color: '#fff', border: 'none', borderRadius: 4, cursor: 'pointer', fontFamily: 'monospace', fontSize: 11 }}
+              >
+                Unload
+              </button>
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-              <input type="range" min="2" max="8" value={chunkRadius}
-                onChange={e => setChunkRadius(parseInt(e.target.value))}
-                style={{ flex: 1 }}
-              />
-              <span style={{ fontSize: 13, fontWeight: 600, color: '#fdcb6e', minWidth: 20, textAlign: 'center' }}>
-                {chunkRadius}
-              </span>
-            </div>
-            <div style={{ fontSize: 10, color: '#666', marginTop: 4 }}>
-              {(chunkRadius * 2 + 1) ** 2} possible chunks
-            </div>
-          </div>
-
-          <div style={{
-            padding: 10, backgroundColor: '#22223a', borderRadius: 8, border: '1px solid #2a2a3e',
-          }}>
-            <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8 }}>
-              <i className="fa-solid fa-chart-simple" style={{ marginRight: 6, color: '#00b894' }} />
-              Streaming Stats
-            </div>
-
-            <div style={{ display: 'flex', flexDirection: 'column', gap: 4, fontSize: 11 }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#888' }}>Loaded</span>
-                <span style={{ color: '#6bcb77', fontWeight: 600 }}>{stats.loaded_count} chunks</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#888' }}>Loading</span>
-                <span style={{ color: '#0984e3', fontWeight: 600 }}>{stats.loading_count} chunks</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#888' }}>Unloading</span>
-                <span style={{ color: '#e17055', fontWeight: 600 }}>{stats.unloading_count} chunks</span>
-              </div>
-              <div style={{ marginTop: 4, borderTop: '1px solid #333', paddingTop: 4, display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#888' }}>Memory</span>
-                <span style={{ color: '#fdcb6e', fontWeight: 600 }}>{stats.total_memory_mb.toFixed(1)} MB</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#888' }}>Queue Size</span>
-                <span style={{ color: '#a29bfe', fontWeight: 600 }}>{stats.queue_size}</span>
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'space-between' }}>
-                <span style={{ color: '#888' }}>FPS Impact</span>
-                <span style={{ color: '#ff6b6b', fontWeight: 600 }}>-{stats.fps_impact.toFixed(1)}</span>
-              </div>
-            </div>
-          </div>
+          ))}
+          {loadedChunks.length === 0 && (
+            <div style={{ color: '#666', textAlign: 'center', padding: 24 }}>No loaded chunks</div>
+          )}
         </div>
-      </div>
+      )}
 
-      <div style={{
-        padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
-        alignItems: 'center', justifyContent: 'space-between',
-        fontSize: 10, color: '#666',
-      }}>
-        <span>
-          <i className="fa-solid fa-globe" style={{ marginRight: 4 }} />
-          Camera: ({camera.x.toFixed(0)}, {camera.y.toFixed(0)}, {camera.z.toFixed(0)})
-        </span>
-        <span>
-          Radius: {chunkRadius} | Total chunks: {chunks.length}
-        </span>
-      </div>
+      {/* Regions Tab */}
+      {activeTab === 'regions' && (
+        <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
+          {regions.map(region => (
+            <div key={region.region_id} style={{
+              background: '#1a1a2e', padding: 12, borderRadius: 8,
+              border: region.is_active ? '1px solid #2ecc71' : '1px solid #333',
+            }}>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div>
+                  <span style={{ fontWeight: 'bold' }}>{region.name}</span>
+                  <span style={{ marginLeft: 8, fontSize: 11, color: '#888' }}>
+                    {region.chunk_count} chunks | Radius: {region.radius}
+                  </span>
+                  {region.is_active && (
+                    <span style={{ marginLeft: 6, padding: '2px 6px', borderRadius: 4, fontSize: 10, background: '#2ecc71', color: '#000' }}>
+                      Active
+                    </span>
+                  )}
+                </div>
+                {!region.is_active && (
+                  <button
+                    onClick={() => activateRegion(region.region_id)}
+                    style={{ padding: '4px 12px', background: '#2ecc71', color: '#000', border: 'none', borderRadius: 4, cursor: 'pointer', fontFamily: 'monospace', fontSize: 11 }}
+                  >
+                    Activate
+                  </button>
+                )}
+              </div>
+              <div style={{ marginTop: 4, fontSize: 11, color: '#888' }}>
+                Center: ({region.center_x}, {region.center_y})
+              </div>
+            </div>
+          ))}
+          {regions.length === 0 && (
+            <div style={{ color: '#666', textAlign: 'center', padding: 24 }}>No regions created yet</div>
+          )}
+        </div>
+      )}
+
+      {/* Config Tab */}
+      {activeTab === 'config' && config && (
+        <div style={{ background: '#1a1a2e', padding: 16, borderRadius: 8 }}>
+          <h4 style={{ fontSize: 14, color: '#3498db', marginBottom: 12 }}>Streaming Configuration</h4>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 12 }}>
+            <div><span style={{ color: '#888' }}>Chunk Size:</span> {config.chunk_size}</div>
+            <div><span style={{ color: '#888' }}>Load Radius:</span> {config.load_radius}</div>
+            <div><span style={{ color: '#888' }}>Unload Radius:</span> {config.unload_radius}</div>
+            <div><span style={{ color: '#888' }}>Max Loaded:</span> {config.max_loaded_chunks}</div>
+            <div><span style={{ color: '#888' }}>Max Concurrent:</span> {config.max_concurrent_loads}</div>
+            <div><span style={{ color: '#888' }}>Max Memory:</span> {config.max_memory_mb} MB</div>
+            <div><span style={{ color: '#888' }}>Preload Threshold:</span> {config.preload_threshold}</div>
+            <div><span style={{ color: '#888' }}>Strategy:</span> {config.strategy}</div>
+            <div><span style={{ color: '#888' }}>Freeze After:</span> {config.freeze_dormant_after_s}s</div>
+            <div><span style={{ color: '#888' }}>Preloading:</span> {config.enable_preloading ? 'Yes' : 'No'}</div>
+            <div><span style={{ color: '#888' }}>Async:</span> {config.enable_async_loading ? 'Yes' : 'No'}</div>
+          </div>
+          {config.detail_distances && (
+            <div style={{ marginTop: 12 }}>
+              <h5 style={{ fontSize: 12, color: '#888', marginBottom: 6 }}>Detail Distances</h5>
+              <div style={{ display: 'flex', gap: 8 }}>
+                {Object.entries(config.detail_distances).map(([level, dist]) => (
+                  <span key={level} style={{
+                    padding: '4px 10px', borderRadius: 4, fontSize: 11,
+                    background: '#0d0d1a', color: detailColors[level] || '#ccc',
+                  }}>
+                    {level}: {dist as number}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 };
