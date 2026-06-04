@@ -428,7 +428,9 @@ export type ViewMode =
   | 'lifecycle'
   | 'slash-commands'
   | 'validation-hooks'
-  | 'task-executor';
+  | 'task-executor'
+  | 'scene-director'
+  | 'world-streamer';
 
 // Runtime types
 
