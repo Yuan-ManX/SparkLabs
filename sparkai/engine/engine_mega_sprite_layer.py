@@ -2,7 +2,7 @@
 SparkAI Engine - Mega Sprite Layer System
 
 High-performance GPU batch rendering for massive sprite counts.
-Inspired by modern GPU-driven rendering architectures, this system
+Leveraging GPU-driven rendering architecture, this system
 enables rendering of millions of sprites through single-pass draw
 calls, GPU-resident vertex buffers, and instance-based rendering.
 
