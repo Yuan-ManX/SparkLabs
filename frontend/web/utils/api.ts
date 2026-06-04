@@ -1713,3 +1713,104 @@ export const renderPipelineApi = {
     return api.get(`/agent/render-pipeline/frame-stats${query}`);
   },
 };
+
+// ============================================================
+// Environment Manager API
+// ============================================================
+export const environmentManagerApi = {
+  stats: () => api.get('/agent/environment-manager/stats'),
+  list: () => api.get('/agent/environment-manager/environments'),
+  provision: (data: { name: string; env_type?: string }) =>
+    api.post('/agent/environment-manager/provision', data),
+};
+
+// ============================================================
+// Frame Timer API
+// ============================================================
+export const frameTimerApi = {
+  stats: () => api.get('/agent/frame-timer/stats'),
+  state: () => api.get('/agent/frame-timer/state'),
+  history: (count?: number) => {
+    const query = count ? `?count=${count}` : '';
+    return api.get(`/agent/frame-timer/history${query}`);
+  },
+  start: () => api.post('/agent/frame-timer/start'),
+  stop: () => api.post('/agent/frame-timer/stop'),
+};
+
+// ============================================================
+// Platform Layer API
+// ============================================================
+export const platformLayerApi = {
+  capabilities: () => api.get('/agent/platform-layer/capabilities'),
+  stats: () => api.get('/agent/platform-layer/stats'),
+  backendCompatibility: () => api.get('/agent/platform-layer/backend-compatibility'),
+  detect: () => api.post('/agent/platform-layer/detect'),
+};
+
+// ============================================================
+// Intent Router API
+// ============================================================
+export const intentRouterApi = {
+  stats: () => api.get('/agent/intent-router/stats'),
+  analyze: (text: string) =>
+    api.post('/agent/intent-router/analyze', { text }),
+  decompose: (text: string) =>
+    api.post('/agent/intent-router/decompose', { text }),
+  spawnAgent: (data: { goal: string; role?: string }) =>
+    api.post('/agent/intent-router/spawn-agent', data),
+};
+
+// ============================================================
+// World Architect API
+// ============================================================
+export const worldArchitectApi = {
+  stats: () => api.get('/agent/world-architect/stats'),
+  listWorlds: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/world-architect/worlds${query}`);
+  },
+  createWorld: (data: { name: string; setting_type?: string }) =>
+    api.post('/agent/world-architect/create-world', data),
+  generateCharacters: (data: { world_id: string; count?: number }) =>
+    api.post('/agent/world-architect/generate-characters', data),
+  evolveWorld: (data: { world_id: string; steps?: number }) =>
+    api.post('/agent/world-architect/evolve-world', data),
+};
+
+// ============================================================
+// God Mode API
+// ============================================================
+export const godModeApi = {
+  stats: () => api.get('/agent/god-mode/stats'),
+  injectEvent: (data: { world_id: string; event_type: string; description: string }) =>
+    api.post('/agent/god-mode/inject-event', data),
+  editMemory: (data: { agent_id: string; content: string; operation?: string }) =>
+    api.post('/agent/god-mode/edit-memory', data),
+  createSnapshot: (data: { world_id: string; name?: string }) =>
+    api.post('/agent/god-mode/create-snapshot', data),
+  applyIntervention: (data: { world_id: string; intervention_type: string; description: string }) =>
+    api.post('/agent/god-mode/apply-intervention', data),
+};
+
+// ============================================================
+// GPU Batch Rendering API
+// ============================================================
+export const gpuRenderingApi = {
+  stats: () => api.get('/agent/gpu-rendering/stats'),
+  createLayer: (data: { name: string; max_sprites?: number }) =>
+    api.post('/agent/gpu-rendering/create-sprite-layer', data),
+  setQuality: (data: { preset: string }) =>
+    api.post('/agent/gpu-rendering/set-quality', data),
+};
+
+// ============================================================
+// Server Orchestrator API
+// ============================================================
+export const serverOrchestratorApi = {
+  stats: () => api.get('/agent/server-orchestrator/stats'),
+  health: () => api.get('/agent/server-orchestrator/health'),
+  register: (data: { server_type: string; name: string }) =>
+    api.post('/agent/server-orchestrator/register', data),
+  optimize: () => api.post('/agent/server-orchestrator/optimize', {}),
+};
