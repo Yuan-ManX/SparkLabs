@@ -1548,6 +1548,406 @@ async def game_design_intelligence_stats():
     except Exception as e:
         return {"error": str(e)}
 
+# ============================================================
+# World Evolution Endpoints
+# ============================================================
+
+@router.get("/world-evolution/stats")
+async def world_evolution_stats():
+    try:
+        return _world_evolution.get_evolution_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-evolution/create-schedule")
+async def world_evolution_create_schedule(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_world_evolution import Season
+        starting_season = body.get("starting_season", "spring")
+        if isinstance(starting_season, str):
+            starting_season = Season(starting_season)
+        schedule = _world_evolution.create_schedule(
+            world_id=body.get("world_id", "default"),
+            total_days=body.get("total_days", 30),
+            starting_season=starting_season,
+            auto_generate_events=body.get("auto_generate_events", True),
+        )
+        return schedule.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-evolution/advance-day")
+async def world_evolution_advance_day(request: Request):
+    try:
+        body = await request.json()
+        day = _world_evolution.advance_day(
+            world_id=body.get("world_id", "default"),
+            character_actions=body.get("character_actions"),
+            external_events=body.get("external_events"),
+        )
+        return day.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-evolution/advance-days")
+async def world_evolution_advance_days(request: Request):
+    try:
+        body = await request.json()
+        days = _world_evolution.advance_multiple_days(
+            world_id=body.get("world_id", "default"),
+            num_days=body.get("num_days", 7),
+        )
+        return [d.to_dict() for d in days]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-evolution/create-population")
+async def world_evolution_create_population(request: Request):
+    try:
+        body = await request.json()
+        model = _world_evolution.create_population_model(
+            world_id=body.get("world_id", "default"),
+            entity_type=body.get("entity_type", "human"),
+            initial_count=body.get("initial_count", 100),
+            growth_rate=body.get("growth_rate", 0.01),
+            carrying_capacity=body.get("carrying_capacity", 500),
+        )
+        return model.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-evolution/create-resource")
+async def world_evolution_create_resource(request: Request):
+    try:
+        body = await request.json()
+        cycle = _world_evolution.create_resource_cycle(
+            world_id=body.get("world_id", "default"),
+            resource_name=body.get("resource_name", "food"),
+            initial_amount=body.get("initial_amount", 1000.0),
+            max_capacity=body.get("max_capacity", 5000.0),
+            production_rate=body.get("production_rate", 10.0),
+            consumption_rate=body.get("consumption_rate", 8.0),
+            is_renewable=body.get("is_renewable", True),
+        )
+        return cycle.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-evolution/timeline")
+async def world_evolution_timeline(world_id: str = "default"):
+    try:
+        return _world_evolution.get_world_timeline(world_id)
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-evolution/state")
+async def world_evolution_state(world_id: str = "default"):
+    try:
+        return _world_evolution.get_world_state(world_id)
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Mega Sprite Layer Endpoints
+# ============================================================
+
+@router.get("/mega-sprite/stats")
+async def mega_sprite_stats():
+    try:
+        return _mega_sprite_layer.get_system_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/mega-sprite/create-layer")
+async def mega_sprite_create_layer(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_mega_sprite_layer import MegaSpriteBlendMode, MegaSpriteSortMode
+        blend_mode = body.get("blend_mode", "normal")
+        sort_mode = body.get("sort_mode", "none")
+        if isinstance(blend_mode, str):
+            blend_mode = MegaSpriteBlendMode(blend_mode)
+        if isinstance(sort_mode, str):
+            sort_mode = MegaSpriteSortMode(sort_mode)
+        layer = _mega_sprite_layer.create_layer(
+            name=body.get("name", "layer"),
+            max_sprites=body.get("max_sprites", 100000),
+            texture_atlas_id=body.get("texture_atlas_id", ""),
+            blend_mode=blend_mode,
+            sort_mode=sort_mode,
+            use_instanced_rendering=body.get("use_instanced_rendering", True),
+        )
+        return layer.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/mega-sprite/add-sprite")
+async def mega_sprite_add_sprite(request: Request):
+    try:
+        body = await request.json()
+        sprite = _mega_sprite_layer.add_sprite(
+            layer_id=body.get("layer_id", ""),
+            texture_frame=body.get("texture_frame", 0),
+            position=tuple(body.get("position", (0, 0))),
+            rotation=body.get("rotation", 0.0),
+            scale=body.get("scale", 1.0),
+            alpha=body.get("alpha", 1.0),
+            tint=tuple(body.get("tint", (255, 255, 255))),
+        )
+        return sprite.to_dict() if sprite else {"error": "Layer full or not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/mega-sprite/add-bulk")
+async def mega_sprite_add_bulk(request: Request):
+    try:
+        body = await request.json()
+        ids = _mega_sprite_layer.add_bulk_sprites(
+            layer_id=body.get("layer_id", ""),
+            sprite_descriptions=body.get("sprites", []),
+        )
+        return {"count": len(ids), "ids": ids}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/mega-sprite/generate-grid")
+async def mega_sprite_generate_grid(request: Request):
+    try:
+        body = await request.json()
+        count = _mega_sprite_layer.generate_sprite_grid(
+            layer_id=body.get("layer_id", ""),
+            rows=body.get("rows", 50),
+            cols=body.get("cols", 50),
+            spacing=body.get("spacing", 32.0),
+            random_rotation=body.get("random_rotation", False),
+            random_alpha=body.get("random_alpha", False),
+        )
+        return {"count": count}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/mega-sprite/render-frame")
+async def mega_sprite_render_frame(request: Request):
+    try:
+        body = await request.json()
+        result = _mega_sprite_layer.render_frame(
+            layer_id=body.get("layer_id", ""),
+            camera_position=tuple(body.get("camera_position", (0, 0))),
+            camera_zoom=body.get("camera_zoom", 1.0),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/mega-sprite/layer-stats")
+async def mega_sprite_layer_stats(layer_id: str):
+    try:
+        return _mega_sprite_layer.get_layer_stats(layer_id)
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# RID Allocator Endpoints
+# ============================================================
+
+@router.get("/rid-allocator/stats")
+async def rid_allocator_stats():
+    try:
+        return _rid_allocator.get_system_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/rid-allocator/allocate")
+async def rid_allocator_allocate(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_rid_allocator import RIDResourceType
+        resource_type = body.get("resource_type", "custom")
+        if isinstance(resource_type, str):
+            resource_type = RIDResourceType(resource_type)
+        rid = _rid_allocator.allocate(
+            resource_type=resource_type,
+            owner_id=body.get("owner_id", ""),
+            metadata=body.get("metadata"),
+        )
+        return {"rid": rid}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/rid-allocator/allocate-bulk")
+async def rid_allocator_allocate_bulk(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_rid_allocator import RIDResourceType
+        resource_type = body.get("resource_type", "custom")
+        if isinstance(resource_type, str):
+            resource_type = RIDResourceType(resource_type)
+        rids = _rid_allocator.allocate_bulk(
+            resource_type=resource_type,
+            count=body.get("count", 10),
+            owner_id=body.get("owner_id", ""),
+        )
+        return {"rids": rids, "count": len(rids)}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/rid-allocator/deallocate")
+async def rid_allocator_deallocate(request: Request):
+    try:
+        body = await request.json()
+        success = _rid_allocator.deallocate(rid=body.get("rid", 0))
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/rid-allocator/add-reference")
+async def rid_allocator_add_reference(request: Request):
+    try:
+        body = await request.json()
+        success = _rid_allocator.add_reference(rid=body.get("rid", 0))
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/rid-allocator/validate")
+async def rid_allocator_validate():
+    try:
+        return _rid_allocator.validate_system()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/rid-allocator/pool-stats")
+async def rid_allocator_pool_stats(resource_type: str = "custom"):
+    try:
+        from sparkai.engine.engine_rid_allocator import RIDResourceType
+        rt = RIDResourceType(resource_type) if isinstance(resource_type, str) else resource_type
+        stats = _rid_allocator.get_pool_stats(rt)
+        return stats.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Cross-Platform Gateway Endpoints
+# ============================================================
+
+@router.get("/gateway/stats")
+async def gateway_stats():
+    try:
+        return _cross_platform_gateway.get_gateway_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/gateway/connect")
+async def gateway_connect(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_cross_platform_gateway import PlatformType
+        platform_type = body.get("platform_type", "web")
+        if isinstance(platform_type, str):
+            platform_type = PlatformType(platform_type)
+        conn = _cross_platform_gateway.connect_platform(
+            platform_type=platform_type,
+            user_id=body.get("user_id", ""),
+            display_name=body.get("display_name", ""),
+            channel_id=body.get("channel_id", ""),
+            is_primary=body.get("is_primary", False),
+            metadata=body.get("metadata"),
+        )
+        return conn.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/gateway/disconnect")
+async def gateway_disconnect(request: Request):
+    try:
+        body = await request.json()
+        success = _cross_platform_gateway.disconnect_platform(
+            connection_id=body.get("connection_id", ""),
+        )
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/gateway/send-message")
+async def gateway_send_message(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_cross_platform_gateway import PlatformType, MessagePriority, MessageFormat
+        target_platform = body.get("target_platform")
+        priority = body.get("priority", "normal")
+        msg_format = body.get("message_format", "plain")
+        if isinstance(target_platform, str):
+            target_platform = PlatformType(target_platform)
+        if isinstance(priority, str):
+            priority = MessagePriority(priority)
+        if isinstance(msg_format, str):
+            msg_format = MessageFormat(msg_format)
+        msg = _cross_platform_gateway.send_message(
+            content=body.get("content", ""),
+            source_connection_id=body.get("source_connection_id", ""),
+            target_platform=target_platform,
+            target_connection_id=body.get("target_connection_id"),
+            priority=priority,
+            message_format=msg_format,
+            reply_to=body.get("reply_to"),
+            thread_id=body.get("thread_id"),
+        )
+        return msg.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/gateway/receive-message")
+async def gateway_receive_message(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_cross_platform_gateway import MessageFormat
+        msg_format = body.get("message_format", "plain")
+        if isinstance(msg_format, str):
+            msg_format = MessageFormat(msg_format)
+        msg = _cross_platform_gateway.receive_message(
+            connection_id=body.get("connection_id", ""),
+            content=body.get("content", ""),
+            sender_name=body.get("sender_name", ""),
+            message_format=msg_format,
+            is_command=body.get("is_command", False),
+        )
+        return msg.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/gateway/create-conversation")
+async def gateway_create_conversation(request: Request):
+    try:
+        body = await request.json()
+        conv = _cross_platform_gateway.create_conversation(
+            title=body.get("title", ""),
+            participants=body.get("participants", []),
+            platforms=body.get("platforms", []),
+            tags=body.get("tags", []),
+        )
+        return conv.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/gateway/heartbeat")
+async def gateway_heartbeat(request: Request):
+    try:
+        body = await request.json()
+        success = _cross_platform_gateway.heartbeat(
+            connection_id=body.get("connection_id", ""),
+        )
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/gateway/active-connections")
+async def gateway_active_connections():
+    try:
+        return _cross_platform_gateway.get_active_connections()
+    except Exception as e:
+        return {"error": str(e)}
+
 @router.post("/game-design-intelligence/start-session")
 async def game_design_intelligence_start_session(request: Request):
     try:
@@ -22387,6 +22787,16 @@ from sparkai.engine.engine_physics_dynamics import get_engine_physics_dynamics
 from sparkai.engine.engine_audio_spatial import get_audio_spatial
 from sparkai.engine.engine_behavior_orchestrator import get_engine_behavior_orchestrator
 from sparkai.agent.agent_cross_module_orchestrator import get_cross_module_orchestrator
+from sparkai.agent.agent_intent_router import get_agent_intent_router
+from sparkai.agent.agent_world_architect import get_agent_world_architect
+from sparkai.agent.agent_god_mode_controller import get_god_mode_controller
+from sparkai.engine.engine_event_scripting import get_engine_event_scripting
+from sparkai.engine.engine_gpu_batch_rendering import get_gpu_batch_rendering
+from sparkai.engine.engine_server_orchestrator import get_engine_server_orchestrator
+from sparkai.agent.agent_world_evolution import get_world_evolution
+from sparkai.engine.engine_mega_sprite_layer import get_mega_sprite_layer
+from sparkai.engine.engine_rid_allocator import get_rid_allocator
+from sparkai.agent.agent_cross_platform_gateway import get_cross_platform_gateway
 from sparkai.engine.engine_tilemap_runtime import get_tilemap_runtime
 from sparkai.engine.engine_entity_component_system import get_entity_component_system
 from sparkai.engine.engine_physics_world_2d import get_engine_physics_world_2d
@@ -22439,6 +22849,16 @@ _physics_dynamics = get_engine_physics_dynamics()
 _audio_spatial = get_audio_spatial()
 _behavior_orchestrator = get_engine_behavior_orchestrator()
 _cross_module_orchestrator = get_cross_module_orchestrator()
+_intent_router = get_agent_intent_router()
+_world_architect = get_agent_world_architect()
+_god_mode_controller = get_god_mode_controller()
+_engine_event_scripting = get_engine_event_scripting()
+_gpu_batch_rendering = get_gpu_batch_rendering()
+_server_orchestrator = get_engine_server_orchestrator()
+_world_evolution = get_world_evolution()
+_mega_sprite_layer = get_mega_sprite_layer()
+_rid_allocator = get_rid_allocator()
+_cross_platform_gateway = get_cross_platform_gateway()
 
 # ============================================================
 # SkillForge Endpoints
@@ -22582,7 +23002,7 @@ async def delegation_broker_assign(request: Request):
 @router.get("/event-scripting-runtime/stats")
 async def event_scripting_runtime_stats():
     try:
-        return _event_scripting.get_stats()
+        return _engine_event_scripting.get_stats()
     except Exception as e:
         return {"error": str(e)}
 
@@ -22590,7 +23010,7 @@ async def event_scripting_runtime_stats():
 async def event_scripting_runtime_create_rule(request: Request):
     try:
         body = await request.json()
-        result = _event_scripting.create_rule(
+        result = _engine_event_scripting.create_rule(
             name=body.get("name", ""),
             sheet_id=body.get("sheet_id", ""),
         )
@@ -22598,7 +23018,7 @@ async def event_scripting_runtime_create_rule(request: Request):
             return {"error": "Rule creation failed - sheet not found or full"}
         if body.get("conditions"):
             for cond in body["conditions"]:
-                _event_scripting.add_condition(
+                _engine_event_scripting.add_condition(
                     rule_id=result.id,
                     condition_type=cond.get("type", ""),
                     target=cond.get("target", ""),
@@ -22608,7 +23028,7 @@ async def event_scripting_runtime_create_rule(request: Request):
                 )
         if body.get("actions"):
             for act in body["actions"]:
-                _event_scripting.add_action(
+                _engine_event_scripting.add_action(
                     rule_id=result.id,
                     action_type=act.get("type", ""),
                     target=act.get("target", ""),
@@ -22622,7 +23042,7 @@ async def event_scripting_runtime_create_rule(request: Request):
 async def event_scripting_runtime_evaluate(request: Request):
     try:
         body = await request.json()
-        result = _event_scripting.process_event_sheet(
+        result = _engine_event_scripting.process_event_sheet(
             sheet_id=body.get("sheet_id", ""),
         )
         return result
@@ -25589,5 +26009,388 @@ async def cross_module_health_check_all():
 async def cross_module_dependency_graph():
     try:
         return _cross_module_orchestrator.get_dependency_graph()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Intent Router Endpoints
+# ============================================================
+
+@router.get("/intent-router/stats")
+async def intent_router_stats():
+    try:
+        return _intent_router.get_routing_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intent-router/register-pattern")
+async def intent_router_register_pattern(request: Request):
+    try:
+        body = await request.json()
+        pattern = _intent_router.register_intent_pattern(
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            trigger_phrases=body.get("trigger_phrases", []),
+            target_module=body.get("target_module", ""),
+            action_type=body.get("action_type", "default"),
+            parameters_schema=body.get("parameters_schema", {}),
+        )
+        return pattern.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intent-router/analyze")
+async def intent_router_analyze(request: Request):
+    try:
+        body = await request.json()
+        decision = _intent_router.analyze_intent(
+            text=body.get("text", ""),
+            context=body.get("context", {}),
+        )
+        return decision.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intent-router/decompose")
+async def intent_router_decompose(request: Request):
+    try:
+        body = await request.json()
+        plan = _intent_router.decompose_intent(
+            decision_id=body.get("decision_id", ""),
+            max_subtasks=body.get("max_subtasks", 5),
+        )
+        return plan.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intent-router/spawn-agent")
+async def intent_router_spawn_agent(request: Request):
+    try:
+        body = await request.json()
+        agent = _intent_router.spawn_sub_agent(
+            plan_id=body.get("plan_id", ""),
+            task_id=body.get("task_id", ""),
+            isolation_level=body.get("isolation_level", "standard"),
+        )
+        return agent.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# World Architect Endpoints
+# ============================================================
+
+@router.get("/world-architect/stats")
+async def world_architect_stats():
+    try:
+        return _world_architect.get_architect_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-architect/create-world")
+async def world_architect_create_world(request: Request):
+    try:
+        body = await request.json()
+        world = _world_architect.create_world(
+            description=body.get("description", ""),
+            setting_type=body.get("setting_type", "fantasy"),
+            era=body.get("era", "medieval"),
+            mood=body.get("mood", "epic"),
+            scale=body.get("scale", "kingdom"),
+        )
+        return world.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-architect/generate-characters")
+async def world_architect_generate_characters(request: Request):
+    try:
+        body = await request.json()
+        chars = _world_architect.generate_characters(
+            world_id=body.get("world_id", ""),
+            count=body.get("count", 5),
+            roles=body.get("roles", []),
+            archetypes=body.get("archetypes", []),
+        )
+        return [c.to_dict() for c in chars]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-architect/evolve-world")
+async def world_architect_evolve_world(request: Request):
+    try:
+        body = await request.json()
+        world = _world_architect.evolve_world(
+            world_id=body.get("world_id", ""),
+            years_passed=body.get("years_passed", 100),
+        )
+        return world.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-architect/worlds")
+async def world_architect_list_worlds(setting_type: str = "", era: str = "", limit: int = 10):
+    try:
+        worlds = _world_architect.list_worlds(setting_type=setting_type, era=era, limit=limit)
+        return [w.to_dict() for w in worlds]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-architect/merge-worlds")
+async def world_architect_merge_worlds(request: Request):
+    try:
+        body = await request.json()
+        merged = _world_architect.merge_worlds(
+            world_id_1=body.get("world_id_1", ""),
+            world_id_2=body.get("world_id_2", ""),
+            new_name=body.get("new_name", "Merged World"),
+        )
+        return merged.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# God Mode Controller Endpoints
+# ============================================================
+
+@router.get("/god-mode/stats")
+async def god_mode_stats():
+    try:
+        return _god_mode_controller.get_god_mode_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/god-mode/create-snapshot")
+async def god_mode_create_snapshot(request: Request):
+    try:
+        body = await request.json()
+        snapshot = _god_mode_controller.create_snapshot(
+            world_id=body.get("world_id", ""),
+            label=body.get("label", "snapshot"),
+            description=body.get("description", ""),
+        )
+        return snapshot.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/god-mode/inject-event")
+async def god_mode_inject_event(request: Request):
+    try:
+        body = await request.json()
+        event = _god_mode_controller.inject_event(
+            event_type=body.get("event_type", "environmental"),
+            description=body.get("description", ""),
+            severity=body.get("severity", "notable"),
+            target_agents=body.get("target_agents", []),
+            target_locations=body.get("target_locations", []),
+            duration=body.get("duration", 0),
+            immediate_effects=body.get("immediate_effects", []),
+            delayed_effects=body.get("delayed_effects", []),
+        )
+        return event.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/god-mode/edit-memory")
+async def god_mode_edit_memory(request: Request):
+    try:
+        body = await request.json()
+        edit = _god_mode_controller.edit_agent_memory(
+            agent_id=body.get("agent_id", ""),
+            memory_id=body.get("memory_id", ""),
+            edit_type=body.get("edit_type", "modify"),
+            new_content=body.get("new_content", {}),
+            justification=body.get("justification", ""),
+        )
+        return edit.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/god-mode/apply-intervention")
+async def god_mode_apply_intervention(request: Request):
+    try:
+        body = await request.json()
+        intervention = _god_mode_controller.apply_divine_intervention(
+            intervention_type=body.get("intervention_type", "instant"),
+            target_type=body.get("target_type", "agent"),
+            target_id=body.get("target_id", ""),
+            action=body.get("action", ""),
+            parameters=body.get("parameters", {}),
+            scope=body.get("scope", "single_agent"),
+        )
+        return intervention.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/god-mode/timeline-branches/{world_id}")
+async def god_mode_timeline_branches(world_id: str):
+    try:
+        branches = _god_mode_controller.list_timeline_branches(world_id)
+        return [b.to_dict() for b in branches]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/god-mode/broadcast-message")
+async def god_mode_broadcast(request: Request):
+    try:
+        body = await request.json()
+        result = _god_mode_controller.broadcast_god_message(
+            message=body.get("message", ""),
+            target_agents=body.get("target_agents", []),
+            delivery_style=body.get("delivery_style", "vision"),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Event Scripting Endpoints
+# ============================================================
+
+@router.get("/event-scripting/stats")
+async def event_scripting_stats():
+    try:
+        return _engine_event_scripting.get_event_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/event-scripting/create-sheet")
+async def event_scripting_create_sheet(request: Request):
+    try:
+        body = await request.json()
+        sheet = _engine_event_scripting.create_event_sheet(
+            name=body.get("name", "sheet"),
+            description=body.get("description", ""),
+            is_global=body.get("is_global", False),
+            linked_objects=body.get("linked_objects", []),
+        )
+        return sheet.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/event-scripting/execute-sheet")
+async def event_scripting_execute_sheet(request: Request):
+    try:
+        body = await request.json()
+        result = _engine_event_scripting.execute_sheet(
+            sheet_id=body.get("sheet_id", ""),
+            context=body.get("context", {}),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/event-scripting/compile")
+async def event_scripting_compile(request: Request):
+    try:
+        body = await request.json()
+        code = _engine_event_scripting.compile_sheet_to_code(
+            sheet_id=body.get("sheet_id", ""),
+            target_language=body.get("target_language", "python"),
+        )
+        return {"code": code, "language": body.get("target_language", "python")}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# GPU Batch Rendering Endpoints
+# ============================================================
+
+@router.get("/gpu-rendering/stats")
+async def gpu_rendering_stats():
+    try:
+        return _gpu_batch_rendering.get_gpu_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/gpu-rendering/create-sprite-layer")
+async def gpu_rendering_create_sprite_layer(request: Request):
+    try:
+        body = await request.json()
+        layer = _gpu_batch_rendering.create_sprite_layer(
+            name=body.get("name", "layer"),
+            max_sprites=body.get("max_sprites", 1000),
+            texture_atlas=body.get("texture_atlas", ""),
+        )
+        return layer.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/gpu-rendering/add-sprite")
+async def gpu_rendering_add_sprite(request: Request):
+    try:
+        body = await request.json()
+        sprite = _gpu_batch_rendering.add_sprite_instance(
+            layer_id=body.get("layer_id", ""),
+            texture_frame=body.get("texture_frame", 0),
+            position=body.get("position", (0, 0)),
+            rotation=body.get("rotation", 0.0),
+            scale=body.get("scale", 1.0),
+            alpha=body.get("alpha", 1.0),
+            tint=body.get("tint", (255, 255, 255)),
+        )
+        return sprite.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/gpu-rendering/set-quality")
+async def gpu_rendering_set_quality(request: Request):
+    try:
+        body = await request.json()
+        _gpu_batch_rendering.set_quality_preset(body.get("preset", "high"))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Server Orchestrator Endpoints
+# ============================================================
+
+@router.get("/server-orchestrator/stats")
+async def server_orchestrator_stats():
+    try:
+        return _server_orchestrator.get_orchestration_overview()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/server-orchestrator/register")
+async def server_orchestrator_register(request: Request):
+    try:
+        body = await request.json()
+        server = _server_orchestrator.register_server(
+            server_type=body.get("server_type", "ai"),
+            name=body.get("name", ""),
+        )
+        return server.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/server-orchestrator/submit-command")
+async def server_orchestrator_submit_command(request: Request):
+    try:
+        body = await request.json()
+        cmd_id = _server_orchestrator.submit_command(
+            server_id=body.get("server_id", ""),
+            command_type=body.get("command_type", ""),
+            payload=body.get("payload", {}),
+            priority=body.get("priority", "normal"),
+        )
+        return {"command_id": cmd_id}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/server-orchestrator/health")
+async def server_orchestrator_health_all():
+    try:
+        return [h.to_dict() for h in _server_orchestrator.get_all_health()]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/server-orchestrator/optimize")
+async def server_orchestrator_optimize(request: Request):
+    try:
+        body = await request.json()
+        result = _server_orchestrator.optimize_server_allocation()
+        return result
     except Exception as e:
         return {"error": str(e)}
