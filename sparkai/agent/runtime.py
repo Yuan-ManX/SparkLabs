@@ -394,6 +394,9 @@ from sparkai.agent.agent_world_evolution import AgentWorldEvolution, get_world_e
 from sparkai.engine.engine_mega_sprite_layer import EngineMegaSpriteLayer, get_mega_sprite_layer
 from sparkai.engine.engine_rid_allocator import EngineRIDAllocator, get_rid_allocator
 from sparkai.agent.agent_cross_platform_gateway import AgentCrossPlatformGateway, get_cross_platform_gateway
+from sparkai.agent.agent_environment_manager import AgentEnvironmentManager, get_environment_manager
+from sparkai.engine.engine_frame_timer import EngineFrameTimer, get_frame_timer
+from sparkai.engine.engine_platform_layer import EnginePlatformLayer, get_platform_layer
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -510,6 +513,15 @@ from sparkai.engine.camera_shake import CameraShakeSystem, ShakePreset, CameraMo
 from sparkai.engine.difficulty_system import DifficultySystem, DifficultyTier, DifficultyParams, get_difficulty_system
 from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, get_fog_of_war
 from sparkai.engine.game_modes import GameModeSystem, BuiltInMode, ModeLayer, get_game_mode_system
+from sparkai.agent.agent_emotion_synthesis import AgentEmotionSynthesis, get_emotion_synthesis
+from sparkai.agent.agent_story_forge import AgentStoryForge, get_story_forge
+from sparkai.agent.agent_quest_generator import AgentQuestGenerator, get_quest_generator
+from sparkai.agent.agent_dialogue_engine import AgentDialogueEngine, get_dialogue_engine
+from sparkai.engine.engine_camera_controller import EngineCameraController, get_camera_controller
+from sparkai.engine.engine_pathfinding import EnginePathfinding, get_pathfinding_engine
+from sparkai.engine.engine_state_machine import EngineStateMachine, get_state_machine_engine
+from sparkai.agent.agent_scene_director import AgentSceneDirector, get_scene_director
+from sparkai.engine.engine_world_streamer import EngineWorldStreamer, get_world_streamer
 
 
 class RuntimeState(Enum):
@@ -907,6 +919,18 @@ class AgentRuntime:
         self._mega_sprite_layer: Optional[EngineMegaSpriteLayer] = None
         self._rid_allocator: Optional[EngineRIDAllocator] = None
         self._cross_platform_gateway: Optional[AgentCrossPlatformGateway] = None
+        self._environment_manager: Optional[AgentEnvironmentManager] = None
+        self._frame_timer: Optional[EngineFrameTimer] = None
+        self._platform_layer: Optional[EnginePlatformLayer] = None
+        self._emotion_synthesis: Optional[AgentEmotionSynthesis] = None
+        self._story_forge: Optional[AgentStoryForge] = None
+        self._quest_generator: Optional[AgentQuestGenerator] = None
+        self._dialogue_engine: Optional[AgentDialogueEngine] = None
+        self._camera_controller: Optional[EngineCameraController] = None
+        self._pathfinding_engine: Optional[EnginePathfinding] = None
+        self._state_machine_engine: Optional[EngineStateMachine] = None
+        self._scene_director: Optional[AgentSceneDirector] = None
+        self._world_streamer: Optional[EngineWorldStreamer] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1304,6 +1328,18 @@ class AgentRuntime:
             self._mega_sprite_layer = get_mega_sprite_layer()
             self._rid_allocator = get_rid_allocator()
             self._cross_platform_gateway = get_cross_platform_gateway()
+            self._environment_manager = get_environment_manager()
+            self._frame_timer = get_frame_timer()
+            self._platform_layer = get_platform_layer()
+            self._emotion_synthesis = get_emotion_synthesis()
+            self._story_forge = get_story_forge()
+            self._quest_generator = get_quest_generator()
+            self._dialogue_engine = get_dialogue_engine()
+            self._camera_controller = get_camera_controller()
+            self._pathfinding_engine = get_pathfinding_engine()
+            self._state_machine_engine = get_state_machine_engine()
+            self._scene_director = get_scene_director()
+            self._world_streamer = get_world_streamer()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
