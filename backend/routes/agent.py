@@ -4310,7 +4310,7 @@ async def dialogue_trees(dialogue_type: Optional[str] = None, npc_name: Optional
 
 @router.post("/dialogue/trees")
 async def dialogue_create_tree(name: str = "", dialogue_type: str = "random", npc_name: str = "", description: str = ""):
-    tree = _dialogue_engine.create_tree(name, dialogue_type, npc_name, description)
+    tree = _dialogue_engine.create_dialogue_tree(name, dialogue_type, npc_name, description)
     return tree.to_dict()
 
 @router.get("/dialogue/trees/{tree_id}")
@@ -22754,7 +22754,7 @@ async def localization_hub_translate(request: Request):
 
 from sparkai.agent.agent_memory_consolidator import get_memory_consolidator
 from sparkai.agent.agent_delegation_broker import get_delegation_broker
-from sparkai.engine.engine_event_scripting import get_event_scripting
+from sparkai.engine.engine_event_scripting import get_engine_event_scripting
 from sparkai.engine.engine_component_assembler import get_component_assembler
 from sparkai.engine.engine_signal_bus import get_signal_bus as get_engine_signal_bus_v2
 from sparkai.agent.agent_skill_forge import get_skill_forge as get_agent_skill_forge
@@ -22797,6 +22797,16 @@ from sparkai.agent.agent_world_evolution import get_world_evolution
 from sparkai.engine.engine_mega_sprite_layer import get_mega_sprite_layer
 from sparkai.engine.engine_rid_allocator import get_rid_allocator
 from sparkai.agent.agent_cross_platform_gateway import get_cross_platform_gateway
+from sparkai.agent.agent_environment_manager import get_environment_manager
+from sparkai.engine.engine_frame_timer import get_frame_timer
+from sparkai.engine.engine_platform_layer import get_platform_layer
+from sparkai.agent.agent_emotion_synthesis import get_emotion_synthesis
+from sparkai.agent.agent_story_forge import get_story_forge
+from sparkai.agent.agent_quest_generator import get_quest_generator
+from sparkai.agent.agent_dialogue_engine import get_dialogue_engine
+from sparkai.engine.engine_camera_controller import get_camera_controller
+from sparkai.engine.engine_pathfinding import get_pathfinding_engine
+from sparkai.engine.engine_state_machine import get_state_machine_engine
 from sparkai.engine.engine_tilemap_runtime import get_tilemap_runtime
 from sparkai.engine.engine_entity_component_system import get_entity_component_system
 from sparkai.engine.engine_physics_world_2d import get_engine_physics_world_2d
@@ -22810,7 +22820,7 @@ _skill_forge = get_agent_skill_forge()
 _memory_consolidator = get_memory_consolidator()
 _delegation_broker = get_delegation_broker()
 _component_assembler = get_component_assembler()
-_event_scripting = get_event_scripting()
+_event_scripting = get_engine_event_scripting()
 _signal_bus_runtime = get_engine_signal_bus_v2()
 _game_design_intelligence = get_game_design_intelligence()
 _game_state_analyzer = get_game_state_analyzer()
@@ -22859,6 +22869,22 @@ _world_evolution = get_world_evolution()
 _mega_sprite_layer = get_mega_sprite_layer()
 _rid_allocator = get_rid_allocator()
 _cross_platform_gateway = get_cross_platform_gateway()
+_environment_manager = get_environment_manager()
+_frame_timer = get_frame_timer()
+_platform_layer = get_platform_layer()
+_emotion_synthesis = get_emotion_synthesis()
+_story_forge = get_story_forge()
+_quest_generator = get_quest_generator()
+_dialogue_engine = get_dialogue_engine()
+_camera_controller = get_camera_controller()
+_pathfinding_engine = get_pathfinding_engine()
+_state_machine_engine = get_state_machine_engine()
+
+from sparkai.agent.agent_scene_director import get_scene_director
+_scene_director = get_scene_director()
+
+from sparkai.engine.engine_world_streamer import get_world_streamer
+_world_streamer = get_world_streamer()
 
 # ============================================================
 # SkillForge Endpoints
@@ -26392,5 +26418,744 @@ async def server_orchestrator_optimize(request: Request):
         body = await request.json()
         result = _server_orchestrator.optimize_server_allocation()
         return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Environment Manager Endpoints
+# ============================================================
+
+@router.get("/environment-manager/stats")
+async def environment_manager_stats():
+    try:
+        return _environment_manager.get_system_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/environment-manager/environments")
+async def environment_manager_list():
+    try:
+        return _environment_manager.get_all_environments()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/environment-manager/provision")
+async def environment_manager_provision(request: Request):
+    try:
+        body = await request.json()
+        env = _environment_manager.provision(
+            name=body.get("name", "env"),
+            env_type=body.get("env_type", "local"),
+        )
+        return env.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Frame Timer Endpoints
+# ============================================================
+
+@router.get("/frame-timer/stats")
+async def frame_timer_stats():
+    try:
+        return _frame_timer.get_stats().to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/frame-timer/state")
+async def frame_timer_state():
+    try:
+        return _frame_timer.get_current_state()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/frame-timer/history")
+async def frame_timer_history(count: int = 60):
+    try:
+        return _frame_timer.get_recent_history(count)
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/frame-timer/start")
+async def frame_timer_start():
+    try:
+        _frame_timer.start()
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/frame-timer/stop")
+async def frame_timer_stop():
+    try:
+        _frame_timer.stop()
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Platform Layer Endpoints
+# ============================================================
+
+@router.get("/platform-layer/capabilities")
+async def platform_layer_capabilities():
+    try:
+        return _platform_layer.get_capabilities().to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/platform-layer/stats")
+async def platform_layer_stats():
+    try:
+        return _platform_layer.get_platform_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/platform-layer/backend-compatibility")
+async def platform_layer_backend():
+    try:
+        return _platform_layer.get_backend_compatibility()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/platform-layer/detect")
+async def platform_layer_detect():
+    try:
+        platform = _platform_layer.detect_platform()
+        return {"platform": platform.value}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Emotion Synthesis Endpoints
+# ============================================================
+
+@router.get("/emotion-synthesis/stats")
+async def emotion_synthesis_stats():
+    try:
+        return _emotion_synthesis.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/emotion-synthesis/profiles")
+async def emotion_synthesis_profiles():
+    try:
+        return _emotion_synthesis.get_all_profiles()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/emotion-synthesis/trigger-event")
+async def emotion_synthesis_trigger(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_emotion_synthesis import EmotionEvent
+        event = EmotionEvent(body.get("event", "achievement"))
+        result = _emotion_synthesis.trigger_event(
+            agent_id=body.get("agent_id", ""),
+            event=event,
+            intensity=body.get("intensity", 0.5),
+            context=body.get("context", ""),
+        )
+        return result.to_dict() if result else {"error": "agent not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Story Forge Endpoints
+# ============================================================
+
+@router.get("/story-forge/stats")
+async def story_forge_stats():
+    try:
+        return _story_forge.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/story-forge/arcs")
+async def story_forge_arcs():
+    try:
+        return _story_forge.get_all_arcs()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/story-forge/create-arc")
+async def story_forge_create_arc(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_story_forge import StoryArcType, StoryGenre
+        arc_type = StoryArcType(body.get("arc_type", "heroes_journey"))
+        genre = StoryGenre(body.get("genre", "fantasy"))
+        arc = _story_forge.create_arc(
+            title=body.get("title", "Story Arc"),
+            arc_type=arc_type,
+            genre=genre,
+            protagonist=body.get("protagonist", "Hero"),
+        )
+        return arc.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/story-forge/generate-beats")
+async def story_forge_generate_beats(request: Request):
+    try:
+        body = await request.json()
+        beats = _story_forge.generate_beats(
+            arc_id=body.get("arc_id", ""),
+            beat_count=body.get("beat_count", 8),
+        )
+        return [b.to_dict() for b in beats]
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Quest Generator Endpoints
+# ============================================================
+
+@router.get("/quest-generator/stats")
+async def quest_generator_stats():
+    try:
+        return _quest_generator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/quest-generator/quests")
+async def quest_generator_list():
+    try:
+        return _quest_generator.get_all_quests()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/quest-generator/generate")
+async def quest_generator_generate(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_quest_generator import QuestCategory, DifficultyLevel
+        category = QuestCategory(body.get("category", "side_quest"))
+        difficulty = DifficultyLevel(body.get("difficulty", "normal"))
+        quest = _quest_generator.generate_quest(
+            title=body.get("title", ""),
+            category=category,
+            difficulty=difficulty,
+            giver_id=body.get("giver_id", ""),
+            min_level=body.get("min_level", 1),
+            description=body.get("description", ""),
+            is_repeatable=body.get("is_repeatable", False),
+        )
+        return quest.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Dialogue Engine Endpoints
+# ============================================================
+
+@router.get("/dialogue-engine/stats")
+async def dialogue_engine_stats():
+    try:
+        return _dialogue_engine.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/dialogue-engine/trees")
+async def dialogue_engine_trees():
+    try:
+        return _dialogue_engine.get_all_trees()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/dialogue-engine/create-tree")
+async def dialogue_engine_create_tree(request: Request):
+    try:
+        body = await request.json()
+        tree = _dialogue_engine.create_dialogue_tree(
+            name=body.get("name", "Dialogue Tree"),
+            context=body.get("context", ""),
+        )
+        return tree.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/dialogue-engine/create-session")
+async def dialogue_engine_create_session(request: Request):
+    try:
+        body = await request.json()
+        session = _dialogue_engine.start_session(
+            tree_id=body.get("tree_id", ""),
+            speaker_name=body.get("speaker_name", "NPC"),
+        )
+        return session.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Camera Controller Endpoints
+# ============================================================
+
+@router.get("/camera-controller/stats")
+async def camera_controller_stats():
+    try:
+        return _camera_controller.get_system_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/camera-controller/cameras")
+async def camera_controller_cameras():
+    try:
+        return [c.to_dict() for c in _camera_controller.list_cameras()]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/camera-controller/create")
+async def camera_controller_create(request: Request):
+    try:
+        body = await request.json()
+        cam = _camera_controller.create_camera(
+            name=body.get("name", "Main Camera"),
+        )
+        return cam.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/camera-controller/shake")
+async def camera_controller_shake(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_camera_controller import ShakeProfile
+        profile = ShakeProfile(body.get("profile", "impact"))
+        result = _camera_controller.start_shake(
+            camera_id=body.get("camera_id", ""),
+            profile=profile,
+            intensity=body.get("intensity", 1.0),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/camera-controller/sequences")
+async def camera_controller_sequences():
+    try:
+        return [s.to_dict() for s in _camera_controller.list_sequences()]
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Pathfinding Engine Endpoints
+# ============================================================
+
+@router.get("/pathfinding/stats")
+async def pathfinding_stats():
+    try:
+        return _pathfinding_engine.get_system_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/pathfinding/grids")
+async def pathfinding_grids():
+    try:
+        return _pathfinding_engine.list_grids()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/pathfinding/create-grid")
+async def pathfinding_create_grid(request: Request):
+    try:
+        body = await request.json()
+        grid = _pathfinding_engine.create_grid(
+            grid_id=body.get("grid_id", "default"),
+            width=body.get("width", 100),
+            height=body.get("height", 100),
+            cell_size=body.get("cell_size", 1.0),
+        )
+        return grid.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/pathfinding/find-path")
+async def pathfinding_find_path(request: Request):
+    try:
+        body = await request.json()
+        result = _pathfinding_engine.find_path_astar(
+            grid_id=body.get("grid_id", "default"),
+            start_x=body.get("start_x", 0),
+            start_y=body.get("start_y", 0),
+            goal_x=body.get("goal_x", 10),
+            goal_y=body.get("goal_y", 10),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/pathfinding/flow-field")
+async def pathfinding_flow_field(request: Request):
+    try:
+        body = await request.json()
+        field = _pathfinding_engine.generate_flow_field(
+            field_id=body.get("field_id", "default"),
+            grid_id=body.get("grid_id", "default"),
+            goal_x=body.get("goal_x", 0),
+            goal_y=body.get("goal_y", 0),
+        )
+        return field.to_dict() if field else {"error": "grid not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/pathfinding/obstacles")
+async def pathfinding_obstacles():
+    try:
+        return [o.to_dict() for o in _pathfinding_engine.get_obstacles()]
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# State Machine Engine Endpoints
+# ============================================================
+
+@router.get("/state-machine/stats")
+async def state_machine_stats():
+    try:
+        return _state_machine_engine.get_system_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/state-machine/machines")
+async def state_machine_machines():
+    try:
+        return [m.to_dict() for m in _state_machine_engine.list_machines()]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/state-machine/create")
+async def state_machine_create(request: Request):
+    try:
+        body = await request.json()
+        machine = _state_machine_engine.create_machine(
+            name=body.get("name", "State Machine"),
+        )
+        return machine.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/state-machine/add-state")
+async def state_machine_add_state(request: Request):
+    try:
+        body = await request.json()
+        state = _state_machine_engine.add_state(
+            machine_id=body.get("machine_id", ""),
+            name=body.get("name", "State"),
+            is_initial=body.get("is_initial", False),
+        )
+        return state.to_dict() if state else {"error": "machine not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/state-machine/add-transition")
+async def state_machine_add_transition(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_state_machine import TransitionTrigger
+        trigger = TransitionTrigger(body.get("trigger", "condition"))
+        trans = _state_machine_engine.add_transition(
+            machine_id=body.get("machine_id", ""),
+            name=body.get("name", "Transition"),
+            from_state=body.get("from_state", ""),
+            to_state=body.get("to_state", ""),
+            trigger=trigger,
+            event_name=body.get("event_name", ""),
+            timer_duration=body.get("timer_duration", 0.0),
+        )
+        return trans.to_dict() if trans else {"error": "machine not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/state-machine/start")
+async def state_machine_start(request: Request):
+    try:
+        body = await request.json()
+        result = _state_machine_engine.start_machine(
+            machine_id=body.get("machine_id", ""),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/state-machine/send-event")
+async def state_machine_send_event(request: Request):
+    try:
+        body = await request.json()
+        result = _state_machine_engine.send_event(
+            machine_id=body.get("machine_id", ""),
+            event_name=body.get("event_name", ""),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/state-machine/export")
+async def state_machine_export(machine_id: str = ""):
+    try:
+        graph = _state_machine_engine.export_machine_graph(machine_id)
+        return graph if graph else {"error": "machine not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Scene Director Endpoints
+# ============================================================
+
+@router.get("/scene-director/stats")
+async def scene_director_stats():
+    try:
+        return _scene_director.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/scene-director/scenes")
+async def scene_director_scenes():
+    try:
+        return _scene_director.get_all_scenes()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/scene-director/sequences")
+async def scene_director_sequences():
+    try:
+        return _scene_director.get_all_sequences()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-director/create-scene")
+async def scene_director_create_scene(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_scene_director import SceneMood
+        mood = SceneMood(body.get("mood", "neutral"))
+        scene = _scene_director.create_scene(
+            title=body.get("title", "Untitled Scene"),
+            description=body.get("description", ""),
+            mood=mood,
+            duration=body.get("duration", 10.0),
+            location_id=body.get("location_id", ""),
+            composition_type=body.get("composition_type", "dialogue"),
+            tags=body.get("tags"),
+        )
+        return scene.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-director/add-actor")
+async def scene_director_add_actor(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.agent.agent_scene_director import ActorRole
+        role = ActorRole(body.get("role", "supporting"))
+        blocking = _scene_director.add_actor_blocking(
+            scene_id=body.get("scene_id", ""),
+            actor_id=body.get("actor_id", ""),
+            role=role,
+            start_x=body.get("start_x", 0.0),
+            start_y=body.get("start_y", 0.0),
+            end_x=body.get("end_x", 0.0),
+            end_y=body.get("end_y", 0.0),
+            emotion=body.get("emotion", "neutral"),
+            enter_at_time=body.get("enter_at_time", 0.0),
+        )
+        return blocking.to_dict() if blocking else {"error": "scene not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-director/add-event")
+async def scene_director_add_event(request: Request):
+    try:
+        body = await request.json()
+        event = _scene_director.add_scene_event(
+            scene_id=body.get("scene_id", ""),
+            event_type=body.get("event_type", "dialogue"),
+            trigger_time=body.get("trigger_time", 0.0),
+            target_id=body.get("target_id", ""),
+            parameters=body.get("parameters"),
+        )
+        return event.to_dict() if event else {"error": "scene not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-director/start-scene")
+async def scene_director_start(request: Request):
+    try:
+        body = await request.json()
+        result = _scene_director.start_scene(scene_id=body.get("scene_id", ""))
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-director/tick-scene")
+async def scene_director_tick(request: Request):
+    try:
+        body = await request.json()
+        result = _scene_director.tick_scene(
+            scene_id=body.get("scene_id", ""),
+            delta_time=body.get("delta_time", 0.016),
+        )
+        return result if result else {"error": "scene not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-director/stop-scene")
+async def scene_director_stop(request: Request):
+    try:
+        body = await request.json()
+        result = _scene_director.stop_scene(scene_id=body.get("scene_id", ""))
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/scene-director/composition-presets")
+async def scene_director_presets():
+    try:
+        return _scene_director.get_composition_presets()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# World Streamer Endpoints
+# ============================================================
+
+@router.get("/world-streamer/stats")
+async def world_streamer_stats():
+    try:
+        return _world_streamer.get_system_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-streamer/chunks")
+async def world_streamer_chunks():
+    try:
+        return _world_streamer.get_all_chunks()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-streamer/loaded")
+async def world_streamer_loaded():
+    try:
+        return _world_streamer.get_loaded_chunks()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-streamer/regions")
+async def world_streamer_regions():
+    try:
+        return _world_streamer.get_all_regions()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-streamer/config")
+async def world_streamer_config():
+    try:
+        return _world_streamer.get_config().to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-streamer/configure")
+async def world_streamer_configure(request: Request):
+    try:
+        body = await request.json()
+        config = _world_streamer.configure(**body)
+        return config.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-streamer/create-chunk")
+async def world_streamer_create_chunk(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_world_streamer import LoadPriority
+        priority = LoadPriority(body.get("priority", "normal"))
+        chunk = _world_streamer.create_chunk(
+            grid_x=body.get("grid_x", 0),
+            grid_y=body.get("grid_y", 0),
+            priority=priority,
+            tags=body.get("tags"),
+        )
+        return chunk.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-streamer/generate-grid")
+async def world_streamer_generate_grid(request: Request):
+    try:
+        body = await request.json()
+        chunks = _world_streamer.generate_world_grid(
+            center_x=body.get("center_x", 0.0),
+            center_y=body.get("center_y", 0.0),
+            grid_radius=body.get("grid_radius", 5),
+        )
+        return [c.to_dict() for c in chunks]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-streamer/load-chunk")
+async def world_streamer_load_chunk(request: Request):
+    try:
+        body = await request.json()
+        from sparkai.engine.engine_world_streamer import LoadPriority
+        priority = LoadPriority(body.get("priority", "normal"))
+        result = _world_streamer.request_chunk_load(
+            chunk_id=body.get("chunk_id", ""),
+            priority=priority,
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-streamer/unload-chunk")
+async def world_streamer_unload_chunk(request: Request):
+    try:
+        body = await request.json()
+        result = _world_streamer.request_chunk_unload(
+            chunk_id=body.get("chunk_id", ""),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-streamer/set-camera")
+async def world_streamer_set_camera(request: Request):
+    try:
+        body = await request.json()
+        _world_streamer.set_camera_position(
+            x=body.get("x", 0.0),
+            y=body.get("y", 0.0),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-streamer/tick")
+async def world_streamer_tick():
+    try:
+        return _world_streamer.tick()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-streamer/create-region")
+async def world_streamer_create_region(request: Request):
+    try:
+        body = await request.json()
+        region = _world_streamer.create_region(
+            name=body.get("name", "Unnamed Region"),
+            center_x=body.get("center_x", 0.0),
+            center_y=body.get("center_y", 0.0),
+            radius=body.get("radius", 500.0),
+        )
+        return region.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-streamer/activate-region")
+async def world_streamer_activate_region(request: Request):
+    try:
+        body = await request.json()
+        result = _world_streamer.activate_region(
+            region_id=body.get("region_id", ""),
+        )
+        return {"success": result}
     except Exception as e:
         return {"error": str(e)}
