@@ -37,6 +37,8 @@ import SkillEvolution from './SkillEvolution';
 import GameEvaluator from './GameEvaluator';
 import ScriptEditor from './ScriptEditor';
 import SettingsPanel from './SettingsPanel';
+import SceneDirectorPanel from './SceneDirectorPanel';
+import WorldStreamerPanel from './WorldStreamerPanel';
 import { LifecyclePanel, SlashCommandsPanel, ValidationHooksPanel } from './LifecyclePanels';
 import { TaskExecutorPanel } from './TaskExecutorPanel';
 import NotificationToast from './NotificationToast';
@@ -318,6 +320,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'task-executor': return <TaskExecutorPanel />;
       case 'script-editor': return <ScriptEditor />;
       case 'settings': return <SettingsPanel />;
+      case 'scene-director': return <SceneDirectorPanel />;
+      case 'world-streamer': return <WorldStreamerPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
