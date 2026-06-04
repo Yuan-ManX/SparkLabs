@@ -1,356 +1,382 @@
 """
-SparkLabs Engine - Event Scripting System
+SparkLabs Engine - Visual Event Scripting System
 
-Event-driven game logic system visual event sheets
-and signal system. Enables creators to define game behavior through
-declarative event rules composed of conditions and actions, organized into
-named event sheets that the runtime evaluates each game tick.
+Visual event scripting system for authoring game logic through declarative
+event sheets composed of conditions and actions. Creators define event-driven
+behavior by assembling condition→action pairs into named sheets that the
+runtime evaluates against live game state each tick.
 
 Architecture:
-  EventScripting
-    |-- EventSheet (named collection of rules with scope and metadata)
-    |-- EventRule (condition-to-action mapping with repeat behavior)
-    |-- EventCondition (evaluable predicate testing simulated game state)
-    |-- EventAction (executable operation mutating game state)
+  EngineEventScripting
+    |-- EventSheet (named collection of event definitions with metadata)
+    |-- EventCondition (evaluable predicate with operators and sub-conditions)
+    |-- EventAction (executable operation with parameters and ordering)
+    |-- EventLink (inter-sheet linking for composition and inheritance)
+    |-- EventVariable (scoped variable with type, default, and runtime value)
 
-Condition Types:
-  - OBJECT_COLLISION: detect overlap between two game objects
-  - KEY_PRESSED: check input key or button state
-  - VARIABLE_COMPARE: compare numeric or string variables
-  - TIMER_EXPIRED: fire when a named timer reaches its interval
-  - RAYCAST_HIT: detect ray intersection with objects
-  - DISTANCE_CHECK: measure distance between two objects
-  - ANIMATION_END: trigger when an animation clip finishes
-  - CUSTOM: user-defined condition with custom evaluation
-
-Action Types:
-  - MOVE_OBJECT: translate an object by offset or to target position
-  - PLAY_SOUND: play an audio asset with optional volume and pitch
-  - CHANGE_VARIABLE: assign, increment, decrement, or toggle variables
-  - CREATE_OBJECT: instantiate a prefab at a given position
-  - DESTROY_OBJECT: remove an object from the scene
-  - APPLY_FORCE: apply a physics force vector to an object
-  - PLAY_ANIMATION: start an animation clip on a target object
-  - TRIGGER_EVENT: fire another event rule by reference
-  - SWITCH_SCENE: transition to a different scene
-  - SPAWN_PARTICLES: emit a particle burst at a location
-
-Repeat Types:
-  - ONCE: fire the rule a single time when conditions are met
-  - REPEAT_WHILE_TRUE: keep executing every tick while conditions hold
-  - EVERY_FRAME: execute unconditionally every game tick
-  - EVERY_N_SECONDS: execute on a fixed time interval while conditions hold
+Sheet Features:
+  - DECLARATIVE: events defined by condition→action rule pairs
+  - HIERARCHICAL: sub-conditions and sub-actions for nested logic
+  - LINKED: sheets can include, reference, inherit, extend, or override
+  - COMPILABLE: sheets compile to Python, JavaScript, or Lua source code
+  - IMPORT/EXPORT: JSON serialization for sheet portability
 
 Usage:
-    es = get_event_scripting()
-    sheet = es.create_event_sheet("player_movement", scope="gameplay")
-    rule = es.create_rule("move_right_on_key", sheet.id, RepeatType.REPEAT_WHILE_TRUE)
-    es.add_condition(rule.id, ConditionType.KEY_PRESSED, "input", "key", "==", "ArrowRight")
-    es.add_action(rule.id, ActionType.MOVE_OBJECT, "player", {"dx": 5, "dy": 0}, order_index=0)
-    es.simulate_game_tick(0.016)
+    es = get_engine_event_scripting()
+    sheet = es.create_event_sheet("gameplay_core", "Core gameplay logic")
+    event_id = es.add_event_to_sheet(sheet.sheet_id, conditions, actions, "on_start")
+    es.execute_sheet(sheet.sheet_id, {"player_x": 0, "player_y": 0})
 """
 
 from __future__ import annotations
 
+import copy
+import json
 import threading
 import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set, Tuple
+from typing import Any, Dict, List, Optional
 
 _time_module = time
 
 
+# ---------------------------------------------------------------------------
+# Helper: unique ID stub
+# ---------------------------------------------------------------------------
+
+
+def _generate_uid_stub() -> str:
+    """Generate a unique identifier for event scripting entities."""
+    return uuid.uuid4().hex
+
+
+# ---------------------------------------------------------------------------
+# Domain Enumerations
+# ---------------------------------------------------------------------------
+
+
 class ConditionType(Enum):
+    """Types of conditions that can be evaluated against game state."""
     OBJECT_COLLISION = "object_collision"
-    KEY_PRESSED = "key_pressed"
-    VARIABLE_COMPARE = "variable_compare"
-    TIMER_EXPIRED = "timer_expired"
-    RAYCAST_HIT = "raycast_hit"
-    DISTANCE_CHECK = "distance_check"
-    ANIMATION_END = "animation_end"
+    OBJECT_POSITION = "object_position"
+    VARIABLE_COMPARISON = "variable_comparison"
+    TIMER = "timer"
+    INPUT = "input"
+    SCENE_LOADED = "scene_loaded"
+    TRIGGER_ZONE = "trigger_zone"
+    ANIMATION_FINISHED = "animation_finished"
+    NETWORK_EVENT = "network_event"
     CUSTOM = "custom"
 
 
 class ActionType(Enum):
-    MOVE_OBJECT = "move_object"
-    PLAY_SOUND = "play_sound"
-    CHANGE_VARIABLE = "change_variable"
+    """Types of actions that can be dispatched by event rules."""
     CREATE_OBJECT = "create_object"
-    DESTROY_OBJECT = "destroy_object"
-    APPLY_FORCE = "apply_force"
+    DELETE_OBJECT = "delete_object"
+    MOVE_OBJECT = "move_object"
+    CHANGE_VARIABLE = "change_variable"
     PLAY_ANIMATION = "play_animation"
+    PLAY_SOUND = "play_sound"
+    CHANGE_SCENE = "change_scene"
+    APPLY_FORCE = "apply_force"
     TRIGGER_EVENT = "trigger_event"
-    SWITCH_SCENE = "switch_scene"
-    SPAWN_PARTICLES = "spawn_particles"
-    CUSTOM_ACTION = "custom_action"
+    SPAWN_PARTICLE = "spawn_particle"
+    MODIFY_PROPERTY = "modify_property"
+    EXECUTE_SCRIPT = "execute_script"
+    WAIT = "wait"
+    CALL_FUNCTION = "call_function"
+    SEND_MESSAGE = "send_message"
+    CUSTOM = "custom"
 
 
-class RepeatType(Enum):
-    ONCE = "once"
-    REPEAT_WHILE_TRUE = "repeat_while_true"
-    EVERY_FRAME = "every_frame"
-    EVERY_N_SECONDS = "every_n_seconds"
+class OperatorType(Enum):
+    """Comparison operators for condition evaluation."""
+    EQUAL = "equal"
+    NOT_EQUAL = "not_equal"
+    GREATER = "greater"
+    GREATER_EQUAL = "greater_equal"
+    LESS = "less"
+    LESS_EQUAL = "less_equal"
+    CONTAINS = "contains"
+    STARTS_WITH = "starts_with"
+    ENDS_WITH = "ends_with"
+    BETWEEN = "between"
+    IN_RANGE = "in_range"
+    IS_NULL = "is_null"
+    IS_NOT_NULL = "is_not_null"
+
+
+class VariableScope(Enum):
+    """Scope at which an event variable is defined and accessible."""
+    GLOBAL = "global"
+    SCENE = "scene"
+    OBJECT = "object"
+    LOCAL = "local"
+    TEMPORARY = "temporary"
+
+
+class LinkType(Enum):
+    """Types of relationships between event sheets."""
+    INCLUDE = "include"
+    REFERENCE = "reference"
+    INHERIT = "inherit"
+    EXTEND = "extend"
+    OVERRIDE = "override"
+
+
+# ---------------------------------------------------------------------------
+# Operator Function Map
+# ---------------------------------------------------------------------------
+
+_OPERATOR_FUNCTIONS = {
+    OperatorType.EQUAL: lambda a, b: a == b,
+    OperatorType.NOT_EQUAL: lambda a, b: a != b,
+    OperatorType.GREATER: lambda a, b: float(a) > float(b),
+    OperatorType.GREATER_EQUAL: lambda a, b: float(a) >= float(b),
+    OperatorType.LESS: lambda a, b: float(a) < float(b),
+    OperatorType.LESS_EQUAL: lambda a, b: float(a) <= float(b),
+    OperatorType.CONTAINS: lambda a, b: str(b) in str(a) if a is not None else False,
+    OperatorType.STARTS_WITH: lambda a, b: str(a).startswith(str(b)) if a is not None else False,
+    OperatorType.ENDS_WITH: lambda a, b: str(a).endswith(str(b)) if a is not None else False,
+    OperatorType.BETWEEN: lambda a, b: (b[0] <= a <= b[1]) if isinstance(b, (list, tuple)) and len(b) >= 2 else False,
+    OperatorType.IN_RANGE: lambda a, b: (b[0] <= a <= b[1]) if isinstance(b, (list, tuple)) and len(b) >= 2 else False,
+    OperatorType.IS_NULL: lambda a, b: a is None,
+    OperatorType.IS_NOT_NULL: lambda a, b: a is not None,
+}
+
+
+# ---------------------------------------------------------------------------
+# Data Classes
+# ---------------------------------------------------------------------------
 
 
 @dataclass
 class EventCondition:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    """Evaluable condition that tests a property or variable against a value."""
+
+    condition_id: str = field(default_factory=_generate_uid_stub)
+    name: str = ""
     condition_type: ConditionType = ConditionType.CUSTOM
-    target: str = ""
+    target_object: str = ""
     property: str = ""
-    operator: str = "=="
+    operator: OperatorType = OperatorType.EQUAL
     value: Any = None
-    negate: bool = False
+    sub_conditions: List[EventCondition] = field(default_factory=list)
+    logic_operator: str = "and"
+    invert: bool = False
+    is_template: bool = False
+    category: str = ""
+    description: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
+            "condition_id": self.condition_id,
+            "name": self.name,
             "condition_type": self.condition_type.value,
-            "target": self.target,
+            "target_object": self.target_object,
             "property": self.property,
-            "operator": self.operator,
+            "operator": self.operator.value,
             "value": self.value,
-            "negate": self.negate,
+            "sub_conditions": [sc.to_dict() for sc in self.sub_conditions],
+            "logic_operator": self.logic_operator,
+            "invert": self.invert,
+            "is_template": self.is_template,
+            "category": self.category,
+            "description": self.description,
         }
 
 
 @dataclass
 class EventAction:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    action_type: ActionType = ActionType.CUSTOM_ACTION
-    target: str = ""
-    parameters: Dict[str, Any] = field(default_factory=dict)
-    order_index: int = 0
+    """Executable operation dispatched when a condition set is satisfied."""
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "action_type": self.action_type.value,
-            "target": self.target,
-            "parameters": self.parameters,
-            "order_index": self.order_index,
-        }
-
-
-@dataclass
-class EventRule:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    action_id: str = field(default_factory=_generate_uid_stub)
     name: str = ""
-    conditions: List[EventCondition] = field(default_factory=list)
-    actions: List[EventAction] = field(default_factory=list)
-    repeat_type: RepeatType = RepeatType.ONCE
-    priority: int = 0
-    enabled: bool = True
-    tags: List[str] = field(default_factory=list)
-    created_at: float = field(default_factory=_time_module.time)
+    action_type: ActionType = ActionType.CUSTOM
+    target_object: str = ""
+    method: str = ""
+    parameters: Dict[str, Any] = field(default_factory=dict)
+    sub_actions: List[EventAction] = field(default_factory=list)
+    execution_order: int = 0
+    is_async: bool = False
+    timeout: float = 0.0
+    error_behavior: str = "ignore"
+    description: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
+            "action_id": self.action_id,
             "name": self.name,
-            "condition_count": len(self.conditions),
-            "action_count": len(self.actions),
-            "repeat_type": self.repeat_type.value,
-            "priority": self.priority,
-            "enabled": self.enabled,
-            "tags": self.tags,
-            "created_at": self.created_at,
+            "action_type": self.action_type.value,
+            "target_object": self.target_object,
+            "method": self.method,
+            "parameters": dict(self.parameters),
+            "sub_actions": [sa.to_dict() for sa in self.sub_actions],
+            "execution_order": self.execution_order,
+            "is_async": self.is_async,
+            "timeout": self.timeout,
+            "error_behavior": self.error_behavior,
+            "description": self.description,
         }
 
 
 @dataclass
 class EventSheet:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    """Named collection of event definitions with scope and metadata."""
+
+    sheet_id: str = field(default_factory=_generate_uid_stub)
     name: str = ""
-    rules: List[EventRule] = field(default_factory=list)
-    scope: str = "global"
     description: str = ""
+    events: List[Dict[str, Any]] = field(default_factory=list)
+    is_active: bool = True
+    is_global: bool = False
+    linked_objects: List[str] = field(default_factory=list)
+    priority: int = 0
+    execution_order: int = 0
+    category: str = ""
     created_at: float = field(default_factory=_time_module.time)
     updated_at: float = field(default_factory=_time_module.time)
+    compiled_code: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
+            "sheet_id": self.sheet_id,
             "name": self.name,
-            "rule_count": len(self.rules),
-            "scope": self.scope,
             "description": self.description,
+            "event_count": len(self.events),
+            "is_active": self.is_active,
+            "is_global": self.is_global,
+            "linked_objects": list(self.linked_objects),
+            "priority": self.priority,
+            "execution_order": self.execution_order,
+            "category": self.category,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
+            "compiled_code": self.compiled_code,
         }
 
 
-OPERATOR_FUNCTIONS = {
-    "==": lambda a, b: a == b,
-    "!=": lambda a, b: a != b,
-    ">": lambda a, b: float(a) > float(b),
-    "<": lambda a, b: float(a) < float(b),
-    ">=": lambda a, b: float(a) >= float(b),
-    "<=": lambda a, b: float(a) <= float(b),
-    "contains": lambda a, b: str(b) in str(a) if a is not None else False,
-    "starts_with": lambda a, b: str(a).startswith(str(b)) if a is not None else False,
-    "ends_with": lambda a, b: str(a).endswith(str(b)) if a is not None else False,
-}
+@dataclass
+class EventLink:
+    """Directed relationship between two event sheets."""
+
+    link_id: str = field(default_factory=_generate_uid_stub)
+    source_sheet_id: str = ""
+    target_sheet_id: str = ""
+    link_type: LinkType = LinkType.INCLUDE
+    condition: str = ""
+    is_active: bool = True
+    description: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "link_id": self.link_id,
+            "source_sheet_id": self.source_sheet_id,
+            "target_sheet_id": self.target_sheet_id,
+            "link_type": self.link_type.value,
+            "condition": self.condition,
+            "is_active": self.is_active,
+            "description": self.description,
+        }
 
 
-class EventScripting:
-    """
-    Event-driven game logic runtime that evaluates declarative event rules
-    against a simulated game state and dispatches actions each tick.
+@dataclass
+class EventVariable:
+    """Scoped variable definition with type, default, and runtime value."""
 
-    The system models declarative event sheets where each sheet contains
-    ordered rules, each rule consists of conditions that must be met and
-    actions that execute when they are. Rules support repeat behaviors
-    including one-shot, while-true, every-frame, and interval-based firing.
+    variable_id: str = field(default_factory=_generate_uid_stub)
+    name: str = ""
+    variable_type: str = "any"
+    scope: VariableScope = VariableScope.LOCAL
+    initial_value: Any = None
+    current_value: Any = None
+    is_system: bool = False
+    is_readonly: bool = False
+    description: str = ""
+    group_name: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "variable_id": self.variable_id,
+            "name": self.name,
+            "variable_type": self.variable_type,
+            "scope": self.scope.value,
+            "initial_value": self.initial_value,
+            "current_value": self.current_value,
+            "is_system": self.is_system,
+            "is_readonly": self.is_readonly,
+            "description": self.description,
+            "group_name": self.group_name,
+        }
+
+
+# ---------------------------------------------------------------------------
+# EngineEventScripting (Singleton)
+# ---------------------------------------------------------------------------
+
+
+class EngineEventScripting:
+    """Visual event scripting runtime for declarative game logic authoring.
+
+    Manages creation, evaluation, and execution of event sheets composed of
+    condition→action rule pairs. Supports hierarchical sub-conditions and
+    sub-actions, inter-sheet linking, code compilation, and JSON import/export.
 
     Usage:
-        es = EventScripting.get_instance()
-        sheet = es.create_event_sheet("core_loop", scope="gameplay",
-                                       description="Main gameplay event sheet")
-        rule = es.create_rule("spawn_enemy_wave", sheet.id,
-                               RepeatType.ONCE, priority=10,
-                               tags=["combat", "spawning"])
-        es.add_condition(rule.id, ConditionType.VARIABLE_COMPARE,
-                          "enemy_count", "value", "<", 5)
-        es.add_action(rule.id, ActionType.CREATE_OBJECT, "enemy_spawner",
-                       {"template": "goblin", "x": 100, "y": 200, "count": 3})
-        es.simulate_game_tick(0.016)
+        es = EngineEventScripting.get_instance()
+        sheet = es.create_event_sheet("core_logic", "Core gameplay events")
+        cond = es.create_condition(sheet.sheet_id, "check_position",
+                                    ConditionType.OBJECT_POSITION,
+                                    "player", "x", OperatorType.GREATER, 100)
+        act = es.create_action(sheet.sheet_id, None, "move_camera",
+                                ActionType.MOVE_OBJECT, "camera",
+                                parameters={"x": 200, "y": 0})
+        es.add_event_to_sheet(sheet.sheet_id, [cond], [act], "follow_player")
     """
 
-    _instance: Optional["EventScripting"] = None
+    _instance: Optional["EngineEventScripting"] = None
     _lock: threading.RLock = threading.RLock()
 
-    MAX_SHEETS = 256
-    MAX_RULES_PER_SHEET = 128
-    MAX_CONDITIONS_PER_RULE = 32
-    MAX_ACTIONS_PER_RULE = 64
-    MAX_TIMERS = 128
+    MAX_SHEETS = 512
+    MAX_EVENTS_PER_SHEET = 256
+    MAX_CONDITIONS_PER_EVENT = 64
+    MAX_ACTIONS_PER_EVENT = 128
+    MAX_LINKS = 1024
+    MAX_VARIABLES = 4096
+    MAX_SUB_CONDITION_DEPTH = 8
+    MAX_SUB_ACTION_DEPTH = 8
 
-    def __init__(self):
+    def __new__(cls) -> "EngineEventScripting":
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+                    cls._instance._initialized = False
+        return cls._instance
+
+    def __init__(self) -> None:
+        if hasattr(self, "_initialized") and self._initialized:
+            return
+        self._initialized = True
         self._sheets: Dict[str, EventSheet] = {}
-        self._rule_index: Dict[str, EventRule] = {}
-        self._condition_index: Dict[str, EventCondition] = {}
-        self._action_index: Dict[str, EventAction] = {}
-        self._rule_to_sheet: Dict[str, str] = {}
-        self._fired_once_rules: Set[str] = set()
-        self._rule_last_fired: Dict[str, float] = {}
-        self._simulated_game_state: Dict[str, Any] = {
-            "variables": {},
-            "objects": {},
-            "inputs": {},
-            "timers": {},
-            "collisions": [],
-            "raycast_hits": [],
-            "animations": {},
-            "scene": "main",
-            "tick_count": 0,
-            "delta_time": 0.0,
-        }
-        self._total_evaluations: int = 0
-        self._total_actions_executed: int = 0
-        self._total_ticks_simulated: int = 0
-        self._total_rules_triggered: int = 0
+        self._conditions: Dict[str, EventCondition] = {}
+        self._actions: Dict[str, EventAction] = {}
+        self._links: Dict[str, EventLink] = {}
+        self._variables: Dict[str, EventVariable] = {}
+        self._event_index: Dict[str, Dict[str, Any]] = {}
+        self._execution_count: int = 0
+        self._total_execution_time: float = 0.0
 
     @classmethod
-    def get_instance(cls) -> "EventScripting":
+    def get_instance(cls) -> "EngineEventScripting":
+        """Thread-safe singleton accessor with double-checked locking."""
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
                     cls._instance = cls()
         return cls._instance
-
-    # ------------------------------------------------------------------
-    # Rule Management
-    # ------------------------------------------------------------------
-
-    def create_rule(
-        self,
-        name: str,
-        sheet_id: str,
-        repeat_type: RepeatType = RepeatType.ONCE,
-        priority: int = 0,
-        enabled: bool = True,
-        tags: Optional[List[str]] = None,
-    ) -> Optional[EventRule]:
-        sheet = self._sheets.get(sheet_id)
-        if sheet is None:
-            return None
-        if len(sheet.rules) >= self.MAX_RULES_PER_SHEET:
-            return None
-
-        rule = EventRule(
-            name=name,
-            repeat_type=repeat_type,
-            priority=priority,
-            enabled=enabled,
-            tags=tags or [],
-        )
-        sheet.rules.append(rule)
-        sheet.updated_at = _time_module.time()
-        self._rule_index[rule.id] = rule
-        self._rule_to_sheet[rule.id] = sheet_id
-        return rule
-
-    def get_rule(self, rule_id: str) -> Optional[EventRule]:
-        return self._rule_index.get(rule_id)
-
-    def remove_rule(self, rule_id: str) -> bool:
-        rule = self._rule_index.pop(rule_id, None)
-        if rule is None:
-            return False
-        sheet_id = self._rule_to_sheet.pop(rule_id, None)
-        if sheet_id and sheet_id in self._sheets:
-            self._sheets[sheet_id].rules = [
-                r for r in self._sheets[sheet_id].rules if r.id != rule_id
-            ]
-            self._sheets[sheet_id].updated_at = _time_module.time()
-        for cond in rule.conditions:
-            self._condition_index.pop(cond.id, None)
-        for act in rule.actions:
-            self._action_index.pop(act.id, None)
-        self._fired_once_rules.discard(rule_id)
-        self._rule_last_fired.pop(rule_id, None)
-        return True
-
-    def set_rule_enabled(self, rule_id: str, enabled: bool) -> bool:
-        rule = self._rule_index.get(rule_id)
-        if rule is None:
-            return False
-        rule.enabled = enabled
-        return True
-
-    def set_rule_repeat_type(self, rule_id: str, repeat_type: RepeatType) -> bool:
-        rule = self._rule_index.get(rule_id)
-        if rule is None:
-            return False
-        rule.repeat_type = repeat_type
-        return True
-
-    def set_rule_priority(self, rule_id: str, priority: int) -> bool:
-        rule = self._rule_index.get(rule_id)
-        if rule is None:
-            return False
-        rule.priority = priority
-        return True
-
-    def add_rule_tag(self, rule_id: str, tag: str) -> bool:
-        rule = self._rule_index.get(rule_id)
-        if rule is None:
-            return False
-        if tag not in rule.tags:
-            rule.tags.append(tag)
-        return True
-
-    def remove_rule_tag(self, rule_id: str, tag: str) -> bool:
-        rule = self._rule_index.get(rule_id)
-        if rule is None:
-            return False
-        if tag in rule.tags:
-            rule.tags.remove(tag)
-            return True
-        return False
 
     # ------------------------------------------------------------------
     # Event Sheet Management
@@ -359,275 +385,536 @@ class EventScripting:
     def create_event_sheet(
         self,
         name: str,
-        scope: str = "global",
         description: str = "",
+        is_global: bool = False,
+        linked_objects: Optional[List[str]] = None,
+        priority: int = 0,
     ) -> Optional[EventSheet]:
+        """Create a new event sheet for organizing event definitions.
+
+        Args:
+            name: Human-readable name for the sheet.
+            description: Optional description of the sheet's purpose.
+            is_global: Whether the sheet applies globally across scenes.
+            linked_objects: Object IDs this sheet is bound to.
+            priority: Execution priority (higher runs first).
+
+        Returns:
+            The created EventSheet, or None if the sheet limit is reached.
+        """
         if len(self._sheets) >= self.MAX_SHEETS:
             return None
         now = _time_module.time()
         sheet = EventSheet(
             name=name,
-            scope=scope,
             description=description,
+            is_global=is_global,
+            linked_objects=linked_objects or [],
+            priority=priority,
             created_at=now,
             updated_at=now,
         )
-        self._sheets[sheet.id] = sheet
+        self._sheets[sheet.sheet_id] = sheet
         return sheet
 
     def get_event_sheet(self, sheet_id: str) -> Optional[EventSheet]:
+        """Retrieve an event sheet by its identifier."""
         return self._sheets.get(sheet_id)
 
-    def list_event_sheets(self, scope: Optional[str] = None) -> List[EventSheet]:
+    def list_event_sheets(self, active_only: bool = False) -> List[EventSheet]:
+        """List all event sheets, optionally filtering to active only."""
         sheets = list(self._sheets.values())
-        if scope is not None:
-            sheets = [s for s in sheets if s.scope == scope]
-        return sheets
+        if active_only:
+            sheets = [s for s in sheets if s.is_active]
+        return sorted(sheets, key=lambda s: (-s.priority, s.execution_order))
 
     def remove_event_sheet(self, sheet_id: str) -> bool:
+        """Remove an event sheet and all its associated events."""
         sheet = self._sheets.pop(sheet_id, None)
         if sheet is None:
             return False
-        for rule in sheet.rules:
-            self._rule_index.pop(rule.id, None)
-            self._rule_to_sheet.pop(rule.id, None)
-            self._fired_once_rules.discard(rule.id)
-            self._rule_last_fired.pop(rule.id, None)
-            for cond in rule.conditions:
-                self._condition_index.pop(cond.id, None)
-            for act in rule.actions:
-                self._action_index.pop(act.id, None)
+        for event_data in sheet.events:
+            eid = event_data.get("event_id", "")
+            self._event_index.pop(eid, None)
+            for cond in event_data.get("conditions", []):
+                cid = cond.condition_id if hasattr(cond, "condition_id") else cond.get("condition_id", "")
+                self._conditions.pop(cid, None)
+            for act in event_data.get("actions", []):
+                aid = act.action_id if hasattr(act, "action_id") else act.get("action_id", "")
+                self._actions.pop(aid, None)
+        links_to_remove = [
+            lid for lid, link in self._links.items()
+            if link.source_sheet_id == sheet_id or link.target_sheet_id == sheet_id
+        ]
+        for lid in links_to_remove:
+            self._links.pop(lid, None)
+        return True
+
+    def set_sheet_active(self, sheet_id: str, active: bool) -> bool:
+        """Enable or disable an event sheet."""
+        sheet = self._sheets.get(sheet_id)
+        if sheet is None:
+            return False
+        sheet.is_active = active
+        sheet.updated_at = _time_module.time()
         return True
 
     # ------------------------------------------------------------------
     # Condition Management
     # ------------------------------------------------------------------
 
-    def add_condition(
+    def create_condition(
         self,
-        rule_id: str,
-        condition_type: ConditionType,
-        target: str,
-        property: str,
-        operator: str,
-        value: Any,
-        negate: bool = False,
+        sheet_id: str,
+        name: str = "",
+        condition_type: ConditionType = ConditionType.CUSTOM,
+        target_object: str = "",
+        property: str = "",
+        operator: OperatorType = OperatorType.EQUAL,
+        value: Any = None,
+        sub_conditions: Optional[List[EventCondition]] = None,
+        logic_operator: str = "and",
     ) -> Optional[EventCondition]:
-        rule = self._rule_index.get(rule_id)
-        if rule is None:
-            return None
-        if len(rule.conditions) >= self.MAX_CONDITIONS_PER_RULE:
+        """Create a new condition for use in event rules.
+
+        Args:
+            sheet_id: The sheet this condition belongs to.
+            name: Human-readable name for the condition.
+            condition_type: The type of condition to evaluate.
+            target_object: The target object or variable to test.
+            property: The property path on the target to evaluate.
+            operator: The comparison operator.
+            value: The expected value to compare against.
+            sub_conditions: Nested sub-conditions for compound logic.
+            logic_operator: Logic operator for sub-conditions ("and" or "or").
+
+        Returns:
+            The created EventCondition, or None if the sheet is not found.
+        """
+        sheet = self._sheets.get(sheet_id)
+        if sheet is None:
             return None
         condition = EventCondition(
+            name=name,
             condition_type=condition_type,
-            target=target,
+            target_object=target_object,
             property=property,
             operator=operator,
             value=value,
-            negate=negate,
+            sub_conditions=sub_conditions or [],
+            logic_operator=logic_operator,
         )
-        rule.conditions.append(condition)
-        self._condition_index[condition.id] = condition
+        self._conditions[condition.condition_id] = condition
         return condition
 
+    def get_condition(self, condition_id: str) -> Optional[EventCondition]:
+        """Retrieve a condition by its identifier."""
+        return self._conditions.get(condition_id)
+
     def remove_condition(self, condition_id: str) -> bool:
-        condition = self._condition_index.pop(condition_id, None)
-        if condition is None:
+        """Remove a condition from the system."""
+        if condition_id not in self._conditions:
             return False
-        for rule in self._rule_index.values():
-            if condition in rule.conditions:
-                rule.conditions.remove(condition)
-                return True
+        del self._conditions[condition_id]
+        for sheet in self._sheets.values():
+            for event_data in sheet.events:
+                conds = event_data.get("conditions", [])
+                for i, c in enumerate(conds):
+                    cid = c.condition_id if hasattr(c, "condition_id") else c.get("condition_id", "")
+                    if cid == condition_id:
+                        conds.pop(i)
+                        sheet.updated_at = _time_module.time()
+                        return True
         return False
 
     # ------------------------------------------------------------------
     # Action Management
     # ------------------------------------------------------------------
 
-    def add_action(
+    def create_action(
         self,
-        rule_id: str,
-        action_type: ActionType,
-        target: str,
+        sheet_id: str,
+        event_id: Optional[str] = None,
+        name: str = "",
+        action_type: ActionType = ActionType.CUSTOM,
+        target_object: str = "",
+        method: str = "",
         parameters: Optional[Dict[str, Any]] = None,
-        order_index: Optional[int] = None,
+        sub_actions: Optional[List[EventAction]] = None,
+        is_async: bool = False,
     ) -> Optional[EventAction]:
-        rule = self._rule_index.get(rule_id)
-        if rule is None:
+        """Create a new action for use in event rules.
+
+        Args:
+            sheet_id: The sheet this action belongs to.
+            event_id: Optional event to attach the action to directly.
+            name: Human-readable name for the action.
+            action_type: The type of action to dispatch.
+            target_object: The target object for the action.
+            method: The method or function to invoke.
+            parameters: Key-value parameters for the action.
+            sub_actions: Nested sub-actions for sequential execution.
+            is_async: Whether the action runs asynchronously.
+
+        Returns:
+            The created EventAction, or None if the sheet is not found.
+        """
+        sheet = self._sheets.get(sheet_id)
+        if sheet is None:
             return None
-        if len(rule.actions) >= self.MAX_ACTIONS_PER_RULE:
-            return None
-        idx = order_index if order_index is not None else len(rule.actions)
         action = EventAction(
+            name=name,
             action_type=action_type,
-            target=target,
+            target_object=target_object,
+            method=method,
             parameters=parameters or {},
-            order_index=idx,
+            sub_actions=sub_actions or [],
+            is_async=is_async,
         )
-        rule.actions.append(action)
-        self._action_index[action.id] = action
+        self._actions[action.action_id] = action
+        if event_id:
+            for event_data in sheet.events:
+                if event_data.get("event_id") == event_id:
+                    actions = event_data.setdefault("actions", [])
+                    action.execution_order = len(actions)
+                    actions.append(action)
+                    sheet.updated_at = _time_module.time()
+                    break
         return action
 
+    def get_action(self, action_id: str) -> Optional[EventAction]:
+        """Retrieve an action by its identifier."""
+        return self._actions.get(action_id)
+
     def remove_action(self, action_id: str) -> bool:
-        action = self._action_index.pop(action_id, None)
-        if action is None:
+        """Remove an action from the system."""
+        if action_id not in self._actions:
             return False
-        for rule in self._rule_index.values():
-            if action in rule.actions:
-                rule.actions.remove(action)
-                return True
+        del self._actions[action_id]
+        for sheet in self._sheets.values():
+            for event_data in sheet.events:
+                acts = event_data.get("actions", [])
+                for i, a in enumerate(acts):
+                    aid = a.action_id if hasattr(a, "action_id") else a.get("action_id", "")
+                    if aid == action_id:
+                        acts.pop(i)
+                        sheet.updated_at = _time_module.time()
+                        return True
         return False
 
     # ------------------------------------------------------------------
-    # Simulated Game State Helpers
+    # Event Management
     # ------------------------------------------------------------------
 
-    def set_variable(self, name: str, value: Any) -> None:
-        self._simulated_game_state["variables"][name] = value
+    def add_event_to_sheet(
+        self,
+        sheet_id: str,
+        conditions: Optional[List[EventCondition]] = None,
+        actions: Optional[List[EventAction]] = None,
+        name: str = "",
+    ) -> str:
+        """Add a new event rule to a sheet, composed of conditions and actions.
 
-    def get_variable(self, name: str, default: Any = None) -> Any:
-        return self._simulated_game_state["variables"].get(name, default)
+        Args:
+            sheet_id: The target event sheet.
+            conditions: List of conditions that must be met.
+            actions: List of actions to execute when conditions are met.
+            name: Optional name for the event.
 
-    def set_input(self, key: str, pressed: bool) -> None:
-        self._simulated_game_state["inputs"][key] = pressed
-
-    def set_timer(self, name: str, interval: float) -> None:
-        self._simulated_game_state["timers"][name] = {
-            "elapsed": 0.0,
-            "interval": interval,
-            "active": True,
+        Returns:
+            The generated event_id string, or empty string on failure.
+        """
+        sheet = self._sheets.get(sheet_id)
+        if sheet is None:
+            return ""
+        if len(sheet.events) >= self.MAX_EVENTS_PER_SHEET:
+            return ""
+        event_id = _generate_uid_stub()
+        condition_list = conditions or []
+        action_list = actions or []
+        event_data: Dict[str, Any] = {
+            "event_id": event_id,
+            "name": name,
+            "conditions": condition_list,
+            "actions": action_list,
         }
+        sheet.events.append(event_data)
+        sheet.updated_at = _time_module.time()
+        self._event_index[event_id] = event_data
+        for cond in condition_list:
+            if cond.condition_id not in self._conditions:
+                self._conditions[cond.condition_id] = cond
+        for act in action_list:
+            if act.action_id not in self._actions:
+                self._actions[act.action_id] = act
+        return event_id
 
-    def reset_timer(self, name: str) -> None:
-        timer = self._simulated_game_state["timers"].get(name)
-        if timer:
-            timer["elapsed"] = 0.0
-            timer["active"] = True
+    def remove_event_from_sheet(self, sheet_id: str, event_id: str) -> bool:
+        """Remove an event from a sheet by its event identifier.
 
-    def set_object_position(self, obj_id: str, x: float, y: float) -> None:
-        if obj_id not in self._simulated_game_state["objects"]:
-            self._simulated_game_state["objects"][obj_id] = {}
-        self._simulated_game_state["objects"][obj_id]["x"] = x
-        self._simulated_game_state["objects"][obj_id]["y"] = y
+        Args:
+            sheet_id: The sheet containing the event.
+            event_id: The event to remove.
 
-    def add_collision(self, obj_a: str, obj_b: str) -> None:
-        pair = tuple(sorted([obj_a, obj_b]))
-        if pair not in self._simulated_game_state["collisions"]:
-            self._simulated_game_state["collisions"].append(pair)
+        Returns:
+            True if the event was found and removed, False otherwise.
+        """
+        sheet = self._sheets.get(sheet_id)
+        if sheet is None:
+            return False
+        for i, event_data in enumerate(sheet.events):
+            if event_data.get("event_id") == event_id:
+                for cond in event_data.get("conditions", []):
+                    cid = cond.condition_id if hasattr(cond, "condition_id") else cond.get("condition_id", "")
+                    self._conditions.pop(cid, None)
+                for act in event_data.get("actions", []):
+                    aid = act.action_id if hasattr(act, "action_id") else act.get("action_id", "")
+                    self._actions.pop(aid, None)
+                sheet.events.pop(i)
+                sheet.updated_at = _time_module.time()
+                self._event_index.pop(event_id, None)
+                return True
+        return False
 
-    def clear_collisions(self) -> None:
-        self._simulated_game_state["collisions"].clear()
+    def get_event(self, event_id: str) -> Optional[Dict[str, Any]]:
+        """Retrieve an event definition by its identifier."""
+        return self._event_index.get(event_id)
 
-    def add_raycast_hit(self, origin: str, hit_object: str) -> None:
-        self._simulated_game_state["raycast_hits"].append({
-            "origin": origin,
-            "hit_object": hit_object,
-        })
+    # ------------------------------------------------------------------
+    # Variable Management
+    # ------------------------------------------------------------------
 
-    def clear_raycast_hits(self) -> None:
-        self._simulated_game_state["raycast_hits"].clear()
+    def create_variable(
+        self,
+        name: str,
+        variable_type: str = "any",
+        scope: VariableScope = VariableScope.LOCAL,
+        initial_value: Any = None,
+        description: str = "",
+        group_name: str = "",
+    ) -> Optional[EventVariable]:
+        """Create a scoped event variable.
 
-    def set_animation_state(self, obj_id: str, state: str, ended: bool = False) -> None:
-        self._simulated_game_state["animations"][obj_id] = {
-            "state": state,
-            "ended": ended,
-        }
+        Args:
+            name: Unique name for the variable.
+            variable_type: Type hint for the variable (e.g. "int", "float", "string").
+            scope: The visibility scope of the variable.
+            initial_value: The default/initial value.
+            description: Optional description of the variable's purpose.
+            group_name: Optional group name for organization.
 
-    def set_scene(self, scene_name: str) -> None:
-        self._simulated_game_state["scene"] = scene_name
+        Returns:
+            The created EventVariable, or None if the limit is reached.
+        """
+        if len(self._variables) >= self.MAX_VARIABLES:
+            return None
+        variable = EventVariable(
+            name=name,
+            variable_type=variable_type,
+            scope=scope,
+            initial_value=initial_value,
+            current_value=initial_value,
+            is_system=False,
+            is_readonly=False,
+            description=description,
+            group_name=group_name,
+        )
+        self._variables[variable.variable_id] = variable
+        return variable
+
+    def set_variable(self, variable_id: str, value: Any) -> bool:
+        """Set the runtime value of an event variable.
+
+        Args:
+            variable_id: The variable to update.
+            value: The new value to assign.
+
+        Returns:
+            True if the variable was found and updated, False otherwise.
+        """
+        variable = self._variables.get(variable_id)
+        if variable is None:
+            return False
+        if variable.is_readonly:
+            return False
+        variable.current_value = value
+        return True
+
+    def get_variable(self, variable_id: str) -> Any:
+        """Retrieve the current value of an event variable.
+
+        Args:
+            variable_id: The variable to read.
+
+        Returns:
+            The current value of the variable, or None if not found.
+        """
+        variable = self._variables.get(variable_id)
+        if variable is None:
+            return None
+        return variable.current_value
+
+    def get_variable_by_name(self, name: str, scope: Optional[VariableScope] = None) -> Optional[EventVariable]:
+        """Find a variable by name, optionally filtering by scope."""
+        for var in self._variables.values():
+            if var.name == name:
+                if scope is None or var.scope == scope:
+                    return var
+        return None
+
+    def list_variables(self, scope: Optional[VariableScope] = None) -> List[EventVariable]:
+        """List all variables, optionally filtered by scope."""
+        if scope is None:
+            return list(self._variables.values())
+        return [v for v in self._variables.values() if v.scope == scope]
+
+    def remove_variable(self, variable_id: str) -> bool:
+        """Remove an event variable by its identifier."""
+        if variable_id not in self._variables:
+            return False
+        del self._variables[variable_id]
+        return True
 
     # ------------------------------------------------------------------
     # Condition Evaluation
     # ------------------------------------------------------------------
 
-    def evaluate_conditions(
+    def evaluate_condition(
         self,
-        conditions: List[EventCondition],
+        condition_id: str,
+        context: Optional[Dict[str, Any]] = None,
     ) -> bool:
-        if not conditions:
-            return True
-        state = self._simulated_game_state
-        for condition in conditions:
-            raw_result = self._evaluate_single_condition(condition, state)
-            result = not raw_result if condition.negate else raw_result
-            if not result:
-                return False
-        self._total_evaluations += 1
-        return True
+        """Evaluate a single condition against the provided context.
+
+        Args:
+            condition_id: The condition to evaluate.
+            context: Game state context providing property values.
+
+        Returns:
+            True if the condition passes, False otherwise.
+        """
+        condition = self._conditions.get(condition_id)
+        if condition is None:
+            return False
+        return self._evaluate_single_condition(condition, context or {})
 
     def _evaluate_single_condition(
         self,
         condition: EventCondition,
-        state: Dict[str, Any],
+        context: Dict[str, Any],
+        depth: int = 0,
     ) -> bool:
+        """Recursively evaluate a condition and its sub-conditions."""
+        if depth >= self.MAX_SUB_CONDITION_DEPTH:
+            return False
+
+        raw_result = self._evaluate_condition_primitive(condition, context)
+
+        if condition.sub_conditions:
+            sub_results = [
+                self._evaluate_single_condition(sc, context, depth + 1)
+                for sc in condition.sub_conditions
+            ]
+            if condition.logic_operator == "or":
+                raw_result = raw_result or any(sub_results)
+            else:
+                raw_result = raw_result and all(sub_results)
+
+        if condition.invert:
+            raw_result = not raw_result
+
+        return raw_result
+
+    def _evaluate_condition_primitive(
+        self,
+        condition: EventCondition,
+        context: Dict[str, Any],
+    ) -> bool:
+        """Evaluate the base condition without considering sub-conditions or invert."""
         ct = condition.condition_type
+        target = condition.target_object
+        prop = condition.property
+        op = condition.operator
+        expected = condition.value
 
         if ct == ConditionType.OBJECT_COLLISION:
-            target_parts = condition.target.split(",") if condition.target else []
-            if len(target_parts) >= 2:
-                pair = tuple(sorted(target_parts[:2]))
-                return pair in state.get("collisions", [])
-            return condition.target in str(state.get("collisions", []))
+            collisions = context.get("collisions", [])
+            pair = tuple(sorted([target, prop])) if target and prop else None
+            if pair:
+                return pair in [tuple(sorted(p)) for p in collisions] if collisions else False
+            return any(target in str(p) for p in collisions)
 
-        if ct == ConditionType.KEY_PRESSED:
-            inputs = state.get("inputs", {})
-            key = condition.target if condition.target else condition.property
-            return inputs.get(key, False)
+        if ct == ConditionType.OBJECT_POSITION:
+            objects = context.get("objects", {})
+            obj = objects.get(target, {})
+            actual = obj.get(prop, 0)
+            return self._apply_operator(actual, op, expected)
 
-        if ct == ConditionType.VARIABLE_COMPARE:
-            variables = state.get("variables", {})
-            actual = variables.get(condition.target, 0)
-            return self._apply_operator(actual, condition.operator, condition.value)
+        if ct == ConditionType.VARIABLE_COMPARISON:
+            variables = context.get("variables", {})
+            actual = variables.get(target)
+            if actual is None:
+                for var in self._variables.values():
+                    if var.name == target:
+                        actual = var.current_value
+                        break
+            return self._apply_operator(actual, op, expected)
 
-        if ct == ConditionType.TIMER_EXPIRED:
-            timers = state.get("timers", {})
-            timer = timers.get(condition.target, {})
+        if ct == ConditionType.TIMER:
+            timers = context.get("timers", {})
+            timer = timers.get(target, {})
             elapsed = timer.get("elapsed", 0.0)
             interval = timer.get("interval", 0.0)
             if interval <= 0:
                 return False
             return elapsed >= interval
 
-        if ct == ConditionType.RAYCAST_HIT:
-            hits = state.get("raycast_hits", [])
-            for hit in hits:
-                if hit.get("origin") == condition.target and hit.get("hit_object") == condition.value:
-                    return True
-            return False
+        if ct == ConditionType.INPUT:
+            inputs = context.get("inputs", {})
+            key = target if target else prop
+            return inputs.get(key, False)
 
-        if ct == ConditionType.DISTANCE_CHECK:
-            objects = state.get("objects", {})
-            parts = condition.target.split(",") if condition.target else []
-            if len(parts) < 2:
-                return False
-            obj_a = objects.get(parts[0].strip())
-            obj_b = objects.get(parts[1].strip())
-            if obj_a is None or obj_b is None:
-                return False
-            ax = obj_a.get("x", 0.0)
-            ay = obj_a.get("y", 0.0)
-            bx = obj_b.get("x", 0.0)
-            by = obj_b.get("y", 0.0)
-            distance = ((bx - ax) ** 2 + (by - ay) ** 2) ** 0.5
-            return self._apply_operator(distance, condition.operator, condition.value)
+        if ct == ConditionType.SCENE_LOADED:
+            current_scene = context.get("scene", "")
+            return current_scene == target
 
-        if ct == ConditionType.ANIMATION_END:
-            animations = state.get("animations", {})
-            anim = animations.get(condition.target)
+        if ct == ConditionType.TRIGGER_ZONE:
+            zones = context.get("trigger_zones", {})
+            zone = zones.get(target, {})
+            objects_inside = zone.get("objects_inside", [])
+            return prop in objects_inside
+
+        if ct == ConditionType.ANIMATION_FINISHED:
+            animations = context.get("animations", {})
+            anim = animations.get(target)
             if anim is None:
                 return False
             return anim.get("ended", False)
 
+        if ct == ConditionType.NETWORK_EVENT:
+            network_events = context.get("network_events", [])
+            return any(
+                e.get("type") == target and e.get("data", {}).get(prop) == expected
+                for e in network_events
+            )
+
         if ct == ConditionType.CUSTOM:
+            custom_evaluators = context.get("_custom_evaluators", {})
+            evaluator = custom_evaluators.get(target)
+            if callable(evaluator):
+                return bool(evaluator(context))
             return True
 
         return False
 
-    def _apply_operator(self, actual: Any, operator: str, expected: Any) -> bool:
-        func = OPERATOR_FUNCTIONS.get(operator)
+    def _apply_operator(self, actual: Any, operator: OperatorType, expected: Any) -> bool:
+        """Apply an operator comparison between actual and expected values."""
+        func = _OPERATOR_FUNCTIONS.get(operator)
         if func is None:
             return False
         try:
+            if operator in (OperatorType.IS_NULL, OperatorType.IS_NOT_NULL):
+                return func(actual, None)
             return func(actual, expected)
         except (ValueError, TypeError):
             return False
@@ -636,542 +923,893 @@ class EventScripting:
     # Action Execution
     # ------------------------------------------------------------------
 
-    def execute_actions(
+    def execute_action(
         self,
-        actions: List[EventAction],
-    ) -> int:
-        sorted_actions = sorted(actions, key=lambda a: a.order_index)
-        dispatched = 0
-        for action in sorted_actions:
-            self._dispatch_single_action(action)
-            dispatched += 1
-        self._total_actions_executed += dispatched
-        return dispatched
-
-    def _dispatch_single_action(self, action: EventAction) -> None:
-        at = action.action_type
-        params = action.parameters
-        target = action.target
-        state = self._simulated_game_state
-
-        if at == ActionType.MOVE_OBJECT:
-            obj = state["objects"].get(target)
-            if obj is None:
-                state["objects"][target] = {"x": 0.0, "y": 0.0}
-                obj = state["objects"][target]
-            dx = params.get("dx", 0)
-            dy = params.get("dy", 0)
-            if "x_target" in params and "y_target" in params:
-                obj["x"] = params["x_target"]
-                obj["y"] = params["y_target"]
-            else:
-                obj["x"] = obj.get("x", 0.0) + dx
-                obj["y"] = obj.get("y", 0.0) + dy
-
-        elif at == ActionType.PLAY_SOUND:
-            sound_name = target if target else params.get("sound", "")
-            volume = params.get("volume", 1.0)
-            pitch = params.get("pitch", 1.0)
-            state.setdefault("audio_events", []).append({
-                "sound": sound_name,
-                "volume": volume,
-                "pitch": pitch,
-            })
-
-        elif at == ActionType.CHANGE_VARIABLE:
-            var_name = target
-            operation = params.get("operation", "set")
-            value = params.get("value", 0)
-            variables = state["variables"]
-            if operation == "set":
-                variables[var_name] = value
-            elif operation == "add":
-                variables[var_name] = variables.get(var_name, 0) + value
-            elif operation == "subtract":
-                variables[var_name] = variables.get(var_name, 0) - value
-            elif operation == "multiply":
-                variables[var_name] = variables.get(var_name, 0) * value
-            elif operation == "toggle":
-                variables[var_name] = not variables.get(var_name, False)
-
-        elif at == ActionType.CREATE_OBJECT:
-            template = params.get("template", target)
-            x = params.get("x", 0)
-            y = params.get("y", 0)
-            count = params.get("count", 1)
-            for i in range(count):
-                obj_id = f"{template}_{uuid.uuid4().hex[:6]}"
-                state["objects"][obj_id] = {
-                    "template": template,
-                    "x": x + (i * params.get("spacing_x", 50)),
-                    "y": y + (i * params.get("spacing_y", 0)),
-                    "created_at": state["tick_count"],
-                }
-
-        elif at == ActionType.DESTROY_OBJECT:
-            obj_id = target
-            if obj_id in state["objects"]:
-                del state["objects"][obj_id]
-            elif params.get("by_template"):
-                to_remove = [
-                    oid for oid, obj in state["objects"].items()
-                    if obj.get("template") == params["by_template"]
-                ]
-                for oid in to_remove:
-                    del state["objects"][oid]
-
-        elif at == ActionType.APPLY_FORCE:
-            obj = state["objects"].get(target)
-            if obj is not None:
-                fx = params.get("fx", 0)
-                fy = params.get("fy", 0)
-                obj["vx"] = obj.get("vx", 0.0) + fx
-                obj["vy"] = obj.get("vy", 0.0) + fy
-
-        elif at == ActionType.PLAY_ANIMATION:
-            anim_name = params.get("animation", "default")
-            loop = params.get("loop", False)
-            state["animations"][target] = {
-                "state": anim_name,
-                "loop": loop,
-                "ended": False,
-                "started_at": state["tick_count"],
-            }
-
-        elif at == ActionType.TRIGGER_EVENT:
-            triggered_rule_id = target
-            triggered_rule = self._rule_index.get(triggered_rule_id)
-            if triggered_rule and triggered_rule.enabled:
-                if self.evaluate_conditions(triggered_rule.conditions):
-                    self.execute_actions(triggered_rule.actions)
-
-        elif at == ActionType.SWITCH_SCENE:
-            scene_name = target if target else params.get("scene", "")
-            state["scene"] = scene_name
-            state.setdefault("scene_transitions", []).append({
-                "to": scene_name,
-                "at_tick": state["tick_count"],
-            })
-
-        elif at == ActionType.SPAWN_PARTICLES:
-            effect = params.get("effect", target)
-            x = params.get("x", 0)
-            y = params.get("y", 0)
-            count = params.get("count", 10)
-            state.setdefault("particle_events", []).append({
-                "effect": effect,
-                "x": x,
-                "y": y,
-                "count": count,
-                "at_tick": state["tick_count"],
-            })
-
-        elif at == ActionType.CUSTOM_ACTION:
-            pass
-
-    # ------------------------------------------------------------------
-    # Event Sheet Evaluation
-    # ------------------------------------------------------------------
-
-    def process_event_sheet(
-        self,
-        sheet_id: str,
+        action_id: str,
+        context: Optional[Dict[str, Any]] = None,
     ) -> Dict[str, Any]:
-        sheet = self._sheets.get(sheet_id)
-        if sheet is None:
-            return {"success": False, "error": "Sheet not found", "sheet_id": sheet_id}
+        """Execute a single action against the provided context.
 
-        state = self._simulated_game_state
-        dt = state.get("delta_time", 0.016)
-        rules_triggered: List[str] = []
-        total_actions_dispatched = 0
+        Args:
+            action_id: The action to execute.
+            context: Game state context for parameter resolution.
 
-        sorted_rules = sorted(sheet.rules, key=lambda r: r.priority, reverse=True)
+        Returns:
+            Dictionary with result, output, and errors keys.
+        """
+        action = self._actions.get(action_id)
+        if action is None:
+            return {"result": False, "output": None, "errors": ["Action not found"]}
+        return self._dispatch_single_action(action, context or {})
 
-        for rule in sorted_rules:
-            if not rule.enabled:
-                continue
+    def _dispatch_single_action(
+        self,
+        action: EventAction,
+        context: Dict[str, Any],
+        depth: int = 0,
+    ) -> Dict[str, Any]:
+        """Recursively dispatch an action and its sub-actions."""
+        if depth >= self.MAX_SUB_ACTION_DEPTH:
+            return {"result": False, "output": None, "errors": ["Max sub-action depth exceeded"]}
 
-            should_execute = self._determine_should_execute(rule, dt)
-            if not should_execute:
-                continue
+        errors: List[str] = []
+        output: Any = None
+        result = True
 
-            conditions_met = (rule.repeat_type == RepeatType.EVERY_FRAME) or self.evaluate_conditions(rule.conditions)
+        try:
+            output = self._execute_action_primitive(action, context)
+        except Exception as exc:
+            errors.append(f"Action '{action.name}' error: {exc}")
+            result = False
+            if action.error_behavior == "abort":
+                return {"result": False, "output": None, "errors": errors}
 
-            if not conditions_met:
-                continue
-
-            self._rule_last_fired[rule.id] = state["tick_count"]
-            dispatched = self.execute_actions(rule.actions)
-            total_actions_dispatched += dispatched
-            rules_triggered.append(rule.id)
-            self._total_rules_triggered += 1
-
-            if rule.repeat_type == RepeatType.ONCE:
-                self._fired_once_rules.add(rule.id)
-
-        sheet.updated_at = _time_module.time()
+        for sub_action in action.sub_actions:
+            sub_result = self._dispatch_single_action(sub_action, context, depth + 1)
+            if not sub_result["result"]:
+                errors.extend(sub_result.get("errors", []))
+                if action.error_behavior == "abort":
+                    break
 
         return {
-            "success": True,
-            "sheet_id": sheet_id,
-            "sheet_name": sheet.name,
-            "rules_evaluated": len(sorted_rules),
-            "rules_triggered": len(rules_triggered),
-            "triggered_rule_ids": rules_triggered,
-            "total_actions_dispatched": total_actions_dispatched,
+            "result": result and len(errors) == 0,
+            "output": output,
+            "errors": errors,
         }
 
-    def _determine_should_execute(self, rule: EventRule, dt: float) -> bool:
-        if rule.repeat_type == RepeatType.ONCE:
-            if rule.id in self._fired_once_rules:
-                return False
+    def _execute_action_primitive(
+        self,
+        action: EventAction,
+        context: Dict[str, Any],
+    ) -> Any:
+        """Execute the base action without considering sub-actions."""
+        at = action.action_type
+        target = action.target_object
+        params = dict(action.parameters)
 
-        if rule.repeat_type == RepeatType.EVERY_N_SECONDS:
-            interval = float(rule.conditions[0].value) if rule.conditions else 0.5
-            last_fired = self._rule_last_fired.get(rule.id, -interval)
-            ticks_since = self._simulated_game_state["tick_count"] - last_fired
-            if ticks_since * dt < interval:
-                return False
+        for key, val in params.items():
+            if isinstance(val, str) and val.startswith("$"):
+                var_name = val[1:]
+                for var in self._variables.values():
+                    if var.name == var_name:
+                        params[key] = var.current_value
+                        break
+                else:
+                    params[key] = context.get(var_name, val)
 
+        if at == ActionType.CREATE_OBJECT:
+            created = {
+                "template": params.get("template", target),
+                "x": params.get("x", 0),
+                "y": params.get("y", 0),
+                "created": True,
+            }
+            context.setdefault("created_objects", []).append(created)
+            return created
+
+        if at == ActionType.DELETE_OBJECT:
+            context.setdefault("deleted_objects", []).append(target)
+            return {"deleted": target}
+
+        if at == ActionType.MOVE_OBJECT:
+            return {
+                "target": target,
+                "dx": params.get("dx", 0),
+                "dy": params.get("dy", 0),
+            }
+
+        if at == ActionType.CHANGE_VARIABLE:
+            var_name = target if target else params.get("variable", "")
+            value = params.get("value")
+            operation = params.get("operation", "set")
+            for var in self._variables.values():
+                if var.name == var_name:
+                    if var.is_readonly:
+                        return {"variable": var_name, "changed": False, "reason": "readonly"}
+                    if operation == "set":
+                        var.current_value = value
+                    elif operation == "add":
+                        var.current_value = (var.current_value or 0) + value
+                    elif operation == "subtract":
+                        var.current_value = (var.current_value or 0) - value
+                    elif operation == "toggle":
+                        var.current_value = not var.current_value
+                    return {"variable": var_name, "changed": True, "new_value": var.current_value}
+            context.setdefault("variables", {})[var_name] = value
+            return {"variable": var_name, "changed": True, "new_value": value}
+
+        if at == ActionType.PLAY_ANIMATION:
+            return {
+                "target": target,
+                "animation": params.get("animation", "default"),
+                "loop": params.get("loop", False),
+            }
+
+        if at == ActionType.PLAY_SOUND:
+            return {
+                "sound": target if target else params.get("sound", ""),
+                "volume": params.get("volume", 1.0),
+                "pitch": params.get("pitch", 1.0),
+            }
+
+        if at == ActionType.CHANGE_SCENE:
+            return {"scene": target if target else params.get("scene", "")}
+
+        if at == ActionType.APPLY_FORCE:
+            return {
+                "target": target,
+                "fx": params.get("fx", 0),
+                "fy": params.get("fy", 0),
+            }
+
+        if at == ActionType.TRIGGER_EVENT:
+            triggered_event_id = target if target else params.get("event_id", "")
+            if triggered_event_id:
+                return self.execute_event(triggered_event_id, context)
+            return {"triggered": False}
+
+        if at == ActionType.SPAWN_PARTICLE:
+            return {
+                "effect": params.get("effect", target),
+                "x": params.get("x", 0),
+                "y": params.get("y", 0),
+                "count": params.get("count", 10),
+            }
+
+        if at == ActionType.MODIFY_PROPERTY:
+            return {
+                "target": target,
+                "property": params.get("property", action.method),
+                "value": params.get("value"),
+            }
+
+        if at == ActionType.EXECUTE_SCRIPT:
+            return {"script": params.get("script", action.method), "executed": True}
+
+        if at == ActionType.WAIT:
+            duration = params.get("duration", 0.0)
+            return {"waited": duration}
+
+        if at == ActionType.CALL_FUNCTION:
+            return {
+                "function": action.method,
+                "parameters": params,
+                "called": True,
+            }
+
+        if at == ActionType.SEND_MESSAGE:
+            return {
+                "message": params.get("message", action.method),
+                "recipient": target,
+                "sent": True,
+            }
+
+        if at == ActionType.CUSTOM:
+            custom_handlers = context.get("_custom_handlers", {})
+            handler = custom_handlers.get(target)
+            if callable(handler):
+                return handler(context, params)
+            return {"custom": True}
+
+        return None
+
+    # ------------------------------------------------------------------
+    # Event Execution
+    # ------------------------------------------------------------------
+
+    def execute_event(
+        self,
+        event_id: str,
+        context: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Execute a single event by evaluating its conditions and dispatching actions.
+
+        Args:
+            event_id: The event to execute.
+            context: Game state context.
+
+        Returns:
+            Dictionary with executed, triggered, and errors keys.
+        """
+        ctx = context or {}
+        event_data = self._event_index.get(event_id)
+        if event_data is None:
+            return {"executed": False, "triggered": False, "errors": ["Event not found"]}
+
+        conditions = event_data.get("conditions", [])
+        actions = event_data.get("actions", [])
+
+        conditions_met = True
+        for cond in conditions:
+            cond_id = cond.condition_id if hasattr(cond, "condition_id") else cond.get("condition_id", "")
+            if not self.evaluate_condition(cond_id, ctx):
+                conditions_met = False
+                break
+
+        if not conditions_met:
+            return {"executed": False, "triggered": False, "errors": []}
+
+        errors: List[str] = []
+        action_results: List[Dict[str, Any]] = []
+        for act in actions:
+            act_id = act.action_id if hasattr(act, "action_id") else act.get("action_id", "")
+            result = self.execute_action(act_id, ctx)
+            action_results.append(result)
+            if not result["result"]:
+                errors.extend(result.get("errors", []))
+
+        return {
+            "executed": True,
+            "triggered": True,
+            "action_results": action_results,
+            "errors": errors,
+        }
+
+    def execute_sheet(
+        self,
+        sheet_id: str,
+        context: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Execute all events in a sheet against the provided context.
+
+        Args:
+            sheet_id: The sheet to execute.
+            context: Game state context.
+
+        Returns:
+            Dictionary with total_events, executed, triggered, errors, duration.
+        """
+        ctx = context or {}
+        sheet = self._sheets.get(sheet_id)
+        if sheet is None:
+            return {
+                "total_events": 0,
+                "executed": 0,
+                "triggered": 0,
+                "errors": ["Sheet not found"],
+                "duration": 0.0,
+            }
+
+        if not sheet.is_active:
+            return {
+                "total_events": 0,
+                "executed": 0,
+                "triggered": 0,
+                "errors": [],
+                "duration": 0.0,
+            }
+
+        start_time = _time_module.time()
+        total_events = len(sheet.events)
+        executed = 0
+        triggered = 0
+        all_errors: List[str] = []
+
+        for event_data in sheet.events:
+            executed += 1
+            event_id = event_data.get("event_id", "")
+            result = self.execute_event(event_id, ctx)
+            if result["triggered"]:
+                triggered += 1
+            all_errors.extend(result.get("errors", []))
+
+        elapsed = _time_module.time() - start_time
+        self._execution_count += 1
+        self._total_execution_time += elapsed
+
+        return {
+            "total_events": total_events,
+            "executed": executed,
+            "triggered": triggered,
+            "errors": all_errors,
+            "duration": elapsed,
+        }
+
+    # ------------------------------------------------------------------
+    # Code Compilation
+    # ------------------------------------------------------------------
+
+    def compile_sheet_to_code(
+        self,
+        sheet_id: str,
+        target_language: str = "python",
+    ) -> str:
+        """Compile an event sheet into executable source code.
+
+        Args:
+            sheet_id: The sheet to compile.
+            target_language: One of "python", "javascript", or "lua".
+
+        Returns:
+            Source code string in the target language, or empty string on failure.
+        """
+        sheet = self._sheets.get(sheet_id)
+        if sheet is None:
+            return ""
+
+        target_language = target_language.lower()
+        if target_language == "python":
+            compiled = self._compile_to_python(sheet)
+        elif target_language == "javascript":
+            compiled = self._compile_to_javascript(sheet)
+        elif target_language == "lua":
+            compiled = self._compile_to_lua(sheet)
+        else:
+            return ""
+
+        sheet.compiled_code = compiled
+        sheet.updated_at = _time_module.time()
+        return compiled
+
+    def _compile_to_python(self, sheet: EventSheet) -> str:
+        """Compile a sheet to Python source code."""
+        lines: List[str] = [
+            f"# Auto-generated event sheet: {sheet.name}",
+            f"# Description: {sheet.description}",
+            "",
+            "def execute_event_sheet(context):",
+            "    triggered = []",
+            "    errors = []",
+            "",
+        ]
+        for event_data in sheet.events:
+            event_name = event_data.get("name", "unnamed")
+            conditions = event_data.get("conditions", [])
+            actions = event_data.get("actions", [])
+
+            cond_exprs: List[str] = []
+            for cond in conditions:
+                target = cond.target_object if hasattr(cond, "target_object") else ""
+                prop = cond.property if hasattr(cond, "property") else ""
+                op = cond.operator if hasattr(cond, "operator") else ""
+                val = cond.value if hasattr(cond, "value") else None
+                op_str = "=" * 2 if str(op) == "equal" else "!" + "=" if str(op) == "not_equal" else str(op)
+                cond_exprs.append(f"context.get('{target}', {{}}).get('{prop}') {op_str} {repr(val)}")
+
+            lines.append(f"    # Event: {event_name}")
+            if cond_exprs:
+                lines.append(f"    if {' and '.join(cond_exprs)}:")
+                indent = "        "
+            else:
+                indent = "    "
+
+            for act in actions:
+                act_type = act.action_type if hasattr(act, "action_type") else ""
+                target = act.target_object if hasattr(act, "target_object") else ""
+                lines.append(f"{indent}# Action: {act_type} on {target}")
+                lines.append(f"{indent}triggered.append('{act_type}')")
+
+            lines.append("")
+            if cond_exprs:
+                lines.append("")
+
+        lines.append("    return {'triggered': len(triggered), 'errors': errors}")
+        return "\n".join(lines)
+
+    def _compile_to_javascript(self, sheet: EventSheet) -> str:
+        """Compile a sheet to JavaScript source code."""
+        lines: List[str] = [
+            f"// Auto-generated event sheet: {sheet.name}",
+            f"// Description: {sheet.description}",
+            "",
+            "function executeEventSheet(context) {",
+            "    const triggered = [];",
+            "    const errors = [];",
+            "",
+        ]
+        for event_data in sheet.events:
+            event_name = event_data.get("name", "unnamed")
+            conditions = event_data.get("conditions", [])
+            actions = event_data.get("actions", [])
+
+            cond_exprs: List[str] = []
+            for cond in conditions:
+                target = cond.target_object if hasattr(cond, "target_object") else ""
+                prop = cond.property if hasattr(cond, "property") else ""
+                op = cond.operator if hasattr(cond, "operator") else ""
+                val = cond.value if hasattr(cond, "value") else None
+                op_str = "===" if str(op) == "equal" else "!==" if str(op) == "not_equal" else str(op)
+                cond_exprs.append(f"context?.{target}?.{prop} {op_str} {json.dumps(val)}")
+
+            lines.append(f"    // Event: {event_name}")
+            if cond_exprs:
+                lines.append(f"    if ({' && '.join(cond_exprs)}) {{")
+                indent = "        "
+            else:
+                indent = "    "
+
+            for act in actions:
+                act_type = act.action_type if hasattr(act, "action_type") else ""
+                lines.append(f"{indent}// Action: {act_type}")
+                lines.append(f"{indent}triggered.push('{act_type}');")
+
+            if cond_exprs:
+                lines.append("    }")
+            lines.append("")
+
+        lines.append("    return { triggered: triggered.length, errors };")
+        lines.append("}")
+        return "\n".join(lines)
+
+    def _compile_to_lua(self, sheet: EventSheet) -> str:
+        """Compile a sheet to Lua source code."""
+        lines: List[str] = [
+            f"-- Auto-generated event sheet: {sheet.name}",
+            f"-- Description: {sheet.description}",
+            "",
+            "function execute_event_sheet(context)",
+            "    local triggered = {}",
+            "    local errors = {}",
+            "",
+        ]
+        for event_data in sheet.events:
+            event_name = event_data.get("name", "unnamed")
+            conditions = event_data.get("conditions", [])
+            actions = event_data.get("actions", [])
+
+            cond_exprs: List[str] = []
+            for cond in conditions:
+                target = cond.target_object if hasattr(cond, "target_object") else ""
+                prop = cond.property if hasattr(cond, "property") else ""
+                op = cond.operator if hasattr(cond, "operator") else ""
+                cond_exprs.append(f"context['{target}']['{prop}'] {str(op)} {repr(getattr(cond, 'value', None))}")
+
+            lines.append(f"    -- Event: {event_name}")
+            if cond_exprs:
+                lines.append(f"    if {' and '.join(cond_exprs)} then")
+                indent = "        "
+            else:
+                indent = "    "
+
+            for act in actions:
+                act_type = act.action_type if hasattr(act, "action_type") else ""
+                lines.append(f"{indent}-- Action: {act_type}")
+                lines.append(f"{indent}table.insert(triggered, '{act_type}')")
+
+            if cond_exprs:
+                lines.append("    end")
+            lines.append("")
+
+        lines.append("    return { triggered = #triggered, errors = errors }")
+        lines.append("end")
+        return "\n".join(lines)
+
+    # ------------------------------------------------------------------
+    # Sheet Linking
+    # ------------------------------------------------------------------
+
+    def create_link(
+        self,
+        source_sheet_id: str,
+        target_sheet_id: str,
+        link_type: LinkType = LinkType.INCLUDE,
+        condition: str = "",
+    ) -> Optional[EventLink]:
+        """Create a link between two event sheets.
+
+        Args:
+            source_sheet_id: The source sheet that references another.
+            target_sheet_id: The target sheet being referenced.
+            link_type: The type of relationship.
+            condition: Optional condition expression for conditional linking.
+
+        Returns:
+            The created EventLink, or None if sheets are not found or limit reached.
+        """
+        if len(self._links) >= self.MAX_LINKS:
+            return None
+        if source_sheet_id not in self._sheets:
+            return None
+        if target_sheet_id not in self._sheets:
+            return None
+        if source_sheet_id == target_sheet_id:
+            return None
+        link = EventLink(
+            source_sheet_id=source_sheet_id,
+            target_sheet_id=target_sheet_id,
+            link_type=link_type,
+            condition=condition,
+        )
+        self._links[link.link_id] = link
+        return link
+
+    def get_link(self, link_id: str) -> Optional[EventLink]:
+        """Retrieve a link by its identifier."""
+        return self._links.get(link_id)
+
+    def get_links_for_sheet(self, sheet_id: str) -> List[EventLink]:
+        """Get all links where the sheet is the source."""
+        return [l for l in self._links.values() if l.source_sheet_id == sheet_id]
+
+    def remove_link(self, link_id: str) -> bool:
+        """Remove a link by its identifier."""
+        if link_id not in self._links:
+            return False
+        del self._links[link_id]
         return True
 
     # ------------------------------------------------------------------
-    # Game Tick Simulation
+    # Sheet Cloning
     # ------------------------------------------------------------------
 
-    def simulate_game_tick(
+    def clone_sheet(
         self,
-        delta_time: float = 0.016,
-        active_sheet_ids: Optional[List[str]] = None,
-    ) -> Dict[str, Any]:
-        state = self._simulated_game_state
-        state["delta_time"] = delta_time
-        state["tick_count"] += 1
+        sheet_id: str,
+        new_name: str,
+    ) -> Optional[EventSheet]:
+        """Create a deep copy of an event sheet with a new name.
 
-        for timer in state["timers"].values():
-            if timer.get("active", False):
-                timer["elapsed"] = timer.get("elapsed", 0.0) + delta_time
+        Args:
+            sheet_id: The sheet to clone.
+            new_name: The name for the cloned sheet.
 
-        state.setdefault("audio_events", []).clear()
-        state.setdefault("particle_events", []).clear()
+        Returns:
+            The cloned EventSheet, or None if source not found or limit reached.
+        """
+        source = self._sheets.get(sheet_id)
+        if source is None:
+            return None
+        if len(self._sheets) >= self.MAX_SHEETS:
+            return None
 
-        results: List[Dict[str, Any]] = []
+        now = _time_module.time()
+        cloned = EventSheet(
+            name=new_name,
+            description=f"Clone of: {source.description}",
+            is_active=source.is_active,
+            is_global=source.is_global,
+            linked_objects=list(source.linked_objects),
+            priority=source.priority,
+            execution_order=source.execution_order,
+            category=source.category,
+            created_at=now,
+            updated_at=now,
+        )
+        self._sheets[cloned.sheet_id] = cloned
 
-        sheet_ids = active_sheet_ids if active_sheet_ids is not None else list(self._sheets.keys())
+        for event_data in source.events:
+            new_conditions: List[EventCondition] = []
+            new_actions: List[EventAction] = []
+            name = event_data.get("name", "")
 
-        for sheet_id in sheet_ids:
-            result = self.process_event_sheet(sheet_id)
-            results.append(result)
+            for cond in event_data.get("conditions", []):
+                new_cond = EventCondition(
+                    name=getattr(cond, "name", ""),
+                    condition_type=getattr(cond, "condition_type", ConditionType.CUSTOM),
+                    target_object=getattr(cond, "target_object", ""),
+                    property=getattr(cond, "property", ""),
+                    operator=getattr(cond, "operator", OperatorType.EQUAL),
+                    value=getattr(cond, "value", None),
+                    sub_conditions=list(getattr(cond, "sub_conditions", [])),
+                    logic_operator=getattr(cond, "logic_operator", "and"),
+                    invert=getattr(cond, "invert", False),
+                    is_template=getattr(cond, "is_template", False),
+                    category=getattr(cond, "category", ""),
+                    description=getattr(cond, "description", ""),
+                )
+                self._conditions[new_cond.condition_id] = new_cond
+                new_conditions.append(new_cond)
 
-        self._total_ticks_simulated += 1
+            for act in event_data.get("actions", []):
+                new_act = EventAction(
+                    name=getattr(act, "name", ""),
+                    action_type=getattr(act, "action_type", ActionType.CUSTOM),
+                    target_object=getattr(act, "target_object", ""),
+                    method=getattr(act, "method", ""),
+                    parameters=dict(getattr(act, "parameters", {})),
+                    sub_actions=list(getattr(act, "sub_actions", [])),
+                    is_async=getattr(act, "is_async", False),
+                    timeout=getattr(act, "timeout", 0.0),
+                    error_behavior=getattr(act, "error_behavior", "ignore"),
+                    description=getattr(act, "description", ""),
+                )
+                self._actions[new_act.action_id] = new_act
+                new_actions.append(new_act)
 
-        return {
-            "tick": state["tick_count"],
-            "delta_time": delta_time,
-            "sheets_processed": len(results),
-            "sheet_results": results,
-            "total_rules_triggered": self._total_rules_triggered,
-            "total_objects": len(state["objects"]),
-            "total_variables": len(state["variables"]),
-            "active_timers": sum(1 for t in state["timers"].values() if t.get("active")),
-        }
+            new_event_id = _generate_uid_stub()
+            new_event_data: Dict[str, Any] = {
+                "event_id": new_event_id,
+                "name": name,
+                "conditions": new_conditions,
+                "actions": new_actions,
+            }
+            cloned.events.append(new_event_data)
+            self._event_index[new_event_id] = new_event_data
+
+        return cloned
 
     # ------------------------------------------------------------------
-    # Rule Optimization
+    # Import / Export
     # ------------------------------------------------------------------
 
-    def optimize_event_sheets(
+    def import_sheet_from_json(
         self,
-        sheet_id: Optional[str] = None,
-    ) -> Dict[str, Any]:
-        sheets_to_optimize: List[EventSheet]
-        if sheet_id is not None:
-            sheet = self._sheets.get(sheet_id)
-            if sheet is None:
-                return {"success": False, "error": "Sheet not found", "sheet_id": sheet_id}
-            sheets_to_optimize = [sheet]
-        else:
-            sheets_to_optimize = list(self._sheets.values())
+        json_data: Dict[str, Any],
+    ) -> Optional[EventSheet]:
+        """Create an event sheet from serialized JSON data.
 
-        total_reordered = 0
-        total_unanchored = 0
-        details: List[Dict[str, Any]] = []
+        Args:
+            json_data: Dictionary with sheet, events, variables, and links data.
 
-        for sheet in sheets_to_optimize:
-            before_order = [r.id for r in sheet.rules]
-            rules_with_conditions = [r for r in sheet.rules if r.conditions]
-            rules_without_conditions = [r for r in sheet.rules if not r.conditions]
+        Returns:
+            The imported EventSheet, or None if import fails or limit reached.
+        """
+        if len(self._sheets) >= self.MAX_SHEETS:
+            return None
 
-            rules_with_conditions.sort(
-                key=lambda r: (
-                    -r.priority,
-                    -len(r.conditions),
-                    1 if r.repeat_type == RepeatType.EVERY_FRAME else 0,
-                    1 if r.repeat_type == RepeatType.REPEAT_WHILE_TRUE else 0,
-                    r.tags,
+        sheet_data = json_data.get("sheet", {})
+        now = _time_module.time()
+        sheet = EventSheet(
+            name=sheet_data.get("name", "Imported Sheet"),
+            description=sheet_data.get("description", ""),
+            is_global=sheet_data.get("is_global", False),
+            linked_objects=sheet_data.get("linked_objects", []),
+            priority=sheet_data.get("priority", 0),
+            execution_order=sheet_data.get("execution_order", 0),
+            category=sheet_data.get("category", ""),
+            created_at=now,
+            updated_at=now,
+        )
+        self._sheets[sheet.sheet_id] = sheet
+
+        for event_entry in json_data.get("events", []):
+            conditions: List[EventCondition] = []
+            actions: List[EventAction] = []
+
+            for cond_data in event_entry.get("conditions", []):
+                try:
+                    ct = ConditionType(cond_data.get("condition_type", "custom"))
+                except ValueError:
+                    ct = ConditionType.CUSTOM
+                try:
+                    op = OperatorType(cond_data.get("operator", "equal"))
+                except ValueError:
+                    op = OperatorType.EQUAL
+                cond = EventCondition(
+                    name=cond_data.get("name", ""),
+                    condition_type=ct,
+                    target_object=cond_data.get("target_object", ""),
+                    property=cond_data.get("property", ""),
+                    operator=op,
+                    value=cond_data.get("value"),
+                    logic_operator=cond_data.get("logic_operator", "and"),
+                    invert=cond_data.get("invert", False),
+                    is_template=cond_data.get("is_template", False),
+                    category=cond_data.get("category", ""),
+                    description=cond_data.get("description", ""),
                 )
-            )
+                self._conditions[cond.condition_id] = cond
+                conditions.append(cond)
 
-            rules_without_conditions.sort(
-                key=lambda r: (
-                    -r.priority,
-                    1 if r.repeat_type == RepeatType.EVERY_FRAME else 0,
-                    0 if r.repeat_type == RepeatType.ONCE else 1,
+            for act_data in event_entry.get("actions", []):
+                try:
+                    at = ActionType(act_data.get("action_type", "custom"))
+                except ValueError:
+                    at = ActionType.CUSTOM
+                act = EventAction(
+                    name=act_data.get("name", ""),
+                    action_type=at,
+                    target_object=act_data.get("target_object", ""),
+                    method=act_data.get("method", ""),
+                    parameters=act_data.get("parameters", {}),
+                    is_async=act_data.get("is_async", False),
+                    timeout=act_data.get("timeout", 0.0),
+                    error_behavior=act_data.get("error_behavior", "ignore"),
+                    description=act_data.get("description", ""),
                 )
+                self._actions[act.action_id] = act
+                actions.append(act)
+
+            event_id = event_entry.get("event_id", _generate_uid_stub())
+            event_data: Dict[str, Any] = {
+                "event_id": event_id,
+                "name": event_entry.get("name", ""),
+                "conditions": conditions,
+                "actions": actions,
+            }
+            sheet.events.append(event_data)
+            self._event_index[event_id] = event_data
+
+        for var_data in json_data.get("variables", []):
+            try:
+                scope = VariableScope(var_data.get("scope", "local"))
+            except ValueError:
+                scope = VariableScope.LOCAL
+            variable = EventVariable(
+                name=var_data.get("name", ""),
+                variable_type=var_data.get("variable_type", "any"),
+                scope=scope,
+                initial_value=var_data.get("initial_value"),
+                current_value=var_data.get("current_value"),
+                is_system=var_data.get("is_system", False),
+                is_readonly=var_data.get("is_readonly", False),
+                description=var_data.get("description", ""),
+                group_name=var_data.get("group_name", ""),
             )
+            self._variables[variable.variable_id] = variable
 
-            sheet.rules = rules_with_conditions + rules_without_conditions
-            after_order = [r.id for r in sheet.rules]
-            reordered = sum(1 for i, rid in enumerate(after_order) if before_order[i] != rid if i < len(before_order))
+        for link_data in json_data.get("links", []):
+            try:
+                lt = LinkType(link_data.get("link_type", "include"))
+            except ValueError:
+                lt = LinkType.INCLUDE
+            link = EventLink(
+                source_sheet_id=link_data.get("source_sheet_id", ""),
+                target_sheet_id=link_data.get("target_sheet_id", ""),
+                link_type=lt,
+                condition=link_data.get("condition", ""),
+                description=link_data.get("description", ""),
+            )
+            self._links[link.link_id] = link
 
-            total_reordered += reordered
-            total_unanchored += len(rules_without_conditions)
-            details.append({
-                "sheet_id": sheet.id,
-                "sheet_name": sheet.name,
-                "total_rules": len(sheet.rules),
-                "rules_reordered": reordered,
-                "unanchored_rules": len(rules_without_conditions),
+        return sheet
+
+    def export_sheet_to_json(self, sheet_id: str) -> Optional[Dict[str, Any]]:
+        """Export an event sheet to a serializable dictionary.
+
+        Args:
+            sheet_id: The sheet to export.
+
+        Returns:
+            Dictionary with all sheet data, or None if not found.
+        """
+        sheet = self._sheets.get(sheet_id)
+        if sheet is None:
+            return None
+
+        events_data: List[Dict[str, Any]] = []
+        for event_data in sheet.events:
+            conditions_list: List[Dict[str, Any]] = []
+            for cond in event_data.get("conditions", []):
+                conditions_list.append(cond.to_dict() if hasattr(cond, "to_dict") else cond)
+            actions_list: List[Dict[str, Any]] = []
+            for act in event_data.get("actions", []):
+                actions_list.append(act.to_dict() if hasattr(act, "to_dict") else act)
+            events_data.append({
+                "event_id": event_data.get("event_id", ""),
+                "name": event_data.get("name", ""),
+                "conditions": conditions_list,
+                "actions": actions_list,
             })
 
+        linked_links = [
+            link.to_dict()
+            for link in self._links.values()
+            if link.source_sheet_id == sheet_id or link.target_sheet_id == sheet_id
+        ]
+
+        sheet_variables: List[Dict[str, Any]] = []
+        for var in self._variables.values():
+            if var.scope == VariableScope.GLOBAL:
+                sheet_variables.append(var.to_dict())
+
         return {
-            "success": True,
-            "sheets_optimized": len(sheets_to_optimize),
-            "total_rules_reordered": total_reordered,
-            "total_unanchored_rules": total_unanchored,
-            "details": details,
+            "format_version": 2,
+            "sheet": sheet.to_dict(),
+            "events": events_data,
+            "variables": sheet_variables,
+            "links": linked_links,
+            "exported_at": _time_module.time(),
         }
 
     # ------------------------------------------------------------------
     # Statistics
     # ------------------------------------------------------------------
 
-    def get_scripting_stats(self) -> Dict[str, Any]:
+    def get_event_stats(self) -> Dict[str, Any]:
+        """Return comprehensive event scripting subsystem statistics.
+
+        Returns:
+            Dictionary with total_sheets, total_events, total_conditions,
+            total_actions, total_variables, active_sheets, execution_count,
+            and avg_execution_time.
+        """
+        total_conditions = 0
+        total_actions = 0
+        active_sheets = 0
         scope_distribution: Dict[str, int] = {}
-        repeat_distribution: Dict[str, int] = {}
-        condition_type_distribution: Dict[str, int] = {}
-        action_type_distribution: Dict[str, int] = {}
-        tag_distribution: Dict[str, int] = {}
+        link_type_distribution: Dict[str, int] = {}
 
         for sheet in self._sheets.values():
-            scope = sheet.scope
-            scope_distribution[scope] = scope_distribution.get(scope, 0) + 1
-            for rule in sheet.rules:
-                rt = rule.repeat_type.value
-                repeat_distribution[rt] = repeat_distribution.get(rt, 0) + 1
-                for tag in rule.tags:
-                    tag_distribution[tag] = tag_distribution.get(tag, 0) + 1
-                for cond in rule.conditions:
-                    ct = cond.condition_type.value
-                    condition_type_distribution[ct] = condition_type_distribution.get(ct, 0) + 1
-                for act in rule.actions:
-                    at = act.action_type.value
-                    action_type_distribution[at] = action_type_distribution.get(at, 0) + 1
+            if sheet.is_active:
+                active_sheets += 1
+            for event_data in sheet.events:
+                total_conditions += len(event_data.get("conditions", []))
+                total_actions += len(event_data.get("actions", []))
+            scope_key = "global" if sheet.is_global else "local"
+            scope_distribution[scope_key] = scope_distribution.get(scope_key, 0) + 1
 
-        total_rules = len(self._rule_index)
-        total_conditions = len(self._condition_index)
-        total_actions = len(self._action_index)
-        total_fired_once = len(self._fired_once_rules)
+        for link in self._links.values():
+            lt = link.link_type.value
+            link_type_distribution[lt] = link_type_distribution.get(lt, 0) + 1
 
-        rules_without_conditions = sum(
-            1 for r in self._rule_index.values() if not r.conditions
+        avg_time = (
+            self._total_execution_time / self._execution_count
+            if self._execution_count > 0
+            else 0.0
         )
-        rules_without_actions = sum(
-            1 for r in self._rule_index.values() if not r.actions
-        )
-
-        avg_conditions = total_conditions / total_rules if total_rules > 0 else 0.0
-        avg_actions = total_actions / total_rules if total_rules > 0 else 0.0
 
         return {
             "total_sheets": len(self._sheets),
-            "total_rules": total_rules,
+            "total_events": len(self._event_index),
             "total_conditions": total_conditions,
             "total_actions": total_actions,
-            "total_fired_once_rules": total_fired_once,
-            "rules_without_conditions": rules_without_conditions,
-            "rules_without_actions": rules_without_actions,
-            "avg_conditions_per_rule": round(avg_conditions, 2),
-            "avg_actions_per_rule": round(avg_actions, 2),
-            "total_evaluations": self._total_evaluations,
-            "total_actions_executed": self._total_actions_executed,
-            "total_ticks_simulated": self._total_ticks_simulated,
-            "total_rules_triggered": self._total_rules_triggered,
+            "total_variables": len(self._variables),
+            "active_sheets": active_sheets,
+            "execution_count": self._execution_count,
+            "avg_execution_time": round(avg_time, 6),
             "scope_distribution": scope_distribution,
-            "repeat_distribution": repeat_distribution,
-            "condition_type_distribution": condition_type_distribution,
-            "action_type_distribution": action_type_distribution,
-            "tag_distribution": tag_distribution,
+            "link_type_distribution": link_type_distribution,
             "limits": {
                 "max_sheets": self.MAX_SHEETS,
-                "max_rules_per_sheet": self.MAX_RULES_PER_SHEET,
-                "max_conditions_per_rule": self.MAX_CONDITIONS_PER_RULE,
-                "max_actions_per_rule": self.MAX_ACTIONS_PER_RULE,
-                "max_timers": self.MAX_TIMERS,
+                "max_events_per_sheet": self.MAX_EVENTS_PER_SHEET,
+                "max_conditions_per_event": self.MAX_CONDITIONS_PER_EVENT,
+                "max_actions_per_event": self.MAX_ACTIONS_PER_EVENT,
+                "max_links": self.MAX_LINKS,
+                "max_variables": self.MAX_VARIABLES,
+                "max_sub_condition_depth": self.MAX_SUB_CONDITION_DEPTH,
+                "max_sub_action_depth": self.MAX_SUB_ACTION_DEPTH,
             },
         }
 
     # ------------------------------------------------------------------
-    # Import / Export
+    # Backward-Compatible Methods
     # ------------------------------------------------------------------
 
-    def export_event_sheet(self, sheet_id: str) -> Optional[Dict[str, Any]]:
-        sheet = self._sheets.get(sheet_id)
-        if sheet is None:
-            return None
-        rules_data = []
-        for rule in sheet.rules:
-            rules_data.append({
-                "name": rule.name,
-                "repeat_type": rule.repeat_type.value,
-                "priority": rule.priority,
-                "enabled": rule.enabled,
-                "tags": rule.tags,
-                "conditions": [
-                    {
-                        "condition_type": c.condition_type.value,
-                        "target": c.target,
-                        "property": c.property,
-                        "operator": c.operator,
-                        "value": c.value,
-                        "negate": c.negate,
-                    }
-                    for c in rule.conditions
-                ],
-                "actions": [
-                    {
-                        "action_type": a.action_type.value,
-                        "target": a.target,
-                        "parameters": a.parameters,
-                        "order_index": a.order_index,
-                    }
-                    for a in rule.actions
-                ],
-            })
-        return {
-            "format_version": 1,
-            "sheet": sheet.to_dict(),
-            "rules": rules_data,
-            "exported_at": _time_module.time(),
-        }
-
-    def import_event_sheet(self, data: Dict[str, Any]) -> Optional[EventSheet]:
-        sheet_info = data.get("sheet", {})
-        sheet = self.create_event_sheet(
-            name=sheet_info.get("name", "Imported Sheet"),
-            scope=sheet_info.get("scope", "global"),
-            description=sheet_info.get("description", ""),
-        )
-        if sheet is None:
-            return None
-
-        for rule_data in data.get("rules", []):
-            try:
-                rt = RepeatType(rule_data.get("repeat_type", "once"))
-            except ValueError:
-                rt = RepeatType.ONCE
-
-            rule = self.create_rule(
-                name=rule_data.get("name", "Imported Rule"),
-                sheet_id=sheet.id,
-                repeat_type=rt,
-                priority=rule_data.get("priority", 0),
-                enabled=rule_data.get("enabled", True),
-                tags=rule_data.get("tags", []),
-            )
-            if rule is None:
-                continue
-
-            for cond_data in rule_data.get("conditions", []):
-                try:
-                    ct = ConditionType(cond_data.get("condition_type", "custom"))
-                except ValueError:
-                    ct = ConditionType.CUSTOM
-                self.add_condition(
-                    rule_id=rule.id,
-                    condition_type=ct,
-                    target=cond_data.get("target", ""),
-                    property=cond_data.get("property", ""),
-                    operator=cond_data.get("operator", "=="),
-                    value=cond_data.get("value"),
-                    negate=cond_data.get("negate", False),
-                )
-
-            for act_data in rule_data.get("actions", []):
-                try:
-                    at = ActionType(act_data.get("action_type", "custom_action"))
-                except ValueError:
-                    at = ActionType.CUSTOM_ACTION
-                self.add_action(
-                    rule_id=rule.id,
-                    action_type=at,
-                    target=act_data.get("target", ""),
-                    parameters=act_data.get("parameters", {}),
-                    order_index=act_data.get("order_index", 0),
-                )
-
-        return sheet
+    def get_stats(self) -> Dict[str, Any]:
+        """Return scripting runtime statistics (backward-compatible alias)."""
+        return self.get_event_stats()
 
     # ------------------------------------------------------------------
     # Lifecycle
     # ------------------------------------------------------------------
 
-    def clear_sheet(self, sheet_id: str) -> Dict[str, Any]:
-        sheet = self._sheets.get(sheet_id)
-        if sheet is None:
-            return {"success": False, "error": "Sheet not found"}
-        for rule in sheet.rules:
-            self._rule_index.pop(rule.id, None)
-            self._rule_to_sheet.pop(rule.id, None)
-            self._fired_once_rules.discard(rule.id)
-            self._rule_last_fired.pop(rule.id, None)
-            for cond in rule.conditions:
-                self._condition_index.pop(cond.id, None)
-            for act in rule.actions:
-                self._action_index.pop(act.id, None)
-        removed_count = len(sheet.rules)
-        sheet.rules.clear()
-        sheet.updated_at = _time_module.time()
-        return {"success": True, "rules_removed": removed_count}
-
     def reset(self) -> None:
+        """Reset all engine state, clearing sheets, events, variables, and links."""
         with self._lock:
             self._sheets.clear()
-            self._rule_index.clear()
-            self._condition_index.clear()
-            self._action_index.clear()
-            self._rule_to_sheet.clear()
-            self._fired_once_rules.clear()
-            self._rule_last_fired.clear()
-            self._simulated_game_state = {
-                "variables": {},
-                "objects": {},
-                "inputs": {},
-                "timers": {},
-                "collisions": [],
-                "raycast_hits": [],
-                "animations": {},
-                "scene": "main",
-                "tick_count": 0,
-                "delta_time": 0.0,
-            }
-            self._total_evaluations = 0
-            self._total_actions_executed = 0
-            self._total_ticks_simulated = 0
-            self._total_rules_triggered = 0
-
-    def get_stats(self) -> Dict[str, Any]:
-        """Return comprehensive EventScripting subsystem statistics."""
-        return {
-            "total_sheets": len(self._sheets),
-            "total_rules": sum(len(s.rules) for s in self._sheets.values()),
-            "total_evaluations": self._total_evaluations,
-            "total_actions_executed": self._total_actions_executed,
-            "total_ticks_simulated": self._total_ticks_simulated,
-            "total_rules_triggered": self._total_rules_triggered,
-        }
+            self._conditions.clear()
+            self._actions.clear()
+            self._links.clear()
+            self._variables.clear()
+            self._event_index.clear()
+            self._execution_count = 0
+            self._total_execution_time = 0.0
 
 
-def get_event_scripting() -> EventScripting:
-    return EventScripting.get_instance()
+# ---------------------------------------------------------------------------
+# Module Accessor
+# ---------------------------------------------------------------------------
+
+
+def get_engine_event_scripting() -> EngineEventScripting:
+    """Return the singleton EngineEventScripting instance."""
+    return EngineEventScripting.get_instance()
+
+
+# ---------------------------------------------------------------------------
+# Backward-Compatible Aliases (for code that imports the old class names)
+# ---------------------------------------------------------------------------
+
+EventScripting = EngineEventScripting
+get_event_scripting = get_engine_event_scripting
