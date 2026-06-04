@@ -384,6 +384,16 @@ from sparkai.engine.engine_physics_dynamics import EnginePhysicsDynamics, get_en
 from sparkai.engine.engine_audio_spatial import EngineAudioSpatial, get_audio_spatial
 from sparkai.engine.engine_behavior_orchestrator import EngineBehaviorOrchestrator, get_engine_behavior_orchestrator
 from sparkai.agent.agent_cross_module_orchestrator import AgentCrossModuleOrchestrator, get_cross_module_orchestrator
+from sparkai.agent.agent_intent_router import AgentIntentRouter, get_agent_intent_router
+from sparkai.agent.agent_world_architect import AgentWorldArchitect, get_agent_world_architect
+from sparkai.agent.agent_god_mode_controller import AgentGodModeController, get_god_mode_controller
+from sparkai.engine.engine_event_scripting import EngineEventScripting, get_engine_event_scripting
+from sparkai.engine.engine_gpu_batch_rendering import EngineGPUBatchRendering, get_gpu_batch_rendering
+from sparkai.engine.engine_server_orchestrator import EngineServerOrchestrator, get_engine_server_orchestrator
+from sparkai.agent.agent_world_evolution import AgentWorldEvolution, get_world_evolution
+from sparkai.engine.engine_mega_sprite_layer import EngineMegaSpriteLayer, get_mega_sprite_layer
+from sparkai.engine.engine_rid_allocator import EngineRIDAllocator, get_rid_allocator
+from sparkai.agent.agent_cross_platform_gateway import AgentCrossPlatformGateway, get_cross_platform_gateway
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -887,6 +897,16 @@ class AgentRuntime:
         self._audio_spatial: Optional[EngineAudioSpatial] = None
         self._behavior_orchestrator: Optional[EngineBehaviorOrchestrator] = None
         self._cross_module_orchestrator: Optional[AgentCrossModuleOrchestrator] = None
+        self._intent_router: Optional[AgentIntentRouter] = None
+        self._world_architect: Optional[AgentWorldArchitect] = None
+        self._god_mode_controller: Optional[AgentGodModeController] = None
+        self._engine_event_scripting: Optional[EngineEventScripting] = None
+        self._gpu_batch_rendering: Optional[EngineGPUBatchRendering] = None
+        self._server_orchestrator: Optional[EngineServerOrchestrator] = None
+        self._world_evolution: Optional[AgentWorldEvolution] = None
+        self._mega_sprite_layer: Optional[EngineMegaSpriteLayer] = None
+        self._rid_allocator: Optional[EngineRIDAllocator] = None
+        self._cross_platform_gateway: Optional[AgentCrossPlatformGateway] = None
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -1274,6 +1294,16 @@ class AgentRuntime:
             self._audio_spatial = get_audio_spatial()
             self._behavior_orchestrator = get_engine_behavior_orchestrator()
             self._cross_module_orchestrator = get_cross_module_orchestrator()
+            self._intent_router = get_agent_intent_router()
+            self._world_architect = get_agent_world_architect()
+            self._god_mode_controller = get_god_mode_controller()
+            self._engine_event_scripting = get_engine_event_scripting()
+            self._gpu_batch_rendering = get_gpu_batch_rendering()
+            self._server_orchestrator = get_engine_server_orchestrator()
+            self._world_evolution = get_world_evolution()
+            self._mega_sprite_layer = get_mega_sprite_layer()
+            self._rid_allocator = get_rid_allocator()
+            self._cross_platform_gateway = get_cross_platform_gateway()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
