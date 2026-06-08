@@ -22783,7 +22783,7 @@ from sparkai.agent.agent_social_dynamics import get_social_dynamics
 from sparkai.agent.agent_emergent_narrative import get_emergent_narrative
 from sparkai.engine.engine_procedural_world import get_procedural_world
 from sparkai.engine.engine_render_pipeline import get_render_pipeline
-from sparkai.engine.engine_physics_dynamics import get_engine_physics_dynamics
+from sparkai.engine.engine_physics_dynamics import get_physics_dynamics
 from sparkai.engine.engine_audio_spatial import get_audio_spatial
 from sparkai.engine.engine_behavior_orchestrator import get_engine_behavior_orchestrator
 from sparkai.agent.agent_cross_module_orchestrator import get_cross_module_orchestrator
@@ -22855,7 +22855,7 @@ _social_dynamics = get_social_dynamics()
 _emergent_narrative = get_emergent_narrative()
 _procedural_world = get_procedural_world()
 _render_pipeline = get_render_pipeline()
-_physics_dynamics = get_engine_physics_dynamics()
+_physics_dynamics = get_physics_dynamics()
 _audio_spatial = get_audio_spatial()
 _behavior_orchestrator = get_engine_behavior_orchestrator()
 _cross_module_orchestrator = get_cross_module_orchestrator()
@@ -27157,5 +27157,248 @@ async def world_streamer_activate_region(request: Request):
             region_id=body.get("region_id", ""),
         )
         return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# World Simulation Endpoints
+# ============================================================
+
+from sparkai.agent.agent_world_simulation import get_agent_world_simulation
+_world_simulation = get_agent_world_simulation()
+
+@router.get("/world-simulation/stats")
+async def world_simulation_stats():
+    try:
+        return _world_simulation.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-simulation/advance")
+async def world_simulation_advance(request: Request):
+    try:
+        body = await request.json()
+        result = _world_simulation.advance(ticks=body.get("ticks", 1))
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-simulation/create-region")
+async def world_simulation_create_region(request: Request):
+    try:
+        body = await request.json()
+        region = _world_simulation.create_region(
+            name=body.get("name", ""),
+            region_type=body.get("region_type", "plains"),
+        )
+        return region.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-simulation/create-entity")
+async def world_simulation_create_entity(request: Request):
+    try:
+        body = await request.json()
+        entity = _world_simulation.create_entity(
+            name=body.get("name", ""),
+            entity_type=body.get("entity_type", "human"),
+            region_id=body.get("region_id", ""),
+        )
+        return entity.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-simulation/add-resource")
+async def world_simulation_add_resource(request: Request):
+    try:
+        body = await request.json()
+        result = _world_simulation.add_resource(
+            region_id=body.get("region_id", ""),
+            resource_type=body.get("resource_type", "food"),
+            amount=body.get("amount", 1000),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-simulation/snapshots")
+async def world_simulation_snapshots():
+    try:
+        return _world_simulation.list_snapshots()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/world-simulation/snapshot")
+async def world_simulation_take_snapshot():
+    try:
+        snapshot = _world_simulation.take_snapshot()
+        return snapshot.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-simulation/events")
+async def world_simulation_events(
+    category: Optional[str] = Query(None),
+    since_tick: Optional[int] = Query(None),
+):
+    try:
+        return _world_simulation.get_events(category=category, since_tick=since_tick)
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Economy Simulator Endpoints
+# ============================================================
+
+from sparkai.agent.agent_economy_simulator import get_agent_economy_simulator
+_economy_simulator = get_agent_economy_simulator()
+
+@router.get("/economy/stats")
+async def economy_stats():
+    try:
+        return _economy_simulator.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/economy/simulate")
+async def economy_simulate():
+    try:
+        result = _economy_simulator.simulate()
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/economy/add-item")
+async def economy_add_item(request: Request):
+    try:
+        body = await request.json()
+        item = _economy_simulator.add_item(
+            name=body.get("name", ""),
+            category=body.get("category", ""),
+            base_price=body.get("base_price", 100),
+        )
+        return item.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/economy/update-market")
+async def economy_update_market(request: Request):
+    try:
+        body = await request.json()
+        result = _economy_simulator.update_market(
+            item_id=body.get("item_id", ""),
+            supply_delta=body.get("supply_delta", 10),
+            demand_delta=body.get("demand_delta", -5),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/economy/snapshot")
+async def economy_snapshot():
+    try:
+        return _economy_simulator.get_snapshot()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/economy/imbalances")
+async def economy_imbalances():
+    try:
+        return _economy_simulator.get_imbalances()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/economy/create-currency")
+async def economy_create_currency(request: Request):
+    try:
+        body = await request.json()
+        currency = _economy_simulator.create_currency(
+            currency_type=body.get("currency_type", "gold"),
+            initial_amount=body.get("initial_amount", 10000),
+        )
+        return currency.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/economy/create-trade-route")
+async def economy_create_trade_route(request: Request):
+    try:
+        body = await request.json()
+        route = _economy_simulator.create_trade_route(
+            source_region=body.get("source_region", ""),
+            target_region=body.get("target_region", ""),
+            goods=body.get("goods", ["food", "wood"]),
+        )
+        return route.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+# ============================================================
+# Agent Intelligence Core Endpoints
+# ============================================================
+
+from sparkai.agent.agent_intelligence_core import get_agent_intelligence_core
+
+_intelligence_core = get_agent_intelligence_core()
+
+@router.get("/intelligence-core/status")
+async def intelligence_core_status():
+    """Get Agent Intelligence Core status for all subsystems."""
+    try:
+        return _intelligence_core.get_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/intelligence-core/report")
+async def intelligence_core_report():
+    """Get comprehensive intelligence report."""
+    try:
+        return _intelligence_core.get_intelligence_report()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intelligence-core/perceive")
+async def intelligence_core_perceive(request: Request):
+    """Process perception through unified perception engine."""
+    try:
+        body = await request.json()
+        result = _intelligence_core.process_perception(body)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intelligence-core/reason")
+async def intelligence_core_reason(request: Request):
+    """Strategic reasoning with goal decomposition."""
+    try:
+        body = await request.json()
+        result = _intelligence_core.strategic_reason(
+            goal=body.get("goal", ""),
+            constraints=body.get("constraints", {}),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intelligence-core/learn")
+async def intelligence_core_learn(request: Request):
+    """Execute autonomous learning cycle."""
+    try:
+        body = await request.json()
+        result = _intelligence_core.autonomous_learn(body)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/intelligence-core/synthesize")
+async def intelligence_core_synthesize(request: Request):
+    """Creative content synthesis."""
+    try:
+        body = await request.json()
+        result = _intelligence_core.creative_synthesize(
+            brief=body.get("brief", ""),
+            domain=body.get("domain", "general"),
+        )
+        return result
     except Exception as e:
         return {"error": str(e)}
