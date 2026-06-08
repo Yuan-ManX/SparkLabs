@@ -5,7 +5,7 @@ API endpoints for engine control, ECS world management,
 scene management, and component/system registry.
 """
 
-from fastapi import APIRouter
+from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel
 from typing import Any, Dict, List, Optional
 
@@ -324,3 +324,598 @@ async def delete_scene(scene_id: str):
     engine = SparkEngine.get_instance()
     success = engine.delete_scene(scene_id)
     return {"success": success}
+
+
+# ---------------------------------------------------------------------------
+# Audio Synthesis Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/audio-synthesis/stats")
+async def get_audio_synthesis_stats():
+    """Get audio synthesis engine statistics."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    synth = get_audio_synthesis()
+    return synth.get_stats()
+
+
+@router.get("/audio-synthesis/oscillators")
+async def list_audio_oscillators():
+    """List all oscillator configurations."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    synth = get_audio_synthesis()
+    return {"oscillators": synth.list_oscillators()}
+
+
+@router.post("/audio-synthesis/oscillators")
+async def create_audio_oscillator(request: Request):
+    """Create a new oscillator."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    body = await request.json()
+    synth = get_audio_synthesis()
+    osc = synth.create_oscillator(
+        waveform=body.get("waveform", "sine"),
+        frequency=body.get("frequency", 440.0),
+        amplitude=body.get("amplitude", 0.5),
+        detune_cents=body.get("detune_cents", 0.0),
+    )
+    return osc.to_dict()
+
+
+@router.delete("/audio-synthesis/oscillators/{oscillator_id}")
+async def remove_audio_oscillator(oscillator_id: str):
+    """Remove an oscillator."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    synth = get_audio_synthesis()
+    return {"success": synth.remove_oscillator(oscillator_id)}
+
+
+@router.post("/audio-synthesis/sfx/{effect_type}")
+async def synthesize_sound_effect(effect_type: str, request: Request):
+    """Synthesize a sound effect. Types: laser, explosion, collect, jump, hit, powerup, ambient."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    body = await request.json()
+    synth = get_audio_synthesis()
+
+    effect_map = {
+        "laser": synth.synthesize_laser,
+        "explosion": synth.synthesize_explosion,
+        "collect": synth.synthesize_collect,
+        "jump": synth.synthesize_jump,
+        "hit": synth.synthesize_hit,
+        "powerup": synth.synthesize_powerup,
+        "ambient": synth.synthesize_ambient,
+    }
+
+    if effect_type not in effect_map:
+        return {"error": f"Unknown effect type: {effect_type}"}
+
+    kwargs = {k: v for k, v in body.items() if k in ("frequency", "start_freq", "end_freq", "duration_ms", "amplitude", "base_freq")}
+    sample = effect_map[effect_type](**kwargs)
+    return sample.to_dict()
+
+
+@router.post("/audio-synthesis/noise")
+async def generate_noise(request: Request):
+    """Generate colored noise."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    body = await request.json()
+    synth = get_audio_synthesis()
+    samples = synth.generate_noise(
+        color=body.get("color", "white"),
+        duration_ms=body.get("duration_ms", 1000.0),
+        amplitude=body.get("amplitude", 0.5),
+    )
+    sample = synth._create_sample(samples, body.get("duration_ms", 1000.0))
+    return sample.to_dict()
+
+
+@router.post("/audio-synthesis/chord")
+async def generate_chord(request: Request):
+    """Generate a musical chord."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    body = await request.json()
+    synth = get_audio_synthesis()
+    sample = synth.generate_chord(
+        root_note=body.get("root_note", "C4"),
+        chord_type=body.get("chord_type", "major"),
+        duration_ms=body.get("duration_ms", 1000.0),
+        amplitude=body.get("amplitude", 0.4),
+        waveform=body.get("waveform", "sine"),
+    )
+    return sample.to_dict()
+
+
+@router.post("/audio-synthesis/melody")
+async def generate_melody(request: Request):
+    """Generate a random melody."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    body = await request.json()
+    synth = get_audio_synthesis()
+    sample = synth.generate_melody(
+        scale_type=body.get("scale_type", "major"),
+        root_note=body.get("root_note", "C4"),
+        note_count=body.get("note_count", 8),
+        note_duration_ms=body.get("note_duration_ms", 250.0),
+        amplitude=body.get("amplitude", 0.4),
+        waveform=body.get("waveform", "sine"),
+        seed=body.get("seed"),
+    )
+    return sample.to_dict()
+
+
+@router.post("/audio-synthesis/rhythm")
+async def generate_rhythm(request: Request):
+    """Generate a rhythmic pattern."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    body = await request.json()
+    synth = get_audio_synthesis()
+    sample = synth.generate_rhythm_pattern(
+        bpm=body.get("bpm", 120.0),
+        beats=body.get("beats", 8),
+        hit_duration_ms=body.get("hit_duration_ms", 50.0),
+        amplitude=body.get("amplitude", 0.5),
+    )
+    return sample.to_dict()
+
+
+@router.get("/audio-synthesis/samples")
+async def list_audio_samples():
+    """List all generated audio samples."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    synth = get_audio_synthesis()
+    return {"samples": synth.list_samples()}
+
+
+@router.get("/audio-synthesis/samples/{sample_id}")
+async def get_audio_sample(sample_id: str):
+    """Get a specific audio sample."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    synth = get_audio_synthesis()
+    sample = synth.get_sample(sample_id)
+    if sample:
+        return sample
+    return {"error": "Sample not found"}
+
+
+@router.get("/audio-synthesis/scale/{scale_type}")
+async def get_scale_notes(scale_type: str, root_note: str = "C4"):
+    """Get notes in a musical scale."""
+    from sparkai.engine.engine_audio_synthesis import get_audio_synthesis
+    synth = get_audio_synthesis()
+    return {"notes": synth.get_scale_notes(root_note, scale_type)}
+
+
+# ---------------------------------------------------------------------------
+# Environment Manager Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/environment/platform")
+async def get_platform_info():
+    """Get platform information."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return em.get_platform_info()
+
+
+@router.get("/environment/stats")
+async def get_environment_stats():
+    """Get environment system statistics."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return em.get_system_stats()
+
+
+@router.get("/environment/health")
+async def check_environment_health():
+    """Check environment health."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return em.check_health()
+
+
+@router.get("/environment/profile")
+async def get_environment_profile():
+    """Get current environment profile."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return {"profile": em.get_profile()}
+
+
+@router.post("/environment/profile")
+async def set_environment_profile(request: Request):
+    """Set the environment profile."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    body = await request.json()
+    em = get_engine_environment_manager()
+    em.set_profile(body.get("profile", "development"))
+    return {"profile": em.get_profile()}
+
+
+@router.get("/environment/budgets")
+async def list_resource_budgets():
+    """List all resource budgets."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return {"budgets": em.list_resource_budgets()}
+
+
+@router.post("/environment/budgets")
+async def create_resource_budget(request: Request):
+    """Create a resource budget."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    body = await request.json()
+    em = get_engine_environment_manager()
+    budget = em.create_resource_budget(
+        category=body.get("category", "general"),
+        cpu_cores=body.get("cpu_cores", 1.0),
+        memory_mb=body.get("memory_mb", 256.0),
+        gpu_memory_mb=body.get("gpu_memory_mb", 0.0),
+        priority=body.get("priority", 0),
+    )
+    return budget.to_dict()
+
+
+@router.get("/environment/dependencies")
+async def list_dependencies(subsystem: Optional[str] = None, status: Optional[str] = None):
+    """List all dependencies."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return {"dependencies": em.list_dependencies(subsystem, status)}
+
+
+@router.post("/environment/dependencies")
+async def register_dependency(request: Request):
+    """Register a new dependency."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    body = await request.json()
+    em = get_engine_environment_manager()
+    dep = em.register_dependency(
+        name=body.get("name", ""),
+        version=body.get("version", "1.0.0"),
+        subsystem=body.get("subsystem", "custom"),
+        dependencies=body.get("dependencies", []),
+        optional=body.get("optional", False),
+        metadata=body.get("metadata"),
+    )
+    return dep.to_dict()
+
+
+@router.get("/environment/dependencies/graph")
+async def get_dependency_graph():
+    """Get the dependency graph."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return em.get_dependency_graph()
+
+
+@router.post("/environment/subsystems/{subsystem}/initialize")
+async def initialize_subsystem(subsystem: str):
+    """Initialize a subsystem."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return em.initialize_subsystem(subsystem)
+
+
+@router.get("/environment/subsystems")
+async def list_initialized_subsystems():
+    """List initialized subsystems."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return {"subsystems": em.list_initialized_subsystems()}
+
+
+@router.get("/environment/sandboxes")
+async def list_sandboxes(subsystem: Optional[str] = None):
+    """List all sandboxes."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return {"sandboxes": em.list_sandboxes(subsystem)}
+
+
+@router.post("/environment/sandboxes")
+async def create_sandbox(request: Request):
+    """Create a sandbox."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    body = await request.json()
+    em = get_engine_environment_manager()
+    sandbox = em.create_sandbox(
+        subsystem=body.get("subsystem", "custom"),
+        isolation_level=body.get("isolation_level", "none"),
+        max_memory_mb=body.get("max_memory_mb", 512.0),
+        max_cpu_time_ms=body.get("max_cpu_time_ms", 10000.0),
+        allowed_paths=body.get("allowed_paths"),
+        denied_paths=body.get("denied_paths"),
+        network_access=body.get("network_access", False),
+    )
+    return sandbox.to_dict()
+
+
+@router.get("/environment/snapshots")
+async def list_environment_snapshots():
+    """List all environment snapshots."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return {"snapshots": em.list_snapshots()}
+
+
+@router.post("/environment/snapshots")
+async def create_environment_snapshot():
+    """Create an environment snapshot."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    snapshot = em.create_snapshot()
+    return snapshot.to_dict()
+
+
+@router.get("/environment/env-vars")
+async def list_env_variables():
+    """List all managed environment variables."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return {"variables": em.list_env_variables()}
+
+
+@router.post("/environment/env-vars")
+async def set_env_variable(request: Request):
+    """Set an environment variable."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    body = await request.json()
+    em = get_engine_environment_manager()
+    em.set_env(body.get("key", ""), body.get("value", ""))
+    return {"success": True}
+
+
+@router.get("/environment/resource-usage")
+async def get_resource_usage():
+    """Get current resource usage."""
+    from sparkai.engine.engine_environment_manager import get_engine_environment_manager
+    em = get_engine_environment_manager()
+    return em.get_resource_usage()
+
+
+# ---------------------------------------------------------------------------
+# Weather System Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/weather/stats")
+async def get_weather_stats():
+    """Get weather system statistics."""
+    from sparkai.engine.engine_weather_system import get_weather_system
+    ws = get_weather_system()
+    return ws.get_stats()
+
+
+@router.post("/weather/update")
+async def update_weather_simulation(request: Request):
+    """Update weather simulation."""
+    from sparkai.engine.engine_weather_system import get_weather_system
+    body = await request.json()
+    ws = get_weather_system()
+    return ws.update(delta_time_ms=body.get("delta_time_ms", 1000))
+
+
+@router.post("/weather/set-weather")
+async def set_weather(request: Request):
+    """Set weather manually for a region."""
+    from sparkai.engine.engine_weather_system import get_weather_system
+    body = await request.json()
+    ws = get_weather_system()
+    return ws.set_weather(
+        region_id=body.get("region_id", ""),
+        weather_type=body.get("weather_type", "rain"),
+        intensity=body.get("intensity", "moderate"),
+    )
+
+
+@router.post("/weather/transition")
+async def transition_weather(request: Request):
+    """Transition weather over time."""
+    from sparkai.engine.engine_weather_system import get_weather_system
+    body = await request.json()
+    ws = get_weather_system()
+    return ws.transition(
+        region_id=body.get("region_id", ""),
+        target_weather=body.get("target_weather", "storm"),
+        duration_ms=body.get("duration_ms", 5000),
+    )
+
+
+@router.post("/weather/set-climate")
+async def set_climate(request: Request):
+    """Set climate profile for a region."""
+    from sparkai.engine.engine_weather_system import get_weather_system
+    body = await request.json()
+    ws = get_weather_system()
+    return ws.set_climate(
+        region_id=body.get("region_id", ""),
+        climate_zone=body.get("climate_zone", "tropical"),
+    )
+
+
+@router.get("/weather/current/{region_id}")
+async def get_current_weather(region_id: str):
+    """Get current weather for a region."""
+    from sparkai.engine.engine_weather_system import get_weather_system
+    ws = get_weather_system()
+    return ws.get_current(region_id)
+
+
+@router.get("/weather/forecast/{region_id}")
+async def get_weather_forecast(region_id: str):
+    """Get weather forecast for a region."""
+    from sparkai.engine.engine_weather_system import get_weather_system
+    ws = get_weather_system()
+    return ws.get_forecast(region_id)
+
+
+@router.get("/weather/particles/{region_id}")
+async def get_weather_particles(region_id: str):
+    """Get active weather particles for a region."""
+    from sparkai.engine.engine_weather_system import get_weather_system
+    ws = get_weather_system()
+    return ws.get_particles(region_id)
+
+
+# ---------------------------------------------------------------------------
+# Water Simulation Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/water/stats")
+async def get_water_stats():
+    """Get water simulation statistics."""
+    from sparkai.engine.engine_water_simulation import get_water_simulation
+    ws = get_water_simulation()
+    return ws.get_stats()
+
+
+@router.post("/water/create-body")
+async def create_water_body(request: Request):
+    """Create a water body."""
+    from sparkai.engine.engine_water_simulation import get_water_simulation
+    body = await request.json()
+    ws = get_water_simulation()
+    return ws.create_body(
+        name=body.get("name", ""),
+        body_type=body.get("body_type", "rectangular"),
+        x=body.get("x", 0),
+        y=body.get("y", 0),
+        width=body.get("width", 100),
+        height=body.get("height", 50),
+    )
+
+
+@router.post("/water/update")
+async def update_water_simulation(request: Request):
+    """Update water simulation."""
+    from sparkai.engine.engine_water_simulation import get_water_simulation
+    body = await request.json()
+    ws = get_water_simulation()
+    return ws.update(delta_time_ms=body.get("delta_time_ms", 16))
+
+
+@router.get("/water/bodies")
+async def list_water_bodies():
+    """List all water bodies."""
+    from sparkai.engine.engine_water_simulation import get_water_simulation
+    ws = get_water_simulation()
+    return ws.list_bodies()
+
+
+@router.post("/water/add-object")
+async def add_buoyant_object(request: Request):
+    """Add a buoyant object to a water body."""
+    from sparkai.engine.engine_water_simulation import get_water_simulation
+    body = await request.json()
+    ws = get_water_simulation()
+    return ws.add_object(
+        water_body_id=body.get("water_body_id", ""),
+        name=body.get("name", ""),
+        x=body.get("x", 50),
+        y=body.get("y", 30),
+        width=body.get("width", 10),
+        height=body.get("height", 10),
+        mass=body.get("mass", 5),
+    )
+
+
+@router.post("/water/set-waves")
+async def set_wave_parameters(request: Request):
+    """Set wave parameters for a water body."""
+    from sparkai.engine.engine_water_simulation import get_water_simulation
+    body = await request.json()
+    ws = get_water_simulation()
+    return ws.set_waves(
+        water_body_id=body.get("water_body_id", ""),
+        amplitude=body.get("amplitude", 2.0),
+        frequency=body.get("frequency", 0.5),
+        speed=body.get("speed", 1.0),
+    )
+
+
+@router.post("/water/splash")
+async def generate_splash(request: Request):
+    """Generate a splash effect."""
+    from sparkai.engine.engine_water_simulation import get_water_simulation
+    body = await request.json()
+    ws = get_water_simulation()
+    return ws.splash(
+        water_body_id=body.get("water_body_id", ""),
+        x=body.get("x", 50),
+        y=body.get("y", 25),
+        velocity=body.get("velocity", 5.0),
+        splash_type=body.get("splash_type", "entry"),
+    )
+
+
+@router.get("/water/surface/{water_body_id}")
+async def get_water_surface(water_body_id: str):
+    """Get surface points for a water body."""
+    from sparkai.engine.engine_water_simulation import get_water_simulation
+    ws = get_water_simulation()
+    return ws.get_surface(water_body_id)
+
+
+# ---------------------------------------------------------------------------
+# Engine Unification Core Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/unification-core/status")
+async def get_unification_core_status():
+    """Get Engine Unification Core status for all orchestrators."""
+    from sparkai.engine.engine_unification_core import get_engine_unification_core
+    core = get_engine_unification_core()
+    return core.get_status()
+
+@router.get("/unification-core/report")
+async def get_unification_core_report():
+    """Get comprehensive engine diagnostics report."""
+    from sparkai.engine.engine_unification_core import get_engine_unification_core
+    core = get_engine_unification_core()
+    return core.get_engine_report()
+
+@router.post("/unification-core/initialize")
+async def initialize_unification_core(request: Request):
+    """Initialize engine unification subsystems."""
+    from sparkai.engine.engine_unification_core import get_engine_unification_core
+    body = await request.json()
+    core = get_engine_unification_core()
+    return core.initialize(subsystems=body.get("subsystems"))
+
+@router.post("/unification-core/tick")
+async def tick_unification_core(request: Request):
+    """Execute one unified game loop tick."""
+    from sparkai.engine.engine_unification_core import get_engine_unification_core
+    body = await request.json()
+    core = get_engine_unification_core()
+    return core.tick(delta_time=body.get("delta_time", 0.016))
+
+@router.post("/unification-core/render")
+async def render_unification_core():
+    """Execute coordinated render pipeline."""
+    from sparkai.engine.engine_unification_core import get_engine_unification_core
+    core = get_engine_unification_core()
+    return core.render_frame()
+
+@router.post("/unification-core/shutdown")
+async def shutdown_unification_core():
+    """Gracefully shutdown engine subsystems."""
+    from sparkai.engine.engine_unification_core import get_engine_unification_core
+    core = get_engine_unification_core()
+    core.shutdown()
+    return {"status": "shutdown"}
+
+@router.get("/unification-core/subsystems")
+async def list_unification_subsystems():
+    """List all engine subsystems by orchestrator."""
+    from sparkai.engine.engine_unification_core import get_engine_unification_core
+    core = get_engine_unification_core()
+    return {"subsystems": core.list_subsystems()}
+
+@router.post("/unification-core/target-fps")
+async def set_unification_target_fps(request: Request):
+    """Set target FPS for engine."""
+    from sparkai.engine.engine_unification_core import get_engine_unification_core
+    body = await request.json()
+    core = get_engine_unification_core()
+    core.set_target_fps(body.get("fps", 60))
+    return {"target_fps": body.get("fps", 60)}
