@@ -380,7 +380,7 @@ from sparkai.agent.agent_social_dynamics import AgentSocialDynamics, get_social_
 from sparkai.agent.agent_emergent_narrative import AgentEmergentNarrative, get_emergent_narrative
 from sparkai.engine.engine_procedural_world import EngineProceduralWorld, get_procedural_world
 from sparkai.engine.engine_render_pipeline import EngineRenderPipeline, get_render_pipeline
-from sparkai.engine.engine_physics_dynamics import EnginePhysicsDynamics, get_engine_physics_dynamics
+from sparkai.engine.engine_physics_dynamics import EnginePhysicsDynamics, get_physics_dynamics
 from sparkai.engine.engine_audio_spatial import EngineAudioSpatial, get_audio_spatial
 from sparkai.engine.engine_behavior_orchestrator import EngineBehaviorOrchestrator, get_engine_behavior_orchestrator
 from sparkai.agent.agent_cross_module_orchestrator import AgentCrossModuleOrchestrator, get_cross_module_orchestrator
@@ -397,6 +397,14 @@ from sparkai.agent.agent_cross_platform_gateway import AgentCrossPlatformGateway
 from sparkai.agent.agent_environment_manager import AgentEnvironmentManager, get_environment_manager
 from sparkai.engine.engine_frame_timer import EngineFrameTimer, get_frame_timer
 from sparkai.engine.engine_platform_layer import EnginePlatformLayer, get_platform_layer
+from sparkai.engine.engine_audio_synthesis import EngineAudioSynthesis, get_audio_synthesis
+from sparkai.engine.engine_environment_manager import EngineEnvironmentManager, get_engine_environment_manager
+from sparkai.agent.agent_world_simulation import AgentWorldSimulation, get_agent_world_simulation
+from sparkai.agent.agent_economy_simulator import AgentEconomySimulator, get_agent_economy_simulator
+from sparkai.engine.engine_weather_system import EngineWeatherSystem, get_weather_system
+from sparkai.engine.engine_water_simulation import EngineWaterSimulation, get_water_simulation
+from sparkai.agent.agent_intelligence_core import AgentIntelligenceCore, get_agent_intelligence_core
+from sparkai.engine.engine_unification_core import EngineUnificationCore, get_engine_unification_core
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -923,6 +931,12 @@ class AgentRuntime:
         self._frame_timer: Optional[EngineFrameTimer] = None
         self._platform_layer: Optional[EnginePlatformLayer] = None
         self._emotion_synthesis: Optional[AgentEmotionSynthesis] = None
+        self._world_simulation: Optional[AgentWorldSimulation] = None
+        self._economy_simulator: Optional[AgentEconomySimulator] = None
+        self._weather_system: Optional[EngineWeatherSystem] = None
+        self._water_simulation: Optional[EngineWaterSimulation] = None
+        self._intelligence_core: Optional[AgentIntelligenceCore] = None
+        self._engine_unification_core: Optional[EngineUnificationCore] = None
         self._story_forge: Optional[AgentStoryForge] = None
         self._quest_generator: Optional[AgentQuestGenerator] = None
         self._dialogue_engine: Optional[AgentDialogueEngine] = None
@@ -1314,7 +1328,7 @@ class AgentRuntime:
             self._emergent_narrative = get_emergent_narrative()
             self._procedural_world = get_procedural_world()
             self._render_pipeline = get_render_pipeline()
-            self._physics_dynamics = get_engine_physics_dynamics()
+            self._physics_dynamics = get_physics_dynamics()
             self._audio_spatial = get_audio_spatial()
             self._behavior_orchestrator = get_engine_behavior_orchestrator()
             self._cross_module_orchestrator = get_cross_module_orchestrator()
@@ -1331,6 +1345,8 @@ class AgentRuntime:
             self._environment_manager = get_environment_manager()
             self._frame_timer = get_frame_timer()
             self._platform_layer = get_platform_layer()
+            self._audio_synthesis = get_audio_synthesis()
+            self._engine_environment_manager = get_engine_environment_manager()
             self._emotion_synthesis = get_emotion_synthesis()
             self._story_forge = get_story_forge()
             self._quest_generator = get_quest_generator()
@@ -1340,6 +1356,12 @@ class AgentRuntime:
             self._state_machine_engine = get_state_machine_engine()
             self._scene_director = get_scene_director()
             self._world_streamer = get_world_streamer()
+            self._world_simulation = get_agent_world_simulation()
+            self._economy_simulator = get_agent_economy_simulator()
+            self._weather_system = get_weather_system()
+            self._water_simulation = get_water_simulation()
+            self._intelligence_core = get_agent_intelligence_core()
+            self._engine_unification_core = get_engine_unification_core()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1422,6 +1444,10 @@ class AgentRuntime:
             self._emergent_narrative_ok = self._emergent_narrative is not None
             self._procedural_world_ok = self._procedural_world is not None
             self._render_pipeline_ok = self._render_pipeline is not None
+            self._world_simulation_ok = self._world_simulation is not None
+            self._economy_simulator_ok = self._economy_simulator is not None
+            self._weather_system_ok = self._weather_system is not None
+            self._water_simulation_ok = self._water_simulation is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -3013,6 +3039,10 @@ class AgentRuntime:
             "emergent_narrative": self._emergent_narrative is not None,
             "procedural_world": self._procedural_world is not None,
             "render_pipeline": self._render_pipeline is not None,
+            "world_simulation": self._world_simulation is not None,
+            "economy_simulator": self._economy_simulator is not None,
+            "weather_system": self._weather_system is not None,
+            "water_simulation": self._water_simulation is not None,
             },
         }
 
@@ -3646,6 +3676,14 @@ class AgentRuntime:
             status["procedural_world_stats"] = self._procedural_world.get_stats()
         if self._render_pipeline:
             status["render_pipeline_stats"] = self._render_pipeline.get_stats()
+        if self._world_simulation:
+            status["world_simulation_stats"] = self._world_simulation.get_stats()
+        if self._economy_simulator:
+            status["economy_simulator_stats"] = self._economy_simulator.get_stats()
+        if self._weather_system:
+            status["weather_system_stats"] = self._weather_system.get_stats()
+        if self._water_simulation:
+            status["water_simulation_stats"] = self._water_simulation.get_stats()
         return status
 
 
