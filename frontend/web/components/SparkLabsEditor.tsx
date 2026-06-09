@@ -39,6 +39,8 @@ import ScriptEditor from './ScriptEditor';
 import SettingsPanel from './SettingsPanel';
 import SceneDirectorPanel from './SceneDirectorPanel';
 import WorldStreamerPanel from './WorldStreamerPanel';
+import AgentIntelligenceCorePanel from './AgentIntelligenceCorePanel';
+import EngineUnificationCorePanel from './EngineUnificationCorePanel';
 import { LifecyclePanel, SlashCommandsPanel, ValidationHooksPanel } from './LifecyclePanels';
 import { TaskExecutorPanel } from './TaskExecutorPanel';
 import NotificationToast from './NotificationToast';
@@ -322,6 +324,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'settings': return <SettingsPanel />;
       case 'scene-director': return <SceneDirectorPanel />;
       case 'world-streamer': return <WorldStreamerPanel />;
+      case 'intelligence-core': return <AgentIntelligenceCorePanel />;
+      case 'engine-unification': return <EngineUnificationCorePanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
