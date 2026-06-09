@@ -2338,7 +2338,7 @@ class AgentIntelligenceCore:
                 "context": brief,
                 "participants": 2,
                 "lines": [
-                    {"speaker": "A", "text": f"Opening line inspired by: {brief[:80]}"},
+                    {"speaker": "A", "text": f"Opening line: {brief[:80]}"},
                     {"speaker": "B", "text": "Response building on the premise"},
                     {"speaker": "A", "text": "Escalation or revelation moment"},
                 ],
