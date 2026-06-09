@@ -300,46 +300,6 @@ decision = await brain.decide({"player_action": "asks about ancient artifact"})
 dialogue = await brain.generate_dialogue("Tell me about the ancient artifact")
 ```
 
-## Architecture Overview
-
-```
-┌─────────────────────────────────────────────────────────────────┐
-│                    SparkLabs Web Editor                         │
-│  React + TypeScript + Vite + Tailwind CSS                      │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
-│  │  Game    │ │ Workflow │ │   NPC    │ │     Agent        │   │
-│  │  Studio  │ │  Canvas  │ │ Designer │ │     Panel        │   │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
-├─────────────────────────────────────────────────────────────────┤
-│                    Backend API (FastAPI)                         │
-│  WebSocket │ REST API │ Agent Routes │ Engine Routes            │
-├─────────────────────────────────────────────────────────────────┤
-│                    sparkai (Python AI Layer)                     │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐   │
-│  │   Agent     │ │  Workflow   │ │       NPC System        │   │
-│  │  Foundation │ │   Engine    │ │  Brain │ Memory │ Emotion│   │
-│  │ LLM│Memory  │ │ Graph│Exec  │ │  Behavior │ Personality │   │
-│  │ Tools│Orch.  │ │ Registry   │ │  Dialogue │ Goals      │   │
-│  └─────────────┘ └─────────────┘ └─────────────────────────┘   │
-│  ┌─────────────┐ ┌─────────────┐ ┌─────────────────────────┐   │
-│  │ Narrative   │ │   Team      │ │       Engine            │   │
-│  │ Story│Quest │ │ Dir│Lead    │ │  Scene │ Entity         │   │
-│  │ Branch│Var  │ │ Spec│Quality│ │  Component System       │   │
-│  └─────────────┘ └─────────────┘ └─────────────────────────┘   │
-├─────────────────────────────────────────────────────────────────┤
-│                    C++ Core Engine Layer                         │
-│  ┌──────────┐ ┌──────────┐ ┌──────────┐ ┌──────────────────┐   │
-│  │  Scene   │ │ Resource │ │ Physics  │ │   AI Runtime     │   │
-│  │ Manager  │ │ Manager  │ │  Engine  │ │ ONNX │ Neural    │   │
-│  └──────────┘ └──────────┘ └──────────┘ └──────────────────┘   │
-├─────────────────────────────────────────────────────────────────┤
-│                    Neural Rendering Pipeline                     │
-│  Classical Render → Neural AA → Neural AO → Neural Upscale     │
-├─────────────────────────────────────────────────────────────────┤
-│                    Platform Layer                                │
-│         Windows | macOS | Linux | Web | Mobile                  │
-└─────────────────────────────────────────────────────────────────┘
-```
 
 ## Documentation
 
