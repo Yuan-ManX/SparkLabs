@@ -430,7 +430,9 @@ export type ViewMode =
   | 'validation-hooks'
   | 'task-executor'
   | 'scene-director'
-  | 'world-streamer';
+  | 'world-streamer'
+  | 'intelligence-core'
+  | 'engine-unification';
 
 // Runtime types
 
