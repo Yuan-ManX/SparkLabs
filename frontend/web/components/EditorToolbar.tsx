@@ -53,6 +53,7 @@ const modeGroups = [
     label: 'AI',
     items: [
       { id: 'agent', label: 'Agent', icon: 'fa-brain' },
+      { id: 'intelligence-core', label: 'Intel Core', icon: 'fa-microchip' },
       { id: 'orchestrator', label: 'Orchestrate', icon: 'fa-sitemap' },
       { id: 'skill-evolution', label: 'Skills', icon: 'fa-chart-line' },
       { id: 'studio', label: 'Studio AI', icon: 'fa-users-gear' },
@@ -78,6 +79,7 @@ const modeGroups = [
   {
     label: 'System',
     items: [
+      { id: 'engine-unification', label: 'Engine Core', icon: 'fa-cogs' },
       { id: 'composition-graph', label: 'Graph', icon: 'fa-project-diagram' },
       { id: 'knowledge', label: 'Knowledge', icon: 'fa-lightbulb' },
       { id: 'lifecycle', label: 'Lifecycle', icon: 'fa-rotate' },
