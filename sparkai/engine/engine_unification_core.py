@@ -30,6 +30,13 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
+from sparkai.engine.engine_deterministic_core import EngineDeterministicCore, get_deterministic_core
+from sparkai.engine.engine_gpu_compute import EngineGPUCompute, get_gpu_compute
+from sparkai.engine.engine_skeletal_blending import EngineSkeletalBlending, get_skeletal_blending
+from sparkai.engine.engine_volumetric_rendering import EngineVolumetricRendering, get_volumetric_rendering
+from sparkai.engine.engine_crowd_dynamics import EngineCrowdDynamics, get_crowd_dynamics
+from sparkai.engine.engine_fluid_dynamics import EngineFluidDynamics, get_fluid_dynamics
+
 
 # ---------------------------------------------------------------------------
 # Domain Enums
@@ -69,6 +76,9 @@ class SystemCategory(Enum):
     INPUT_UI = "input_ui"
     PERFORMANCE_DIAGNOSTICS = "performance_diagnostics"
     RESOURCE_ASSETS = "resource_assets"
+    VOLUMETRIC_RENDERING = "volumetric_rendering"
+    CROWD_DYNAMICS = "crowd_dynamics"
+    FLUID_DYNAMICS = "fluid_dynamics"
 
 
 class InitializationMode(Enum):
@@ -287,6 +297,14 @@ class EngineUnificationCore:
         # --- Subsystem definitions ---
         self._define_orchestrators()
 
+        # --- Subsystem instances ---
+        self._deterministic_core: Optional[EngineDeterministicCore] = None
+        self._gpu_compute: Optional[EngineGPUCompute] = None
+        self._skeletal_blending: Optional[EngineSkeletalBlending] = None
+        self._volumetric_rendering: Optional[EngineVolumetricRendering] = None
+        self._crowd_dynamics: Optional[EngineCrowdDynamics] = None
+        self._fluid_dynamics: Optional[EngineFluidDynamics] = None
+
         # --- Runtime statistics ---
         self._total_errors: int = 0
         self._avg_fps_accumulator: float = 0.0
@@ -435,6 +453,14 @@ class EngineUnificationCore:
             "uptime_seconds": round(_time_module.time() - self._start_time, 2) if self._start_time > 0 else 0.0,
             "initialization_mode": self._init_mode.value,
             "orchestrators": {},
+            "core_subsystems": {
+                "deterministic_core": self._deterministic_core is not None,
+                "gpu_compute": self._gpu_compute is not None,
+                "skeletal_blending": self._skeletal_blending is not None,
+                "volumetric_rendering": self._volumetric_rendering is not None,
+                "crowd_dynamics": self._crowd_dynamics is not None,
+                "fluid_dynamics": self._fluid_dynamics is not None,
+            },
         }
 
         for oid in self._orchestrator_order:
@@ -578,6 +604,14 @@ class EngineUnificationCore:
                     "state": desc.state.value,
                     "error": str(exc),
                 }
+
+        # Initialize core engine subsystem instances
+        self._deterministic_core = get_deterministic_core()
+        self._gpu_compute = get_gpu_compute()
+        self._skeletal_blending = get_skeletal_blending()
+        self._volumetric_rendering = get_volumetric_rendering()
+        self._crowd_dynamics = get_crowd_dynamics()
+        self._fluid_dynamics = get_fluid_dynamics()
 
         if overall_success and any(r.get("success") for r in init_results.values()):
             self._lifecycle = EngineLifecycle.RUNNING
@@ -900,6 +934,20 @@ class EngineUnificationCore:
                     "error": str(exc),
                 }
 
+        # Shutdown core subsystems
+        if self._skeletal_blending:
+            self._skeletal_blending = None
+        if self._gpu_compute:
+            self._gpu_compute = None
+        if self._deterministic_core:
+            self._deterministic_core = None
+        if self._fluid_dynamics:
+            self._fluid_dynamics = None
+        if self._crowd_dynamics:
+            self._crowd_dynamics = None
+        if self._volumetric_rendering:
+            self._volumetric_rendering = None
+
         self._lifecycle = EngineLifecycle.TERMINATED
 
         return {
@@ -1025,6 +1073,13 @@ class EngineUnificationCore:
                 desc.error_count = 0
                 desc.last_error = ""
                 desc.enabled = True
+
+            self._deterministic_core = None
+            self._gpu_compute = None
+            self._skeletal_blending = None
+            self._volumetric_rendering = None
+            self._crowd_dynamics = None
+            self._fluid_dynamics = None
 
     def get_categories(self) -> List[str]:
         """Return all orchestrator category names."""
