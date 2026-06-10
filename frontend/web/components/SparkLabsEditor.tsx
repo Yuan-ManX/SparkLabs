@@ -41,6 +41,13 @@ import SceneDirectorPanel from './SceneDirectorPanel';
 import WorldStreamerPanel from './WorldStreamerPanel';
 import AgentIntelligenceCorePanel from './AgentIntelligenceCorePanel';
 import EngineUnificationCorePanel from './EngineUnificationCorePanel';
+import AgentMetacognitionPanel from './AgentMetacognitionPanel';
+import AgentPredictiveIntelligencePanel from './AgentPredictiveIntelligencePanel';
+import AgentCausalReasoningPanel from './AgentCausalReasoningPanel';
+import AgentMultiObjectiveOptimizerPanel from './AgentMultiObjectiveOptimizerPanel';
+import EngineVolumetricRenderingPanel from './EngineVolumetricRenderingPanel';
+import EngineCrowdDynamicsPanel from './EngineCrowdDynamicsPanel';
+import EngineFluidDynamicsPanel from './EngineFluidDynamicsPanel';
 import { LifecyclePanel, SlashCommandsPanel, ValidationHooksPanel } from './LifecyclePanels';
 import { TaskExecutorPanel } from './TaskExecutorPanel';
 import NotificationToast from './NotificationToast';
@@ -326,6 +333,13 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'world-streamer': return <WorldStreamerPanel />;
       case 'intelligence-core': return <AgentIntelligenceCorePanel />;
       case 'engine-unification': return <EngineUnificationCorePanel />;
+      case 'metacognition': return <AgentMetacognitionPanel />;
+      case 'predictive-intelligence': return <AgentPredictiveIntelligencePanel />;
+      case 'causal-reasoning': return <AgentCausalReasoningPanel />;
+      case 'multi-objective': return <AgentMultiObjectiveOptimizerPanel />;
+      case 'volumetric-rendering': return <EngineVolumetricRenderingPanel />;
+      case 'crowd-dynamics': return <EngineCrowdDynamicsPanel />;
+      case 'fluid-dynamics': return <EngineFluidDynamicsPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
