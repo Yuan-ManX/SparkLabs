@@ -432,7 +432,12 @@ export type ViewMode =
   | 'scene-director'
   | 'world-streamer'
   | 'intelligence-core'
-  | 'engine-unification';
+  | 'engine-unification'
+  | 'causal-reasoning'
+  | 'multi-objective'
+  | 'volumetric-rendering'
+  | 'crowd-dynamics'
+  | 'fluid-dynamics';
 
 // Runtime types
 
