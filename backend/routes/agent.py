@@ -283,6 +283,10 @@ from sparkai.engine.engine_procedural_synthesis import get_procedural_synthesis
 from sparkai.engine.engine_asset_bundler import get_asset_bundler
 from sparkai.engine.engine_deterministic_recorder import get_deterministic_recorder
 from sparkai.engine.engine_localization_hub import get_localization_hub
+from sparkai.agent.agent_metacognition import AgentMetacognition, get_agent_metacognition, ConfidenceProfile, CognitiveLoadSnapshot
+from sparkai.agent.agent_predictive_intelligence import AgentPredictiveIntelligence, get_predictive_intelligence, ForecastHorizon, TrendDirection
+from sparkai.agent.agent_causal_reasoning import AgentCausalReasoning, get_causal_reasoning, DiscoveryAlgorithm, InterventionType
+from sparkai.agent.agent_multi_objective_optimizer import AgentMultiObjectiveOptimizer, get_agent_multi_objective_optimizer, OptimizationStrategy, ObjectiveDirection
 
 router = APIRouter()
 
@@ -293,6 +297,10 @@ _team_orchestrator = TeamOrchestrator(_orchestrator)
 _game_bench = GameBench()
 _session_manager = SessionManager()
 _memory_system = AgentMemorySystem()
+_metacognition = get_agent_metacognition()
+_predictive = get_predictive_intelligence()
+_causal_reasoning = get_causal_reasoning()
+_multi_objective = get_agent_multi_objective_optimizer()
 
 _STUDIO_AGENTS = {
     "creative_director": CreativeDirector,
@@ -11856,6 +11864,77 @@ async def goal_decomposer_delete_tree(tree_id: str):
     return {"success": success}
 
 
+# === Goal Decomposer - Advanced Decomposition ===
+
+@router.post("/goal-decomposer/decompose")
+async def goal_decomposer_decompose(request: Request):
+    """Decompose a goal into structured checklist items with domain-aware keyword analysis."""
+    try:
+        body = await request.json()
+        goal = body.get("goal", "")
+        custom_items = body.get("custom_items", None)
+        result = _goal_decomposer.decompose(goal, custom_items=custom_items)
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/goal-decomposer/evaluate")
+async def goal_decomposer_evaluate(request: Request):
+    """Evaluate a checklist item with evidence and auto-propagate status."""
+    try:
+        body = await request.json()
+        item_id = body.get("item_id", "")
+        evidence = body.get("evidence", "")
+        status = _goal_decomposer.evaluate_item(item_id, evidence)
+        return {"item_id": item_id, "status": status.value}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/goal-decomposer/add-dependency")
+async def goal_decomposer_add_dependency(request: Request):
+    """Explicitly declare a dependency between two checklist items."""
+    try:
+        body = await request.json()
+        item_id = body.get("item_id", "")
+        depends_on_id = body.get("depends_on_id", "")
+        success = _goal_decomposer.add_dependency(item_id, depends_on_id)
+        return {"success": success}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/goal-decomposer/prioritize/{decomposition_id}")
+async def goal_decomposer_prioritize(decomposition_id: str):
+    """Return items ordered by dependency depth (most foundational first)."""
+    try:
+        items = _goal_decomposer.prioritize_items(decomposition_id)
+        return {"decomposition_id": decomposition_id, "items": items}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/goal-decomposer/next-available/{decomposition_id}")
+async def goal_decomposer_next_available(decomposition_id: str):
+    """Get items that are unblocked and ready to work on."""
+    try:
+        items = _goal_decomposer.get_next_available(decomposition_id)
+        return {"decomposition_id": decomposition_id, "available_items": items}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/goal-decomposer/milestones/{decomposition_id}")
+async def goal_decomposer_milestones(decomposition_id: str):
+    """Group checklist items into logical milestone phases."""
+    try:
+        milestones = _goal_decomposer.create_milestones(decomposition_id)
+        return {"decomposition_id": decomposition_id, "milestones": milestones}
+    except Exception as e:
+        return {"error": str(e)}
+
+
 # === Prompt Template Library ===
 
 from sparkai.agent.agent_prompt_template import PromptTemplateLib, TemplateEntry, TemplateDomain, TemplateRole, VariableDef, get_prompt_template_lib
@@ -19136,6 +19215,362 @@ async def collaboration_protocol_stats():
     if _collaboration_protocol is None:
         return {"error": "Collaboration Protocol not initialized"}
     return _collaboration_protocol.get_stats()
+
+
+@router.post("/collaboration-protocol/register-expertise")
+async def collaboration_protocol_register_expertise(request: Request):
+    """Register an agent's expertise domains and proficiency levels."""
+    try:
+        if _collaboration_protocol is None:
+            return {"error": "Collaboration Protocol not initialized"}
+        body = await request.json()
+        agent_id = body.get("agent_id", "")
+        domains = body.get("domains", [])
+        proficiency = body.get("proficiency_levels", None)
+        _collaboration_protocol.register_agent_expertise(agent_id, domains, proficiency)
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/collaboration-protocol/assign-by-expertise")
+async def collaboration_protocol_assign_by_expertise(request: Request):
+    """Auto-assign a task to the most qualified agent based on expertise matching."""
+    try:
+        if _collaboration_protocol is None:
+            return {"error": "Collaboration Protocol not initialized"}
+        body = await request.json()
+        team_id = body.get("team_id", "")
+        task_context = body.get("task_context", "")
+        handoff_type = body.get("handoff_type", "delegate")
+        result = _collaboration_protocol.assign_by_expertise(team_id, task_context, handoff_type)
+        if result:
+            return result.to_dict()
+        return {"error": "No qualified agent found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/collaboration-protocol/workload-balance/{team_id}")
+async def collaboration_protocol_workload_balance(team_id: str):
+    """Analyze workload distribution and provide balancing recommendations."""
+    try:
+        if _collaboration_protocol is None:
+            return {"error": "Collaboration Protocol not initialized"}
+        result = _collaboration_protocol.balance_workload(team_id)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/collaboration-protocol/team-efficiency/{team_id}")
+async def collaboration_protocol_team_efficiency(team_id: str):
+    """Calculate comprehensive team performance metrics."""
+    try:
+        if _collaboration_protocol is None:
+            return {"error": "Collaboration Protocol not initialized"}
+        result = _collaboration_protocol.get_team_efficiency(team_id)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/collaboration-protocol/agent-workload/{agent_id}")
+async def collaboration_protocol_agent_workload(agent_id: str):
+    """Get workload distribution for a specific agent."""
+    try:
+        if _collaboration_protocol is None:
+            return {"error": "Collaboration Protocol not initialized"}
+        result = _collaboration_protocol.get_agent_workload(agent_id)
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Agent World Model
+# ============================================================
+
+from sparkai.agent.agent_world_model import get_agent_world_model
+_world_model = get_agent_world_model()
+
+
+@router.get("/world-model/stats")
+async def world_model_stats():
+    """Get agent world model statistics including entity counts and zone info."""
+    try:
+        return _world_model.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-model/entity/update")
+async def world_model_update_entity(request: Request):
+    """Register or update a tracked entity in the world model."""
+    try:
+        body = await request.json()
+        entity_id = body.get("entity_id", "")
+        entity_type = body.get("entity_type", None)
+        if entity_type:
+            from sparkai.agent.agent_world_model import WorldEntityType
+            try:
+                entity_type = WorldEntityType(entity_type)
+            except ValueError:
+                pass
+        result = _world_model.update_entity(
+            entity_id=entity_id,
+            entity_type=entity_type,
+            position=body.get("position"),
+            velocity=body.get("velocity"),
+            size=body.get("size"),
+            health=body.get("health"),
+            tags=body.get("tags"),
+        )
+        return result.to_dict() if result else {"success": False}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/world-model/entity/{entity_id}")
+async def world_model_get_entity(entity_id: str):
+    """Get a specific entity from the world model."""
+    try:
+        entity = _world_model.get_entity(entity_id)
+        if entity:
+            return entity.to_dict()
+        return {"error": "Entity not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/world-model/entities/type/{entity_type}")
+async def world_model_entities_by_type(entity_type: str):
+    """Get all entities of a specific type."""
+    try:
+        from sparkai.agent.agent_world_model import WorldEntityType
+        try:
+            etype = WorldEntityType(entity_type)
+        except ValueError:
+            etype = entity_type
+        entities = _world_model.get_entities_by_type(etype)
+        return {"entities": [e.to_dict() for e in entities], "count": len(entities)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-model/entities/in-radius")
+async def world_model_entities_in_radius(request: Request):
+    """Spatial query: find entities within a given radius."""
+    try:
+        body = await request.json()
+        x = float(body.get("x", 0))
+        y = float(body.get("y", 0))
+        radius = float(body.get("radius", 10))
+        entities = _world_model.get_entities_in_radius(x, y, radius)
+        return {"entities": [e.to_dict() for e in entities], "count": len(entities)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-model/grid/build")
+async def world_model_build_grid(request: Request):
+    """Build or rebuild the spatial partitioning grid."""
+    try:
+        body = await request.json()
+        resolution = body.get("resolution", "medium")
+        from sparkai.agent.agent_world_model import SpatialGridResolution
+        try:
+            res = SpatialGridResolution(resolution)
+        except ValueError:
+            res = SpatialGridResolution.MEDIUM
+        grid = _world_model.build_spatial_grid(res)
+        return {"total_cells": len(grid) if isinstance(grid, dict) else 0}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-model/predict-trajectory")
+async def world_model_predict_trajectory(request: Request):
+    """Predict the future trajectory of an entity."""
+    try:
+        body = await request.json()
+        entity_id = body.get("entity_id", "")
+        horizon = body.get("horizon", "short_term")
+        from sparkai.agent.agent_world_model import PredictionHorizon
+        try:
+            h = PredictionHorizon(horizon)
+        except ValueError:
+            h = PredictionHorizon.SHORT_TERM
+        result = _world_model.predict_trajectory(entity_id, h)
+        return result.to_dict() if result else {"error": "Entity not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-model/detect-threats")
+async def world_model_detect_threats(request: Request):
+    """Detect entities posing threats to a specific agent."""
+    try:
+        body = await request.json()
+        agent_id = body.get("agent_id", "")
+        threat_radius = body.get("threat_radius", 20)
+        threats = _world_model.detect_threats(agent_id, threat_radius)
+        return {"threats": threats, "count": len(threats)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-model/find-nearest")
+async def world_model_find_nearest(request: Request):
+    """Find the nearest entity of a given type."""
+    try:
+        body = await request.json()
+        target_type = body.get("target_type", "")
+        x = float(body.get("x", 0))
+        y = float(body.get("y", 0))
+        max_radius = float(body.get("max_radius", 100))
+        result = _world_model.find_nearest(target_type, (x, y), max_radius)
+        return result if result else {}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/world-model/snapshot")
+async def world_model_snapshot():
+    """Create a point-in-time snapshot of the entire world model."""
+    try:
+        snap = _world_model.snapshot()
+        return snap.to_dict() if snap else {"error": "No entities to snapshot"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Agent Curiosity Engine
+# ============================================================
+
+from sparkai.agent.agent_curiosity_engine import get_curiosity_engine
+_curiosity_engine = get_curiosity_engine()
+
+
+@router.get("/curiosity-engine/stats")
+async def curiosity_engine_stats():
+    """Get curiosity engine statistics and exploration metrics."""
+    try:
+        return _curiosity_engine.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/curiosity-engine/profile/create")
+async def curiosity_engine_create_profile(request: Request):
+    """Create a curiosity profile for an agent."""
+    try:
+        body = await request.json()
+        agent_id = body.get("agent_id", "")
+        strategy = body.get("dominant_strategy", None)
+        from sparkai.agent.agent_curiosity_engine import CuriosityStrategy
+        if strategy:
+            try:
+                strategy = CuriosityStrategy(strategy)
+            except ValueError:
+                pass
+        profile = _curiosity_engine.create_curiosity_profile(
+            agent_id=agent_id,
+            dominant_strategy=strategy,
+            exploration_rate=body.get("exploration_rate"),
+            novelty_threshold=body.get("novelty_threshold"),
+            boredom_threshold=body.get("boredom_threshold"),
+        )
+        return profile.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/curiosity-engine/profile/{agent_id}")
+async def curiosity_engine_get_profile(agent_id: str):
+    """Get the curiosity profile for a specific agent."""
+    try:
+        profile = _curiosity_engine.get_curiosity_profile(agent_id)
+        return profile.to_dict() if profile else {"error": "Profile not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/curiosity-engine/zone/register")
+async def curiosity_engine_register_zone(request: Request):
+    """Register a knowledge zone for exploration tracking."""
+    try:
+        body = await request.json()
+        bounds = body.get("bounds", [0, 0, 100, 100])
+        if len(bounds) >= 4:
+            bounds = tuple(bounds[:4])
+        entity_types = body.get("entity_types", [])
+        zone = _curiosity_engine.register_knowledge_zone(bounds, entity_types)
+        return zone.to_dict() if zone else {"success": False}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/curiosity-engine/goal/generate")
+async def curiosity_engine_generate_goal(request: Request):
+    """Generate an exploration goal for an agent."""
+    try:
+        body = await request.json()
+        agent_id = body.get("agent_id", "")
+        world_bounds = body.get("world_bounds", [0, 0, 500, 500])
+        if len(world_bounds) >= 4:
+            world_bounds = tuple(world_bounds[:4])
+        known_zones = body.get("known_zones", None)
+        goal = _curiosity_engine.generate_exploration_goal(agent_id, world_bounds, known_zones)
+        return goal.to_dict() if goal else {"error": "No exploration target found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/curiosity-engine/discovery/record")
+async def curiosity_engine_record_discovery(request: Request):
+    """Record a new discovery in the curiosity engine."""
+    try:
+        body = await request.json()
+        agent_id = body.get("agent_id", "")
+        discovery_type = body.get("discovery_type", "object")
+        location = body.get("location", [0, 0])
+        description = body.get("description", "")
+        from sparkai.agent.agent_curiosity_engine import DiscoveryType
+        try:
+            discovery_type = DiscoveryType(discovery_type)
+        except ValueError:
+            pass
+        result = _curiosity_engine.record_discovery(
+            agent_id, discovery_type,
+            tuple(location) if len(location) >= 2 else (0, 0),
+            description,
+        )
+        return result.to_dict() if result else {"error": "Failed to record"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/curiosity-engine/goals/{agent_id}")
+async def curiosity_engine_suggested_goals(agent_id: str, max_goals: int = 5):
+    """Get suggested exploration goals for an agent."""
+    try:
+        goals = _curiosity_engine.get_suggested_goals(agent_id, max_goals)
+        return {"agent_id": agent_id, "goals": [g.to_dict() for g in goals]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/curiosity-engine/efficiency/{agent_id}")
+async def curiosity_engine_efficiency(agent_id: str):
+    """Evaluate exploration efficiency for an agent."""
+    try:
+        report = _curiosity_engine.evaluate_exploration_efficiency(agent_id)
+        return report.to_dict() if report else {"error": "No data"}
+    except Exception as e:
+        return {"error": str(e)}
+
 
 # ============================================================
 # Knowledge Synthesis
@@ -27398,6 +27833,360 @@ async def intelligence_core_synthesize(request: Request):
         result = _intelligence_core.creative_synthesize(
             brief=body.get("brief", ""),
             domain=body.get("domain", "general"),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# =============================================================================
+# Agent Metacognition Endpoints
+# =============================================================================
+
+@router.get("/metacognition/status")
+async def metacognition_status():
+    """Get agent metacognition system status including confidence calibration and cognitive load."""
+    try:
+        return _metacognition.get_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/metacognition/assess-confidence")
+async def metacognition_assess_confidence(request: Request):
+    """Assess confidence for a decision or prediction with calibrated probability estimates."""
+    try:
+        body = await request.json()
+        profile = _metacognition.assess_confidence(
+            task_id=body.get("task_id", ""),
+            evidence_strength=body.get("evidence_strength", 0.5),
+            consensus_level=body.get("consensus_level", 0.5),
+            reasoning_paths=body.get("reasoning_paths", 1),
+            alternative_count=body.get("alternative_count", 0),
+            domain_familiarity=body.get("domain_familiarity", 0.5),
+        )
+        return profile.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/metacognition/cognitive-load")
+async def metacognition_cognitive_load(request: Request):
+    """Update and get current cognitive load state with throttling recommendations."""
+    try:
+        body = await request.json()
+        snapshot = _metacognition.update_cognitive_load(
+            active_tasks=body.get("active_tasks", 0),
+            queue_depth=body.get("queue_depth", 0),
+            memory_pressure=body.get("memory_pressure", 0.0),
+            processing_latency_ms=body.get("processing_latency_ms", 0.0),
+        )
+        return snapshot.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/metacognition/log-outcome")
+async def metacognition_log_outcome(request: Request):
+    """Log a task outcome for confidence calibration and learning."""
+    try:
+        body = await request.json()
+        _metacognition.record_outcome(
+            profile_id=body.get("profile_id", body.get("task_id", "")),
+            was_correct=body.get("was_correct", False),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/metacognition/history")
+async def metacognition_history(limit: int = Query(default=50, ge=1, le=500)):
+    """Get metacognition confidence history for calibration analysis."""
+    try:
+        history = list(_metacognition._confidence_history)[-limit:]
+        return {"history": [p.to_dict() for p in history]}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# =============================================================================
+# Agent Predictive Intelligence Endpoints
+# =============================================================================
+
+@router.get("/predictive/status")
+async def predictive_status():
+    """Get agent predictive intelligence system status."""
+    try:
+        return _predictive.get_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/predictive/forecast")
+async def predictive_forecast(request: Request):
+    """Generate a time-series forecast for a domain (e.g., game economy, player behavior)."""
+    try:
+        body = await request.json()
+        horizon = ForecastHorizon[body.get("horizon", "SHORT_TERM").upper()]
+        forecast = _predictive.forecast(
+            domain=body.get("domain", ""),
+            horizon=horizon,
+            window=body.get("window", 50),
+        )
+        return forecast.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/predictive/analyze-trend")
+async def predictive_analyze_trend(request: Request):
+    """Analyze trend direction and strength for a domain's time series."""
+    try:
+        body = await request.json()
+        analysis = _predictive.analyze_trend(
+            domain=body.get("domain", ""),
+            window=body.get("window", 50),
+        )
+        return analysis.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/predictive/simulate-counterfactual")
+async def predictive_simulate_counterfactual(request: Request):
+    """Simulate a counterfactual 'what-if' scenario for decision analysis."""
+    try:
+        body = await request.json()
+        scenario = _predictive.simulate_counterfactual(
+            query=body.get("query", ""),
+            base_state=body.get("base_state", ""),
+            modification=body.get("modification", ""),
+            domain=body.get("domain", ""),
+            impacted_domains=body.get("impacted_domains", []),
+        )
+        return scenario.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/predictive/record-data-point")
+async def predictive_record_data(request: Request):
+    """Record a data point for time-series analysis and forecasting."""
+    try:
+        body = await request.json()
+        _predictive.record_datapoint(
+            domain=body.get("domain", ""),
+            value=body.get("value", 0.0),
+            confidence=body.get("confidence", 1.0),
+            tags=body.get("tags"),
+            metadata=body.get("metadata"),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/predictive/assess-risk")
+async def predictive_assess_risk(request: Request):
+    """Assess risk level for a proposed scenario."""
+    try:
+        body = await request.json()
+        risk = _predictive.assess_risks(
+            domain=body.get("domain", ""),
+            thresholds=body.get("thresholds"),
+        )
+        return risk.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Agent Causal Reasoning Endpoints
+# ---------------------------------------------------------------------------
+
+@router.get("/causal-reasoning/status")
+async def causal_reasoning_status():
+    """Get agent causal reasoning system status."""
+    try:
+        return _causal_reasoning.get_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/causal-reasoning/discover")
+async def causal_reasoning_discover(request: Request):
+    """Discover causal graph from observational data."""
+    try:
+        body = await request.json()
+        graph = _causal_reasoning.discover_causal_graph(
+            domain=body.get("domain", ""),
+            variables=body.get("variables", []),
+            observations=body.get("observations"),
+            algorithm=body.get("algorithm", "hybrid"),
+            forbidden_edges=body.get("forbidden_edges"),
+            required_edges=body.get("required_edges"),
+        )
+        return graph.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/causal-reasoning/add-observations")
+async def causal_reasoning_add_observations(request: Request):
+    """Add observational data for causal analysis."""
+    try:
+        body = await request.json()
+        count = _causal_reasoning.add_observations(
+            domain=body.get("domain", ""),
+            observations=body.get("observations", []),
+        )
+        return {"success": True, "count": count}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/causal-reasoning/intervention")
+async def causal_reasoning_intervention(request: Request):
+    """Simulate a causal intervention."""
+    try:
+        body = await request.json()
+        result = _causal_reasoning.simulate_intervention(
+            domain=body.get("domain", ""),
+            intervention=body.get("intervention", {}),
+            target=body.get("target", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/causal-reasoning/counterfactual")
+async def causal_reasoning_counterfactual(request: Request):
+    """Evaluate a counterfactual scenario."""
+    try:
+        body = await request.json()
+        result = _causal_reasoning.evaluate_counterfactual(
+            domain=body.get("domain", ""),
+            factual=body.get("factual", {}),
+            hypothetical=body.get("hypothetical", {}),
+            query=body.get("query", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/causal-reasoning/confounders")
+async def causal_reasoning_confounders(request: Request):
+    """Detect confounders between variables."""
+    try:
+        body = await request.json()
+        analysis = _causal_reasoning.detect_confounders(
+            domain=body.get("domain", ""),
+            source_variable=body.get("source", ""),
+            target_variable=body.get("target", ""),
+        )
+        return analysis.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/causal-reasoning/mediation")
+async def causal_reasoning_mediation(request: Request):
+    """Analyze mediation effects."""
+    try:
+        body = await request.json()
+        analysis = _causal_reasoning.analyze_mediation(
+            domain=body.get("domain", ""),
+            treatment=body.get("treatment", ""),
+            mediator=body.get("mediator", ""),
+            outcome=body.get("outcome", ""),
+        )
+        return analysis.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/causal-reasoning/ate")
+async def causal_reasoning_ate(request: Request):
+    """Compute average treatment effect."""
+    try:
+        body = await request.json()
+        ate = _causal_reasoning.compute_average_treatment_effect(
+            domain=body.get("domain", ""),
+            treatment_variable=body.get("treatment", ""),
+            outcome_variable=body.get("outcome", ""),
+            treatment_value=body.get("treatment_value", 1.0),
+            control_value=body.get("control_value", 0.0),
+        )
+        return {"ate": ate}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Agent Multi-Objective Optimizer Endpoints
+# ---------------------------------------------------------------------------
+
+@router.get("/multi-objective/status")
+async def multi_objective_status():
+    """Get agent multi-objective optimizer status."""
+    try:
+        return _multi_objective.get_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-objective/define-problem")
+async def multi_objective_define(request: Request):
+    """Define an optimization problem."""
+    try:
+        body = await request.json()
+        problem = _multi_objective.define_problem(
+            domain=body.get("domain", ""),
+            objectives=body.get("objectives", []),
+            constraints=body.get("constraints", []),
+            variables=body.get("variables", {}),
+        )
+        return problem.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-objective/solve")
+async def multi_objective_solve(request: Request):
+    """Solve an optimization problem."""
+    try:
+        body = await request.json()
+        solutions = _multi_objective.solve(
+            domain=body.get("domain", ""),
+            strategy=body.get("strategy", "weighted_sum"),
+            population_size=body.get("population_size", 100),
+            generations=body.get("generations", 50),
+        )
+        return {"solutions": [s.to_dict() for s in solutions]}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-objective/analyze-tradeoffs")
+async def multi_objective_tradeoffs(request: Request):
+    """Analyze trade-offs between objectives."""
+    try:
+        body = await request.json()
+        analysis = _multi_objective.analyze_trade_offs(
+            domain=body.get("domain", ""),
+            objective_a=body.get("objective_a", ""),
+            objective_b=body.get("objective_b", ""),
+        )
+        return analysis.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-objective/select-solution")
+async def multi_objective_select(request: Request):
+    """Select a solution based on preference weights."""
+    try:
+        body = await request.json()
+        solution = _multi_objective.select_solution(
+            domain=body.get("domain", ""),
+            preference_weights=body.get("preference_weights", {}),
+        )
+        return solution.to_dict() if solution else {"error": "No solutions available"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/multi-objective/sensitivity")
+async def multi_objective_sensitivity(request: Request):
+    """Compute sensitivity analysis."""
+    try:
+        body = await request.json()
+        result = _multi_objective.compute_sensitivity(
+            domain=body.get("domain", ""),
+            variable=body.get("variable", ""),
+            perturbation=body.get("perturbation", 0.1),
         )
         return result
     except Exception as e:
