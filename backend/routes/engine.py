@@ -1225,3 +1225,898 @@ async def fluid_neighbor_search(request: Request):
     neighbor_map = fd.neighbor_search(all_particles, radius)
     neighbors = neighbor_map.get(particle_id, [])
     return {"neighbors": neighbors, "count": len(neighbors)}
+
+# ---------------------------------------------------------------------------
+# Procedural Animation Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/procedural-animation/status")
+async def procedural_animation_status():
+    """Get procedural animation system status."""
+    from sparkai.engine.engine_procedural_animation import get_procedural_animation
+    pa = get_procedural_animation()
+    return pa.get_status()
+
+
+@router.post("/procedural-animation/create-skeleton")
+async def create_animation_skeleton(request: Request):
+    """Create a skeleton from bone hierarchy data."""
+    from sparkai.engine.engine_procedural_animation import get_procedural_animation
+    body = await request.json()
+    pa = get_procedural_animation()
+    skeleton = pa.create_skeleton(
+        name=body.get("name", ""),
+        bones_data=body.get("bones_data", []),
+    )
+    return skeleton.to_dict()
+
+
+@router.post("/procedural-animation/add-ik")
+async def add_ik_chain(request: Request):
+    """Add an IK solver chain."""
+    from sparkai.engine.engine_procedural_animation import get_procedural_animation
+    body = await request.json()
+    pa = get_procedural_animation()
+    chain = body.get("chain", [])
+    if isinstance(chain, str):
+        chain = [b.strip() for b in chain.split(",") if b.strip()]
+    target = body.get("target", [0, 0, 0])
+    if isinstance(target, list):
+        target = tuple(target)
+    ik = pa.add_ik_chain(
+        skeleton_id=body.get("skeleton_id", ""),
+        chain=chain,
+        target=target,
+        method=body.get("method", "fabrik"),
+        iterations=body.get("iterations", 10),
+        tolerance=body.get("tolerance", 0.001),
+    )
+    return ik.to_dict()
+
+
+@router.post("/procedural-animation/solve-ik")
+async def solve_ik_chain(request: Request):
+    """Solve IK and update bone positions."""
+    from sparkai.engine.engine_procedural_animation import get_procedural_animation
+    body = await request.json()
+    pa = get_procedural_animation()
+    skeleton = pa.solve_ik(
+        skeleton_id=body.get("skeleton_id", ""),
+        ik_target_id=body.get("ik_target_id", ""),
+        max_iterations=body.get("max_iterations", 50),
+    )
+    return skeleton.to_dict()
+
+
+@router.post("/procedural-animation/create-motion")
+async def create_procedural_motion(request: Request):
+    """Create a procedural motion."""
+    from sparkai.engine.engine_procedural_animation import get_procedural_animation
+    body = await request.json()
+    pa = get_procedural_animation()
+    motion = pa.create_procedural_motion(
+        skeleton_id=body.get("skeleton_id", ""),
+        motion_style=body.get("motion_style", "walk"),
+        speed=body.get("speed", 1.0),
+        stride_length=body.get("stride_length", 1.0),
+        step_height=body.get("step_height", 0.3),
+    )
+    return motion.to_dict()
+
+
+@router.post("/procedural-animation/update-motion")
+async def update_procedural_motion(request: Request):
+    """Update procedural animation frame."""
+    from sparkai.engine.engine_procedural_animation import get_procedural_animation
+    body = await request.json()
+    pa = get_procedural_animation()
+    skeleton = pa.update_procedural_motion(
+        motion_id=body.get("motion_id", ""),
+        delta_time=body.get("delta_time", 0.016),
+        ground_contacts=body.get("ground_contacts"),
+    )
+    return skeleton.to_dict()
+
+
+@router.post("/procedural-animation/create-blend")
+async def create_animation_blend(request: Request):
+    """Create an animation blend tree."""
+    from sparkai.engine.engine_procedural_animation import get_procedural_animation
+    body = await request.json()
+    pa = get_procedural_animation()
+    animations = body.get("animations", "")
+    if isinstance(animations, str):
+        animations = [a.strip() for a in animations.split(",") if a.strip()]
+    blend = pa.create_blend_tree(
+        skeleton_id=body.get("skeleton_id", ""),
+        animations=animations,
+        blend_mode=body.get("blend_mode", "linear"),
+        blend_duration=body.get("blend_duration", 0.3),
+    )
+    return blend.to_dict()
+
+
+@router.post("/procedural-animation/update-blend")
+async def update_animation_blend(request: Request):
+    """Evaluate blend tree with weights."""
+    from sparkai.engine.engine_procedural_animation import get_procedural_animation
+    body = await request.json()
+    pa = get_procedural_animation()
+    skeleton = pa.update_blend_tree(
+        blend_id=body.get("blend_id", ""),
+        weights=body.get("weights", []),
+        delta_time=body.get("delta_time", 0.016),
+    )
+    return skeleton.to_dict()
+
+# ---------------------------------------------------------------------------
+# Object Pool Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/object-pool/status")
+async def object_pool_status():
+    """Get object pool system status."""
+    from sparkai.engine.engine_object_pool import get_object_pool
+    op = get_object_pool()
+    return op.get_status()
+
+
+@router.post("/object-pool/create-pool")
+async def create_object_pool(request: Request):
+    """Create a new object pool."""
+    from sparkai.engine.engine_object_pool import get_object_pool
+    body = await request.json()
+    op = get_object_pool()
+    config = op.create_pool(
+        name=body.get("pool_name", ""),
+        object_type=body.get("object_type", ""),
+        config_params={
+            "strategy": body.get("strategy", "dynamic_growth"),
+            "initial_size": body.get("initial_size", 10),
+            "max_size": body.get("max_size", 100),
+            "growth_factor": body.get("growth_factor", 1.5),
+            "allocation_policy": body.get("allocation_policy", "round_robin"),
+        },
+    )
+    return config.to_dict()
+
+
+@router.post("/object-pool/borrow")
+async def borrow_object(request: Request):
+    """Borrow an object from pool."""
+    from sparkai.engine.engine_object_pool import get_object_pool
+    body = await request.json()
+    op = get_object_pool()
+    obj = op.borrow_object(
+        pool_id=body.get("pool_id", ""),
+        required_properties=body.get("required_properties", {}),
+    )
+    return obj.to_dict() if obj else {"error": "No available object"}
+
+
+@router.post("/object-pool/return")
+async def return_object(request: Request):
+    """Return an object to pool."""
+    from sparkai.engine.engine_object_pool import get_object_pool
+    body = await request.json()
+    op = get_object_pool()
+    success = op.return_object(
+        pool_id=body.get("pool_id", ""),
+        object_id=body.get("object_id", ""),
+    )
+    return {"success": success}
+
+
+@router.post("/object-pool/prewarm")
+async def prewarm_pool(request: Request):
+    """Pre-allocate objects in pool."""
+    from sparkai.engine.engine_object_pool import get_object_pool
+    body = await request.json()
+    op = get_object_pool()
+    count = op.prewarm_pool(
+        pool_id=body.get("pool_id", ""),
+        count=body.get("count", 5),
+        background=body.get("background", False),
+    )
+    return {"prewarmed": count}
+
+
+@router.post("/object-pool/recycle")
+async def recycle_pool(request: Request):
+    """Force recycle inactive objects."""
+    from sparkai.engine.engine_object_pool import get_object_pool
+    body = await request.json()
+    op = get_object_pool()
+    count = op.recycle_pool(pool_id=body.get("pool_id", ""))
+    return {"recycled": count}
+
+
+@router.post("/object-pool/force-gc")
+async def force_gc_pool(request: Request):
+    """Force garbage collect excess objects."""
+    from sparkai.engine.engine_object_pool import get_object_pool
+    body = await request.json()
+    op = get_object_pool()
+    count = op.force_gc(pool_id=body.get("pool_id", ""))
+    return {"collected": count}
+
+
+@router.post("/object-pool/predict-demand")
+async def predict_object_demand(request: Request):
+    """Predict future object demand."""
+    from sparkai.engine.engine_object_pool import get_object_pool
+    body = await request.json()
+    op = get_object_pool()
+    demand = op.predict_demand(
+        pool_id=body.get("pool_id", ""),
+        time_window_seconds=body.get("time_window_seconds", 60),
+    )
+    return {"predicted_demand": demand}
+
+
+@router.post("/object-pool/auto-optimize")
+async def auto_optimize_pools():
+    """Run automatic optimization across all pools."""
+    from sparkai.engine.engine_object_pool import get_object_pool
+    op = get_object_pool()
+    result = op.auto_optimize()
+    return result
+
+# ---------------------------------------------------------------------------
+# Runtime Scripting Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/runtime-scripting/status")
+async def runtime_scripting_status():
+    """Get runtime scripting system status."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    rs = get_runtime_scripting()
+    return rs.get_status()
+
+
+@router.post("/runtime-scripting/register")
+async def register_script(request: Request):
+    """Register a new script."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    events = body.get("events", [])
+    if isinstance(events, str):
+        events = [e.strip() for e in events.split(",") if e.strip()]
+    script = rs.register_script(
+        name=body.get("name", ""),
+        language=body.get("language", "python"),
+        scope=body.get("scope", "entity"),
+        source_code=body.get("source_code", ""),
+        events=events,
+        dependencies=body.get("dependencies", []),
+    )
+    return script.to_dict()
+
+
+@router.post("/runtime-scripting/compile")
+async def compile_script(request: Request):
+    """Compile/validate script syntax."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    script = rs.compile_script(script_id=body.get("script_id", ""))
+    return script.to_dict() if script else {"error": "Script not found"}
+
+
+@router.post("/runtime-scripting/instantiate")
+async def instantiate_script(request: Request):
+    """Create a script instance."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    instance = rs.instantiate_script(
+        script_id=body.get("script_id", ""),
+        target_entity_id=body.get("target_entity_id"),
+        initial_variables=body.get("initial_variables", {}),
+    )
+    return instance.to_dict() if instance else {"error": "Script not found"}
+
+
+@router.post("/runtime-scripting/execute")
+async def execute_script(request: Request):
+    """Execute a script instance."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting, ScriptEventType
+    body = await request.json()
+    rs = get_runtime_scripting()
+    context = {"delta_time": body.get("delta_time", 0.016), "frame_number": 0}
+    result = rs.execute_script(
+        instance_id=body.get("instance_id", ""),
+        context=context,
+    )
+    return result
+
+
+@router.post("/runtime-scripting/hot-reload")
+async def hot_reload_script(request: Request):
+    """Hot-reload script at runtime."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    script = rs.hot_reload(
+        script_id=body.get("script_id", ""),
+        new_source=body.get("new_source", ""),
+    )
+    return script.to_dict() if script else {"error": "Script not found"}
+
+
+@router.post("/runtime-scripting/trigger-event")
+async def trigger_script_event(request: Request):
+    """Trigger event on script."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    results = rs.trigger_event(
+        script_id=body.get("script_id", ""),
+        event_type=body.get("event_type", "on_start"),
+        event_data=body.get("event_data", {}),
+    )
+    return {"results": results, "count": len(results)}
+
+
+@router.post("/runtime-scripting/pause")
+async def pause_script(request: Request):
+    """Pause script execution."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    success = rs.pause_instance(instance_id=body.get("instance_id", ""))
+    return {"success": success}
+
+
+@router.post("/runtime-scripting/resume")
+async def resume_script(request: Request):
+    """Resume script execution."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    success = rs.resume_instance(instance_id=body.get("instance_id", ""))
+    return {"success": success}
+
+
+@router.post("/runtime-scripting/set-variable")
+async def set_script_variable(request: Request):
+    """Set a script variable."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    success = rs.set_variable(
+        instance_id=body.get("instance_id", ""),
+        name=body.get("name", ""),
+        value=body.get("value"),
+    )
+    return {"success": success}
+
+
+@router.post("/runtime-scripting/register-handler")
+async def register_event_handler(request: Request):
+    """Register an event handler."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    success = rs.register_event_handler(
+        script_id=body.get("script_id", ""),
+        event_type=body.get("event_type", "on_start"),
+        handler_code=body.get("handler_code", ""),
+    )
+    return {"success": success}
+
+
+@router.post("/runtime-scripting/schedule")
+async def schedule_script(request: Request):
+    """Schedule future script execution."""
+    from sparkai.engine.engine_runtime_scripting import get_runtime_scripting
+    body = await request.json()
+    rs = get_runtime_scripting()
+    schedule_id = rs.schedule_execution(
+        script_id=body.get("script_id", ""),
+        delay_ms=body.get("delay_ms", 1000),
+        repeat=body.get("repeat", False),
+        context=body.get("context", {}),
+    )
+    return {"schedule_id": schedule_id}
+
+
+# ---------------------------------------------------------------------------
+# Sprite Batcher Routes
+# ---------------------------------------------------------------------------
+
+
+@router.get("/sprite-batcher/status")
+async def sprite_batcher_status():
+    """Get sprite batcher statistics."""
+    from sparkai.engine.engine_sprite_batcher import get_sprite_batcher
+    sb = get_sprite_batcher()
+    return sb.get_render_stats()
+
+
+@router.post("/sprite-batcher/submit")
+async def sprite_batcher_submit(request: Request):
+    """Submit a sprite draw command to the batcher."""
+    from sparkai.engine.engine_sprite_batcher import get_sprite_batcher, BlendMode
+    body = await request.json()
+    sb = get_sprite_batcher()
+
+    try:
+        blend = BlendMode(body.get("blend_mode", "normal"))
+    except ValueError:
+        blend = BlendMode.NORMAL
+
+    command = sb.submit_sprite(
+        texture_name=body.get("texture_name", ""),
+        position_x=body.get("position_x", 0.0),
+        position_y=body.get("position_y", 0.0),
+        scale_x=body.get("scale_x", 1.0),
+        scale_y=body.get("scale_y", 1.0),
+        rotation_degrees=body.get("rotation_degrees", 0.0),
+        color_rgba=tuple(body.get("color_rgba", [255, 255, 255, 255])),
+        blend_mode=blend,
+        z_order=body.get("z_order", 0),
+    )
+    return command.to_dict()
+
+
+@router.post("/sprite-batcher/flush")
+async def sprite_batcher_flush():
+    """Flush command buffer into optimized GPU batches."""
+    from sparkai.engine.engine_sprite_batcher import get_sprite_batcher
+    sb = get_sprite_batcher()
+    batches = sb.flush_batches()
+    return {"batches": [b.to_dict() for b in batches], "count": len(batches)}
+
+
+@router.post("/sprite-batcher/clear")
+async def sprite_batcher_clear():
+    """Clear the command buffer for the next frame."""
+    from sparkai.engine.engine_sprite_batcher import get_sprite_batcher
+    sb = get_sprite_batcher()
+    sb.clear_frame()
+    return {"cleared": True}
+
+
+@router.post("/sprite-batcher/create-atlas")
+async def sprite_batcher_create_atlas(request: Request):
+    """Create a texture atlas from multiple textures."""
+    from sparkai.engine.engine_sprite_batcher import get_sprite_batcher, AtlasPackMode
+    body = await request.json()
+    sb = get_sprite_batcher()
+
+    try:
+        pack = AtlasPackMode(body.get("pack_mode", "bin_pack"))
+    except ValueError:
+        pack = AtlasPackMode.BIN_PACK
+
+    atlas = sb.create_texture_atlas(
+        name=body.get("name", ""),
+        texture_names=body.get("texture_names", []),
+        size=body.get("size", 2048),
+        pack_mode=pack,
+    )
+    return atlas.to_dict()
+
+
+@router.get("/sprite-batcher/atlases")
+async def sprite_batcher_atlases():
+    """List all texture atlases."""
+    from sparkai.engine.engine_sprite_batcher import get_sprite_batcher
+    sb = get_sprite_batcher()
+    return {"atlases": sb.list_atlases()}
+
+
+@router.get("/sprite-batcher/frame-report")
+async def sprite_batcher_frame_report():
+    """Get current frame batch report."""
+    from sparkai.engine.engine_sprite_batcher import get_sprite_batcher
+    sb = get_sprite_batcher()
+    return sb.get_frame_report()
+
+
+# ---------------------------------------------------------------------------
+# Visual Event Sheet Routes
+# ---------------------------------------------------------------------------
+
+
+@router.get("/visual-event-sheet/status")
+async def visual_event_sheet_status():
+    """Get visual event sheet system statistics."""
+    from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet
+    ves = get_visual_event_sheet()
+    return ves.get_statistics()
+
+
+@router.post("/visual-event-sheet/create")
+async def visual_event_sheet_create(request: Request):
+    """Create a new event sheet."""
+    from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet, EventScope
+    body = await request.json()
+    ves = get_visual_event_sheet()
+
+    try:
+        scope = EventScope(body.get("scope", "scene"))
+    except ValueError:
+        scope = EventScope.SCENE
+
+    sheet = ves.create_sheet(
+        name=body.get("name", ""),
+        scope=scope,
+        description=body.get("description", ""),
+    )
+    return sheet.to_dict()
+
+
+@router.get("/visual-event-sheet/list")
+async def visual_event_sheet_list():
+    """List event sheets."""
+    from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet
+    ves = get_visual_event_sheet()
+    return {"sheets": ves.list_sheets()}
+
+
+@router.post("/visual-event-sheet/add-event")
+async def visual_event_sheet_add_event(request: Request):
+    """Add a condition-action event to a sheet."""
+    from sparkai.engine.engine_visual_event_sheet import (
+        get_visual_event_sheet, EventTrigger, EventCondition,
+        EventAction, ConditionOperator, ActionType
+    )
+    body = await request.json()
+    ves = get_visual_event_sheet()
+
+    try:
+        trigger = EventTrigger(body.get("trigger", "every_frame"))
+    except ValueError:
+        trigger = EventTrigger.EVERY_FRAME
+
+    conditions = []
+    for c in body.get("conditions", []):
+        try:
+            op = ConditionOperator(c.get("operator", "equal"))
+        except ValueError:
+            op = ConditionOperator.EQUAL
+        conditions.append(EventCondition(
+            operator=op,
+            left_operand=c.get("left_operand", ""),
+            right_operand=c.get("right_operand"),
+            invert=c.get("invert", False),
+            description=c.get("description", ""),
+        ))
+
+    actions = []
+    for a in body.get("actions", []):
+        try:
+            at = ActionType(a.get("action_type", "object"))
+        except ValueError:
+            at = ActionType.OBJECT
+        actions.append(EventAction(
+            action_type=at,
+            action_name=a.get("action_name", ""),
+            parameters=a.get("parameters", {}),
+            target_object=a.get("target_object", ""),
+            delay_ms=a.get("delay_ms", 0.0),
+        ))
+
+    event = ves.add_event(
+        sheet_id=body.get("sheet_id", ""),
+        name=body.get("name", ""),
+        trigger=trigger,
+        conditions=conditions,
+        actions=actions,
+        priority=body.get("priority", 0),
+    )
+    return event.to_dict() if event else {"error": "Sheet not found"}
+
+
+@router.post("/visual-event-sheet/add-sub-event")
+async def visual_event_sheet_add_sub_event(request: Request):
+    """Add a nested sub-event to a parent event."""
+    from sparkai.engine.engine_visual_event_sheet import (
+        get_visual_event_sheet, EventCondition, EventAction,
+        ConditionOperator, ActionType
+    )
+    body = await request.json()
+    ves = get_visual_event_sheet()
+
+    conditions = []
+    for c in body.get("conditions", []):
+        try:
+            op = ConditionOperator(c.get("operator", "equal"))
+        except ValueError:
+            op = ConditionOperator.EQUAL
+        conditions.append(EventCondition(
+            operator=op,
+            left_operand=c.get("left_operand", ""),
+            right_operand=c.get("right_operand"),
+        ))
+
+    actions = []
+    for a in body.get("actions", []):
+        try:
+            at = ActionType(a.get("action_type", "object"))
+        except ValueError:
+            at = ActionType.OBJECT
+        actions.append(EventAction(
+            action_type=at,
+            action_name=a.get("action_name", ""),
+            parameters=a.get("parameters", {}),
+        ))
+
+    sub = ves.add_sub_event(
+        sheet_id=body.get("sheet_id", ""),
+        event_id=body.get("event_id", ""),
+        conditions=conditions,
+        actions=actions,
+    )
+    return sub.to_dict() if sub else {"error": "Parent event not found"}
+
+
+@router.post("/visual-event-sheet/evaluate")
+async def visual_event_sheet_evaluate(request: Request):
+    """Evaluate an event sheet against current runtime state."""
+    from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet
+    body = await request.json()
+    ves = get_visual_event_sheet()
+    result = ves.evaluate_sheet(
+        sheet_id=body.get("sheet_id", ""),
+        custom_state=body.get("custom_state"),
+    )
+    return result
+
+
+@router.post("/visual-event-sheet/clone")
+async def visual_event_sheet_clone(request: Request):
+    """Deep-copy an event sheet."""
+    from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet
+    body = await request.json()
+    ves = get_visual_event_sheet()
+    cloned = ves.clone_sheet(
+        sheet_id=body.get("sheet_id", ""),
+        new_name=body.get("new_name", "Cloned Sheet"),
+    )
+    return cloned.to_dict() if cloned else {"error": "Source sheet not found"}
+
+
+@router.post("/visual-event-sheet/validate")
+async def visual_event_sheet_validate(request: Request):
+    """Validate an event sheet for errors."""
+    from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet
+    body = await request.json()
+    ves = get_visual_event_sheet()
+    result = ves.validate_sheet(sheet_id=body.get("sheet_id", ""))
+    return result
+
+
+@router.post("/visual-event-sheet/compile")
+async def visual_event_sheet_compile(request: Request):
+    """Pre-compile an event sheet for runtime."""
+    from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet
+    body = await request.json()
+    ves = get_visual_event_sheet()
+    result = ves.compile_sheet(sheet_id=body.get("sheet_id", ""))
+    return result
+
+
+@router.get("/visual-event-sheet/execution-log")
+async def visual_event_sheet_execution_log():
+    """Get recent execution log."""
+    from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet
+    ves = get_visual_event_sheet()
+    return {"log": ves.get_execution_log(limit=20)}
+
+
+# ---------------------------------------------------------------------------
+# Node Composer Routes
+# ---------------------------------------------------------------------------
+
+
+@router.get("/node-composer/status")
+async def node_composer_status():
+    """Get node composer statistics."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    nc = get_node_composer()
+    return nc.get_statistics()
+
+
+@router.post("/node-composer/build-tree")
+async def node_composer_build_tree(request: Request):
+    """Create a new node tree with a root node."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    body = await request.json()
+    nc = get_node_composer()
+    tree = nc.build_tree(
+        name=body.get("name", ""),
+        root_name=body.get("root_name", "Root"),
+        metadata=body.get("metadata"),
+    )
+    return tree.to_dict()
+
+
+@router.get("/node-composer/trees")
+async def node_composer_trees():
+    """List all node trees."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    nc = get_node_composer()
+    return {"trees": nc.list_trees()}
+
+
+@router.post("/node-composer/create-node")
+async def node_composer_create_node(request: Request):
+    """Create a new scene node."""
+    from sparkai.engine.engine_node_composer import get_node_composer, NodeType
+    body = await request.json()
+    nc = get_node_composer()
+
+    try:
+        ntype = NodeType(body.get("node_type", "group"))
+    except ValueError:
+        ntype = NodeType.GROUP
+
+    node = nc.create_node(
+        name=body.get("name", ""),
+        node_type=ntype,
+        position_x=body.get("position_x", 0.0),
+        position_y=body.get("position_y", 0.0),
+        rotation_degrees=body.get("rotation_degrees", 0.0),
+        scale_x=body.get("scale_x", 1.0),
+        scale_y=body.get("scale_y", 1.0),
+        properties=body.get("properties"),
+        tags=body.get("tags"),
+    )
+    return node.to_dict()
+
+
+@router.post("/node-composer/add-child")
+async def node_composer_add_child(request: Request):
+    """Attach a child node to a parent with transform inheritance."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    body = await request.json()
+    nc = get_node_composer()
+
+    # Create the child node from request data
+    child = nc.create_node(
+        name=body.get("child_name", "Child"),
+        position_x=body.get("position_x", 0.0),
+        position_y=body.get("position_y", 0.0),
+    )
+
+    success = nc.add_child(
+        tree_id=body.get("tree_id", ""),
+        parent_id=body.get("parent_id", ""),
+        child=child,
+    )
+    return {"success": success, "child_id": child.node_id if success else ""}
+
+
+@router.post("/node-composer/reparent")
+async def node_composer_reparent(request: Request):
+    """Move a node to a different parent."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    body = await request.json()
+    nc = get_node_composer()
+    success = nc.reparent(
+        tree_id=body.get("tree_id", ""),
+        node_id=body.get("node_id", ""),
+        new_parent_id=body.get("new_parent_id", ""),
+    )
+    return {"success": success}
+
+
+@router.post("/node-composer/query")
+async def node_composer_query(request: Request):
+    """Query nodes by type, name, tags, or state."""
+    from sparkai.engine.engine_node_composer import get_node_composer, NodeType, NodeState
+    body = await request.json()
+    nc = get_node_composer()
+
+    node_type = body.get("node_type")
+    if node_type:
+        try:
+            node_type = NodeType(node_type)
+        except ValueError:
+            node_type = None
+
+    state = body.get("state")
+    if state:
+        try:
+            state = NodeState(state)
+        except ValueError:
+            state = None
+
+    nodes = nc.query_nodes(
+        tree_id=body.get("tree_id", ""),
+        node_type=node_type,
+        name_pattern=body.get("name_pattern"),
+        tags=body.get("tags"),
+        state=state,
+    )
+    return {"nodes": [n.to_dict() for n in nodes], "count": len(nodes)}
+
+
+@router.post("/node-composer/get-by-path")
+async def node_composer_get_by_path(request: Request):
+    """Find a node by hierarchical path."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    body = await request.json()
+    nc = get_node_composer()
+    node = nc.get_node_by_path(
+        tree_id=body.get("tree_id", ""),
+        path=body.get("path", "/"),
+    )
+    return node.to_dict() if node else {"error": "Node not found"}
+
+
+@router.post("/node-composer/send-signal")
+async def node_composer_send_signal(request: Request):
+    """Emit a signal through the node tree."""
+    from sparkai.engine.engine_node_composer import get_node_composer, SignalDirection
+    body = await request.json()
+    nc = get_node_composer()
+
+    try:
+        direction = SignalDirection(body.get("direction", "downward"))
+    except ValueError:
+        direction = SignalDirection.DOWNWARD
+
+    recipients = nc.send_signal(
+        tree_id=body.get("tree_id", ""),
+        signal_name=body.get("signal_name", ""),
+        source_node_id=body.get("source_node_id", ""),
+        data=body.get("data"),
+        direction=direction,
+        target_node_id=body.get("target_node_id"),
+    )
+    return {"recipients": recipients, "count": len(recipients)}
+
+
+@router.post("/node-composer/freeze-branch")
+async def node_composer_freeze_branch(request: Request):
+    """Freeze (pause) a node branch."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    body = await request.json()
+    nc = get_node_composer()
+    count = nc.freeze_branch(
+        tree_id=body.get("tree_id", ""),
+        node_id=body.get("node_id", ""),
+    )
+    return {"frozen_count": count}
+
+
+@router.post("/node-composer/thaw-branch")
+async def node_composer_thaw_branch(request: Request):
+    """Thaw (resume) a frozen node branch."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    body = await request.json()
+    nc = get_node_composer()
+    count = nc.thaw_branch(
+        tree_id=body.get("tree_id", ""),
+        node_id=body.get("node_id", ""),
+    )
+    return {"thawed_count": count}
+
+
+@router.post("/node-composer/export-tree")
+async def node_composer_export_tree(request: Request):
+    """Export a complete node tree to portable format."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    body = await request.json()
+    nc = get_node_composer()
+    exported = nc.export_tree(tree_id=body.get("tree_id", ""))
+    return exported if exported else {"error": "Tree not found"}
+
+
+@router.post("/node-composer/create-group")
+async def node_composer_create_group(request: Request):
+    """Create a logical node group."""
+    from sparkai.engine.engine_node_composer import get_node_composer
+    body = await request.json()
+    nc = get_node_composer()
+    group = nc.create_group(
+        tree_id=body.get("tree_id", ""),
+        name=body.get("name", ""),
+        node_ids=body.get("node_ids"),
+    )
+    return group.to_dict() if group else {"error": "Tree not found"}
