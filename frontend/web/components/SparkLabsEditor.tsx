@@ -48,6 +48,16 @@ import AgentMultiObjectiveOptimizerPanel from './AgentMultiObjectiveOptimizerPan
 import EngineVolumetricRenderingPanel from './EngineVolumetricRenderingPanel';
 import EngineCrowdDynamicsPanel from './EngineCrowdDynamicsPanel';
 import EngineFluidDynamicsPanel from './EngineFluidDynamicsPanel';
+import AgentWorldPerceptionPanel from './AgentWorldPerceptionPanel';
+import AgentDynamicNarrativePanel from './AgentDynamicNarrativePanel';
+import EngineProceduralAnimationPanel from './EngineProceduralAnimationPanel';
+import EngineObjectPoolPanel from './EngineObjectPoolPanel';
+import EngineRuntimeScriptingPanel from './EngineRuntimeScriptingPanel';
+import AgentFunctionDispatcherPanel from './AgentFunctionDispatcherPanel';
+import AgentWorldInteractionPanel from './AgentWorldInteractionPanel';
+import EngineSpriteBatcherPanel from './EngineSpriteBatcherPanel';
+import EngineVisualEventSheetPanel from './EngineVisualEventSheetPanel';
+import EngineNodeComposerPanel from './EngineNodeComposerPanel';
 import { LifecyclePanel, SlashCommandsPanel, ValidationHooksPanel } from './LifecyclePanels';
 import { TaskExecutorPanel } from './TaskExecutorPanel';
 import NotificationToast from './NotificationToast';
@@ -340,6 +350,16 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'volumetric-rendering': return <EngineVolumetricRenderingPanel />;
       case 'crowd-dynamics': return <EngineCrowdDynamicsPanel />;
       case 'fluid-dynamics': return <EngineFluidDynamicsPanel />;
+      case 'world-perception': return <AgentWorldPerceptionPanel />;
+      case 'dynamic-narrative': return <AgentDynamicNarrativePanel />;
+      case 'procedural-animation': return <EngineProceduralAnimationPanel />;
+      case 'object-pool': return <EngineObjectPoolPanel />;
+      case 'runtime-scripting': return <EngineRuntimeScriptingPanel />;
+      case 'function-dispatcher': return <AgentFunctionDispatcherPanel />;
+      case 'world-interaction': return <AgentWorldInteractionPanel />;
+      case 'sprite-batcher': return <EngineSpriteBatcherPanel />;
+      case 'visual-event-sheet': return <EngineVisualEventSheetPanel />;
+      case 'node-composer': return <EngineNodeComposerPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
