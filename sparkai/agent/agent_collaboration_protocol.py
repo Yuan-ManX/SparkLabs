@@ -578,6 +578,217 @@ class CollaborationProtocolEngine:
                 "teams_joined": 0,
             }
 
+    def register_agent_expertise(
+        self,
+        agent_id: str,
+        domains: List[str],
+        proficiency_levels: Optional[Dict[str, float]] = None,
+    ) -> None:
+        """Register an agent's expertise domains and proficiency levels for 
+        intelligent task-to-agent assignment.
+        
+        Args:
+            agent_id: Unique agent identifier
+            domains: List of expertise domains (e.g., 'combat_design', 'level_art')
+            proficiency_levels: Optional proficiency scores per domain (0.0-1.0)
+        """
+        self._ensure_agent_registered(agent_id)
+        levels = proficiency_levels or {}
+        self._agent_registry[agent_id].update({
+            "expertise_domains": domains,
+            "proficiency_levels": {d: levels.get(d, 0.5) for d in domains},
+            "expertise_registered_at": time.time(),
+        })
+
+    def assign_by_expertise(
+        self,
+        team_id: str,
+        task_context: str,
+        handoff_type: str = "delegate",
+    ) -> Optional[HandoffRecord]:
+        """Auto-assign a task to the most qualified agent in a team based on 
+        domain expertise matching.
+        
+        Uses keyword overlap scoring between the task context and registered 
+        agent expertise domains to compute the best assignment.
+        """
+        team = self._teams.get(team_id)
+        if not team:
+            return None
+
+        task_lower = task_context.lower()
+        task_keywords = set(task_lower.replace(",", " ").replace(".", " ").split())
+
+        best_agent_id: str = ""
+        best_score: float = -1.0
+
+        for member_id in team.member_ids:
+            agent_info = self._agent_registry.get(member_id, {})
+            domains = agent_info.get("expertise_domains", [])
+            levels = agent_info.get("proficiency_levels", {})
+
+            if not domains:
+                score = 0.0
+            else:
+                score = sum(
+                    levels.get(d, 0.5) * 2.0 if d.lower() in task_lower else 0.0
+                    for d in domains
+                )
+                for kw in task_keywords:
+                    for d in domains:
+                        if kw in d.lower() or d.lower() in kw:
+                            score += levels.get(d, 0.5)
+
+            # Penalize agents with high active workload
+            workload = self.get_agent_workload(member_id)
+            active = workload.get("active_handoffs", 0)
+            score = score * (1.0 / max(1.0, 1.0 + active * 0.15))
+
+            if score > best_score:
+                best_score = score
+                best_agent_id = member_id
+
+        if not best_agent_id:
+            return None
+
+        # Find the team lead as the delegator
+        from_agent = team.lead_id if team.lead_id else team.member_ids[0]
+        if from_agent == best_agent_id and len(team.member_ids) > 1:
+            from_agent = [m for m in team.member_ids if m != best_agent_id][0]
+
+        return self.initiate_handoff(
+            team_id=team_id,
+            from_agent=from_agent,
+            to_agent=best_agent_id,
+            task_context=f"[Auto-assigned] {task_context}",
+            handoff_type=handoff_type,
+        )
+
+    def balance_workload(self, team_id: str) -> List[Dict[str, Any]]:
+        """Analyze and suggest workload balancing recommendations for a team.
+        
+        Returns a list of suggested reassignments to distribute work evenly.
+        """
+        team = self._teams.get(team_id)
+        if not team:
+            return []
+
+        workloads = {}
+        for member_id in team.member_ids:
+            wl = self.get_agent_workload(member_id)
+            workloads[member_id] = wl["active_handoffs"]
+
+        if not workloads:
+            return []
+
+        avg_workload = sum(workloads.values()) / len(workloads)
+        max_workload = max(workloads.values())
+        min_workload = min(workloads.values())
+
+        recommendations = []
+        overloaded = [mid for mid, wl in workloads.items() if wl > avg_workload + 1]
+        underloaded = [mid for mid, wl in workloads.items() if wl < avg_workload]
+
+        for over in overloaded:
+            for under in underloaded:
+                suggestions = []
+                for handoff in self._handoffs.values():
+                    if handoff.team_id == team_id and handoff.to_agent == over:
+                        if handoff.state in (ProtocolState.PROPOSED, ProtocolState.ACCEPTED):
+                            suggestions.append({
+                                "handoff_id": handoff.id,
+                                "task": handoff.task_context[:60],
+                                "state": handoff.state.value,
+                            })
+                if suggestions:
+                    recommendations.append({
+                        "from_agent": over,
+                        "to_agent": under,
+                        "from_workload": workloads[over],
+                        "to_workload": workloads[under],
+                        "suggested_transfers": suggestions[:2],
+                    })
+
+        return {
+            "team_id": team_id,
+            "average_workload": round(avg_workload, 1),
+            "max_workload": max_workload,
+            "min_workload": min_workload,
+            "is_balanced": max_workload - min_workload <= 1,
+            "member_workloads": workloads,
+            "recommendations": recommendations,
+        }
+
+    def get_team_efficiency(self, team_id: str) -> Dict[str, Any]:
+        """Calculate comprehensive team performance metrics."""
+        team = self._teams.get(team_id)
+        if not team:
+            return {"error": "Team not found"}
+
+        team_handoffs = [h for h in self._handoffs.values() if h.team_id == team_id]
+        completed = [h for h in team_handoffs if h.state == ProtocolState.COMPLETED]
+        rejected = [h for h in team_handoffs if h.state == ProtocolState.REJECTED]
+
+        # Completion time metrics
+        completion_times = []
+        for h in completed:
+            if h.completed_at and h.created_at:
+                completion_times.append(h.completed_at - h.created_at)
+
+        avg_completion_time = (
+            round(sum(completion_times) / len(completion_times), 2)
+            if completion_times else 0.0
+        )
+
+        # Per-agent efficiency
+        agent_metrics = {}
+        for member_id in team.member_ids:
+            agent_completed = sum(
+                1 for h in completed if h.to_agent == member_id or h.from_agent == member_id
+            )
+            agent_total = sum(
+                1 for h in team_handoffs
+                if h.to_agent == member_id or h.from_agent == member_id
+            )
+            agent_metrics[member_id] = {
+                "completed": agent_completed,
+                "total": agent_total,
+                "completion_rate": (
+                    round(agent_completed / max(agent_total, 1), 3)
+                    if agent_total > 0 else 0.0
+                ),
+            }
+
+        handoff_type_breakdown = {}
+        for h in team_handoffs:
+            ht = h.handoff_type.value
+            if ht not in handoff_type_breakdown:
+                handoff_type_breakdown[ht] = {"total": 0, "completed": 0}
+            handoff_type_breakdown[ht]["total"] += 1
+            if h.state == ProtocolState.COMPLETED:
+                handoff_type_breakdown[ht]["completed"] += 1
+
+        session = self._find_session_by_team(team_id)
+        return {
+            "team_id": team_id,
+            "member_count": len(team.member_ids),
+            "total_handoffs": len(team_handoffs),
+            "completed_handoffs": len(completed),
+            "rejected_handoffs": len(rejected),
+            "pending_handoffs": len(team_handoffs) - len(completed) - len(rejected),
+            "overall_completion_rate": (
+                round(len(completed) / max(len(team_handoffs), 1), 3)
+                if team_handoffs else 0.0
+            ),
+            "avg_completion_time_seconds": avg_completion_time,
+            "total_messages": len(session.messages) if session else 0,
+            "per_agent_metrics": agent_metrics,
+            "handoff_type_breakdown": {
+                k: {**v, "success_rate": round(v["completed"] / max(v["total"], 1), 3)}
+                for k, v in handoff_type_breakdown.items()
+            },
+        }
+
     def get_stats(self) -> Dict[str, Any]:
         role_distribution: Dict[str, int] = {}
         for team in self._teams.values():
