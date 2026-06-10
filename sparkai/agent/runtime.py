@@ -308,6 +308,8 @@ from sparkai.agent.agent_chain_of_thought import ChainOfThoughtEngine, get_chain
 from sparkai.agent.agent_conversation_memory import ConversationMemoryEngine, get_conversation_memory
 from sparkai.agent.agent_self_optimization import SelfOptimizationEngine, get_self_optimization
 from sparkai.agent.agent_collaboration_protocol import CollaborationProtocolEngine, get_collaboration_protocol
+from sparkai.agent.agent_world_model import AgentWorldModel, get_agent_world_model
+from sparkai.agent.agent_curiosity_engine import AgentCuriosityEngine, get_curiosity_engine
 from sparkai.agent.agent_knowledge_synthesis import KnowledgeSynthesisEngine, get_knowledge_synthesis
 from sparkai.agent.agent_capability_registry import CapabilityRegistryEngine, get_capability_registry
 from sparkai.engine.engine_event_sheet import EventSheetRuntime, get_event_sheet
@@ -405,6 +407,9 @@ from sparkai.engine.engine_weather_system import EngineWeatherSystem, get_weathe
 from sparkai.engine.engine_water_simulation import EngineWaterSimulation, get_water_simulation
 from sparkai.agent.agent_intelligence_core import AgentIntelligenceCore, get_agent_intelligence_core
 from sparkai.engine.engine_unification_core import EngineUnificationCore, get_engine_unification_core
+
+from sparkai.agent.agent_metacognition import AgentMetacognition, get_agent_metacognition
+from sparkai.agent.agent_predictive_intelligence import AgentPredictiveIntelligence, get_predictive_intelligence
 
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
@@ -530,6 +535,11 @@ from sparkai.engine.engine_pathfinding import EnginePathfinding, get_pathfinding
 from sparkai.engine.engine_state_machine import EngineStateMachine, get_state_machine_engine
 from sparkai.agent.agent_scene_director import AgentSceneDirector, get_scene_director
 from sparkai.engine.engine_world_streamer import EngineWorldStreamer, get_world_streamer
+from sparkai.agent.agent_causal_reasoning import AgentCausalReasoning, get_causal_reasoning
+from sparkai.agent.agent_multi_objective_optimizer import AgentMultiObjectiveOptimizer, get_agent_multi_objective_optimizer
+from sparkai.engine.engine_volumetric_rendering import EngineVolumetricRendering, get_volumetric_rendering
+from sparkai.engine.engine_crowd_dynamics import EngineCrowdDynamics, get_crowd_dynamics
+from sparkai.engine.engine_fluid_dynamics import EngineFluidDynamics, get_fluid_dynamics
 
 
 class RuntimeState(Enum):
@@ -841,6 +851,8 @@ class AgentRuntime:
         self._conversation_memory: Optional[ConversationMemoryEngine] = None
         self._self_optimization: Optional[SelfOptimizationEngine] = None
         self._collaboration_protocol: Optional[CollaborationProtocolEngine] = None
+        self._world_model: Optional[AgentWorldModel] = None
+        self._curiosity_engine: Optional[AgentCuriosityEngine] = None
         self._knowledge_synthesis: Optional[KnowledgeSynthesisEngine] = None
         self._capability_registry: Optional[CapabilityRegistryEngine] = None
         self._event_sheet: Optional[EventSheetRuntime] = None
@@ -937,6 +949,8 @@ class AgentRuntime:
         self._water_simulation: Optional[EngineWaterSimulation] = None
         self._intelligence_core: Optional[AgentIntelligenceCore] = None
         self._engine_unification_core: Optional[EngineUnificationCore] = None
+        self._metacognition: Optional[AgentMetacognition] = None
+        self._predictive_intelligence: Optional[AgentPredictiveIntelligence] = None
         self._story_forge: Optional[AgentStoryForge] = None
         self._quest_generator: Optional[AgentQuestGenerator] = None
         self._dialogue_engine: Optional[AgentDialogueEngine] = None
@@ -945,6 +959,16 @@ class AgentRuntime:
         self._state_machine_engine: Optional[EngineStateMachine] = None
         self._scene_director: Optional[AgentSceneDirector] = None
         self._world_streamer: Optional[EngineWorldStreamer] = None
+        self._causal_reasoning: Optional[AgentCausalReasoning] = None
+        self._multi_objective_optimizer: Optional[AgentMultiObjectiveOptimizer] = None
+        self._volumetric_rendering: Optional[EngineVolumetricRendering] = None
+        self._crowd_dynamics: Optional[EngineCrowdDynamics] = None
+        self._fluid_dynamics: Optional[EngineFluidDynamics] = None
+        self._causal_reasoning_ok: bool = False
+        self._multi_objective_optimizer_ok: bool = False
+        self._volumetric_rendering_ok: bool = False
+        self._crowd_dynamics_ok: bool = False
+        self._fluid_dynamics_ok: bool = False
         self._session_snapshot_ok: bool = False
         self._trajectory_compressor_ok: bool = False
         self._skills_hub_ok: bool = False
@@ -955,6 +979,10 @@ class AgentRuntime:
         self._conversation_memory_ok: bool = False
         self._self_optimization_ok: bool = False
         self._collaboration_protocol_ok: bool = False
+        self._metacognition_ok: bool = False
+        self._predictive_intelligence_ok: bool = False
+        self._world_model_ok: bool = False
+        self._curiosity_engine_ok: bool = False
         self._knowledge_synthesis_ok: bool = False
         self._capability_registry_ok: bool = False
         self._event_sheet_ok: bool = False
@@ -1256,6 +1284,8 @@ class AgentRuntime:
             self._conversation_memory = get_conversation_memory()
             self._self_optimization = get_self_optimization()
             self._collaboration_protocol = get_collaboration_protocol()
+            self._world_model = get_agent_world_model()
+            self._curiosity_engine = get_curiosity_engine()
             self._knowledge_synthesis = get_knowledge_synthesis()
             self._capability_registry = get_capability_registry()
             self._event_sheet = get_event_sheet()
@@ -1356,12 +1386,19 @@ class AgentRuntime:
             self._state_machine_engine = get_state_machine_engine()
             self._scene_director = get_scene_director()
             self._world_streamer = get_world_streamer()
+            self._causal_reasoning = get_causal_reasoning()
+            self._multi_objective_optimizer = get_agent_multi_objective_optimizer()
+            self._volumetric_rendering = get_volumetric_rendering()
+            self._crowd_dynamics = get_crowd_dynamics()
+            self._fluid_dynamics = get_fluid_dynamics()
             self._world_simulation = get_agent_world_simulation()
             self._economy_simulator = get_agent_economy_simulator()
             self._weather_system = get_weather_system()
             self._water_simulation = get_water_simulation()
             self._intelligence_core = get_agent_intelligence_core()
             self._engine_unification_core = get_engine_unification_core()
+            self._metacognition = get_agent_metacognition()
+            self._predictive_intelligence = get_predictive_intelligence()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1372,6 +1409,10 @@ class AgentRuntime:
             self._conversation_memory_ok = self._conversation_memory is not None
             self._self_optimization_ok = self._self_optimization is not None
             self._collaboration_protocol_ok = self._collaboration_protocol is not None
+            self._metacognition_ok = self._metacognition is not None
+            self._predictive_intelligence_ok = self._predictive_intelligence is not None
+            self._world_model_ok = self._world_model is not None
+            self._curiosity_engine_ok = self._curiosity_engine is not None
             self._knowledge_synthesis_ok = self._knowledge_synthesis is not None
             self._capability_registry_ok = self._capability_registry is not None
             self._event_sheet_ok = self._event_sheet is not None
@@ -1677,6 +1718,8 @@ class AgentRuntime:
             self._integration.register_subsystem("conversation_memory", self._conversation_memory)
             self._integration.register_subsystem("self_optimization", self._self_optimization)
             self._integration.register_subsystem("collaboration_protocol", self._collaboration_protocol)
+            self._integration.register_subsystem("metacognition", self._metacognition)
+            self._integration.register_subsystem("predictive_intelligence", self._predictive_intelligence)
             self._integration.register_subsystem("knowledge_synthesis", self._knowledge_synthesis)
             self._integration.register_subsystem("capability_registry", self._capability_registry)
             self._integration.register_subsystem("event_sheet", self._event_sheet)
@@ -2967,6 +3010,8 @@ class AgentRuntime:
                 "conversation_memory": self._conversation_memory is not None,
                 "self_optimization": self._self_optimization is not None,
                 "collaboration_protocol": self._collaboration_protocol is not None,
+                "metacognition": self._metacognition is not None,
+                "predictive_intelligence": self._predictive_intelligence is not None,
                 "knowledge_synthesis": self._knowledge_synthesis is not None,
                 "capability_registry": self._capability_registry is not None,
                 "event_sheet": self._event_sheet is not None,
@@ -3043,6 +3088,11 @@ class AgentRuntime:
             "economy_simulator": self._economy_simulator is not None,
             "weather_system": self._weather_system is not None,
             "water_simulation": self._water_simulation is not None,
+            "causal_reasoning": self._causal_reasoning is not None,
+            "multi_objective_optimizer": self._multi_objective_optimizer is not None,
+            "volumetric_rendering": self._volumetric_rendering is not None,
+            "crowd_dynamics": self._crowd_dynamics is not None,
+            "fluid_dynamics": self._fluid_dynamics is not None,
             },
         }
 
@@ -3532,6 +3582,12 @@ class AgentRuntime:
             status["self_optimization_stats"] = self._self_optimization.get_stats()
         if self._collaboration_protocol:
             status["collaboration_protocol_stats"] = self._collaboration_protocol.get_stats()
+        if self._metacognition:
+            status["metacognition_stats"] = self._metacognition.get_status()
+        if self._predictive_intelligence:
+            status["predictive_intelligence_stats"] = self._predictive_intelligence.get_status()
+            status["world_model_stats"] = self._world_model.get_stats()
+            status["curiosity_engine_stats"] = self._curiosity_engine.get_stats()
         if self._knowledge_synthesis:
             status["knowledge_synthesis_stats"] = self._knowledge_synthesis.get_stats()
         if self._capability_registry:
@@ -3684,6 +3740,16 @@ class AgentRuntime:
             status["weather_system_stats"] = self._weather_system.get_stats()
         if self._water_simulation:
             status["water_simulation_stats"] = self._water_simulation.get_stats()
+        if self._causal_reasoning:
+            status["causal_reasoning_stats"] = self._causal_reasoning.get_status()
+        if self._multi_objective_optimizer:
+            status["multi_objective_optimizer_stats"] = self._multi_objective_optimizer.get_status()
+        if self._volumetric_rendering:
+            status["volumetric_rendering_stats"] = self._volumetric_rendering.get_status()
+        if self._crowd_dynamics:
+            status["crowd_dynamics_stats"] = self._crowd_dynamics.get_status()
+        if self._fluid_dynamics:
+            status["fluid_dynamics_stats"] = self._fluid_dynamics.get_status()
         return status
 
 
