@@ -1814,3 +1814,115 @@ export const serverOrchestratorApi = {
     api.post('/agent/server-orchestrator/register', data),
   optimize: () => api.post('/agent/server-orchestrator/optimize', {}),
 };
+
+// ============================================================
+// Function Dispatcher API
+// ============================================================
+export const functionDispatcherApi = {
+  status: () => api.get('/agent/function-dispatcher/status'),
+  categories: () => api.get('/agent/function-dispatcher/categories'),
+  discover: (category?: string, includeInternal?: boolean) =>
+    api.post('/agent/function-dispatcher/discover', { category, include_internal: includeInternal }),
+  dispatch: (functionName: string, parameters?: Record<string, unknown>, policy?: string, metadata?: Record<string, unknown>) =>
+    api.post('/agent/function-dispatcher/dispatch', { function_name: functionName, parameters, policy, metadata }),
+  batchDispatch: (requests: Array<{ function_name: string; parameters?: Record<string, unknown>; policy?: string }>) =>
+    api.post('/agent/function-dispatcher/batch-dispatch', { requests }),
+  chainDispatch: (steps: Array<{ function_name: string; parameters?: Record<string, unknown>; policy?: string }>, abortOnFailure?: boolean) =>
+    api.post('/agent/function-dispatcher/chain-dispatch', { steps, abort_on_failure: abortOnFailure }),
+  auditTrail: (limit?: number) => {
+    const query = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/function-dispatcher/audit-trail${query}`);
+  },
+  validateParams: (functionName: string, parameters: Record<string, unknown>) =>
+    api.post('/agent/function-dispatcher/validate-params', { function_name: functionName, parameters }),
+  register: (name: string, description: string, parameters?: Array<{ name: string; param_type: string; description: string; required: boolean; default_value?: unknown }>, category?: string, policy?: string) =>
+    api.post('/agent/function-dispatcher/register', { name, description, parameters, category, policy }),
+};
+
+// ============================================================
+// World Interaction API
+// ============================================================
+export const worldInteractionApi = {
+  status: () => api.get('/agent/world-interaction/status'),
+  registerAgent: (agentId: string, name?: string, interests?: string[], mode?: string) =>
+    api.post('/agent/world-interaction/register-agent', { agent_id: agentId, name, interests, mode }),
+  perceive: (agentId: string, viewRadius?: number) =>
+    api.post('/agent/world-interaction/perceive', { agent_id: agentId, view_radius: viewRadius }),
+  runCycle: (agentId: string, viewRadius?: number, goal?: string, mode?: string) =>
+    api.post('/agent/world-interaction/run-cycle', { agent_id: agentId, view_radius: viewRadius, goal, mode }),
+  upsertEntity: (entityId: string, name?: string, entityType?: string, position?: number[], region?: string, properties?: Record<string, unknown>) =>
+    api.post('/agent/world-interaction/upsert-entity', { entity_id: entityId, name, entity_type: entityType, position, region, properties }),
+  queryEntities: (region?: string, entityType?: string, limit?: number) =>
+    api.post('/agent/world-interaction/query-entities', { region, entity_type: entityType, limit }),
+  awareness: () => api.get('/agent/world-interaction/awareness'),
+  registerInterest: (agentId: string, region?: string, entityType?: string, eventType?: string) =>
+    api.post('/agent/world-interaction/register-interest', { agent_id: agentId, region, entity_type: entityType, event_type: eventType }),
+};
+
+// ============================================================
+// Sprite Batcher API
+// ============================================================
+export const spriteBatcherApi = {
+  status: () => api.get('/engine/sprite-batcher/status'),
+  submit: (textureName: string, positionX?: number, positionY?: number, scaleX?: number, scaleY?: number, rotationDegrees?: number, colorRgba?: number[], blendMode?: string, zOrder?: number) =>
+    api.post('/engine/sprite-batcher/submit', { texture_name: textureName, position_x: positionX, position_y: positionY, scale_x: scaleX, scale_y: scaleY, rotation_degrees: rotationDegrees, color_rgba: colorRgba, blend_mode: blendMode, z_order: zOrder }),
+  flush: () => api.post('/engine/sprite-batcher/flush'),
+  clear: () => api.post('/engine/sprite-batcher/clear'),
+  createAtlas: (name: string, textureNames: string[], size?: number, packMode?: string) =>
+    api.post('/engine/sprite-batcher/create-atlas', { name, texture_names: textureNames, size, pack_mode: packMode }),
+  atlases: () => api.get('/engine/sprite-batcher/atlases'),
+  frameReport: () => api.get('/engine/sprite-batcher/frame-report'),
+};
+
+// ============================================================
+// Visual Event Sheet API
+// ============================================================
+export const visualEventSheetApi = {
+  status: () => api.get('/engine/visual-event-sheet/status'),
+  create: (name: string, scope?: string, description?: string) =>
+    api.post('/engine/visual-event-sheet/create', { name, scope, description }),
+  list: () => api.get('/engine/visual-event-sheet/list'),
+  addEvent: (sheetId: string, name: string, trigger?: string, conditions?: Array<{ operator: string; left_operand: string; right_operand?: unknown; invert?: boolean; description?: string }>, actions?: Array<{ action_type: string; action_name: string; parameters?: Record<string, unknown>; target_object?: string; delay_ms?: number }>, priority?: number) =>
+    api.post('/engine/visual-event-sheet/add-event', { sheet_id: sheetId, name, trigger, conditions, actions, priority }),
+  addSubEvent: (sheetId: string, eventId: string, conditions?: Array<{ operator: string; left_operand: string; right_operand?: unknown }>, actions?: Array<{ action_type: string; action_name: string; parameters?: Record<string, unknown> }>) =>
+    api.post('/engine/visual-event-sheet/add-sub-event', { sheet_id: sheetId, event_id: eventId, conditions, actions }),
+  evaluate: (sheetId: string, customState?: Record<string, unknown>) =>
+    api.post('/engine/visual-event-sheet/evaluate', { sheet_id: sheetId, custom_state: customState }),
+  clone: (sheetId: string, newName?: string) =>
+    api.post('/engine/visual-event-sheet/clone', { sheet_id: sheetId, new_name: newName }),
+  validate: (sheetId: string) =>
+    api.post('/engine/visual-event-sheet/validate', { sheet_id: sheetId }),
+  compile: (sheetId: string) =>
+    api.post('/engine/visual-event-sheet/compile', { sheet_id: sheetId }),
+  executionLog: () => api.get('/engine/visual-event-sheet/execution-log'),
+};
+
+// ============================================================
+// Node Composer API
+// ============================================================
+export const nodeComposerApi = {
+  status: () => api.get('/engine/node-composer/status'),
+  buildTree: (name: string, rootName?: string, metadata?: Record<string, unknown>) =>
+    api.post('/engine/node-composer/build-tree', { name, root_name: rootName, metadata }),
+  trees: () => api.get('/engine/node-composer/trees'),
+  createNode: (name: string, nodeType?: string, positionX?: number, positionY?: number, rotationDegrees?: number, scaleX?: number, scaleY?: number, properties?: Record<string, unknown>, tags?: string[]) =>
+    api.post('/engine/node-composer/create-node', { name, node_type: nodeType, position_x: positionX, position_y: positionY, rotation_degrees: rotationDegrees, scale_x: scaleX, scale_y: scaleY, properties, tags }),
+  addChild: (treeId: string, parentId: string, childName?: string, positionX?: number, positionY?: number) =>
+    api.post('/engine/node-composer/add-child', { tree_id: treeId, parent_id: parentId, child_name: childName, position_x: positionX, position_y: positionY }),
+  reparent: (treeId: string, nodeId: string, newParentId: string) =>
+    api.post('/engine/node-composer/reparent', { tree_id: treeId, node_id: nodeId, new_parent_id: newParentId }),
+  query: (treeId: string, nodeType?: string, namePattern?: string, tags?: string[], state?: string) =>
+    api.post('/engine/node-composer/query', { tree_id: treeId, node_type: nodeType, name_pattern: namePattern, tags, state }),
+  getByPath: (treeId: string, path: string) =>
+    api.post('/engine/node-composer/get-by-path', { tree_id: treeId, path }),
+  sendSignal: (treeId: string, signalName: string, sourceNodeId: string, direction?: string, data?: Record<string, unknown>, targetNodeId?: string) =>
+    api.post('/engine/node-composer/send-signal', { tree_id: treeId, signal_name: signalName, source_node_id: sourceNodeId, direction, data, target_node_id: targetNodeId }),
+  freezeBranch: (treeId: string, nodeId: string) =>
+    api.post('/engine/node-composer/freeze-branch', { tree_id: treeId, node_id: nodeId }),
+  thawBranch: (treeId: string, nodeId: string) =>
+    api.post('/engine/node-composer/thaw-branch', { tree_id: treeId, node_id: nodeId }),
+  exportTree: (treeId: string) =>
+    api.post('/engine/node-composer/export-tree', { tree_id: treeId }),
+  createGroup: (treeId: string, name: string, nodeIds?: string[]) =>
+    api.post('/engine/node-composer/create-group', { tree_id: treeId, name, node_ids: nodeIds }),
+};
