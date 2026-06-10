@@ -919,3 +919,309 @@ async def set_unification_target_fps(request: Request):
     core = get_engine_unification_core()
     core.set_target_fps(body.get("fps", 60))
     return {"target_fps": body.get("fps", 60)}
+
+# ---------------------------------------------------------------------------
+# Volumetric Rendering Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/volumetric-rendering/status")
+async def get_volumetric_rendering_status():
+    """Get volumetric rendering system status."""
+    from sparkai.engine.engine_volumetric_rendering import get_volumetric_rendering
+    vr = get_volumetric_rendering()
+    return vr.get_status()
+
+
+@router.post("/volumetric-rendering/ray-march")
+async def volumetric_ray_march(request: Request):
+    """Perform ray marching through participating media."""
+    from sparkai.engine.engine_volumetric_rendering import get_volumetric_rendering
+    body = await request.json()
+    vr = get_volumetric_rendering()
+    result = vr.ray_march(
+        camera_pos=tuple(body.get("camera_pos", [0, 0])),
+        ray_direction=tuple(body.get("ray_direction", [0, 1])),
+        max_distance=body.get("max_distance", 100.0),
+        step_count=body.get("step_count", 64),
+    )
+    return result.to_dict()
+
+
+@router.post("/volumetric-rendering/fog-config")
+async def create_fog_config(request: Request):
+    """Create a volumetric fog configuration."""
+    from sparkai.engine.engine_volumetric_rendering import get_volumetric_rendering
+    body = await request.json()
+    vr = get_volumetric_rendering()
+    config = vr.create_fog_config(
+        name=body.get("name", ""),
+        density=body.get("density", 0.01),
+        scattering_coefficient=body.get("scattering_coefficient", 0.5),
+        absorption_coefficient=body.get("absorption_coefficient", 0.1),
+        phase_g=body.get("phase_g", 0.0),
+        color=tuple(body.get("color", [0.5, 0.6, 0.7, 1.0])),
+    )
+    return config.to_dict()
+
+
+@router.post("/volumetric-rendering/light-config")
+async def create_volumetric_light_config(request: Request):
+    """Create a volumetric light configuration."""
+    from sparkai.engine.engine_volumetric_rendering import get_volumetric_rendering
+    body = await request.json()
+    vr = get_volumetric_rendering()
+    config = vr.create_light_config(
+        name=body.get("name", ""),
+        position=tuple(body.get("position", [0, 0])),
+        intensity=body.get("intensity", 1.0),
+        color=tuple(body.get("color", [1.0, 1.0, 1.0])),
+        radius=body.get("radius", 10.0),
+        volumetric_enabled=body.get("volumetric_enabled", True),
+    )
+    return config.to_dict()
+
+
+@router.post("/volumetric-rendering/cloud-config")
+async def create_cloud_config(request: Request):
+    """Create a volumetric cloud configuration."""
+    from sparkai.engine.engine_volumetric_rendering import get_volumetric_rendering
+    body = await request.json()
+    vr = get_volumetric_rendering()
+    config = vr.create_cloud_config(
+        name=body.get("name", ""),
+        coverage=body.get("coverage", 0.5),
+        density=body.get("density", 0.3),
+        altitude=body.get("altitude", 100.0),
+        thickness=body.get("thickness", 20.0),
+        wind_speed=body.get("wind_speed", 1.0),
+        wind_direction=body.get("wind_direction", 0.0),
+    )
+    return config.to_dict()
+
+
+@router.post("/volumetric-rendering/phase-function")
+async def evaluate_phase_function(request: Request):
+    """Evaluate a scattering phase function."""
+    from sparkai.engine.engine_volumetric_rendering import get_volumetric_rendering
+    body = await request.json()
+    vr = get_volumetric_rendering()
+    result = vr.evaluate_phase_function(
+        scattering_model=body.get("scattering_model", "rayleigh"),
+        cos_theta=body.get("cos_theta", 0.0),
+        g=body.get("g", 0.0),
+    )
+    return {"result": result}
+
+
+@router.post("/volumetric-rendering/quality-preset")
+async def set_quality_preset(request: Request):
+    """Set the volumetric rendering quality preset."""
+    from sparkai.engine.engine_volumetric_rendering import get_volumetric_rendering, QualityPreset
+    body = await request.json()
+    vr = get_volumetric_rendering()
+    preset_str = body.get("preset", "medium")
+    try:
+        preset = QualityPreset(preset_str)
+    except ValueError:
+        preset = QualityPreset.MEDIUM
+    result = vr.set_quality_preset(preset)
+    return {"quality_preset": preset.value, "settings": result}
+
+# ---------------------------------------------------------------------------
+# Crowd Dynamics Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/crowd-dynamics/status")
+async def get_crowd_dynamics_status():
+    """Get crowd dynamics system status."""
+    from sparkai.engine.engine_crowd_dynamics import get_crowd_dynamics
+    cd = get_crowd_dynamics()
+    return cd.get_status()
+
+
+@router.post("/crowd-dynamics/create-agent")
+async def create_crowd_agent(request: Request):
+    """Create a crowd agent."""
+    from sparkai.engine.engine_crowd_dynamics import get_crowd_dynamics
+    body = await request.json()
+    cd = get_crowd_dynamics()
+    agent = cd.create_agent(
+        name=body.get("name", ""),
+        position=tuple(body.get("position", [0, 0])),
+        velocity=tuple(body.get("velocity", [0, 0])),
+        max_speed=body.get("max_speed", 5.0),
+        preferred_speed=body.get("preferred_speed", 3.0),
+        radius=body.get("radius", 0.5),
+        group_id=body.get("group_id"),
+        behavior=body.get("behavior", "flocking"),
+    )
+    return agent.to_dict()
+
+
+@router.post("/crowd-dynamics/create-group")
+async def create_crowd_group(request: Request):
+    """Create a crowd group."""
+    from sparkai.engine.engine_crowd_dynamics import get_crowd_dynamics
+    body = await request.json()
+    cd = get_crowd_dynamics()
+    group = cd.create_group(
+        name=body.get("name", ""),
+        cohesion_weight=body.get("cohesion_weight", 0.3),
+        alignment_weight=body.get("alignment_weight", 0.3),
+        separation_weight=body.get("separation_weight", 0.4),
+        formation=body.get("formation", "none"),
+    )
+    return group.to_dict()
+
+
+@router.post("/crowd-dynamics/update")
+async def update_crowd_simulation(request: Request):
+    """Update the crowd simulation."""
+    from sparkai.engine.engine_crowd_dynamics import get_crowd_dynamics
+    body = await request.json()
+    cd = get_crowd_dynamics()
+    agents = cd.update(
+        delta_time=body.get("delta_time", 0.016),
+        max_agents=body.get("max_agents", 1000),
+    )
+    return {"agents": [a.to_dict() for a in agents], "count": len(agents)}
+
+
+@router.post("/crowd-dynamics/create-flow-field")
+async def create_flow_field(request: Request):
+    """Create a flow field for crowd navigation."""
+    from sparkai.engine.engine_crowd_dynamics import get_crowd_dynamics
+    body = await request.json()
+    cd = get_crowd_dynamics()
+    field = cd.create_flow_field(
+        name=body.get("name", ""),
+        resolution=tuple(body.get("resolution", [10, 10])),
+        field_data=body.get("field_data"),
+    )
+    return field.to_dict()
+
+
+@router.post("/crowd-dynamics/create-obstacle")
+async def create_crowd_obstacle(request: Request):
+    """Add an obstacle to the crowd simulation."""
+    from sparkai.engine.engine_crowd_dynamics import get_crowd_dynamics
+    body = await request.json()
+    cd = get_crowd_dynamics()
+    cd.add_obstacle(
+        x=body.get("x", 0),
+        y=body.get("y", 0),
+        width=body.get("width", 1),
+        height=body.get("height", 1),
+    )
+    return {"success": True}
+
+
+@router.post("/crowd-dynamics/density-map")
+async def compute_density_map(request: Request):
+    """Compute the crowd density map."""
+    from sparkai.engine.engine_crowd_dynamics import get_crowd_dynamics
+    body = await request.json()
+    cd = get_crowd_dynamics()
+    density = cd.compute_density_map(grid_size=body.get("grid_size"))
+    return {"density_map": density}
+
+# ---------------------------------------------------------------------------
+# Fluid Dynamics Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/fluid-dynamics/status")
+async def get_fluid_dynamics_status():
+    """Get fluid dynamics system status."""
+    from sparkai.engine.engine_fluid_dynamics import get_fluid_dynamics
+    fd = get_fluid_dynamics()
+    return fd.get_status()
+
+
+@router.post("/fluid-dynamics/create-simulation")
+async def create_fluid_simulation(request: Request):
+    """Create a fluid simulation."""
+    from sparkai.engine.engine_fluid_dynamics import get_fluid_dynamics, FluidConfig
+    body = await request.json()
+    fd = get_fluid_dynamics()
+    config = FluidConfig(
+        rest_density=body.get("rest_density", 1000.0),
+        gas_constant=body.get("gas_constant", 2000.0),
+        viscosity_coefficient=body.get("viscosity_coefficient", 0.01),
+        surface_tension_coefficient=body.get("surface_tension_coefficient", 0.05),
+        kernel_radius=body.get("kernel_radius", 0.1),
+        gravity=tuple(body.get("gravity", [0, -9.81])),
+    )
+    sim = fd.create_simulation(
+        config=config,
+        bounds=(-10, -10, 10, 10),
+    )
+    return sim.to_dict()
+
+
+@router.post("/fluid-dynamics/add-particles")
+async def add_fluid_particles(request: Request):
+    """Add particles to a fluid simulation."""
+    from sparkai.engine.engine_fluid_dynamics import get_fluid_dynamics
+    body = await request.json()
+    fd = get_fluid_dynamics()
+    particles = fd.add_particles(
+        simulation_id=body.get("simulation_id", ""),
+        particle_count=body.get("particle_count", 100),
+        region=body.get("region", {"x": 0, "y": 0, "width": 1, "height": 1}),
+        velocity_range=body.get("velocity_range"),
+        mass=body.get("mass", 0.001),
+    )
+    return {"particles": [p.to_dict() for p in particles], "count": len(particles)}
+
+
+@router.post("/fluid-dynamics/step")
+async def step_fluid_simulation(request: Request):
+    """Advance the fluid simulation."""
+    from sparkai.engine.engine_fluid_dynamics import get_fluid_dynamics
+    body = await request.json()
+    fd = get_fluid_dynamics()
+    stats = fd.step_simulation(
+        simulation_id=body.get("simulation_id", ""),
+        delta_time=body.get("delta_time", 0.016),
+        max_iterations=body.get("max_iterations", 8),
+    )
+    return stats.to_dict()
+
+
+@router.post("/fluid-dynamics/create-boundary")
+async def create_fluid_boundary(request: Request):
+    """Create a fluid boundary."""
+    from sparkai.engine.engine_fluid_dynamics import get_fluid_dynamics
+    body = await request.json()
+    fd = get_fluid_dynamics()
+    boundary = fd.create_boundary(
+        simulation_id=body.get("simulation_id", ""),
+        boundary_type=body.get("boundary_type", "wall"),
+        params=body.get("params", {}),
+    )
+    return boundary.to_dict()
+
+
+@router.get("/fluid-dynamics/simulations")
+async def list_fluid_simulations():
+    """List all fluid simulations."""
+    from sparkai.engine.engine_fluid_dynamics import get_fluid_dynamics
+    fd = get_fluid_dynamics()
+    return {"simulations": fd.list_simulations()}
+
+
+@router.post("/fluid-dynamics/neighbor-search")
+async def fluid_neighbor_search(request: Request):
+    """Perform neighbor search for particles."""
+    from sparkai.engine.engine_fluid_dynamics import get_fluid_dynamics
+    body = await request.json()
+    fd = get_fluid_dynamics()
+    simulation = fd._simulations.get(body.get("simulation_id", ""))
+    if not simulation:
+        return {"error": "Simulation not found"}
+    particle_id = body.get("particle_id", "")
+    radius = body.get("radius", 0.1)
+    all_particles = list(simulation.particles.values())
+    neighbor_map = fd.neighbor_search(all_particles, radius)
+    neighbors = neighbor_map.get(particle_id, [])
+    return {"neighbors": neighbors, "count": len(neighbors)}
