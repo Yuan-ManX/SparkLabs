@@ -287,6 +287,8 @@ from sparkai.agent.agent_metacognition import AgentMetacognition, get_agent_meta
 from sparkai.agent.agent_predictive_intelligence import AgentPredictiveIntelligence, get_predictive_intelligence, ForecastHorizon, TrendDirection
 from sparkai.agent.agent_causal_reasoning import AgentCausalReasoning, get_causal_reasoning, DiscoveryAlgorithm, InterventionType
 from sparkai.agent.agent_multi_objective_optimizer import AgentMultiObjectiveOptimizer, get_agent_multi_objective_optimizer, OptimizationStrategy, ObjectiveDirection
+from sparkai.agent.agent_world_perception import AgentWorldPerception, get_world_perception, PerceptionModality, WorldLayer, EntityCategory
+from sparkai.agent.agent_dynamic_narrative import AgentDynamicNarrative, get_dynamic_narrative, PlotAdaptation, PlayerImpactLevel
 
 router = APIRouter()
 
@@ -301,6 +303,8 @@ _metacognition = get_agent_metacognition()
 _predictive = get_predictive_intelligence()
 _causal_reasoning = get_causal_reasoning()
 _multi_objective = get_agent_multi_objective_optimizer()
+_world_perception = get_world_perception()
+_dynamic_narrative = get_dynamic_narrative()
 
 _STUDIO_AGENTS = {
     "creative_director": CreativeDirector,
@@ -28187,6 +28191,523 @@ async def multi_objective_sensitivity(request: Request):
             domain=body.get("domain", ""),
             variable=body.get("variable", ""),
             perturbation=body.get("perturbation", 0.1),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+# ---------------------------------------------------------------------------
+# World Perception Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/world-perception/status")
+async def world_perception_status():
+    """Get world perception system status."""
+    try:
+        return _world_perception.get_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-perception/perceive")
+async def world_perception_perceive(request: Request):
+    """Process sensory data and build perception snapshot."""
+    try:
+        body = await request.json()
+        sensory_inputs = body.get("sensory_inputs", [])
+        world_id = body.get("world_id", "")
+        delta_time = body.get("delta_time", 0.016)
+        snapshot = _world_perception.perceive(world_id, sensory_inputs, delta_time)
+        return snapshot.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-perception/filter-by-modality")
+async def world_perception_filter(request: Request):
+    """Filter perceived entities by modality."""
+    try:
+        body = await request.json()
+        modality_str = body.get("modality", "visual")
+        min_confidence = body.get("min_confidence", 0.5)
+        try:
+            modality = PerceptionModality(modality_str)
+        except ValueError:
+            modality = PerceptionModality.VISUAL
+        entities = _world_perception.filter_by_modality(modality, min_confidence)
+        return {"entities": [e.to_dict() for e in entities], "count": len(entities)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-perception/query-region")
+async def world_perception_query(request: Request):
+    """Spatial query for entities in a region."""
+    try:
+        body = await request.json()
+        bounds = tuple(body.get("bounds", [0, 0, 100, 100]))
+        layer_str = body.get("layer", "physical")
+        categories = body.get("categories", [])
+        try:
+            layer = WorldLayer(layer_str)
+        except ValueError:
+            layer = WorldLayer.PHYSICAL
+        cat_list = []
+        for c in categories:
+            try:
+                cat_list.append(EntityCategory(c))
+            except ValueError:
+                pass
+        entities = _world_perception.query_region(bounds, layer, cat_list if cat_list else None)
+        return {"entities": [e.to_dict() for e in entities], "count": len(entities)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-perception/detect-changes")
+async def world_perception_changes(request: Request):
+    """Detect significant changes in world state."""
+    try:
+        body = await request.json()
+        threshold = body.get("threshold", 0.1)
+        entities = _world_perception.detect_changes(threshold)
+        return {"entities": [e.to_dict() for e in entities], "count": len(entities)}
+    except Exception as e:
+        return {"error": str(e)}
+
+# ---------------------------------------------------------------------------
+# Dynamic Narrative Routes
+# ---------------------------------------------------------------------------
+
+@router.get("/dynamic-narrative/status")
+async def dynamic_narrative_status():
+    """Get dynamic narrative system status."""
+    try:
+        return _dynamic_narrative.get_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/dynamic-narrative/build-graph")
+async def dynamic_narrative_build(request: Request):
+    """Build initial narrative graph."""
+    try:
+        body = await request.json()
+        root_story = body.get("root_story", "")
+        branching_factor = body.get("branching_factor", 2)
+        max_depth = body.get("max_depth", 3)
+        root_id = _dynamic_narrative.build_narrative_graph(root_story, branching_factor, max_depth)
+        state = _dynamic_narrative.get_narrative_state()
+        return {"root_id": root_id, "state": state.to_dict()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/dynamic-narrative/process-action")
+async def dynamic_narrative_process_action(request: Request):
+    """Process a player action and compute narrative impact."""
+    try:
+        body = await request.json()
+        impact = _dynamic_narrative.process_player_action(
+            action_name=body.get("action_name", ""),
+            context=body.get("context", ""),
+            intensity=body.get("intensity", 0.5),
+        )
+        return impact.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/dynamic-narrative/adapt")
+async def dynamic_narrative_adapt(request: Request):
+    """Dynamically adapt narrative based on player impact."""
+    try:
+        body = await request.json()
+        impact_id = body.get("impact_id", "")
+        impacts = _dynamic_narrative._player_actions
+        impact_found = None
+        for imp in impacts:
+            if hasattr(imp, 'id') and imp.id == impact_id:
+                impact_found = imp
+                break
+        if impact_found is None:
+            return {"error": "Impact not found"}
+        nodes = _dynamic_narrative.adapt_narrative(impact_found)
+        return {"adapted_nodes": [n.to_dict() for n in nodes], "count": len(nodes)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/dynamic-narrative/advance")
+async def dynamic_narrative_advance(request: Request):
+    """Advance story to next node."""
+    try:
+        body = await request.json()
+        choice_id = body.get("choice_id", "")
+        node = _dynamic_narrative.advance_narrative(choice_id)
+        return node.to_dict() if node else {"error": "No valid next node"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/dynamic-narrative/track-arc")
+async def dynamic_narrative_track_arc(request: Request):
+    """Track character development arc."""
+    try:
+        body = await request.json()
+        arc = _dynamic_narrative.track_character_arc(
+            character_name=body.get("character_name", ""),
+            event_description=body.get("event_description", ""),
+            emotional_impact=body.get("emotional_impact", 0.0),
+        )
+        return arc.to_dict() if arc else {"error": "Character not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/dynamic-narrative/available-branches")
+async def dynamic_narrative_branches():
+    """Get currently available narrative branches."""
+    try:
+        branches = _dynamic_narrative.get_available_branches()
+        return {"branches": [b.to_dict() for b in branches], "count": len(branches)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/dynamic-narrative/predict-outcomes")
+async def dynamic_narrative_predict(request: Request):
+    """Predict possible narrative outcomes."""
+    try:
+        body = await request.json()
+        depth = body.get("depth", 3)
+        outcomes = _dynamic_narrative.predict_narrative_outcomes(depth)
+        return {"outcomes": outcomes, "count": len(outcomes)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Function Dispatcher Routes
+# ---------------------------------------------------------------------------
+
+
+@router.get("/function-dispatcher/status")
+async def function_dispatcher_status():
+    """Get function dispatcher system status."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import get_function_dispatcher
+        fd = get_function_dispatcher()
+        return fd.get_statistics()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/function-dispatcher/categories")
+async def function_dispatcher_categories():
+    """List available function categories."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import get_function_dispatcher
+        fd = get_function_dispatcher()
+        return {"categories": fd.list_categories()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/function-dispatcher/discover")
+async def function_dispatcher_discover(request: Request):
+    """Discover available functions by filter criteria."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import (
+            get_function_dispatcher, FunctionCategory
+        )
+        body = await request.json()
+        fd = get_function_dispatcher()
+        category = body.get("category")
+        if category:
+            try:
+                category = FunctionCategory(category)
+            except ValueError:
+                category = None
+        functions = fd.discover_functions(
+            category=category,
+            tags=body.get("tags"),
+            query=body.get("query"),
+        )
+        return {"functions": [f.to_dict() for f in functions], "count": len(functions)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/function-dispatcher/dispatch")
+async def function_dispatcher_dispatch(request: Request):
+    """Dispatch a function with schema validation and auditing."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import get_function_dispatcher
+        body = await request.json()
+        fd = get_function_dispatcher()
+        result = fd.dispatch(
+            function_name=body.get("function_name", ""),
+            parameters=body.get("parameters", {}),
+            policy=body.get("policy", "safe"),
+            metadata=body.get("metadata"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/function-dispatcher/batch-dispatch")
+async def function_dispatcher_batch(request: Request):
+    """Execute multiple functions in parallel."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import get_function_dispatcher
+        body = await request.json()
+        fd = get_function_dispatcher()
+        results = fd.batch_dispatch(
+            calls=body.get("calls", []),
+            policy=body.get("policy", "safe"),
+        )
+        return {"results": [r.to_dict() for r in results], "count": len(results)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/function-dispatcher/chain-dispatch")
+async def function_dispatcher_chain(request: Request):
+    """Execute functions sequentially in a pipeline."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import get_function_dispatcher
+        body = await request.json()
+        fd = get_function_dispatcher()
+        results = fd.chain_dispatch(
+            steps=body.get("steps", []),
+            policy=body.get("policy", "safe"),
+            stop_on_error=body.get("stop_on_error", True),
+        )
+        return {"results": [r.to_dict() for r in results], "count": len(results)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/function-dispatcher/audit-trail")
+async def function_dispatcher_audit():
+    """Get recent dispatch audit trail."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import get_function_dispatcher
+        fd = get_function_dispatcher()
+        trail = fd.get_audit_trail(limit=50)
+        return {"audit_trail": trail, "count": len(trail)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/function-dispatcher/validate-params")
+async def function_dispatcher_validate(request: Request):
+    """Pre-flight validate function parameters."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import get_function_dispatcher
+        body = await request.json()
+        fd = get_function_dispatcher()
+        is_valid, coerced, errors = fd.validate_parameters(
+            function_name=body.get("function_name", ""),
+            parameters=body.get("parameters", {}),
+        )
+        return {"valid": is_valid, "coerced": coerced, "errors": errors}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/function-dispatcher/register")
+async def function_dispatcher_register(request: Request):
+    """Register a new dispatchable function."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import (
+            get_function_dispatcher, FunctionCategory, ExecutionPolicy,
+            ParameterDefinition, ParameterType
+        )
+        body = await request.json()
+        fd = get_function_dispatcher()
+
+        params = []
+        for p in body.get("parameters", []):
+            try:
+                pt = ParameterType(p.get("param_type", "string"))
+            except ValueError:
+                pt = ParameterType.STRING
+            params.append(ParameterDefinition(
+                name=p.get("name", ""),
+                param_type=pt,
+                required=p.get("required", True),
+                default=p.get("default"),
+                description=p.get("description", ""),
+                enum_values=p.get("enum_values"),
+                min_value=p.get("min_value"),
+                max_value=p.get("max_value"),
+            ))
+
+        try:
+            cat = FunctionCategory(body.get("category", "game_creation"))
+        except ValueError:
+            cat = FunctionCategory.GAME_CREATION
+
+        try:
+            pol = ExecutionPolicy(body.get("policy", "safe"))
+        except ValueError:
+            pol = ExecutionPolicy.SAFE
+
+        # Register with a default handler that echoes params
+        def _default_handler(**kwargs):
+            return {"called": True, "params": kwargs}
+
+        schema = fd.register_function(
+            name=body.get("name", ""),
+            handler=_default_handler,
+            category=cat,
+            description=body.get("description", ""),
+            parameters=params,
+            policy=pol,
+            timeout_ms=body.get("timeout_ms", 30000.0),
+            tags=body.get("tags", []),
+        )
+        return schema.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# World Interaction Routes
+# ---------------------------------------------------------------------------
+
+
+@router.get("/world-interaction/status")
+async def world_interaction_status():
+    """Get world interaction system status."""
+    try:
+        from sparkai.agent.agent_world_interaction import get_agent_world_interaction
+        awi = get_agent_world_interaction()
+        return awi.get_statistics()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-interaction/register-agent")
+async def world_interaction_register_agent(request: Request):
+    """Register an agent in the world interaction layer."""
+    try:
+        from sparkai.agent.agent_world_interaction import get_agent_world_interaction
+        body = await request.json()
+        awi = get_agent_world_interaction()
+        result = awi.register_agent(
+            agent_id=body.get("agent_id", ""),
+            position_x=body.get("position_x", 0.0),
+            position_y=body.get("position_y", 0.0),
+            mode=body.get("mode", "observer"),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-interaction/perceive")
+async def world_interaction_perceive(request: Request):
+    """Capture a structured world snapshot for agent consumption."""
+    try:
+        from sparkai.agent.agent_world_interaction import get_agent_world_interaction
+        body = await request.json()
+        awi = get_agent_world_interaction()
+        percept = awi.perceive_world(
+            agent_id=body.get("agent_id", ""),
+            view_radius=body.get("view_radius", 500.0),
+        )
+        return percept.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-interaction/run-cycle")
+async def world_interaction_run_cycle(request: Request):
+    """Execute a complete perceive-reason-act-observe cycle."""
+    try:
+        from sparkai.agent.agent_world_interaction import get_agent_world_interaction
+        body = await request.json()
+        awi = get_agent_world_interaction()
+        cycle = awi.run_interaction_cycle(
+            agent_id=body.get("agent_id", ""),
+            view_radius=body.get("view_radius", 500.0),
+            goal=body.get("goal"),
+            mode=body.get("mode", "participant"),
+        )
+        return cycle.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-interaction/upsert-entity")
+async def world_interaction_upsert_entity(request: Request):
+    """Add or update a world entity."""
+    try:
+        from sparkai.agent.agent_world_interaction import get_agent_world_interaction
+        body = await request.json()
+        awi = get_agent_world_interaction()
+        entity = awi.upsert_entity(
+            entity_id=body.get("entity_id", ""),
+            entity_type=body.get("entity_type", "unknown"),
+            name=body.get("name", ""),
+            position_x=body.get("position_x", 0.0),
+            position_y=body.get("position_y", 0.0),
+            state=body.get("state", "idle"),
+            properties=body.get("properties"),
+        )
+        return entity.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-interaction/query-entities")
+async def world_interaction_query_entities(request: Request):
+    """Query world entities by type, state, or proximity."""
+    try:
+        from sparkai.agent.agent_world_interaction import get_agent_world_interaction
+        body = await request.json()
+        awi = get_agent_world_interaction()
+        entities = awi.query_world_entities(
+            entity_type=body.get("entity_type"),
+            state=body.get("state"),
+            proximity_x=body.get("proximity_x"),
+            proximity_y=body.get("proximity_y"),
+            max_distance=body.get("max_distance", 500.0),
+            limit=body.get("limit", 100),
+        )
+        return {"entities": [e.to_dict() for e in entities], "count": len(entities)}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/world-interaction/awareness")
+async def world_interaction_awareness(agent_id: str = ""):
+    """Get an agent's situational awareness."""
+    try:
+        from sparkai.agent.agent_world_interaction import get_agent_world_interaction
+        awi = get_agent_world_interaction()
+        awareness = awi.get_situational_awareness(agent_id)
+        return awareness
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/world-interaction/register-interest")
+async def world_interaction_register_interest(request: Request):
+    """Subscribe an agent to spatial region updates."""
+    try:
+        from sparkai.agent.agent_world_interaction import get_agent_world_interaction
+        body = await request.json()
+        awi = get_agent_world_interaction()
+        result = awi.register_interest_region(
+            agent_id=body.get("agent_id", ""),
+            x=body.get("x", 0.0),
+            y=body.get("y", 0.0),
+            radius=body.get("radius", 500.0),
         )
         return result
     except Exception as e:
