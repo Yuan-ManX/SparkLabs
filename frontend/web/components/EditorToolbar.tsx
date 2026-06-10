@@ -57,6 +57,16 @@ const modeGroups = [
       { id: 'orchestrator', label: 'Orchestrate', icon: 'fa-sitemap' },
       { id: 'skill-evolution', label: 'Skills', icon: 'fa-chart-line' },
       { id: 'studio', label: 'Studio AI', icon: 'fa-users-gear' },
+      { id: 'function-dispatcher', label: 'Dispatcher', icon: 'fa-arrow-right-arrow-left' },
+      { id: 'world-interaction', label: 'World AI', icon: 'fa-globe' },
+    ],
+  },
+  {
+    label: 'Engine',
+    items: [
+      { id: 'sprite-batcher', label: 'Batcher', icon: 'fa-layer-group' },
+      { id: 'visual-event-sheet', label: 'Events', icon: 'fa-list-check' },
+      { id: 'node-composer', label: 'Nodes', icon: 'fa-cubes' },
     ],
   },
   {
