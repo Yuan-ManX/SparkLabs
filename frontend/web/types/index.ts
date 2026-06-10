@@ -437,7 +437,17 @@ export type ViewMode =
   | 'multi-objective'
   | 'volumetric-rendering'
   | 'crowd-dynamics'
-  | 'fluid-dynamics';
+  | 'fluid-dynamics'
+  | 'world-perception'
+  | 'dynamic-narrative'
+  | 'procedural-animation'
+  | 'object-pool'
+  | 'runtime-scripting'
+  | 'function-dispatcher'
+  | 'world-interaction'
+  | 'sprite-batcher'
+  | 'visual-event-sheet'
+  | 'node-composer';
 
 // Runtime types
 
