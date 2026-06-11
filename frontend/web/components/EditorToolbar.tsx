@@ -59,6 +59,8 @@ const modeGroups = [
       { id: 'studio', label: 'Studio AI', icon: 'fa-users-gear' },
       { id: 'function-dispatcher', label: 'Dispatcher', icon: 'fa-arrow-right-arrow-left' },
       { id: 'world-interaction', label: 'World AI', icon: 'fa-globe' },
+      { id: 'creative-director', label: 'Creative', icon: 'fa-lightbulb' },
+      { id: 'live-debugger', label: 'Debugger', icon: 'fa-bug' },
     ],
   },
   {
@@ -67,6 +69,12 @@ const modeGroups = [
       { id: 'sprite-batcher', label: 'Batcher', icon: 'fa-layer-group' },
       { id: 'visual-event-sheet', label: 'Events', icon: 'fa-list-check' },
       { id: 'node-composer', label: 'Nodes', icon: 'fa-cubes' },
+      { id: 'particle-system', label: 'Particles', icon: 'fa-wind' },
+      { id: 'tilemap-system', label: 'Tilemap', icon: 'fa-grid-2' },
+      { id: 'input-mapping', label: 'Input', icon: 'fa-keyboard' },
+      { id: 'camera-system', label: 'Camera', icon: 'fa-camera' },
+      { id: 'animation-controller', label: 'Animation', icon: 'fa-film' },
+      { id: 'scene-transition', label: 'Scenes', icon: 'fa-right-left' },
     ],
   },
   {
