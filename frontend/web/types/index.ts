@@ -447,7 +447,15 @@ export type ViewMode =
   | 'world-interaction'
   | 'sprite-batcher'
   | 'visual-event-sheet'
-  | 'node-composer';
+  | 'node-composer'
+  | 'particle-system'
+  | 'tilemap-system'
+  | 'input-mapping'
+  | 'camera-system'
+  | 'animation-controller'
+  | 'scene-transition'
+  | 'creative-director'
+  | 'live-debugger';
 
 // Runtime types
 
