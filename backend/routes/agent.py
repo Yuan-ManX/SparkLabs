@@ -28712,3 +28712,534 @@ async def world_interaction_register_interest(request: Request):
         return result
     except Exception as e:
         return {"error": str(e)}
+# ---------------------------------------------------------------------------
+# Creative Director Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/creative-director/create-project")
+async def creative_director_create_project(request: Request):
+    """Create a new game project."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        project = obj.create_project(
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            genre=body.get("genre", "platformer"),
+            platform=body.get("platform", "web"),
+        )
+        return project.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/create-idea")
+async def creative_director_create_idea(request: Request):
+    """Create a new game idea."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        idea = obj.create_idea(
+            project_id=body.get("project_id", ""),
+            title=body.get("title", ""),
+            category=body.get("category", "mechanic"),
+            description=body.get("description", ""),
+            mechanics=body.get("mechanics"),
+            complexity=body.get("complexity", "moderate"),
+            target_audience=body.get("target_audience", "core"),
+            tags=body.get("tags"),
+            parent_idea_id=body.get("parent_idea_id", ""),
+        )
+        return idea.to_dict() if idea else {"error": "project not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/iterate-idea")
+async def creative_director_iterate_idea(request: Request):
+    """Iterate on an existing idea."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        result = obj.iterate_idea(
+            project_id=body.get("project_id", ""),
+            idea_id=body.get("idea_id", ""),
+            iteration_notes=body.get("iteration_notes", ""),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/approve-idea")
+async def creative_director_approve_idea(request: Request):
+    """Approve an idea."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        obj.approve_idea(
+            project_id=body.get("project_id", ""),
+            idea_id=body.get("idea_id", ""),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/add-feedback")
+async def creative_director_add_feedback(request: Request):
+    """Add feedback to an idea."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        feedback = obj.add_feedback(
+            idea_id=body.get("idea_id", ""),
+            rating=body.get("rating", 3),
+            strengths=body.get("strengths", []),
+            weaknesses=body.get("weaknesses", []),
+            suggestions=body.get("suggestions", []),
+            reviewer_role=body.get("reviewer_role", "designer"),
+        )
+        return feedback.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/creative-director/project-ideas")
+async def creative_director_project_ideas(request: Request):
+    """Get project ideas."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        obj = get_creative_director()
+        ideas = obj.get_project_ideas(
+            project_id=request.query_params.get("project_id", ""),
+            status=request.query_params.get("status"),
+            category=request.query_params.get("category"),
+        )
+        return [i.to_dict() for i in ideas]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/create-session")
+async def creative_director_create_session(request: Request):
+    """Create a creative session."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        session = obj.create_session(
+            project_id=body.get("project_id", ""),
+            focus_area=body.get("focus_area", "mechanic"),
+        )
+        return session.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/end-session")
+async def creative_director_end_session(request: Request):
+    """End a creative session."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        obj.end_session(session_id=body.get("session_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/generate-prompts")
+async def creative_director_generate_prompts(request: Request):
+    """Generate creative prompts."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        prompts = obj.generate_prompts(
+            project_id=body.get("project_id", ""),
+            session_id=body.get("session_id", ""),
+            category=body.get("category", "mechanic"),
+            count=body.get("count", 3),
+        )
+        return {"prompts": prompts}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/generate-from-prompt")
+async def creative_director_generate_from_prompt(request: Request):
+    """Generate an idea from a prompt."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        idea = obj.generate_idea_from_prompt(
+            project_id=body.get("project_id", ""),
+            category=body.get("category", "mechanic"),
+            prompt=body.get("prompt", ""),
+        )
+        return idea.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/add-inspiration")
+async def creative_director_add_inspiration(request: Request):
+    """Add an inspiration entry."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        insp = obj.add_inspiration(
+            source=body.get("source", ""),
+            content=body.get("content", ""),
+            category=body.get("category", "mechanic"),
+            relevance_tags=body.get("relevance_tags"),
+        )
+        return insp.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/mechanic-combos")
+async def creative_director_mechanic_combos(request: Request):
+    """Generate mechanic combinations."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        combos = obj.generate_mechanic_combo(
+            project_id=body.get("project_id", ""),
+            count=body.get("count", 3),
+        )
+        return {"combos": combos}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/creative-director/project-stats")
+async def creative_director_project_stats(request: Request):
+    """Get project statistics."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        obj = get_creative_director()
+        return obj.get_project_stats(
+            project_id=request.query_params.get("project_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/creative-director/element-templates")
+async def creative_director_element_templates(request: Request):
+    """Get element templates by type."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        obj = get_creative_director()
+        return obj.get_templates_by_type(
+            element_type=request.query_params.get("element_type", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/creative-director/export-doc")
+async def creative_director_export_doc(request: Request):
+    """Export design document."""
+    try:
+        from sparkai.agent.agent_creative_director import get_creative_director
+        body = await request.json()
+        obj = get_creative_director()
+        return obj.export_design_doc(
+            project_id=body.get("project_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Live Debugger Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/live-debugger/start-session")
+async def live_debugger_start_session(request: Request):
+    """Start a debug session."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        session = obj.start_session(name=body.get("name", "debug-session"))
+        return session.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/end-session")
+async def live_debugger_end_session(request: Request):
+    """End a debug session."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        obj.end_session(session_id=body.get("session_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/log-entry")
+async def live_debugger_log_entry(request: Request):
+    """Log a debug entry."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        entry = obj.log_entry(
+            level=body.get("level", "info"),
+            source=body.get("source", ""),
+            message=body.get("message", ""),
+            stack_trace=body.get("stack_trace", ""),
+            context=body.get("context"),
+        )
+        return entry.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/live-debugger/entries")
+async def live_debugger_entries(request: Request):
+    """Get debug entries."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        obj = get_live_debugger()
+        entries = obj.get_entries(
+            level=request.query_params.get("level"),
+            source=request.query_params.get("source"),
+            resolved=request.query_params.get("resolved"),
+            limit=int(request.query_params.get("limit", 50)),
+        )
+        return [e.to_dict() for e in entries]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/resolve-entry")
+async def live_debugger_resolve_entry(request: Request):
+    """Resolve a debug entry."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        obj.resolve_entry(entry_id=body.get("entry_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/add-breakpoint")
+async def live_debugger_add_breakpoint(request: Request):
+    """Add a breakpoint."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        bp = obj.add_breakpoint(
+            name=body.get("name", ""),
+            bp_type=body.get("bp_type", "line"),
+            target=body.get("target", ""),
+            max_hits=body.get("max_hits", 0),
+            tags=body.get("tags"),
+        )
+        return bp.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/toggle-breakpoint")
+async def live_debugger_toggle_breakpoint(request: Request):
+    """Toggle a breakpoint enabled state."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        enabled = body.get("enabled", True)
+        breakpoint_id = body.get("breakpoint_id", "")
+        if enabled:
+            obj.enable_breakpoint(breakpoint_id)
+        else:
+            obj.disable_breakpoint(breakpoint_id)
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/hit-breakpoint")
+async def live_debugger_hit_breakpoint(request: Request):
+    """Record a breakpoint hit."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        obj.hit_breakpoint(breakpoint_id=body.get("breakpoint_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/live-debugger/active-breakpoints")
+async def live_debugger_active_breakpoints():
+    """Get active breakpoints."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        obj = get_live_debugger()
+        return obj.get_active_breakpoints()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/take-snapshot")
+async def live_debugger_take_snapshot(request: Request):
+    """Take a debug snapshot."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        snap = obj.take_snapshot(
+            scope=body.get("scope", "scene"),
+            target_name=body.get("target_name", ""),
+            state_data=body.get("state_data", {}),
+        )
+        return snap.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/live-debugger/snapshots")
+async def live_debugger_snapshots(request: Request):
+    """Get debug snapshots."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        obj = get_live_debugger()
+        snapshots = obj.get_snapshots(
+            scope=request.query_params.get("scope"),
+            limit=int(request.query_params.get("limit", 20)),
+        )
+        return [s.to_dict() for s in snapshots]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/report-error")
+async def live_debugger_report_error(request: Request):
+    """Report an error."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        error = obj.report_error(
+            error_type=body.get("error_type", ""),
+            message=body.get("message", ""),
+            stack_trace=body.get("stack_trace", ""),
+            context=body.get("context"),
+        )
+        return error.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/live-debugger/unresolved-errors")
+async def live_debugger_unresolved_errors():
+    """Get unresolved errors."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        obj = get_live_debugger()
+        return obj.get_unresolved_errors()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/resolve-error")
+async def live_debugger_resolve_error(request: Request):
+    """Resolve an error."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        obj.resolve_error(error_id=body.get("error_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/suggest-fix")
+async def live_debugger_suggest_fix(request: Request):
+    """Suggest a fix for an error."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        fix = obj.suggest_fix(error_id=body.get("error_id", ""))
+        return fix.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/apply-fix")
+async def live_debugger_apply_fix(request: Request):
+    """Apply a suggested fix."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        obj.apply_fix(suggestion_id=body.get("suggestion_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/live-debugger/debug-report")
+async def live_debugger_debug_report(request: Request):
+    """Generate a debug report."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        obj = get_live_debugger()
+        return obj.generate_debug_report(
+            session_id=request.query_params.get("session_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/live-debugger/clear-old")
+async def live_debugger_clear_old(request: Request):
+    """Clear old debug entries."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        body = await request.json()
+        obj = get_live_debugger()
+        count = obj.clear_old_entries(
+            older_than_seconds=body.get("older_than_seconds", 3600),
+        )
+        return {"cleared": count}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/live-debugger/session-stats")
+async def live_debugger_session_stats(request: Request):
+    """Get session statistics."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        obj = get_live_debugger()
+        return obj.get_session_stats(
+            session_id=request.query_params.get("session_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
