@@ -2120,3 +2120,1309 @@ async def node_composer_create_group(request: Request):
         node_ids=body.get("node_ids"),
     )
     return group.to_dict() if group else {"error": "Tree not found"}
+# ---------------------------------------------------------------------------
+# Particle System Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/particle-system/create-emitter")
+async def particle_system_create_emitter(request: Request):
+    """Create a particle emitter."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system, EmitterConfig
+        body = await request.json()
+        ps = get_particle_system()
+        config = EmitterConfig(
+            name=body.get("name", "emitter"),
+            texture_id=body.get("texture_id", ""),
+            emission_shape=body.get("emission_shape", "point"),
+            emission_rate=body.get("emission_rate", 100.0),
+            life_min=body.get("life_min", 0.5),
+            life_max=body.get("life_max", 1.0),
+            speed_min=body.get("speed_min", 100.0),
+            speed_max=body.get("speed_max", 200.0),
+            angle_min=body.get("angle_min", 0.0),
+            angle_max=body.get("angle_max", 360.0),
+            size_start_min=body.get("size_start_min", 1.0),
+            size_start_max=body.get("size_start_max", 1.0),
+            size_end_min=body.get("size_end_min", 0.5),
+            size_end_max=body.get("size_end_max", 0.5),
+            color_start=body.get("color_start", (255, 255, 255, 255)),
+            color_end=body.get("color_end", (255, 255, 255, 0)),
+            gravity_x=body.get("gravity_x", 0.0),
+            gravity_y=body.get("gravity_y", 0.0),
+            radial_accel=body.get("radial_accel", 0.0),
+            tangential_accel=body.get("tangential_accel", 0.0),
+            damping=body.get("damping", 0.0),
+            blend_mode=body.get("blend_mode", "normal"),
+            max_particles=body.get("max_particles", 500),
+            emitter_lifetime=body.get("emitter_lifetime", -1),
+            emitter_duration=body.get("emitter_duration", 0.0),
+            emission_burst_count=body.get("emission_burst_count", 0),
+            simulation_space=body.get("simulation_space", "world"),
+            circle_radius=body.get("circle_radius", 0.0),
+            rect_width=body.get("rect_width", 0.0),
+            rect_height=body.get("rect_height", 0.0),
+            ring_inner_radius=body.get("ring_inner_radius", 0.0),
+            ring_outer_radius=body.get("ring_outer_radius", 0.0),
+            cone_angle=body.get("cone_angle", 0.0),
+            line_length=body.get("line_length", 0.0),
+        )
+        emitter = ps.create_emitter(
+            config=config,
+            pos_x=body.get("pos_x", 0.0),
+            pos_y=body.get("pos_y", 0.0),
+            rotation=body.get("rotation", 0.0),
+        )
+        return emitter.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/particle-system/update-all")
+async def particle_system_update_all(request: Request):
+    """Update all particle emitters."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system
+        body = await request.json()
+        ps = get_particle_system()
+        result = ps.update_all(delta_time=body.get("delta_time", 0.016))
+        return {k: [p.to_dict() for p in v] for k, v in result.items()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/particle-system/update-emitter")
+async def particle_system_update_emitter(request: Request):
+    """Update a single particle emitter."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system
+        body = await request.json()
+        ps = get_particle_system()
+        particles = ps.update_emitter(
+            emitter_id=body.get("emitter_id", ""),
+            delta_time=body.get("delta_time", 0.016),
+        )
+        return [p.to_dict() for p in particles]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/particle-system/emitter-state")
+async def particle_system_emitter_state(request: Request):
+    """Get emitter state."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system
+        ps = get_particle_system()
+        state = ps.get_emitter_state(emitter_id=request.query_params.get("emitter_id", ""))
+        return state.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/particle-system/set-emitter-position")
+async def particle_system_set_emitter_position(request: Request):
+    """Set emitter position."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system
+        body = await request.json()
+        ps = get_particle_system()
+        ps.set_emitter_position(
+            emitter_id=body.get("emitter_id", ""),
+            x=body.get("x", 0.0),
+            y=body.get("y", 0.0),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/particle-system/set-emitter-active")
+async def particle_system_set_emitter_active(request: Request):
+    """Set emitter active state."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system
+        body = await request.json()
+        ps = get_particle_system()
+        ps.set_emitter_active(
+            emitter_id=body.get("emitter_id", ""),
+            active=body.get("active", True),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/particle-system/remove-emitter")
+async def particle_system_remove_emitter(request: Request):
+    """Remove an emitter."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system
+        body = await request.json()
+        ps = get_particle_system()
+        ps.remove_emitter(emitter_id=body.get("emitter_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/particle-system/burst")
+async def particle_system_burst(request: Request):
+    """Burst particles from an emitter."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system
+        body = await request.json()
+        ps = get_particle_system()
+        particles = ps.burst(
+            emitter_id=body.get("emitter_id", ""),
+            count=body.get("count", 50),
+        )
+        return [p.to_dict() for p in particles]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/particle-system/stats")
+async def particle_system_stats():
+    """Get particle system statistics."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system
+        ps = get_particle_system()
+        return ps.get_active_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/particle-system/clear")
+async def particle_system_clear():
+    """Clear all emitters."""
+    try:
+        from sparkai.engine.engine_particle_system import get_particle_system
+        ps = get_particle_system()
+        ps.clear_all()
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Tilemap System Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/tilemap-system/create-tilemap")
+async def tilemap_system_create_tilemap(request: Request):
+    """Create a tilemap."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        body = await request.json()
+        tm = get_tilemap_system()
+        result = tm.create_tilemap(
+            name=body.get("name", ""),
+            width=body.get("width", 0),
+            height=body.get("height", 0),
+            tile_width=body.get("tile_width", 0),
+            tile_height=body.get("tile_height", 0),
+            orientation=body.get("orientation", "orthogonal"),
+        )
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/tilemap-system/create-tileset")
+async def tilemap_system_create_tileset(request: Request):
+    """Create a tileset."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        body = await request.json()
+        tm = get_tilemap_system()
+        tileset = tm.create_tileset(
+            name=body.get("name", ""),
+            tile_width=body.get("tile_width", 0),
+            tile_height=body.get("tile_height", 0),
+            image_width=body.get("image_width", 0),
+            image_height=body.get("image_height", 0),
+            margin=body.get("margin", 0),
+            spacing=body.get("spacing", 0),
+        )
+        return tileset.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/tilemap-system/set-tile")
+async def tilemap_system_set_tile(request: Request):
+    """Set a tile in the tilemap."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        body = await request.json()
+        tm = get_tilemap_system()
+        result = tm.set_tile(
+            tilemap_id=body.get("tilemap_id", ""),
+            layer_id=body.get("layer_id", ""),
+            x=body.get("x", 0),
+            y=body.get("y", 0),
+            global_tile_id=body.get("global_tile_id", 0),
+            tileset_id=body.get("tileset_id", ""),
+            flags=body.get("flags"),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/tilemap-system/fill-rect")
+async def tilemap_system_fill_rect(request: Request):
+    """Fill a rectangular region with tiles."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        body = await request.json()
+        tm = get_tilemap_system()
+        tm.fill_rect(
+            tilemap_id=body.get("tilemap_id", ""),
+            layer_id=body.get("layer_id", ""),
+            x=body.get("x", 0),
+            y=body.get("y", 0),
+            w=body.get("w", 1),
+            h=body.get("h", 1),
+            global_tile_id=body.get("global_tile_id", 0),
+            tileset_id=body.get("tileset_id", ""),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/tilemap-system/add-layer")
+async def tilemap_system_add_layer(request: Request):
+    """Add a tile layer."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        body = await request.json()
+        tm = get_tilemap_system()
+        layer = tm.add_layer(
+            tilemap_id=body.get("tilemap_id", ""),
+            name=body.get("name", ""),
+            z_order=body.get("z_order", 0),
+        )
+        return layer.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/tilemap-system/add-object-layer")
+async def tilemap_system_add_object_layer(request: Request):
+    """Add an object layer."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        body = await request.json()
+        tm = get_tilemap_system()
+        layer = tm.add_object_layer(
+            tilemap_id=body.get("tilemap_id", ""),
+            name=body.get("name", ""),
+            z_order=body.get("z_order", 0),
+        )
+        return layer.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/tilemap-system/add-object")
+async def tilemap_system_add_object(request: Request):
+    """Add an object to an object layer."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        body = await request.json()
+        tm = get_tilemap_system()
+        obj = tm.add_tilemap_object(
+            tilemap_id=body.get("tilemap_id", ""),
+            object_layer_id=body.get("object_layer_id", ""),
+            name=body.get("name", ""),
+            obj_type=body.get("obj_type", ""),
+            x=body.get("x", 0.0),
+            y=body.get("y", 0.0),
+            width=body.get("width", 0.0),
+            height=body.get("height", 0.0),
+        )
+        return obj.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/tilemap-system/world-to-tile")
+async def tilemap_system_world_to_tile(request: Request):
+    """Convert world coordinates to tile coordinates."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        body = await request.json()
+        tm = get_tilemap_system()
+        tx, ty = tm.world_to_tile(
+            tilemap_id=body.get("tilemap_id", ""),
+            world_x=body.get("world_x", 0.0),
+            world_y=body.get("world_y", 0.0),
+        )
+        return {"tile_x": tx, "tile_y": ty}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/tilemap-system/tile-to-world")
+async def tilemap_system_tile_to_world(request: Request):
+    """Convert tile coordinates to world coordinates."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        body = await request.json()
+        tm = get_tilemap_system()
+        wx, wy = tm.tile_to_world(
+            tilemap_id=body.get("tilemap_id", ""),
+            tile_x=body.get("tile_x", 0),
+            tile_y=body.get("tile_y", 0),
+        )
+        return {"world_x": wx, "world_y": wy}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/tilemap-system/collision-tiles")
+async def tilemap_system_collision_tiles(request: Request):
+    """Get collision tiles."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        tm = get_tilemap_system()
+        return tm.get_collision_tiles(
+            tilemap_id=request.query_params.get("tilemap_id", ""),
+            layer_id=request.query_params.get("layer_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/tilemap-system/stats")
+async def tilemap_system_stats(request: Request):
+    """Get tilemap statistics."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        tm = get_tilemap_system()
+        return tm.get_tilemap_stats(
+            tilemap_id=request.query_params.get("tilemap_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Input Mapping Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/input-mapping/create-map")
+async def input_mapping_create_map(request: Request):
+    """Create an action map."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        body = await request.json()
+        im = get_input_mapping()
+        map_obj = im.create_action_map(
+            name=body.get("name", "default"),
+            priority=body.get("priority", 0),
+        )
+        return map_obj.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/register-action")
+async def input_mapping_register_action(request: Request):
+    """Register an input action."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping, ActionDefinition
+        body = await request.json()
+        im = get_input_mapping()
+        action = ActionDefinition(
+            name=body.get("name", ""),
+            display_name=body.get("display_name", ""),
+            action_type=body.get("action_type", "digital"),
+            analog_dead_zone=body.get("analog_dead_zone", 0.15),
+            analog_sensitivity=body.get("analog_sensitivity", 1.0),
+            is_toggle=body.get("is_toggle", False),
+        )
+        result = im.register_action(
+            map_id=body.get("map_id", ""),
+            action=action,
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/bind-input")
+async def input_mapping_bind_input(request: Request):
+    """Bind an input to an action."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping, InputBinding
+        body = await request.json()
+        im = get_input_mapping()
+        binding = InputBinding(
+            action_name=body.get("action_name", ""),
+            device=body.get("device", "keyboard"),
+            input_code=body.get("input_code", ""),
+            event_type=body.get("event_type", "pressed"),
+            scale=body.get("scale", 1.0),
+            chord_modifier=body.get("chord_modifier"),
+            chord_key=body.get("chord_key"),
+            zone=body.get("zone"),
+        )
+        result = im.bind_input(
+            map_id=body.get("map_id", ""),
+            action_name=body.get("action_name", ""),
+            binding=binding,
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/register-chord")
+async def input_mapping_register_chord(request: Request):
+    """Register a chord definition."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping, ChordDefinition
+        body = await request.json()
+        im = get_input_mapping()
+        chord = ChordDefinition(
+            name=body.get("name", ""),
+            keys=body.get("keys", []),
+            action_name=body.get("action_name", ""),
+        )
+        result = im.register_chord(chord)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/key-event")
+async def input_mapping_key_event(request: Request):
+    """Process a key event."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        body = await request.json()
+        im = get_input_mapping()
+        states = im.process_key_event(
+            key_code=body.get("key_code", ""),
+            pressed=body.get("pressed", True),
+        )
+        return {k: v.to_dict() for k, v in states.items()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/mouse-event")
+async def input_mapping_mouse_event(request: Request):
+    """Process a mouse event."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        body = await request.json()
+        im = get_input_mapping()
+        states = im.process_mouse_event(
+            button_code=body.get("button_code", ""),
+            pressed=body.get("pressed", True),
+            x=body.get("x", 0.0),
+            y=body.get("y", 0.0),
+        )
+        return {k: v.to_dict() for k, v in states.items()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/mouse-move")
+async def input_mapping_mouse_move(request: Request):
+    """Process mouse movement."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        body = await request.json()
+        im = get_input_mapping()
+        im.process_mouse_move(
+            x=body.get("x", 0.0),
+            y=body.get("y", 0.0),
+            delta_x=body.get("delta_x", 0.0),
+            delta_y=body.get("delta_y", 0.0),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/gamepad-button")
+async def input_mapping_gamepad_button(request: Request):
+    """Process a gamepad button event."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        body = await request.json()
+        im = get_input_mapping()
+        states = im.process_gamepad_button(
+            gamepad_id=body.get("gamepad_id", 0),
+            button_code=body.get("button_code", ""),
+            pressed=body.get("pressed", True),
+        )
+        return {k: v.to_dict() for k, v in states.items()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/gamepad-axis")
+async def input_mapping_gamepad_axis(request: Request):
+    """Process a gamepad axis event."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        body = await request.json()
+        im = get_input_mapping()
+        states = im.process_gamepad_axis(
+            gamepad_id=body.get("gamepad_id", 0),
+            axis_code=body.get("axis_code", ""),
+            value=body.get("value", 0.0),
+        )
+        return {k: v.to_dict() for k, v in states.items()}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/build-frame")
+async def input_mapping_build_frame(request: Request):
+    """Build the input frame."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        im = get_input_mapping()
+        frame = im.build_frame()
+        return frame.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/input-mapping/action-state")
+async def input_mapping_action_state(request: Request):
+    """Get action state."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        im = get_input_mapping()
+        state = im.get_action_state(action_name=request.query_params.get("action_name", ""))
+        return state.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/input-mapping/set-map-enabled")
+async def input_mapping_set_map_enabled(request: Request):
+    """Enable or disable an action map."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        body = await request.json()
+        im = get_input_mapping()
+        im.set_action_map_enabled(
+            map_id=body.get("map_id", ""),
+            enabled=body.get("enabled", True),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/input-mapping/stats")
+async def input_mapping_stats():
+    """Get input mapping statistics."""
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping
+        im = get_input_mapping()
+        return im.get_input_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Camera System Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/camera-system/create")
+async def camera_system_create(request: Request):
+    """Create a camera."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        camera = cs.create_camera(
+            name=body.get("name", "main"),
+            viewport_w=body.get("viewport_w", 1920),
+            viewport_h=body.get("viewport_h", 1080),
+        )
+        return camera.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/set-position")
+async def camera_system_set_position(request: Request):
+    """Set camera position."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        cs.set_camera_position(
+            camera_id=body.get("camera_id", ""),
+            x=body.get("x", 0.0),
+            y=body.get("y", 0.0),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/set-zoom")
+async def camera_system_set_zoom(request: Request):
+    """Set camera zoom."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        cs.set_camera_zoom(
+            camera_id=body.get("camera_id", ""),
+            zoom=body.get("zoom", 1.0),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/set-rotation")
+async def camera_system_set_rotation(request: Request):
+    """Set camera rotation."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        cs.set_camera_rotation(
+            camera_id=body.get("camera_id", ""),
+            degrees=body.get("degrees", 0.0),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/set-follow")
+async def camera_system_set_follow(request: Request):
+    """Set camera follow target."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system, CameraTarget
+        body = await request.json()
+        cs = get_camera_system()
+        target = CameraTarget(
+            target_id=body.get("target_id", ""),
+            offset_x=body.get("offset_x", 0.0),
+            offset_y=body.get("offset_y", 0.0),
+            smooth_speed=body.get("smooth_speed", 5.0),
+            dead_zone_x=body.get("dead_zone_x", 0.0),
+            dead_zone_y=body.get("dead_zone_y", 0.0),
+            look_ahead=body.get("look_ahead", 0.0),
+        )
+        cs.set_follow_target(
+            camera_id=body.get("camera_id", ""),
+            target=target,
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/update-follow")
+async def camera_system_update_follow(request: Request):
+    """Update camera follow."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        camera = cs.update_follow(
+            camera_id=body.get("camera_id", ""),
+            delta_time=body.get("delta_time", 0.016),
+        )
+        return camera.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/start-shake")
+async def camera_system_start_shake(request: Request):
+    """Start camera shake."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        cs.start_shake(
+            camera_id=body.get("camera_id", ""),
+            amplitude_x=body.get("amplitude_x", 5.0),
+            amplitude_y=body.get("amplitude_y", 5.0),
+            frequency=body.get("frequency", 10.0),
+            duration=body.get("duration", 0.5),
+            shake_type=body.get("shake_type", "random"),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/update-shake")
+async def camera_system_update_shake(request: Request):
+    """Update camera shake."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        cs.update_shake(
+            camera_id=body.get("camera_id", ""),
+            delta_time=body.get("delta_time", 0.016),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/stop-shake")
+async def camera_system_stop_shake(request: Request):
+    """Stop camera shake."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        cs.stop_shake(camera_id=body.get("camera_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/set-bounds")
+async def camera_system_set_bounds(request: Request):
+    """Set camera bounds."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system, CameraBounds
+        body = await request.json()
+        cs = get_camera_system()
+        bounds = CameraBounds(
+            min_x=body.get("min_x", 0.0),
+            min_y=body.get("min_y", 0.0),
+            max_x=body.get("max_x", 0.0),
+            max_y=body.get("max_y", 0.0),
+        )
+        cs.set_bounds(
+            camera_id=body.get("camera_id", ""),
+            bounds=bounds,
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/world-to-screen")
+async def camera_system_world_to_screen(request: Request):
+    """Convert world to screen coordinates."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        sx, sy = cs.world_to_screen(
+            camera_id=body.get("camera_id", ""),
+            world_x=body.get("world_x", 0.0),
+            world_y=body.get("world_y", 0.0),
+        )
+        return {"screen_x": sx, "screen_y": sy}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/screen-to-world")
+async def camera_system_screen_to_world(request: Request):
+    """Convert screen to world coordinates."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        wx, wy = cs.screen_to_world(
+            camera_id=body.get("camera_id", ""),
+            screen_x=body.get("screen_x", 0.0),
+            screen_y=body.get("screen_y", 0.0),
+        )
+        return {"world_x": wx, "world_y": wy}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/add-effect")
+async def camera_system_add_effect(request: Request):
+    """Add a camera effect."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        cs.add_effect(
+            camera_id=body.get("camera_id", ""),
+            name=body.get("name", ""),
+            duration=body.get("duration", 1.0),
+            params=body.get("params"),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/camera-system/snapshot")
+async def camera_system_snapshot(request: Request):
+    """Take a camera snapshot."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        body = await request.json()
+        cs = get_camera_system()
+        snapshot = cs.take_snapshot(camera_id=body.get("camera_id", ""))
+        return snapshot.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/camera-system/viewport")
+async def camera_system_viewport(request: Request):
+    """Get camera viewport."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        cs = get_camera_system()
+        return cs.get_camera_viewport(
+            camera_id=request.query_params.get("camera_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/camera-system/stats")
+async def camera_system_stats():
+    """Get camera system statistics."""
+    try:
+        from sparkai.engine.engine_camera_system import get_camera_system
+        cs = get_camera_system()
+        return cs.get_camera_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Animation Controller Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/animation-controller/create-clip")
+async def animation_controller_create_clip(request: Request):
+    """Create an animation clip."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller, AnimationFrame
+        body = await request.json()
+        ac = get_animation_controller()
+        frames = []
+        for f in body.get("frames", []):
+            frames.append(AnimationFrame(
+                frame_index=f.get("frame_index", 0),
+                source_rect=f.get("source_rect", [0, 0, 0, 0]),
+                duration=f.get("duration", 0.1),
+                offset=f.get("offset", [0, 0]),
+            ))
+        clip = ac.create_clip(
+            name=body.get("name", ""),
+            frames=frames,
+            fps=body.get("fps", 30.0),
+            play_mode=body.get("play_mode", "loop"),
+        )
+        return clip.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/create-machine")
+async def animation_controller_create_machine(request: Request):
+    """Create an animation state machine."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        body = await request.json()
+        ac = get_animation_controller()
+        result = ac.create_state_machine(
+            name=body.get("name", ""),
+            default_state=body.get("default_state", "idle"),
+        )
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/add-state")
+async def animation_controller_add_state(request: Request):
+    """Add a state to the state machine."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller, AnimationState
+        body = await request.json()
+        ac = get_animation_controller()
+        state = AnimationState(
+            name=body.get("name", ""),
+            clip_name=body.get("clip_name", ""),
+            speed=body.get("speed", 1.0),
+            loop=body.get("loop", True),
+            blend_in=body.get("blend_in", 0.15),
+            blend_out=body.get("blend_out", 0.15),
+        )
+        result = ac.add_state(
+            machine_id=body.get("machine_id", ""),
+            state=state,
+        )
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/add-transition")
+async def animation_controller_add_transition(request: Request):
+    """Add a transition to the state machine."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller, AnimationTransition
+        body = await request.json()
+        ac = get_animation_controller()
+        transition = AnimationTransition(
+            from_state=body.get("from_state", ""),
+            to_state=body.get("to_state", ""),
+            conditions=body.get("conditions", []),
+            has_exit_time=body.get("has_exit_time", False),
+            exit_time=body.get("exit_time", 0.0),
+            duration=body.get("duration", 0.15),
+        )
+        result = ac.add_transition(
+            machine_id=body.get("machine_id", ""),
+            transition=transition,
+        )
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/add-parameter")
+async def animation_controller_add_parameter(request: Request):
+    """Add a parameter to the state machine."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller, AnimationParameter
+        body = await request.json()
+        ac = get_animation_controller()
+        param = AnimationParameter(
+            name=body.get("name", ""),
+            param_type=body.get("param_type", "float"),
+            default_value=body.get("default_value", 0.0),
+        )
+        result = ac.add_parameter(
+            machine_id=body.get("machine_id", ""),
+            param=param,
+        )
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/set-parameter")
+async def animation_controller_set_parameter(request: Request):
+    """Set a parameter value."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        body = await request.json()
+        ac = get_animation_controller()
+        ac.set_parameter(
+            machine_id=body.get("machine_id", ""),
+            param_name=body.get("param_name", ""),
+            value=body.get("value", 0.0),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/create-instance")
+async def animation_controller_create_instance(request: Request):
+    """Create an animation state machine instance."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        body = await request.json()
+        ac = get_animation_controller()
+        result = ac.create_instance(machine_id=body.get("machine_id", ""))
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/update-instance")
+async def animation_controller_update_instance(request: Request):
+    """Update an animation instance."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        body = await request.json()
+        ac = get_animation_controller()
+        instance = ac.update_instance(
+            instance_id=body.get("instance_id", ""),
+            delta_time=body.get("delta_time", 0.016),
+        )
+        return instance.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/current-frame")
+async def animation_controller_current_frame(request: Request):
+    """Get the current animation frame."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        body = await request.json()
+        ac = get_animation_controller()
+        frame = ac.get_current_frame(instance_id=body.get("instance_id", ""))
+        return frame.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/pause")
+async def animation_controller_pause(request: Request):
+    """Pause an animation instance."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        body = await request.json()
+        ac = get_animation_controller()
+        ac.pause_instance(instance_id=body.get("instance_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/resume")
+async def animation_controller_resume(request: Request):
+    """Resume an animation instance."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        body = await request.json()
+        ac = get_animation_controller()
+        ac.resume_instance(instance_id=body.get("instance_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/speed")
+async def animation_controller_speed(request: Request):
+    """Set animation instance speed."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        body = await request.json()
+        ac = get_animation_controller()
+        ac.set_instance_speed(
+            instance_id=body.get("instance_id", ""),
+            speed=body.get("speed", 1.0),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/animation-controller/trigger-event")
+async def animation_controller_trigger_event(request: Request):
+    """Trigger a state machine event."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        body = await request.json()
+        ac = get_animation_controller()
+        ac.trigger_event(
+            machine_id=body.get("machine_id", ""),
+            event_name=body.get("event_name", ""),
+        )
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/animation-controller/stats")
+async def animation_controller_stats():
+    """Get animation controller statistics."""
+    try:
+        from sparkai.engine.engine_animation_controller import get_animation_controller
+        ac = get_animation_controller()
+        return ac.get_animation_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ---------------------------------------------------------------------------
+# Scene Transition Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/scene-transition/register-scene")
+async def scene_transition_register_scene(request: Request):
+    """Register a scene descriptor."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition, SceneDescriptor
+        body = await request.json()
+        st = get_scene_transition()
+        descriptor = SceneDescriptor(
+            id=body.get("id", ""),
+            name=body.get("name", ""),
+            scene_path=body.get("scene_path", ""),
+            transition_in=body.get("transition_in", "fade"),
+            transition_out=body.get("transition_out", "fade"),
+            is_persistent=body.get("is_persistent", False),
+        )
+        result = st.register_scene(descriptor)
+        return result.to_dict() if hasattr(result, "to_dict") else {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/scene-transition/load-scene")
+async def scene_transition_load_scene(request: Request):
+    """Load a scene."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition, TransitionConfig
+        body = await request.json()
+        st = get_scene_transition()
+        config = None
+        if body.get("transition_config"):
+            tc = body["transition_config"]
+            config = TransitionConfig(
+                transition_type=tc.get("transition_type", "fade"),
+                duration=tc.get("duration", 1.0),
+                easing=tc.get("easing", "linear"),
+                params=tc.get("params"),
+            )
+        result = st.load_scene(
+            descriptor_id=body.get("descriptor_id", ""),
+            load_mode=body.get("load_mode", "single"),
+            transition_config=config,
+        )
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/scene-transition/transition-to")
+async def scene_transition_transition_to(request: Request):
+    """Transition to a scene."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition, TransitionConfig
+        body = await request.json()
+        st = get_scene_transition()
+        tc = body.get("config", {})
+        config = TransitionConfig(
+            transition_type=tc.get("transition_type", "fade"),
+            duration=tc.get("duration", 1.0),
+            easing=tc.get("easing", "linear"),
+            params=tc.get("params"),
+        )
+        result = st.transition_to(
+            from_instance_id=body.get("from_instance_id", ""),
+            to_descriptor_id=body.get("to_descriptor_id", ""),
+            config=config,
+        )
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/scene-transition/update-transition")
+async def scene_transition_update_transition(request: Request):
+    """Update an active transition."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition
+        body = await request.json()
+        st = get_scene_transition()
+        result = st.update_transition(
+            transition_id=body.get("transition_id", ""),
+            delta_time=body.get("delta_time", 0.016),
+        )
+        if isinstance(result, tuple):
+            return {"progress": result[0], "completed": result[1]}
+        return result.to_dict() if hasattr(result, "to_dict") else result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/scene-transition/cancel-transition")
+async def scene_transition_cancel_transition(request: Request):
+    """Cancel an active transition."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition
+        body = await request.json()
+        st = get_scene_transition()
+        st.cancel_transition(transition_id=body.get("transition_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/scene-transition/pause-scene")
+async def scene_transition_pause_scene(request: Request):
+    """Pause a scene instance."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition
+        body = await request.json()
+        st = get_scene_transition()
+        st.pause_scene(instance_id=body.get("instance_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/scene-transition/resume-scene")
+async def scene_transition_resume_scene(request: Request):
+    """Resume a scene instance."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition
+        body = await request.json()
+        st = get_scene_transition()
+        st.resume_scene(instance_id=body.get("instance_id", ""))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/scene-transition/active-scenes")
+async def scene_transition_active_scenes():
+    """Get active scenes."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition
+        st = get_scene_transition()
+        return st.get_active_scenes()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/scene-transition/descriptors")
+async def scene_transition_descriptors():
+    """Get all scene descriptors."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition
+        st = get_scene_transition()
+        return st.get_all_descriptors()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/scene-transition/scene-state")
+async def scene_transition_scene_state(request: Request):
+    """Get a scene instance state."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition
+        st = get_scene_transition()
+        return st.get_scene_state(
+            instance_id=request.query_params.get("instance_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/scene-transition/stats")
+async def scene_transition_stats():
+    """Get scene transition statistics."""
+    try:
+        from sparkai.engine.engine_scene_transition import get_scene_transition
+        st = get_scene_transition()
+        stats = st.get_scene_stats()
+        return stats.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
