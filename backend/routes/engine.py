@@ -1634,6 +1634,16 @@ async def sprite_batcher_status():
     sb = get_sprite_batcher()
     return sb.get_render_stats()
 
+@router.get("/sprite-batcher/stats")
+async def sprite_batcher_stats():
+    """Get sprite batcher statistics (alias for status)."""
+    try:
+        from sparkai.engine.engine_sprite_batcher import get_sprite_batcher
+        sb = get_sprite_batcher()
+        return sb.get_render_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
 
 @router.post("/sprite-batcher/submit")
 async def sprite_batcher_submit(request: Request):
@@ -1727,6 +1737,16 @@ async def visual_event_sheet_status():
     from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet
     ves = get_visual_event_sheet()
     return ves.get_statistics()
+
+@router.get("/visual-event-sheet/stats")
+async def visual_event_sheet_stats():
+    """Get visual event sheet statistics (alias for status)."""
+    try:
+        from sparkai.engine.engine_visual_event_sheet import get_visual_event_sheet
+        ves = get_visual_event_sheet()
+        return ves.get_statistics()
+    except Exception as e:
+        return {"error": str(e)}
 
 
 @router.post("/visual-event-sheet/create")
@@ -1919,6 +1939,16 @@ async def node_composer_status():
     from sparkai.engine.engine_node_composer import get_node_composer
     nc = get_node_composer()
     return nc.get_statistics()
+
+@router.get("/node-composer/stats")
+async def node_composer_stats():
+    """Get node composer statistics (alias for status)."""
+    try:
+        from sparkai.engine.engine_node_composer import get_node_composer
+        nc = get_node_composer()
+        return nc.get_statistics()
+    except Exception as e:
+        return {"error": str(e)}
 
 
 @router.post("/node-composer/build-tree")
@@ -3424,5 +3454,904 @@ async def scene_transition_stats():
         st = get_scene_transition()
         stats = st.get_scene_stats()
         return stats.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Network Replication Routes
+# ============================================================
+
+@router.post("/network-replication/register-identity")
+async def network_replication_register_identity(request: Request):
+    """Register a network-synchronized entity."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication, ReplicationMode
+        body = await request.json()
+        nr = get_network_replication()
+        try:
+            mode = ReplicationMode(body.get("replication_mode", "reliable"))
+        except ValueError:
+            mode = ReplicationMode.RELIABLE
+        identity = nr.register_identity(
+            entity_type=body.get("entity_type", ""),
+            owner_client_id=body.get("owner_client_id", ""),
+            is_authoritative=body.get("is_authoritative", True),
+            replication_mode=mode,
+            spawn_position=tuple(body.get("spawn_position", [0.0, 0.0, 0.0])),
+            priority=body.get("priority", 1),
+        )
+        return identity.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/network-replication/submit-state")
+async def network_replication_submit_state(request: Request):
+    """Submit replicated state for a network entity."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication
+        body = await request.json()
+        nr = get_network_replication()
+        state = nr.submit_state(
+            identity_id=body.get("identity_id", ""),
+            position=tuple(body.get("position", [0.0, 0.0, 0.0])),
+            rotation=tuple(body.get("rotation", [0.0, 0.0, 0.0])),
+            velocity=tuple(body.get("velocity", [0.0, 0.0, 0.0])),
+            custom_state=body.get("custom_state"),
+        )
+        return state.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/network-replication/send-event")
+async def network_replication_send_event(request: Request):
+    """Send a network event between clients."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication, NetworkEventType
+        body = await request.json()
+        nr = get_network_replication()
+        try:
+            etype = NetworkEventType(body.get("event_type", "rpc"))
+        except ValueError:
+            etype = NetworkEventType.RPC
+        event = nr.send_event(
+            event_type=etype,
+            source_id=body.get("source_id", ""),
+            target_id=body.get("target_id", ""),
+            payload=body.get("payload", {}),
+            reliable=body.get("reliable", True),
+        )
+        return event.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/network-replication/register-client")
+async def network_replication_register_client(request: Request):
+    """Register a client connection."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication, NetworkRole
+        body = await request.json()
+        nr = get_network_replication()
+        try:
+            role = NetworkRole(body.get("role", "client"))
+        except ValueError:
+            role = NetworkRole.CLIENT
+        client = nr.register_client(
+            address=body.get("address", "127.0.0.1"),
+            port=body.get("port", 7777),
+            role=role,
+        )
+        return client.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/network-replication/heartbeat")
+async def network_replication_heartbeat(request: Request):
+    """Update client heartbeat timestamp."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication
+        body = await request.json()
+        nr = get_network_replication()
+        result = nr.update_heartbeat(client_id=body.get("client_id", ""))
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/network-replication/disconnect")
+async def network_replication_disconnect(request: Request):
+    """Disconnect a client."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication
+        body = await request.json()
+        nr = get_network_replication()
+        result = nr.disconnect_client(client_id=body.get("client_id", ""))
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/network-replication/stats")
+async def network_replication_stats():
+    """Get network replication statistics."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication
+        nr = get_network_replication()
+        return nr.get_stats().to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/network-replication/clients")
+async def network_replication_list_clients():
+    """List all connected clients."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication
+        nr = get_network_replication()
+        return [c.to_dict() for c in nr.list_clients()]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/network-replication/interested-entities")
+async def network_replication_interested_entities(request: Request):
+    """Get entities within a client's view radius (interest management)."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication
+        body = await request.json()
+        nr = get_network_replication()
+        entities = nr.get_interested_entities(
+            client_id=body.get("client_id", ""),
+            view_radius=body.get("view_radius", 100.0),
+        )
+        return [e.to_dict() for e in entities]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/network-replication/create-match")
+async def network_replication_create_match(request: Request):
+    """Create a multiplayer match."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication
+        body = await request.json()
+        nr = get_network_replication()
+        match = nr.create_match(
+            room_name=body.get("room_name", "default"),
+            max_players=body.get("max_players", 4),
+            game_mode=body.get("game_mode", "free"),
+        )
+        return match
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/network-replication/reconcile")
+async def network_replication_reconcile(request: Request):
+    """Reconcile client-predicted state with server authoritative state."""
+    try:
+        from sparkai.engine.engine_network_replication import get_network_replication
+        body = await request.json()
+        nr = get_network_replication()
+        result = nr.reconcile_state(
+            client_id=body.get("client_id", ""),
+            server_state=body.get("server_state", {}),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Terrain System Routes
+# ============================================================
+
+@router.post("/terrain-system/create-config")
+async def terrain_system_create_config(request: Request):
+    """Create a terrain generation configuration."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system, TerrainAlgorithm
+        body = await request.json()
+        ts = get_terrain_system()
+        try:
+            algo = TerrainAlgorithm(body.get("algorithm", "perlin"))
+        except ValueError:
+            algo = TerrainAlgorithm.PERLIN
+        config = ts.create_config(
+            width=body.get("width", 256),
+            depth=body.get("depth", 256),
+            height_scale=body.get("height_scale", 100.0),
+            seed=body.get("seed", 42),
+            algorithm=algo,
+            octaves=body.get("octaves", 6),
+            persistence=body.get("persistence", 0.5),
+            lacunarity=body.get("lacunarity", 2.0),
+        )
+        return config.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/terrain-system/generate")
+async def terrain_system_generate(request: Request):
+    """Generate terrain from a configuration."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        body = await request.json()
+        ts = get_terrain_system()
+        chunks = ts.generate_terrain(config_id=body.get("config_id", ""))
+        return [c.to_dict() for c in chunks]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/terrain-system/height")
+async def terrain_system_get_height(
+    config_id: str = "",
+    world_x: float = 0.0,
+    world_z: float = 0.0,
+):
+    """Sample terrain height at a world position."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        ts = get_terrain_system()
+        height = ts.get_height_at(config_id=config_id, world_x=world_x, world_z=world_z)
+        return {"height": height, "world_x": world_x, "world_z": world_z}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/terrain-system/set-height")
+async def terrain_system_set_height(request: Request):
+    """Edit terrain height at a world position."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        body = await request.json()
+        ts = get_terrain_system()
+        result = ts.set_height_at(
+            config_id=body.get("config_id", ""),
+            world_x=body.get("world_x", 0.0),
+            world_z=body.get("world_z", 0.0),
+            new_height=body.get("new_height", 0.0),
+        )
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/terrain-system/erosion")
+async def terrain_system_erosion(request: Request):
+    """Apply erosion simulation to terrain."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system, ErosionSettings, ErosionType
+        body = await request.json()
+        ts = get_terrain_system()
+        try:
+            etype = ErosionType(body.get("erosion_type", "hydraulic"))
+        except ValueError:
+            etype = ErosionType.HYDRAULIC
+        settings = ErosionSettings(
+            erosion_type=etype,
+            iterations=body.get("iterations", 100),
+            erosion_rate=body.get("erosion_rate", 0.01),
+            deposition_rate=body.get("deposition_rate", 0.005),
+            evaporation_rate=body.get("evaporation_rate", 0.02),
+            rain_amount=body.get("rain_amount", 0.1),
+        )
+        chunks = ts.apply_erosion(
+            config_id=body.get("config_id", ""),
+            erosion_settings=settings,
+        )
+        return [c.to_dict() for c in chunks]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/terrain-system/flatten-area")
+async def terrain_system_flatten_area(request: Request):
+    """Flatten a circular area of terrain."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        body = await request.json()
+        ts = get_terrain_system()
+        chunks = ts.flatten_area(
+            config_id=body.get("config_id", ""),
+            center_x=body.get("center_x", 0.0),
+            center_z=body.get("center_z", 0.0),
+            radius=body.get("radius", 10.0),
+        )
+        return [c.to_dict() for c in chunks]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/terrain-system/raise-area")
+async def terrain_system_raise_area(request: Request):
+    """Raise a circular area of terrain."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        body = await request.json()
+        ts = get_terrain_system()
+        chunks = ts.raise_area(
+            config_id=body.get("config_id", ""),
+            center_x=body.get("center_x", 0.0),
+            center_z=body.get("center_z", 0.0),
+            radius=body.get("radius", 10.0),
+            amount=body.get("amount", 5.0),
+        )
+        return [c.to_dict() for c in chunks]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/terrain-system/generate-island")
+async def terrain_system_generate_island(request: Request):
+    """Generate an island by masking terrain below sea level."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        body = await request.json()
+        ts = get_terrain_system()
+        chunks = ts.generate_island(
+            config_id=body.get("config_id", ""),
+            shore_threshold=body.get("shore_threshold", 0.1),
+        )
+        return [c.to_dict() for c in chunks]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/terrain-system/slope")
+async def terrain_system_get_slope(
+    config_id: str = "",
+    world_x: float = 0.0,
+    world_z: float = 0.0,
+):
+    """Compute terrain slope at a world position."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        ts = get_terrain_system()
+        slope = ts.compute_slope_at(config_id=config_id, world_x=world_x, world_z=world_z)
+        return {"slope_degrees": slope, "world_x": world_x, "world_z": world_z}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/terrain-system/biome")
+async def terrain_system_add_biome(request: Request):
+    """Add a biome layer to a terrain configuration."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        body = await request.json()
+        ts = get_terrain_system()
+        from sparkai.engine.engine_terrain_system import BiomeLayer
+        biome = BiomeLayer(
+            name=body.get("name", "plains"),
+            min_height=body.get("min_height", 0.0),
+            max_height=body.get("max_height", 100.0),
+            base_color=tuple(body.get("base_color", [100, 180, 50, 255])),
+            texture_id=body.get("texture_id", ""),
+            tree_density=body.get("tree_density", 0.1),
+            rock_density=body.get("rock_density", 0.05),
+            grass_coverage=body.get("grass_coverage", 0.8),
+        )
+        config = ts.add_biome_layer(
+            config_id=body.get("config_id", ""),
+            biome=biome,
+        )
+        return config.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/terrain-system/stats")
+async def terrain_system_stats(config_id: str = ""):
+    """Get terrain system statistics."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        ts = get_terrain_system()
+        if config_id:
+            stats = ts.get_stats(config_id=config_id)
+            if stats is None:
+                return {"error": f"Terrain config '{config_id}' not found"}
+            return stats.to_dict()
+        configs = ts.list_configs()
+        return {
+            "total_configs": len(configs),
+            "configs": [c.to_dict() for c in configs],
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/terrain-system/configs")
+async def terrain_system_list_configs():
+    """List all terrain configurations."""
+    try:
+        from sparkai.engine.engine_terrain_system import get_terrain_system
+        ts = get_terrain_system()
+        return [c.to_dict() for c in ts.list_configs()]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Asset Streamer Routes
+# ============================================================
+
+@router.post("/asset-streamer/register-asset")
+async def asset_streamer_register_asset(request: Request):
+    """Register an asset for streaming."""
+    try:
+        from sparkai.engine.engine_asset_streamer import get_asset_streamer
+        body = await request.json()
+        streamer = get_asset_streamer()
+        asset = streamer.register_asset(
+            asset_path=body.get("asset_path", ""),
+            asset_type=body.get("asset_type", "texture"),
+            priority=body.get("priority", 1),
+            preload=body.get("preload", False),
+        )
+        return asset.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/asset-streamer/request-load")
+async def asset_streamer_request_load(request: Request):
+    """Request loading of a streamed asset."""
+    try:
+        from sparkai.engine.engine_asset_streamer import get_asset_streamer
+        body = await request.json()
+        streamer = get_asset_streamer()
+        result = streamer.request_load(asset_id=body.get("asset_id", ""))
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/asset-streamer/stats")
+async def asset_streamer_stats():
+    """Get asset streamer statistics."""
+    try:
+        from sparkai.engine.engine_asset_streamer import get_asset_streamer
+        streamer = get_asset_streamer()
+        return streamer.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# ECS Entity Component System Routes
+# ============================================================
+
+@router.post("/ecs/create-entity")
+async def ecs_create_entity(request: Request):
+    """Create a new entity in the ECS world."""
+    try:
+        from sparkai.engine.engine_entity_component_system import get_entity_component_system
+        body = await request.json()
+        ecs = get_entity_component_system()
+        entity = ecs.create_entity(
+            name=body.get("name", "Entity"),
+            tags=body.get("tags", []),
+        )
+        return entity.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/ecs/add-component")
+async def ecs_add_component(request: Request):
+    """Add a component to an entity."""
+    try:
+        from sparkai.engine.engine_entity_component_system import get_entity_component_system
+        body = await request.json()
+        ecs = get_entity_component_system()
+        result = ecs.add_component(
+            entity_id=body.get("entity_id", ""),
+            component_type=body.get("component_type", ""),
+            component_data=body.get("component_data", {}),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/ecs/entity")
+async def ecs_get_entity(entity_id: str = ""):
+    """Get an entity by ID."""
+    try:
+        from sparkai.engine.engine_entity_component_system import get_entity_component_system
+        ecs = get_entity_component_system()
+        entity = ecs.get_entity(entity_id=entity_id)
+        return entity.to_dict() if entity else {"error": "not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/ecs/query")
+async def ecs_query(component_type: str = ""):
+    """Query entities with a specific component type."""
+    try:
+        from sparkai.engine.engine_entity_component_system import get_entity_component_system
+        ecs = get_entity_component_system()
+        entities = ecs.query_entities(component_type=component_type)
+        return [e.to_dict() for e in entities]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/ecs/stats")
+async def ecs_stats():
+    """Get ECS statistics."""
+    try:
+        from sparkai.engine.engine_entity_component_system import get_entity_component_system
+        ecs = get_entity_component_system()
+        return ecs.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Scene Manager Routes
+# ============================================================
+
+@router.post("/scene-manager/create-scene")
+async def scene_manager_create_scene(request: Request):
+    """Create a new scene."""
+    try:
+        from sparkai.engine.engine_scene_manager import get_scene_manager
+        body = await request.json()
+        sm = get_scene_manager()
+        scene = sm.create_scene(
+            name=body.get("name", "New Scene"),
+            parent_scene_id=body.get("parent_scene_id"),
+        )
+        return scene.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-manager/load-scene")
+async def scene_manager_load_scene(request: Request):
+    """Load a scene."""
+    try:
+        from sparkai.engine.engine_scene_manager import get_scene_manager
+        body = await request.json()
+        sm = get_scene_manager()
+        result = sm.load_scene(scene_id=body.get("scene_id", ""))
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/scene-manager/unload-scene")
+async def scene_manager_unload_scene(request: Request):
+    """Unload a scene."""
+    try:
+        from sparkai.engine.engine_scene_manager import get_scene_manager
+        body = await request.json()
+        sm = get_scene_manager()
+        result = sm.unload_scene(scene_id=body.get("scene_id", ""))
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/scene-manager/scenes")
+async def scene_manager_list_scenes():
+    """List all scenes."""
+    try:
+        from sparkai.engine.engine_scene_manager import get_scene_manager
+        sm = get_scene_manager()
+        return [s.to_dict() for s in sm.list_scenes()]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/scene-manager/stats")
+async def scene_manager_stats():
+    """Get scene manager statistics."""
+    try:
+        from sparkai.engine.engine_scene_manager import get_scene_manager
+        sm = get_scene_manager()
+        return sm.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Render Pipeline Routes
+# ============================================================
+
+@router.post("/render-pipeline/configure")
+async def render_pipeline_configure(request: Request):
+    """Configure the render pipeline."""
+    try:
+        from sparkai.engine.engine_render_pipeline import get_render_pipeline
+        body = await request.json()
+        rp = get_render_pipeline()
+        result = rp.configure(
+            resolution=tuple(body.get("resolution", [1920, 1080])),
+            target_fps=body.get("target_fps", 60),
+            vsync=body.get("vsync", True),
+            msaa=body.get("msaa", 4),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/render-pipeline/render-frame")
+async def render_pipeline_render_frame(request: Request):
+    """Render a single frame."""
+    try:
+        from sparkai.engine.engine_render_pipeline import get_render_pipeline
+        body = await request.json()
+        rp = get_render_pipeline()
+        frame = rp.render_frame(delta_time=body.get("delta_time", 0.016))
+        return frame.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/render-pipeline/stats")
+async def render_pipeline_stats():
+    """Get render pipeline statistics."""
+    try:
+        from sparkai.engine.engine_render_pipeline import get_render_pipeline
+        rp = get_render_pipeline()
+        return rp.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Audio System Routes
+# ============================================================
+
+@router.post("/audio-system/play-sound")
+async def audio_system_play_sound(request: Request):
+    """Play a sound effect."""
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        body = await request.json()
+        audio = get_audio_system()
+        result = audio.play_sound(
+            sound_id=body.get("sound_id", ""),
+            volume=body.get("volume", 1.0),
+            pitch=body.get("pitch", 1.0),
+            loop=body.get("loop", False),
+            position=tuple(body.get("position", [0.0, 0.0, 0.0])),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/audio-system/stop-sound")
+async def audio_system_stop_sound(request: Request):
+    """Stop a playing sound."""
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        body = await request.json()
+        audio = get_audio_system()
+        result = audio.stop_sound(instance_id=body.get("instance_id", ""))
+        return {"success": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/audio-system/set-master-volume")
+async def audio_system_set_master_volume(request: Request):
+    """Set master volume."""
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        body = await request.json()
+        audio = get_audio_system()
+        audio.set_master_volume(volume=body.get("volume", 1.0))
+        return {"success": True}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/audio-system/stats")
+async def audio_system_stats():
+    """Get audio system statistics."""
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        audio = get_audio_system()
+        return audio.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Physics Dynamics Routes
+# ============================================================
+
+@router.post("/physics-dynamics/apply-force")
+async def physics_dynamics_apply_force(request: Request):
+    """Apply a force to a physics body."""
+    try:
+        from sparkai.engine.engine_physics_dynamics import get_physics_dynamics
+        body = await request.json()
+        pd = get_physics_dynamics()
+        result = pd.apply_force(
+            body_id=body.get("body_id", ""),
+            force=tuple(body.get("force", [0.0, 0.0])),
+            point=tuple(body.get("point", [0.0, 0.0])),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/physics-dynamics/set-velocity")
+async def physics_dynamics_set_velocity(request: Request):
+    """Set velocity of a physics body."""
+    try:
+        from sparkai.engine.engine_physics_dynamics import get_physics_dynamics
+        body = await request.json()
+        pd = get_physics_dynamics()
+        result = pd.set_velocity(
+            body_id=body.get("body_id", ""),
+            velocity=tuple(body.get("velocity", [0.0, 0.0])),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/physics-dynamics/stats")
+async def physics_dynamics_stats():
+    """Get physics dynamics statistics."""
+    try:
+        from sparkai.engine.engine_physics_dynamics import get_physics_dynamics
+        pd = get_physics_dynamics()
+        return pd.get_system_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Behavior Orchestrator Routes
+# ============================================================
+
+@router.post("/behavior-orchestrator/register-behavior")
+async def behavior_orchestrator_register(request: Request):
+    """Register a behavior in the orchestrator."""
+    try:
+        from sparkai.engine.engine_behavior_orchestrator import get_behavior_orchestrator
+        body = await request.json()
+        bo = get_behavior_orchestrator()
+        behavior = bo.register_behavior(
+            name=body.get("name", ""),
+            entity_id=body.get("entity_id", ""),
+            behavior_type=body.get("behavior_type", "state_machine"),
+            config=body.get("config", {}),
+        )
+        return behavior.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/behavior-orchestrator/execute")
+async def behavior_orchestrator_execute(request: Request):
+    """Execute behavior for an entity."""
+    try:
+        from sparkai.engine.engine_behavior_orchestrator import get_behavior_orchestrator
+        body = await request.json()
+        bo = get_behavior_orchestrator()
+        result = bo.execute_behavior(
+            entity_id=body.get("entity_id", ""),
+            delta_time=body.get("delta_time", 0.016),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/behavior-orchestrator/stats")
+async def behavior_orchestrator_stats():
+    """Get behavior orchestrator statistics."""
+    try:
+        from sparkai.engine.engine_behavior_orchestrator import get_engine_behavior_orchestrator
+        bo = get_engine_behavior_orchestrator()
+        return bo.get_orchestration_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Unification Core Routes
+# ============================================================
+
+@router.get("/unification-core/stats")
+async def unification_core_stats():
+    """Get unification core statistics."""
+    try:
+        from sparkai.engine.engine_unification_core import get_engine_unification_core
+        uc = get_engine_unification_core()
+        return uc.get_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/unification-core/register-orchestrator")
+async def unification_core_register(request: Request):
+    """Register an orchestrator with the unification core."""
+    try:
+        from sparkai.engine.engine_unification_core import get_engine_unification_core
+        body = await request.json()
+        uc = get_engine_unification_core()
+        result = uc.register_orchestrator(
+            name=body.get("name", ""),
+            orchestrator_type=body.get("orchestrator_type", ""),
+            config=body.get("config", {}),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Deterministic Core Routes
+# ============================================================
+
+@router.post("/deterministic-core/record-frame")
+async def deterministic_core_record_frame(request: Request):
+    """Record a deterministic frame for replay."""
+    try:
+        from sparkai.engine.engine_deterministic_core import get_deterministic_core
+        body = await request.json()
+        dc = get_deterministic_core()
+        frame = dc.record_frame(
+            frame_number=body.get("frame_number", 0),
+            inputs=body.get("inputs", {}),
+            state_hash=body.get("state_hash", ""),
+        )
+        return frame.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/deterministic-core/replay")
+async def deterministic_core_replay(request: Request):
+    """Replay recorded frames."""
+    try:
+        from sparkai.engine.engine_deterministic_core import get_deterministic_core
+        body = await request.json()
+        dc = get_deterministic_core()
+        result = dc.replay_frames(
+            start_frame=body.get("start_frame", 0),
+            end_frame=body.get("end_frame", -1),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/deterministic-core/stats")
+async def deterministic_core_stats():
+    """Get deterministic core statistics."""
+    try:
+        from sparkai.engine.engine_deterministic_core import get_deterministic_core
+        dc = get_deterministic_core()
+        return dc.get_status()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Asset Bundler Routes
+# ============================================================
+
+@router.post("/asset-bundler/create-bundle")
+async def asset_bundler_create_bundle(request: Request):
+    """Create an asset bundle."""
+    try:
+        from sparkai.engine.engine_asset_bundler import get_asset_bundler
+        body = await request.json()
+        ab = get_asset_bundler()
+        bundle = ab.create_bundle(
+            name=body.get("name", "bundle"),
+            asset_ids=body.get("asset_ids", []),
+            compression=body.get("compression", "lz4"),
+            platform=body.get("platform", "web"),
+        )
+        return bundle.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/asset-bundler/stats")
+async def asset_bundler_stats():
+    """Get asset bundler statistics."""
+    try:
+        from sparkai.engine.engine_asset_bundler import get_asset_bundler
+        ab = get_asset_bundler()
+        return ab.get_stats()
     except Exception as e:
         return {"error": str(e)}
