@@ -14,7 +14,7 @@ Architecture:
     |-- Counterfactual Evaluator (what-if scenario analysis)
     |-- Confounder Detector (unobserved variable identification)
     |-- Mediation Analyzer (direct/indirect effect decomposition)
-    |-- Causal Discovery Engine (PC/FCI algorithm-inspired structure learning)
+    |-- Causal Discovery Engine (constraint-based structure learning from observational patterns)
 
 Core Capabilities:
   - discover_causal_graph: Infer causal DAG from observational data
