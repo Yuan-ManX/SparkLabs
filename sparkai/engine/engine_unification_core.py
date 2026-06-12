@@ -1081,6 +1081,27 @@ class EngineUnificationCore:
             self._crowd_dynamics = None
             self._fluid_dynamics = None
 
+    def register_orchestrator(
+        self,
+        name: str,
+        orchestrator_type: str,
+        config: Optional[Dict[str, Any]] = None,
+    ) -> OrchestratorDescriptor:
+        """Register a custom orchestrator with the unification core."""
+        try:
+            category = SystemCategory(orchestrator_type)
+        except ValueError:
+            category = SystemCategory.RENDERING
+
+        desc = OrchestratorDescriptor(
+            category=category,
+            name=name,
+            state=OrchestratorState.UNINITIALIZED,
+            metadata=config or {},
+        )
+        self._orchestrators[desc.id] = desc
+        return desc
+
     def get_categories(self) -> List[str]:
         """Return all orchestrator category names."""
         return [cat.value for cat in SystemCategory]
