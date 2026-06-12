@@ -3,9 +3,9 @@ SparkLabs Engine - Sprite Batcher
 
 A high-performance 2D sprite batching system that optimizes draw calls by
 grouping sprites with similar render states into unified GPU batches.
-Inspired by efficient 2D rendering techniques, the batcher uses texture
-atlases, dynamic geometry merging, and z-order-preserving batch generation
-to maximize throughput for sprite-heavy 2D game scenes.
+The batcher uses texture atlases, dynamic geometry merging, and
+z-order-preserving batch generation to maximize throughput for
+sprite-heavy 2D game scenes.
 
 The batcher operates on a command-buffer model: game systems submit draw
 commands throughout the frame, and the batcher processes them into optimized
