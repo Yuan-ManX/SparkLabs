@@ -797,6 +797,10 @@ class EngineParticleSystem:
     # Statistics and lifecycle
     # ------------------------------------------------------------------
 
+    def get_stats(self) -> Dict[str, Any]:
+        """Return statistics about the particle system."""
+        return self.get_active_stats()
+
     def get_active_stats(self) -> Dict[str, Any]:
         """Return statistics about the particle system.
 
