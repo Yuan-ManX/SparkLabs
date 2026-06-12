@@ -554,6 +554,23 @@ class SparkEngine:
             self._frame_count = stats.frame_count
 
     def get_status(self) -> Dict[str, Any]:
+        try:
+            return self._build_status()
+        except Exception:
+            return {
+                "running": self._running,
+                "frame_count": self._frame_count,
+                "world_count": len(self._worlds),
+                "scene_count": len(self._scenes),
+                "active_world": self._active_world_id,
+                "active_scene": self._active_scene_id,
+                "delta_time": self._delta_time,
+                "component_types": ComponentRegistry.list_types(),
+                "system_types": SystemRegistry.list_types(),
+                "error": "Partial status - some subsystems unavailable",
+            }
+
+    def _build_status(self) -> Dict[str, Any]:
         return {
             "running": self._running,
             "frame_count": self._frame_count,
