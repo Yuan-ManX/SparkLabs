@@ -484,12 +484,14 @@ async def orchestrator_status():
 
 @router.get("/studio/types")
 async def list_studio_types():
-    return {
-        "studio_agents": [
-            {"type": key, "name": cls().name, "role": cls().role.value}
-            for key, cls in _STUDIO_AGENTS.items()
-        ]
-    }
+    types = []
+    for key, cls in _STUDIO_AGENTS.items():
+        try:
+            instance = cls(name=key.replace("_", " ").title())
+            types.append({"type": key, "name": instance.name, "role": instance.role.value})
+        except Exception:
+            types.append({"type": key, "name": key.replace("_", " ").title(), "role": "specialist"})
+    return {"studio_agents": types}
 
 
 @router.post("/studio/create")
@@ -4659,6 +4661,14 @@ async def skill_evolution_find_protocol(error: str):
 @router.get("/skill-evolution/skills/{skill_id}/lineage")
 async def skill_evolution_lineage(skill_id: str):
     return {"lineage": _skill_evolution_engine.get_skill_lineage(skill_id)}
+
+@router.get("/skill-evolution/stats")
+async def skill_evolution_stats():
+    """Get skill evolution system statistics."""
+    try:
+        return _skill_evolution_engine.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
 
 
 # === Game Evaluator Engine ===
@@ -28402,6 +28412,16 @@ async def function_dispatcher_status():
     except Exception as e:
         return {"error": str(e)}
 
+@router.get("/function-dispatcher/stats")
+async def function_dispatcher_stats():
+    """Get function dispatcher system statistics (alias for status)."""
+    try:
+        from sparkai.agent.agent_function_dispatcher import get_function_dispatcher
+        fd = get_function_dispatcher()
+        return fd.get_statistics()
+    except Exception as e:
+        return {"error": str(e)}
+
 
 @router.get("/function-dispatcher/categories")
 async def function_dispatcher_categories():
@@ -28583,6 +28603,16 @@ async def function_dispatcher_register(request: Request):
 @router.get("/world-interaction/status")
 async def world_interaction_status():
     """Get world interaction system status."""
+    try:
+        from sparkai.agent.agent_world_interaction import get_agent_world_interaction
+        awi = get_agent_world_interaction()
+        return awi.get_statistics()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/world-interaction/stats")
+async def world_interaction_stats():
+    """Get world interaction system statistics (alias for status)."""
     try:
         from sparkai.agent.agent_world_interaction import get_agent_world_interaction
         awi = get_agent_world_interaction()
@@ -29241,5 +29271,802 @@ async def live_debugger_session_stats(request: Request):
         return obj.get_session_stats(
             session_id=request.query_params.get("session_id", ""),
         )
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/live-debugger/stats")
+async def live_debugger_stats(request: Request):
+    """Get live debugger statistics (alias for session-stats)."""
+    try:
+        from sparkai.agent.agent_live_debugger import get_live_debugger
+        obj = get_live_debugger()
+        return obj.get_session_stats(
+            session_id=request.query_params.get("session_id", ""),
+        )
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Game Code Generator Routes
+# ============================================================
+
+@router.post("/game-code-generator/create-template")
+async def game_code_generator_create_template(request: Request):
+    """Create a code template for game logic generation."""
+    try:
+        from sparkai.agent.agent_game_code_generator import get_game_code_generator, CodeLanguage, CodeDomain
+        body = await request.json()
+        gcg = get_game_code_generator()
+        try:
+            lang = CodeLanguage(body.get("language", "python"))
+        except ValueError:
+            lang = CodeLanguage.PYTHON
+        try:
+            domain = CodeDomain(body.get("domain", "behavior"))
+        except ValueError:
+            domain = CodeDomain.BEHAVIOR
+        template = gcg.create_template(
+            name=body.get("name", ""),
+            language=lang,
+            domain=domain,
+            template_code=body.get("template_code", ""),
+            parameters=body.get("parameters", []),
+            description=body.get("description", ""),
+        )
+        return template.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/game-code-generator/templates")
+async def game_code_generator_list_templates(
+    domain: str = "",
+    language: str = "",
+):
+    """List available code templates, optionally filtered."""
+    try:
+        from sparkai.agent.agent_game_code_generator import get_game_code_generator
+        gcg = get_game_code_generator()
+        templates = gcg.list_templates(domain=domain or None, language=language or None)
+        return [t.to_dict() for t in templates]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/game-code-generator/generate")
+async def game_code_generator_generate(request: Request):
+    """Generate game code from a natural language specification."""
+    try:
+        from sparkai.agent.agent_game_code_generator import get_game_code_generator, CodeLanguage, CodeDomain, GenerationMode
+        body = await request.json()
+        gcg = get_game_code_generator()
+        try:
+            lang = CodeLanguage(body.get("target_language", "python"))
+        except ValueError:
+            lang = CodeLanguage.PYTHON
+        try:
+            domain = CodeDomain(body.get("target_domain", "behavior"))
+        except ValueError:
+            domain = CodeDomain.BEHAVIOR
+        try:
+            mode = GenerationMode(body.get("mode", "hybrid"))
+        except ValueError:
+            mode = GenerationMode.HYBRID
+        result = gcg.generate_from_spec(
+            description=body.get("description", ""),
+            target_language=lang,
+            target_domain=domain,
+            context=body.get("context"),
+            mode=mode,
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/game-code-generator/review")
+async def game_code_generator_review(request: Request):
+    """Review generated game code for quality and correctness."""
+    try:
+        from sparkai.agent.agent_game_code_generator import get_game_code_generator
+        body = await request.json()
+        gcg = get_game_code_generator()
+        review = gcg.review_code(
+            code_id=body.get("code_id", ""),
+            criteria=body.get("criteria"),
+        )
+        return review.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/game-code-generator/validate")
+async def game_code_generator_validate(request: Request):
+    """Validate generated game code for syntax and semantic correctness."""
+    try:
+        from sparkai.agent.agent_game_code_generator import get_game_code_generator
+        body = await request.json()
+        gcg = get_game_code_generator()
+        result = gcg.validate_code(
+            code_id=body.get("code_id", ""),
+        )
+        return result
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/game-code-generator/compile")
+async def game_code_generator_compile(request: Request):
+    """Mark generated code as compiled."""
+    try:
+        from sparkai.agent.agent_game_code_generator import get_game_code_generator
+        body = await request.json()
+        gcg = get_game_code_generator()
+        result = gcg.compile_code(code_id=body.get("code_id", ""))
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/game-code-generator/bundle")
+async def game_code_generator_bundle(request: Request):
+    """Bundle multiple code files into a deployable package."""
+    try:
+        from sparkai.agent.agent_game_code_generator import get_game_code_generator
+        body = await request.json()
+        gcg = get_game_code_generator()
+        bundle = gcg.bundle_codes(
+            code_ids=body.get("code_ids", []),
+            bundle_name=body.get("bundle_name", "bundle"),
+            entry_point=body.get("entry_point", "main.py"),
+        )
+        return bundle.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/game-code-generator/generated")
+async def game_code_generator_list_generated(
+    domain: str = "",
+    language: str = "",
+    status: str = "",
+):
+    """List generated code, optionally filtered."""
+    try:
+        from sparkai.agent.agent_game_code_generator import get_game_code_generator
+        gcg = get_game_code_generator()
+        codes = gcg.list_generated(domain=domain or None, language=language or None, status=status or None)
+        return [c.to_dict() for c in codes]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/game-code-generator/stats")
+async def game_code_generator_stats():
+    """Get code generator statistics."""
+    try:
+        from sparkai.agent.agent_game_code_generator import get_game_code_generator
+        gcg = get_game_code_generator()
+        return gcg.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Balance Optimizer Routes
+# ============================================================
+
+@router.post("/balance-optimizer/create-parameter")
+async def balance_optimizer_create_parameter(request: Request):
+    """Create a game parameter for balance optimization."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer, ParameterType, BalanceDomain
+        body = await request.json()
+        bo = get_balance_optimizer()
+        try:
+            ptype = ParameterType(body.get("param_type", "float"))
+        except ValueError:
+            ptype = ParameterType.FLOAT
+        try:
+            domain = BalanceDomain(body.get("domain", "combat"))
+        except ValueError:
+            domain = BalanceDomain.COMBAT
+        param = bo.create_parameter(
+            name=body.get("name", ""),
+            param_type=ptype,
+            domain=domain,
+            current_value=body.get("current_value", 0),
+            min_value=body.get("min_value", 0),
+            max_value=body.get("max_value", 100),
+            description=body.get("description", ""),
+            weight=body.get("weight", 1.0),
+            step=body.get("step", 1.0),
+            enumeration_options=body.get("enumeration_options"),
+        )
+        return param.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/balance-optimizer/create-target")
+async def balance_optimizer_create_target(request: Request):
+    """Create a balance optimization target."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer, BalanceDomain, OptimizationGoal
+        body = await request.json()
+        bo = get_balance_optimizer()
+        try:
+            domain = BalanceDomain(body.get("domain", "combat"))
+        except ValueError:
+            domain = BalanceDomain.COMBAT
+        try:
+            goal = OptimizationGoal(body.get("goal", "target_win_rate"))
+        except ValueError:
+            goal = OptimizationGoal.TARGET_WIN_RATE
+        target = bo.create_target(
+            name=body.get("name", ""),
+            domain=domain,
+            goal=goal,
+            target_value=body.get("target_value", 0.5),
+            tolerance=body.get("tolerance", 0.05),
+            description=body.get("description", ""),
+        )
+        return target.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/balance-optimizer/create-session")
+async def balance_optimizer_create_session(request: Request):
+    """Create an optimization session."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer, BalanceDomain
+        body = await request.json()
+        bo = get_balance_optimizer()
+        try:
+            domain = BalanceDomain(body.get("domain", "combat"))
+        except ValueError:
+            domain = BalanceDomain.COMBAT
+        session = bo.create_session(
+            name=body.get("name", ""),
+            domain=domain,
+            parameter_ids=body.get("parameter_ids", []),
+            target_ids=body.get("target_ids", []),
+            max_iterations=body.get("max_iterations", 50),
+        )
+        return session.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/balance-optimizer/run-optimization")
+async def balance_optimizer_run(request: Request):
+    """Run a balance optimization session."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer
+        body = await request.json()
+        bo = get_balance_optimizer()
+        session = bo.run_optimization(session_id=body.get("session_id", ""))
+        return session.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/balance-optimizer/generate-report")
+async def balance_optimizer_report(request: Request):
+    """Generate a balance optimization report."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer
+        body = await request.json()
+        bo = get_balance_optimizer()
+        report = bo.generate_report(session_id=body.get("session_id", ""))
+        return report.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/balance-optimizer/parameters")
+async def balance_optimizer_list_parameters(
+    domain: str = "",
+    param_type: str = "",
+):
+    """List game parameters, optionally filtered."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer
+        bo = get_balance_optimizer()
+        params = bo.list_parameters(domain=domain or None, param_type=param_type or None)
+        return [p.to_dict() for p in params]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/balance-optimizer/sessions")
+async def balance_optimizer_list_sessions(
+    domain: str = "",
+    status: str = "",
+):
+    """List optimization sessions, optionally filtered."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer
+        bo = get_balance_optimizer()
+        sessions = bo.list_sessions(domain=domain or None, status=status or None)
+        return [s.to_dict() for s in sessions]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/balance-optimizer/stats")
+async def balance_optimizer_stats():
+    """Get balance optimizer statistics."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer
+        bo = get_balance_optimizer()
+        return bo.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/balance-optimizer/sensitivity")
+async def balance_optimizer_sensitivity(request: Request):
+    """Analyze parameter sensitivity for a session."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer
+        body = await request.json()
+        bo = get_balance_optimizer()
+        return bo.parameter_sensitivity(session_id=body.get("session_id", ""))
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/balance-optimizer/export")
+async def balance_optimizer_export(request: Request):
+    """Export optimized parameters from a session."""
+    try:
+        from sparkai.agent.agent_balance_optimizer import get_balance_optimizer
+        body = await request.json()
+        bo = get_balance_optimizer()
+        return bo.export_parameters(session_id=body.get("session_id", ""))
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Memory Consolidation Routes
+# ============================================================
+
+@router.post("/memory-consolidation/consolidate")
+async def memory_consolidation_consolidate(request: Request):
+    """Consolidate memories from short-term to long-term storage."""
+    try:
+        from sparkai.agent.agent_memory_consolidation import get_memory_consolidation
+        body = await request.json()
+        mc = get_memory_consolidation()
+        result = mc.consolidate(
+            session_id=body.get("session_id", ""),
+            strategy=body.get("strategy", "importance"),
+            max_memories=body.get("max_memories", 50),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/memory-consolidation/stats")
+async def memory_consolidation_stats():
+    """Get memory consolidation statistics."""
+    try:
+        from sparkai.agent.agent_memory_consolidation import get_memory_consolidation
+        mc = get_memory_consolidation()
+        return mc.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Memory Hierarchy Routes
+# ============================================================
+
+@router.post("/memory-hierarchy/store")
+async def memory_hierarchy_store(request: Request):
+    """Store a memory in the hierarchy."""
+    try:
+        from sparkai.agent.agent_memory_hierarchy import get_memory_hierarchy
+        body = await request.json()
+        mh = get_memory_hierarchy()
+        memory = mh.store(
+            content=body.get("content", ""),
+            memory_type=body.get("memory_type", "episodic"),
+            importance=body.get("importance", 0.5),
+            metadata=body.get("metadata"),
+        )
+        return memory.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/memory-hierarchy/retrieve")
+async def memory_hierarchy_retrieve(request: Request):
+    """Retrieve memories from the hierarchy."""
+    try:
+        from sparkai.agent.agent_memory_hierarchy import get_memory_hierarchy
+        body = await request.json()
+        mh = get_memory_hierarchy()
+        memories = mh.retrieve(
+            query=body.get("query", ""),
+            memory_type=body.get("memory_type"),
+            top_k=body.get("top_k", 10),
+        )
+        return [m.to_dict() for m in memories]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/memory-hierarchy/stats")
+async def memory_hierarchy_stats():
+    """Get memory hierarchy statistics."""
+    try:
+        from sparkai.agent.agent_memory_hierarchy import get_memory_hierarchy
+        mh = get_memory_hierarchy()
+        return mh.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Reflection Loop Routes
+# ============================================================
+
+@router.post("/reflection-loop/reflect")
+async def reflection_loop_reflect(request: Request):
+    """Execute a reflection cycle on recent actions."""
+    try:
+        from sparkai.agent.agent_reflection_loop import get_reflection_loop
+        body = await request.json()
+        rl = get_reflection_loop()
+        result = rl.reflect(
+            session_id=body.get("session_id", ""),
+            context=body.get("context", {}),
+            depth=body.get("depth", 3),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/reflection-loop/reflections")
+async def reflection_loop_list(session_id: str = ""):
+    """List reflections for a session."""
+    try:
+        from sparkai.agent.agent_reflection_loop import get_reflection_loop
+        rl = get_reflection_loop()
+        return [r.to_dict() for r in rl.list_reflections(session_id=session_id)]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/reflection-loop/stats")
+async def reflection_loop_stats():
+    """Get reflection loop statistics."""
+    try:
+        from sparkai.agent.agent_reflection_loop import get_reflection_loop
+        rl = get_reflection_loop()
+        return rl.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Knowledge Synthesis Routes
+# ============================================================
+
+@router.post("/knowledge-synthesis/synthesize")
+async def knowledge_synthesis_synthesize(request: Request):
+    """Synthesize knowledge from multiple sources."""
+    try:
+        from sparkai.agent.agent_knowledge_synthesis import get_knowledge_synthesis
+        body = await request.json()
+        ks = get_knowledge_synthesis()
+        result = ks.synthesize(
+            sources=body.get("sources", []),
+            topic=body.get("topic", ""),
+            depth=body.get("depth", "comprehensive"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/knowledge-synthesis/knowledge")
+async def knowledge_synthesis_list(topic: str = ""):
+    """List synthesized knowledge, optionally filtered."""
+    try:
+        from sparkai.agent.agent_knowledge_synthesis import get_knowledge_synthesis
+        ks = get_knowledge_synthesis()
+        return [k.to_dict() for k in ks.list_knowledge(topic=topic or None)]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Behavior Designer Routes
+# ============================================================
+
+@router.post("/behavior-designer/design")
+async def behavior_designer_design(request: Request):
+    """Design an AI behavior for a game entity."""
+    try:
+        from sparkai.agent.agent_behavior_designer import get_behavior_designer
+        body = await request.json()
+        bd = get_behavior_designer()
+        behavior = bd.design(
+            name=body.get("name", ""),
+            entity_type=body.get("entity_type", "npc"),
+            behavior_type=body.get("behavior_type", "state_machine"),
+            description=body.get("description", ""),
+            constraints=body.get("constraints", {}),
+        )
+        return behavior.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/behavior-designer/behaviors")
+async def behavior_designer_list(entity_type: str = ""):
+    """List designed behaviors."""
+    try:
+        from sparkai.agent.agent_behavior_designer import get_behavior_designer
+        bd = get_behavior_designer()
+        return [b.to_dict() for b in bd.list_behaviors(entity_type=entity_type or None)]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Task Queue Routes
+# ============================================================
+
+@router.post("/task-queue/enqueue")
+async def task_queue_enqueue(request: Request):
+    """Enqueue a task."""
+    try:
+        from sparkai.agent.agent_task_queue import get_task_queue
+        body = await request.json()
+        tq = get_task_queue()
+        task = tq.enqueue(
+            name=body.get("name", ""),
+            task_type=body.get("task_type", "general"),
+            payload=body.get("payload", {}),
+            priority=body.get("priority", 1),
+        )
+        return task.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/task-queue/dequeue")
+async def task_queue_dequeue(request: Request):
+    """Dequeue the next task."""
+    try:
+        from sparkai.agent.agent_task_queue import get_task_queue
+        body = await request.json()
+        tq = get_task_queue()
+        task = tq.dequeue(task_type=body.get("task_type"))
+        return task.to_dict() if task else {"error": "queue empty"}
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/task-queue/stats")
+async def task_queue_stats():
+    """Get task queue statistics."""
+    try:
+        from sparkai.agent.agent_task_queue import get_task_queue
+        tq = get_task_queue()
+        return tq.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Intent Classifier Routes
+# ============================================================
+
+@router.post("/intent-classifier/classify")
+async def intent_classifier_classify(request: Request):
+    """Classify user intent from input."""
+    try:
+        from sparkai.agent.agent_intent_classifier import get_intent_classifier
+        body = await request.json()
+        ic = get_intent_classifier()
+        result = ic.classify(
+            text=body.get("text", ""),
+            context=body.get("context", {}),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/intent-classifier/stats")
+async def intent_classifier_stats():
+    """Get intent classifier statistics."""
+    try:
+        from sparkai.agent.agent_intent_classifier import get_intent_classifier
+        ic = get_intent_classifier()
+        return ic.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Context Compression Routes
+# ============================================================
+
+@router.post("/context-compression/compress")
+async def context_compression_compress(request: Request):
+    """Compress context for efficient storage."""
+    try:
+        from sparkai.agent.agent_context_compression import get_context_compression
+        body = await request.json()
+        cc = get_context_compression()
+        result = cc.compress(
+            context=body.get("context", {}),
+            max_tokens=body.get("max_tokens", 4096),
+            strategy=body.get("strategy", "auto"),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/context-compression/stats")
+async def context_compression_stats():
+    """Get context compression system statistics."""
+    try:
+        from sparkai.agent.agent_context_compression import get_compression_engine
+        cc = get_compression_engine()
+        return cc.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Learning Loop Routes
+# ============================================================
+
+@router.post("/learning-loop/learn")
+async def learning_loop_learn(request: Request):
+    """Execute a learning cycle from experience."""
+    try:
+        from sparkai.agent.agent_learning_loop import get_learning_loop
+        body = await request.json()
+        ll = get_learning_loop()
+        result = ll.learn(
+            experience=body.get("experience", {}),
+            feedback=body.get("feedback", ""),
+            learning_rate=body.get("learning_rate", 0.1),
+        )
+        return result.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/learning-loop/insights")
+async def learning_loop_insights():
+    """Get learned insights."""
+    try:
+        from sparkai.agent.agent_learning_loop import get_learning_loop
+        ll = get_learning_loop()
+        return [i.to_dict() for i in ll.get_insights()]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Agent Engine Orchestrator Routes
+# ============================================================
+
+@router.post("/orchestrator/create-project")
+async def orchestrator_create_project(request: Request):
+    """Create a new game project in the orchestration pipeline."""
+    try:
+        from sparkai.core.agent_engine_orchestrator import get_agent_engine_orchestrator
+        body = await request.json()
+        aeo = get_agent_engine_orchestrator()
+        project = aeo.create_project(
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            genre=body.get("genre", "rpg"),
+            platform=body.get("platform", "web"),
+        )
+        return project.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/orchestrator/create-game")
+async def orchestrator_create_game(request: Request):
+    """Create a complete game from description (full pipeline)."""
+    try:
+        from sparkai.core.agent_engine_orchestrator import get_agent_engine_orchestrator
+        body = await request.json()
+        aeo = get_agent_engine_orchestrator()
+        project = aeo.create_game_from_description(
+            description=body.get("description", ""),
+            genre=body.get("genre", "rpg"),
+            platform=body.get("platform", "web"),
+        )
+        return project.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/orchestrator/execute-workflow")
+async def orchestrator_execute_workflow(request: Request):
+    """Execute a pipeline workflow."""
+    try:
+        from sparkai.core.agent_engine_orchestrator import get_agent_engine_orchestrator
+        body = await request.json()
+        aeo = get_agent_engine_orchestrator()
+        workflow = aeo.execute_workflow(workflow_id=body.get("workflow_id", ""))
+        return workflow.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/orchestrator/projects")
+async def orchestrator_list_projects():
+    """List all game projects."""
+    try:
+        from sparkai.core.agent_engine_orchestrator import get_agent_engine_orchestrator
+        aeo = get_agent_engine_orchestrator()
+        return [p.to_dict() for p in aeo.list_projects()]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/orchestrator/workflows")
+async def orchestrator_list_workflows(project_id: str = ""):
+    """List workflows for a project."""
+    try:
+        from sparkai.core.agent_engine_orchestrator import get_agent_engine_orchestrator
+        aeo = get_agent_engine_orchestrator()
+        return [w.to_dict() for w in aeo.list_workflows(project_id=project_id)]
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/orchestrator/metrics")
+async def orchestrator_get_metrics(workflow_id: str = ""):
+    """Get pipeline metrics for a workflow."""
+    try:
+        from sparkai.core.agent_engine_orchestrator import get_agent_engine_orchestrator
+        aeo = get_agent_engine_orchestrator()
+        metrics = aeo.get_pipeline_metrics(workflow_id=workflow_id)
+        return metrics.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.get("/orchestrator/stats")
+async def orchestrator_stats():
+    """Get orchestrator statistics."""
+    try:
+        from sparkai.core.agent_engine_orchestrator import get_agent_engine_orchestrator
+        aeo = get_agent_engine_orchestrator()
+        return aeo.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/orchestrator/add-feature")
+async def orchestrator_add_feature(request: Request):
+    """Add a feature to an existing game project."""
+    try:
+        from sparkai.core.agent_engine_orchestrator import get_agent_engine_orchestrator
+        body = await request.json()
+        aeo = get_agent_engine_orchestrator()
+        workflow = aeo.add_feature_to_game(
+            project_id=body.get("project_id", ""),
+            feature_description=body.get("feature_description", ""),
+        )
+        return workflow.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+@router.post("/orchestrator/tune-balance")
+async def orchestrator_tune_balance(request: Request):
+    """Tune game balance for a project."""
+    try:
+        from sparkai.core.agent_engine_orchestrator import get_agent_engine_orchestrator
+        body = await request.json()
+        aeo = get_agent_engine_orchestrator()
+        workflow = aeo.tune_game_balance(
+            project_id=body.get("project_id", ""),
+            aspect=body.get("aspect", "combat"),
+        )
+        return workflow.to_dict()
     except Exception as e:
         return {"error": str(e)}
