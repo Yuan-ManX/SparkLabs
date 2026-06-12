@@ -2,8 +2,7 @@
 SparkLabs Engine - Intelligent Object Pool
 
 Predictive game object pool system with automatic sizing, memory
-optimization, and usage-based demand forecasting. Inspired by Phaser's
-Group system and Godot's node pooling, this module provides a central
+optimization, and usage-based demand forecasting. Provides a central
 object lifecycle manager that minimizes garbage collection pressure by
 recycling frequently-used game objects.
 
