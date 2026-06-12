@@ -1,819 +1,648 @@
 """
 SparkLabs Engine - Scene Transition System
 
-Smooth scene transition management providing blend effects, configurable
-easing curves, and scene preloading for seamless gameplay flow. Supports
-sequenced multi-step transitions and real-time loading progress tracking.
+A scene loading and unloading system providing transition effects,
+easing curves, resource lifecycle management, and additive scene
+compositing for seamless gameplay flow.
 
 Architecture:
-  SceneTransitionSystem
-    |-- TransitionConfig (effect, duration, easing, and scene pair definition)
-    |-- TransitionEvent (active transition runtime state with progress)
-    |-- TransitionSequence (ordered chain of configs with auto-advance)
-    |-- LoadingProgress (per-transition resource loading progress)
+  EngineSceneTransition (Singleton)
+    |-- TransitionConfig  — effect, duration, easing, and direction
+    |-- SceneDescriptor   — scene metadata with dependencies and load mode
+    |-- SceneInstance     — runtime scene state with loading progress
+    |-- TransitionState   — active transition tracking elapsed and progress
+    |-- TransitionResult  — outcome of a completed transition
+    |-- SceneStats        — aggregate telemetry across all scenes
 """
 
 from __future__ import annotations
 
 import math
 import threading
-import time
+import time as _time_module
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Tuple
 
 
-class TransitionEffect(Enum):
+# ---------------------------------------------------------------------------
+# Enums
+# ---------------------------------------------------------------------------
+
+class TransitionEffect(str, Enum):
+    """Visual effect applied during a scene transition."""
     FADE = "fade"
-    CROSSFADE = "crossfade"
-    SLIDE_LEFT = "slide_left"
-    SLIDE_RIGHT = "slide_right"
-    SLIDE_UP = "slide_up"
-    SLIDE_DOWN = "slide_down"
-    ZOOM_IN = "zoom_in"
-    ZOOM_OUT = "zoom_out"
+    SLIDE_LEFT = "slide-left"
+    SLIDE_RIGHT = "slide-right"
+    SLIDE_UP = "slide-up"
+    SLIDE_DOWN = "slide-down"
+    ZOOM_IN = "zoom-in"
+    ZOOM_OUT = "zoom-out"
     WIPE = "wipe"
-    CUSTOM = "custom"
+    CROSSFADE = "crossfade"
+    DISSOLVE = "dissolve"
+    NONE = "none"
 
 
-class TransitionState(Enum):
-    IDLE = "idle"
-    PRELOADING = "preloading"
-    TRANSITIONING = "transitioning"
-    COMPLETE = "complete"
-    FAILED = "failed"
+class SceneState(str, Enum):
+    """Lifecycle state of a scene instance."""
+    UNLOADED = "unloaded"
+    LOADING = "loading"
+    ACTIVE = "active"
+    PAUSING = "pausing"
+    PAUSED = "paused"
+    RESUMING = "resuming"
+    UNLOADING = "unloading"
 
 
-class EasingFunction(Enum):
-    LINEAR = "linear"
-    EASE_IN = "ease_in"
-    EASE_OUT = "ease_out"
-    EASE_IN_OUT = "ease_in_out"
-    BOUNCE = "bounce"
-    ELASTIC = "elastic"
+class SceneLoadMode(str, Enum):
+    """How a scene is loaded relative to other active scenes."""
+    SINGLE = "single"
+    ADDITIVE = "additive"
 
+
+class TransitionDirection(str, Enum):
+    """Direction of the transition effect."""
+    IN = "in"
+    OUT = "out"
+
+
+# ---------------------------------------------------------------------------
+# Dataclasses
+# ---------------------------------------------------------------------------
 
 @dataclass
 class TransitionConfig:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    from_scene: str = ""
-    to_scene: str = ""
+    """Configuration for a scene transition effect."""
+    config_id: str = field(default_factory=lambda: uuid.uuid4().hex)
     effect: TransitionEffect = TransitionEffect.FADE
     duration: float = 0.5
-    easing: EasingFunction = EasingFunction.EASE_IN_OUT
-    preload_assets: bool = True
-    auto_unload_from: bool = True
-    mask_color: Tuple[float, float, float, float] = (0.0, 0.0, 0.0, 1.0)
-    custom_shader: str = ""
-    metadata: Dict[str, Any] = field(default_factory=dict)
-    created_at: float = field(default_factory=time.time)
+    easing: str = "linear"
+    direction: TransitionDirection = TransitionDirection.IN
+    color_rgba: Tuple[int, int, int, int] = (0, 0, 0, 255)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
-            "from_scene": self.from_scene,
-            "to_scene": self.to_scene,
+            "config_id": self.config_id,
             "effect": self.effect.value,
-            "duration": round(self.duration, 3),
-            "easing": self.easing.value,
-            "preload_assets": self.preload_assets,
-            "auto_unload_from": self.auto_unload_from,
-            "mask_color": list(self.mask_color),
-            "custom_shader": self.custom_shader,
-            "metadata": dict(self.metadata),
-            "created_at": self.created_at,
+            "duration": self.duration,
+            "easing": self.easing,
+            "direction": self.direction.value,
+            "color_rgba": list(self.color_rgba),
         }
 
 
 @dataclass
-class TransitionEvent:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    config_id: str = ""
-    state: TransitionState = TransitionState.IDLE
+class SceneDescriptor:
+    """Metadata describing a scene and its dependencies."""
+    descriptor_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    name: str = ""
+    path: str = ""
+    load_mode: SceneLoadMode = SceneLoadMode.SINGLE
+    dependencies: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "descriptor_id": self.descriptor_id,
+            "name": self.name,
+            "path": self.path,
+            "load_mode": self.load_mode.value,
+            "dependencies": list(self.dependencies),
+            "metadata": dict(self.metadata),
+        }
+
+
+@dataclass
+class SceneInstance:
+    """Runtime representation of a loaded scene."""
+    instance_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    descriptor_id: str = ""
+    state: SceneState = SceneState.UNLOADED
+    load_progress: float = 0.0
+    start_time: float = 0.0
+    active_since: float = 0.0
+    transition_config: Optional[TransitionConfig] = None
+    loading_tasks: int = 0
+    completed_tasks: int = 0
+    gc_references: List[str] = field(default_factory=list)
+    is_additive: bool = False
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "instance_id": self.instance_id,
+            "descriptor_id": self.descriptor_id,
+            "state": self.state.value,
+            "load_progress": self.load_progress,
+            "start_time": self.start_time,
+            "active_since": self.active_since,
+            "transition_config": self.transition_config.to_dict() if self.transition_config else None,
+            "loading_tasks": self.loading_tasks,
+            "completed_tasks": self.completed_tasks,
+            "gc_references": list(self.gc_references),
+            "is_additive": self.is_additive,
+        }
+
+
+@dataclass
+class TransitionState:
+    """Active transition tracking progress between two scenes."""
+    transition_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    from_scene_id: str = ""
+    to_scene_id: str = ""
+    config: TransitionConfig = field(default_factory=TransitionConfig)
     progress: float = 0.0
     elapsed: float = 0.0
-    from_scene: str = ""
-    to_scene: str = ""
-    effect: TransitionEffect = TransitionEffect.FADE
-    started_at: float = field(default_factory=time.time)
-    completed_at: Optional[float] = None
+    active: bool = True
+    start_time: float = field(default_factory=_time_module.time)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "transition_id": self.transition_id,
+            "from_scene_id": self.from_scene_id,
+            "to_scene_id": self.to_scene_id,
+            "config": self.config.to_dict(),
+            "progress": self.progress,
+            "elapsed": self.elapsed,
+            "active": self.active,
+            "start_time": self.start_time,
+        }
+
+
+@dataclass
+class TransitionResult:
+    """Outcome of a completed scene transition."""
+    result_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    success: bool = False
+    from_scene_id: str = ""
+    to_scene_id: str = ""
+    transition_time: float = 0.0
     error_message: str = ""
-    sequence_id: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
-            "config_id": self.config_id,
-            "state": self.state.value,
-            "progress": round(self.progress, 4),
-            "elapsed": round(self.elapsed, 3),
-            "from_scene": self.from_scene,
-            "to_scene": self.to_scene,
-            "effect": self.effect.value,
-            "started_at": self.started_at,
-            "completed_at": self.completed_at,
+            "result_id": self.result_id,
+            "success": self.success,
+            "from_scene_id": self.from_scene_id,
+            "to_scene_id": self.to_scene_id,
+            "transition_time": self.transition_time,
             "error_message": self.error_message,
-            "sequence_id": self.sequence_id,
         }
 
 
 @dataclass
-class TransitionSequence:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = ""
-    config_ids: List[str] = field(default_factory=list)
-    current_index: int = 0
-    auto_advance: bool = True
-    looping: bool = False
-    is_active: bool = False
-    created_at: float = field(default_factory=time.time)
+class SceneStats:
+    """Aggregate telemetry across all scene operations."""
+    active_scenes: int = 0
+    total_loading_time: float = 0.0
+    transition_count: int = 0
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
-            "name": self.name,
-            "config_ids": list(self.config_ids),
-            "current_index": self.current_index,
-            "auto_advance": self.auto_advance,
-            "looping": self.looping,
-            "is_active": self.is_active,
-            "created_at": self.created_at,
+            "active_scenes": self.active_scenes,
+            "total_loading_time": self.total_loading_time,
+            "transition_count": self.transition_count,
         }
 
 
-@dataclass
-class LoadingProgress:
-    event_id: str = ""
-    total_assets: int = 0
-    loaded_assets: int = 0
-    current_asset: str = ""
-    percent: float = 0.0
-    estimated_remaining: float = 0.0
-    updated_at: float = field(default_factory=time.time)
+# ---------------------------------------------------------------------------
+# EngineSceneTransition — Thread-Safe Singleton
+# ---------------------------------------------------------------------------
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "event_id": self.event_id,
-            "total_assets": self.total_assets,
-            "loaded_assets": self.loaded_assets,
-            "current_asset": self.current_asset,
-            "percent": round(self.percent, 2),
-            "estimated_remaining": round(self.estimated_remaining, 2),
-            "updated_at": self.updated_at,
-        }
+class EngineSceneTransition:
+    """
+    Central scene loading, unloading, and transition orchestrator.
 
+    Manages scene descriptors, runtime instances, transition effects,
+    and resource lifecycle (GC references). Thread-safe via reentrant lock.
 
-class SceneTransitionSystem:
-    """Smooth scene transition manager with blend effects and loading management."""
+    Usage:
+        st = get_scene_transition()
+        desc = st.register_scene(SceneDescriptor(name="level1", path="/levels/1.json"))
+        inst = st.load_scene(desc.descriptor_id)
+        cfg = st.create_default_transition()
+        ts = st.transition_to(inst.instance_id, desc2.descriptor_id, cfg)
+    """
 
-    _instance: Optional["SceneTransitionSystem"] = None
+    _instance: Optional["EngineSceneTransition"] = None
     _lock = threading.RLock()
 
-    MAX_CONFIGS = 1000
-    MAX_SEQUENCES = 200
-    MAX_HISTORY = 500
-    MAX_ACTIVE_TRANSITIONS = 16
+    # ------------------------------------------------------------------
+    # Singleton
+    # ------------------------------------------------------------------
 
-    # ---- Easing curves ----
-
-    _EASING_PRESETS: Dict[str, Dict[str, Any]] = {
-        "fade": {
-            "maskable": True,
-            "slide_direction": None,
-            "uses_zoom": False,
-            "default_duration": 0.4,
-        },
-        "crossfade": {
-            "maskable": False,
-            "slide_direction": None,
-            "uses_zoom": False,
-            "default_duration": 0.6,
-        },
-        "slide_left": {
-            "maskable": True,
-            "slide_direction": (-1.0, 0.0),
-            "uses_zoom": False,
-            "default_duration": 0.5,
-        },
-        "slide_right": {
-            "maskable": True,
-            "slide_direction": (1.0, 0.0),
-            "uses_zoom": False,
-            "default_duration": 0.5,
-        },
-        "slide_up": {
-            "maskable": True,
-            "slide_direction": (0.0, -1.0),
-            "uses_zoom": False,
-            "default_duration": 0.5,
-        },
-        "slide_down": {
-            "maskable": True,
-            "slide_direction": (0.0, 1.0),
-            "uses_zoom": False,
-            "default_duration": 0.5,
-        },
-        "zoom_in": {
-            "maskable": False,
-            "slide_direction": None,
-            "uses_zoom": True,
-            "default_duration": 0.4,
-        },
-        "zoom_out": {
-            "maskable": False,
-            "slide_direction": None,
-            "uses_zoom": True,
-            "default_duration": 0.4,
-        },
-        "wipe": {
-            "maskable": True,
-            "slide_direction": None,
-            "uses_zoom": False,
-            "default_duration": 0.5,
-        },
-        "custom": {
-            "maskable": False,
-            "slide_direction": None,
-            "uses_zoom": False,
-            "default_duration": 0.5,
-        },
-    }
-
-    def __init__(self) -> None:
-        self._configs: Dict[str, TransitionConfig] = {}
-        self._events: Dict[str, TransitionEvent] = {}
-        self._sequences: Dict[str, TransitionSequence] = {}
-        self._loading_progress: Dict[str, LoadingProgress] = {}
-        self._history: List[TransitionEvent] = []
-        self._active_event_ids: List[str] = []
-        self._total_transitions: int = 0
-        self._total_sequences_run: int = 0
-        self._preload_cache: Dict[str, List[str]] = {}
-
-    @classmethod
-    def get_instance(cls) -> "SceneTransitionSystem":
+    def __new__(cls) -> "EngineSceneTransition":
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    cls._instance = cls()
+                    instance = super().__new__(cls)
+                    instance._initialized = False
+                    cls._instance = instance
         return cls._instance
 
-    # ---- Configuration ----
+    @classmethod
+    def get_instance(cls) -> "EngineSceneTransition":
+        """Return the singleton EngineSceneTransition instance."""
+        return cls()
 
-    def configure_transition(
+    def __init__(self) -> None:
+        if getattr(self, "_initialized", False):
+            return
+        self._initialized = True
+
+        self._descriptors: Dict[str, SceneDescriptor] = {}
+        self._instances: Dict[str, SceneInstance] = {}
+        self._transitions: Dict[str, TransitionState] = {}
+        self._results: List[TransitionResult] = []
+
+        self._total_transitions: int = 0
+        self._total_loading_time: float = 0.0
+
+    # ------------------------------------------------------------------
+    # Scene Registration & Loading
+    # ------------------------------------------------------------------
+
+    def register_scene(self, descriptor: SceneDescriptor) -> str:
+        """Register a scene descriptor and return its id."""
+        with self._lock:
+            self._descriptors[descriptor.descriptor_id] = descriptor
+            return descriptor.descriptor_id
+
+    def load_scene(
         self,
-        from_scene: str,
-        to_scene: str,
-        effect: str = "fade",
-        duration: float = 0.5,
-        easing: str = "ease_in_out",
-        preload_assets: bool = True,
-        auto_unload_from: bool = True,
-        metadata: Optional[Dict[str, Any]] = None,
-    ) -> TransitionConfig:
-        try:
-            te = TransitionEffect(effect.lower())
-        except ValueError:
-            te = TransitionEffect.FADE
-        try:
-            ef = EasingFunction(easing.lower())
-        except ValueError:
-            ef = EasingFunction.EASE_IN_OUT
-
-        preset = self._EASING_PRESETS.get(te.value, {})
-        resolved_duration = duration if duration > 0 else preset.get("default_duration", 0.5)
-
-        config = TransitionConfig(
-            from_scene=from_scene,
-            to_scene=to_scene,
-            effect=te,
-            duration=max(0.05, min(30.0, resolved_duration)),
-            easing=ef,
-            preload_assets=preload_assets,
-            auto_unload_from=auto_unload_from,
-            metadata=metadata or {},
-        )
-
-        if len(self._configs) >= self.MAX_CONFIGS:
-            oldest_id = next(iter(self._configs.keys()))
-            del self._configs[oldest_id]
-
-        self._configs[config.id] = config
-        return config
-
-    def get_config(self, config_id: str) -> Optional[TransitionConfig]:
-        return self._configs.get(config_id)
-
-    def remove_config(self, config_id: str) -> bool:
-        if config_id not in self._configs:
-            return False
-        for evt in self._events.values():
-            if evt.config_id == config_id and evt.state in (
-                TransitionState.PRELOADING,
-                TransitionState.TRANSITIONING,
-            ):
-                return False
-        del self._configs[config_id]
-        return True
-
-    # ---- Transition Execution ----
-
-    def start_transition(self, config_id: str) -> Optional[TransitionEvent]:
-        config = self._configs.get(config_id)
-        if config is None:
+        descriptor_id: str,
+        load_mode: SceneLoadMode = SceneLoadMode.SINGLE,
+        transition_config: Optional[TransitionConfig] = None,
+    ) -> Optional[SceneInstance]:
+        """Load a scene, creating a runtime instance."""
+        desc = self._descriptors.get(descriptor_id)
+        if desc is None:
             return None
 
-        if len(self._active_event_ids) >= self.MAX_ACTIVE_TRANSITIONS:
+        now = _time_module.time()
+
+        # If SINGLE mode, unload all active non-additive scenes
+        if load_mode == SceneLoadMode.SINGLE:
+            for inst in list(self._instances.values()):
+                if not inst.is_additive and inst.state in (
+                    SceneState.ACTIVE, SceneState.LOADING,
+                ):
+                    inst.state = SceneState.UNLOADING
+                    inst.gc_references.clear()
+
+        instance = SceneInstance(
+            descriptor_id=descriptor_id,
+            state=SceneState.LOADING,
+            start_time=now,
+            transition_config=transition_config,
+            is_additive=(load_mode == SceneLoadMode.ADDITIVE),
+        )
+        self._instances[instance.instance_id] = instance
+        return instance
+
+    def unload_scene(
+        self,
+        instance_id: str,
+        transition_config: Optional[TransitionConfig] = None,
+    ) -> Optional[TransitionState]:
+        """Begin unloading a scene with an optional transition."""
+        inst = self._instances.get(instance_id)
+        if inst is None:
             return None
 
-        event = TransitionEvent(
-            config_id=config_id,
-            state=TransitionState.IDLE,
-            from_scene=config.from_scene,
-            to_scene=config.to_scene,
-            effect=config.effect,
-            elapsed=0.0,
-            progress=0.0,
+        inst.state = SceneState.UNLOADING
+        cfg = transition_config or self.create_default_transition()
+
+        ts = TransitionState(
+            from_scene_id=instance_id,
+            to_scene_id="",
+            config=cfg,
+            start_time=_time_module.time(),
         )
+        self._transitions[ts.transition_id] = ts
+        return ts
 
-        if config.preload_assets:
-            event.state = TransitionState.PRELOADING
-            self._init_loading_progress(event.id, config.to_scene)
-        else:
-            event.state = TransitionState.TRANSITIONING
+    # ------------------------------------------------------------------
+    # Transition Flow
+    # ------------------------------------------------------------------
 
-        self._events[event.id] = event
-        self._active_event_ids.append(event.id)
-        self._total_transitions += 1
-
-        return event
-
-    def complete_transition(self, event_id: str) -> bool:
-        event = self._events.get(event_id)
-        if event is None:
-            return False
-        if event.state == TransitionState.COMPLETE:
-            return True
-
-        event.state = TransitionState.COMPLETE
-        event.progress = 1.0
-        event.completed_at = time.time()
-
-        self._remove_from_active(event_id)
-        self._push_to_history(event)
-
-        config = self._configs.get(event.config_id)
-        if config and config.auto_unload_from and config.from_scene in self._preload_cache:
-            del self._preload_cache[config.from_scene]
-
-        if event.sequence_id:
-            self._advance_sequence(event.sequence_id, event_id)
-
-        return True
-
-    def cancel_transition(self, event_id: str) -> bool:
-        event = self._events.get(event_id)
-        if event is None:
-            return False
-        if event.state in (TransitionState.COMPLETE, TransitionState.FAILED):
-            return False
-
-        event.state = TransitionState.FAILED
-        event.progress = 0.0
-        event.error_message = "cancelled by user"
-        event.completed_at = time.time()
-
-        self._remove_from_active(event_id)
-        self._push_to_history(event)
-        self._loading_progress.pop(event_id, None)
-
-        return True
-
-    def fail_transition(self, event_id: str, error_message: str = "") -> bool:
-        event = self._events.get(event_id)
-        if event is None:
-            return False
-
-        event.state = TransitionState.FAILED
-        event.error_message = error_message or "unknown error"
-        event.completed_at = time.time()
-
-        self._remove_from_active(event_id)
-        self._push_to_history(event)
-        self._loading_progress.pop(event_id, None)
-
-        return True
-
-    # ---- Loading Progress ----
-
-    def update_progress(
+    def transition_to(
         self,
-        event_id: str,
-        loaded_assets: int,
-        total_assets: int = 0,
-        current_asset: str = "",
-    ) -> Optional[LoadingProgress]:
-        event = self._events.get(event_id)
-        if event is None:
+        from_instance_id: str,
+        to_descriptor_id: str,
+        config: TransitionConfig,
+    ) -> Optional[TransitionState]:
+        """Start a transition from one scene to another."""
+        from_inst = self._instances.get(from_instance_id)
+        if from_inst is None:
             return None
-        if event.state != TransitionState.PRELOADING:
-            return self._loading_progress.get(event_id)
+        if to_descriptor_id not in self._descriptors:
+            return None
 
-        total = total_assets if total_assets > 0 else loaded_assets
-        safe_total = max(1, total)
-        percent = min(1.0, loaded_assets / safe_total)
-
-        lp = self._loading_progress.get(event_id)
-        if lp is None:
-            lp = LoadingProgress(event_id=event_id)
-            self._loading_progress[event_id] = lp
-
-        lp.loaded_assets = loaded_assets
-        lp.total_assets = safe_total
-        lp.current_asset = current_asset
-        lp.percent = percent
-        lp.updated_at = time.time()
-
-        if lp.loaded_assets > 0 and lp.total_assets > 0:
-            elapsed = time.time() - event.started_at
-            rate = lp.loaded_assets / max(0.001, elapsed)
-            remaining = safe_total - lp.loaded_assets
-            lp.estimated_remaining = remaining / max(0.001, rate)
-
-        event.progress = percent
-
-        if percent >= 1.0:
-            event.state = TransitionState.TRANSITIONING
-            event.elapsed = 0.0
-            event.started_at = time.time()
-
-        return lp
-
-    # ---- Sequence Management ----
-
-    def create_sequence(
-        self,
-        name: str = "",
-        steps: Optional[List[Dict[str, Any]]] = None,
-        auto_advance: bool = True,
-        looping: bool = False,
-    ) -> TransitionSequence:
-        if len(self._sequences) >= self.MAX_SEQUENCES:
-            oldest_id = next(iter(self._sequences.keys()))
-            del self._sequences[oldest_id]
-
-        sequence = TransitionSequence(
-            name=name or f"sequence_{len(self._sequences) + 1}",
-            auto_advance=auto_advance,
-            looping=looping,
+        ts = TransitionState(
+            from_scene_id=from_instance_id,
+            to_scene_id=to_descriptor_id,
+            config=config,
+            start_time=_time_module.time(),
         )
+        self._transitions[ts.transition_id] = ts
+        return ts
 
-        for step in (steps or []):
-            config = self.configure_transition(
-                from_scene=step.get("from_scene", ""),
-                to_scene=step.get("to_scene", ""),
-                effect=step.get("effect", "fade"),
-                duration=step.get("duration", 0.3),
-                easing=step.get("easing", "ease_in_out"),
+    def update_transition(
+        self, transition_id: str, delta_time: float,
+    ) -> Tuple[bool, Optional[TransitionResult]]:
+        """Advance a transition; returns (is_complete, result) when done."""
+        ts = self._transitions.get(transition_id)
+        if ts is None or not ts.active:
+            return (True, TransitionResult(
+                success=False,
+                from_scene_id=ts.from_scene_id if ts else "",
+                to_scene_id=ts.to_scene_id if ts else "",
+                error_message="transition not found or inactive",
+            ))
+
+        dt = max(0.0, delta_time)
+        ts.elapsed += dt
+
+        progress = self.compute_transition_progress(
+            ts.elapsed, ts.config.duration, ts.config.easing,
+        )
+        ts.progress = min(1.0, progress)
+
+        if ts.progress >= 1.0:
+            ts.active = False
+            now = _time_module.time()
+            transition_time = now - ts.start_time
+            self._total_loading_time += transition_time
+            self._total_transitions += 1
+
+            # Unload old scene
+            from_inst = self._instances.get(ts.from_scene_id)
+            if from_inst is not None:
+                from_inst.state = SceneState.UNLOADED
+                from_inst.gc_references.clear()
+
+            # Activate new scene
+            new_inst = self.load_scene(ts.to_scene_id, SceneLoadMode.ADDITIVE)
+            if new_inst is not None:
+                new_inst.state = SceneState.ACTIVE
+                new_inst.active_since = now
+
+            result = TransitionResult(
+                success=True,
+                from_scene_id=ts.from_scene_id,
+                to_scene_id=ts.to_scene_id,
+                transition_time=transition_time,
             )
-            sequence.config_ids.append(config.id)
+            self._results.append(result)
+            return (True, result)
 
-        self._sequences[sequence.id] = sequence
-        return sequence
+        return (False, None)
 
-    def add_step_to_sequence(
-        self,
-        sequence_id: str,
-        from_scene: str,
-        to_scene: str,
-        effect: str = "fade",
-        duration: float = 0.3,
-        easing: str = "ease_in_out",
-    ) -> Optional[TransitionConfig]:
-        sequence = self._sequences.get(sequence_id)
-        if sequence is None:
+    def cancel_transition(self, transition_id: str) -> bool:
+        """Cancel an active transition."""
+        ts = self._transitions.get(transition_id)
+        if ts is None:
+            return False
+        ts.active = False
+        ts.progress = 0.0
+        return True
+
+    # ------------------------------------------------------------------
+    # Scene Lifecycle
+    # ------------------------------------------------------------------
+
+    def update_scene(
+        self, instance_id: str, delta_time: float,
+    ) -> Optional[SceneInstance]:
+        """Update a scene's internal state machine."""
+        inst = self._instances.get(instance_id)
+        if inst is None:
             return None
 
-        config = self.configure_transition(
-            from_scene=from_scene,
-            to_scene=to_scene,
-            effect=effect,
-            duration=duration,
-            easing=easing,
-        )
-        sequence.config_ids.append(config.id)
-        return config
+        if inst.state == SceneState.PAUSING:
+            inst.state = SceneState.PAUSED
+        elif inst.state == SceneState.RESUMING:
+            inst.state = SceneState.ACTIVE
 
-    def remove_step_from_sequence(
-        self, sequence_id: str, step_index: int,
+        return inst
+
+    def pause_scene(self, instance_id: str) -> bool:
+        """Request a scene to pause."""
+        inst = self._instances.get(instance_id)
+        if inst is None:
+            return False
+        if inst.state != SceneState.ACTIVE:
+            return False
+        inst.state = SceneState.PAUSING
+        return True
+
+    def resume_scene(self, instance_id: str) -> bool:
+        """Request a scene to resume."""
+        inst = self._instances.get(instance_id)
+        if inst is None:
+            return False
+        if inst.state != SceneState.PAUSED:
+            return False
+        inst.state = SceneState.RESUMING
+        return True
+
+    def set_scene_progress(
+        self, instance_id: str, progress: float,
     ) -> bool:
-        sequence = self._sequences.get(sequence_id)
-        if sequence is None:
+        """Set the loading progress of a scene (0.0 to 1.0)."""
+        inst = self._instances.get(instance_id)
+        if inst is None:
             return False
-        if step_index < 0 or step_index >= len(sequence.config_ids):
-            return False
-        config_id = sequence.config_ids.pop(step_index)
-        self._configs.pop(config_id, None)
+        inst.load_progress = max(0.0, min(1.0, progress))
+        if inst.load_progress >= 1.0 and inst.state == SceneState.LOADING:
+            inst.state = SceneState.ACTIVE
+            inst.active_since = _time_module.time()
         return True
 
-    def start_sequence(self, sequence_id: str) -> Optional[TransitionEvent]:
-        sequence = self._sequences.get(sequence_id)
-        if sequence is None:
+    # ------------------------------------------------------------------
+    # Scene Query
+    # ------------------------------------------------------------------
+
+    def get_scene_state(self, instance_id: str) -> Optional[SceneState]:
+        """Return the current state of a scene instance."""
+        inst = self._instances.get(instance_id)
+        if inst is None:
             return None
-        if not sequence.config_ids:
-            return None
+        return inst.state
 
-        sequence.is_active = True
-        sequence.current_index = 0
-        self._total_sequences_run += 1
+    def get_active_scenes(self) -> List[SceneInstance]:
+        """Return all currently active or loading scenes."""
+        return [
+            inst for inst in self._instances.values()
+            if inst.state in (SceneState.ACTIVE, SceneState.LOADING)
+        ]
 
-        config_id = sequence.config_ids[0]
-        event = self.start_transition(config_id)
-        if event:
-            event.sequence_id = sequence_id
+    def get_scene_by_name(self, name: str) -> Optional[SceneInstance]:
+        """Find a scene instance by its descriptor name."""
+        for inst in self._instances.values():
+            desc = self._descriptors.get(inst.descriptor_id)
+            if desc is not None and desc.name == name:
+                return inst
+        return None
 
-        return event
+    def get_all_descriptors(self) -> List[SceneDescriptor]:
+        """Return all registered scene descriptors."""
+        return list(self._descriptors.values())
 
-    def stop_sequence(self, sequence_id: str) -> bool:
-        sequence = self._sequences.get(sequence_id)
-        if sequence is None:
+    # ------------------------------------------------------------------
+    # GC References
+    # ------------------------------------------------------------------
+
+    def set_scene_gc_references(
+        self, instance_id: str, references: List[str],
+    ) -> bool:
+        """Set references to be garbage-collected when the scene unloads."""
+        inst = self._instances.get(instance_id)
+        if inst is None:
             return False
-        sequence.is_active = False
-        sequence.current_index = 0
-
-        for evt in list(self._events.values()):
-            if evt.sequence_id == sequence_id:
-                self.cancel_transition(evt.id)
-
+        inst.gc_references = list(references)
         return True
 
-    # ---- Effect Preview ----
+    # ------------------------------------------------------------------
+    # Easing & Effect Computation
+    # ------------------------------------------------------------------
 
-    def preview_effect(
-        self,
-        effect_name: str,
-        preview_context: Optional[Dict[str, Any]] = None,
-    ) -> Dict[str, Any]:
-        try:
-            te = TransitionEffect(effect_name.lower())
-        except ValueError:
-            return {"error": f"unknown_effect", "effect": effect_name}
-
-        preset = self._EASING_PRESETS.get(te.value, {})
-        context = preview_context or {}
-
-        preview = {
-            "effect": te.value,
-            "category": self._classify_effect(te),
-            "maskable": preset.get("maskable", False),
-            "slide_direction": preset.get("slide_direction"),
-            "uses_zoom": preset.get("uses_zoom", False),
-            "default_duration": preset.get("default_duration", 0.5),
-            "supported_easing": [
-                EasingFunction.LINEAR.value,
-                EasingFunction.EASE_IN.value,
-                EasingFunction.EASE_OUT.value,
-                EasingFunction.EASE_IN_OUT.value,
-                EasingFunction.BOUNCE.value,
-                EasingFunction.ELASTIC.value,
-            ],
-            "preview_frames": self._generate_preview_frames(
-                te, context.get("frame_count", 16),
-            ),
-            "metadata": dict(context),
-        }
-
-        return preview
-
-    def _classify_effect(self, effect: TransitionEffect) -> str:
-        if effect in (TransitionEffect.FADE, TransitionEffect.CROSSFADE):
-            return "blend"
-        if effect in (
-            TransitionEffect.SLIDE_LEFT,
-            TransitionEffect.SLIDE_RIGHT,
-            TransitionEffect.SLIDE_UP,
-            TransitionEffect.SLIDE_DOWN,
-        ):
-            return "slide"
-        if effect in (TransitionEffect.ZOOM_IN, TransitionEffect.ZOOM_OUT):
-            return "zoom"
-        if effect == TransitionEffect.WIPE:
-            return "wipe"
-        return "custom"
-
-    def _generate_preview_frames(
-        self, effect: TransitionEffect, frame_count: int,
-    ) -> List[Dict[str, Any]]:
-        frames: List[Dict[str, Any]] = []
-        for i in range(max(4, min(60, frame_count))):
-            t = i / max(1, frame_count - 1)
-            val = self._ease_value(t, EasingFunction.EASE_IN_OUT)
-            frames.append({
-                "frame": i,
-                "t": round(t, 3),
-                "value": round(val, 4),
-            })
-        return frames
-
-    # ---- Easing Computation ----
-
-    def _ease_value(
-        self, t: float, easing: EasingFunction,
+    @staticmethod
+    def compute_transition_progress(
+        elapsed: float, duration: float, easing: str,
     ) -> float:
-        t = max(0.0, min(1.0, t))
+        """Compute normalised progress (0.0–1.0) using the given easing."""
+        safe_duration = max(duration, 0.0001)
+        t = max(0.0, min(1.0, elapsed / safe_duration))
 
-        if easing == EasingFunction.LINEAR:
+        if easing == "linear":
             return t
-        if easing == EasingFunction.EASE_IN:
+        elif easing == "ease-in":
             return t * t
-        if easing == EasingFunction.EASE_OUT:
+        elif easing == "ease-out":
             return 1.0 - (1.0 - t) * (1.0 - t)
-        if easing == EasingFunction.EASE_IN_OUT:
+        elif easing == "ease-in-out":
             if t < 0.5:
                 return 2.0 * t * t
             return 1.0 - (-2.0 * t + 2.0) ** 2 / 2.0
-        if easing == EasingFunction.BOUNCE:
-            return self._bounce_ease(t)
-        if easing == EasingFunction.ELASTIC:
-            return self._elastic_ease(t)
-        return t
-
-    @staticmethod
-    def _bounce_ease(t: float) -> float:
-        n1 = 7.5625
-        d1 = 2.75
-        if t < 1.0 / d1:
-            return n1 * t * t
-        if t < 2.0 / d1:
-            t2 = t - 1.5 / d1
-            return n1 * t2 * t2 + 0.75
-        if t < 2.5 / d1:
-            t3 = t - 2.25 / d1
-            return n1 * t3 * t3 + 0.9375
-        t4 = t - 2.625 / d1
-        return n1 * t4 * t4 + 0.984375
-
-    @staticmethod
-    def _elastic_ease(t: float) -> float:
-        if t == 0.0 or t == 1.0:
+        elif easing == "cubic":
+            return t * t * t
+        elif easing == "elastic":
+            if t == 0.0 or t == 1.0:
+                return t
+            c4 = (2.0 * math.pi) / 3.0
+            return -(2.0 ** (10.0 * t - 10.0)) * math.sin((t * 10.0 - 10.75) * c4)
+        else:
             return t
-        c4 = (2.0 * math.pi) / 3.0
-        return -(2.0 ** (10.0 * t - 10.0)) * math.sin((t * 10.0 - 10.75) * c4)
 
-    def compute_transition_value(
-        self, event_id: str, delta_time: float,
-    ) -> Optional[Dict[str, Any]]:
-        event = self._events.get(event_id)
-        if event is None:
-            return None
-        if event.state != TransitionState.TRANSITIONING:
-            return {
-                "event_id": event_id,
-                "value": 1.0 if event.state == TransitionState.COMPLETE else 0.0,
-                "state": event.state.value,
-            }
+    @staticmethod
+    def get_transition_alpha(
+        config: TransitionConfig, progress: float,
+    ) -> float:
+        """Compute the alpha value for transition effects at a given progress."""
+        p = max(0.0, min(1.0, progress))
+        effect = config.effect
 
-        config = self._configs.get(event.config_id)
-        if config is None:
-            return None
+        if effect == TransitionEffect.FADE:
+            return p
+        elif effect == TransitionEffect.CROSSFADE:
+            return p
+        elif effect == TransitionEffect.DISSOLVE:
+            # Dissolve ramps alpha based on a pseudo-random threshold
+            return 1.0 if p > 0.5 else p * 2.0
+        elif effect == TransitionEffect.ZOOM_IN:
+            return p
+        elif effect == TransitionEffect.ZOOM_OUT:
+            return p
+        elif effect == TransitionEffect.WIPE:
+            return p
+        elif effect == TransitionEffect.NONE:
+            return 0.0
+        else:
+            # Slide effects don't use alpha; they use positional offset
+            return 0.0
 
-        event.elapsed += delta_time
-        duration = max(0.001, config.duration)
-        t = min(1.0, event.elapsed / duration)
-        value = self._ease_value(t, config.easing)
-        event.progress = value
+    @staticmethod
+    def get_transition_offset(
+        config: TransitionConfig, progress: float,
+    ) -> Tuple[float, float]:
+        """Compute the screen-space offset for slide and wipe effects."""
+        p = max(0.0, min(1.0, progress))
+        magnitude = 1.0 - p if config.direction == TransitionDirection.IN else p
 
-        if t >= 1.0:
-            self.complete_transition(event_id)
+        effect = config.effect
+        if effect == TransitionEffect.SLIDE_LEFT:
+            return (-magnitude, 0.0)
+        elif effect == TransitionEffect.SLIDE_RIGHT:
+            return (magnitude, 0.0)
+        elif effect == TransitionEffect.SLIDE_UP:
+            return (0.0, -magnitude)
+        elif effect == TransitionEffect.SLIDE_DOWN:
+            return (0.0, magnitude)
+        elif effect == TransitionEffect.WIPE:
+            return (magnitude - 1.0, 0.0)
+        else:
+            return (0.0, 0.0)
 
-        return {
-            "event_id": event_id,
-            "value": round(value, 4),
-            "t": round(t, 4),
-            "elapsed": round(event.elapsed, 3),
-            "duration": config.duration,
-            "easing": config.easing.value,
-            "state": event.state.value,
-        }
+    # ------------------------------------------------------------------
+    # Stats
+    # ------------------------------------------------------------------
 
-    # ---- Query Methods ----
+    def get_scene_stats(self) -> SceneStats:
+        """Return aggregate scene telemetry."""
+        active_count = sum(
+            1 for inst in self._instances.values()
+            if inst.state == SceneState.ACTIVE
+        )
+        return SceneStats(
+            active_scenes=active_count,
+            total_loading_time=self._total_loading_time,
+            transition_count=self._total_transitions,
+        )
 
-    def get_active_transitions(self) -> List[TransitionEvent]:
-        return [self._events[eid] for eid in self._active_event_ids if eid in self._events]
+    def get_stats(self) -> dict:
+        """Return stats as dict for existing engine integration."""
+        return self.get_scene_stats().to_dict()
 
-    def get_transition_history(self, limit: int = 20) -> List[TransitionEvent]:
-        return self._history[-max(1, min(self.MAX_HISTORY, limit)):]
+    # ------------------------------------------------------------------
+    # Factory
+    # ------------------------------------------------------------------
 
-    def get_event(self, event_id: str) -> Optional[TransitionEvent]:
-        return self._events.get(event_id)
+    @staticmethod
+    def create_default_transition() -> TransitionConfig:
+        """Return a default FADE transition with ease-in-out easing."""
+        return TransitionConfig(
+            effect=TransitionEffect.FADE,
+            duration=0.5,
+            easing="ease-in-out",
+            direction=TransitionDirection.IN,
+        )
 
-    def get_sequence(self, sequence_id: str) -> Optional[TransitionSequence]:
-        return self._sequences.get(sequence_id)
-
-    def get_loading_progress(
-        self, event_id: str,
-    ) -> Optional[LoadingProgress]:
-        return self._loading_progress.get(event_id)
-
-    def list_sequences(self) -> List[TransitionSequence]:
-        return list(self._sequences.values())
-
-    def list_configs(self) -> List[TransitionConfig]:
-        return list(self._configs.values())
-
-    # ---- Stats ----
-
-    def get_stats(self) -> Dict[str, Any]:
-        effect_counts: Dict[str, int] = {}
-        for evt in self._history[-200:]:
-            ef = evt.effect.value
-            effect_counts[ef] = effect_counts.get(ef, 0) + 1
-
-        return {
-            "total_configs": len(self._configs),
-            "total_events": len(self._events),
-            "total_sequences": len(self._sequences),
-            "active_transitions": len(self._active_event_ids),
-            "max_active_transitions": self.MAX_ACTIVE_TRANSITIONS,
-            "total_transitions_run": self._total_transitions,
-            "total_sequences_run": self._total_sequences_run,
-            "history_size": len(self._history),
-            "loading_progress_count": len(self._loading_progress),
-            "recent_effect_counts": effect_counts,
-            "preloaded_scenes": list(self._preload_cache.keys()),
-        }
-
-    # ---- Lifecycle ----
+    # ------------------------------------------------------------------
+    # Lifecycle
+    # ------------------------------------------------------------------
 
     def reset(self) -> None:
-        for event_id in list(self._active_event_ids):
-            self.cancel_transition(event_id)
-        self._configs.clear()
-        self._events.clear()
-        self._sequences.clear()
-        self._loading_progress.clear()
-        self._history.clear()
-        self._active_event_ids.clear()
-        self._preload_cache.clear()
-        self._total_transitions = 0
-        self._total_sequences_run = 0
-
-    # ---- Internal Helpers ----
-
-    def _init_loading_progress(
-        self, event_id: str, scene_name: str,
-    ) -> None:
-        asset_count = len(self._preload_cache.get(scene_name, []))
-        lp = LoadingProgress(
-            event_id=event_id,
-            total_assets=max(1, asset_count),
-        )
-        self._loading_progress[event_id] = lp
-
-    def _remove_from_active(self, event_id: str) -> None:
-        if event_id in self._active_event_ids:
-            self._active_event_ids.remove(event_id)
-
-    def _push_to_history(self, event: TransitionEvent) -> None:
-        self._history.append(event)
-        while len(self._history) > self.MAX_HISTORY:
-            self._history.pop(0)
-
-    def _advance_sequence(
-        self, sequence_id: str, completed_event_id: str,
-    ) -> None:
-        sequence = self._sequences.get(sequence_id)
-        if sequence is None or not sequence.is_active:
-            return
-        if not sequence.auto_advance:
-            return
-
-        sequence.current_index += 1
-
-        if sequence.current_index >= len(sequence.config_ids):
-            if sequence.looping:
-                sequence.current_index = 0
-            else:
-                sequence.is_active = False
-                return
-
-        next_config_id = sequence.config_ids[sequence.current_index]
-        event = self.start_transition(next_config_id)
-        if event:
-            event.sequence_id = sequence_id
-
-    def preload_scene_assets(
-        self, scene_name: str, asset_ids: List[str],
-    ) -> None:
-        self._preload_cache[scene_name] = list(asset_ids)
-
-    def clear_preload_cache(self, scene_name: str = "") -> None:
-        if scene_name:
-            self._preload_cache.pop(scene_name, None)
-        else:
-            self._preload_cache.clear()
+        """Remove all descriptors, instances, and transitions."""
+        with self._lock:
+            self._descriptors.clear()
+            self._instances.clear()
+            self._transitions.clear()
+            self._results.clear()
+            self._total_transitions = 0
+            self._total_loading_time = 0.0
 
 
-def get_scene_transition() -> SceneTransitionSystem:
-    return SceneTransitionSystem.get_instance()
+# ---------------------------------------------------------------------------
+# Module-level Accessor
+# ---------------------------------------------------------------------------
+
+def get_scene_transition() -> EngineSceneTransition:
+    """Return the singleton EngineSceneTransition instance."""
+    return EngineSceneTransition.get_instance()
+
+
+# Compatibility alias for existing engine integration
+SceneTransitionSystem = EngineSceneTransition
