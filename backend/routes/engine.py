@@ -4355,3 +4355,950 @@ async def asset_bundler_stats():
         return ab.get_stats()
     except Exception as e:
         return {"error": str(e)}
+
+
+# ============================================================
+# Collision System Routes
+# ============================================================
+
+@router.get("/collision-system/stats")
+async def collision_system_stats():
+    """Get collision system statistics."""
+    try:
+        from sparkai.engine.engine_collision_system import get_collision_system
+        cs = get_collision_system()
+        return cs.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/collision-system/create-body")
+async def collision_system_create_body(request: Request):
+    """Create a collision body."""
+    try:
+        from sparkai.engine.engine_collision_system import get_collision_system, CollisionShape, CollisionLayer
+        body = await request.json()
+        cs = get_collision_system()
+        shape_str = body.get("shape", "aabb")
+        shape = getattr(CollisionShape, shape_str.upper(), CollisionShape.AABB)
+        layer_str = body.get("layer", "default")
+        layer = getattr(CollisionLayer, layer_str.upper(), CollisionLayer.DEFAULT)
+        cb = cs.create_body(
+            entity_id=body.get("entity_id", ""),
+            shape=shape,
+            position=tuple(body.get("position", [0, 0])),
+            size=tuple(body.get("size", [1, 1])),
+            layer=layer,
+            is_static=body.get("is_static", False),
+            is_trigger=body.get("is_trigger", False),
+        )
+        return cb.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/collision-system/raycast")
+async def collision_system_raycast(request: Request):
+    """Cast a ray and detect collisions."""
+    try:
+        from sparkai.engine.engine_collision_system import get_collision_system, CollisionLayer
+        body = await request.json()
+        cs = get_collision_system()
+        layer_mask_raw = body.get("layer_mask")
+        layer_mask = None
+        if layer_mask_raw:
+            layer_mask = [getattr(CollisionLayer, lm.upper(), CollisionLayer.DEFAULT) for lm in layer_mask_raw]
+        results = cs.raycast(
+            origin=tuple(body.get("origin", [0, 0])),
+            direction=tuple(body.get("direction", [0, 0])),
+            max_distance=body.get("max_distance", 100.0),
+            layer_mask=layer_mask,
+        )
+        return [r.to_dict() for r in results]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/collision-system/overlap-area")
+async def collision_system_overlap_area(request: Request):
+    """Find all bodies overlapping with a given area."""
+    try:
+        from sparkai.engine.engine_collision_system import get_collision_system, CollisionShape
+        body = await request.json()
+        cs = get_collision_system()
+        shape_str = body.get("shape", "aabb")
+        shape = getattr(CollisionShape, shape_str.upper(), CollisionShape.AABB)
+        bodies = cs.overlap_area(
+            body_id=body.get("body_id", ""),
+            shape=shape,
+            position=tuple(body.get("position", [0, 0])),
+            size=tuple(body.get("size", [1, 1])),
+        )
+        return [b.to_dict() for b in bodies]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/collision-system/body")
+async def collision_system_get_body(body_id: str = ""):
+    """Get a collision body by ID."""
+    try:
+        from sparkai.engine.engine_collision_system import get_collision_system
+        cs = get_collision_system()
+        cb = cs.get_body(body_id)
+        return cb.to_dict() if cb else {"error": "Body not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Game Loop Routes
+# ============================================================
+
+@router.get("/game-loop/stats")
+async def game_loop_stats():
+    """Get game loop statistics."""
+    try:
+        from sparkai.engine.engine_game_loop import get_game_loop
+        gl = get_game_loop()
+        return gl.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/game-loop/start")
+async def game_loop_start():
+    """Start the game loop."""
+    try:
+        from sparkai.engine.engine_game_loop import get_game_loop
+        gl = get_game_loop()
+        gl.start()
+        return {"status": "started"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/game-loop/stop")
+async def game_loop_stop():
+    """Stop the game loop."""
+    try:
+        from sparkai.engine.engine_game_loop import get_game_loop
+        gl = get_game_loop()
+        gl.stop()
+        return {"status": "stopped"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/game-loop/pause")
+async def game_loop_pause():
+    """Pause the game loop."""
+    try:
+        from sparkai.engine.engine_game_loop import get_game_loop
+        gl = get_game_loop()
+        gl.pause()
+        return {"status": "paused"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/game-loop/resume")
+async def game_loop_resume():
+    """Resume the game loop."""
+    try:
+        from sparkai.engine.engine_game_loop import get_game_loop
+        gl = get_game_loop()
+        gl.resume()
+        return {"status": "resumed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/game-loop/frame-timing")
+async def game_loop_frame_timing():
+    """Get frame timing information."""
+    try:
+        from sparkai.engine.engine_game_loop import get_game_loop
+        gl = get_game_loop()
+        timing = gl.get_frame_timing()
+        return timing.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Resource Cache Routes
+# ============================================================
+
+@router.get("/resource-cache/stats")
+async def resource_cache_stats():
+    """Get resource cache statistics."""
+    try:
+        from sparkai.engine.engine_resource_cache import get_resource_cache
+        rc = get_resource_cache()
+        return rc.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/resource-cache/load")
+async def resource_cache_load(request: Request):
+    """Load a resource into the cache."""
+    try:
+        from sparkai.engine.engine_resource_cache import get_resource_cache, ResourceType
+        body = await request.json()
+        rc = get_resource_cache()
+        rt_str = body.get("resource_type", "texture")
+        resource_type = getattr(ResourceType, rt_str.upper(), ResourceType.TEXTURE)
+        handle = rc.load(
+            path=body.get("path", ""),
+            resource_type=resource_type,
+            tags=body.get("tags"),
+        )
+        return handle.to_dict() if handle else {"error": "Failed to load resource"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/resource-cache/unload")
+async def resource_cache_unload(request: Request):
+    """Unload a resource from the cache."""
+    try:
+        from sparkai.engine.engine_resource_cache import get_resource_cache
+        body = await request.json()
+        rc = get_resource_cache()
+        rc.unload(resource_id=body.get("resource_id", ""))
+        return {"status": "unloaded"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/resource-cache/resource")
+async def resource_cache_get_resource(resource_id: str = ""):
+    """Get a cached resource."""
+    try:
+        from sparkai.engine.engine_resource_cache import get_resource_cache
+        rc = get_resource_cache()
+        handle = rc.get(resource_id)
+        return handle.to_dict() if handle else {"error": "Resource not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/resource-cache/create-group")
+async def resource_cache_create_group(request: Request):
+    """Create a resource group for batch loading."""
+    try:
+        from sparkai.engine.engine_resource_cache import get_resource_cache
+        body = await request.json()
+        rc = get_resource_cache()
+        group = rc.create_resource_group(
+            name=body.get("name", "group"),
+            resource_paths=body.get("resource_paths", []),
+            priority=body.get("priority", 0),
+        )
+        return group.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/resource-cache/load-group")
+async def resource_cache_load_group(request: Request):
+    """Load all resources in a group."""
+    try:
+        from sparkai.engine.engine_resource_cache import get_resource_cache
+        body = await request.json()
+        rc = get_resource_cache()
+        rc.load_group(group_id=body.get("group_id", ""))
+        return {"status": "group_loaded"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Scene Graph Routes
+# ============================================================
+
+@router.get("/scene-graph/stats")
+async def scene_graph_stats():
+    """Get scene graph statistics."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        sg = get_scene_graph()
+        return sg.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/scene-graph/create-node")
+async def scene_graph_create_node(request: Request):
+    """Create a new scene graph node."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph, NodeType, Transform2D
+        body = await request.json()
+        sg = get_scene_graph()
+        nt_str = body.get("node_type", "group")
+        node_type = getattr(NodeType, nt_str.upper(), NodeType.GROUP)
+        tx_data = body.get("transform")
+        transform = None
+        if tx_data:
+            transform = Transform2D(
+                position=tuple(tx_data.get("position", [0, 0])),
+                rotation=tx_data.get("rotation", 0.0),
+                scale=tuple(tx_data.get("scale", [1, 1])),
+            )
+        node = sg.create_node(
+            name=body.get("name", "Node"),
+            node_type=node_type,
+            parent_id=body.get("parent_id"),
+            transform=transform,
+            tags=body.get("tags"),
+        )
+        return node.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/scene-graph/remove-node")
+async def scene_graph_remove_node(request: Request):
+    """Remove a node from the scene graph."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        body = await request.json()
+        sg = get_scene_graph()
+        sg.remove_node(node_id=body.get("node_id", ""))
+        return {"status": "removed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/scene-graph/node")
+async def scene_graph_get_node(node_id: str = ""):
+    """Get a scene graph node by ID."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        sg = get_scene_graph()
+        node = sg.get_node(node_id)
+        return node.to_dict() if node else {"error": "Node not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/scene-graph/find-by-tag")
+async def scene_graph_find_by_tag(tag: str = ""):
+    """Find scene graph nodes by tag."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        sg = get_scene_graph()
+        nodes = sg.find_by_tag(tag)
+        return [n.to_dict() for n in nodes]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/scene-graph/set-parent")
+async def scene_graph_set_parent(request: Request):
+    """Change the parent of a node."""
+    try:
+        from sparkai.engine.engine_scene_graph import get_scene_graph
+        body = await request.json()
+        sg = get_scene_graph()
+        sg.set_parent(
+            node_id=body.get("node_id", ""),
+            new_parent_id=body.get("new_parent_id", ""),
+        )
+        return {"status": "parent_updated"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Script Engine Routes
+# ============================================================
+
+@router.get("/script-engine/stats")
+async def script_engine_stats():
+    """Get script engine statistics."""
+    try:
+        from sparkai.engine.engine_script_engine import get_script_engine
+        se = get_script_engine()
+        return se.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/script-engine/create-binding")
+async def script_engine_create_binding(request: Request):
+    """Create a script binding for an entity."""
+    try:
+        from sparkai.engine.engine_script_engine import get_script_engine, ScriptLanguage
+        body = await request.json()
+        se = get_script_engine()
+        lang_str = body.get("language", "python")
+        language = getattr(ScriptLanguage, lang_str.upper(), ScriptLanguage.PYTHON)
+        binding = se.create_binding(
+            entity_id=body.get("entity_id", ""),
+            script_source=body.get("script_source", ""),
+            language=language,
+        )
+        return binding.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/script-engine/bind-event")
+async def script_engine_bind_event(request: Request):
+    """Bind a handler to a script event. Note: handler must be registered separately."""
+    try:
+        from sparkai.engine.engine_script_engine import get_script_engine, ScriptEvent
+        body = await request.json()
+        se = get_script_engine()
+        event_str = body.get("event", "on_update")
+        event = getattr(ScriptEvent, event_str.upper(), ScriptEvent.ON_UPDATE)
+        binding = se._bindings.get(body.get("binding_id", ""))
+        if not binding:
+            return {"error": "Binding not found"}
+        se.listen_event(
+            entity_id=binding.entity_id,
+            event=event,
+            binding_id=binding.binding_id,
+        )
+        return {"status": "event_bound"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/script-engine/execute")
+async def script_engine_execute(request: Request):
+    """Execute a script binding for a specific event."""
+    try:
+        from sparkai.engine.engine_script_engine import get_script_engine, ScriptEvent
+        body = await request.json()
+        se = get_script_engine()
+        event_str = body.get("event", "on_update")
+        event = getattr(ScriptEvent, event_str.upper(), ScriptEvent.ON_UPDATE)
+        se.execute_binding(
+            binding_id=body.get("binding_id", ""),
+            event=event,
+            context=body.get("context"),
+        )
+        return {"status": "executed"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/script-engine/compile-expression")
+async def script_engine_compile_expression(request: Request):
+    """Compile a script expression for later evaluation."""
+    try:
+        from sparkai.engine.engine_script_engine import get_script_engine, ScriptLanguage
+        body = await request.json()
+        se = get_script_engine()
+        lang_str = body.get("language", "python")
+        language = getattr(ScriptLanguage, lang_str.upper(), ScriptLanguage.PYTHON)
+        expression = se.compile_expression(
+            source=body.get("source", ""),
+            language=language,
+        )
+        return expression.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/script-engine/evaluate")
+async def script_engine_evaluate(request: Request):
+    """Evaluate a compiled expression."""
+    try:
+        from sparkai.engine.engine_script_engine import get_script_engine
+        body = await request.json()
+        se = get_script_engine()
+        result = se.evaluate(
+            expression_id=body.get("expression_id", ""),
+            context=body.get("context"),
+        )
+        return {"result": result}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ============================================================
+# Spatial Hash Routes
+# ============================================================
+
+@router.get("/spatial-hash/stats")
+async def spatial_hash_stats():
+    """Get spatial hash statistics."""
+    try:
+        from sparkai.engine.engine_spatial_hash import get_spatial_hash
+        sh = get_spatial_hash()
+        return sh.get_stats()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/spatial-hash/insert")
+async def spatial_hash_insert(request: Request):
+    """Insert an object into the spatial hash."""
+    try:
+        from sparkai.engine.engine_spatial_hash import get_spatial_hash
+        body = await request.json()
+        sh = get_spatial_hash()
+        obj = sh.insert(
+            entity_id=body.get("entity_id", ""),
+            position=tuple(body.get("position", [0.0, 0.0])),
+            size=tuple(body.get("size", [1.0, 1.0])),
+            layer=body.get("layer", "default"),
+            properties=body.get("properties"),
+        )
+        return obj.to_dict()
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/spatial-hash/update")
+async def spatial_hash_update(request: Request):
+    """Update an object's position and size in the spatial hash."""
+    try:
+        from sparkai.engine.engine_spatial_hash import get_spatial_hash
+        body = await request.json()
+        sh = get_spatial_hash()
+        size = body.get("size")
+        sh.update(
+            object_id=body.get("object_id", ""),
+            position=tuple(body.get("position", [0.0, 0.0])),
+            size=tuple(size) if size else None,
+        )
+        return {"status": "updated"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/spatial-hash/query-radius")
+async def spatial_hash_query_radius(request: Request):
+    """Query objects within a radius of a point."""
+    try:
+        from sparkai.engine.engine_spatial_hash import get_spatial_hash
+        body = await request.json()
+        sh = get_spatial_hash()
+        results = sh.query_radius(
+            center=tuple(body.get("center", [0.0, 0.0])),
+            radius=body.get("radius", 1.0),
+            layer=body.get("layer"),
+            max_results=body.get("max_results", 100),
+        )
+        return [r.to_dict() for r in results]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.post("/spatial-hash/query-rect")
+async def spatial_hash_query_rect(request: Request):
+    """Query objects within a rectangular region."""
+    try:
+        from sparkai.engine.engine_spatial_hash import get_spatial_hash
+        body = await request.json()
+        sh = get_spatial_hash()
+        results = sh.query_rect(
+            min_x=body.get("min_x", 0.0),
+            min_y=body.get("min_y", 0.0),
+            max_x=body.get("max_x", 1.0),
+            max_y=body.get("max_y", 1.0),
+            layer=body.get("layer"),
+        )
+        return [r.to_dict() for r in results]
+    except Exception as e:
+        return {"error": str(e)}
+
+
+@router.get("/spatial-hash/object")
+async def spatial_hash_get_object(object_id: str = ""):
+    """Get a spatial hash object by ID."""
+    try:
+        from sparkai.engine.engine_spatial_hash import get_spatial_hash
+        sh = get_spatial_hash()
+        obj = sh.get_object(object_id)
+        return obj.to_dict() if obj else {"error": "Object not found"}
+    except Exception as e:
+        return {"error": str(e)}
+
+
+# ===== Game Assembler Routes =====
+
+@router.get("/game-assembler/stats")
+async def game_assembler_stats():
+    """Get game assembler statistics."""
+    try:
+        from sparkai.engine.engine_game_assembler import get_game_assembler
+        ga = get_game_assembler()
+        return {"status": "ok", "stats": ga.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-assembler/register-component")
+async def game_assembler_register_component(request: Request):
+    """Register an engine component."""
+    try:
+        from sparkai.engine.engine_game_assembler import get_game_assembler, ComponentCategory
+        body = await request.json()
+        ga = get_game_assembler()
+        comp = ga.register_component(
+            name=body.get("name", ""),
+            category=ComponentCategory(body.get("category", "core")),
+            version=body.get("version", "1.0.0"),
+            dependencies=body.get("dependencies"),
+            provides=body.get("provides"),
+            config=body.get("config")
+        )
+        return {"status": "ok", "component_id": comp.component_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/game-assembler/components")
+async def game_assembler_components(category: str = None):
+    """List registered components."""
+    try:
+        from sparkai.engine.engine_game_assembler import get_game_assembler, ComponentCategory
+        ga = get_game_assembler()
+        cat = ComponentCategory(category) if category else None
+        return {"status": "ok", "components": ga.list_components(category=cat)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-assembler/add-scene")
+async def game_assembler_add_scene(request: Request):
+    """Add a scene to the assembler."""
+    try:
+        from sparkai.engine.engine_game_assembler import get_game_assembler
+        body = await request.json()
+        ga = get_game_assembler()
+        scene = ga.add_scene(
+            name=body.get("name", ""),
+            entities=body.get("entities"),
+            systems=body.get("systems"),
+            resources=body.get("resources"),
+            config=body.get("config")
+        )
+        return {"status": "ok", "scene_id": scene.scene_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/game-assembler/scenes")
+async def game_assembler_scenes():
+    """List all scenes."""
+    try:
+        from sparkai.engine.engine_game_assembler import get_game_assembler
+        ga = get_game_assembler()
+        return {"status": "ok", "scenes": ga.list_scenes()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-assembler/create-plan")
+async def game_assembler_create_plan(request: Request):
+    """Create a build plan."""
+    try:
+        from sparkai.engine.engine_game_assembler import get_game_assembler, BuildTarget
+        body = await request.json()
+        ga = get_game_assembler()
+        plan = ga.create_plan(
+            project_name=body.get("project_name", ""),
+            target=BuildTarget(body.get("target", "web")),
+            component_ids=body.get("component_ids", []),
+            scene_ids=body.get("scene_ids")
+        )
+        return {"status": "ok", "plan_id": plan.plan_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-assembler/execute-plan")
+async def game_assembler_execute_plan(request: Request):
+    """Execute a build plan."""
+    try:
+        from sparkai.engine.engine_game_assembler import get_game_assembler
+        body = await request.json()
+        ga = get_game_assembler()
+        result = ga.execute_plan(plan_id=body.get("plan_id", ""))
+        return {
+            "status": "ok",
+            "success": result.success,
+            "output_path": result.output_path,
+            "build_time": result.build_time,
+            "warnings": result.warnings,
+            "errors": result.errors
+        }
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/game-assembler/plans")
+async def game_assembler_plans():
+    """List all build plans."""
+    try:
+        from sparkai.engine.engine_game_assembler import get_game_assembler
+        ga = get_game_assembler()
+        return {"status": "ok", "plans": ga.list_plans()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# ===== AI Bridge Routes =====
+
+@router.get("/ai-bridge/stats")
+async def ai_bridge_stats():
+    """Get AI bridge statistics."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge
+        bridge = get_ai_bridge()
+        return {"status": "ok", "stats": bridge.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ai-bridge/send-command")
+async def ai_bridge_send_command(request: Request):
+    """Send a command from agent to engine."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge, CommandType, CommandPriority
+        body = await request.json()
+        bridge = get_ai_bridge()
+        cmd = bridge.send_command(
+            command_type=CommandType(body.get("command_type", "spawn_entity")),
+            agent_id=body.get("agent_id", ""),
+            parameters=body.get("parameters", {}),
+            priority=CommandPriority(body.get("priority")) if body.get("priority") else None,
+            target_entity=body.get("target_entity", "")
+        )
+        return {"status": "ok", "command_id": cmd.command_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ai-bridge/send-event")
+async def ai_bridge_send_event(request: Request):
+    """Send an event from engine to agent."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge, EventType
+        body = await request.json()
+        bridge = get_ai_bridge()
+        event = bridge.send_event(
+            event_type=EventType(body.get("event_type", "entity_created")),
+            source_entity=body.get("source_entity", ""),
+            target_entity=body.get("target_entity", ""),
+            data=body.get("data", {}),
+            scene_id=body.get("scene_id", "")
+        )
+        return {"status": "ok", "event_id": event.event_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ai-bridge/synced-state")
+async def ai_bridge_synced_state():
+    """Get synchronized state between agent and engine."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge
+        bridge = get_ai_bridge()
+        return {"status": "ok", "state": bridge.get_synced_state()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ai-bridge/sync-entity")
+async def ai_bridge_sync_entity(request: Request):
+    """Sync entity state."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge
+        body = await request.json()
+        bridge = get_ai_bridge()
+        bridge.sync_entity_state(
+            entity_id=body.get("entity_id", ""),
+            state=body.get("state", {})
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ai-bridge/record-metric")
+async def ai_bridge_record_metric(request: Request):
+    """Record a feedback metric."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge
+        body = await request.json()
+        bridge = get_ai_bridge()
+        metric = bridge.record_metric(
+            name=body.get("name", ""),
+            value=body.get("value", 0.0),
+            category=body.get("category", ""),
+            source=body.get("source", "")
+        )
+        return {"status": "ok", "metric_id": metric.metric_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ai-bridge/metrics")
+async def ai_bridge_metrics(category: str = None, limit: int = 100):
+    """Get feedback metrics."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge
+        bridge = get_ai_bridge()
+        return {"status": "ok", "metrics": bridge.get_metrics(category=category, limit=limit)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ai-bridge/metric-summary")
+async def ai_bridge_metric_summary():
+    """Get metric summary."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge
+        bridge = get_ai_bridge()
+        return {"status": "ok", "summary": bridge.get_metric_summary()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ai-bridge/command-history")
+async def ai_bridge_command_history(limit: int = 50):
+    """Get command history."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge
+        bridge = get_ai_bridge()
+        return {"status": "ok", "commands": bridge.get_command_history(limit=limit)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ai-bridge/event-history")
+async def ai_bridge_event_history(limit: int = 50):
+    """Get event history."""
+    try:
+        from sparkai.engine.engine_ai_bridge import get_ai_bridge
+        bridge = get_ai_bridge()
+        return {"status": "ok", "events": bridge.get_event_history(limit=limit)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# ===== Render Orchestrator Routes =====
+
+@router.get("/render-orchestrator/stats")
+async def render_orchestrator_stats():
+    """Get render orchestrator statistics."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator
+        ro = get_render_orchestrator()
+        return {"status": "ok", "stats": ro.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/render-orchestrator/add-pass")
+async def render_orchestrator_add_pass(request: Request):
+    """Add a render pass."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator, RenderPassType
+        body = await request.json()
+        ro = get_render_orchestrator()
+        rp = ro.add_render_pass(
+            name=body.get("name", ""),
+            pass_type=RenderPassType(body.get("pass_type", "opaque_geometry")),
+            order=body.get("order", 0),
+            dependencies=body.get("dependencies"),
+            config=body.get("config")
+        )
+        return {"status": "ok", "pass_id": rp.pass_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/render-orchestrator/passes")
+async def render_orchestrator_passes(pass_type: str = None):
+    """List render passes."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator, RenderPassType
+        ro = get_render_orchestrator()
+        pt = RenderPassType(pass_type) if pass_type else None
+        return {"status": "ok", "passes": ro.get_render_passes(pass_type=pt)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/render-orchestrator/sorted-passes")
+async def render_orchestrator_sorted_passes():
+    """Get topologically sorted render passes."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator
+        ro = get_render_orchestrator()
+        return {"status": "ok", "order": ro.sort_passes()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/render-orchestrator/set-post-effects")
+async def render_orchestrator_set_post_effects(request: Request):
+    """Set post-processing effect chain."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator, PostProcessEffect
+        body = await request.json()
+        ro = get_render_orchestrator()
+        effects = [PostProcessEffect(e) for e in body.get("effects", [])]
+        ro.set_post_process_chain(effects)
+        return {"status": "ok", "chain": ro.get_post_process_chain()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/render-orchestrator/post-effects")
+async def render_orchestrator_post_effects():
+    """Get current post-processing chain."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator
+        ro = get_render_orchestrator()
+        return {"status": "ok", "chain": ro.get_post_process_chain()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/render-orchestrator/set-quality")
+async def render_orchestrator_set_quality(request: Request):
+    """Set quality preset."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator, QualityPreset
+        body = await request.json()
+        ro = get_render_orchestrator()
+        ro.set_quality_preset(QualityPreset(body.get("preset", "high")))
+        return {"status": "ok", "quality": ro.get_quality_settings()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/render-orchestrator/record-frame")
+async def render_orchestrator_record_frame(request: Request):
+    """Record frame statistics."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator
+        body = await request.json()
+        ro = get_render_orchestrator()
+        ro.record_frame(
+            draw_calls=body.get("draw_calls", 0),
+            triangles=body.get("triangles", 0),
+            gpu_time_ms=body.get("gpu_time_ms", 0.0),
+            cpu_time_ms=body.get("cpu_time_ms", 0.0),
+            pass_times=body.get("pass_times"),
+            batch_savings=body.get("batch_savings", 0)
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/render-orchestrator/frame-stats")
+async def render_orchestrator_frame_stats():
+    """Get recent frame statistics."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator
+        ro = get_render_orchestrator()
+        return {"status": "ok", "frames": ro.get_frame_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/render-orchestrator/performance")
+async def render_orchestrator_performance():
+    """Get performance summary."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator
+        ro = get_render_orchestrator()
+        return {"status": "ok", "performance": ro.get_performance_summary()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/render-orchestrator/gpu-memory")
+async def render_orchestrator_gpu_memory():
+    """Get GPU memory usage."""
+    try:
+        from sparkai.engine.engine_render_orchestrator import get_render_orchestrator
+        ro = get_render_orchestrator()
+        return {"status": "ok", "memory": ro.get_gpu_memory_usage()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
