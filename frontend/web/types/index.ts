@@ -614,7 +614,29 @@ export type ViewMode =
   | 'lifecycle-panels'
   | 'slash-commands-pnl'
   | 'validation-hooks-pnl'
-  | 'task-executor-pnl';
+  | 'task-executor-pnl'
+  | 'persona-vault'
+  | 'personality-system'
+  | 'agent-cron-scheduler'
+  | 'document-synthesizer'
+  | 'developer-oracle'
+  | 'prompt-optimizer'
+  | 'provider-switch'
+  | 'streaming-scrubber'
+  | 'session-nexus'
+  | 'session-snapshot'
+  | 'security-scanner'
+  | 'audit-trail'
+  | 'verification-pipeline'
+  | 'tool-registry'
+  | 'concurrency-manager'
+  | 'delegation-broker'
+  | 'telemetry-pipeline'
+  | 'journal-system'
+  | 'kanban-coordinator'
+  | 'localization-hub'
+  | 'metacognition'
+  | 'predictive-intelligence';
 
 // Runtime types
 
