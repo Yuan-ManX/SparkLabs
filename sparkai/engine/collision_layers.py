@@ -125,7 +125,7 @@ class CollisionLayerManager:
     """Layer-based collision filtering for game objects."""
 
     _instance: Optional["CollisionLayerManager"] = None
-    _lock = threading.Lock()
+    _lock = threading.RLock()
 
     MAX_LAYERS = 32
     MAX_RULES = 256
