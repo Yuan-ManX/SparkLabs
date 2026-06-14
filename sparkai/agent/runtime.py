@@ -308,7 +308,7 @@ from sparkai.agent.agent_chain_of_thought import ChainOfThoughtEngine, get_chain
 from sparkai.agent.agent_conversation_memory import ConversationMemoryEngine, get_conversation_memory
 from sparkai.agent.agent_self_optimization import SelfOptimizationEngine, get_self_optimization
 from sparkai.agent.agent_collaboration_protocol import CollaborationProtocolEngine, get_collaboration_protocol
-from sparkai.agent.agent_world_model import AgentWorldModel, get_agent_world_model
+from sparkai.agent.agent_world_model import AgentWorldModel, get_world_model
 from sparkai.agent.agent_curiosity_engine import AgentCuriosityEngine, get_curiosity_engine
 from sparkai.agent.agent_knowledge_synthesis import KnowledgeSynthesisEngine, get_knowledge_synthesis
 from sparkai.agent.agent_capability_registry import CapabilityRegistryEngine, get_capability_registry
@@ -1284,7 +1284,7 @@ class AgentRuntime:
             self._conversation_memory = get_conversation_memory()
             self._self_optimization = get_self_optimization()
             self._collaboration_protocol = get_collaboration_protocol()
-            self._world_model = get_agent_world_model()
+            self._world_model = get_world_model()
             self._curiosity_engine = get_curiosity_engine()
             self._knowledge_synthesis = get_knowledge_synthesis()
             self._capability_registry = get_capability_registry()
