@@ -1,472 +1,508 @@
 """
 SparkLabs Agent - Social Simulation Engine
 
-AI-driven social dynamics simulation system for NPC relationship
-modeling in game worlds. Constructs emergent social networks between
-non-player characters, simulates relationship evolution, generates
-context-aware social events, computes influence propagation maps,
-predicts faction-level behaviors, and resolves inter-group conflicts
-through mediation algorithms.
+AI-driven multi-agent social dynamics simulation system that models
+independent character agents with personality, emotions, needs, social
+connections, episodic memory, and emergent narrative events. Characters
+autonomously interact through a social action system, form relationships
+via a weighted directed graph, and generate cascading narrative events
+that propagate through the social network.
 
 Architecture:
   AgentSocialSimulation (Singleton)
-    |-- SocialRelationship (pairwise NPC relationship data)
-    |-- SocialNetwork (complete graph of NPC social ties)
-    |-- FactionNode (group identity with membership and goals)
-    |-- SocialEvent (emergent event from social dynamics)
-    |-- CharacterProfile (NPC personality and social attributes)
+    |-- CharacterProfile (personality, backstory, traits, skills)
+    |-- CharacterState (runtime state: location, emotion, needs, action)
+    |-- SocialRelationship (weighted directed graph edges)
+    |-- SocialAction (actor-initiated interactions with outcomes)
+    |-- CharacterMemory (episodic memories with retrieval scoring)
+    |-- SocialEvent (emergent narrative events with witnesses)
+    |-- PersonalityTraits (Big Five model: 0-1 values)
+    |-- EmotionState (valence-arousal two-dimensional model)
+    |-- NeedState (decaying needs that drive behavior)
 
-Relationship Types:
-  FRIEND, FOE, RIVAL, LOVER, MENTOR, STUDENT, NEUTRAL
+Personality Model:
+  Big Five traits: openness, conscientiousness, extraversion,
+  agreeableness, neuroticism — each 0.0 to 1.0.
 
-Event Types:
-  BETRAYAL, ALLIANCE, TRADE, CONFLICT, CELEBRATION,
-  RECONCILIATION, MENTORSHIP, RUMOR
+Emotion Model:
+  Two-dimensional: valence (-5 to +5) and arousal (0 to 10).
+  EMA smoothing and natural decay toward neutral baseline.
 
-Faction Templates:
-  GUILD, TRIBE, KINGDOM, CABAL, ACADEMY, MERCENARY_BAND,
-  REBEL_ALLIANCE, TRADING_CONSORTIUM
+Need System:
+  Five need types: curiosity, social, achievement, safety, autonomy.
+  Each decays over time; low values trigger compensatory behavior.
+
+Relationship Network:
+  Weighted directed graph with trust, familiarity, and affinity.
+  Interaction count and history track relationship evolution.
+
+Social Action Types:
+  GREET, TRADE, FIGHT, HELP, GOSSIP, IGNORE, FLEE, COOPERATE,
+  COMPETE, COMFORT, THREATEN, GIFT
+
+Memory System:
+  Episodic memories with multi-factor retrieval scoring:
+  relevance, recency, importance, emotional intensity.
 
 Usage:
     sim = get_agent_social_simulation()
-    rel = sim.simulate_relationship_pair(profile_a, profile_b)
-    network = sim.build_social_network(profiles, faction_nodes={'town': faction})
-    event = sim.generate_social_event(network)
-    influence = sim.compute_influence_map(network, source_npc_id)
-    prediction = sim.predict_faction_behavior(faction, network)
-    result = sim.resolve_social_conflict(faction_a, faction_b, network)
-    stats = sim.get_stats()
+    char = sim.create_character(name="Elena", role="Merchant")
+    sim.update_emotion(char.character_id, event_valence=2.0, event_arousal=5.0)
+    sim.add_relationship("char_a", "char_b", RelationshipType.ACQUAINTANCE)
+    action = sim.execute_social_action("char_a", "char_b", SocialActionType.GREET, "First meeting")
+    mem = sim.add_memory("char_a", MemoryType.SOCIAL, "Met char_b for the first time")
+    memories = sim.retrieve_memories("char_a", ["char_b", "first"], top_k=5)
+    sim.reflect("char_a")
+    event = sim.generate_social_event(["char_a", "char_b"], "market_square", "A tense negotiation")
+    sim.propagate_event(event.event_id)
+    sim.tick()
+    status = sim.get_status()
 """
 
 from __future__ import annotations
 
 import math
+import random
 import threading
 import time as _time_module
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
+
+
+# =============================================================================
+# Enums
+# =============================================================================
+
+
+class SocialActionType(Enum):
+    """Types of social actions a character can initiate."""
+    GREET = "greet"
+    TRADE = "trade"
+    FIGHT = "fight"
+    HELP = "help"
+    GOSSIP = "gossip"
+    IGNORE = "ignore"
+    FLEE = "flee"
+    COOPERATE = "cooperate"
+    COMPETE = "compete"
+    COMFORT = "comfort"
+    THREATEN = "threaten"
+    GIFT = "gift"
 
 
 class RelationshipType(Enum):
+    """Categories of social relationships between characters."""
+    STRANGER = "stranger"
+    ACQUAINTANCE = "acquaintance"
     FRIEND = "friend"
-    FOE = "foe"
+    CLOSE_FRIEND = "close_friend"
     RIVAL = "rival"
-    LOVER = "lover"
-    MENTOR = "mentor"
-    STUDENT = "student"
-    NEUTRAL = "neutral"
+    ENEMY = "enemy"
+    ALLY = "ally"
+    FAMILY = "family"
+    ROMANTIC = "romantic"
 
 
-class EventType(Enum):
-    BETRAYAL = "betrayal"
-    ALLIANCE = "alliance"
-    TRADE = "trade"
-    CONFLICT = "conflict"
-    CELEBRATION = "celebration"
-    RECONCILIATION = "reconciliation"
-    MENTORSHIP = "mentorship"
-    RUMOR = "rumor"
+class MemoryType(Enum):
+    """Types of episodic memories a character can store."""
+    OBSERVATION = "observation"
+    CONVERSATION = "conversation"
+    EXPERIENCE = "experience"
+    REFLECTION = "reflection"
+    EMOTION = "emotion"
+    SOCIAL = "social"
 
 
-class FactionStatus(Enum):
-    RISING = "rising"
-    STABLE = "stable"
-    DECLINING = "declining"
-    HOSTILE = "hostile"
-    ISOLATED = "isolated"
-    DOMINANT = "dominant"
+class SocialStyle(Enum):
+    """Social interaction style of a character."""
+    EXTROVERT = "extrovert"
+    INTROVERT_SELECTIVE = "introvert_selective"
+    INTROVERT = "introvert"
+    AMBIVERT = "ambivert"
 
 
-SOCIAL_TRAIT_ARCHETYPES: Dict[str, Dict[str, float]] = {
-    "social_butterfly": {
-        "extroversion": 0.90, "agreeableness": 0.75, "loyalty": 0.40, "charisma": 0.85,
-    },
-    "lone_wolf": {
-        "extroversion": 0.15, "agreeableness": 0.30, "loyalty": 0.55, "charisma": 0.35,
-    },
-    "diplomat": {
-        "extroversion": 0.60, "agreeableness": 0.85, "loyalty": 0.65, "charisma": 0.80,
-    },
-    "schemer": {
-        "extroversion": 0.45, "agreeableness": 0.25, "loyalty": 0.15, "charisma": 0.70,
-    },
-    "guardian": {
-        "extroversion": 0.40, "agreeableness": 0.60, "loyalty": 0.95, "charisma": 0.50,
-    },
-    "charmer": {
-        "extroversion": 0.75, "agreeableness": 0.50, "loyalty": 0.30, "charisma": 0.95,
-    },
-    "sage": {
-        "extroversion": 0.35, "agreeableness": 0.70, "loyalty": 0.70, "charisma": 0.55,
-    },
-    "tyrant": {
-        "extroversion": 0.65, "agreeableness": 0.10, "loyalty": 0.25, "charisma": 0.80,
-    },
-    "idealist": {
-        "extroversion": 0.55, "agreeableness": 0.80, "loyalty": 0.80, "charisma": 0.60,
-    },
-    "mercenary": {
-        "extroversion": 0.40, "agreeableness": 0.30, "loyalty": 0.10, "charisma": 0.40,
-    },
-    "peacekeeper": {
-        "extroversion": 0.50, "agreeableness": 0.90, "loyalty": 0.75, "charisma": 0.70,
-    },
-    "agitator": {
-        "extroversion": 0.80, "agreeableness": 0.20, "loyalty": 0.20, "charisma": 0.75,
-    },
-}
+class EmotionLabel(Enum):
+    """Discrete emotion labels derived from valence-arousal space."""
+    EXCITED = "excited"
+    ANGRY = "angry"
+    TENSE = "tense"
+    CONTENT = "content"
+    FRUSTRATED = "frustrated"
+    CALM = "calm"
+    PEACEFUL = "peaceful"
+    SAD = "sad"
+    BORED = "bored"
+    JOYFUL = "joyful"
+    ANXIOUS = "anxious"
 
-RELATIONSHIP_ARCHETYPES: Dict[str, Dict[str, Any]] = {
-    "close_friendship": {
-        "types": [RelationshipType.FRIEND.value],
-        "strength_range": (0.60, 0.95),
-        "trust_range": (0.65, 0.95),
-        "compatibility_bonus": 0.20,
-    },
-    "bitter_enmity": {
-        "types": [RelationshipType.FOE.value],
-        "strength_range": (0.50, 0.90),
-        "trust_range": (0.05, 0.30),
-        "compatibility_bonus": -0.30,
-    },
-    "competitive_rivalry": {
-        "types": [RelationshipType.RIVAL.value],
-        "strength_range": (0.40, 0.75),
-        "trust_range": (0.20, 0.50),
-        "compatibility_bonus": -0.10,
-    },
-    "romantic_bond": {
-        "types": [RelationshipType.LOVER.value],
-        "strength_range": (0.65, 1.00),
-        "trust_range": (0.70, 1.00),
-        "compatibility_bonus": 0.25,
-    },
-    "mentor_protege": {
-        "types": [RelationshipType.MENTOR.value, RelationshipType.STUDENT.value],
-        "strength_range": (0.45, 0.80),
-        "trust_range": (0.50, 0.80),
-        "compatibility_bonus": 0.15,
-    },
-}
 
-FACTION_TEMPLATES: Dict[str, Dict[str, Any]] = {
-    "merchants_guild": {
-        "name": "Merchants Guild",
-        "status": FactionStatus.STABLE.value,
-        "reputation": 0.65,
-        "territory": "market_district",
-        "goals": ["control_trade_routes", "accumulate_wealth", "expand_market_influence"],
-        "preferred_relationships": [RelationshipType.FRIEND.value, RelationshipType.NEUTRAL.value],
-        "aggression_baseline": 0.15,
-        "cooperation_baseline": 0.70,
-    },
-    "warrior_clan": {
-        "name": "Warrior Clan",
-        "status": FactionStatus.RISING.value,
-        "reputation": 0.55,
-        "territory": "highland_fortress",
-        "goals": ["defend_homeland", "train_elite_warriors", "establish_military_dominance"],
-        "preferred_relationships": [RelationshipType.RIVAL.value, RelationshipType.FOE.value],
-        "aggression_baseline": 0.65,
-        "cooperation_baseline": 0.25,
-    },
-    "arcane_academy": {
-        "name": "Arcane Academy",
-        "status": FactionStatus.STABLE.value,
-        "reputation": 0.70,
-        "territory": "ivory_spire",
-        "goals": ["preserve_knowledge", "train_mages", "research_forbidden_arts"],
-        "preferred_relationships": [RelationshipType.MENTOR.value, RelationshipType.STUDENT.value],
-        "aggression_baseline": 0.10,
-        "cooperation_baseline": 0.55,
-    },
-    "thieves_cabal": {
-        "name": "Thieves Cabal",
-        "status": FactionStatus.ISOLATED.value,
-        "reputation": 0.20,
-        "territory": "undercity_sewers",
-        "goals": ["control_black_market", "infiltrate_nobility", "eliminate_rivals"],
-        "preferred_relationships": [RelationshipType.NEUTRAL.value],
-        "aggression_baseline": 0.50,
-        "cooperation_baseline": 0.20,
-    },
-    "holy_order": {
-        "name": "Holy Order",
-        "status": FactionStatus.DOMINANT.value,
-        "reputation": 0.80,
-        "territory": "grand_cathedral",
-        "goals": ["spread_faith", "heal_the_sick", "purge_heresy"],
-        "preferred_relationships": [RelationshipType.FRIEND.value],
-        "aggression_baseline": 0.25,
-        "cooperation_baseline": 0.60,
-    },
-    "rebel_alliance": {
-        "name": "Rebel Alliance",
-        "status": FactionStatus.RISING.value,
-        "reputation": 0.35,
-        "territory": "hidden_camp",
-        "goals": ["overthrow_tyrant", "liberate_oppressed", "establish_democracy"],
-        "preferred_relationships": [RelationshipType.FRIEND.value],
-        "aggression_baseline": 0.55,
-        "cooperation_baseline": 0.45,
-    },
-    "nomadic_tribe": {
-        "name": "Nomadic Tribe",
-        "status": FactionStatus.STABLE.value,
-        "reputation": 0.40,
-        "territory": "wandering_plains",
-        "goals": ["survive_the_season", "find_sacred_grounds", "preserve_oral_traditions"],
-        "preferred_relationships": [RelationshipType.NEUTRAL.value, RelationshipType.FRIEND.value],
-        "aggression_baseline": 0.20,
-        "cooperation_baseline": 0.65,
-    },
-    "noble_house": {
-        "name": "Noble House",
-        "status": FactionStatus.DECLINING.value,
-        "reputation": 0.50,
-        "territory": "ancestral_estate",
-        "goals": ["restore_family_honor", "arrange_political_marriages", "secure_legacy"],
-        "preferred_relationships": [RelationshipType.FRIEND.value, RelationshipType.RIVAL.value],
-        "aggression_baseline": 0.30,
-        "cooperation_baseline": 0.50,
-    },
-}
-
-EVENT_TRIGGER_THRESHOLDS: Dict[str, Dict[str, float]] = {
-    EventType.BETRAYAL.value: {"trust_below": 0.25, "strength_above": 0.50, "probability": 0.15},
-    EventType.ALLIANCE.value: {"trust_above": 0.55, "strength_above": 0.40, "probability": 0.20},
-    EventType.TRADE.value: {"trust_above": 0.30, "strength_above": 0.20, "probability": 0.30},
-    EventType.CONFLICT.value: {"trust_below": 0.40, "strength_above": 0.35, "probability": 0.25},
-    EventType.CELEBRATION.value: {"trust_above": 0.60, "strength_above": 0.50, "probability": 0.18},
-    EventType.RECONCILIATION.value: {"trust_below": 0.35, "strength_above": 0.45, "probability": 0.12},
-    EventType.MENTORSHIP.value: {"trust_above": 0.45, "strength_above": 0.30, "probability": 0.22},
-    EventType.RUMOR.value: {"trust_below": 0.50, "strength_above": 0.10, "probability": 0.28},
-}
-
-BACKSTORY_HOOKS: List[str] = [
-    "orphaned_during_the_last_war",
-    "raised_by_wolves_in_the_northern_wilds",
-    "former_gladiator_who_earned_freedom",
-    "disgraced_noble_seeking_redemption",
-    "apprentice_to_a_legendary_artisan",
-    "sole_survivor_of_a_cursed_expedition",
-    "child_of_two_warring_factions",
-    "escaped_from_a_secret_laboratory",
-    "inherited_a_mysterious_artifact",
-    "vowed_to_avenge_a_slaughtered_village",
-    "former_pirate_turned_merchant",
-    "deserted_from_an_elite_military_unit",
-    "raised_in_a_hidden_monastery",
-    "won_freedom_through_a_legendary_wager",
-    "is_the_seventh_child_of_a_seventh_child",
-]
-
-SOCIAL_GOAL_TEMPLATES: List[str] = [
-    "gain_political_influence",
-    "find_true_love",
-    "accumulate_vast_wealth",
-    "protect_the_innocent",
-    "master_a_forgotten_art",
-    "build_a_powerful_faction",
-    "seek_revenge_against_a_rival",
-    "discover_hidden_knowledge",
-    "unite_warring_tribes",
-    "escape_a_dark_past",
-    "become_a_legendary_hero",
-    "maintain_peace_at_all_costs",
-    "overthrow_a_corrupt_regime",
-    "restore_an_ancient_lineage",
-    "achieve_immortality_through_fame",
-]
+# =============================================================================
+# Data Classes
+# =============================================================================
 
 
 @dataclass
-class CharacterProfile:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = "UnnamedNPC"
-    extroversion: float = 0.50
+class PersonalityTraits:
+    """Big Five personality traits for a character agent.
+
+    All values are in range [0.0, 1.0].
+    """
+    openness: float = 0.50
+    conscientiousness: float = 0.50
+    extraversion: float = 0.50
     agreeableness: float = 0.50
-    loyalty: float = 0.50
-    charisma: float = 0.50
-    archetype: str = "neutral"
-    backstory_hook: str = ""
-    social_goals: List[str] = field(default_factory=list)
-    faction_id: str = ""
-    influence_score: float = 0.30
-    reputation: float = 0.50
-    resource_level: float = 0.30
+    neuroticism: float = 0.50
 
     def to_dict(self) -> Dict[str, Any]:
         _time_module.sleep(0.001)
         return {
-            "id": self.id,
-            "name": self.name,
-            "extroversion": round(self.extroversion, 4),
+            "openness": round(self.openness, 4),
+            "conscientiousness": round(self.conscientiousness, 4),
+            "extraversion": round(self.extraversion, 4),
             "agreeableness": round(self.agreeableness, 4),
-            "loyalty": round(self.loyalty, 4),
-            "charisma": round(self.charisma, 4),
-            "archetype": self.archetype,
-            "backstory_hook": self.backstory_hook,
-            "social_goals": list(self.social_goals),
-            "faction_id": self.faction_id,
-            "influence_score": round(self.influence_score, 4),
-            "reputation": round(self.reputation, 4),
-            "resource_level": round(self.resource_level, 4),
+            "neuroticism": round(self.neuroticism, 4),
+        }
+
+
+@dataclass
+class EmotionState:
+    """Two-dimensional emotion model with valence and arousal.
+
+    Valence ranges from -5.0 (negative) to +5.0 (positive).
+    Arousal ranges from 0.0 (calm) to 10.0 (excited).
+    """
+    valence: float = 0.0
+    arousal: float = 5.0
+    dominant_emotion: str = EmotionLabel.CALM.value
+    intensity: float = 0.0
+    last_update: float = field(default_factory=_time_module.time)
+
+    def to_dict(self) -> Dict[str, Any]:
+        _time_module.sleep(0.001)
+        return {
+            "valence": round(self.valence, 4),
+            "arousal": round(self.arousal, 4),
+            "dominant_emotion": self.dominant_emotion,
+            "intensity": round(self.intensity, 4),
+            "last_update": self.last_update,
+        }
+
+
+@dataclass
+class NeedState:
+    """A single need that decays over time and drives character behavior.
+
+    Each need has a current value (0-100), decay rate, threshold below
+    which the need becomes urgent, and a priority weight.
+    """
+    need_type: str = "curiosity"
+    current_value: float = 100.0
+    decay_rate: float = 0.5
+    threshold: float = 30.0
+    priority: float = 1.0
+
+    def to_dict(self) -> Dict[str, Any]:
+        _time_module.sleep(0.001)
+        return {
+            "need_type": self.need_type,
+            "current_value": round(self.current_value, 4),
+            "decay_rate": round(self.decay_rate, 4),
+            "threshold": round(self.threshold, 4),
+            "priority": round(self.priority, 4),
+        }
+
+
+@dataclass
+class CharacterProfile:
+    """Complete profile of a character agent including personality and backstory.
+
+    Attributes:
+        character_id: Unique identifier.
+        name: Display name of the character.
+        role: Character's role in the world (e.g., "Merchant", "Guard").
+        backstory: Narrative backstory text.
+        core_motivation: Primary drive (e.g., "seek_wealth", "protect_family").
+        core_values: List of values the character holds (e.g., ["honor", "loyalty"]).
+        speaking_style: Description of how the character speaks.
+        fears: List of things the character fears.
+        social_style: Social interaction style from SocialStyle enum.
+        personality_traits: Big Five personality traits.
+        skills: Dictionary of skill name to proficiency (0-100).
+        anchor_location: Preferred location or home base.
+    """
+    character_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    name: str = "UnnamedNPC"
+    role: str = "villager"
+    backstory: str = ""
+    core_motivation: str = ""
+    core_values: List[str] = field(default_factory=list)
+    speaking_style: str = ""
+    fears: List[str] = field(default_factory=list)
+    social_style: str = SocialStyle.AMBIVERT.value
+    personality_traits: PersonalityTraits = field(default_factory=PersonalityTraits)
+    skills: Dict[str, float] = field(default_factory=dict)
+    anchor_location: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        _time_module.sleep(0.001)
+        return {
+            "character_id": self.character_id,
+            "name": self.name,
+            "role": self.role,
+            "backstory": self.backstory,
+            "core_motivation": self.core_motivation,
+            "core_values": list(self.core_values),
+            "speaking_style": self.speaking_style,
+            "fears": list(self.fears),
+            "social_style": self.social_style,
+            "personality_traits": self.personality_traits.to_dict(),
+            "skills": dict(self.skills),
+            "anchor_location": self.anchor_location,
+        }
+
+
+@dataclass
+class CharacterState:
+    """Runtime state of a character agent during simulation.
+
+    Tracks the character's current location, action, emotion, needs,
+    conversation target, and last action timestamp.
+    """
+    character_id: str = ""
+    location: str = ""
+    current_action: str = ""
+    action_target: str = ""
+    emotion_valence: float = 0.0
+    emotion_arousal: float = 5.0
+    needs: Dict[str, NeedState] = field(default_factory=dict)
+    conversation_target: str = ""
+    last_action_time: float = field(default_factory=_time_module.time)
+
+    def to_dict(self) -> Dict[str, Any]:
+        _time_module.sleep(0.001)
+        return {
+            "character_id": self.character_id,
+            "location": self.location,
+            "current_action": self.current_action,
+            "action_target": self.action_target,
+            "emotion_valence": round(self.emotion_valence, 4),
+            "emotion_arousal": round(self.emotion_arousal, 4),
+            "needs": {k: v.to_dict() for k, v in self.needs.items()},
+            "conversation_target": self.conversation_target,
+            "last_action_time": self.last_action_time,
         }
 
 
 @dataclass
 class SocialRelationship:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    npc_a_id: str = ""
-    npc_b_id: str = ""
-    relationship_type: str = RelationshipType.NEUTRAL.value
-    strength: float = 0.30
-    trust_level: float = 0.30
-    history_events: List[str] = field(default_factory=list)
-    compatibility_score: float = 0.00
-    tension_level: float = 0.00
-    duration: float = 0.00
-    last_updated: float = field(default_factory=_time_module.time)
+    """Weighted directed relationship between two characters.
+
+    Tracks trust (0-1), familiarity (0-1), affinity (-1 to 1),
+    interaction count, and relationship type with history.
+    """
+    relationship_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    source_id: str = ""
+    target_id: str = ""
+    trust: float = 0.30
+    familiarity: float = 0.10
+    affinity: float = 0.00
+    interaction_count: int = 0
+    last_interaction: float = field(default_factory=_time_module.time)
+    relationship_type: str = RelationshipType.STRANGER.value
+    history: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         _time_module.sleep(0.001)
         return {
-            "id": self.id,
-            "npc_a_id": self.npc_a_id,
-            "npc_b_id": self.npc_b_id,
+            "relationship_id": self.relationship_id,
+            "source_id": self.source_id,
+            "target_id": self.target_id,
+            "trust": round(self.trust, 4),
+            "familiarity": round(self.familiarity, 4),
+            "affinity": round(self.affinity, 4),
+            "interaction_count": self.interaction_count,
+            "last_interaction": self.last_interaction,
             "relationship_type": self.relationship_type,
-            "strength": round(self.strength, 4),
-            "trust_level": round(self.trust_level, 4),
-            "history_events": list(self.history_events),
-            "compatibility_score": round(self.compatibility_score, 4),
-            "tension_level": round(self.tension_level, 4),
-            "duration": round(self.duration, 2),
-            "last_updated": self.last_updated,
+            "history": list(self.history),
         }
 
 
 @dataclass
-class FactionNode:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = "UnnamedFaction"
-    members: List[str] = field(default_factory=list)
-    reputation: float = 0.50
-    territory: str = ""
-    goals: List[str] = field(default_factory=list)
-    status: str = FactionStatus.STABLE.value
-    influence_radius: float = 0.30
-    resource_pool: float = 0.50
-    cohesion: float = 0.50
-    aggression_index: float = 0.30
-    diplomacy_index: float = 0.50
+class SocialAction:
+    """A social action executed by an actor character toward a target.
+
+    Records the action type, reason, outcome, timestamp, and the
+    emotional impact on both participants.
+    """
+    action_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    actor_id: str = ""
+    target_id: str = ""
+    action_type: str = SocialActionType.GREET.value
+    reason: str = ""
+    outcome: str = ""
+    timestamp: float = field(default_factory=_time_module.time)
+    emotional_impact: Dict[str, float] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         _time_module.sleep(0.001)
         return {
-            "id": self.id,
-            "name": self.name,
-            "member_count": len(self.members),
-            "members": list(self.members),
-            "reputation": round(self.reputation, 4),
-            "territory": self.territory,
-            "goals": list(self.goals),
-            "status": self.status,
-            "influence_radius": round(self.influence_radius, 4),
-            "resource_pool": round(self.resource_pool, 4),
-            "cohesion": round(self.cohesion, 4),
-            "aggression_index": round(self.aggression_index, 4),
-            "diplomacy_index": round(self.diplomacy_index, 4),
+            "action_id": self.action_id,
+            "actor_id": self.actor_id,
+            "target_id": self.target_id,
+            "action_type": self.action_type,
+            "reason": self.reason,
+            "outcome": self.outcome,
+            "timestamp": self.timestamp,
+            "emotional_impact": {k: round(v, 4) for k, v in self.emotional_impact.items()},
+        }
+
+
+@dataclass
+class CharacterMemory:
+    """An episodic memory belonging to a character.
+
+    Features multi-factor retrieval scoring based on relevance, recency,
+    importance, and emotional intensity. Memories decay over time and
+    may be consolidated or forgotten.
+    """
+    memory_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    character_id: str = ""
+    memory_type: str = MemoryType.OBSERVATION.value
+    content: str = ""
+    importance: float = 0.50
+    emotional_intensity: float = 0.00
+    timestamp: float = field(default_factory=_time_module.time)
+    decay_factor: float = 0.995
+    access_count: int = 0
+    tags: List[str] = field(default_factory=list)
+
+    def to_dict(self) -> Dict[str, Any]:
+        _time_module.sleep(0.001)
+        return {
+            "memory_id": self.memory_id,
+            "character_id": self.character_id,
+            "memory_type": self.memory_type,
+            "content": self.content,
+            "importance": round(self.importance, 4),
+            "emotional_intensity": round(self.emotional_intensity, 4),
+            "timestamp": self.timestamp,
+            "decay_factor": round(self.decay_factor, 4),
+            "access_count": self.access_count,
+            "tags": list(self.tags),
         }
 
 
 @dataclass
 class SocialEvent:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    event_type: str = EventType.RUMOR.value
-    participants: List[str] = field(default_factory=list)
-    impact_scores: Dict[str, float] = field(default_factory=dict)
+    """An emergent narrative event generated by social interactions.
+
+    Events involve actors and targets at a location, carry a dramatic
+    score, and may cascade through the social network via witnesses.
+    """
+    event_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    event_type: str = ""
+    actors: List[str] = field(default_factory=list)
+    targets: List[str] = field(default_factory=list)
+    location: str = ""
     description: str = ""
-    severity: float = 0.30
-    affected_factions: List[str] = field(default_factory=list)
-    ripple_effects: List[str] = field(default_factory=list)
-    generated_at: float = field(default_factory=_time_module.time)
+    dram_score: float = 0.50
+    timestamp: float = field(default_factory=_time_module.time)
+    witnesses: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         _time_module.sleep(0.001)
         return {
-            "id": self.id,
+            "event_id": self.event_id,
             "event_type": self.event_type,
-            "participants": list(self.participants),
-            "impact_scores": dict(self.impact_scores),
+            "actors": list(self.actors),
+            "targets": list(self.targets),
+            "location": self.location,
             "description": self.description,
-            "severity": round(self.severity, 4),
-            "affected_factions": list(self.affected_factions),
-            "ripple_effects": list(self.ripple_effects),
-            "generated_at": self.generated_at,
+            "dram_score": round(self.dram_score, 4),
+            "timestamp": self.timestamp,
+            "witnesses": list(self.witnesses),
         }
 
 
-@dataclass
-class SocialNetwork:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    relationships: Dict[str, SocialRelationship] = field(default_factory=dict)
-    factions: Dict[str, FactionNode] = field(default_factory=dict)
-    profiles: Dict[str, CharacterProfile] = field(default_factory=dict)
-    influence_map: Dict[str, float] = field(default_factory=dict)
-    adjacency_matrix: Dict[str, Dict[str, float]] = field(default_factory=dict)
-    faction_adjacency: Dict[str, Dict[str, float]] = field(default_factory=dict)
-    network_density: float = 0.00
-    average_trust: float = 0.00
-    conflict_hotspots: List[Tuple[str, str]] = field(default_factory=list)
+# =============================================================================
+# Action Templates — emotional impact and relationship effects
+# =============================================================================
 
-    def to_dict(self) -> Dict[str, Any]:
-        _time_module.sleep(0.001)
-        return {
-            "id": self.id,
-            "relationship_count": len(self.relationships),
-            "faction_count": len(self.factions),
-            "profile_count": len(self.profiles),
-            "influence_map": {k: round(v, 4) for k, v in self.influence_map.items()},
-            "network_density": round(self.network_density, 4),
-            "average_trust": round(self.average_trust, 4),
-            "conflict_hotspot_count": len(self.conflict_hotspots),
-            "conflict_hotspots": [
-                {"npc_a": a, "npc_b": b} for a, b in self.conflict_hotspots
-            ],
-        }
+_ACTION_EMOTIONAL_IMPACT: Dict[str, Dict[str, Tuple[float, float]]] = {
+    SocialActionType.GREET.value: {"actor": (0.3, 0.5), "target": (0.2, 0.8)},
+    SocialActionType.TRADE.value: {"actor": (0.5, 1.0), "target": (0.5, 1.0)},
+    SocialActionType.FIGHT.value: {"actor": (-2.0, 6.0), "target": (-3.0, 7.0)},
+    SocialActionType.HELP.value: {"actor": (0.8, 1.5), "target": (1.5, 2.0)},
+    SocialActionType.GOSSIP.value: {"actor": (0.2, 2.0), "target": (-0.5, 3.0)},
+    SocialActionType.IGNORE.value: {"actor": (0.0, 0.0), "target": (-0.8, 1.0)},
+    SocialActionType.FLEE.value: {"actor": (-1.0, 4.0), "target": (0.0, 2.0)},
+    SocialActionType.COOPERATE.value: {"actor": (0.6, 1.0), "target": (0.6, 1.0)},
+    SocialActionType.COMPETE.value: {"actor": (0.0, 3.0), "target": (-0.5, 3.0)},
+    SocialActionType.COMFORT.value: {"actor": (0.5, 0.5), "target": (1.5, -1.0)},
+    SocialActionType.THREATEN.value: {"actor": (0.3, 3.0), "target": (-2.0, 5.0)},
+    SocialActionType.GIFT.value: {"actor": (0.4, 1.0), "target": (1.0, 2.0)},
+}
+
+_ACTION_RELATIONSHIP_EFFECTS: Dict[str, Dict[str, float]] = {
+    SocialActionType.GREET.value: {"trust": 0.01, "familiarity": 0.02, "affinity": 0.01},
+    SocialActionType.TRADE.value: {"trust": 0.02, "familiarity": 0.03, "affinity": 0.01},
+    SocialActionType.FIGHT.value: {"trust": -0.15, "familiarity": 0.05, "affinity": -0.20},
+    SocialActionType.HELP.value: {"trust": 0.10, "familiarity": 0.05, "affinity": 0.10},
+    SocialActionType.GOSSIP.value: {"trust": -0.03, "familiarity": 0.04, "affinity": -0.02},
+    SocialActionType.IGNORE.value: {"trust": -0.01, "familiarity": 0.00, "affinity": -0.02},
+    SocialActionType.FLEE.value: {"trust": -0.05, "familiarity": 0.01, "affinity": -0.05},
+    SocialActionType.COOPERATE.value: {"trust": 0.08, "familiarity": 0.04, "affinity": 0.08},
+    SocialActionType.COMPETE.value: {"trust": -0.04, "familiarity": 0.03, "affinity": -0.05},
+    SocialActionType.COMFORT.value: {"trust": 0.08, "familiarity": 0.04, "affinity": 0.08},
+    SocialActionType.THREATEN.value: {"trust": -0.12, "familiarity": 0.03, "affinity": -0.15},
+    SocialActionType.GIFT.value: {"trust": 0.06, "familiarity": 0.04, "affinity": 0.08},
+}
+
+_NEED_DEFAULTS: Dict[str, Dict[str, float]] = {
+    "curiosity": {"current_value": 100.0, "decay_rate": 0.3, "threshold": 25.0, "priority": 0.8},
+    "social": {"current_value": 100.0, "decay_rate": 0.5, "threshold": 30.0, "priority": 1.0},
+    "achievement": {"current_value": 100.0, "decay_rate": 0.4, "threshold": 20.0, "priority": 0.9},
+    "safety": {"current_value": 100.0, "decay_rate": 0.2, "threshold": 40.0, "priority": 1.2},
+    "autonomy": {"current_value": 100.0, "decay_rate": 0.35, "threshold": 25.0, "priority": 0.7},
+}
+
+
+# =============================================================================
+# AgentSocialSimulation
+# =============================================================================
 
 
 class AgentSocialSimulation:
-    """
-    AI-driven social dynamics simulation engine for NPC relationships.
+    """AI-driven multi-agent social dynamics simulation engine.
 
-    Constructs emergent social networks, simulates relationship evolution,
-    generates context-aware social events, computes influence propagation,
-    predicts faction-level behaviors, and resolves inter-group conflicts.
+    Models independent character agents with personality, emotion, needs,
+    social connections, episodic memory, and emergent narrative events.
+    Characters autonomously interact through social actions, form
+    relationships, and generate cascading narrative events.
 
     Usage:
         sim = get_agent_social_simulation()
-        profile_a = sim.create_character_profile(name="Elena", archetype="diplomat")
-        profile_b = sim.create_character_profile(name="Marcus", archetype="lone_wolf")
-        rel = sim.simulate_relationship_pair(profile_a, profile_b)
-        network = sim.build_social_network([profile_a, profile_b])
-        event = sim.generate_social_event(network)
-        influence = sim.compute_influence_map(network, profile_a.id)
+        char = sim.create_character(name="Elena", role="Merchant")
+        sim.update_emotion(char.character_id, event_valence=2.0, event_arousal=5.0)
+        sim.add_relationship("char_a", "char_b", RelationshipType.ACQUAINTANCE)
+        action = sim.execute_social_action("char_a", "char_b", SocialActionType.GREET, "Meeting")
+        sim.tick()
+        status = sim.get_status()
     """
 
     _instance: Optional["AgentSocialSimulation"] = None
     _lock: threading.RLock = threading.RLock()
 
-    _MAX_NETWORK_SIZE = 200
-    _INFLUENCE_DECAY_RATE = 0.15
-    _TRUST_EVOLUTION_RATE = 0.05
-    _STRENGTH_EVOLUTION_RATE = 0.03
-    _CONFLICT_ESCALATION_THRESHOLD = 0.65
-    _DIPLOMACY_COOLDOWN_STEPS = 3
-    _MAX_EVENT_RIPPLE_DEPTH = 4
+    _DEFAULT_EMOTION_DECAY_RATE = 0.95
+    _DEFAULT_NEED_DECAY_RATE = 0.98
+    _DEFAULT_MEMORY_DECAY_RATE = 0.995
+    _DEFAULT_MEMORY_CONSOLIDATION_THRESHOLD = 0.15
+    _DEFAULT_REFLECTION_COOLDOWN = 30.0
+    _DEFAULT_PROPAGATION_DEPTH = 3
+    _MAX_MEMORIES_PER_CHARACTER = 200
+    _EMA_SMOOTHING_ALPHA = 0.3
 
     def __new__(cls) -> "AgentSocialSimulation":
         if cls._instance is None:
@@ -481,1155 +517,1001 @@ class AgentSocialSimulation:
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    cls._instance = cls()
+                    instance = super().__new__(cls)
+                    instance.__init__()
+                    cls._instance = instance
         return cls._instance
 
     def __init__(self) -> None:
-        if hasattr(self, "_initialized") and self._initialized:
-            return
-        self._initialized = True
+        with self._lock:
+            if hasattr(self, "_initialized") and self._initialized:
+                return
+            self._initialized = True
 
-        self._profiles: Dict[str, CharacterProfile] = {}
-        self._relationships: Dict[str, SocialRelationship] = {}
-        self._factions: Dict[str, FactionNode] = {}
-        self._events: List[SocialEvent] = []
-        self._networks: List[SocialNetwork] = []
-        self._event_history: List[SocialEvent] = []
-        self._conflict_log: List[Dict[str, Any]] = []
-        self._stats: Dict[str, Any] = {
-            "relationships_simulated": 0,
-            "networks_built": 0,
-            "events_generated": 0,
-            "conflicts_resolved": 0,
-            "influence_maps_computed": 0,
-            "faction_predictions_made": 0,
-        }
+            self._profiles: Dict[str, CharacterProfile] = {}
+            self._states: Dict[str, CharacterState] = {}
+            self._relationships: Dict[str, SocialRelationship] = {}
+            self._memories: Dict[str, List[CharacterMemory]] = {}
+            self._actions: List[SocialAction] = []
+            self._events: List[SocialEvent] = []
+            self._tick_count: int = 0
+            self._last_reflection: Dict[str, float] = {}
+            self._config: Dict[str, Any] = {
+                "emotion_decay_rate": self._DEFAULT_EMOTION_DECAY_RATE,
+                "need_decay_rate": self._DEFAULT_NEED_DECAY_RATE,
+                "memory_decay_rate": self._DEFAULT_MEMORY_DECAY_RATE,
+                "memory_consolidation_threshold": self._DEFAULT_MEMORY_CONSOLIDATION_THRESHOLD,
+                "reflection_cooldown": self._DEFAULT_REFLECTION_COOLDOWN,
+                "propagation_depth": self._DEFAULT_PROPAGATION_DEPTH,
+                "ema_alpha": self._EMA_SMOOTHING_ALPHA,
+            }
 
-    def create_character_profile(
+    # ------------------------------------------------------------------
+    # Configuration
+    # ------------------------------------------------------------------
+
+    def configure(self, **kwargs: Any) -> None:
+        """Update simulation configuration parameters.
+
+        Accepts keyword arguments for any config key:
+        emotion_decay_rate, need_decay_rate, memory_decay_rate,
+        memory_consolidation_threshold, reflection_cooldown,
+        propagation_depth, ema_alpha.
+        """
+        _time_module.sleep(0.001)
+        with self._lock:
+            for key, value in kwargs.items():
+                if key in self._config:
+                    self._config[key] = value
+
+    # ------------------------------------------------------------------
+    # Character Management
+    # ------------------------------------------------------------------
+
+    def create_character(
         self,
         name: str = "UnnamedNPC",
-        archetype: str = "neutral",
-        faction_id: str = "",
-        backstory_hook: str = "",
-        social_goals: Optional[List[str]] = None,
+        role: str = "villager",
+        personality_traits: Optional[PersonalityTraits] = None,
+        backstory: str = "",
+        core_motivation: str = "",
+        core_values: Optional[List[str]] = None,
+        speaking_style: str = "",
+        fears: Optional[List[str]] = None,
+        social_style: str = SocialStyle.AMBIVERT.value,
+        skills: Optional[Dict[str, float]] = None,
+        anchor_location: str = "",
     ) -> CharacterProfile:
+        """Create a new character agent with the given profile.
+
+        Args:
+            name: Display name of the character.
+            role: Character's role in the world.
+            personality_traits: Big Five traits; defaults to balanced.
+            backstory: Narrative backstory text.
+            core_motivation: Primary drive.
+            core_values: List of moral values.
+            speaking_style: How the character speaks.
+            fears: Things the character fears.
+            social_style: SocialStyle enum value.
+            skills: Dict of skill name to proficiency (0-100).
+            anchor_location: Home base location.
+
+        Returns:
+            The created CharacterProfile.
+        """
         _time_module.sleep(0.001)
+        with self._lock:
+            profile = CharacterProfile(
+                name=name,
+                role=role,
+                personality_traits=personality_traits if personality_traits else PersonalityTraits(),
+                backstory=backstory,
+                core_motivation=core_motivation,
+                core_values=core_values if core_values is not None else [],
+                speaking_style=speaking_style,
+                fears=fears if fears is not None else [],
+                social_style=social_style,
+                skills=skills if skills is not None else {},
+                anchor_location=anchor_location,
+            )
+            self._profiles[profile.character_id] = profile
 
-        traits = SOCIAL_TRAIT_ARCHETYPES.get(
-            archetype,
-            {"extroversion": 0.50, "agreeableness": 0.50, "loyalty": 0.50, "charisma": 0.50},
-        )
+            needs: Dict[str, NeedState] = {}
+            for need_key, defaults in _NEED_DEFAULTS.items():
+                needs[need_key] = NeedState(
+                    need_type=need_key,
+                    current_value=defaults["current_value"],
+                    decay_rate=defaults["decay_rate"],
+                    threshold=defaults["threshold"],
+                    priority=defaults["priority"],
+                )
+            self._states[profile.character_id] = CharacterState(
+                character_id=profile.character_id,
+                location=anchor_location,
+                needs=needs,
+            )
+            self._memories[profile.character_id] = []
 
-        hook = backstory_hook if backstory_hook else BACKSTORY_HOOKS[
-            hash(name + archetype) % len(BACKSTORY_HOOKS)
-        ]
+            return profile
 
-        goals = social_goals if social_goals else [
-            SOCIAL_GOAL_TEMPLATES[hash(name + str(i)) % len(SOCIAL_GOAL_TEMPLATES)]
-            for i in range(2)
-        ]
+    def get_character(self, character_id: str) -> Optional[CharacterProfile]:
+        """Retrieve a character profile by ID.
 
-        influence = traits["charisma"] * 0.5 + traits["extroversion"] * 0.3 + traits["agreeableness"] * 0.2
-        influence = max(0.05, min(0.95, influence + (hash(name) % 100) / 1000.0))
+        Args:
+            character_id: The unique character identifier.
 
-        profile = CharacterProfile(
-            name=name,
-            extroversion=traits["extroversion"],
-            agreeableness=traits["agreeableness"],
-            loyalty=traits["loyalty"],
-            charisma=traits["charisma"],
-            archetype=archetype,
-            backstory_hook=hook,
-            social_goals=goals,
-            faction_id=faction_id,
-            influence_score=round(influence, 4),
-            reputation=0.30 + traits["charisma"] * 0.40 + traits["agreeableness"] * 0.20,
-        )
+        Returns:
+            The CharacterProfile, or None if not found.
+        """
+        _time_module.sleep(0.001)
+        return self._profiles.get(character_id)
 
-        self._profiles[profile.id] = profile
-
-        if faction_id and faction_id in self._factions:
-            faction = self._factions[faction_id]
-            if profile.id not in faction.members:
-                faction.members.append(profile.id)
-                self._recompute_faction_cohesion(faction)
-
-        return profile
-
-    def simulate_relationship_pair(
+    def update_character_state(
         self,
-        profile_a: CharacterProfile,
-        profile_b: CharacterProfile,
-    ) -> SocialRelationship:
+        character_id: str,
+        location: Optional[str] = None,
+        current_action: Optional[str] = None,
+        action_target: Optional[str] = None,
+        conversation_target: Optional[str] = None,
+    ) -> Optional[CharacterState]:
+        """Update the runtime state of a character.
+
+        Args:
+            character_id: The character to update.
+            location: New location (optional).
+            current_action: Description of current action (optional).
+            action_target: Target of the current action (optional).
+            conversation_target: Current conversation partner (optional).
+
+        Returns:
+            The updated CharacterState, or None if character not found.
+        """
         _time_module.sleep(0.001)
+        with self._lock:
+            state = self._states.get(character_id)
+            if state is None:
+                return None
+            if location is not None:
+                state.location = location
+            if current_action is not None:
+                state.current_action = current_action
+            if action_target is not None:
+                state.action_target = action_target
+            if conversation_target is not None:
+                state.conversation_target = conversation_target
+            state.last_action_time = _time_module.time()
+            return state
 
-        compatibility = self._compute_compatibility(profile_a, profile_b)
-        rel_type = self._determine_relationship_type(profile_a, profile_b, compatibility)
+    # ------------------------------------------------------------------
+    # Emotion System
+    # ------------------------------------------------------------------
 
-        trust = self._compute_initial_trust(profile_a, profile_b, compatibility)
-        strength = self._compute_initial_strength(profile_a, profile_b, compatibility, rel_type)
-        tension = 1.0 - (trust * 0.6 + strength * 0.4)
-        tension = max(0.0, min(1.0, tension))
-
-        history: List[str] = [f"initial_encounter_{rel_type}"]
-
-        relationship = SocialRelationship(
-            npc_a_id=profile_a.id,
-            npc_b_id=profile_b.id,
-            relationship_type=rel_type,
-            strength=strength,
-            trust_level=trust,
-            history_events=history,
-            compatibility_score=compatibility,
-            tension_level=round(tension, 4),
-        )
-
-        pair_key = self._relationship_key(profile_a.id, profile_b.id)
-        self._relationships[pair_key] = relationship
-        self._stats["relationships_simulated"] += 1
-
-        return relationship
-
-    def build_social_network(
+    def update_emotion(
         self,
-        profiles: List[CharacterProfile],
-        faction_nodes: Optional[Dict[str, FactionNode]] = None,
-    ) -> SocialNetwork:
+        character_id: str,
+        event_valence: float,
+        event_arousal: float,
+    ) -> Optional[EmotionState]:
+        """Update a character's emotion using EMA smoothing.
+
+        Applies exponential moving average to blend the new emotional
+        event with the current emotional state.
+
+        Args:
+            character_id: The character to update.
+            event_valence: Valence of the new event (-5 to +5).
+            event_arousal: Arousal of the new event (0 to 10).
+
+        Returns:
+            The updated EmotionState, or None if character not found.
+        """
         _time_module.sleep(0.001)
+        with self._lock:
+            state = self._states.get(character_id)
+            if state is None:
+                return None
+            alpha = self._config["ema_alpha"]
+            new_valence = state.emotion_valence * (1.0 - alpha) + event_valence * alpha
+            new_arousal = state.emotion_arousal * (1.0 - alpha) + event_arousal * alpha
+            new_valence = max(-5.0, min(5.0, new_valence))
+            new_arousal = max(0.0, min(10.0, new_arousal))
+            state.emotion_valence = new_valence
+            state.emotion_arousal = new_arousal
+            label = self._classify_emotion(new_valence, new_arousal)
+            intensity = abs(new_valence) / 5.0 * 0.5 + new_arousal / 10.0 * 0.5
+            return EmotionState(
+                valence=new_valence,
+                arousal=new_arousal,
+                dominant_emotion=label,
+                intensity=round(intensity, 4),
+            )
 
-        network = SocialNetwork()
+    def decay_emotions(self) -> None:
+        """Decay all character emotions toward the neutral baseline.
 
-        for profile in profiles:
-            network.profiles[profile.id] = profile
+        Each tick, emotions drift toward valence=0, arousal=5 by the
+        configured emotion_decay_rate.
+        """
+        _time_module.sleep(0.001)
+        with self._lock:
+            rate = self._config["emotion_decay_rate"]
+            for state in self._states.values():
+                state.emotion_valence *= rate
+                state.emotion_arousal = 5.0 + (state.emotion_arousal - 5.0) * rate
 
-        faction_map: Dict[str, FactionNode] = {}
-        if faction_nodes:
-            for fid, fnode in faction_nodes.items():
-                network.factions[fid] = fnode
-                faction_map[fid] = fnode
-        else:
-            for profile in profiles:
-                if profile.faction_id and profile.faction_id not in faction_map:
-                    faction = self._factions.get(profile.faction_id)
-                    if faction:
-                        faction_map[profile.faction_id] = faction
-                        network.factions[profile.faction_id] = faction
+    def get_character_emotion_label(self, character_id: str) -> Optional[str]:
+        """Get the discrete emotion label for a character's current state.
 
-        profile_ids = list(network.profiles.keys())
-        n = len(profile_ids)
+        Args:
+            character_id: The character to query.
 
-        for i in range(n):
-            for j in range(i + 1, n):
-                pid_a = profile_ids[i]
-                pid_b = profile_ids[j]
-                pair_key = self._relationship_key(pid_a, pid_b)
+        Returns:
+            An EmotionLabel string value, or None if character not found.
+        """
+        _time_module.sleep(0.001)
+        state = self._states.get(character_id)
+        if state is None:
+            return None
+        return self._classify_emotion(state.emotion_valence, state.emotion_arousal)
 
-                if pair_key in self._relationships:
-                    rel = self._relationships[pair_key]
-                else:
-                    rel = self.simulate_relationship_pair(
-                        network.profiles[pid_a], network.profiles[pid_b]
-                    )
+    # ------------------------------------------------------------------
+    # Need System
+    # ------------------------------------------------------------------
 
-                network.relationships[pair_key] = rel
+    def decay_needs(self) -> None:
+        """Decay all character needs by one tick.
 
-        network.adjacency_matrix = self._build_adjacency_matrix(profile_ids, network.relationships)
+        Each need's current_value is multiplied by the configured
+        need_decay_rate, simulating natural need erosion over time.
+        """
+        _time_module.sleep(0.001)
+        with self._lock:
+            rate = self._config["need_decay_rate"]
+            for state in self._states.values():
+                for need in state.needs.values():
+                    need.current_value = max(0.0, need.current_value * rate)
 
-        influence_scores: Dict[str, float] = {}
-        for pid in profile_ids:
-            profile = network.profiles[pid]
-            influence_scores[pid] = self._compute_raw_influence(pid, profile_ids, network.relationships)
-        network.influence_map = influence_scores
+    # ------------------------------------------------------------------
+    # Relationship System
+    # ------------------------------------------------------------------
 
-        network.faction_adjacency = self._build_faction_adjacency(network)
+    def add_relationship(
+        self,
+        source_id: str,
+        target_id: str,
+        relationship_type: str = RelationshipType.STRANGER.value,
+        trust: float = 0.30,
+        familiarity: float = 0.10,
+        affinity: float = 0.00,
+    ) -> Optional[SocialRelationship]:
+        """Create a directed relationship from source to target.
 
-        edge_count = len(network.relationships)
-        max_edges = n * (n - 1) / 2.0
-        network.network_density = edge_count / max(max_edges, 1.0)
+        Args:
+            source_id: The character initiating the relationship perspective.
+            target_id: The target character.
+            relationship_type: RelationshipType enum value.
+            trust: Initial trust level (0-1).
+            familiarity: Initial familiarity (0-1).
+            affinity: Initial affinity (-1 to +1).
 
-        trust_sum = sum(r.trust_level for r in network.relationships.values())
-        network.average_trust = trust_sum / max(len(network.relationships), 1)
+        Returns:
+            The created SocialRelationship, or None if either character is missing.
+        """
+        _time_module.sleep(0.001)
+        with self._lock:
+            if source_id not in self._profiles or target_id not in self._profiles:
+                return None
+            rel = SocialRelationship(
+                source_id=source_id,
+                target_id=target_id,
+                trust=trust,
+                familiarity=familiarity,
+                affinity=affinity,
+                relationship_type=relationship_type,
+            )
+            self._relationships[rel.relationship_id] = rel
+            return rel
 
-        network.conflict_hotspots = self._detect_conflict_hotspots(network)
+    def update_relationship(
+        self,
+        source_id: str,
+        target_id: str,
+        trust_delta: float = 0.0,
+        familiarity_delta: float = 0.0,
+        affinity_delta: float = 0.0,
+    ) -> Optional[SocialRelationship]:
+        """Update an existing relationship between two characters.
 
-        self._stats["networks_built"] += 1
-        return network
+        Finds the relationship by source and target IDs and applies
+        deltas to trust, familiarity, and affinity.
+
+        Args:
+            source_id: Source character ID.
+            target_id: Target character ID.
+            trust_delta: Change in trust.
+            familiarity_delta: Change in familiarity.
+            affinity_delta: Change in affinity.
+
+        Returns:
+            The updated SocialRelationship, or None if not found.
+        """
+        _time_module.sleep(0.001)
+        with self._lock:
+            rel = self._find_relationship(source_id, target_id)
+            if rel is None:
+                return None
+            rel.trust = max(0.0, min(1.0, rel.trust + trust_delta))
+            rel.familiarity = max(0.0, min(1.0, rel.familiarity + familiarity_delta))
+            rel.affinity = max(-1.0, min(1.0, rel.affinity + affinity_delta))
+            rel.interaction_count += 1
+            rel.last_interaction = _time_module.time()
+            rel.history.append(
+                f"updated_trust={round(rel.trust, 3)}_fam={round(rel.familiarity, 3)}_aff={round(rel.affinity, 3)}"
+            )
+            self._update_relationship_type(rel)
+            return rel
+
+    def get_relationships(self, character_id: str) -> List[SocialRelationship]:
+        """Get all relationships where the character is either source or target.
+
+        Args:
+            character_id: The character to look up.
+
+        Returns:
+            List of SocialRelationship objects involving the character.
+        """
+        _time_module.sleep(0.001)
+        results: List[SocialRelationship] = []
+        for rel in self._relationships.values():
+            if rel.source_id == character_id or rel.target_id == character_id:
+                results.append(rel)
+        return results
+
+    def get_social_network(self) -> Dict[str, Any]:
+        """Get the full relationship graph as a dictionary.
+
+        Returns:
+            Dict with 'nodes' (character IDs) and 'edges' (relationship dicts).
+        """
+        _time_module.sleep(0.001)
+        nodes = list(self._profiles.keys())
+        edges = [rel.to_dict() for rel in self._relationships.values()]
+        return {
+            "nodes": nodes,
+            "edges": edges,
+            "node_count": len(nodes),
+            "edge_count": len(edges),
+        }
+
+    # ------------------------------------------------------------------
+    # Memory System
+    # ------------------------------------------------------------------
+
+    def add_memory(
+        self,
+        character_id: str,
+        memory_type: str = MemoryType.OBSERVATION.value,
+        content: str = "",
+        importance: float = 0.50,
+        emotional_intensity: float = 0.00,
+        tags: Optional[List[str]] = None,
+    ) -> Optional[CharacterMemory]:
+        """Add an episodic memory for a character.
+
+        Args:
+            character_id: The character to add the memory to.
+            memory_type: MemoryType enum value.
+            content: The memory content text.
+            importance: Importance score (0-1).
+            emotional_intensity: Emotional intensity (0-1).
+            tags: List of keyword tags for retrieval.
+
+        Returns:
+            The created CharacterMemory, or None if character not found.
+        """
+        _time_module.sleep(0.001)
+        with self._lock:
+            if character_id not in self._profiles:
+                return None
+            if character_id not in self._memories:
+                self._memories[character_id] = []
+            memory = CharacterMemory(
+                character_id=character_id,
+                memory_type=memory_type,
+                content=content,
+                importance=importance,
+                emotional_intensity=emotional_intensity,
+                tags=tags if tags is not None else [],
+            )
+            self._memories[character_id].append(memory)
+            self._prune_memories(character_id)
+            return memory
+
+    def retrieve_memories(
+        self,
+        character_id: str,
+        context_keywords: Optional[List[str]] = None,
+        top_k: int = 5,
+    ) -> List[CharacterMemory]:
+        """Retrieve the most relevant memories for a character.
+
+        Uses multi-factor scoring: relevance (tag/keyword match),
+        recency (time since memory), importance, and emotional intensity.
+
+        Args:
+            character_id: The character whose memories to query.
+            context_keywords: Keywords to match against memory tags.
+            top_k: Maximum number of memories to return.
+
+        Returns:
+            List of the top-k most relevant CharacterMemory objects.
+        """
+        _time_module.sleep(0.001)
+        mems = self._memories.get(character_id, [])
+        if not mems:
+            return []
+        keywords = context_keywords if context_keywords else []
+        now = _time_module.time()
+        scored: List[Tuple[float, CharacterMemory]] = []
+        for mem in mems:
+            relevance = self._compute_relevance(mem, keywords)
+            recency = max(0.0, 1.0 - (now - mem.timestamp) / 3600.0)
+            score = (
+                relevance * 0.35
+                + recency * 0.25
+                + mem.importance * 0.25
+                + mem.emotional_intensity * 0.15
+            )
+            scored.append((score, mem))
+        scored.sort(key=lambda x: x[0], reverse=True)
+        top_memories = [m for _, m in scored[:top_k]]
+        for mem in top_memories:
+            mem.access_count += 1
+        return top_memories
+
+    def decay_memories(self) -> None:
+        """Decay and consolidate all character memories.
+
+        Memories with importance below the consolidation threshold are
+        removed. Remaining memories have their decay_factor applied.
+        """
+        _time_module.sleep(0.001)
+        with self._lock:
+            threshold = self._config["memory_consolidation_threshold"]
+            for character_id, mems in list(self._memories.items()):
+                kept: List[CharacterMemory] = []
+                for mem in mems:
+                    mem.importance *= self._config["memory_decay_rate"]
+                    if mem.importance >= threshold:
+                        kept.append(mem)
+                self._memories[character_id] = kept
+
+    # ------------------------------------------------------------------
+    # Reflection System
+    # ------------------------------------------------------------------
+
+    def reflect(self, character_id: str) -> Optional[Dict[str, Any]]:
+        """Trigger reflection on recent memories for a character.
+
+        The character reviews recent memories, generates insights,
+        and adjusts their emotional state based on the reflection.
+
+        Args:
+            character_id: The character to reflect.
+
+        Returns:
+            Dict with 'insight', 'emotional_adjustment', 'memories_processed',
+            or None if character not found or on cooldown.
+        """
+        _time_module.sleep(0.001)
+        with self._lock:
+            if character_id not in self._profiles:
+                return None
+            now = _time_module.time()
+            last = self._last_reflection.get(character_id, 0.0)
+            cooldown = self._config["reflection_cooldown"]
+            if now - last < cooldown:
+                return None
+            self._last_reflection[character_id] = now
+
+            mems = self._memories.get(character_id, [])
+            if not mems:
+                return {
+                    "insight": "No memories to reflect on.",
+                    "emotional_adjustment": (0.0, 0.0),
+                    "memories_processed": 0,
+                }
+            recent = [m for m in mems if now - m.timestamp < 600.0]
+            if not recent:
+                recent = mems[-10:]
+            avg_valence = 0.0
+            avg_arousal = 0.0
+            topics: Set[str] = set()
+            for mem in recent:
+                for tag in mem.tags:
+                    topics.add(tag)
+            for mem in recent:
+                val = mem.emotional_intensity * (1.0 if "positive" in mem.tags else -0.5)
+                avg_valence += val
+                avg_arousal += mem.emotional_intensity * 0.5
+            n = max(len(recent), 1)
+            avg_valence /= n
+            avg_arousal /= n
+
+            self.update_emotion(character_id, avg_valence * 0.3, avg_arousal)
+
+            insight_parts: List[str] = []
+            if topics:
+                insight_parts.append(f"Reflected on topics: {', '.join(sorted(topics)[:5])}")
+            if avg_valence > 0.5:
+                insight_parts.append("Overall positive memories dominate.")
+            elif avg_valence < -0.3:
+                insight_parts.append("Recent memories carry negative undertones.")
+            else:
+                insight_parts.append("Recent memories are emotionally neutral.")
+
+            reflection_mem = self.add_memory(
+                character_id=character_id,
+                memory_type=MemoryType.REFLECTION.value,
+                content=" ".join(insight_parts),
+                importance=0.6,
+                emotional_intensity=abs(avg_valence),
+                tags=list(topics),
+            )
+
+            return {
+                "insight": " ".join(insight_parts),
+                "emotional_adjustment": (round(avg_valence, 4), round(avg_arousal, 4)),
+                "memories_processed": len(recent),
+                "reflection_memory_id": reflection_mem.memory_id if reflection_mem else "",
+            }
+
+    # ------------------------------------------------------------------
+    # Social Action System
+    # ------------------------------------------------------------------
+
+    def execute_social_action(
+        self,
+        actor_id: str,
+        target_id: str,
+        action_type: str = SocialActionType.GREET.value,
+        reason: str = "",
+    ) -> Optional[SocialAction]:
+        """Execute a social action from one character to another.
+
+        Computes the emotional impact on both parties and updates
+        the relationship between them based on the action type.
+
+        Args:
+            actor_id: The character performing the action.
+            target_id: The target character.
+            action_type: SocialActionType enum value.
+            reason: Description of why the action was taken.
+
+        Returns:
+            The resulting SocialAction, or None if either character is missing.
+        """
+        _time_module.sleep(0.001)
+        with self._lock:
+            if actor_id not in self._profiles or target_id not in self._profiles:
+                return None
+            actor_profile = self._profiles[actor_id]
+            target_profile = self._profiles[target_id]
+
+            impact = _ACTION_EMOTIONAL_IMPACT.get(action_type, {"actor": (0.0, 0.0), "target": (0.0, 0.0)})
+            actor_val = impact["actor"][0]
+            actor_ar = impact["actor"][1]
+            target_val = impact["target"][0]
+            target_ar = impact["target"][1]
+
+            neuroticism_mod = 1.0 + actor_profile.personality_traits.neuroticism * 0.5
+            agreeableness_mod = 1.0 + target_profile.personality_traits.agreeableness * 0.3
+
+            actor_val *= neuroticism_mod
+            target_val *= agreeableness_mod
+
+            self.update_emotion(actor_id, actor_val, actor_ar)
+            self.update_emotion(target_id, target_val, target_ar)
+
+            rel = self._find_or_create_relationship(actor_id, target_id)
+            rel_effects = _ACTION_RELATIONSHIP_EFFECTS.get(action_type, {})
+            rel.trust = max(0.0, min(1.0, rel.trust + rel_effects.get("trust", 0.0)))
+            rel.familiarity = max(0.0, min(1.0, rel.familiarity + rel_effects.get("familiarity", 0.0)))
+            rel.affinity = max(-1.0, min(1.0, rel.affinity + rel_effects.get("affinity", 0.0)))
+            rel.interaction_count += 1
+            rel.last_interaction = _time_module.time()
+            rel.history.append(f"{action_type}_{actor_id[:8]}_{target_id[:8]}")
+            self._update_relationship_type(rel)
+
+            outcome = self._generate_action_outcome(action_type, actor_profile, target_profile)
+            action = SocialAction(
+                actor_id=actor_id,
+                target_id=target_id,
+                action_type=action_type,
+                reason=reason,
+                outcome=outcome,
+                emotional_impact={
+                    "actor_valence": round(actor_val, 4),
+                    "actor_arousal": round(actor_ar, 4),
+                    "target_valence": round(target_val, 4),
+                    "target_arousal": round(target_ar, 4),
+                },
+            )
+            self._actions.append(action)
+
+            self.add_memory(
+                character_id=actor_id,
+                memory_type=MemoryType.SOCIAL.value,
+                content=f"{action_type} {target_profile.name}: {outcome}",
+                importance=0.5 + abs(actor_val) * 0.1,
+                emotional_intensity=(abs(actor_val) / 5.0 + actor_ar / 10.0) / 2.0,
+                tags=[action_type, target_id],
+            )
+
+            target_importance = 0.5 + abs(target_val) * 0.1
+            self.add_memory(
+                character_id=target_id,
+                memory_type=MemoryType.SOCIAL.value,
+                content=f"Received {action_type} from {actor_profile.name}: {outcome}",
+                importance=target_importance,
+                emotional_intensity=(abs(target_val) / 5.0 + target_ar / 10.0) / 2.0,
+                tags=[action_type, actor_id],
+            )
+
+            self._update_state_after_action(actor_id, action_type, target_id)
+            self._update_state_after_action(target_id, action_type, actor_id)
+
+            return action
+
+    # ------------------------------------------------------------------
+    # Social Event System
+    # ------------------------------------------------------------------
 
     def generate_social_event(
         self,
-        network: SocialNetwork,
+        actors: List[str],
+        location: str,
+        description: str = "",
+        event_type: str = "",
     ) -> Optional[SocialEvent]:
+        """Generate an emergent narrative event from social interactions.
+
+        Args:
+            actors: List of character IDs involved.
+            location: Where the event takes place.
+            description: Human-readable event description.
+            event_type: Category label for the event.
+
+        Returns:
+            The created SocialEvent, or None if no valid actors.
+        """
         _time_module.sleep(0.001)
+        with self._lock:
+            valid_actors = [a for a in actors if a in self._profiles]
+            if not valid_actors:
+                return None
+            dram_score = self._compute_dram_score(valid_actors)
+            if not event_type:
+                event_type = "social_interaction"
+            event = SocialEvent(
+                event_type=event_type,
+                actors=valid_actors,
+                targets=[],
+                location=location,
+                description=description,
+                dram_score=dram_score,
+            )
+            self._events.append(event)
+            return event
 
-        if not network.relationships:
-            return None
+    def propagate_event(self, event_id: str) -> Dict[str, Any]:
+        """Propagate a social event through the social network.
 
-        candidate_events: List[Tuple[float, str, SocialRelationship, str]] = []
+        Cascades the event to connected characters up to the configured
+        propagation depth, creating emotional ripples and witness memories.
 
-        for pair_key, rel in network.relationships.items():
-            trust = rel.trust_level
-            strength = rel.strength
+        Args:
+            event_id: The SocialEvent to propagate.
 
-            for evt_type_str, thresholds in EVENT_TRIGGER_THRESHOLDS.items():
-                trust_above = thresholds.get("trust_above", 0.0)
-                trust_below = thresholds.get("trust_below", 1.0)
-                strength_above = thresholds.get("strength_above", 0.0)
-                prob = thresholds.get("probability", 0.1)
-
-                condition_met = True
-                if trust_above > 0 and trust < trust_above:
-                    condition_met = False
-                if trust_below < 1.0 and trust > trust_below:
-                    condition_met = False
-                if strength < strength_above:
-                    condition_met = False
-
-                if condition_met:
-                    trigger_score = prob * (1.0 + rel.tension_level) * (1.0 + abs(rel.compatibility_score))
-                    candidate_events.append((trigger_score, evt_type_str, rel, pair_key))
-
-        if not candidate_events:
-            return None
-
-        candidate_events.sort(key=lambda x: x[0], reverse=True)
-        max_score = candidate_events[0][0]
-        threshold = max_score * 0.6
-
-        top_candidates = [c for c in candidate_events if c[0] >= threshold]
-        chosen = top_candidates[hash(str(network.id) + str(candidate_events[0][1])) % len(top_candidates)]
-
-        _, event_type_str, rel, pair_key = chosen
-
-        participants = [rel.npc_a_id, rel.npc_b_id]
-        impact_scores = self._compute_event_impacts(event_type_str, rel, network)
-
-        affected_factions: List[str] = []
-        for pid in participants:
-            profile = network.profiles.get(pid)
-            if profile and profile.faction_id:
-                if profile.faction_id not in affected_factions:
-                    affected_factions.append(profile.faction_id)
-
-        ripple = self._compute_ripple_effects(event_type_str, rel, network)
-
-        description = self._generate_event_description(
-            event_type_str, participants, network, rel
-        )
-
-        event = SocialEvent(
-            event_type=event_type_str,
-            participants=participants,
-            impact_scores=impact_scores,
-            description=description,
-            severity=round(max(impact_scores.values()) if impact_scores else 0.3, 4),
-            affected_factions=affected_factions,
-            ripple_effects=ripple,
-        )
-
-        rel.history_events.append(f"{event_type_str}_{event.id[:8]}")
-        rel.last_updated = _time_module.time()
-
-        self._events.append(event)
-        self._event_history.append(event)
-        self._stats["events_generated"] += 1
-
-        self._apply_event_ripple(event, network)
-
-        return event
-
-    def compute_influence_map(
-        self,
-        network: SocialNetwork,
-        source_npc_id: str,
-    ) -> Dict[str, float]:
+        Returns:
+            Dict with 'propagated_to', 'affected_count', 'depth'.
+        """
         _time_module.sleep(0.001)
+        with self._lock:
+            event = self._find_event(event_id)
+            if event is None:
+                return {"propagated_to": [], "affected_count": 0, "depth": 0}
+            max_depth = self._config["propagation_depth"]
+            visited: Set[str] = set(event.actors)
+            frontier: Set[str] = set(event.actors)
+            affected: List[str] = []
 
-        profile_ids = list(network.profiles.keys())
+            for depth in range(max_depth):
+                next_frontier: Set[str] = set()
+                for char_id in frontier:
+                    for rel in self._relationships.values():
+                        if rel.source_id == char_id and rel.target_id not in visited:
+                            next_frontier.add(rel.target_id)
+                        elif rel.target_id == char_id and rel.source_id not in visited:
+                            next_frontier.add(rel.source_id)
+                if not next_frontier:
+                    break
+                for char_id in next_frontier:
+                    visited.add(char_id)
+                    affected.append(char_id)
+                    event.witnesses.append(char_id)
+                    self.add_memory(
+                        character_id=char_id,
+                        memory_type=MemoryType.OBSERVATION.value,
+                        content=f"Witnessed: {event.description}",
+                        importance=event.dram_score * 0.5,
+                        emotional_intensity=event.dram_score * 0.3,
+                        tags=["event", event.event_type],
+                    )
+                    self.update_emotion(
+                        char_id,
+                        event_valence=-0.5 * event.dram_score,
+                        event_arousal=2.0 * event.dram_score,
+                    )
+                frontier = next_frontier
 
-        if source_npc_id not in network.profiles:
-            return {source_npc_id: 0.0}
+            return {
+                "propagated_to": affected,
+                "affected_count": len(affected),
+                "depth": min(max_depth, len(affected)),
+            }
 
-        distances: Dict[str, float] = {}
-        active: List[str] = [source_npc_id]
-        distances[source_npc_id] = 0.0
+    # ------------------------------------------------------------------
+    # Simulation Tick
+    # ------------------------------------------------------------------
 
-        visited: set = set()
+    def tick(self) -> Dict[str, Any]:
+        """Advance the simulation by one timestep.
 
-        while active:
-            current = active.pop(0)
-            if current in visited:
-                continue
-            visited.add(current)
+        Decays emotions, needs, and memories. Triggers reflection for
+        characters whose cooldown has elapsed.
 
-            current_dist = distances[current]
-
-            for other_id in profile_ids:
-                if other_id == current or other_id in visited:
-                    continue
-
-                pair_key = self._relationship_key(current, other_id)
-                rel = network.relationships.get(pair_key)
-
-                if rel is None:
-                    continue
-
-                edge_weight = 1.0 - rel.strength + 0.01
-                new_dist = current_dist + edge_weight
-
-                if other_id not in distances or new_dist < distances[other_id]:
-                    distances[other_id] = new_dist
-                    active.append(other_id)
-
-        source_profile = network.profiles.get(source_npc_id)
-        source_influence = source_profile.influence_score if source_profile else 0.3
-
-        influence_map: Dict[str, float] = {}
-
-        for pid in profile_ids:
-            dist = distances.get(pid, float("inf"))
-            if dist < float("inf"):
-                decay = math.exp(-self._INFLUENCE_DECAY_RATE * dist)
-                raw_influence = source_influence * decay
-            else:
-                raw_influence = 0.0
-            influence_map[pid] = round(raw_influence, 4)
-
-        influence_map[source_npc_id] = round(source_influence, 4)
-
-        self._stats["influence_maps_computed"] += 1
-        return influence_map
-
-    def predict_faction_behavior(
-        self,
-        faction: FactionNode,
-        network: SocialNetwork,
-    ) -> Dict[str, Any]:
+        Returns:
+            Dict with tick summary: tick_count, character_count, etc.
+        """
         _time_module.sleep(0.001)
+        self._tick_count += 1
+        self.decay_emotions()
+        self.decay_needs()
+        self.decay_memories()
 
-        cohesion = self._assess_faction_cohesion(faction, network)
-        external_pressure = self._compute_external_pressure(faction, network)
-        goal_alignment = self._compute_goal_alignment(faction, network)
-        internal_tension = self._compute_internal_tension(faction, network)
+        now = _time_module.time()
+        cooldown = self._config["reflection_cooldown"]
+        for char_id in self._profiles:
+            last = self._last_reflection.get(char_id, 0.0)
+            if now - last >= cooldown:
+                self.reflect(char_id)
 
-        aggression = (
-            faction.aggression_index * 0.35
-            + external_pressure * 0.30
-            + (1.0 - cohesion) * 0.20
-            + internal_tension * 0.15
-        )
-        aggression = max(0.0, min(1.0, aggression))
+        return self.get_status()
 
-        diplomacy = (
-            faction.diplomacy_index * 0.40
-            + cohesion * 0.25
-            + goal_alignment * 0.20
-            + (1.0 - external_pressure) * 0.15
-        )
-        diplomacy = max(0.0, min(1.0, diplomacy))
+    def get_status(self) -> Dict[str, Any]:
+        """Get the current simulation status.
 
-        predicted_actions: List[str] = []
-
-        if aggression > 0.60:
-            predicted_actions.append("launch_offensive")
-            predicted_actions.append("issue_ultimatum")
-        elif aggression > 0.35:
-            predicted_actions.append("reinforce_borders")
-            predicted_actions.append("recruit_allies")
-
-        if diplomacy > 0.60:
-            predicted_actions.append("propose_treaty")
-            predicted_actions.append("establish_trade_route")
-        elif diplomacy > 0.35:
-            predicted_actions.append("send_emissary")
-            predicted_actions.append("negotiate_ceasefire")
-
-        if internal_tension > 0.50:
-            predicted_actions.append("purge_dissidents")
-        if cohesion < 0.40:
-            predicted_actions.append("internal_reform")
-
-        if not predicted_actions:
-            predicted_actions.append("maintain_status_quo")
-
-        threat_assessment: Dict[str, float] = {}
-        for other_fid, other_faction in network.factions.items():
-            if other_fid != faction.id:
-                threat = self._compute_faction_threat(faction, other_faction, network)
-                threat_assessment[other_faction.name] = round(threat, 4)
-
-        self._stats["faction_predictions_made"] += 1
-
+        Returns:
+            Dict with tick_count, character_count, relationship_count,
+            memory_count, event_count, action_count, and config.
+        """
+        _time_module.sleep(0.001)
+        total_memories = sum(len(m) for m in self._memories.values())
         return {
-            "faction_id": faction.id,
-            "faction_name": faction.name,
-            "predicted_aggression": round(aggression, 4),
-            "predicted_diplomacy": round(diplomacy, 4),
-            "predicted_actions": predicted_actions,
-            "cohesion": round(cohesion, 4),
-            "external_pressure": round(external_pressure, 4),
-            "goal_alignment": round(goal_alignment, 4),
-            "internal_tension": round(internal_tension, 4),
-            "threat_assessment": threat_assessment,
-        }
-
-    def resolve_social_conflict(
-        self,
-        faction_a: FactionNode,
-        faction_b: FactionNode,
-        network: SocialNetwork,
-    ) -> Dict[str, Any]:
-        _time_module.sleep(0.001)
-
-        power_a = self._compute_faction_power(faction_a, network)
-        power_b = self._compute_faction_power(faction_b, network)
-
-        power_ratio = power_a / max(power_b, 0.01)
-
-        negotiation_strength_a = power_a * faction_a.diplomacy_index
-        negotiation_strength_b = power_b * faction_b.diplomacy_index
-
-        resolution_pressure = (
-            (1.0 - power_ratio if power_ratio < 1.0 else 1.0 / power_ratio)
-            * (faction_a.diplomacy_index + faction_b.diplomacy_index) / 2.0
-        )
-        resolution_pressure = max(0.1, min(1.0, resolution_pressure))
-
-        outcomes: Dict[str, float] = {
-            "ceasefire": resolution_pressure * 0.8 + (1.0 - max(faction_a.aggression_index, faction_b.aggression_index)) * 0.2,
-            "negotiated_settlement": resolution_pressure * 0.85,
-            "stalemate": 0.5 + (1.0 - resolution_pressure) * 0.3,
-            "escalation": max(faction_a.aggression_index, faction_b.aggression_index) * (1.0 - resolution_pressure * 0.5),
-            "one_sided_victory": max(power_a, power_b) / (power_a + power_b + 0.01) * (1.0 - resolution_pressure * 0.3),
-        }
-
-        best_outcome = max(outcomes, key=lambda k: outcomes[k])
-
-        mediation_bonus = 0.0
-        mediator_candidates: List[str] = []
-        for fid, fnode in network.factions.items():
-            if fid != faction_a.id and fid != faction_b.id:
-                if fnode.diplomacy_index > 0.6 and fnode.cohesion > 0.5:
-                    mediator_candidates.append(fid)
-                    mediation_bonus += fnode.diplomacy_index * 0.1
-
-        mediation_bonus = min(0.3, mediation_bonus)
-        if mediator_candidates:
-            outcomes["negotiated_settlement"] += mediation_bonus
-            outcomes["ceasefire"] += mediation_bonus * 0.7
-            outcomes["escalation"] -= mediation_bonus * 0.3
-
-        reputation_impact_a = 0.0
-        reputation_impact_b = 0.0
-
-        if best_outcome in ("ceasefire", "negotiated_settlement"):
-            reputation_impact_a = 0.05
-            reputation_impact_b = 0.05
-        elif best_outcome == "stalemate":
-            reputation_impact_a = -0.02
-            reputation_impact_b = -0.02
-        elif best_outcome == "escalation":
-            reputation_impact_a = -0.10
-            reputation_impact_b = -0.10
-        elif best_outcome == "one_sided_victory":
-            if power_a > power_b:
-                reputation_impact_a = 0.08
-                reputation_impact_b = -0.15
-            else:
-                reputation_impact_a = -0.15
-                reputation_impact_b = 0.08
-
-        faction_a.reputation = max(0.0, min(1.0, faction_a.reputation + reputation_impact_a))
-        faction_b.reputation = max(0.0, min(1.0, faction_b.reputation + reputation_impact_b))
-
-        conflict_record = {
-            "faction_a": faction_a.name,
-            "faction_b": faction_b.name,
-            "power_a": round(power_a, 4),
-            "power_b": round(power_b, 4),
-            "outcome": best_outcome,
-            "outcome_probabilities": {k: round(v, 4) for k, v in outcomes.items()},
-            "mediators": mediator_candidates,
-            "resolution_pressure": round(resolution_pressure, 4),
-            "resolved_at": _time_module.time(),
-        }
-        self._conflict_log.append(conflict_record)
-        self._stats["conflicts_resolved"] += 1
-
-        return conflict_record
-
-    def list_characters(self) -> List[Dict[str, Any]]:
-        """Return all character profiles as dicts."""
-        _time_module.sleep(0.001)
-        return [p.to_dict() for p in self._character_profiles.values()]
-
-    def list_relationships(self) -> List[Dict[str, Any]]:
-        """Return all relationships as dicts."""
-        _time_module.sleep(0.001)
-        return [r.to_dict() for r in self._relationships.values()]
-
-    def get_network_summary(self) -> Dict[str, Any]:
-        """Return a summary of the current social network state."""
-        _time_module.sleep(0.001)
-        return {
-            "character_count": len(self._character_profiles),
+            "tick_count": self._tick_count,
+            "character_count": len(self._profiles),
             "relationship_count": len(self._relationships),
-            "faction_count": len(self._factions),
-            "event_count": len(self._event_history),
-            "network_density": self._network_density if hasattr(self, '_network_density') else 0.0,
-            "average_trust": self._average_trust if hasattr(self, '_average_trust') else 0.0,
-            "factions": [f.to_dict() for f in self._factions.values()],
-        }
-
-    def list_events(self) -> List[Dict[str, Any]]:
-        """Return all social events as dicts."""
-        _time_module.sleep(0.001)
-        return [e.to_dict() for e in self._event_history]
-
-    def get_stats(self) -> Dict[str, Any]:
-        _time_module.sleep(0.001)
-        return {
-            "relationships_simulated": self._stats["relationships_simulated"],
-            "networks_built": self._stats["networks_built"],
-            "events_generated": self._stats["events_generated"],
-            "conflicts_resolved": self._stats["conflicts_resolved"],
-            "influence_maps_computed": self._stats["influence_maps_computed"],
-            "faction_predictions_made": self._stats["faction_predictions_made"],
-            "profiles_registered": len(self._profiles),
-            "factions_registered": len(self._factions),
-            "active_relationships": len(self._relationships),
-            "event_history_size": len(self._event_history),
-            "conflict_log_size": len(self._conflict_log),
-            "available_archetypes": list(SOCIAL_TRAIT_ARCHETYPES.keys()),
-            "available_relationship_archetypes": list(RELATIONSHIP_ARCHETYPES.keys()),
-            "available_faction_templates": list(FACTION_TEMPLATES.keys()),
-            "available_event_types": [e.value for e in EventType],
-            "available_relationship_types": [r.value for r in RelationshipType],
+            "memory_count": total_memories,
+            "event_count": len(self._events),
+            "action_count": len(self._actions),
+            "config": dict(self._config),
         }
 
     def reset(self) -> None:
+        """Reset all simulation data to initial state."""
         _time_module.sleep(0.001)
-        self._profiles.clear()
-        self._relationships.clear()
-        self._factions.clear()
-        self._events.clear()
-        self._event_history.clear()
-        self._conflict_log.clear()
-        self._stats = {
-            "relationships_simulated": 0,
-            "networks_built": 0,
-            "events_generated": 0,
-            "conflicts_resolved": 0,
-            "influence_maps_computed": 0,
-            "faction_predictions_made": 0,
-        }
+        with self._lock:
+            self._profiles.clear()
+            self._states.clear()
+            self._relationships.clear()
+            self._memories.clear()
+            self._actions.clear()
+            self._events.clear()
+            self._tick_count = 0
+            self._last_reflection.clear()
+            self._config = {
+                "emotion_decay_rate": self._DEFAULT_EMOTION_DECAY_RATE,
+                "need_decay_rate": self._DEFAULT_NEED_DECAY_RATE,
+                "memory_decay_rate": self._DEFAULT_MEMORY_DECAY_RATE,
+                "memory_consolidation_threshold": self._DEFAULT_MEMORY_CONSOLIDATION_THRESHOLD,
+                "reflection_cooldown": self._DEFAULT_REFLECTION_COOLDOWN,
+                "propagation_depth": self._DEFAULT_PROPAGATION_DEPTH,
+                "ema_alpha": self._EMA_SMOOTHING_ALPHA,
+            }
 
-    def register_faction(self, faction: FactionNode) -> None:
+    # ------------------------------------------------------------------
+    # Internal Helpers
+    # ------------------------------------------------------------------
+
+    def _classify_emotion(self, valence: float, arousal: float) -> str:
+        """Classify a valence-arousal pair into a discrete emotion label.
+
+        Maps the two-dimensional emotion space to EmotionLabel values
+        based on quadrant and intensity.
+        """
         _time_module.sleep(0.001)
-        self._factions[faction.id] = faction
-
-    def create_faction_from_template(
-        self,
-        template_key: str,
-        custom_name: Optional[str] = None,
-    ) -> Optional[FactionNode]:
-        _time_module.sleep(0.001)
-        template = FACTION_TEMPLATES.get(template_key)
-        if template is None:
-            return None
-
-        faction = FactionNode(
-            name=custom_name if custom_name else template["name"],
-            reputation=template["reputation"],
-            territory=template.get("territory", ""),
-            goals=list(template.get("goals", [])),
-            status=template.get("status", FactionStatus.STABLE.value),
-            aggression_index=template.get("aggression_baseline", 0.30),
-            diplomacy_index=template.get("cooperation_baseline", 0.50),
-        )
-
-        self._factions[faction.id] = faction
-        return faction
-
-    def evolve_relationship(
-        self,
-        relationship: SocialRelationship,
-        profile_a: CharacterProfile,
-        profile_b: CharacterProfile,
-        steps: int = 1,
-    ) -> SocialRelationship:
-        _time_module.sleep(0.001)
-
-        for _ in range(steps):
-            compat = relationship.compatibility_score
-
-            trust_delta = (
-                (profile_a.agreeableness + profile_b.agreeableness) / 2.0 * self._TRUST_EVOLUTION_RATE
-                + compat * self._TRUST_EVOLUTION_RATE * 0.5
-                - relationship.tension_level * self._TRUST_EVOLUTION_RATE * 0.3
-            )
-            relationship.trust_level = max(0.01, min(0.99, relationship.trust_level + trust_delta))
-
-            strength_delta = (
-                (relationship.trust_level * 0.4 + abs(compat) * 0.3 + 0.15) * self._STRENGTH_EVOLUTION_RATE
-            )
-            relationship.strength = max(0.01, min(1.0, relationship.strength + strength_delta))
-
-            relationship.tension_level = max(0.0, min(1.0,
-                1.0 - (relationship.trust_level * 0.55 + relationship.strength * 0.45)
-            ))
-
-            relationship.duration += 1.0
-            relationship.last_updated = _time_module.time()
-
-            self._maybe_shift_relationship_type(relationship)
-
-        return relationship
-
-    def get_faction_relationships(
-        self,
-        faction_a: FactionNode,
-        faction_b: FactionNode,
-        network: SocialNetwork,
-    ) -> List[SocialRelationship]:
-        _time_module.sleep(0.001)
-        results: List[SocialRelationship] = []
-
-        for pair_key, rel in network.relationships.items():
-            a_in_faction = rel.npc_a_id in faction_a.members or rel.npc_b_id in faction_a.members
-            b_in_faction = rel.npc_a_id in faction_b.members or rel.npc_b_id in faction_b.members
-            if a_in_faction and b_in_faction:
-                results.append(rel)
-
-        return results
-
-    def compute_faction_influence(
-        self,
-        faction: FactionNode,
-        network: SocialNetwork,
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        if not faction.members:
-            return 0.0
-
-        total_influence = 0.0
-        for member_id in faction.members:
-            influence_map = self.compute_influence_map(network, member_id)
-            avg_influence = sum(influence_map.values()) / max(len(influence_map), 1)
-            total_influence += avg_influence
-
-        return round(total_influence / len(faction.members), 4)
-
-    def get_event_history(
-        self,
-        event_type: Optional[str] = None,
-        limit: int = 50,
-    ) -> List[Dict[str, Any]]:
-        _time_module.sleep(0.001)
-        results = list(self._event_history)
-        if event_type:
-            results = [e for e in results if e.event_type == event_type]
-        return [e.to_dict() for e in results[-limit:]]
-
-    def get_conflict_log(
-        self,
-        limit: int = 50,
-    ) -> List[Dict[str, Any]]:
-        _time_module.sleep(0.001)
-        return list(self._conflict_log[-limit:])
-
-    def _compute_compatibility(
-        self,
-        profile_a: CharacterProfile,
-        profile_b: CharacterProfile,
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        extro_diff = 1.0 - abs(profile_a.extroversion - profile_b.extroversion)
-        agree_sum = (profile_a.agreeableness + profile_b.agreeableness) / 2.0
-        loyalty_sum = (profile_a.loyalty + profile_b.loyalty) / 2.0
-
-        charisma_boost = max(profile_a.charisma, profile_b.charisma) * 0.15
-
-        goal_overlap = len(
-            set(profile_a.social_goals) & set(profile_b.social_goals)
-        ) / max(len(set(profile_a.social_goals) | set(profile_b.social_goals)), 1)
-
-        compatibility = (
-            extro_diff * 0.25
-            + agree_sum * 0.25
-            + loyalty_sum * 0.20
-            + charisma_boost * 0.15
-            + goal_overlap * 0.15
-        )
-
-        same_faction_bonus = 0.10 if profile_a.faction_id and profile_a.faction_id == profile_b.faction_id else 0.0
-
-        return max(-1.0, min(1.0, compatibility + same_faction_bonus - 0.30))
-
-    def _determine_relationship_type(
-        self,
-        profile_a: CharacterProfile,
-        profile_b: CharacterProfile,
-        compatibility: float,
-    ) -> str:
-        _time_module.sleep(0.001)
-
-        if compatibility > 0.55:
-            loyalty_avg = (profile_a.loyalty + profile_b.loyalty) / 2.0
-            charisma_avg = (profile_a.charisma + profile_b.charisma) / 2.0
-
-            if charisma_avg > 0.70 and loyalty_avg < 0.45:
-                return RelationshipType.LOVER.value
-            elif loyalty_avg > 0.65:
-                return RelationshipType.FRIEND.value
-            elif profile_a.extroversion > profile_b.extroversion + 0.3:
-                return RelationshipType.MENTOR.value
-            elif profile_b.extroversion > profile_a.extroversion + 0.3:
-                return RelationshipType.STUDENT.value
+        if arousal > 7.0:
+            if valence > 2.0:
+                return EmotionLabel.EXCITED.value
+            elif valence < -2.0:
+                return EmotionLabel.ANGRY.value
             else:
-                return RelationshipType.FRIEND.value
-
-        elif compatibility < -0.15:
-            if profile_a.agreeableness < 0.30 or profile_b.agreeableness < 0.30:
-                return RelationshipType.FOE.value
+                return EmotionLabel.TENSE.value
+        elif arousal > 4.0:
+            if valence > 2.0:
+                return EmotionLabel.JOYFUL.value
+            elif valence < -2.0:
+                return EmotionLabel.FRUSTRATED.value
+            elif valence < 0:
+                return EmotionLabel.ANXIOUS.value
             else:
-                return RelationshipType.RIVAL.value
-
+                return EmotionLabel.CONTENT.value
         else:
-            return RelationshipType.NEUTRAL.value
-
-    def _compute_initial_trust(
-        self,
-        profile_a: CharacterProfile,
-        profile_b: CharacterProfile,
-        compatibility: float,
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        agree_avg = (profile_a.agreeableness + profile_b.agreeableness) / 2.0
-        loyalty_avg = (profile_a.loyalty + profile_b.loyalty) / 2.0
-        raw_trust = agree_avg * 0.40 + loyalty_avg * 0.40 + (compatibility + 1.0) / 2.0 * 0.20
-        return round(max(0.05, min(0.95, raw_trust)), 4)
-
-    def _compute_initial_strength(
-        self,
-        profile_a: CharacterProfile,
-        profile_b: CharacterProfile,
-        compatibility: float,
-        rel_type: str,
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        extro_avg = (profile_a.extroversion + profile_b.extroversion) / 2.0
-        base_strength = extro_avg * 0.30 + abs(compatibility) * 0.50 + 0.20
-
-        type_multipliers = {
-            RelationshipType.LOVER.value: 1.30,
-            RelationshipType.FRIEND.value: 1.10,
-            RelationshipType.FOE.value: 1.05,
-            RelationshipType.RIVAL.value: 1.15,
-            RelationshipType.MENTOR.value: 1.10,
-            RelationshipType.STUDENT.value: 1.10,
-            RelationshipType.NEUTRAL.value: 0.60,
-        }
-        multiplier = type_multipliers.get(rel_type, 0.80)
-
-        return round(max(0.05, min(0.95, base_strength * multiplier)), 4)
-
-    def _build_adjacency_matrix(
-        self,
-        profile_ids: List[str],
-        relationships: Dict[str, SocialRelationship],
-    ) -> Dict[str, Dict[str, float]]:
-        _time_module.sleep(0.001)
-
-        matrix: Dict[str, Dict[str, float]] = {}
-        for pid in profile_ids:
-            matrix[pid] = {}
-            for other_pid in profile_ids:
-                if pid == other_pid:
-                    matrix[pid][other_pid] = 1.0
-                else:
-                    pair_key = self._relationship_key(pid, other_pid)
-                    rel = relationships.get(pair_key)
-                    matrix[pid][other_pid] = rel.strength if rel else 0.0
-
-        return matrix
-
-    def _build_faction_adjacency(
-        self,
-        network: SocialNetwork,
-    ) -> Dict[str, Dict[str, float]]:
-        _time_module.sleep(0.001)
-
-        matrix: Dict[str, Dict[str, float]] = {}
-        faction_ids = list(network.factions.keys())
-
-        for fid_a in faction_ids:
-            matrix[fid_a] = {}
-            for fid_b in faction_ids:
-                if fid_a == fid_b:
-                    matrix[fid_a][fid_b] = 1.0
-                    continue
-
-                faction_rels = self.get_faction_relationships(
-                    network.factions[fid_a], network.factions[fid_b], network
-                )
-
-                if faction_rels:
-                    avg_strength = sum(r.strength for r in faction_rels) / len(faction_rels)
-                    avg_trust = sum(r.trust_level for r in faction_rels) / len(faction_rels)
-                    matrix[fid_a][fid_b] = round((avg_strength + avg_trust) / 2.0, 4)
-                else:
-                    matrix[fid_a][fid_b] = 0.0
-
-        return matrix
-
-    def _compute_raw_influence(
-        self,
-        source_pid: str,
-        all_profile_ids: List[str],
-        relationships: Dict[str, SocialRelationship],
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        total = 0.0
-        count = 0
-
-        for other_pid in all_profile_ids:
-            if other_pid == source_pid:
-                continue
-            pair_key = self._relationship_key(source_pid, other_pid)
-            rel = relationships.get(pair_key)
-            if rel:
-                total += rel.strength
-                count += 1
-
-        avg_connection = total / max(count, 1)
-        return round(avg_connection * 0.7 + 0.15, 4)
-
-    def _detect_conflict_hotspots(
-        self,
-        network: SocialNetwork,
-    ) -> List[Tuple[str, str]]:
-        _time_module.sleep(0.001)
-
-        hotspots: List[Tuple[str, str]] = []
-
-        for pair_key, rel in network.relationships.items():
-            conflict_score = rel.tension_level * (1.0 + rel.strength) * (1.0 - rel.trust_level)
-            if conflict_score > self._CONFLICT_ESCALATION_THRESHOLD:
-                hotspots.append((rel.npc_a_id, rel.npc_b_id))
-
-        hotspots.sort(
-            key=lambda h: network.relationships.get(
-                self._relationship_key(h[0], h[1]),
-                SocialRelationship()
-            ).tension_level,
-            reverse=True,
-        )
-
-        return hotspots[:20]
-
-    def _compute_event_impacts(
-        self,
-        event_type: str,
-        rel: SocialRelationship,
-        network: SocialNetwork,
-    ) -> Dict[str, float]:
-        _time_module.sleep(0.001)
-
-        impacts: Dict[str, float] = {}
-
-        impacts[rel.npc_a_id] = self._event_impact_on_npc(event_type, rel.npc_a_id, network)
-        impacts[rel.npc_b_id] = self._event_impact_on_npc(event_type, rel.npc_b_id, network)
-
-        return impacts
-
-    def _event_impact_on_npc(
-        self,
-        event_type: str,
-        npc_id: str,
-        network: SocialNetwork,
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        profile = network.profiles.get(npc_id)
-        base_impact = 0.25
-
-        positive_events = {EventType.CELEBRATION.value, EventType.ALLIANCE.value,
-                           EventType.RECONCILIATION.value, EventType.MENTORSHIP.value,
-                           EventType.TRADE.value}
-        negative_events = {EventType.BETRAYAL.value, EventType.CONFLICT.value}
-
-        if event_type in positive_events:
-            if profile is not None:
-                base_impact = 0.30 + profile.agreeableness * 0.25 + profile.charisma * 0.15
-        elif event_type in negative_events:
-            agree = profile.agreeableness if profile is not None else 0.5
-            base_impact = 0.35 + (1.0 - agree) * 0.30
-
-        if event_type == EventType.RUMOR.value:
-            chr_val = profile.charisma if profile is not None else 0.5
-            base_impact = 0.15 + chr_val * 0.10
-
-        return round(max(0.05, min(1.0, base_impact)), 4)
-
-    def _compute_ripple_effects(
-        self,
-        event_type: str,
-        rel: SocialRelationship,
-        network: SocialNetwork,
-    ) -> List[str]:
-        _time_module.sleep(0.001)
-
-        ripple: List[str] = []
-
-        affected = {rel.npc_a_id, rel.npc_b_id}
-
-        for other_pair, other_rel in network.relationships.items():
-            if other_pair == self._relationship_key(rel.npc_a_id, rel.npc_b_id):
-                continue
-            if other_rel.npc_a_id in affected or other_rel.npc_b_id in affected:
-                if other_rel.strength > 0.40:
-                    ripple.append(f"affects_relationship_{other_rel.id[:8]}")
-
-        return ripple[:self._MAX_EVENT_RIPPLE_DEPTH]
-
-    def _generate_event_description(
-        self,
-        event_type: str,
-        participants: List[str],
-        network: SocialNetwork,
-        rel: SocialRelationship,
-    ) -> str:
-        _time_module.sleep(0.001)
-
-        name_a = network.profiles.get(participants[0], CharacterProfile(name="Unknown")).name
-        name_b = network.profiles.get(participants[1], CharacterProfile(name="Unknown")).name if len(participants) > 1 else ""
-
-        descriptions: Dict[str, str] = {
-            EventType.BETRAYAL.value: f"{name_a} betrayed the trust of {name_b}; their bond is shattered by treachery",
-            EventType.ALLIANCE.value: f"{name_a} and {name_b} forged a powerful alliance, shifting the balance of power",
-            EventType.TRADE.value: f"{name_a} and {name_b} engaged in a significant exchange of resources and information",
-            EventType.CONFLICT.value: f"Open conflict erupted between {name_a} and {name_b}, drawing in their allies",
-            EventType.CELEBRATION.value: f"{name_a} and {name_b} celebrated a shared triumph, strengthening their bond",
-            EventType.RECONCILIATION.value: f"{name_a} and {name_b} reconciled their differences through earnest dialogue",
-            EventType.MENTORSHIP.value: f"{name_a} took {name_b} under their wing, beginning a mentorship journey",
-            EventType.RUMOR.value: f"A rumor about {name_a} and {name_b} spread through the social network like wildfire",
-        }
-
-        return descriptions.get(event_type, f"Social event between {name_a} and {name_b}")
-
-    def _apply_event_ripple(
-        self,
-        event: SocialEvent,
-        network: SocialNetwork,
-    ) -> None:
-        _time_module.sleep(0.001)
-
-        for pair_key, rel in network.relationships.items():
-            if rel.npc_a_id in event.participants or rel.npc_b_id in event.participants:
-                if not (rel.npc_a_id in event.participants and rel.npc_b_id in event.participants):
-                    ripple_factor = rel.strength * 0.15
-
-                    if event.event_type in (EventType.ALLIANCE.value, EventType.CELEBRATION.value):
-                        rel.trust_level = min(0.99, rel.trust_level + ripple_factor * 0.3)
-                    elif event.event_type in (EventType.BETRAYAL.value, EventType.CONFLICT.value):
-                        rel.trust_level = max(0.01, rel.trust_level - ripple_factor * 0.3)
-                        rel.tension_level = min(1.0, rel.tension_level + ripple_factor * 0.2)
-
-    def _assess_faction_cohesion(
-        self,
-        faction: FactionNode,
-        network: SocialNetwork,
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        if len(faction.members) < 2:
-            return 0.5 if faction.members else 0.0
-
-        strengths: List[float] = []
-        trust_vals: List[float] = []
-
-        for i, m_a in enumerate(faction.members):
-            for m_b in faction.members[i + 1:]:
-                pair_key = self._relationship_key(m_a, m_b)
-                rel = network.relationships.get(pair_key)
-                if rel:
-                    strengths.append(rel.strength)
-                    trust_vals.append(rel.trust_level)
-
-        avg_strength = sum(strengths) / len(strengths) if strengths else 0.3
-        avg_trust = sum(trust_vals) / len(trust_vals) if trust_vals else 0.3
-        faction.cohesion = round((avg_strength * 0.5 + avg_trust * 0.5), 4)
-
-        return faction.cohesion
-
-    def _recompute_faction_cohesion(self, faction: FactionNode) -> None:
-        _time_module.sleep(0.001)
-
-        if len(faction.members) < 2:
-            faction.cohesion = 0.5
-            return
-
-        strengths: List[float] = []
-        trust_vals: List[float] = []
-
-        for i, m_a in enumerate(faction.members):
-            for m_b in faction.members[i + 1:]:
-                pair_key = self._relationship_key(m_a, m_b)
-                rel = self._relationships.get(pair_key)
-                if rel:
-                    strengths.append(rel.strength)
-                    trust_vals.append(rel.trust_level)
-
-        avg_strength = sum(strengths) / len(strengths) if strengths else 0.3
-        avg_trust = sum(trust_vals) / len(trust_vals) if trust_vals else 0.3
-        faction.cohesion = round((avg_strength * 0.5 + avg_trust * 0.5), 4)
-
-    def _compute_external_pressure(
-        self,
-        faction: FactionNode,
-        network: SocialNetwork,
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        total_pressure = 0.0
-        opposing_faction_count = 0
-
-        for other_fid, other_faction in network.factions.items():
-            if other_fid == faction.id:
-                continue
-
-            adj = network.faction_adjacency.get(faction.id, {}).get(other_fid, 0.0)
-
-            if other_faction.aggression_index > 0.5 and adj < 0.3:
-                total_pressure += other_faction.aggression_index * (1.0 - adj)
-                opposing_faction_count += 1
-            elif adj < 0.2:
-                total_pressure += (1.0 - adj) * other_faction.aggression_index * 0.5
-                opposing_faction_count += 1
-
-        if opposing_faction_count == 0:
-            return max(0.0, 0.1 - faction.cohesion * 0.1)
-
-        return round(max(0.0, min(1.0, total_pressure / max(opposing_faction_count, 1))), 4)
-
-    def _compute_goal_alignment(
-        self,
-        faction: FactionNode,
-        network: SocialNetwork,
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        total_alignment = 0.0
-        comparisons = 0
-
-        for other_fid, other_faction in network.factions.items():
-            if other_fid == faction.id:
-                continue
-
-            shared_goals = len(
-                set(faction.goals) & set(other_faction.goals)
+            if valence > 2.0:
+                return EmotionLabel.CALM.value
+            elif valence < -2.0:
+                return EmotionLabel.SAD.value
+            elif valence < 0:
+                return EmotionLabel.PEACEFUL.value
+            else:
+                return EmotionLabel.BORED.value
+
+    def _find_relationship(
+        self, source_id: str, target_id: str
+    ) -> Optional[SocialRelationship]:
+        """Find a relationship by source and target IDs."""
+        for rel in self._relationships.values():
+            if rel.source_id == source_id and rel.target_id == target_id:
+                return rel
+        return None
+
+    def _find_or_create_relationship(
+        self, source_id: str, target_id: str
+    ) -> SocialRelationship:
+        """Find an existing relationship or create a default one."""
+        rel = self._find_relationship(source_id, target_id)
+        if rel is None:
+            rel = SocialRelationship(
+                source_id=source_id,
+                target_id=target_id,
+                relationship_type=RelationshipType.STRANGER.value,
             )
-            total_possible = max(
-                len(set(faction.goals) | set(other_faction.goals)), 1
-            )
-            alignment = shared_goals / total_possible
-            total_alignment += alignment
-            comparisons += 1
+            self._relationships[rel.relationship_id] = rel
+        return rel
 
-        if comparisons == 0:
+    def _find_event(self, event_id: str) -> Optional[SocialEvent]:
+        """Find a social event by ID."""
+        for event in self._events:
+            if event.event_id == event_id:
+                return event
+        return None
+
+    def _update_relationship_type(self, rel: SocialRelationship) -> None:
+        """Update relationship type based on affinity and trust levels."""
+        _time_module.sleep(0.001)
+        if rel.affinity > 0.7 and rel.trust > 0.8:
+            rel.relationship_type = RelationshipType.CLOSE_FRIEND.value
+        elif rel.affinity > 0.4 and rel.trust > 0.5:
+            rel.relationship_type = RelationshipType.FRIEND.value
+        elif rel.affinity > 0.15 and rel.trust > 0.3:
+            rel.relationship_type = RelationshipType.ACQUAINTANCE.value
+        elif rel.affinity < -0.6 and rel.trust < 0.2:
+            rel.relationship_type = RelationshipType.ENEMY.value
+        elif rel.affinity < -0.3:
+            rel.relationship_type = RelationshipType.RIVAL.value
+        elif rel.trust > 0.7 and rel.affinity > 0.5:
+            rel.relationship_type = RelationshipType.ALLY.value
+        elif rel.familiarity < 0.05:
+            rel.relationship_type = RelationshipType.STRANGER.value
+
+    def _compute_relevance(
+        self, memory: CharacterMemory, keywords: List[str]
+    ) -> float:
+        """Compute relevance score between memory tags and context keywords."""
+        _time_module.sleep(0.001)
+        if not keywords:
             return 0.5
+        matches = 0
+        for kw in keywords:
+            kw_lower = kw.lower()
+            for tag in memory.tags:
+                if kw_lower in tag.lower():
+                    matches += 1
+                    break
+            if kw_lower in memory.content.lower():
+                matches += 0.5
+        return min(1.0, matches / max(len(keywords), 1))
 
-        return round(total_alignment / comparisons, 4)
-
-    def _compute_internal_tension(
-        self,
-        faction: FactionNode,
-        network: SocialNetwork,
-    ) -> float:
+    def _compute_dram_score(self, actor_ids: List[str]) -> float:
+        """Compute the dramatic score of a social event based on participants."""
         _time_module.sleep(0.001)
-
-        if len(faction.members) < 2:
-            return 0.1
-
-        tensions: List[float] = []
-        for i, m_a in enumerate(faction.members):
-            for m_b in faction.members[i + 1:]:
-                pair_key = self._relationship_key(m_a, m_b)
-                rel = network.relationships.get(pair_key)
+        if not actor_ids:
+            return 0.5
+        total_intensity = 0.0
+        for aid in actor_ids:
+            state = self._states.get(aid)
+            if state:
+                intensity = abs(state.emotion_valence) / 5.0 * 0.6 + state.emotion_arousal / 10.0 * 0.4
+                total_intensity += intensity
+        avg_intensity = total_intensity / len(actor_ids)
+        relationships = 0
+        total_affinity_mag = 0.0
+        for i, a1 in enumerate(actor_ids):
+            for a2 in actor_ids[i + 1:]:
+                rel = self._find_relationship(a1, a2)
                 if rel:
-                    tensions.append(rel.tension_level)
+                    relationships += 1
+                    total_affinity_mag += abs(rel.affinity)
+        if relationships > 0:
+            avg_affinity = total_affinity_mag / relationships
+        else:
+            avg_affinity = 0.3
+        return round(avg_intensity * 0.5 + avg_affinity * 0.5, 4)
 
-        return round(sum(tensions) / len(tensions), 4) if tensions else 0.2
-
-    def _compute_faction_threat(
+    def _generate_action_outcome(
         self,
-        faction_a: FactionNode,
-        faction_b: FactionNode,
-        network: SocialNetwork,
-    ) -> float:
+        action_type: str,
+        actor: CharacterProfile,
+        target: CharacterProfile,
+    ) -> str:
+        """Generate a human-readable outcome description for a social action."""
         _time_module.sleep(0.001)
+        outcomes: Dict[str, str] = {
+            SocialActionType.GREET.value: f"{actor.name} greeted {target.name} warmly.",
+            SocialActionType.TRADE.value: f"{actor.name} traded with {target.name}.",
+            SocialActionType.FIGHT.value: f"{actor.name} and {target.name} clashed violently.",
+            SocialActionType.HELP.value: f"{actor.name} helped {target.name}.",
+            SocialActionType.GOSSIP.value: f"{actor.name} gossiped about {target.name}.",
+            SocialActionType.IGNORE.value: f"{actor.name} ignored {target.name}.",
+            SocialActionType.FLEE.value: f"{actor.name} fled from {target.name}.",
+            SocialActionType.COOPERATE.value: f"{actor.name} cooperated with {target.name}.",
+            SocialActionType.COMPETE.value: f"{actor.name} competed against {target.name}.",
+            SocialActionType.COMFORT.value: f"{actor.name} comforted {target.name}.",
+            SocialActionType.THREATEN.value: f"{actor.name} threatened {target.name}.",
+            SocialActionType.GIFT.value: f"{actor.name} gave a gift to {target.name}.",
+        }
+        return outcomes.get(action_type, f"{actor.name} interacted with {target.name}.")
 
-        power_b = self._compute_faction_power(faction_b, network)
-        power_a = self._compute_faction_power(faction_a, network)
-
-        adjacency = network.faction_adjacency.get(faction_a.id, {}).get(faction_b.id, 0.0)
-
-        aggression_factor = faction_b.aggression_index
-
-        threat = (
-            (power_b / max(power_a + power_b, 0.01)) * 0.40
-            + aggression_factor * 0.35
-            + (1.0 - adjacency) * 0.25
-        )
-
-        return round(max(0.0, min(1.0, threat)), 4)
-
-    def _compute_faction_power(
-        self,
-        faction: FactionNode,
-        network: SocialNetwork,
-    ) -> float:
-        _time_module.sleep(0.001)
-
-        member_power = len(faction.members) / max(1, self._MAX_NETWORK_SIZE)
-        resource_power = faction.resource_pool
-        cohesion_power = faction.cohesion
-        influence_power = faction.influence_radius
-
-        power = (
-            member_power * 0.30
-            + resource_power * 0.25
-            + cohesion_power * 0.25
-            + influence_power * 0.20
-        )
-
-        return round(max(0.01, min(1.0, power)), 4)
-
-    def _maybe_shift_relationship_type(
-        self,
-        rel: SocialRelationship,
+    def _update_state_after_action(
+        self, character_id: str, action_type: str, other_id: str
     ) -> None:
-        _time_module.sleep(0.001)
+        """Update character state after a social action."""
+        state = self._states.get(character_id)
+        if state is None:
+            return
+        state.current_action = action_type
+        state.action_target = other_id
+        state.last_action_time = _time_module.time()
 
-        if rel.trust_level > 0.75 and rel.strength > 0.60:
-            if rel.relationship_type in (RelationshipType.NEUTRAL.value, RelationshipType.RIVAL.value):
-                rel.relationship_type = RelationshipType.FRIEND.value
+    def _prune_memories(self, character_id: str) -> None:
+        """Remove oldest memories if exceeding the maximum per character."""
+        mems = self._memories.get(character_id, [])
+        if len(mems) > self._MAX_MEMORIES_PER_CHARACTER:
+            mems.sort(key=lambda m: m.importance)
+            self._memories[character_id] = mems[-(self._MAX_MEMORIES_PER_CHARACTER):]
 
-        if rel.trust_level < 0.20 and rel.strength > 0.45:
-            if rel.relationship_type == RelationshipType.NEUTRAL.value:
-                rel.relationship_type = RelationshipType.FOE.value
 
-    @staticmethod
-    def _relationship_key(pid_a: str, pid_b: str) -> str:
-        if pid_a < pid_b:
-            return f"{pid_a}__{pid_b}"
-        return f"{pid_b}__{pid_a}"
+# =============================================================================
+# Module-level accessor
+# =============================================================================
 
 
 def get_agent_social_simulation() -> AgentSocialSimulation:
+    """Get the singleton instance of AgentSocialSimulation.
+
+    Returns:
+        The global AgentSocialSimulation instance.
+    """
     return AgentSocialSimulation.get_instance()
