@@ -81,7 +81,7 @@ class ConsoleSystem:
     """In-game developer console for runtime debugging and control."""
 
     _instance: Optional["ConsoleSystem"] = None
-    _lock = threading.Lock()
+    _lock = threading.RLock()
 
     MAX_HISTORY = 500
     MAX_OUTPUT_LINES = 2000
