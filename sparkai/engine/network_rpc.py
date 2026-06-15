@@ -121,7 +121,7 @@ class NetworkRPC:
     """Remote procedure call layer for multiplayer game networking."""
 
     _instance: Optional["NetworkRPC"] = None
-    _lock = threading.Lock()
+    _lock = threading.RLock()
 
     MAX_MESSAGE_QUEUE = 10000
     DEFAULT_TIMEOUT_S = 5.0
