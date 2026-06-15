@@ -152,7 +152,7 @@ class InputRecorder:
     """Input recording and replay for game testing and debugging."""
 
     _instance: Optional["InputRecorder"] = None
-    _lock = threading.Lock()
+    _lock = threading.RLock()
 
     MAX_RECORDINGS = 50
     MAX_EVENTS_PER_SESSION = 100000
