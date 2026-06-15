@@ -109,7 +109,7 @@ class SaveSystem:
         self._auto_config = AutoSaveConfig()
         self._serializers: Dict[str, Callable] = {}
         self._migrators: Dict[int, Callable] = {}
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._last_auto_save: float = 0.0
         self._init_slots()
 
