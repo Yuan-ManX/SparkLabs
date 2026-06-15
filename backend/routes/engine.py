@@ -6317,3 +6317,141 @@ async def asset_pipeline_batch_generate(request: Request):
         return {"status": "ok", "assets": [a.to_dict() for a in assets]}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Deployment Orchestrator Routes
+# ============================================================
+
+@router.get("/deployment-orchestrator/stats")
+async def deployment_orchestrator_stats():
+    try:
+        from sparkai.engine.engine_deployment_orchestrator import get_deployment_orchestrator
+        instance = get_deployment_orchestrator()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/deployment-orchestrator/create-config")
+async def deployment_orchestrator_create_config(request: Request):
+    try:
+        from sparkai.engine.engine_deployment_orchestrator import get_deployment_orchestrator
+        body = await request.json()
+        instance = get_deployment_orchestrator()
+        config = instance.create_build_config(body.get("name",""), body.get("platform","web"), body.get("optimization_level","standard"), body.get("target_resolution","1080p"), body.get("compression",True), body.get("include_assets",[]), body.get("exclude_patterns",[]), body.get("custom_flags",{}))
+        return {"status": "ok", "config": config.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/deployment-orchestrator/queue-build")
+async def deployment_orchestrator_queue_build(request: Request):
+    try:
+        from sparkai.engine.engine_deployment_orchestrator import get_deployment_orchestrator
+        body = await request.json()
+        instance = get_deployment_orchestrator()
+        job = instance.queue_build(body.get("config_id",""))
+        return {"status": "ok", "job": job.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/deployment-orchestrator/execute-build")
+async def deployment_orchestrator_execute(request: Request):
+    try:
+        from sparkai.engine.engine_deployment_orchestrator import get_deployment_orchestrator
+        body = await request.json()
+        instance = get_deployment_orchestrator()
+        job = instance.execute_build(body.get("job_id",""))
+        return {"status": "ok", "job": job.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/deployment-orchestrator/optimize-assets")
+async def deployment_orchestrator_optimize(request: Request):
+    try:
+        from sparkai.engine.engine_deployment_orchestrator import get_deployment_orchestrator
+        body = await request.json()
+        instance = get_deployment_orchestrator()
+        result = instance.optimize_assets(body.get("job_id",""))
+        return {"status": "ok", "optimization": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/deployment-orchestrator/builds")
+async def deployment_orchestrator_builds(request: Request):
+    try:
+        from sparkai.engine.engine_deployment_orchestrator import get_deployment_orchestrator
+        instance = get_deployment_orchestrator()
+        builds = instance.list_builds(request.query_params.get("platform"), request.query_params.get("status"))
+        return {"status": "ok", "builds": [b.to_dict() for b in builds]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Network Layer Routes
+# ============================================================
+
+@router.get("/network-layer/stats")
+async def network_layer_stats():
+    try:
+        from sparkai.engine.engine_network_layer import get_network_layer_engine
+        instance = get_network_layer_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/network-layer/create-session")
+async def network_layer_create_session(request: Request):
+    try:
+        from sparkai.engine.engine_network_layer import get_network_layer_engine
+        body = await request.json()
+        instance = get_network_layer_engine()
+        session = instance.create_session(body.get("name",""), body.get("topology","client_server"), body.get("max_players",4), body.get("sync_strategy","full_state"), body.get("tick_rate",30))
+        return {"status": "ok", "session": session.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/network-layer/connect")
+async def network_layer_connect(request: Request):
+    try:
+        from sparkai.engine.engine_network_layer import get_network_layer_engine
+        body = await request.json()
+        instance = get_network_layer_engine()
+        conn = instance.connect_player(body.get("session_id",""), body.get("player_id",""), body.get("ip_address","127.0.0.1"))
+        return {"status": "ok", "connection": conn.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/network-layer/disconnect")
+async def network_layer_disconnect(request: Request):
+    try:
+        from sparkai.engine.engine_network_layer import get_network_layer_engine
+        body = await request.json()
+        instance = get_network_layer_engine()
+        conn = instance.disconnect_player(body.get("session_id",""), body.get("player_id",""))
+        return {"status": "ok", "connection": conn.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/network-layer/sync")
+async def network_layer_sync(request: Request):
+    try:
+        from sparkai.engine.engine_network_layer import get_network_layer_engine
+        body = await request.json()
+        instance = get_network_layer_engine()
+        result = instance.synchronize_state(body.get("session_id",""))
+        return {"status": "ok", "sync": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/network-layer/find-match")
+async def network_layer_find_match(request: Request):
+    try:
+        from sparkai.engine.engine_network_layer import get_network_layer_engine
+        body = await request.json()
+        instance = get_network_layer_engine()
+        query = instance.create_matchmaking_query(body.get("player_id",""), body.get("preferences",{}), body.get("skill_range",200), body.get("region","global"))
+        result = instance.find_match(query.query_id)
+        return {"status": "ok", "match": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
