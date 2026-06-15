@@ -246,7 +246,7 @@ class RagdollSystem:
     """Physics-based ragdoll simulation for character animation."""
 
     _instance: Optional["RagdollSystem"] = None
-    _lock = threading.Lock()
+    _lock = threading.RLock()
 
     MAX_SKELETONS = 100
 
