@@ -137,7 +137,7 @@ class TelemetryEngine:
     """Game analytics and telemetry for AI-native game engine."""
 
     _instance: Optional["TelemetryEngine"] = None
-    _lock = threading.Lock()
+    _lock = threading.RLock()
 
     MAX_EVENTS = 50000
     MAX_SESSIONS = 1000
