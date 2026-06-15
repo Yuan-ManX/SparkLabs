@@ -5302,3 +5302,1018 @@ async def render_orchestrator_gpu_memory():
         return {"status": "ok", "memory": ro.get_gpu_memory_usage()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# AI Game Runtime Routes
+# ============================================================
+
+@router.get("/ai-game-runtime/stats")
+async def ai_game_runtime_stats():
+    """Get AI Game Runtime system statistics."""
+    try:
+        from sparkai.engine.engine_ai_game_runtime import get_ai_game_runtime
+        instance = get_ai_game_runtime()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ai-game-runtime/register-agent")
+async def ai_game_runtime_register_agent(body: dict):
+    """Register a game agent."""
+    try:
+        from sparkai.engine.engine_ai_game_runtime import get_ai_game_runtime
+        instance = get_ai_game_runtime()
+        instance.register_agent(
+            agent_id=body.get("agent_id"),
+            name=body.get("name"),
+            metadata=body.get("metadata")
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ai-game-runtime/add-hook")
+async def ai_game_runtime_add_hook(body: dict):
+    """Add a hook callback for an agent."""
+    try:
+        from sparkai.engine.engine_ai_game_runtime import get_ai_game_runtime
+        instance = get_ai_game_runtime()
+        instance.add_hook(
+            agent_id=body.get("agent_id"),
+            hook_type=body.get("hook_type"),
+            callback_name=body.get("callback_name"),
+            priority=body.get("priority", 0)
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ai-game-runtime/submit-action")
+async def ai_game_runtime_submit_action(body: dict):
+    """Submit an agent action."""
+    try:
+        from sparkai.engine.engine_ai_game_runtime import get_ai_game_runtime
+        instance = get_ai_game_runtime()
+        instance.submit_action(
+            agent_id=body.get("agent_id"),
+            action_type=body.get("action_type"),
+            target=body.get("target"),
+            parameters=body.get("parameters")
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ai-game-runtime/pending-actions")
+async def ai_game_runtime_pending_actions():
+    """Get pending agent actions."""
+    try:
+        from sparkai.engine.engine_ai_game_runtime import get_ai_game_runtime
+        instance = get_ai_game_runtime()
+        return {"status": "ok", "actions": instance.get_pending_actions()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ai-game-runtime/execute-hooks")
+async def ai_game_runtime_execute_hooks(body: dict):
+    """Execute hooks for a given hook type."""
+    try:
+        from sparkai.engine.engine_ai_game_runtime import get_ai_game_runtime
+        instance = get_ai_game_runtime()
+        instance.execute_hooks(
+            hook_type=body.get("hook_type"),
+            game_state=body.get("game_state")
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Procedural Gameplay Routes
+# ============================================================
+
+@router.get("/procedural-gameplay/stats")
+async def procedural_gameplay_stats():
+    """Get Procedural Gameplay system statistics."""
+    try:
+        from sparkai.engine.engine_procedural_gameplay import get_procedural_gameplay
+        instance = get_procedural_gameplay()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-gameplay/create-session")
+async def procedural_gameplay_create_session(body: dict):
+    """Create a new procedural gameplay session."""
+    try:
+        from sparkai.engine.engine_procedural_gameplay import get_procedural_gameplay
+        instance = get_procedural_gameplay()
+        session = instance.create_session(
+            style=body.get("style"),
+            difficulty=body.get("difficulty"),
+            player_level=body.get("player_level"),
+            seed=body.get("seed")
+        )
+        return {"status": "ok", "session": session}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-gameplay/generate-mechanic")
+async def procedural_gameplay_generate_mechanic(body: dict):
+    """Generate a gameplay mechanic."""
+    try:
+        from sparkai.engine.engine_procedural_gameplay import get_procedural_gameplay
+        instance = get_procedural_gameplay()
+        mechanic = instance.generate_mechanic(
+            session_id=body.get("session_id"),
+            type=body.get("type"),
+            difficulty_tier=body.get("difficulty_tier")
+        )
+        return {"status": "ok", "mechanic": mechanic}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-gameplay/generate-event")
+async def procedural_gameplay_generate_event(body: dict):
+    """Generate a gameplay event."""
+    try:
+        from sparkai.engine.engine_procedural_gameplay import get_procedural_gameplay
+        instance = get_procedural_gameplay()
+        event = instance.generate_event(
+            session_id=body.get("session_id"),
+            trigger_condition=body.get("trigger_condition"),
+            mechanic_count=body.get("mechanic_count")
+        )
+        return {"status": "ok", "event": event}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-gameplay/generate-encounter")
+async def procedural_gameplay_generate_encounter(body: dict):
+    """Generate a gameplay encounter."""
+    try:
+        from sparkai.engine.engine_procedural_gameplay import get_procedural_gameplay
+        instance = get_procedural_gameplay()
+        encounter = instance.generate_encounter(
+            session_id=body.get("session_id"),
+            difficulty=body.get("difficulty"),
+            style=body.get("style")
+        )
+        return {"status": "ok", "encounter": encounter}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-gameplay/adapt-difficulty")
+async def procedural_gameplay_adapt_difficulty(body: dict):
+    """Adapt difficulty based on player performance."""
+    try:
+        from sparkai.engine.engine_procedural_gameplay import get_procedural_gameplay
+        instance = get_procedural_gameplay()
+        result = instance.adapt_difficulty(
+            session_id=body.get("session_id"),
+            player_performance=body.get("player_performance")
+        )
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Animation System Routes
+# ============================================================
+
+@router.get("/animation-system/stats")
+async def animation_system_stats():
+    """Get Animation System statistics."""
+    try:
+        from sparkai.engine.engine_animation_system import get_animation_system
+        instance = get_animation_system()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/animation-system/create-animation")
+async def animation_system_create_animation(body: dict):
+    """Create a new animation."""
+    try:
+        from sparkai.engine.engine_animation_system import get_animation_system
+        instance = get_animation_system()
+        result = instance.create_animation(
+            name=body.get("name"),
+            duration=body.get("duration"),
+            keyframes=body.get("keyframes")
+        )
+        return {"status": "ok", "animation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/animation-system/list")
+async def animation_system_list():
+    """List all animations."""
+    try:
+        from sparkai.engine.engine_animation_system import get_animation_system
+        instance = get_animation_system()
+        return {"status": "ok", "animations": instance.list_animations()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Camera Controller Routes
+# ============================================================
+
+@router.get("/camera-controller/stats")
+async def camera_controller_stats():
+    """Get Camera Controller system statistics."""
+    try:
+        from sparkai.engine.engine_camera_controller import get_camera_controller
+        instance = get_camera_controller()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/camera-controller/create")
+async def camera_controller_create(body: dict):
+    """Create a new camera."""
+    try:
+        from sparkai.engine.engine_camera_controller import get_camera_controller
+        instance = get_camera_controller()
+        result = instance.create(
+            name=body.get("name"),
+            position=body.get("position"),
+            target=body.get("target"),
+            fov=body.get("fov")
+        )
+        return {"status": "ok", "camera": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/camera-controller/move")
+async def camera_controller_move(body: dict):
+    """Move a camera to a new position."""
+    try:
+        from sparkai.engine.engine_camera_controller import get_camera_controller
+        instance = get_camera_controller()
+        instance.move(
+            camera_id=body.get("camera_id"),
+            position=body.get("position")
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Particle Emitter Routes
+# ============================================================
+
+@router.get("/particle-emitter/stats")
+async def particle_emitter_stats():
+    """Get Particle Emitter system statistics."""
+    try:
+        from sparkai.engine.engine_particle_emitter import get_particle_emitter
+        instance = get_particle_emitter()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/particle-emitter/create")
+async def particle_emitter_create(body: dict):
+    """Create a new particle emitter."""
+    try:
+        from sparkai.engine.engine_particle_emitter import get_particle_emitter
+        instance = get_particle_emitter()
+        result = instance.create(
+            name=body.get("name"),
+            config=body.get("config")
+        )
+        return {"status": "ok", "emitter": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Pathfinding Routes
+# ============================================================
+
+@router.get("/pathfinding/stats")
+async def pathfinding_stats():
+    """Get Pathfinding system statistics."""
+    try:
+        from sparkai.engine.engine_pathfinding import get_pathfinding_engine
+        instance = get_pathfinding_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/pathfinding/find-path")
+async def pathfinding_find_path(body: dict):
+    """Find a path between two points on a grid."""
+    try:
+        from sparkai.engine.engine_pathfinding import get_pathfinding_engine
+        instance = get_pathfinding_engine()
+        path = instance.find_path(
+            start=body.get("start"),
+            end=body.get("end"),
+            grid=body.get("grid")
+        )
+        return {"status": "ok", "path": path}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# State Machine Routes
+# ============================================================
+
+@router.get("/state-machine/stats")
+async def state_machine_stats():
+    """Get State Machine system statistics."""
+    try:
+        from sparkai.engine.engine_state_machine import get_state_machine_engine
+        instance = get_state_machine_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/state-machine/create")
+async def state_machine_create(body: dict):
+    """Create a new state machine."""
+    try:
+        from sparkai.engine.engine_state_machine import get_state_machine_engine
+        instance = get_state_machine_engine()
+        result = instance.create(
+            name=body.get("name"),
+            states=body.get("states"),
+            transitions=body.get("transitions")
+        )
+        return {"status": "ok", "state_machine": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Physics World 2D Routes
+# ============================================================
+
+@router.get("/physics-world-2d/stats")
+async def physics_world_2d_stats():
+    """Get Physics World 2D system statistics."""
+    try:
+        from sparkai.engine.engine_physics_world_2d import get_engine_physics_world_2d
+        instance = get_engine_physics_world_2d()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/physics-world-2d/create-world")
+async def physics_world_2d_create_world(body: dict):
+    """Create a new 2D physics world."""
+    try:
+        from sparkai.engine.engine_physics_world_2d import get_engine_physics_world_2d
+        instance = get_engine_physics_world_2d()
+        result = instance.create_world(
+            gravity=body.get("gravity"),
+            bounds=body.get("bounds")
+        )
+        return {"status": "ok", "world": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Visual Scripting Routes
+# ============================================================
+
+@router.get("/visual-scripting/stats")
+async def visual_scripting_stats():
+    """Get Visual Scripting system statistics."""
+    try:
+        from sparkai.engine.engine_visual_scripting import get_engine_visual_scripting
+        instance = get_engine_visual_scripting()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/visual-scripting/create-script")
+async def visual_scripting_create_script(body: dict):
+    """Create a new visual script."""
+    try:
+        from sparkai.engine.engine_visual_scripting import get_engine_visual_scripting
+        instance = get_engine_visual_scripting()
+        result = instance.create_script(
+            name=body.get("name"),
+            nodes=body.get("nodes"),
+            connections=body.get("connections")
+        )
+        return {"status": "ok", "script": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Procedural World Routes
+# ============================================================
+
+@router.get("/procedural-world/stats")
+async def procedural_world_stats():
+    """Get Procedural World system statistics."""
+    try:
+        from sparkai.engine.engine_procedural_world import get_procedural_world
+        instance = get_procedural_world()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-world/generate")
+async def procedural_world_generate(body: dict):
+    """Generate a procedural world."""
+    try:
+        from sparkai.engine.engine_procedural_world import get_procedural_world
+        instance = get_procedural_world()
+        result = instance.generate(
+            size=body.get("size"),
+            seed=body.get("seed"),
+            biome=body.get("biome")
+        )
+        return {"status": "ok", "world": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Tilemap System Routes
+# ============================================================
+
+@router.get("/tilemap-system/stats")
+async def tilemap_system_stats():
+    """Get Tilemap System statistics."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        instance = get_tilemap_system()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/tilemap-system/create")
+async def tilemap_system_create(body: dict):
+    """Create a new tilemap."""
+    try:
+        from sparkai.engine.engine_tilemap_system import get_tilemap_system
+        instance = get_tilemap_system()
+        result = instance.create(
+            name=body.get("name"),
+            width=body.get("width"),
+            height=body.get("height"),
+            tile_size=body.get("tile_size")
+        )
+        return {"status": "ok", "tilemap": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Audio Spatial Routes
+# ============================================================
+
+@router.get("/audio-spatial/stats")
+async def audio_spatial_stats():
+    """Get Audio Spatial system statistics."""
+    try:
+        from sparkai.engine.engine_audio_spatial import get_audio_spatial
+        instance = get_audio_spatial()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/audio-spatial/create-source")
+async def audio_spatial_create_source(body: dict):
+    """Create a spatial audio source."""
+    try:
+        from sparkai.engine.engine_audio_spatial import get_audio_spatial
+        instance = get_audio_spatial()
+        result = instance.create_source(
+            name=body.get("name"),
+            position=body.get("position"),
+            sound=body.get("sound")
+        )
+        return {"status": "ok", "source": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Sprite Animator Routes
+# ============================================================
+
+@router.get("/sprite-animator/stats")
+async def sprite_animator_stats():
+    """Get Sprite Animator system statistics."""
+    try:
+        from sparkai.engine.engine_sprite_animator import get_sprite_animator
+        instance = get_sprite_animator()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/sprite-animator/create")
+async def sprite_animator_create(body: dict):
+    """Create a new sprite animation."""
+    try:
+        from sparkai.engine.engine_sprite_animator import get_sprite_animator
+        instance = get_sprite_animator()
+        result = instance.create(
+            name=body.get("name"),
+            frames=body.get("frames"),
+            fps=body.get("fps")
+        )
+        return {"status": "ok", "animation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Navmesh Forge Routes
+# ============================================================
+
+@router.get("/navmesh-forge/stats")
+async def navmesh_forge_stats():
+    """Get Navmesh Forge system statistics."""
+    try:
+        from sparkai.engine.engine_navmesh_forge import get_navmesh_forge
+        instance = get_navmesh_forge()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/navmesh-forge/generate")
+async def navmesh_forge_generate(body: dict):
+    """Generate a navigation mesh."""
+    try:
+        from sparkai.engine.engine_navmesh_forge import get_navmesh_forge
+        instance = get_navmesh_forge()
+        result = instance.generate(
+            geometry=body.get("geometry"),
+            agent_radius=body.get("agent_radius")
+        )
+        return {"status": "ok", "navmesh": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# GPU Batch Rendering Routes
+# ============================================================
+
+@router.get("/gpu-batch-rendering/stats")
+async def gpu_batch_rendering_stats():
+    """Get GPU Batch Rendering system statistics."""
+    try:
+        from sparkai.engine.engine_gpu_batch_rendering import get_gpu_batch_rendering
+        instance = get_gpu_batch_rendering()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/gpu-batch-rendering/add-batch")
+async def gpu_batch_rendering_add_batch(body: dict):
+    """Add a new batch rendering group."""
+    try:
+        from sparkai.engine.engine_gpu_batch_rendering import get_gpu_batch_rendering
+        instance = get_gpu_batch_rendering()
+        instance.add_batch(
+            name=body.get("name"),
+            material=body.get("material"),
+            max_instances=body.get("max_instances")
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Deterministic Recorder Routes
+# ============================================================
+
+@router.get("/deterministic-recorder/stats")
+async def deterministic_recorder_stats():
+    """Get Deterministic Recorder system statistics."""
+    try:
+        from sparkai.engine.engine_deterministic_recorder import get_deterministic_recorder
+        instance = get_deterministic_recorder()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/deterministic-recorder/start-recording")
+async def deterministic_recorder_start_recording(body: dict):
+    """Start a recording session."""
+    try:
+        from sparkai.engine.engine_deterministic_recorder import get_deterministic_recorder
+        instance = get_deterministic_recorder()
+        result = instance.start_recording(
+            session_name=body.get("session_name")
+        )
+        return {"status": "ok", "session": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/deterministic-recorder/stop-recording")
+async def deterministic_recorder_stop_recording(body: dict):
+    """Stop a recording session."""
+    try:
+        from sparkai.engine.engine_deterministic_recorder import get_deterministic_recorder
+        instance = get_deterministic_recorder()
+        instance.stop_recording(
+            session_id=body.get("session_id")
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Signal Bus Routes
+# ============================================================
+
+@router.get("/signal-bus/stats")
+async def signal_bus_stats():
+    """Get Signal Bus system statistics."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus
+        instance = get_signal_bus()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/signal-bus/emit")
+async def signal_bus_emit(body: dict):
+    """Emit a signal to the bus."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus
+        instance = get_signal_bus()
+        instance.emit(
+            signal_name=body.get("signal_name"),
+            data=body.get("data")
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Entity Blueprint Routes
+# ============================================================
+
+@router.get("/entity-blueprint/stats")
+async def entity_blueprint_stats():
+    """Get Entity Blueprint system statistics."""
+    try:
+        from sparkai.engine.engine_entity_blueprint import get_entity_blueprint
+        instance = get_entity_blueprint()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/entity-blueprint/create")
+async def entity_blueprint_create(body: dict):
+    """Create a new entity blueprint."""
+    try:
+        from sparkai.engine.engine_entity_blueprint import get_entity_blueprint
+        instance = get_entity_blueprint()
+        result = instance.create(
+            name=body.get("name"),
+            components=body.get("components")
+        )
+        return {"status": "ok", "blueprint": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Post Processing Routes
+# ============================================================
+
+@router.get("/post-processing/stats")
+async def post_processing_stats():
+    """Get Post Processing system statistics."""
+    try:
+        from sparkai.engine.engine_post_processing import get_post_processing
+        instance = get_post_processing()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/post-processing/add-effect")
+async def post_processing_add_effect(body: dict):
+    """Add a post-processing effect."""
+    try:
+        from sparkai.engine.engine_post_processing import get_post_processing
+        instance = get_post_processing()
+        instance.add_effect(
+            name=body.get("name"),
+            effect_type=body.get("effect_type"),
+            parameters=body.get("parameters")
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Asset Streamer Routes
+# ============================================================
+
+@router.get("/asset-streamer/stats")
+async def asset_streamer_stats():
+    """Get Asset Streamer system statistics."""
+    try:
+        from sparkai.engine.engine_asset_streamer import get_asset_streamer
+        instance = get_asset_streamer()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/asset-streamer/load")
+async def asset_streamer_load(body: dict):
+    """Load an asset with priority."""
+    try:
+        from sparkai.engine.engine_asset_streamer import get_asset_streamer
+        instance = get_asset_streamer()
+        result = instance.load(
+            asset_path=body.get("asset_path"),
+            priority=body.get("priority")
+        )
+        return {"status": "ok", "asset": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Scene Manager Routes
+# ============================================================
+
+@router.get("/scene-manager/stats")
+async def scene_manager_stats():
+    """Get Scene Manager system statistics."""
+    try:
+        from sparkai.engine.engine_scene_manager import get_scene_manager
+        instance = get_scene_manager()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/scene-manager/create-scene")
+async def scene_manager_create_scene(body: dict):
+    """Create a new scene."""
+    try:
+        from sparkai.engine.engine_scene_manager import get_scene_manager
+        instance = get_scene_manager()
+        result = instance.create_scene(
+            name=body.get("name"),
+            entities=body.get("entities")
+        )
+        return {"status": "ok", "scene": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/scene-manager/load-scene")
+async def scene_manager_load_scene(body: dict):
+    """Load a scene by ID."""
+    try:
+        from sparkai.engine.engine_scene_manager import get_scene_manager
+        instance = get_scene_manager()
+        instance.load_scene(
+            scene_id=body.get("scene_id")
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Game State Analyzer Routes
+# ============================================================
+
+@router.get("/game-state-analyzer/stats")
+async def game_state_analyzer_stats():
+    """Get Game State Analyzer system statistics."""
+    try:
+        from sparkai.engine.engine_game_state_analyzer import get_game_state_analyzer
+        instance = get_game_state_analyzer()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-state-analyzer/analyze")
+async def game_state_analyzer_analyze(body: dict):
+    """Analyze a game state."""
+    try:
+        from sparkai.engine.engine_game_state_analyzer import get_game_state_analyzer
+        instance = get_game_state_analyzer()
+        result = instance.analyze(
+            state_data=body.get("state_data")
+        )
+        return {"status": "ok", "analysis": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Live Feedback Routes
+# ============================================================
+
+@router.get("/live-feedback/stats")
+async def live_feedback_stats():
+    """Get live feedback engine statistics."""
+    try:
+        from sparkai.engine.engine_live_feedback import get_engine_live_feedback
+        instance = get_engine_live_feedback()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/live-feedback/analyze-entity")
+async def live_feedback_analyze_entity(request: Request):
+    """Analyze an entity for feedback."""
+    try:
+        from sparkai.engine.engine_live_feedback import get_engine_live_feedback
+        body = await request.json()
+        instance = get_engine_live_feedback()
+        items = instance.analyze_entity(
+            entity_id=body.get("entity_id", ""),
+            entity_data=body.get("entity_data", {})
+        )
+        return {"status": "ok", "feedback": [item.to_dict() for item in items]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/live-feedback/analyze-scene")
+async def live_feedback_analyze_scene(request: Request):
+    """Analyze a scene for feedback."""
+    try:
+        from sparkai.engine.engine_live_feedback import get_engine_live_feedback
+        body = await request.json()
+        instance = get_engine_live_feedback()
+        items = instance.analyze_scene(
+            scene_id=body.get("scene_id", ""),
+            scene_data=body.get("scene_data", {})
+        )
+        return {"status": "ok", "feedback": [item.to_dict() for item in items]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/live-feedback/analyze-project")
+async def live_feedback_analyze_project(request: Request):
+    """Analyze a project for feedback."""
+    try:
+        from sparkai.engine.engine_live_feedback import get_engine_live_feedback
+        body = await request.json()
+        instance = get_engine_live_feedback()
+        items = instance.analyze_project(project_data=body.get("project_data", {}))
+        return {"status": "ok", "feedback": [item.to_dict() for item in items]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/live-feedback/analyze-runtime")
+async def live_feedback_analyze_runtime(request: Request):
+    """Analyze runtime metrics for feedback."""
+    try:
+        from sparkai.engine.engine_live_feedback import get_engine_live_feedback
+        body = await request.json()
+        instance = get_engine_live_feedback()
+        items = instance.analyze_runtime(runtime_metrics=body.get("runtime_metrics", {}))
+        return {"status": "ok", "feedback": [item.to_dict() for item in items]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/live-feedback/feedback")
+async def live_feedback_get_feedback(request: Request):
+    """Get feedback items with filters."""
+    try:
+        from sparkai.engine.engine_live_feedback import get_engine_live_feedback
+        instance = get_engine_live_feedback()
+        items = instance.get_feedback(
+            category=request.query_params.get("category"),
+            severity=request.query_params.get("severity"),
+            scope=request.query_params.get("scope"),
+            applied=request.query_params.get("applied")
+        )
+        return {"status": "ok", "feedback": [item.to_dict() for item in items[:50]]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/live-feedback/apply-fix")
+async def live_feedback_apply_fix(request: Request):
+    """Apply an auto-fix for a feedback item."""
+    try:
+        from sparkai.engine.engine_live_feedback import get_engine_live_feedback
+        body = await request.json()
+        instance = get_engine_live_feedback()
+        success = instance.apply_fix(feedback_id=body.get("feedback_id", ""))
+        return {"status": "ok", "applied": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Asset Pipeline Routes
+# ============================================================
+
+@router.get("/asset-pipeline/stats")
+async def asset_pipeline_stats():
+    """Get asset pipeline statistics."""
+    try:
+        from sparkai.engine.engine_asset_pipeline import get_asset_pipeline_engine
+        instance = get_asset_pipeline_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/asset-pipeline/create-style-profile")
+async def asset_pipeline_create_style(request: Request):
+    """Create a style profile."""
+    try:
+        from sparkai.engine.engine_asset_pipeline import get_asset_pipeline_engine
+        body = await request.json()
+        instance = get_asset_pipeline_engine()
+        profile = instance.create_style_profile(
+            name=body.get("name", ""),
+            color_palette=body.get("color_palette", ["#000000", "#ffffff"]),
+            theme=body.get("theme", "fantasy"),
+            mood=body.get("mood", "neutral"),
+            art_style=body.get("art_style", "pixel"),
+            resolution=body.get("resolution", "1080p"),
+            pixel_scale=body.get("pixel_scale", 1)
+        )
+        return {"status": "ok", "profile": profile.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/asset-pipeline/request-asset")
+async def asset_pipeline_request_asset(request: Request):
+    """Request asset generation."""
+    try:
+        from sparkai.engine.engine_asset_pipeline import get_asset_pipeline_engine
+        body = await request.json()
+        instance = get_asset_pipeline_engine()
+        req = instance.request_asset(
+            asset_type=body.get("asset_type", "sprite"),
+            name=body.get("name", ""),
+            style_profile_id=body.get("style_profile_id", ""),
+            parameters=body.get("parameters", {})
+        )
+        return {"status": "ok", "request": req.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/asset-pipeline/generate-asset")
+async def asset_pipeline_generate_asset(request: Request):
+    """Generate an asset from a request."""
+    try:
+        from sparkai.engine.engine_asset_pipeline import get_asset_pipeline_engine
+        body = await request.json()
+        instance = get_asset_pipeline_engine()
+        asset = instance.generate_asset(request_id=body.get("request_id", ""))
+        return {"status": "ok", "asset": asset.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/asset-pipeline/style-profiles")
+async def asset_pipeline_style_profiles():
+    """List all style profiles."""
+    try:
+        from sparkai.engine.engine_asset_pipeline import get_asset_pipeline_engine
+        instance = get_asset_pipeline_engine()
+        profiles = instance.list_style_profiles()
+        return {"status": "ok", "profiles": [p.to_dict() for p in profiles]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/asset-pipeline/assets")
+async def asset_pipeline_assets(request: Request):
+    """List generated assets with filters."""
+    try:
+        from sparkai.engine.engine_asset_pipeline import get_asset_pipeline_engine
+        instance = get_asset_pipeline_engine()
+        assets = instance.list_assets(
+            asset_type=request.query_params.get("asset_type"),
+            style_profile_id=request.query_params.get("style_profile_id")
+        )
+        return {"status": "ok", "assets": [a.to_dict() for a in assets]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/asset-pipeline/batch-generate")
+async def asset_pipeline_batch_generate(request: Request):
+    """Batch generate assets."""
+    try:
+        from sparkai.engine.engine_asset_pipeline import get_asset_pipeline_engine
+        body = await request.json()
+        instance = get_asset_pipeline_engine()
+        assets = instance.batch_generate(body.get("requests", []))
+        return {"status": "ok", "assets": [a.to_dict() for a in assets]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
