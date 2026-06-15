@@ -149,7 +149,7 @@ class NetworkSync:
         self._clients: Dict[str, ClientState] = {}
         self._prop_registry: Dict[str, List[SyncProperty]] = {}
         self._on_receive: List[Callable] = []
-        self._lock = threading.Lock()
+        self._lock = threading.RLock()
         self._is_server: bool = True
         self._tick_rate: float = 30.0
         self._last_tick: float = 0.0
