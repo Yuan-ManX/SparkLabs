@@ -31537,3 +31537,187 @@ async def game_designer_designs():
         return {"status": "ok", "designs": [d.to_dict() for d in designs]}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Playtesting Framework Routes
+# ============================================================
+
+@router.get("/playtesting/stats")
+async def playtesting_stats():
+    try:
+        from sparkai.agent.agent_playtesting_framework import get_playtesting_framework
+        instance = get_playtesting_framework()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/playtesting/create-session")
+async def playtesting_create_session(request: Request):
+    try:
+        from sparkai.agent.agent_playtesting_framework import get_playtesting_framework
+        body = await request.json()
+        instance = get_playtesting_framework()
+        session = instance.create_session(body.get("game_id",""), body.get("test_types",[]), body.get("game_config",{}))
+        return {"status": "ok", "session": session.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/playtesting/run-test-suite")
+async def playtesting_run_test_suite(request: Request):
+    try:
+        from sparkai.agent.agent_playtesting_framework import get_playtesting_framework
+        body = await request.json()
+        instance = get_playtesting_framework()
+        report = instance.run_full_test_suite(body.get("session_id",""))
+        return {"status": "ok", "report": report.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/playtesting/report-bug")
+async def playtesting_report_bug(request: Request):
+    try:
+        from sparkai.agent.agent_playtesting_framework import get_playtesting_framework
+        body = await request.json()
+        instance = get_playtesting_framework()
+        bug = instance.report_bug(body.get("session_id",""), body.get("title",""), body.get("description",""), body.get("severity","minor"), body.get("category",""), body.get("reproduction_steps",""), body.get("expected",""), body.get("actual",""), body.get("location",""))
+        return {"status": "ok", "bug": bug.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/playtesting/simulate")
+async def playtesting_simulate(request: Request):
+    try:
+        from sparkai.agent.agent_playtesting_framework import get_playtesting_framework
+        body = await request.json()
+        instance = get_playtesting_framework()
+        result = instance.simulate_gameplay(body.get("session_id",""), body.get("duration_seconds",60))
+        return {"status": "ok", "simulation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Learning Pipeline Routes
+# ============================================================
+
+@router.get("/learning-pipeline/stats")
+async def learning_pipeline_stats():
+    try:
+        from sparkai.agent.agent_learning_pipeline import get_learning_pipeline
+        instance = get_learning_pipeline()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/learning-pipeline/start-session")
+async def learning_pipeline_start_session(request: Request):
+    try:
+        from sparkai.agent.agent_learning_pipeline import get_learning_pipeline
+        body = await request.json()
+        instance = get_learning_pipeline()
+        session_id = instance.start_session(body.get("player_id",""), body.get("metadata",{}))
+        return {"status": "ok", "session_id": session_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/learning-pipeline/record-observation")
+async def learning_pipeline_record(request: Request):
+    try:
+        from sparkai.agent.agent_learning_pipeline import get_learning_pipeline
+        body = await request.json()
+        instance = get_learning_pipeline()
+        obs = instance.record_observation(body.get("session_id",""), body.get("player_id",""), body.get("obs_type","player_action"), body.get("data",{}))
+        return {"status": "ok", "observation": obs.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/learning-pipeline/end-session")
+async def learning_pipeline_end_session(request: Request):
+    try:
+        from sparkai.agent.agent_learning_pipeline import get_learning_pipeline
+        body = await request.json()
+        instance = get_learning_pipeline()
+        result = instance.end_session(body.get("session_id",""), body.get("player_id",""), body.get("outcome",{}))
+        return {"status": "ok", "session": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/learning-pipeline/analyze-patterns")
+async def learning_pipeline_analyze(request: Request):
+    try:
+        from sparkai.agent.agent_learning_pipeline import get_learning_pipeline
+        body = await request.json()
+        instance = get_learning_pipeline()
+        insights = instance.analyze_patterns(body.get("player_id",""))
+        return {"status": "ok", "insights": [i.to_dict() for i in insights]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/learning-pipeline/player-profile")
+async def learning_pipeline_profile(request: Request):
+    try:
+        from sparkai.agent.agent_learning_pipeline import get_learning_pipeline
+        body = await request.json()
+        instance = get_learning_pipeline()
+        profile = instance.build_player_profile(body.get("player_id",""))
+        return {"status": "ok", "profile": profile.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Dynamic Difficulty Routes
+# ============================================================
+
+@router.get("/dynamic-difficulty/stats")
+async def dynamic_difficulty_stats():
+    try:
+        from sparkai.agent.agent_dynamic_difficulty import get_dynamic_difficulty
+        instance = get_dynamic_difficulty()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/dynamic-difficulty/create-profile")
+async def dynamic_difficulty_create_profile(request: Request):
+    try:
+        from sparkai.agent.agent_dynamic_difficulty import get_dynamic_difficulty
+        body = await request.json()
+        instance = get_dynamic_difficulty()
+        profile = instance.create_profile(body.get("player_id",""), body.get("baseline_difficulty",0.5), body.get("strategy","adaptive"))
+        return {"status": "ok", "profile": profile.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/dynamic-difficulty/update-metrics")
+async def dynamic_difficulty_update_metrics(request: Request):
+    try:
+        from sparkai.agent.agent_dynamic_difficulty import get_dynamic_difficulty
+        body = await request.json()
+        instance = get_dynamic_difficulty()
+        metrics = instance.update_metrics(body.get("player_id",""), body.get("metrics_data",{}))
+        return {"status": "ok", "metrics": metrics.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/dynamic-difficulty/adjust")
+async def dynamic_difficulty_adjust(request: Request):
+    try:
+        from sparkai.agent.agent_dynamic_difficulty import get_dynamic_difficulty
+        body = await request.json()
+        instance = get_dynamic_difficulty()
+        adjustments = instance.adjust_difficulty(body.get("player_id",""))
+        return {"status": "ok", "adjustments": [a.to_dict() for a in adjustments], "player_state": body.get("player_id","")}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/dynamic-difficulty/profile")
+async def dynamic_difficulty_get_profile(request: Request):
+    try:
+        from sparkai.agent.agent_dynamic_difficulty import get_dynamic_difficulty
+        instance = get_dynamic_difficulty()
+        profile = instance.get_profile(request.query_params.get("player_id",""))
+        return {"status": "ok", "profile": profile.to_dict() if profile else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
