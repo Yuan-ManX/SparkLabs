@@ -171,7 +171,7 @@ class ProceduralGenerator:
     """Procedural content generation for AI-native game engine."""
 
     _instance: Optional["ProceduralGenerator"] = None
-    _lock = threading.Lock()
+    _lock = threading.RLock()
 
     MAX_LOOT_TABLES = 200
     MAX_MAPS = 50
