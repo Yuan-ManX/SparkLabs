@@ -6320,6 +6320,153 @@ async def asset_pipeline_batch_generate(request: Request):
 
 
 # ============================================================
+# Input Mapping Routes
+# ============================================================
+
+@router.get("/input-mapping/stats")
+async def input_mapping_stats():
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping_engine
+        instance = get_input_mapping_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/input-mapping/create-scheme")
+async def input_mapping_create_scheme(request: Request):
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping_engine
+        body = await request.json()
+        instance = get_input_mapping_engine()
+        scheme = instance.create_control_scheme(body.get("name",""), body.get("device","keyboard"), body.get("preset_name",""))
+        return {"status": "ok", "scheme": scheme.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/input-mapping/bind-action")
+async def input_mapping_bind_action(request: Request):
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping_engine
+        body = await request.json()
+        instance = get_input_mapping_engine()
+        binding = instance.bind_action(body.get("scheme_id",""), body.get("action",""), body.get("primary_input",""), body.get("secondary_input",""), body.get("sensitivity",1.0), body.get("deadzone",0.2), body.get("invert",False))
+        return {"status": "ok", "binding": binding.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/input-mapping/default-scheme")
+async def input_mapping_default_scheme(request: Request):
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping_engine
+        body = await request.json()
+        instance = get_input_mapping_engine()
+        scheme = instance.generate_default_scheme(body.get("device","keyboard"))
+        return {"status": "ok", "scheme": scheme.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/input-mapping/recommend-bindings")
+async def input_mapping_recommend_bindings(request: Request):
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping_engine
+        body = await request.json()
+        instance = get_input_mapping_engine()
+        recommendations = instance.recommend_bindings(body.get("player_behavior",{}))
+        return {"status": "ok", "recommendations": recommendations}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/input-mapping/schemes")
+async def input_mapping_schemes(request: Request):
+    try:
+        from sparkai.engine.engine_input_mapping import get_input_mapping_engine
+        instance = get_input_mapping_engine()
+        schemes = instance.list_schemes(request.query_params.get("device"))
+        return {"status": "ok", "schemes": [s.to_dict() for s in schemes]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Analytics Pipeline Routes
+# ============================================================
+
+@router.get("/analytics-pipeline/stats")
+async def analytics_pipeline_stats():
+    try:
+        from sparkai.engine.engine_analytics_pipeline import get_analytics_pipeline
+        instance = get_analytics_pipeline()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/analytics-pipeline/track")
+async def analytics_pipeline_track(request: Request):
+    try:
+        from sparkai.engine.engine_analytics_pipeline import get_analytics_pipeline
+        body = await request.json()
+        instance = get_analytics_pipeline()
+        event = instance.track_event(body.get("metric_type",""), body.get("value",0), body.get("player_id",""), body.get("session_id",""), body.get("metadata",{}))
+        return {"status": "ok", "event": event.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/analytics-pipeline/track-batch")
+async def analytics_pipeline_track_batch(request: Request):
+    try:
+        from sparkai.engine.engine_analytics_pipeline import get_analytics_pipeline
+        body = await request.json()
+        instance = get_analytics_pipeline()
+        events = instance.track_batch(body.get("events",[]))
+        return {"status": "ok", "events": [e.to_dict() for e in events]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/analytics-pipeline/query")
+async def analytics_pipeline_query(request: Request):
+    try:
+        from sparkai.engine.engine_analytics_pipeline import get_analytics_pipeline
+        body = await request.json()
+        instance = get_analytics_pipeline()
+        result = instance.query_metrics(body.get("metric_type",""), body.get("aggregation","average"), body.get("time_range_start",0), body.get("time_range_end",0), body.get("group_by",""), body.get("filter_conditions",{}))
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/analytics-pipeline/report")
+async def analytics_pipeline_report(request: Request):
+    try:
+        from sparkai.engine.engine_analytics_pipeline import get_analytics_pipeline
+        body = await request.json()
+        instance = get_analytics_pipeline()
+        report = instance.generate_report(body.get("title",""), body.get("metric_types",[]), body.get("time_range_start",0), body.get("time_range_end",0))
+        return {"status": "ok", "report": report.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/analytics-pipeline/dashboard")
+async def analytics_pipeline_dashboard():
+    try:
+        from sparkai.engine.engine_analytics_pipeline import get_analytics_pipeline
+        instance = get_analytics_pipeline()
+        dashboard = instance.get_realtime_dashboard()
+        return {"status": "ok", "dashboard": dashboard}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/analytics-pipeline/detect-anomalies")
+async def analytics_pipeline_anomalies(request: Request):
+    try:
+        from sparkai.engine.engine_analytics_pipeline import get_analytics_pipeline
+        body = await request.json()
+        instance = get_analytics_pipeline()
+        anomalies = instance.detect_anomalies(body.get("metric_type",""), body.get("time_range_start",0), body.get("time_range_end",0))
+        return {"status": "ok", "anomalies": anomalies}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
 # Deployment Orchestrator Routes
 # ============================================================
 
