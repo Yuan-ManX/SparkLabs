@@ -289,7 +289,7 @@ from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_c
 from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
 from sparkai.agent.agent_gateway import AgentGateway, get_gateway
 from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
-from sparkai.engine.engine_network_layer import NetworkLayer, get_network_layer
+from sparkai.engine.engine_network_layer import NetworkLayerEngine, get_network_layer_engine
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
 from sparkai.engine.engine_save_system import SaveSystem, get_save_system
 from sparkai.engine.engine_node_tree import NodeTreeSystem, get_node_tree
@@ -838,7 +838,7 @@ class AgentRuntime:
         self._tool_forge: Optional[AgentToolForge] = None
         self._gateway: Optional[AgentGateway] = None
         self._audio_system: Optional[GameAudioSystem] = None
-        self._network_layer: Optional[NetworkLayer] = None
+        self._network_layer: Optional[NetworkLayerEngine] = None
         self._behavior_runtime: Optional[BehaviorRuntime] = None
         self._save_system: Optional[SaveSystem] = None
         self._session_snapshot: Optional[SessionSnapshotSystem] = None
@@ -1269,7 +1269,7 @@ class AgentRuntime:
             self._tool_forge = get_tool_forge()
             self._gateway = get_gateway()
             self._audio_system = get_audio_system()
-            self._network_layer = get_network_layer()
+            self._network_layer = get_network_layer_engine()
             self._behavior_runtime = get_behavior_runtime()
             self._save_system = get_save_system()
             self._scene_streamer = get_scene_streamer()
