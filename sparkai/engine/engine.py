@@ -127,7 +127,7 @@ from sparkai.engine.performance_overlay import PerformanceOverlay, get_performan
 from sparkai.engine.engine_scene_streamer import SceneStreamer, get_scene_streamer
 from sparkai.engine.engine_project_exporter import ProjectExporter, get_project_exporter
 from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
-from sparkai.engine.engine_network_layer import NetworkLayer, get_network_layer
+from sparkai.engine.engine_network_layer import NetworkLayerEngine, get_network_layer_engine
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
 from sparkai.engine.engine_save_system import SaveSystem, get_save_system
 from sparkai.engine.engine_node_tree import NodeTreeSystem, get_node_tree
@@ -332,7 +332,7 @@ class SparkEngine:
         self._performance_overlay: PerformanceOverlay = get_performance_overlay()
         self._scene_streamer: SceneStreamer = get_scene_streamer()
         self._project_exporter: ProjectExporter = get_project_exporter()
-        self._network_layer = get_network_layer()
+        self._network_layer = get_network_layer_engine()
         self._behavior_runtime = get_behavior_runtime()
         self._node_tree = get_node_tree()
         self._extension_registry = get_extension_registry()
