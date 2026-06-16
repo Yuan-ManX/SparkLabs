@@ -165,7 +165,7 @@ from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_an
 from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
 from sparkai.agent.agent_player_modeler import PlayerModeler, get_player_modeler
 from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
-from sparkai.engine.engine_network_layer import NetworkLayer, get_network_layer
+from sparkai.engine.engine_network_layer import NetworkLayerEngine, get_network_layer_engine
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
 from sparkai.engine.engine_save_system import SaveSystem, get_save_system
 from sparkai.engine.engine_node_tree import NodeTreeSystem, get_node_tree, SceneDefinition
@@ -3482,7 +3482,7 @@ _balance_analyzer = get_balance_analyzer()
 _narrative_composer = get_narrative_composer()
 _player_modeler = get_player_modeler()
 _audio_system = get_audio_system()
-_network_layer = get_network_layer()
+_network_layer = get_network_layer_engine()
 _behavior_runtime = get_behavior_runtime()
 _save_system = get_save_system()
 _node_tree = get_node_tree()
@@ -3691,7 +3691,7 @@ def _init_new_subsystems():
     _narrative_composer = get_narrative_composer()
     _player_modeler = get_player_modeler()
     _audio_system = get_audio_system()
-    _network_layer = get_network_layer()
+    _network_layer = get_network_layer_engine()
     _behavior_runtime = get_behavior_runtime()
     _save_system = get_save_system()
     _node_tree = get_node_tree()
@@ -31535,6 +31535,210 @@ async def game_designer_designs():
         instance = get_game_designer()
         designs = instance.list_designs()
         return {"status": "ok", "designs": [d.to_dict() for d in designs]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Dialogue System Routes
+# ============================================================
+
+@router.get("/dialogue-system/stats")
+async def dialogue_system_stats():
+    try:
+        from sparkai.agent.agent_dialogue_system import get_dialogue_system
+        instance = get_dialogue_system()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/dialogue-system/create-npc")
+async def dialogue_system_create_npc(request: Request):
+    try:
+        from sparkai.agent.agent_dialogue_system import get_dialogue_system
+        body = await request.json()
+        instance = get_dialogue_system()
+        npc = instance.create_npc(body.get("name",""), body.get("role",""), body.get("style","friendly"), body.get("traits",[]), body.get("background",""), body.get("knowledge_topics",[]), body.get("speech_patterns",[]))
+        return {"status": "ok", "npc": npc.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/dialogue-system/create-dialogue-tree")
+async def dialogue_system_create_tree(request: Request):
+    try:
+        from sparkai.agent.agent_dialogue_system import get_dialogue_system
+        body = await request.json()
+        instance = get_dialogue_system()
+        tree = instance.create_dialogue_tree(body.get("npc_id",""), body.get("title",""), body.get("context",{}))
+        return {"status": "ok", "tree": tree.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/dialogue-system/start-conversation")
+async def dialogue_system_start_conversation(request: Request):
+    try:
+        from sparkai.agent.agent_dialogue_system import get_dialogue_system
+        body = await request.json()
+        instance = get_dialogue_system()
+        session = instance.start_conversation(body.get("player_id",""), body.get("npc_id",""), body.get("tree_id",""))
+        return {"status": "ok", "session": session.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/dialogue-system/generate-dialogue")
+async def dialogue_system_generate_dialogue(request: Request):
+    try:
+        from sparkai.agent.agent_dialogue_system import get_dialogue_system
+        body = await request.json()
+        instance = get_dialogue_system()
+        text = instance.generate_dialogue(body.get("npc_id",""), body.get("context",{}), body.get("tone","neutral"))
+        return {"status": "ok", "dialogue": text}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/dialogue-system/npcs")
+async def dialogue_system_npcs():
+    try:
+        from sparkai.agent.agent_dialogue_system import get_dialogue_system
+        instance = get_dialogue_system()
+        npcs = instance.list_npcs()
+        return {"status": "ok", "npcs": [n.to_dict() for n in npcs]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Quest Generator Routes
+# ============================================================
+
+@router.get("/quest-generator/stats")
+async def quest_generator_stats():
+    try:
+        from sparkai.agent.agent_quest_generator import get_quest_generator
+        instance = get_quest_generator()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/quest-generator/create-quest")
+async def quest_generator_create_quest(request: Request):
+    try:
+        from sparkai.agent.agent_quest_generator import get_quest_generator
+        body = await request.json()
+        instance = get_quest_generator()
+        quest = instance.create_quest(body.get("title",""), body.get("quest_type","side_quest"), body.get("difficulty","moderate"), body.get("giver_npc_id",""), body.get("description",""), body.get("location",""))
+        return {"status": "ok", "quest": quest.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/quest-generator/random-quest")
+async def quest_generator_random_quest(request: Request):
+    try:
+        from sparkai.agent.agent_quest_generator import get_quest_generator
+        body = await request.json()
+        instance = get_quest_generator()
+        quest = instance.generate_random_quest(body.get("difficulty","moderate"), body.get("location",""))
+        return {"status": "ok", "quest": quest.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/quest-generator/quest-chain")
+async def quest_generator_quest_chain(request: Request):
+    try:
+        from sparkai.agent.agent_quest_generator import get_quest_generator
+        body = await request.json()
+        instance = get_quest_generator()
+        chain = instance.generate_quest_chain(body.get("name",""), body.get("quest_type","side_quest"), body.get("count",3), body.get("difficulty_progression",True), body.get("story_theme",""))
+        return {"status": "ok", "chain": chain.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/quest-generator/validate")
+async def quest_generator_validate(request: Request):
+    try:
+        from sparkai.agent.agent_quest_generator import get_quest_generator
+        body = await request.json()
+        instance = get_quest_generator()
+        result = instance.validate_quest(body.get("quest_id",""))
+        return {"status": "ok", "validation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/quest-generator/quests")
+async def quest_generator_quests(request: Request):
+    try:
+        from sparkai.agent.agent_quest_generator import get_quest_generator
+        instance = get_quest_generator()
+        quests = instance.list_quests(request.query_params.get("quest_type"), request.query_params.get("difficulty"))
+        return {"status": "ok", "quests": [q.to_dict() for q in quests]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Tutorial Designer Routes
+# ============================================================
+
+@router.get("/tutorial-designer/stats")
+async def tutorial_designer_stats():
+    try:
+        from sparkai.agent.agent_tutorial_designer import get_tutorial_designer
+        instance = get_tutorial_designer()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/tutorial-designer/create-module")
+async def tutorial_designer_create_module(request: Request):
+    try:
+        from sparkai.agent.agent_tutorial_designer import get_tutorial_designer
+        body = await request.json()
+        instance = get_tutorial_designer()
+        module = instance.create_module(body.get("title",""), body.get("topic",""), body.get("tutorial_type","interactive"), body.get("learning_style","adaptive"), body.get("skill_level","beginner"), body.get("description",""), body.get("learning_objectives",[]))
+        return {"status": "ok", "module": module.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/tutorial-designer/adaptive-tutorial")
+async def tutorial_designer_adaptive_tutorial(request: Request):
+    try:
+        from sparkai.agent.agent_tutorial_designer import get_tutorial_designer
+        body = await request.json()
+        instance = get_tutorial_designer()
+        module = instance.generate_adaptive_tutorial(body.get("player_id",""), body.get("topic",""), body.get("game_context",{}))
+        return {"status": "ok", "module": module.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/tutorial-designer/assess-skill")
+async def tutorial_designer_assess_skill(request: Request):
+    try:
+        from sparkai.agent.agent_tutorial_designer import get_tutorial_designer
+        body = await request.json()
+        instance = get_tutorial_designer()
+        level = instance.assess_player_skill(body.get("player_id",""), body.get("game_data",{}))
+        return {"status": "ok", "skill_level": str(level.value) if hasattr(level, 'value') else str(level)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/tutorial-designer/recommend")
+async def tutorial_designer_recommend(request: Request):
+    try:
+        from sparkai.agent.agent_tutorial_designer import get_tutorial_designer
+        body = await request.json()
+        instance = get_tutorial_designer()
+        modules = instance.recommend_tutorials(body.get("player_id",""), body.get("skill_level","beginner"), body.get("topic",""))
+        return {"status": "ok", "modules": [m.to_dict() for m in modules]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/tutorial-designer/modules")
+async def tutorial_designer_modules(request: Request):
+    try:
+        from sparkai.agent.agent_tutorial_designer import get_tutorial_designer
+        instance = get_tutorial_designer()
+        modules = instance.list_modules(request.query_params.get("topic"), request.query_params.get("skill_level"), request.query_params.get("tutorial_type"))
+        return {"status": "ok", "modules": [m.to_dict() for m in modules]}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
