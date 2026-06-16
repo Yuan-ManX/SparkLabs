@@ -4248,8 +4248,8 @@ async def websocket_endpoint(websocket: WebSocket):
                 elif msg_type == "network_layer":
                     sub = data.get("subtype", "stats")
                     try:
-                        from sparkai.engine.engine_network_layer import get_network_layer
-                        net = get_network_layer()
+                        from sparkai.engine.engine_network_layer import get_network_layer_engine
+                        net = get_network_layer_engine()
                         if sub == "stats":
                             await manager.send_to_client(client_id, {"type": "network_layer_stats", "data": net.get_stats()})
                         elif sub == "host":
