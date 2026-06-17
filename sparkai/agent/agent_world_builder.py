@@ -1,653 +1,664 @@
 """
 SparkLabs Agent - World Builder
 
-AI-driven world building system for terrain, biome, and environmental design.
-Generates procedurally coherent worlds with region definitions, climate
-distribution, biome profiles, settlement placement, trade routes, landmarks,
-and world lore.
+AI-driven world building system for the AI-native game engine.
+Generates game worlds with biomes, terrain, points of interest,
+population distribution, and environmental storytelling.
+
+The WorldBuilderEngine creates diverse, interconnected worlds
+with logical biome placement, appropriate terrain features,
+population distribution based on habitability, and danger level
+progression across regions.
 
 Architecture:
-  AgentWorldBuilder (Singleton)
-    |-- Region Generator (terrain types, climate zones, fertility)
-    |-- Biome Engine (flora, fauna, soil, threat, resource profiles)
-    |-- Settlement Placer (strategic village/town/city placement)
-    |-- Trade Network (route generation and adjacency graph)
-    |-- Landmark System (natural wonders, ruins, monuments, dungeons, portals)
-    |-- Lore Generator (world history and narrative context)
+  WorldBuilderEngine (Singleton)
+    |-- BiomeType (16 distinct biome categories)
+    |-- TerrainFeature (15 terrain feature types)
+    |-- PointOfInterestType (16 POI categories)
+    |-- WorldRegion (individual region data model)
+    |-- PointOfInterest (location data model)
+    |-- WorldMap (complete world data model)
 """
 
 from __future__ import annotations
 
+import json
 import math
 import random
 import threading
-import time as _time_module
+import time
 import uuid
+from collections import deque
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional, Set, Tuple
 
 
-class TerrainType(Enum):
-    PLAINS = "plains"
-    MOUNTAINS = "mountains"
-    HILLS = "hills"
-    VALLEY = "valley"
-    PLATEAU = "plateau"
-    CANYON = "canyon"
-    MARSH = "marsh"
+# ------------------------------------------------------------------
+# Enums
+# ------------------------------------------------------------------
+
+
+class BiomeType(Enum):
+    """Distinct biome categories for world regions."""
+
+    FOREST = "forest"
     DESERT = "desert"
     TUNDRA = "tundra"
-    VOLCANIC = "volcanic"
-    FOREST = "forest"
-    OCEAN = "ocean"
     SWAMP = "swamp"
+    MOUNTAIN = "mountain"
+    VOLCANIC = "volcanic"
+    OCEAN = "ocean"
+    PLAINS = "plains"
+    JUNGLE = "jungle"
+    TAIGA = "taiga"
+    SAVANNA = "savanna"
     CAVE = "cave"
-    FLOATING_ISLANDS = "floating_islands"
-    CRYSTAL = "crystal"
-    MUSHROOM = "mushroom"
-
-
-class ClimateZone(Enum):
-    TROPICAL = "tropical"
-    SUBTROPICAL = "subtropical"
-    TEMPERATE = "temperate"
-    BOREAL = "boreal"
-    POLAR = "polar"
-    ARID = "arid"
-    MEDITERRANEAN = "mediterranean"
-    SUBPOLAR = "subpolar"
-    CONTINENTAL = "continental"
-
-
-class PopulationDensity(Enum):
-    SPARSE = "sparse"
-    RURAL = "rural"
-    SUBURBAN = "suburban"
     URBAN = "urban"
-    METROPOLITAN = "metropolitan"
+    RUINS = "ruins"
+    CORRUPTED = "corrupted"
+    CELESTIAL = "celestial"
 
 
-class SettlementType(Enum):
+class TerrainFeature(Enum):
+    """Natural terrain features that can appear within regions."""
+
+    RIVER = "river"
+    LAKE = "lake"
+    WATERFALL = "waterfall"
+    CLIFF = "cliff"
+    CANYON = "canyon"
+    VALLEY = "valley"
+    PLATEAU = "plateau"
+    HILL = "hill"
+    DUNE = "dune"
+    GLACIER = "glacier"
+    HOT_SPRING = "hot_spring"
+    GEYSER = "geyser"
+    CRATER = "crater"
+    ARCH = "arch"
+    PILLAR = "pillar"
+
+
+class PointOfInterestType(Enum):
+    """Categories of points of interest placed within regions."""
+
     VILLAGE = "village"
     TOWN = "town"
     CITY = "city"
-    CAPITAL = "capital"
-    FORTRESS = "fortress"
-
-
-class LandmarkFeatureType(Enum):
-    NATURAL_WONDER = "natural_wonder"
-    RUIN = "ruin"
-    MONUMENT = "monument"
     DUNGEON = "dungeon"
+    TEMPLE = "temple"
+    RUINS = "ruins"
+    TOWER = "tower"
+    CAMP = "camp"
+    OASIS = "oasis"
     PORTAL = "portal"
+    SHRINE = "shrine"
+    BRIDGE = "bridge"
+    GRAVEYARD = "graveyard"
+    MINE = "mine"
+    LIGHTHOUSE = "lighthouse"
+    OUTPOST = "outpost"
 
 
-TERRAIN_TEMPLATES: Dict[TerrainType, Dict[str, Any]] = {
-    TerrainType.PLAINS: {
-        "base_elevation": (0, 200),
-        "fertility_range": (0.55, 0.95),
-        "resource_types": ["grain", "livestock", "clay", "freshwater"],
-        "travel_modifier": 1.0,
-        "defense_modifier": 0.3,
-    },
-    TerrainType.MOUNTAINS: {
-        "base_elevation": (1500, 5000),
-        "fertility_range": (0.05, 0.25),
-        "resource_types": ["iron", "coal", "gold", "stone", "gems"],
-        "travel_modifier": 3.5,
-        "defense_modifier": 0.9,
-    },
-    TerrainType.HILLS: {
-        "base_elevation": (200, 800),
-        "fertility_range": (0.30, 0.65),
-        "resource_types": ["copper", "stone", "timber", "herbs"],
-        "travel_modifier": 1.6,
-        "defense_modifier": 0.6,
-    },
-    TerrainType.VALLEY: {
-        "base_elevation": (50, 400),
-        "fertility_range": (0.60, 0.90),
-        "resource_types": ["grain", "freshwater", "fruit", "clay"],
-        "travel_modifier": 1.1,
-        "defense_modifier": 0.4,
-    },
-    TerrainType.PLATEAU: {
-        "base_elevation": (600, 2000),
-        "fertility_range": (0.20, 0.50),
-        "resource_types": ["stone", "copper", "herbs", "obsidian"],
-        "travel_modifier": 1.4,
-        "defense_modifier": 0.7,
-    },
-    TerrainType.CANYON: {
-        "base_elevation": (100, 800),
-        "fertility_range": (0.10, 0.40),
-        "resource_types": ["stone", "gems", "clay", "freshwater"],
-        "travel_modifier": 2.2,
-        "defense_modifier": 0.8,
-    },
-    TerrainType.MARSH: {
-        "base_elevation": (0, 50),
-        "fertility_range": (0.40, 0.75),
-        "resource_types": ["peat", "herbs", "fish", "reeds"],
-        "travel_modifier": 2.8,
-        "defense_modifier": 0.5,
-    },
-    TerrainType.DESERT: {
-        "base_elevation": (0, 500),
-        "fertility_range": (0.01, 0.15),
-        "resource_types": ["salt", "glass_sand", "oil", "gems"],
-        "travel_modifier": 2.0,
-        "defense_modifier": 0.2,
-    },
-    TerrainType.TUNDRA: {
-        "base_elevation": (0, 300),
-        "fertility_range": (0.02, 0.20),
-        "resource_types": ["fur", "oil", "iron", "ice"],
-        "travel_modifier": 2.5,
-        "defense_modifier": 0.4,
-    },
-    TerrainType.VOLCANIC: {
-        "base_elevation": (300, 3000),
-        "fertility_range": (0.15, 0.55),
-        "resource_types": ["obsidian", "sulfur", "gems", "iron"],
-        "travel_modifier": 2.3,
-        "defense_modifier": 0.6,
-    },
-    TerrainType.FOREST: {
-        "base_elevation": (50, 600),
-        "fertility_range": (0.50, 0.85),
-        "resource_types": ["timber", "herbs", "berries", "game", "mushrooms"],
-        "travel_modifier": 1.5,
-        "defense_modifier": 0.5,
-    },
-    TerrainType.OCEAN: {
-        "base_elevation": (-5000, -100),
-        "fertility_range": (0.0, 0.0),
-        "resource_types": ["fish", "pearls", "coral", "salt", "oil"],
-        "travel_modifier": 4.0,
-        "defense_modifier": 0.1,
-    },
-    TerrainType.SWAMP: {
-        "base_elevation": (0, 30),
-        "fertility_range": (0.35, 0.70),
-        "resource_types": ["peat", "herbs", "venom", "reeds", "fish"],
-        "travel_modifier": 3.0,
-        "defense_modifier": 0.4,
-    },
-    TerrainType.CAVE: {
-        "base_elevation": (-200, 200),
-        "fertility_range": (0.0, 0.15),
-        "resource_types": ["gems", "crystals", "mushrooms", "iron", "coal"],
-        "travel_modifier": 2.5,
-        "defense_modifier": 0.9,
-    },
-    TerrainType.FLOATING_ISLANDS: {
-        "base_elevation": (500, 3000),
-        "fertility_range": (0.30, 0.70),
-        "resource_types": ["aether_crystals", "cloud_essence", "wind_stone", "rare_herbs"],
-        "travel_modifier": 3.5,
-        "defense_modifier": 0.8,
-    },
-    TerrainType.CRYSTAL: {
-        "base_elevation": (100, 1500),
-        "fertility_range": (0.05, 0.25),
-        "resource_types": ["crystals", "gems", "arcane_dust", "mana_stone"],
-        "travel_modifier": 2.0,
-        "defense_modifier": 0.6,
-    },
-    TerrainType.MUSHROOM: {
-        "base_elevation": (0, 400),
-        "fertility_range": (0.60, 0.95),
-        "resource_types": ["giant_mushrooms", "spores", "mycelium", "bioluminescent_dust"],
-        "travel_modifier": 1.8,
-        "defense_modifier": 0.3,
-    },
+# ------------------------------------------------------------------
+# Lookup Tables
+# ------------------------------------------------------------------
+
+
+# Adjacency rules: which biomes can naturally border each other.
+# Each biome maps to a list of compatible neighboring biomes.
+BIOME_ADJACENCY_RULES: Dict[BiomeType, List[BiomeType]] = {
+    BiomeType.FOREST: [
+        BiomeType.FOREST, BiomeType.PLAINS, BiomeType.MOUNTAIN,
+        BiomeType.SWAMP, BiomeType.JUNGLE, BiomeType.TAIGA,
+        BiomeType.RUINS, BiomeType.RIVER if hasattr(BiomeType, "RIVER") else BiomeType.PLAINS,
+    ],
+    BiomeType.DESERT: [
+        BiomeType.DESERT, BiomeType.PLAINS, BiomeType.MOUNTAIN,
+        BiomeType.SAVANNA, BiomeType.RUINS, BiomeType.VOLCANIC,
+    ],
+    BiomeType.TUNDRA: [
+        BiomeType.TUNDRA, BiomeType.TAIGA, BiomeType.MOUNTAIN,
+        BiomeType.PLAINS, BiomeType.GLACIER if hasattr(BiomeType, "GLACIER") else BiomeType.TUNDRA,
+    ],
+    BiomeType.SWAMP: [
+        BiomeType.SWAMP, BiomeType.FOREST, BiomeType.PLAINS,
+        BiomeType.JUNGLE, BiomeType.RUINS,
+    ],
+    BiomeType.MOUNTAIN: [
+        BiomeType.MOUNTAIN, BiomeType.FOREST, BiomeType.TUNDRA,
+        BiomeType.DESERT, BiomeType.VOLCANIC, BiomeType.CAVE,
+        BiomeType.TAIGA, BiomeType.PLAINS,
+    ],
+    BiomeType.VOLCANIC: [
+        BiomeType.VOLCANIC, BiomeType.MOUNTAIN, BiomeType.DESERT,
+        BiomeType.CORRUPTED, BiomeType.CAVE,
+    ],
+    BiomeType.OCEAN: [
+        BiomeType.OCEAN, BiomeType.PLAINS, BiomeType.DESERT,
+        BiomeType.SWAMP, BiomeType.TUNDRA, BiomeType.FOREST,
+    ],
+    BiomeType.PLAINS: [
+        BiomeType.PLAINS, BiomeType.FOREST, BiomeType.DESERT,
+        BiomeType.MOUNTAIN, BiomeType.SWAMP, BiomeType.SAVANNA,
+        BiomeType.TUNDRA, BiomeType.URBAN, BiomeType.RUINS,
+        BiomeType.OCEAN,
+    ],
+    BiomeType.JUNGLE: [
+        BiomeType.JUNGLE, BiomeType.FOREST, BiomeType.SWAMP,
+        BiomeType.PLAINS, BiomeType.RUINS, BiomeType.MOUNTAIN,
+    ],
+    BiomeType.TAIGA: [
+        BiomeType.TAIGA, BiomeType.FOREST, BiomeType.TUNDRA,
+        BiomeType.MOUNTAIN, BiomeType.PLAINS,
+    ],
+    BiomeType.SAVANNA: [
+        BiomeType.SAVANNA, BiomeType.PLAINS, BiomeType.DESERT,
+        BiomeType.MOUNTAIN, BiomeType.FOREST,
+    ],
+    BiomeType.CAVE: [
+        BiomeType.CAVE, BiomeType.MOUNTAIN, BiomeType.VOLCANIC,
+        BiomeType.RUINS, BiomeType.CORRUPTED,
+    ],
+    BiomeType.URBAN: [
+        BiomeType.URBAN, BiomeType.PLAINS, BiomeType.FOREST,
+        BiomeType.RUINS, BiomeType.OCEAN,
+    ],
+    BiomeType.RUINS: [
+        BiomeType.RUINS, BiomeType.DESERT, BiomeType.PLAINS,
+        BiomeType.FOREST, BiomeType.SWAMP, BiomeType.URBAN,
+        BiomeType.CORRUPTED, BiomeType.CAVE, BiomeType.JUNGLE,
+    ],
+    BiomeType.CORRUPTED: [
+        BiomeType.CORRUPTED, BiomeType.RUINS, BiomeType.VOLCANIC,
+        BiomeType.CAVE, BiomeType.SWAMP, BiomeType.DESERT,
+    ],
+    BiomeType.CELESTIAL: [
+        BiomeType.CELESTIAL, BiomeType.MOUNTAIN, BiomeType.PLAINS,
+        BiomeType.CAVE, BiomeType.RUINS,
+    ],
 }
 
-CLIMATE_PROFILES: Dict[ClimateZone, Dict[str, Any]] = {
-    ClimateZone.TROPICAL: {
-        "temperature_range": (24.0, 35.0),
-        "precipitation_range": (1500, 4000),
-        "flora_types": ["rainforest_canopy", "tropical_hardwoods", "bamboo", "vines"],
-        "fauna_types": ["tropical_birds", "primates", "large_felines", "amphibians"],
-        "soil_types": ["laterite", "tropical_loam"],
-        "threat_base": 0.6,
-    },
-    ClimateZone.SUBTROPICAL: {
-        "temperature_range": (18.0, 30.0),
-        "precipitation_range": (800, 2000),
-        "flora_types": ["broadleaf_evergreens", "citrus_groves", "ferns", "cycads"],
-        "fauna_types": ["reptiles", "songbirds", "small_mammals", "insects"],
-        "soil_types": ["red_earth", "subtropical_clay"],
-        "threat_base": 0.4,
-    },
-    ClimateZone.TEMPERATE: {
-        "temperature_range": (0.0, 25.0),
-        "precipitation_range": (500, 1500),
-        "flora_types": ["deciduous_forests", "grasslands", "oak_groves", "meadow_wildflowers"],
-        "fauna_types": ["deer", "wolves", "raptors", "rodents"],
-        "soil_types": ["brown_earth", "chernozem"],
-        "threat_base": 0.35,
-    },
-    ClimateZone.BOREAL: {
-        "temperature_range": (-15.0, 10.0),
-        "precipitation_range": (300, 800),
-        "flora_types": ["coniferous_forests", "taiga_scrub", "mosses", "lichens"],
-        "fauna_types": ["bears", "moose", "lynx", "winter_birds"],
-        "soil_types": ["podzol", "permafrost_margin"],
-        "threat_base": 0.45,
-    },
-    ClimateZone.POLAR: {
-        "temperature_range": (-40.0, 0.0),
-        "precipitation_range": (50, 300),
-        "flora_types": ["tundra_scrub", "mosses", "lichens", "hardy_grasses"],
-        "fauna_types": ["polar_bears", "seals", "arctic_foxes", "migratory_birds"],
-        "soil_types": ["permafrost", "glacial_till"],
-        "threat_base": 0.7,
-    },
-    ClimateZone.ARID: {
-        "temperature_range": (10.0, 45.0),
-        "precipitation_range": (10, 250),
-        "flora_types": ["cacti", "succulents", "desert_scrub", "drought_grasses"],
-        "fauna_types": ["scorpions", "snakes", "camels", "desert_foxes"],
-        "soil_types": ["aridisol", "sand_dunes"],
-        "threat_base": 0.55,
-    },
-    ClimateZone.MEDITERRANEAN: {
-        "temperature_range": (8.0, 30.0),
-        "precipitation_range": (400, 900),
-        "flora_types": ["olive_groves", "vineyards", "evergreen_oaks", "aromatic_herbs"],
-        "fauna_types": ["goats", "wild_boar", "eagles", "lizards"],
-        "soil_types": ["terra_rossa", "calcareous_loam"],
-        "threat_base": 0.25,
-    },
-    ClimateZone.SUBPOLAR: {
-        "temperature_range": (-10.0, 10.0),
-        "precipitation_range": (200, 700),
-        "flora_types": ["conifers", "mosses", "lichens", "hardy_shrubs"],
-        "fauna_types": ["wolves", "moose", "bears", "arctic_foxes"],
-        "soil_types": ["podzol", "permafrost_loam"],
-        "threat_base": 0.45,
-    },
-    ClimateZone.CONTINENTAL: {
-        "temperature_range": (-5.0, 25.0),
-        "precipitation_range": (500, 1200),
-        "flora_types": ["deciduous_trees", "prairie_grasses", "wildflowers", "shrubs"],
-        "fauna_types": ["deer", "bison", "wolves", "eagles"],
-        "soil_types": ["chernozem", "loess"],
-        "threat_base": 0.30,
-    },
+
+# Terrain features that naturally occur in each biome.
+BIOME_TERRAIN_FEATURES: Dict[BiomeType, List[TerrainFeature]] = {
+    BiomeType.FOREST: [
+        TerrainFeature.RIVER, TerrainFeature.LAKE, TerrainFeature.HILL,
+        TerrainFeature.VALLEY, TerrainFeature.WATERFALL, TerrainFeature.CLIFF,
+    ],
+    BiomeType.DESERT: [
+        TerrainFeature.DUNE, TerrainFeature.CANYON, TerrainFeature.PLATEAU,
+        TerrainFeature.CRATER, TerrainFeature.ARCH, TerrainFeature.PILLAR,
+    ],
+    BiomeType.TUNDRA: [
+        TerrainFeature.GLACIER, TerrainFeature.PLATEAU, TerrainFeature.LAKE,
+        TerrainFeature.HILL, TerrainFeature.CLIFF,
+    ],
+    BiomeType.SWAMP: [
+        TerrainFeature.LAKE, TerrainFeature.RIVER, TerrainFeature.HOT_SPRING,
+        TerrainFeature.VALLEY, TerrainFeature.PILLAR,
+    ],
+    BiomeType.MOUNTAIN: [
+        TerrainFeature.CLIFF, TerrainFeature.WATERFALL, TerrainFeature.CANYON,
+        TerrainFeature.CRATER, TerrainFeature.ARCH, TerrainFeature.PLATEAU,
+        TerrainFeature.GEYSER, TerrainFeature.HOT_SPRING,
+    ],
+    BiomeType.VOLCANIC: [
+        TerrainFeature.GEYSER, TerrainFeature.CRATER, TerrainFeature.CLIFF,
+        TerrainFeature.HOT_SPRING, TerrainFeature.PLATEAU,
+    ],
+    BiomeType.OCEAN: [
+        TerrainFeature.CLIFF, TerrainFeature.ARCH, TerrainFeature.PILLAR,
+        TerrainFeature.CRATER, TerrainFeature.LAKE,
+    ],
+    BiomeType.PLAINS: [
+        TerrainFeature.RIVER, TerrainFeature.LAKE, TerrainFeature.HILL,
+        TerrainFeature.VALLEY, TerrainFeature.PLATEAU,
+    ],
+    BiomeType.JUNGLE: [
+        TerrainFeature.RIVER, TerrainFeature.WATERFALL, TerrainFeature.VALLEY,
+        TerrainFeature.LAKE, TerrainFeature.HILL,
+    ],
+    BiomeType.TAIGA: [
+        TerrainFeature.LAKE, TerrainFeature.RIVER, TerrainFeature.HILL,
+        TerrainFeature.GLACIER, TerrainFeature.VALLEY,
+    ],
+    BiomeType.SAVANNA: [
+        TerrainFeature.PLATEAU, TerrainFeature.HILL, TerrainFeature.VALLEY,
+        TerrainFeature.RIVER, TerrainFeature.ARCH,
+    ],
+    BiomeType.CAVE: [
+        TerrainFeature.LAKE, TerrainFeature.PILLAR, TerrainFeature.CLIFF,
+        TerrainFeature.HOT_SPRING, TerrainFeature.CRATER,
+    ],
+    BiomeType.URBAN: [
+        TerrainFeature.RIVER, TerrainFeature.LAKE, TerrainFeature.HILL,
+        TerrainFeature.PLATEAU,
+    ],
+    BiomeType.RUINS: [
+        TerrainFeature.CRATER, TerrainFeature.ARCH, TerrainFeature.PILLAR,
+        TerrainFeature.CANYON, TerrainFeature.CLIFF,
+    ],
+    BiomeType.CORRUPTED: [
+        TerrainFeature.CRATER, TerrainFeature.GEYSER, TerrainFeature.CLIFF,
+        TerrainFeature.HOT_SPRING, TerrainFeature.PILLAR,
+    ],
+    BiomeType.CELESTIAL: [
+        TerrainFeature.ARCH, TerrainFeature.PILLAR, TerrainFeature.PLATEAU,
+        TerrainFeature.CRATER, TerrainFeature.WATERFALL,
+    ],
 }
 
-SETTLEMENT_TYPE_TEMPLATES: Dict[SettlementType, Dict[str, Any]] = {
-    SettlementType.VILLAGE: {
-        "min_population": 50,
-        "max_population": 500,
-        "economy_types": ["subsistence_farming", "fishing", "hunting", "herding"],
-        "defense_rating": 0.15,
-        "trade_route_capacity": 1,
-    },
-    SettlementType.TOWN: {
-        "min_population": 500,
-        "max_population": 5000,
-        "economy_types": ["crafting", "market_trade", "mining", "lumber"],
-        "defense_rating": 0.35,
-        "trade_route_capacity": 3,
-    },
-    SettlementType.CITY: {
-        "min_population": 5000,
-        "max_population": 50000,
-        "economy_types": ["manufacturing", "commerce", "education", "governance"],
-        "defense_rating": 0.60,
-        "trade_route_capacity": 6,
-    },
-    SettlementType.CAPITAL: {
-        "min_population": 20000,
-        "max_population": 200000,
-        "economy_types": ["governance", "high_commerce", "culture", "military_command"],
-        "defense_rating": 0.85,
-        "trade_route_capacity": 10,
-    },
-    SettlementType.FORTRESS: {
-        "min_population": 200,
-        "max_population": 3000,
-        "economy_types": ["military", "armory", "garrison", "prison"],
-        "defense_rating": 0.95,
-        "trade_route_capacity": 1,
-    },
+
+# Points of interest that can appear in each biome.
+BIOME_POI_AFFINITY: Dict[BiomeType, List[PointOfInterestType]] = {
+    BiomeType.FOREST: [
+        PointOfInterestType.VILLAGE, PointOfInterestType.TEMPLE,
+        PointOfInterestType.CAMP, PointOfInterestType.SHRINE,
+        PointOfInterestType.OUTPOST, PointOfInterestType.TOWER,
+        PointOfInterestType.RUINS,
+    ],
+    BiomeType.DESERT: [
+        PointOfInterestType.OASIS, PointOfInterestType.RUINS,
+        PointOfInterestType.CAMP, PointOfInterestType.TEMPLE,
+        PointOfInterestType.MINE, PointOfInterestType.GRAVEYARD,
+    ],
+    BiomeType.TUNDRA: [
+        PointOfInterestType.OUTPOST, PointOfInterestType.CAMP,
+        PointOfInterestType.RUINS, PointOfInterestType.MINE,
+        PointOfInterestType.SHRINE,
+    ],
+    BiomeType.SWAMP: [
+        PointOfInterestType.RUINS, PointOfInterestType.SHRINE,
+        PointOfInterestType.CAMP, PointOfInterestType.TEMPLE,
+        PointOfInterestType.GRAVEYARD,
+    ],
+    BiomeType.MOUNTAIN: [
+        PointOfInterestType.MINE, PointOfInterestType.TOWER,
+        PointOfInterestType.TEMPLE, PointOfInterestType.DUNGEON,
+        PointOfInterestType.BRIDGE, PointOfInterestType.OUTPOST,
+        PointOfInterestType.SHRINE,
+    ],
+    BiomeType.VOLCANIC: [
+        PointOfInterestType.DUNGEON, PointOfInterestType.MINE,
+        PointOfInterestType.PORTAL, PointOfInterestType.TEMPLE,
+        PointOfInterestType.RUINS,
+    ],
+    BiomeType.OCEAN: [
+        PointOfInterestType.LIGHTHOUSE, PointOfInterestType.PORTAL,
+        PointOfInterestType.OUTPOST, PointOfInterestType.RUINS,
+        PointOfInterestType.SHRINE,
+    ],
+    BiomeType.PLAINS: [
+        PointOfInterestType.VILLAGE, PointOfInterestType.TOWN,
+        PointOfInterestType.CITY, PointOfInterestType.CAMP,
+        PointOfInterestType.BRIDGE, PointOfInterestType.OUTPOST,
+        PointOfInterestType.TOWER, PointOfInterestType.GRAVEYARD,
+    ],
+    BiomeType.JUNGLE: [
+        PointOfInterestType.TEMPLE, PointOfInterestType.RUINS,
+        PointOfInterestType.CAMP, PointOfInterestType.SHRINE,
+        PointOfInterestType.DUNGEON,
+    ],
+    BiomeType.TAIGA: [
+        PointOfInterestType.OUTPOST, PointOfInterestType.CAMP,
+        PointOfInterestType.VILLAGE, PointOfInterestType.SHRINE,
+        PointOfInterestType.TOWER,
+    ],
+    BiomeType.SAVANNA: [
+        PointOfInterestType.VILLAGE, PointOfInterestType.CAMP,
+        PointOfInterestType.OASIS, PointOfInterestType.OUTPOST,
+        PointOfInterestType.RUINS,
+    ],
+    BiomeType.CAVE: [
+        PointOfInterestType.DUNGEON, PointOfInterestType.MINE,
+        PointOfInterestType.SHRINE, PointOfInterestType.RUINS,
+        PointOfInterestType.GRAVEYARD, PointOfInterestType.PORTAL,
+    ],
+    BiomeType.URBAN: [
+        PointOfInterestType.CITY, PointOfInterestType.TOWN,
+        PointOfInterestType.TEMPLE, PointOfInterestType.BRIDGE,
+        PointOfInterestType.TOWER, PointOfInterestType.GRAVEYARD,
+    ],
+    BiomeType.RUINS: [
+        PointOfInterestType.RUINS, PointOfInterestType.DUNGEON,
+        PointOfInterestType.TEMPLE, PointOfInterestType.GRAVEYARD,
+        PointOfInterestType.PORTAL, PointOfInterestType.SHRINE,
+    ],
+    BiomeType.CORRUPTED: [
+        PointOfInterestType.DUNGEON, PointOfInterestType.PORTAL,
+        PointOfInterestType.RUINS, PointOfInterestType.GRAVEYARD,
+        PointOfInterestType.TEMPLE,
+    ],
+    BiomeType.CELESTIAL: [
+        PointOfInterestType.SHRINE, PointOfInterestType.TEMPLE,
+        PointOfInterestType.PORTAL, PointOfInterestType.TOWER,
+        PointOfInterestType.RUINS,
+    ],
 }
 
-FACTION_POOL: List[str] = [
-    "Iron Dominion",
-    "Azure Concord",
-    "Shadow Syndicate",
-    "Emerald Enclave",
-    "Frostborn Covenant",
-    "Sunstone Coalition",
-    "Verdant Collective",
-    "Obsidian Pact",
-    "Celestial Order",
-    "Thornwood Alliance",
-]
 
-LANDMARK_NAME_PREFIXES: List[str] = [
-    "Crimson", "Shattered", "Eternal", "Frozen", "Gilded",
-    "Howling", "Jade", "Lost", "Obsidian", "Radiant",
-    "Silent", "Thundering", "Twilight", "Veiled", "Whispering",
-]
+# Population ranges per biome based on habitability.
+# (min, max) population per square kilometer.
+BIOME_POPULATION_DENSITY: Dict[BiomeType, Tuple[float, float]] = {
+    BiomeType.FOREST: (5.0, 40.0),
+    BiomeType.DESERT: (0.1, 5.0),
+    BiomeType.TUNDRA: (0.5, 8.0),
+    BiomeType.SWAMP: (1.0, 15.0),
+    BiomeType.MOUNTAIN: (0.2, 8.0),
+    BiomeType.VOLCANIC: (0.0, 2.0),
+    BiomeType.OCEAN: (0.0, 0.5),
+    BiomeType.PLAINS: (10.0, 80.0),
+    BiomeType.JUNGLE: (2.0, 25.0),
+    BiomeType.TAIGA: (1.0, 12.0),
+    BiomeType.SAVANNA: (3.0, 30.0),
+    BiomeType.CAVE: (0.0, 3.0),
+    BiomeType.URBAN: (50.0, 500.0),
+    BiomeType.RUINS: (0.5, 10.0),
+    BiomeType.CORRUPTED: (0.0, 1.0),
+    BiomeType.CELESTIAL: (0.1, 5.0),
+}
 
-LANDMARK_NAME_SUFFIXES: List[str] = [
-    "Peak", "Depths", "Spire", "Cradle", "Gate",
-    "Expanse", "Grove", "Canyon", "Falls", "Reach",
-    "Maw", "Citadel", "Vale", "Throne", "Abyss",
-]
 
-SETTLEMENT_NAME_PREFIXES: List[str] = [
-    "North", "South", "East", "West", "Old",
-    "New", "Upper", "Lower", "Fort", "Port",
-    "Kings", "Queens", "Grand", "High", "Deep",
-]
+# Base danger level range per biome.
+BIOME_DANGER_LEVELS: Dict[BiomeType, Tuple[float, float]] = {
+    BiomeType.FOREST: (0.1, 0.5),
+    BiomeType.DESERT: (0.2, 0.6),
+    BiomeType.TUNDRA: (0.2, 0.5),
+    BiomeType.SWAMP: (0.3, 0.7),
+    BiomeType.MOUNTAIN: (0.3, 0.7),
+    BiomeType.VOLCANIC: (0.5, 0.95),
+    BiomeType.OCEAN: (0.2, 0.7),
+    BiomeType.PLAINS: (0.05, 0.3),
+    BiomeType.JUNGLE: (0.3, 0.8),
+    BiomeType.TAIGA: (0.2, 0.5),
+    BiomeType.SAVANNA: (0.15, 0.5),
+    BiomeType.CAVE: (0.4, 0.8),
+    BiomeType.URBAN: (0.1, 0.4),
+    BiomeType.RUINS: (0.3, 0.7),
+    BiomeType.CORRUPTED: (0.6, 1.0),
+    BiomeType.CELESTIAL: (0.3, 0.8),
+}
 
-SETTLEMENT_NAME_SUFFIXES: List[str] = [
-    "haven", "shire", "ford", "bridge", "field",
-    "vale", "crest", "watch", "gate", "moor",
-    "wood", "stone", "mere", "holm", "stead",
-]
 
+# Region name generation pools.
 REGION_NAME_PREFIXES: List[str] = [
     "Aether", "Blight", "Crystal", "Dragon", "Elder",
     "Frost", "Gloom", "Hallow", "Iron", "Jade",
     "Kings", "Lunar", "Mist", "Noble", "Opal",
+    "Raven", "Silver", "Storm", "Thorn", "Verdant",
 ]
 
 REGION_NAME_SUFFIXES: List[str] = [
     "Wilds", "Expanse", "Reach", "Frontier", "Blight",
     "Highlands", "Lowlands", "Badlands", "Heartlands", "Marches",
     "Shield", "Falls", "Cradle", "Fringe", "Enclave",
+    "Hollow", "Depths", "Vale", "Steppe", "Moor",
 ]
 
-BIOME_NAME_PREFIXES: List[str] = [
-    "Ancient", "Burning", "Crystal", "Dense", "Emerald",
-    "Frozen", "Golden", "Hidden", "Ivory", "Lush",
-    "Misty", "Shadow", "Silent", "Verdant", "Wild",
-]
+# Descriptive phrases for environmental storytelling.
+REGION_DESCRIPTION_SEGMENTS: Dict[str, List[str]] = {
+    "forest": [
+        "Ancient trees tower overhead, their canopies forming a dense ceiling that filters sunlight into scattered beams.",
+        "The forest floor is carpeted with moss and ferns, muffling footsteps and hiding small creatures.",
+        "Tangled undergrowth and twisting vines create natural corridors between the towering trunks.",
+        "A constant chorus of birdsong and rustling leaves fills the air, broken occasionally by the distant call of something larger.",
+    ],
+    "desert": [
+        "Endless dunes stretch toward the horizon, their ridges sculpted by relentless winds into flowing patterns.",
+        "The sun beats down mercilessly on cracked earth, where only the hardiest life clings to existence.",
+        "Heat shimmers rise from the sand, distorting distant landmarks and playing tricks on weary travelers.",
+        "Scattered rock formations jut from the barren landscape, offering brief respite from the scorching sun.",
+    ],
+    "tundra": [
+        "A frozen expanse stretches in all directions, the permafrost locking the land in an eternal winter grip.",
+        "Sparse vegetation clings to the rocky soil, surviving in the brief window between frosts.",
+        "The wind howls across the open plain, carrying the scent of ice and distant snow.",
+        "Low clouds hang perpetually overhead, casting the landscape in shades of grey and white.",
+    ],
+    "swamp": [
+        "Stagnant water pools among the gnarled roots of ancient trees, the surface occasionally broken by rising bubbles.",
+        "A thick mist hangs over the murky waters, muffling sounds and obscuring vision.",
+        "Twisted mangroves rise from the black water, their roots forming a labyrinthine network.",
+        "The air is heavy with the scent of decay and damp earth, a reminder of the cycle of life and death.",
+    ],
+    "mountain": [
+        "Jagged peaks pierce the sky, their snow-capped summits visible from leagues away.",
+        "Sheer cliff faces and narrow passes make travel treacherous, rewarding only the most determined.",
+        "The thin air carries the sound of distant avalanches and the cry of mountain birds.",
+        "Ancient rock formations tell stories of geological upheaval spanning millennia.",
+    ],
+    "volcanic": [
+        "Rivers of molten rock carve glowing paths down the mountainside, illuminating the ash-choked sky.",
+        "The ground trembles periodically, a reminder of the immense forces churning beneath the surface.",
+        "Sulfur-scented steam vents hiss from cracks in the blackened earth, painting the rocks in yellow and orange.",
+        "Obsidian formations jut from the landscape, their glassy surfaces reflecting the orange glow of distant lava flows.",
+    ],
+    "ocean": [
+        "Waves crash against rocky shores, their rhythm a constant heartbeat of the deep.",
+        "The vast expanse of water stretches beyond sight, its depths hiding secrets older than civilization.",
+        "Salt spray hangs in the air, carried inland by the persistent coastal winds.",
+        "Coral reefs teem with life beneath the surface, a hidden world of color and movement.",
+    ],
+    "plains": [
+        "Rolling grasslands stretch as far as the eye can see, a sea of green swaying in the breeze.",
+        "Scattered groves of trees dot the landscape, providing shade and shelter for travelers and wildlife alike.",
+        "The open sky dominates the horizon, making the world feel vast and full of possibility.",
+        "Wildflowers bloom in season, painting the fields in bursts of color before the cycle begins anew.",
+    ],
+    "jungle": [
+        "Dense vegetation forms a living wall of green, the canopy so thick that the forest floor exists in perpetual twilight.",
+        "The air is thick with humidity and the sounds of countless creatures, from buzzing insects to calling birds.",
+        "Massive buttress roots support trees that have stood for centuries, their trunks disappearing into the canopy above.",
+        "Vibrant flowers and fruit hang from every branch, their colors a stark contrast to the deep greens of the foliage.",
+    ],
+    "taiga": [
+        "Endless rows of conifers march across the landscape, their dark needles softening the harsh northern light.",
+        "The ground is a patchwork of moss, lichen, and fallen needles, absorbing sound into a muffled quiet.",
+        "Clear lakes reflect the sky like mirrors, their waters cold and deep, fed by melting snow.",
+        "The scent of pine permeates the air, sharp and clean, carried by the steady northern breeze.",
+    ],
+    "savanna": [
+        "Scattered trees stand like sentinels over the golden grasslands, their broad canopies casting pools of shade.",
+        "The dry season paints the landscape in amber and gold, while the rains transform it into a verdant paradise.",
+        "Dust devils spin across the open plain, marking the passage of wind across the sun-baked earth.",
+        "Herds of grazing animals dot the horizon, their movements synchronized with the rhythm of the seasons.",
+    ],
+    "cave": [
+        "Darkness presses in from all sides, broken only by the glow of bioluminescent fungi clinging to the walls.",
+        "The sound of dripping water echoes through vast chambers, marking the slow passage of geological time.",
+        "Stalactites and stalagmites form natural pillars, their surfaces glistening with mineral deposits.",
+        "Narrow passages open into grand cathedrals of stone, their ceilings lost in shadow.",
+    ],
+    "urban": [
+        "Towering spires and crowded streets form the heart of civilization, where thousands live and work in close quarters.",
+        "The architecture tells the story of centuries of development, from ancient foundations to modern heights.",
+        "Markets and squares buzz with activity, the constant hum of commerce and conversation filling the air.",
+        "Stone walls and paved roads crisscross the district, connecting neighborhoods and landmarks.",
+    ],
+    "ruins": [
+        "Crumbling walls and toppled columns mark where a great civilization once stood, now reclaimed by nature.",
+        "The silence is heavy with history, broken only by the wind whistling through empty windows.",
+        "Weathered stone bears the faint marks of inscriptions, their meanings lost to time.",
+        "Vines and moss creep over ancient masonry, slowly erasing the boundary between architecture and earth.",
+    ],
+    "corrupted": [
+        "The land itself seems to writhe, twisted into unnatural shapes by forces beyond comprehension.",
+        "A palpable sense of wrongness permeates the air, making skin crawl and hearts race.",
+        "The colors here are muted and sickly, as if the very light has been drained from the world.",
+        "Strange growths and crystalline formations pulse with a dim, malevolent light.",
+    ],
+    "celestial": [
+        "The ground seems to float above the clouds, bathed in an eternal twilight of shifting colors.",
+        "Crystalline structures hum with energy, resonating with frequencies beyond mortal hearing.",
+        "Stars are visible even in the brightest hours, their light seemingly drawn toward this sacred place.",
+        "The air itself feels charged with possibility, as if the boundary between worlds grows thin here.",
+    ],
+}
 
-BIOME_NAME_SUFFIXES: List[str] = [
-    "Woodlands", "Fen", "Thicket", "Grove", "Marsh",
-    "Steppe", "Savanna", "Tundra", "Jungle", "Heath",
-    "Coppice", "Glade", "Bog", "Weald", "Chaparral",
-]
+
+# ------------------------------------------------------------------
+# Dataclasses
+# ------------------------------------------------------------------
 
 
 @dataclass
 class WorldRegion:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    """A single region within a world, defined by its biome, terrain, and population."""
+
+    region_id: str = field(default_factory=lambda: uuid.uuid4().hex)
     name: str = ""
-    terrain_type: TerrainType = TerrainType.PLAINS
-    climate: ClimateZone = ClimateZone.TEMPERATE
-    size_km2: float = 1000.0
-    elevation: float = 0.0
-    fertility: float = 0.5
+    biome: BiomeType = BiomeType.PLAINS
+    size: float = 1000.0
+    terrain_features: List[TerrainFeature] = field(default_factory=list)
+    points_of_interest: List[str] = field(default_factory=list)
+    population: int = 0
+    danger_level: float = 0.3
     resources: List[str] = field(default_factory=list)
-    population_density: PopulationDensity = PopulationDensity.SPARSE
-    biome_signature: str = ""
-    borders: List[str] = field(default_factory=list)
-    landmarks: List[str] = field(default_factory=list)
+    description: str = ""
+    connected_regions: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
-            "name": self.name,
-            "terrain_type": self.terrain_type.value,
-            "climate": self.climate.value,
-            "size_km2": self.size_km2,
-            "elevation": round(self.elevation, 2),
-            "fertility": round(self.fertility, 3),
-            "resources": self.resources,
-            "population_density": self.population_density.value,
-            "biome_signature": self.biome_signature,
-            "borders": self.borders,
-            "landmarks": self.landmarks,
-        }
-
-
-@dataclass
-class BiomeProfile:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = ""
-    temperature_range: Tuple[float, float] = (0.0, 25.0)
-    precipitation_range: Tuple[int, int] = (500, 1500)
-    flora_species: List[str] = field(default_factory=list)
-    fauna_species: List[str] = field(default_factory=list)
-    soil_type: str = "loam"
-    threat_level: float = 0.3
-    resource_richness: float = 0.5
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "temperature_range": list(self.temperature_range),
-            "precipitation_range": list(self.precipitation_range),
-            "flora_species": self.flora_species,
-            "fauna_species": self.fauna_species,
-            "soil_type": self.soil_type,
-            "threat_level": round(self.threat_level, 3),
-            "resource_richness": round(self.resource_richness, 3),
-        }
-
-
-@dataclass
-class SettlementNode:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = ""
-    region_id: str = ""
-    population: int = 100
-    settlement_type: SettlementType = SettlementType.VILLAGE
-    economy_type: str = "subsistence_farming"
-    defenses: float = 0.15
-    trade_routes: List[str] = field(default_factory=list)
-    faction_control: str = ""
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "name": self.name,
             "region_id": self.region_id,
+            "name": self.name,
+            "biome": self.biome.value,
+            "size": self.size,
+            "terrain_features": [tf.value for tf in self.terrain_features],
+            "points_of_interest": list(self.points_of_interest),
             "population": self.population,
-            "settlement_type": self.settlement_type.value,
-            "economy_type": self.economy_type,
-            "defenses": round(self.defenses, 3),
-            "trade_routes": self.trade_routes,
-            "faction_control": self.faction_control,
-        }
-
-
-@dataclass
-class LandmarkFeature:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = ""
-    feature_type: LandmarkFeatureType = LandmarkFeatureType.NATURAL_WONDER
-    region_id: str = ""
-    coordinates: Tuple[float, float] = (0.0, 0.0)
-    discovery_status: str = "undiscovered"
-    lore_description: str = ""
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "feature_type": self.feature_type.value,
-            "region_id": self.region_id,
-            "coordinates": list(self.coordinates),
-            "discovery_status": self.discovery_status,
-            "lore_description": self.lore_description,
-        }
-
-
-@dataclass
-class TradeRoute:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    source_id: str = ""
-    target_id: str = ""
-    distance: float = 0.0
-    hazard_level: float = 0.0
-    goods_flow: List[str] = field(default_factory=list)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "source_id": self.source_id,
-            "target_id": self.target_id,
-            "distance": round(self.distance, 2),
-            "hazard_level": round(self.hazard_level, 2),
-            "goods_flow": self.goods_flow,
+            "danger_level": round(self.danger_level, 3),
+            "resources": list(self.resources),
+            "description": self.description,
+            "connected_regions": list(self.connected_regions),
         }
 
 
 @dataclass
 class WorldMap:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    """A complete world map composed of interconnected regions."""
+
+    map_id: str = field(default_factory=lambda: uuid.uuid4().hex)
     name: str = ""
-    seed: int = 42
-    width: int = 1000
-    height: int = 1000
     regions: List[str] = field(default_factory=list)
-    biomes: List[str] = field(default_factory=list)
-    settlements: List[str] = field(default_factory=list)
-    adjacency_graph: Dict[str, List[str]] = field(default_factory=dict)
-    total_area: float = 1000000.0
-    climate_zones: List[str] = field(default_factory=list)
-    population_centers: List[str] = field(default_factory=list)
-    trade_routes: List[str] = field(default_factory=list)
-    landmarks: List[str] = field(default_factory=list)
+    total_biomes: int = 0
+    world_size: float = 10000.0
+    seed: int = 42
+    description: str = ""
     lore: str = ""
+    created_at: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
+            "map_id": self.map_id,
             "name": self.name,
+            "regions": list(self.regions),
+            "total_biomes": self.total_biomes,
+            "world_size": self.world_size,
             "seed": self.seed,
-            "width": self.width,
-            "height": self.height,
-            "region_count": len(self.regions),
-            "regions": self.regions,
-            "biome_count": len(self.biomes),
-            "biomes": self.biomes,
-            "settlement_count": len(self.settlements),
-            "settlements": self.settlements,
-            "adjacency_graph": self.adjacency_graph,
-            "total_area": self.total_area,
-            "climate_zones": self.climate_zones,
-            "population_centers": self.population_centers,
-            "trade_routes": self.trade_routes,
-            "landmark_count": len(self.landmarks),
-            "landmarks": self.landmarks,
+            "description": self.description,
             "lore": self.lore,
+            "created_at": self.created_at,
         }
 
 
-class AgentWorldBuilder:
-    """AI-driven world building system for terrain, biome, and environmental design.
+@dataclass
+class PointOfInterest:
+    """A point of interest within a world region."""
 
-    Generates complete worlds with coherent region definitions, climate
-    distribution, biome profiles, settlement networks, trade routes,
-    landmark placement, and world lore.
+    poi_id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    name: str = ""
+    poi_type: PointOfInterestType = PointOfInterestType.VILLAGE
+    region_id: str = ""
+    description: str = ""
+    significance: str = "minor"
+    npc_count: int = 0
+    quest_hooks: List[str] = field(default_factory=list)
+    loot_tier: int = 1
+    danger_level: float = 0.1
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "poi_id": self.poi_id,
+            "name": self.name,
+            "poi_type": self.poi_type.value,
+            "region_id": self.region_id,
+            "description": self.description,
+            "significance": self.significance,
+            "npc_count": self.npc_count,
+            "quest_hooks": list(self.quest_hooks),
+            "loot_tier": self.loot_tier,
+            "danger_level": round(self.danger_level, 3),
+        }
+
+
+# ------------------------------------------------------------------
+# WorldBuilderEngine (Singleton)
+# ------------------------------------------------------------------
+
+
+POI_NAME_PREFIXES: List[str] = [
+    "Crimson", "Shattered", "Eternal", "Frozen", "Gilded",
+    "Howling", "Jade", "Lost", "Obsidian", "Radiant",
+    "Silent", "Thundering", "Twilight", "Veiled", "Whispering",
+    "Iron", "Silver", "Golden", "Shadow", "Storm",
+]
+
+POI_NAME_SUFFIXES: List[str] = [
+    "Keep", "Hollow", "Spire", "Cradle", "Gate",
+    "Expanse", "Grove", "Canyon", "Falls", "Reach",
+    "Maw", "Citadel", "Vale", "Throne", "Abyss",
+    "Sanctuary", "Crossing", "Haven", "Refuge", "Watch",
+]
+
+QUEST_HOOK_TEMPLATES: List[str] = [
+    "A mysterious disappearance has the locals on edge.",
+    "Ancient treasure is rumored to be hidden nearby.",
+    "Travelers have been attacked by unknown creatures in the area.",
+    "A long-lost artifact was recently unearthed by a storm.",
+    "Strange lights have been seen in the night sky.",
+    "The local leader seeks aid with a growing threat.",
+    "A reclusive scholar needs rare materials for research.",
+    "Bandits have been raiding supply caravans along the road.",
+    "A ghostly figure has been spotted near the old ruins.",
+    "The water supply has been tainted by an unknown source.",
+    "A messenger carrying urgent news has gone missing.",
+    "Rival factions are on the brink of open conflict.",
+    "An ancient seal has been weakening, causing strange phenomena.",
+    "A festival is approaching, but key preparations are disrupted.",
+    "Survivors of a shipwreck need escort to safety.",
+    "A rare creature has been spotted, drawing hunters and scholars.",
+    "The crops have been failing for three seasons straight.",
+    "A forgotten shrine has been discovered deep in the wilderness.",
+    "Whispers of a secret society reach the ears of the curious.",
+    "A lone tower stands abandoned, yet lights flicker in its windows.",
+]
+
+
+class WorldBuilderEngine:
+    """AI-driven world building system for the game engine.
+
+    Generates complete game worlds with diverse biomes, terrain features,
+    points of interest, population distribution, and environmental
+    storytelling. Worlds are interconnected, validated for coherence,
+    and designed to support narrative gameplay.
+
+    Usage:
+        engine = get_world_builder_engine()
+        world = engine.generate_random_world("Eldoria", num_regions=12)
+        print(world.to_dict())
     """
 
-    _instance: Optional["AgentWorldBuilder"] = None
+    _instance: Optional["WorldBuilderEngine"] = None
     _lock: threading.RLock = threading.RLock()
 
     MAX_REGIONS_PER_WORLD: int = 64
-    MAX_BIOMES_PER_REGION: int = 8
-    MAX_SETTLEMENTS_PER_WORLD: int = 200
-    MAX_TRADE_ROUTES_PER_WORLD: int = 500
-    MAX_LANDMARKS_PER_WORLD: int = 50
-    DEFAULT_WORLD_SIZE: int = 1000
+    MAX_POI_PER_REGION: int = 8
+    MAX_FEATURES_PER_REGION: int = 6
+    DEFAULT_WORLD_SIZE: float = 50000.0
 
-    WORLD_PRESETS: Dict[str, Dict[str, Any]] = {
-        "fantasy_kingdom": {
-            "description": "Classic medieval fantasy realm with diverse biomes",
-            "terrain_distribution": {
-                TerrainType.PLAINS: 0.30,
-                TerrainType.MOUNTAINS: 0.15,
-                TerrainType.HILLS: 0.15,
-                TerrainType.VALLEY: 0.10,
-                TerrainType.PLATEAU: 0.05,
-                TerrainType.CANYON: 0.05,
-                TerrainType.MARSH: 0.05,
-                TerrainType.DESERT: 0.05,
-                TerrainType.TUNDRA: 0.05,
-                TerrainType.VOLCANIC: 0.05,
-            },
-            "climate_distribution": {
-                ClimateZone.TEMPERATE: 0.35,
-                ClimateZone.SUBTROPICAL: 0.15,
-                ClimateZone.BOREAL: 0.15,
-                ClimateZone.MEDITERRANEAN: 0.15,
-                ClimateZone.ARID: 0.10,
-                ClimateZone.TROPICAL: 0.05,
-                ClimateZone.POLAR: 0.05,
-            },
-        },
-        "desert_wasteland": {
-            "description": "Harsh desert-dominated world with scattered oases",
-            "terrain_distribution": {
-                TerrainType.DESERT: 0.45,
-                TerrainType.CANYON: 0.20,
-                TerrainType.PLATEAU: 0.15,
-                TerrainType.MOUNTAINS: 0.10,
-                TerrainType.PLAINS: 0.05,
-                TerrainType.VOLCANIC: 0.05,
-            },
-            "climate_distribution": {
-                ClimateZone.ARID: 0.60,
-                ClimateZone.SUBTROPICAL: 0.20,
-                ClimateZone.MEDITERRANEAN: 0.15,
-                ClimateZone.TEMPERATE: 0.05,
-            },
-        },
-        "frozen_north": {
-            "description": "Frigid northern realm of tundra, boreal forests, and glaciers",
-            "terrain_distribution": {
-                TerrainType.TUNDRA: 0.40,
-                TerrainType.MOUNTAINS: 0.20,
-                TerrainType.HILLS: 0.15,
-                TerrainType.PLAINS: 0.10,
-                TerrainType.VALLEY: 0.10,
-                TerrainType.VOLCANIC: 0.05,
-            },
-            "climate_distribution": {
-                ClimateZone.POLAR: 0.40,
-                ClimateZone.BOREAL: 0.35,
-                ClimateZone.TEMPERATE: 0.20,
-                ClimateZone.ARID: 0.05,
-            },
-        },
-        "lush_tropics": {
-            "description": "Vibrant tropical world with dense jungles and archipelagos",
-            "terrain_distribution": {
-                TerrainType.PLAINS: 0.20,
-                TerrainType.HILLS: 0.15,
-                TerrainType.VALLEY: 0.15,
-                TerrainType.MARSH: 0.15,
-                TerrainType.PLATEAU: 0.10,
-                TerrainType.MOUNTAINS: 0.10,
-                TerrainType.VOLCANIC: 0.10,
-                TerrainType.CANYON: 0.05,
-            },
-            "climate_distribution": {
-                ClimateZone.TROPICAL: 0.55,
-                ClimateZone.SUBTROPICAL: 0.30,
-                ClimateZone.TEMPERATE: 0.10,
-                ClimateZone.MEDITERRANEAN: 0.05,
-            },
-        },
-    }
-
-    def __new__(cls) -> "AgentWorldBuilder":
+    def __new__(cls) -> "WorldBuilderEngine":
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
@@ -655,785 +666,1093 @@ class AgentWorldBuilder:
         return cls._instance
 
     @classmethod
-    def get_instance(cls) -> "AgentWorldBuilder":
+    def get_instance(cls) -> "WorldBuilderEngine":
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
                     cls._instance = cls()
         return cls._instance
 
-    def __init__(self):
-        _time_module.sleep(0.001)
+    def __init__(self) -> None:
+        time.sleep(0.001)
         if not hasattr(self, "_initialized"):
             self._worlds: Dict[str, WorldMap] = {}
             self._regions: Dict[str, WorldRegion] = {}
-            self._biomes: Dict[str, BiomeProfile] = {}
-            self._settlements: Dict[str, SettlementNode] = {}
-            self._landmarks: Dict[str, LandmarkFeature] = {}
-            self._trade_routes: Dict[str, TradeRoute] = {}
-            self._region_lookup: Dict[str, str] = {}
+            self._pois: Dict[str, PointOfInterest] = {}
+            self._region_to_world: Dict[str, str] = {}
             self._total_worlds_generated: int = 0
-            self._total_regions_defined: int = 0
-            self._total_settlements_placed: int = 0
+            self._total_regions_created: int = 0
+            self._total_pois_placed: int = 0
             self._initialized = True
 
-    def generate_world_map(
+    # ------------------------------------------------------------------
+    # Public API
+    # ------------------------------------------------------------------
+
+    def create_world(
         self,
-        name: str = "Untitled World",
-        width: int = 1000,
-        height: int = 1000,
+        name: str,
         seed: int = 42,
-        preset: Optional[str] = None,
+        world_size: float = 50000.0,
+        description: str = "",
     ) -> WorldMap:
-        _time_module.sleep(0.001)
-        rng = random.Random(seed)
-        world_id = uuid.uuid4().hex
+        """Create an empty world map ready for region population.
 
-        if preset is not None and preset in self.WORLD_PRESETS:
-            preset_config = self.WORLD_PRESETS[preset]
-            terrain_dist = preset_config.get("terrain_distribution", {})
-            climate_dist = preset_config.get("climate_distribution", {})
-        else:
-            terrain_dist = self.WORLD_PRESETS["fantasy_kingdom"]["terrain_distribution"]
-            climate_dist = self.WORLD_PRESETS["fantasy_kingdom"]["climate_distribution"]
+        Args:
+            name: Display name for the world.
+            seed: Random seed for deterministic generation.
+            world_size: Total area of the world in square kilometers.
+            description: A brief description of the world's theme.
 
-        total_area = float(width * height)
-        region_count = rng.randint(6, min(self.MAX_REGIONS_PER_WORLD, 24))
-        region_ids: List[str] = []
-        region_objects: List[WorldRegion] = []
-
-        for _ in range(region_count):
-            terrain = self._weighted_choice(rng, terrain_dist)
-            climate = self._weighted_choice(rng, climate_dist)
-
-            base_elev = TERRAIN_TEMPLATES[terrain]["base_elevation"]
-            elevation = rng.randint(base_elev[0], base_elev[1])
-            fert_min, fert_max = TERRAIN_TEMPLATES[terrain]["fertility_range"]
-            fertility = rng.uniform(fert_min, fert_max)
-            resources = list(TERRAIN_TEMPLATES[terrain]["resource_types"])
-
-            size_km2 = (total_area / region_count) * rng.uniform(0.5, 1.5)
-            size_km2 = round(size_km2, 2)
-
-            region_name = (
-                rng.choice(REGION_NAME_PREFIXES)
-                + " "
-                + rng.choice(REGION_NAME_SUFFIXES)
-            )
-            while any(r.name == region_name for r in region_objects):
-                region_name = (
-                    rng.choice(REGION_NAME_PREFIXES)
-                    + " "
-                    + rng.choice(REGION_NAME_SUFFIXES)
-                )
-
-            pop_density = self._derive_population_density(fertility, terrain)
-
-            region = WorldRegion(
-                id=uuid.uuid4().hex,
-                name=region_name,
-                terrain_type=terrain,
-                climate=climate,
-                size_km2=size_km2,
-                elevation=float(elevation),
-                fertility=fertility,
-                resources=resources,
-                population_density=pop_density,
-                biome_signature="",
-            )
-            region_ids.append(region.id)
-            region_objects.append(region)
-            self._regions[region.id] = region
-            self._region_lookup[region.id] = world_id
-            self._total_regions_defined += 1
-
-        adjacency = self._build_adjacency_graph(rng, region_ids, region_objects)
+        Returns:
+            A new WorldMap instance.
+        """
+        time.sleep(0.001)
+        map_id = uuid.uuid4().hex
 
         world = WorldMap(
-            id=world_id,
+            map_id=map_id,
             name=name,
+            regions=[],
+            total_biomes=0,
+            world_size=world_size,
             seed=seed,
-            width=width,
-            height=height,
-            regions=region_ids,
-            biomes=[],
-            settlements=[],
-            adjacency_graph=adjacency,
-            total_area=total_area,
-            climate_zones=[],
-            population_centers=[],
-            trade_routes=[],
-            landmarks=[],
+            description=description,
+            lore="",
+            created_at=time.time(),
         )
-        self._worlds[world_id] = world
-
-        self.compute_climate_distribution(region_objects)
-        for region in region_objects:
-            self.generate_biomes_for_region(region.id)
-
-        world.climate_zones = [
-            self._regions[rid].climate.value
-            for rid in region_ids
-            if rid in self._regions
-        ]
-        world.biomes = [
-            b.id
-            for b in self._biomes.values()
-            if any(
-                b.id in self._regions[rid].biome_signature.split(",")
-                for rid in region_ids
-                if rid in self._regions
-            )
-        ]
+        self._worlds[map_id] = world
         self._total_worlds_generated += 1
         return world
 
-    def define_region(
-        self, name: str, terrain: TerrainType, climate: ClimateZone, size: float
+    def generate_region(
+        self,
+        map_id: str,
+        biome: BiomeType,
+        size: float = 1000.0,
+        danger_level: float = 0.3,
     ) -> WorldRegion:
-        _time_module.sleep(0.001)
-        template = TERRAIN_TEMPLATES.get(terrain, TERRAIN_TEMPLATES[TerrainType.PLAINS])
-        base_elev = template["base_elevation"]
-        fert_min, fert_max = template["fertility_range"]
+        """Generate a single region within an existing world map.
 
-        elevation = float(random.randint(base_elev[0], base_elev[1]))
-        fertility = random.uniform(fert_min, fert_max)
-        resources = list(template["resource_types"])
-        pop_density = self._derive_population_density(fertility, terrain)
+        Args:
+            map_id: The world map to add the region to.
+            biome: The biome type for this region.
+            size: The region's area in square kilometers.
+            danger_level: Overall danger rating (0.0 to 1.0).
+
+        Returns:
+            A new WorldRegion instance.
+        """
+        time.sleep(0.001)
+        world = self._worlds.get(map_id)
+        if world is None:
+            raise ValueError(f"World map '{map_id}' not found.")
+
+        rng = random.Random(world.seed + len(world.regions))
 
         region = WorldRegion(
-            id=uuid.uuid4().hex,
-            name=name,
-            terrain_type=terrain,
-            climate=climate,
-            size_km2=size,
-            elevation=elevation,
-            fertility=fertility,
-            resources=resources,
-            population_density=pop_density,
+            region_id=uuid.uuid4().hex,
+            name=self._generate_region_name(rng, biome),
+            biome=biome,
+            size=size,
+            terrain_features=[],
+            points_of_interest=[],
+            population=self._compute_population(biome, size, danger_level),
+            danger_level=danger_level,
+            resources=self._derive_resources(biome, rng),
+            description=self._generate_region_description(biome, rng),
+            connected_regions=[],
         )
-        self._regions[region.id] = region
-        self._total_regions_defined += 1
+
+        # Assign terrain features based on biome.
+        feature_count = rng.randint(1, min(self.MAX_FEATURES_PER_REGION, len(BIOME_TERRAIN_FEATURES.get(biome, []))))
+        available_features = list(BIOME_TERRAIN_FEATURES.get(biome, []))
+        if available_features:
+            region.terrain_features = rng.sample(
+                available_features,
+                min(feature_count, len(available_features)),
+            )
+
+        self._regions[region.region_id] = region
+        self._region_to_world[region.region_id] = map_id
+        world.regions.append(region.region_id)
+        self._total_regions_created += 1
+
+        # Update total biomes count.
+        biome_set: Set[str] = set()
+        for rid in world.regions:
+            r = self._regions.get(rid)
+            if r is not None:
+                biome_set.add(r.biome.value)
+        world.total_biomes = len(biome_set)
+
         return region
 
-    def compute_climate_distribution(
-        self, regions: List[WorldRegion]
-    ) -> Dict[str, ClimateZone]:
-        _time_module.sleep(0.001)
-        result: Dict[str, ClimateZone] = {}
-        rng = random.Random()
+    def add_terrain_feature(
+        self,
+        region_id: str,
+        feature: TerrainFeature,
+    ) -> WorldRegion:
+        """Add a terrain feature to an existing region.
 
-        for region in regions:
-            if not region.climate:
-                elevation_factor = region.elevation / 5000.0
-                if elevation_factor > 0.6:
-                    region.climate = ClimateZone.BOREAL
-                elif elevation_factor > 0.3:
-                    region.climate = ClimateZone.TEMPERATE
-                else:
-                    region.climate = rng.choice(list(ClimateZone))
-            result[region.id] = region.climate
-        return result
+        Args:
+            region_id: The region to modify.
+            feature: The terrain feature to add.
 
-    def generate_biomes_for_region(self, region_id: str) -> List[BiomeProfile]:
-        _time_module.sleep(0.001)
+        Returns:
+            The updated WorldRegion.
+        """
+        time.sleep(0.001)
         region = self._regions.get(region_id)
         if region is None:
-            return []
+            raise ValueError(f"Region '{region_id}' not found.")
 
-        climate_profile = CLIMATE_PROFILES.get(
-            region.climate, CLIMATE_PROFILES[ClimateZone.TEMPERATE]
+        if feature not in region.terrain_features:
+            region.terrain_features.append(feature)
+
+        return region
+
+    def add_point_of_interest(
+        self,
+        region_id: str,
+        name: str,
+        poi_type: PointOfInterestType,
+        description: str = "",
+        significance: str = "minor",
+        npc_count: int = 0,
+        quest_hooks: Optional[List[str]] = None,
+        loot_tier: int = 1,
+        danger_level: float = 0.1,
+    ) -> PointOfInterest:
+        """Add a point of interest to a region.
+
+        Args:
+            region_id: The region to place the POI in.
+            name: Display name for the POI.
+            poi_type: The type of point of interest.
+            description: Narrative description of the location.
+            significance: Importance level (minor, major, legendary).
+            npc_count: Number of NPCs at this location.
+            quest_hooks: List of quest hook descriptions.
+            loot_tier: Quality tier of loot (1-5).
+            danger_level: Danger rating (0.0 to 1.0).
+
+        Returns:
+            A new PointOfInterest instance.
+        """
+        time.sleep(0.001)
+        region = self._regions.get(region_id)
+        if region is None:
+            raise ValueError(f"Region '{region_id}' not found.")
+
+        poi = PointOfInterest(
+            poi_id=uuid.uuid4().hex,
+            name=name,
+            poi_type=poi_type,
+            region_id=region_id,
+            description=description,
+            significance=significance,
+            npc_count=npc_count,
+            quest_hooks=quest_hooks or [],
+            loot_tier=loot_tier,
+            danger_level=danger_level,
         )
-        rng = random.Random()
-        biome_count = rng.randint(1, self.MAX_BIOMES_PER_REGION)
-        biomes: List[BiomeProfile] = []
-        biome_ids: List[str] = []
 
-        for _ in range(biome_count):
-            temp_low, temp_high = climate_profile["temperature_range"]
-            adjusted_temp = (
-                temp_low + rng.uniform(0, 5),
-                temp_high - rng.uniform(0, 5),
-            )
+        self._pois[poi.poi_id] = poi
+        region.points_of_interest.append(poi.poi_id)
+        self._total_pois_placed += 1
 
-            precip_low, precip_high = climate_profile["precipitation_range"]
-            adjusted_precip = (
-                int(precip_low * rng.uniform(0.7, 1.0)),
-                int(precip_high * rng.uniform(0.7, 1.3)),
-            )
+        return poi
 
-            flora = list(climate_profile.get("flora_types", []))
-            fauna = list(climate_profile.get("fauna_types", []))
-            soil = rng.choice(climate_profile.get("soil_types", ["loam"]))
-            threat = climate_profile.get("threat_base", 0.3) * rng.uniform(0.5, 1.5)
-            threat = min(threat, 1.0)
+    def connect_regions(
+        self,
+        region_a_id: str,
+        region_b_id: str,
+    ) -> WorldMap:
+        """Create a bidirectional connection between two regions.
 
-            richness = region.fertility * rng.uniform(0.6, 1.4)
-            richness = min(richness, 1.0)
+        Args:
+            region_a_id: First region to connect.
+            region_b_id: Second region to connect.
 
-            biome_name = (
-                rng.choice(BIOME_NAME_PREFIXES)
-                + " "
-                + rng.choice(BIOME_NAME_SUFFIXES)
-            )
-            while any(b.name == biome_name for b in biomes):
-                biome_name = (
-                    rng.choice(BIOME_NAME_PREFIXES)
-                    + " "
-                    + rng.choice(BIOME_NAME_SUFFIXES)
-                )
+        Returns:
+            The WorldMap containing both regions.
+        """
+        time.sleep(0.001)
+        region_a = self._regions.get(region_a_id)
+        region_b = self._regions.get(region_b_id)
+        if region_a is None:
+            raise ValueError(f"Region '{region_a_id}' not found.")
+        if region_b is None:
+            raise ValueError(f"Region '{region_b_id}' not found.")
 
-            rng.shuffle(flora)
-            rng.shuffle(fauna)
+        map_id_a = self._region_to_world.get(region_a_id)
+        map_id_b = self._region_to_world.get(region_b_id)
+        if map_id_a != map_id_b or map_id_a is None:
+            raise ValueError("Regions must belong to the same world map.")
 
-            biome = BiomeProfile(
-                id=uuid.uuid4().hex,
-                name=biome_name,
-                temperature_range=adjusted_temp,
-                precipitation_range=adjusted_precip,
-                flora_species=flora[: rng.randint(2, min(6, len(flora)))],
-                fauna_species=fauna[: rng.randint(2, min(6, len(fauna)))],
-                soil_type=soil,
-                threat_level=round(threat, 3),
-                resource_richness=round(richness, 3),
-            )
-            biomes.append(biome)
-            biome_ids.append(biome.id)
-            self._biomes[biome.id] = biome
+        if region_b_id not in region_a.connected_regions:
+            region_a.connected_regions.append(region_b_id)
+        if region_a_id not in region_b.connected_regions:
+            region_b.connected_regions.append(region_a_id)
 
-        region.biome_signature = ",".join(biome_ids)
-        return biomes
-
-    def place_settlements(
-        self, world_id: str, density: PopulationDensity = PopulationDensity.RURAL
-    ) -> List[SettlementNode]:
-        _time_module.sleep(0.001)
-        world = self._worlds.get(world_id)
+        world = self._worlds.get(map_id_a)
         if world is None:
-            return []
+            raise ValueError("World map not found.")
+        return world
 
-        rng = random.Random(world.seed)
-        settlements: List[SettlementNode] = []
+    def generate_random_world(
+        self,
+        name: str,
+        num_regions: int = 10,
+    ) -> WorldMap:
+        """Generate a complete, diverse, interconnected world procedurally.
 
-        density_multipliers = {
-            PopulationDensity.SPARSE: 0.3,
-            PopulationDensity.RURAL: 0.6,
-            PopulationDensity.SUBURBAN: 1.0,
-            PopulationDensity.URBAN: 2.0,
-            PopulationDensity.METROPOLITAN: 4.0,
-        }
-        multiplier = density_multipliers.get(density, 0.6)
+        This method creates a world with:
+        - Varied biome distribution based on adjacency rules.
+        - Appropriate terrain features per biome.
+        - Points of interest with logical placement.
+        - Population distribution based on biome habitability.
+        - Danger level progression across regions.
+        - Environmental storytelling through region descriptions.
 
-        for region_id in world.regions:
-            region = self._regions.get(region_id)
-            if region is None:
-                continue
+        Args:
+            name: Display name for the world.
+            num_regions: Number of regions to generate (2-64).
 
-            base_count = max(1, int(region.size_km2 / 200 * multiplier))
-            count = min(base_count, 10)
+        Returns:
+            A fully generated WorldMap.
+        """
+        time.sleep(0.001)
+        num_regions = max(2, min(num_regions, self.MAX_REGIONS_PER_WORLD))
+        seed = random.randint(0, 2**31 - 1)
+        rng = random.Random(seed)
 
-            faction = rng.choice(FACTION_POOL)
+        world = self.create_world(
+            name=name,
+            seed=seed,
+            world_size=self.DEFAULT_WORLD_SIZE,
+            description=f"A procedurally generated world of {num_regions} regions.",
+        )
 
-            for _ in range(count):
-                pop_density = region.population_density
-                settlement_type = self._derive_settlement_type(
-                    rng, region.size_km2, pop_density
-                )
-                template = SETTLEMENT_TYPE_TEMPLATES.get(
-                    settlement_type,
-                    SETTLEMENT_TYPE_TEMPLATES[SettlementType.VILLAGE],
-                )
-                population = rng.randint(
-                    template["min_population"], template["max_population"]
-                )
-                economy = rng.choice(template["economy_types"])
-                defense = template["defense_rating"] * rng.uniform(0.7, 1.3)
+        # Phase 1: Select biomes with diversity and adjacency awareness.
+        biomes = self._select_diverse_biomes(rng, num_regions)
 
-                name = self._generate_settlement_name(rng, settlements)
+        # Phase 2: Create regions with progressive danger levels.
+        for i in range(num_regions):
+            biome = biomes[i]
+            size = rng.uniform(500.0, 3000.0)
 
-                settlement = SettlementNode(
-                    id=uuid.uuid4().hex,
-                    name=name,
-                    region_id=region_id,
-                    population=population,
-                    settlement_type=settlement_type,
-                    economy_type=economy,
-                    defenses=min(defense, 1.0),
-                    trade_routes=[],
-                    faction_control=faction,
-                )
-                settlements.append(settlement)
-                self._settlements[settlement.id] = settlement
-                self._total_settlements_placed += 1
+            # Danger level progression: outer regions are more dangerous.
+            # Center regions are safer, edges are more hostile.
+            progress = i / max(num_regions - 1, 1)
+            base_danger = BIOME_DANGER_LEVELS.get(biome, (0.1, 0.5))
+            # Mix biome base with position-based progression.
+            danger = base_danger[0] + (base_danger[1] - base_danger[0]) * (0.3 + 0.7 * progress)
+            danger = round(min(1.0, max(0.0, danger)), 3)
 
-        world.settlements = [s.id for s in settlements]
-        world.population_centers = [
-            s.id
-            for s in settlements
-            if s.settlement_type
-            in (SettlementType.CITY, SettlementType.CAPITAL)
-        ]
-        return settlements
+            region = self.generate_region(
+                map_id=world.map_id,
+                biome=biome,
+                size=size,
+                danger_level=danger,
+            )
 
-    def generate_trade_routes(self, world_id: str) -> List[TradeRoute]:
-        _time_module.sleep(0.001)
-        world = self._worlds.get(world_id)
+            # Phase 3: Add points of interest with logical placement.
+            self._populate_pois_for_region(rng, region, world.seed)
+
+        # Phase 4: Connect regions using adjacency rules.
+        self._build_region_connections(rng, world)
+
+        # Phase 5: Generate world lore.
+        world.lore = self._generate_world_lore(rng, world)
+
+        self._total_worlds_generated += 1
+        return world
+
+    def validate_world(self, map_id: str) -> Dict[str, Any]:
+        """Validate a world map for structural and logical coherence.
+
+        Checks:
+        - Region connectivity (no isolated regions).
+        - Biome adjacency rules.
+        - Point of interest distribution.
+        - Population balance.
+
+        Args:
+            map_id: The world map to validate.
+
+        Returns:
+            A dictionary with validation results, issues, and a valid flag.
+        """
+        time.sleep(0.001)
+        world = self._worlds.get(map_id)
         if world is None:
-            return []
+            return {"valid": False, "error": f"World map '{map_id}' not found.", "issues": []}
 
-        rng = random.Random(world.seed)
-        routes: List[TradeRoute] = []
-        settlement_ids = list(world.settlements)
+        issues: List[str] = []
+        warnings: List[str] = []
 
-        if len(settlement_ids) < 2:
-            return []
-
-        trade_graph: Dict[str, List[str]] = {}
-
-        for i in range(len(settlement_ids)):
-            for j in range(i + 1, len(settlement_ids)):
-                sid_a = settlement_ids[i]
-                sid_b = settlement_ids[j]
-                settlement_a = self._settlements.get(sid_a)
-                settlement_b = self._settlements.get(sid_b)
-                if settlement_a is None or settlement_b is None:
-                    continue
-
-                region_a = self._regions.get(settlement_a.region_id)
-                region_b = self._regions.get(settlement_b.region_id)
-                if region_a is None or region_b is None:
-                    continue
-
-                distance = (
-                    abs(region_a.elevation - region_b.elevation) * 0.1
-                    + rng.uniform(10, 100)
-                )
-
-                hazard = (
-                    rng.uniform(0.0, 0.3)
-                    + TERRAIN_TEMPLATES.get(
-                        region_a.terrain_type,
-                        TERRAIN_TEMPLATES[TerrainType.PLAINS],
-                    )["travel_modifier"]
-                    * 0.1
-                    + TERRAIN_TEMPLATES.get(
-                        region_b.terrain_type,
-                        TERRAIN_TEMPLATES[TerrainType.PLAINS],
-                    )["travel_modifier"]
-                    * 0.1
-                )
-                hazard = min(hazard, 1.0)
-
-                goods = self._derive_trade_goods(region_a, region_b, rng)
-
-                route = TradeRoute(
-                    id=uuid.uuid4().hex,
-                    source_id=sid_a,
-                    target_id=sid_b,
-                    distance=round(distance, 2),
-                    hazard_level=round(hazard, 2),
-                    goods_flow=goods,
-                )
-                routes.append(route)
-                self._trade_routes[route.id] = route
-
-                trade_graph.setdefault(sid_a, []).append(sid_b)
-                trade_graph.setdefault(sid_b, []).append(sid_a)
-
-                settlement_a.trade_routes.append(route.id)
-                settlement_b.trade_routes.append(route.id)
-
-                if len(routes) >= self.MAX_TRADE_ROUTES_PER_WORLD:
-                    break
-            if len(routes) >= self.MAX_TRADE_ROUTES_PER_WORLD:
-                break
-
-        world.trade_routes = [r.id for r in routes]
-        return routes
-
-    def calculate_region_fertility(self, region: WorldRegion) -> float:
-        _time_module.sleep(0.001)
-        template = TERRAIN_TEMPLATES.get(
-            region.terrain_type, TERRAIN_TEMPLATES[TerrainType.PLAINS]
-        )
-        base_fertility_min, base_fertility_max = template["fertility_range"]
-
-        climate = CLIMATE_PROFILES.get(region.climate, CLIMATE_PROFILES[ClimateZone.TEMPERATE])
-        precip_min, precip_max = climate["precipitation_range"]
-        temp_min, temp_max = climate["temperature_range"]
-
-        precipitation_score = min(precip_max / 4000.0, 1.0) if precip_max > 0 else 0.1
-        temperature_score = (
-            max(0.0, min(1.0, (temp_max - 5.0) / 30.0)) if temp_max > 5 else 0.05
-        )
-
-        elevation_penalty = max(0.0, 1.0 - (region.elevation / 4000.0))
-
-        computed = (
-            base_fertility_max * 0.4
-            + precipitation_score * 0.25
-            + temperature_score * 0.20
-            + elevation_penalty * 0.15
-        )
-        computed = max(base_fertility_min, min(base_fertility_max, computed))
-        region.fertility = round(computed, 3)
-        return region.fertility
-
-    def place_landmarks(
-        self, world_id: str, count: int
-    ) -> List[LandmarkFeature]:
-        _time_module.sleep(0.001)
-        world = self._worlds.get(world_id)
-        if world is None:
-            return []
-
-        rng = random.Random(world.seed)
-        placed = min(count, self.MAX_LANDMARKS_PER_WORLD)
-        landmarks: List[LandmarkFeature] = []
         region_ids = world.regions
 
-        feature_types = list(LandmarkFeatureType)
-        lore_templates = [
-            "An ancient structure left by a forgotten civilization, its purpose shrouded in mystery.",
-            "A natural formation said to hold immense magical energy, attracting scholars and adventurers alike.",
-            "The site of a legendary battle where the earth itself was scarred by forces beyond comprehension.",
-            "A sacred grove where the veil between worlds grows thin during certain celestial alignments.",
-            "Remnants of a colossal beast, its bones now serving as a landmark for travelers crossing the region.",
-            "A towering monument erected by the first settlers, marking the founding of civilization in this land.",
-            "An underground labyrinth rumored to contain treasures guarded by ancient automatons.",
-            "A crystalline cavern whose walls glow with an ethereal light, never touched by the sun.",
-            "The petrified remains of an elder forest, its trees now standing as silent stone sentinels.",
-        ]
+        # Check 1: Region connectivity (no isolated regions).
+        if len(region_ids) > 1:
+            visited = self._bfs_connected_regions(region_ids)
+            isolated = [rid for rid in region_ids if rid not in visited]
+            if isolated:
+                region_names = []
+                for rid in isolated:
+                    r = self._regions.get(rid)
+                    if r is not None:
+                        region_names.append(r.name)
+                issues.append(
+                    f"Found {len(isolated)} isolated region(s) with no connections: "
+                    f"{', '.join(region_names[:5])}"
+                )
 
-        for _ in range(placed):
-            region_id = rng.choice(region_ids)
-            feature_type = rng.choice(feature_types)
-
-            prefix = rng.choice(LANDMARK_NAME_PREFIXES)
-            suffix = rng.choice(LANDMARK_NAME_SUFFIXES)
-            name = f"The {prefix} {suffix}"
-            while any(l.name == name for l in landmarks):
-                prefix = rng.choice(LANDMARK_NAME_PREFIXES)
-                suffix = rng.choice(LANDMARK_NAME_SUFFIXES)
-                name = f"The {prefix} {suffix}"
-
-            coordinates = (
-                round(rng.uniform(0, world.width), 2),
-                round(rng.uniform(0, world.height), 2),
-            )
-
-            lore = rng.choice(lore_templates)
-
-            landmark = LandmarkFeature(
-                id=uuid.uuid4().hex,
-                name=name,
-                feature_type=feature_type,
-                region_id=region_id,
-                coordinates=coordinates,
-                discovery_status="undiscovered",
-                lore_description=lore,
-            )
-            landmarks.append(landmark)
-            self._landmarks[landmark.id] = landmark
-
-            region = self._regions.get(region_id)
-            if region is not None:
-                region.landmarks.append(landmark.id)
-
-        world.landmarks = [l.id for l in landmarks]
-        return landmarks
-
-    def generate_world_lore(self, world_id: str) -> str:
-        _time_module.sleep(0.001)
-        world = self._worlds.get(world_id)
-        if world is None:
-            return ""
-
-        rng = random.Random(world.seed)
-        region_count = len(world.regions)
-        settlement_count = len(world.settlements)
-        landmark_count = len(world.landmarks)
-
-        age_eras = [
-            "Dawn Era",
-            "Age of Foundations",
-            "Era of Strife",
-            "Golden Age",
-            "Age of Discovery",
-            "Era of Discord",
-            "Age of Renewal",
-            "Silver Century",
-        ]
-        era = rng.choice(age_eras)
-
-        faction = rng.choice(FACTION_POOL)
-        region_name = "unknown lands"
-        if world.regions:
-            first_region = self._regions.get(world.regions[0])
-            if first_region is not None:
-                region_name = first_region.name
-
-        lore_lines: List[str] = [
-            f"In the {era}, the world of {world.name} spans {region_count} regions "
-            f"across {world.width}x{world.height} kilometers of varied terrain.",
-            "",
-            f"The {faction} rose to prominence from the {region_name}, "
-            f"establishing dominion through diplomacy and conquest.",
-            f"With {settlement_count} settlements scattered across the realm, "
-            f"trade flourishes along carefully guarded routes.",
-            "",
-            f"Legends speak of {landmark_count} landmarks hidden throughout the world, "
-            f"each holding secrets of the ancient past.",
-            f"Scholars debate the origins of these sites, but adventurers "
-            f"continue to seek their treasures regardless of the dangers.",
-            "",
-            f"The climate ranges from frozen polar wastes to scorching desert expanses, "
-            f"with temperate heartlands serving as the cradle of civilization.",
-            f"Each region's unique biome supports distinct flora and fauna, "
-            f"shaping the cultures that have grown within them.",
-        ]
-
-        # Add region-specific lore snippets
-        for region_id in world.regions[:3]:
-            region = self._regions.get(region_id)
+        # Check 2: Biome adjacency rules.
+        for rid in region_ids:
+            region = self._regions.get(rid)
             if region is None:
                 continue
-            region_faction = rng.choice(FACTION_POOL)
-            lore_lines.append("")
-            lore_lines.append(
-                f"The {region.name} is a {region.terrain_type.value} region "
-                f"under the influence of the {region_faction}. "
-                f"Its {region.climate.value} climate and "
-                f"{'fertile' if region.fertility > 0.5 else 'harsh'} lands "
-                f"support a {region.population_density.value} population."
+            compatible = BIOME_ADJACENCY_RULES.get(region.biome, [])
+            for neighbor_id in region.connected_regions:
+                neighbor = self._regions.get(neighbor_id)
+                if neighbor is None:
+                    continue
+                if neighbor.biome not in compatible:
+                    warnings.append(
+                        f"Biome adjacency violation: '{region.name}' ({region.biome.value}) "
+                        f"borders '{neighbor.name}' ({neighbor.biome.value})"
+                    )
+
+        # Check 3: Point of interest distribution.
+        total_pois = 0
+        empty_regions: List[str] = []
+        for rid in region_ids:
+            region = self._regions.get(rid)
+            if region is None:
+                continue
+            total_pois += len(region.points_of_interest)
+            if len(region.points_of_interest) == 0:
+                empty_regions.append(region.name)
+
+        if empty_regions:
+            warnings.append(
+                f"{len(empty_regions)} region(s) have no points of interest: "
+                f"{', '.join(empty_regions[:5])}"
             )
 
-        world.lore = "\n".join(lore_lines)
-        return world.lore
+        if total_pois == 0 and region_ids:
+            issues.append("World has no points of interest at all.")
+
+        # Check 4: Population balance.
+        total_pop = 0
+        zero_pop_regions: List[str] = []
+        for rid in region_ids:
+            region = self._regions.get(rid)
+            if region is None:
+                continue
+            total_pop += region.population
+            if region.population <= 0 and region.biome not in (
+                BiomeType.VOLCANIC, BiomeType.CORRUPTED, BiomeType.CAVE,
+            ):
+                zero_pop_regions.append(region.name)
+
+        if zero_pop_regions:
+            warnings.append(
+                f"{len(zero_pop_regions)} unexpectedly unpopulated region(s): "
+                f"{', '.join(zero_pop_regions[:5])}"
+            )
+
+        if total_pop == 0 and region_ids:
+            issues.append("World has zero total population.")
+
+        # Check 5: POI type diversity per world.
+        poi_types_seen: Set[str] = set()
+        for rid in region_ids:
+            region = self._regions.get(rid)
+            if region is None:
+                continue
+            for poi_id in region.points_of_interest:
+                poi = self._pois.get(poi_id)
+                if poi is not None:
+                    poi_types_seen.add(poi.poi_type.value)
+        if len(poi_types_seen) < 3 and region_ids:
+            warnings.append(
+                f"Low POI type diversity: only {len(poi_types_seen)} distinct type(s) in world."
+            )
+
+        valid = len(issues) == 0
+
+        return {
+            "valid": valid,
+            "map_id": map_id,
+            "world_name": world.name,
+            "region_count": len(region_ids),
+            "total_pois": total_pois,
+            "total_population": total_pop,
+            "issues": issues,
+            "warnings": warnings,
+        }
+
+    def get_region(self, region_id: str) -> Optional[WorldRegion]:
+        """Retrieve a region by its ID.
+
+        Args:
+            region_id: The region identifier.
+
+        Returns:
+            The WorldRegion if found, or None.
+        """
+        time.sleep(0.001)
+        return self._regions.get(region_id)
+
+    def get_world(self, map_id: str) -> Optional[WorldMap]:
+        """Retrieve a world map by its ID.
+
+        Args:
+            map_id: The world map identifier.
+
+        Returns:
+            The WorldMap if found, or None.
+        """
+        time.sleep(0.001)
+        return self._worlds.get(map_id)
+
+    def list_worlds(self) -> List[WorldMap]:
+        """List all generated world maps.
+
+        Returns:
+            A list of all WorldMap instances.
+        """
+        time.sleep(0.001)
+        return list(self._worlds.values())
 
     def get_stats(self) -> Dict[str, Any]:
-        _time_module.sleep(0.001)
-        total_regions = len(self._regions)
-        total_biomes = len(self._biomes)
-        total_settlements = len(self._settlements)
-        total_landmarks = len(self._landmarks)
-        total_trade_routes = len(self._trade_routes)
+        """Return aggregate statistics about the world builder's activity.
+
+        Returns:
+            A dictionary of usage statistics and world composition data.
+        """
+        time.sleep(0.001)
         total_worlds = len(self._worlds)
+        total_regions = len(self._regions)
+        total_pois = len(self._pois)
 
-        terrain_counts: Dict[str, int] = {}
-        climate_counts: Dict[str, int] = {}
+        biome_counts: Dict[str, int] = {}
+        total_population = 0
         for region in self._regions.values():
-            t_key = region.terrain_type.value
-            terrain_counts[t_key] = terrain_counts.get(t_key, 0) + 1
-            c_key = region.climate.value
-            climate_counts[c_key] = climate_counts.get(c_key, 0) + 1
+            biome_counts[region.biome.value] = biome_counts.get(region.biome.value, 0) + 1
+            total_population += region.population
 
-        avg_fertility = 0.0
+        poi_type_counts: Dict[str, int] = {}
+        for poi in self._pois.values():
+            poi_type_counts[poi.poi_type.value] = poi_type_counts.get(poi.poi_type.value, 0) + 1
+
+        avg_danger = 0.0
         if total_regions > 0:
-            avg_fertility = round(
-                sum(r.fertility for r in self._regions.values()) / total_regions, 3
+            avg_danger = round(
+                sum(r.danger_level for r in self._regions.values()) / total_regions, 3
             )
 
-        total_population = sum(s.population for s in self._settlements.values())
+        avg_region_size = 0.0
+        if total_regions > 0:
+            avg_region_size = round(
+                sum(r.size for r in self._regions.values()) / total_regions, 2
+            )
 
         return {
             "total_worlds": total_worlds,
             "total_regions": total_regions,
-            "total_biomes": total_biomes,
-            "total_settlements": total_settlements,
-            "total_landmarks": total_landmarks,
-            "total_trade_routes": total_trade_routes,
+            "total_points_of_interest": total_pois,
             "total_population": total_population,
-            "average_fertility": avg_fertility,
-            "terrain_distribution": terrain_counts,
-            "climate_distribution": climate_counts,
+            "average_danger_level": avg_danger,
+            "average_region_size_km2": avg_region_size,
+            "biome_distribution": biome_counts,
+            "poi_type_distribution": poi_type_counts,
             "worlds_generated_lifetime": self._total_worlds_generated,
-            "regions_defined_lifetime": self._total_regions_defined,
-            "settlements_placed_lifetime": self._total_settlements_placed,
+            "regions_created_lifetime": self._total_regions_created,
+            "pois_placed_lifetime": self._total_pois_placed,
         }
 
-    def _weighted_choice(
-        self, rng: random.Random, distribution: Dict[Any, float]
-    ) -> Any:
-        _time_module.sleep(0.001)
-        items = list(distribution.items())
-        if not items:
-            return TerrainType.PLAINS
-        total = sum(weight for _, weight in items)
-        if total <= 0:
-            return items[0][0]
-        roll = rng.uniform(0, total)
-        cumulative = 0.0
-        for key, weight in items:
-            cumulative += weight
-            if roll <= cumulative:
-                return key
-        return items[-1][0]
+    # ------------------------------------------------------------------
+    # Internal: Region Generation Helpers
+    # ------------------------------------------------------------------
 
-    def _derive_population_density(
-        self, fertility: float, terrain: TerrainType
-    ) -> PopulationDensity:
-        _time_module.sleep(0.001)
-        if terrain in (TerrainType.DESERT, TerrainType.TUNDRA, TerrainType.VOLCANIC):
-            if fertility > 0.35:
-                return PopulationDensity.RURAL
-            return PopulationDensity.SPARSE
-
-        if fertility > 0.75:
-            return PopulationDensity.URBAN
-        elif fertility > 0.50:
-            return PopulationDensity.SUBURBAN
-        elif fertility > 0.25:
-            return PopulationDensity.RURAL
-        return PopulationDensity.SPARSE
-
-    def _derive_settlement_type(
+    def _select_diverse_biomes(
         self,
         rng: random.Random,
-        region_size: float,
-        density: PopulationDensity,
-    ) -> SettlementType:
-        _time_module.sleep(0.001)
-        if density == PopulationDensity.METROPOLITAN:
-            return rng.choice(
-                [SettlementType.CITY, SettlementType.CAPITAL, SettlementType.CITY]
-            )
-        if density == PopulationDensity.URBAN:
-            return rng.choice(
-                [
-                    SettlementType.TOWN,
-                    SettlementType.CITY,
-                    SettlementType.CAPITAL,
-                    SettlementType.TOWN,
-                ]
-            )
-        if density == PopulationDensity.SUBURBAN:
-            return rng.choice(
-                [
-                    SettlementType.VILLAGE,
-                    SettlementType.TOWN,
-                    SettlementType.CITY,
-                    SettlementType.VILLAGE,
-                    SettlementType.TOWN,
-                ]
-            )
-        if density == PopulationDensity.RURAL:
-            if region_size > 800 and rng.random() < 0.15:
-                return SettlementType.FORTRESS
-            return rng.choice(
-                [
-                    SettlementType.VILLAGE,
-                    SettlementType.VILLAGE,
-                    SettlementType.TOWN,
-                    SettlementType.FORTRESS,
-                ]
-            )
-        return rng.choice(
-            [
-                SettlementType.VILLAGE,
-                SettlementType.VILLAGE,
-                SettlementType.FORTRESS,
-            ]
-        )
+        count: int,
+    ) -> List[BiomeType]:
+        """Select a diverse set of biomes with adjacency-aware ordering.
 
-    def _build_adjacency_graph(
+        Ensures that adjacent biomes in the sequence are compatible
+        according to BIOME_ADJACENCY_RULES.
+
+        Args:
+            rng: Random number generator.
+            count: Number of biomes to select.
+
+        Returns:
+            A list of BiomeType values in generation order.
+        """
+        all_biomes = list(BiomeType)
+        # Start with a habitable biome.
+        starter_pool = [
+            BiomeType.PLAINS, BiomeType.FOREST, BiomeType.SAVANNA,
+            BiomeType.URBAN, BiomeType.TAIGA,
+        ]
+        biomes: List[BiomeType] = [rng.choice(starter_pool)]
+
+        # Ensure minimum diversity: include at least one of several biome groups.
+        mandatory_groups: List[List[BiomeType]] = [
+            [BiomeType.DESERT, BiomeType.SAVANNA],
+            [BiomeType.MOUNTAIN, BiomeType.VOLCANIC],
+            [BiomeType.SWAMP, BiomeType.JUNGLE],
+            [BiomeType.TUNDRA, BiomeType.TAIGA],
+            [BiomeType.RUINS, BiomeType.CORRUPTED, BiomeType.CAVE],
+        ]
+
+        for _ in range(count - 1):
+            if len(biomes) < len(mandatory_groups) and len(biomes) < count:
+                # Pick from mandatory groups not yet represented.
+                group_idx = len(biomes) % len(mandatory_groups)
+                candidates = list(mandatory_groups[group_idx])
+                current = biomes[-1]
+                compatible = [
+                    b for b in candidates
+                    if b in BIOME_ADJACENCY_RULES.get(current, [])
+                ]
+                if compatible:
+                    biomes.append(rng.choice(compatible))
+                    continue
+
+            # Fallback: pick from biomes compatible with the last one.
+            current = biomes[-1]
+            compatible = BIOME_ADJACENCY_RULES.get(current, all_biomes)
+            # Exclude recently used biomes to promote diversity.
+            recent = set(biomes[-3:]) if len(biomes) >= 3 else set(biomes)
+            candidates = [b for b in compatible if b not in recent or len(biomes) > count - 3]
+            if not candidates:
+                candidates = list(compatible)
+            biomes.append(rng.choice(candidates))
+
+        return biomes
+
+    def _populate_pois_for_region(
         self,
         rng: random.Random,
-        region_ids: List[str],
-        regions: List[WorldRegion],
-    ) -> Dict[str, List[str]]:
-        _time_module.sleep(0.001)
-        graph: Dict[str, List[str]] = {rid: [] for rid in region_ids}
+        region: WorldRegion,
+        world_seed: int,
+    ) -> None:
+        """Generate points of interest for a region based on its biome.
+
+        Args:
+            rng: Random number generator.
+            region: The region to populate.
+            world_seed: The world's seed for deterministic generation.
+        """
+        available_types = BIOME_POI_AFFINITY.get(region.biome, [PointOfInterestType.VILLAGE])
+        if not available_types:
+            return
+
+        # More POIs in safer, habitable regions; fewer in dangerous ones.
+        habitable_biomes = {
+            BiomeType.PLAINS, BiomeType.FOREST, BiomeType.URBAN,
+            BiomeType.SAVANNA, BiomeType.JUNGLE,
+        }
+        if region.biome in habitable_biomes:
+            poi_count = rng.randint(2, min(self.MAX_POI_PER_REGION, 5))
+        else:
+            poi_count = rng.randint(1, min(self.MAX_POI_PER_REGION, 3))
+
+        # Adjust for size: larger regions get more POIs.
+        if region.size > 2000.0:
+            poi_count += 1
+        poi_count = min(poi_count, self.MAX_POI_PER_REGION)
+
+        for _ in range(poi_count):
+            poi_type = rng.choice(available_types)
+            name = self._generate_poi_name(rng, poi_type)
+            significance = rng.choice(["minor", "minor", "major", "major", "legendary"])
+            npc_count = self._derive_npc_count(poi_type, significance, rng)
+            loot_tier = rng.randint(1, 5)
+            if significance == "legendary":
+                loot_tier = max(loot_tier, 4)
+            poi_danger = round(region.danger_level * rng.uniform(0.5, 1.2), 3)
+            poi_danger = min(1.0, max(0.0, poi_danger))
+
+            quest_hooks = rng.sample(
+                QUEST_HOOK_TEMPLATES,
+                min(rng.randint(1, 3), len(QUEST_HOOK_TEMPLATES)),
+            )
+
+            description = self._generate_poi_description(poi_type, region.biome, significance, rng)
+
+            self.add_point_of_interest(
+                region_id=region.region_id,
+                name=name,
+                poi_type=poi_type,
+                description=description,
+                significance=significance,
+                npc_count=npc_count,
+                quest_hooks=quest_hooks,
+                loot_tier=loot_tier,
+                danger_level=poi_danger,
+            )
+
+    def _build_region_connections(
+        self,
+        rng: random.Random,
+        world: WorldMap,
+    ) -> None:
+        """Build connections between regions ensuring no isolation.
+
+        Uses a minimum spanning tree approach to connect all regions,
+        then adds extra edges for a more natural topology.
+
+        Args:
+            rng: Random number generator.
+            world: The world map to connect.
+        """
+        region_ids = list(world.regions)
         if len(region_ids) < 2:
-            return graph
+            return
 
-        remaining = list(region_ids)
-        rng.shuffle(remaining)
-        connected: List[str] = [remaining.pop()]
+        # Minimum spanning tree to ensure connectivity.
+        connected: List[str] = [region_ids[0]]
+        remaining: Set[str] = set(region_ids[1:])
 
         while remaining:
             best_src: Optional[str] = None
             best_tgt: Optional[str] = None
-            best_dist = float("inf")
+            best_score = float("inf")
 
-            for src in connected:
-                src_region = self._regions.get(src)
-                if src_region is None:
+            for src_id in connected:
+                src = self._regions.get(src_id)
+                if src is None:
                     continue
-                for tgt in remaining:
-                    tgt_region = self._regions.get(tgt)
-                    if tgt_region is None:
+                for tgt_id in remaining:
+                    tgt = self._regions.get(tgt_id)
+                    if tgt is None:
                         continue
-                    dist = abs(src_region.elevation - tgt_region.elevation)
-                    if dist < best_dist:
-                        best_dist = dist
-                        best_src = src
-                        best_tgt = tgt
+                    # Prefer connecting compatible biomes with lower cost.
+                    compatible = BIOME_ADJACENCY_RULES.get(src.biome, [])
+                    compat_score = 0.0 if tgt.biome in compatible else 10.0
+                    danger_diff = abs(src.danger_level - tgt.danger_level)
+                    score = compat_score + danger_diff * 5.0
+                    if score < best_score:
+                        best_score = score
+                        best_src = src_id
+                        best_tgt = tgt_id
 
             if best_src is not None and best_tgt is not None:
-                graph[best_src].append(best_tgt)
-                graph[best_tgt].append(best_src)
+                self.connect_regions(best_src, best_tgt)
                 connected.append(best_tgt)
-                remaining.remove(best_tgt)
+                remaining.discard(best_tgt)
             else:
                 break
 
+        # Add extra edges for a richer topology (up to 2 extra per region).
         for rid in region_ids:
-            if len(graph[rid]) < 2:
-                candidates = [r for r in region_ids if r != rid and r not in graph[rid]]
-                for _ in range(min(2 - len(graph[rid]), len(candidates))):
-                    if not candidates:
-                        break
-                    neighbor = rng.choice(candidates)
-                    graph[rid].append(neighbor)
-                    graph[neighbor].append(rid)
-                    candidates.remove(neighbor)
+            region = self._regions.get(rid)
+            if region is None:
+                continue
+            if len(region.connected_regions) >= 3:
+                continue
+            candidates = [
+                r for r in region_ids
+                if r != rid and r not in region.connected_regions
+            ]
+            extra_count = rng.randint(0, min(2, len(candidates)))
+            if extra_count > 0 and candidates:
+                for neighbor in rng.sample(candidates, extra_count):
+                    self.connect_regions(rid, neighbor)
 
-        return graph
+    def _bfs_connected_regions(self, region_ids: List[str]) -> Set[str]:
+        """Perform BFS from the first region to find all connected regions.
 
-    def _generate_settlement_name(
+        Args:
+            region_ids: All region IDs in the world.
+
+        Returns:
+            Set of region IDs reachable from the first region.
+        """
+        if not region_ids:
+            return set()
+        visited: Set[str] = set()
+        queue: deque[str] = deque([region_ids[0]])
+        while queue:
+            current = queue.popleft()
+            if current in visited:
+                continue
+            visited.add(current)
+            region = self._regions.get(current)
+            if region is not None:
+                for neighbor in region.connected_regions:
+                    if neighbor not in visited:
+                        queue.append(neighbor)
+        return visited
+
+    # ------------------------------------------------------------------
+    # Internal: Name and Description Generation
+    # ------------------------------------------------------------------
+
+    def _generate_region_name(
         self,
         rng: random.Random,
-        existing: List[SettlementNode],
+        biome: BiomeType,
     ) -> str:
-        _time_module.sleep(0.001)
-        name = (
-            rng.choice(SETTLEMENT_NAME_PREFIXES)
-            + rng.choice(SETTLEMENT_NAME_SUFFIXES)
-        )
-        while any(s.name == name for s in existing):
-            name = (
-                rng.choice(SETTLEMENT_NAME_PREFIXES)
-                + rng.choice(SETTLEMENT_NAME_SUFFIXES)
-            )
+        """Generate a unique region name combining prefix and suffix.
+
+        Args:
+            rng: Random number generator.
+            biome: The region's biome for themed naming.
+
+        Returns:
+            A unique region name string.
+        """
+        prefix = rng.choice(REGION_NAME_PREFIXES)
+        suffix = rng.choice(REGION_NAME_SUFFIXES)
+        name = f"{prefix} {suffix}"
+        # Ensure uniqueness.
+        attempts = 0
+        while any(r.name == name for r in self._regions.values()) and attempts < 20:
+            prefix = rng.choice(REGION_NAME_PREFIXES)
+            suffix = rng.choice(REGION_NAME_SUFFIXES)
+            name = f"{prefix} {suffix}"
+            attempts += 1
         return name
 
-    def _derive_trade_goods(
+    def _generate_poi_name(
         self,
-        region_a: WorldRegion,
-        region_b: WorldRegion,
+        rng: random.Random,
+        poi_type: PointOfInterestType,
+    ) -> str:
+        """Generate a unique point of interest name.
+
+        Args:
+            rng: Random number generator.
+            poi_type: The POI type for themed naming.
+
+        Returns:
+            A unique POI name string.
+        """
+        prefix = rng.choice(POI_NAME_PREFIXES)
+        suffix = rng.choice(POI_NAME_SUFFIXES)
+        name = f"The {prefix} {suffix}"
+        attempts = 0
+        while any(p.name == name for p in self._pois.values()) and attempts < 20:
+            prefix = rng.choice(POI_NAME_PREFIXES)
+            suffix = rng.choice(POI_NAME_SUFFIXES)
+            name = f"The {prefix} {suffix}"
+            attempts += 1
+        return name
+
+    def _generate_region_description(
+        self,
+        biome: BiomeType,
+        rng: random.Random,
+    ) -> str:
+        """Generate environmental storytelling text for a region.
+
+        Combines segments from the biome's description pool to create
+        a unique, evocative description of the region.
+
+        Args:
+            biome: The region's biome.
+            rng: Random number generator.
+
+        Returns:
+            A narrative description string.
+        """
+        biome_key = biome.value
+        segments = REGION_DESCRIPTION_SEGMENTS.get(biome_key, REGION_DESCRIPTION_SEGMENTS.get("plains", []))
+        if not segments:
+            segments = ["A vast, uncharted territory stretching toward the horizon."]
+
+        chosen = rng.sample(segments, min(2, len(segments)))
+        return " ".join(chosen)
+
+    def _generate_poi_description(
+        self,
+        poi_type: PointOfInterestType,
+        biome: BiomeType,
+        significance: str,
+        rng: random.Random,
+    ) -> str:
+        """Generate a description for a point of interest.
+
+        Args:
+            poi_type: The type of POI.
+            biome: The surrounding biome.
+            significance: Importance level.
+            rng: Random number generator.
+
+        Returns:
+            A narrative description string.
+        """
+        significance_prefix = {
+            "minor": "A modest",
+            "major": "An impressive",
+            "legendary": "A legendary",
+        }.get(significance, "A")
+
+        description_templates: Dict[PointOfInterestType, List[str]] = {
+            PointOfInterestType.VILLAGE: [
+                f"{significance_prefix} settlement nestled within the {biome.value} landscape, where locals go about their daily routines.",
+                f"A small {biome.value} community built from local materials, its residents welcoming to travelers.",
+            ],
+            PointOfInterestType.TOWN: [
+                f"{significance_prefix} trade hub where merchants from surrounding regions gather to exchange goods.",
+                f"A bustling market town that serves as the economic heart of the surrounding {biome.value} territory.",
+            ],
+            PointOfInterestType.CITY: [
+                f"{significance_prefix} metropolis rising from the {biome.value}, its spires visible for miles.",
+                f"A grand city of stone and ambition, where thousands of souls pursue their fortunes in the {biome.value}.",
+            ],
+            PointOfInterestType.DUNGEON: [
+                f"{significance_prefix} underground complex carved into the {biome.value}, its depths unexplored for generations.",
+                f"A dark labyrinth beneath the {biome.value} surface, where treasures and dangers lie in equal measure.",
+            ],
+            PointOfInterestType.TEMPLE: [
+                f"{significance_prefix} sacred structure dedicated to ancient powers, its halls echoing with whispered prayers.",
+                f"A place of worship built where the veil between worlds grows thin, attracting pilgrims and scholars.",
+            ],
+            PointOfInterestType.RUINS: [
+                f"{significance_prefix} remnant of a forgotten age, its crumbling walls telling stories of glory and downfall.",
+                f"Weathered stones and broken arches mark where civilization once flourished in the {biome.value}.",
+            ],
+            PointOfInterestType.TOWER: [
+                f"{significance_prefix} spire reaching toward the sky, its purpose known only to those who dwell within.",
+                f"A solitary tower standing against the {biome.value} elements, its windows flickering with mysterious light.",
+            ],
+            PointOfInterestType.CAMP: [
+                f"{significance_prefix} encampment providing shelter for travelers braving the {biome.value}.",
+                f"A temporary settlement of tents and campfires, its occupants wary but not unfriendly.",
+            ],
+            PointOfInterestType.OASIS: [
+                f"{significance_prefix} haven of water and greenery in the {biome.value}, a lifeline for weary travelers.",
+                f"A spring-fed pool surrounded by vegetation, a rare sanctuary in the harsh {biome.value}.",
+            ],
+            PointOfInterestType.PORTAL: [
+                f"{significance_prefix} gateway shimmering with arcane energy, a threshold between worlds.",
+                f"A rift in reality where the {biome.value} landscape gives way to something beyond mortal understanding.",
+            ],
+            PointOfInterestType.SHRINE: [
+                f"{significance_prefix} sacred site marked by offerings and tokens left by those seeking favor.",
+                f"A quiet place of contemplation where the {biome.value} seems to hold its breath.",
+            ],
+            PointOfInterestType.BRIDGE: [
+                f"{significance_prefix} span crossing a natural divide, connecting two parts of the {biome.value}.",
+                f"A marvel of engineering or magic, this bridge has stood against the {biome.value} elements for ages.",
+            ],
+            PointOfInterestType.GRAVEYARD: [
+                f"{significance_prefix} burial ground where the {biome.value} slowly reclaims the markers of the dead.",
+                f"Rows of weathered tombstones stand in silent testimony to those who came before.",
+            ],
+            PointOfInterestType.MINE: [
+                f"{significance_prefix} excavation site where workers extract valuable resources from the {biome.value} earth.",
+                f"Dark tunnels plunge into the {biome.value} ground, their depths promising wealth and danger.",
+            ],
+            PointOfInterestType.LIGHTHOUSE: [
+                f"{significance_prefix} beacon standing at the edge of the {biome.value}, guiding ships safely to shore.",
+                f"A tower of light that pierces through the {biome.value} darkness, a symbol of hope and warning.",
+            ],
+            PointOfInterestType.OUTPOST: [
+                f"{significance_prefix} fortified position on the frontier of the {biome.value}, manned by vigilant guards.",
+                f"A small garrison built to watch over the {biome.value} and protect against its dangers.",
+            ],
+        }
+
+        templates = description_templates.get(poi_type, [
+            f"A notable location within the {biome.value}, its story waiting to be discovered.",
+        ])
+        return rng.choice(templates)
+
+    def _generate_world_lore(
+        self,
+        rng: random.Random,
+        world: WorldMap,
+    ) -> str:
+        """Generate world lore text summarizing the world's composition.
+
+        Args:
+            rng: Random number generator.
+            world: The world map to generate lore for.
+
+        Returns:
+            A narrative lore string.
+        """
+        region_count = len(world.regions)
+        poi_count = sum(
+            len(self._regions.get(rid, WorldRegion()).points_of_interest)
+            for rid in world.regions
+        )
+        total_pop = sum(
+            self._regions.get(rid, WorldRegion()).population
+            for rid in world.regions
+        )
+
+        biome_names: Set[str] = set()
+        for rid in world.regions:
+            r = self._regions.get(rid)
+            if r is not None:
+                biome_names.add(r.biome.value)
+
+        biome_list = ", ".join(sorted(biome_names)[:8])
+
+        ages = [
+            "the Age of Exploration",
+            "the Era of Founding",
+            "the Dawn of a New Cycle",
+            "the Time of Convergence",
+            "the Epoch of Strife",
+            "the Century of Rebuilding",
+            "the Age of Whispers",
+            "the Era of Shifting Sands",
+        ]
+
+        lore_lines: List[str] = [
+            f"During {rng.choice(ages)}, the world of {world.name} emerged as a land of {region_count} regions.",
+            f"",
+            f"Across {world.world_size:.0f} square kilometers, {len(biome_names)} distinct biomes shape the landscape: {biome_list}.",
+            f"",
+            f"A population of {total_pop:,} souls inhabits this world, scattered across {poi_count} points of interest.",
+            f"Each region tells its own story, from the safest heartlands to the most dangerous frontiers.",
+            f"",
+            f"Travelers who brave the connected regions will find adventure, danger, and discovery.",
+            f"Maps show intricate networks of paths linking settlements, ruins, and natural wonders.",
+            f"",
+            f"The balance of power shifts with every season, as factions rise and fall.",
+            f"Legends speak of secrets hidden in the oldest places, waiting for those bold enough to seek them.",
+        ]
+
+        # Add region-specific lore for the first few regions.
+        for rid in world.regions[:4]:
+            region = self._regions.get(rid)
+            if region is None:
+                continue
+            lore_lines.append("")
+            lore_lines.append(
+                f"The {region.name} is a {region.biome.value} region spanning {region.size:.0f} square kilometers. "
+                f"Home to {region.population:,} inhabitants, its danger level of {region.danger_level:.1%} "
+                f"makes it {'a treacherous frontier' if region.danger_level > 0.5 else 'a relatively safe domain'}."
+            )
+
+        return "\n".join(lore_lines)
+
+    # ------------------------------------------------------------------
+    # Internal: Computation Helpers
+    # ------------------------------------------------------------------
+
+    def _compute_population(
+        self,
+        biome: BiomeType,
+        size: float,
+        danger_level: float,
+    ) -> int:
+        """Compute population for a region based on biome habitability and size.
+
+        Args:
+            biome: The region's biome.
+            size: Region area in square kilometers.
+            danger_level: Danger rating affecting population.
+
+        Returns:
+            Estimated population count.
+        """
+        density_range = BIOME_POPULATION_DENSITY.get(biome, (1.0, 20.0))
+        base_density = density_range[0] + (density_range[1] - density_range[0]) * 0.5
+        # Higher danger reduces population.
+        danger_penalty = 1.0 - danger_level * 0.8
+        effective_density = base_density * danger_penalty
+        return max(0, int(effective_density * size))
+
+    def _derive_resources(
+        self,
+        biome: BiomeType,
         rng: random.Random,
     ) -> List[str]:
-        _time_module.sleep(0.001)
-        goods: List[str] = []
-        a_resources = set(region_a.resources)
-        b_resources = set(region_b.resources)
+        """Derive natural resources available in a biome.
 
-        a_exclusive = a_resources - b_resources
-        b_exclusive = b_resources - a_resources
+        Args:
+            biome: The region's biome.
+            rng: Random number generator.
 
-        if a_exclusive:
-            goods.append(f"{rng.choice(list(a_exclusive))}_export")
-        if b_exclusive:
-            goods.append(f"{rng.choice(list(b_exclusive))}_import")
+        Returns:
+            A list of resource name strings.
+        """
+        resource_pools: Dict[BiomeType, List[str]] = {
+            BiomeType.FOREST: ["timber", "herbs", "game", "mushrooms", "berries", "honey"],
+            BiomeType.DESERT: ["salt", "glass_sand", "oil", "gems", "cactus_fruit"],
+            BiomeType.TUNDRA: ["fur", "oil", "iron", "ice", "peat"],
+            BiomeType.SWAMP: ["peat", "herbs", "venom", "reeds", "fish", "clay"],
+            BiomeType.MOUNTAIN: ["iron", "coal", "gold", "stone", "gems", "marble"],
+            BiomeType.VOLCANIC: ["obsidian", "sulfur", "gems", "iron", "basalt"],
+            BiomeType.OCEAN: ["fish", "pearls", "coral", "salt", "oil"],
+            BiomeType.PLAINS: ["grain", "livestock", "clay", "freshwater", "wool"],
+            BiomeType.JUNGLE: ["rare_herbs", "exotic_fruit", "venom", "timber", "dyes"],
+            BiomeType.TAIGA: ["timber", "fur", "iron", "amber", "honey"],
+            BiomeType.SAVANNA: ["livestock", "grain", "clay", "salt", "ivory"],
+            BiomeType.CAVE: ["gems", "crystals", "mushrooms", "iron", "coal"],
+            BiomeType.URBAN: ["crafted_goods", "coin", "textiles", "spices", "tools"],
+            BiomeType.RUINS: ["ancient_relics", "salvage", "stone", "scrolls", "artifacts"],
+            BiomeType.CORRUPTED: ["void_crystals", "shadow_essence", "corrupted_iron", "dark_matter"],
+            BiomeType.CELESTIAL: ["starlight_shards", "aether_essence", "moonstone", "celestial_dust"],
+        }
 
-        mutual = a_resources & b_resources
-        if mutual:
-            goods.append(f"{rng.choice(list(mutual))}_mutual_trade")
-        if not goods:
-            goods.append("basic_supplies")
-        return goods
+        pool = resource_pools.get(biome, ["stone", "wood", "water"])
+        count = rng.randint(2, min(4, len(pool)))
+        return rng.sample(pool, count)
+
+    def _derive_npc_count(
+        self,
+        poi_type: PointOfInterestType,
+        significance: str,
+        rng: random.Random,
+    ) -> int:
+        """Derive NPC count for a point of interest.
+
+        Args:
+            poi_type: The type of POI.
+            significance: Importance level.
+            rng: Random number generator.
+
+        Returns:
+            Number of NPCs present.
+        """
+        base_ranges: Dict[PointOfInterestType, Tuple[int, int]] = {
+            PointOfInterestType.VILLAGE: (5, 30),
+            PointOfInterestType.TOWN: (20, 80),
+            PointOfInterestType.CITY: (50, 200),
+            PointOfInterestType.DUNGEON: (2, 15),
+            PointOfInterestType.TEMPLE: (3, 20),
+            PointOfInterestType.RUINS: (0, 10),
+            PointOfInterestType.TOWER: (1, 10),
+            PointOfInterestType.CAMP: (3, 25),
+            PointOfInterestType.OASIS: (2, 15),
+            PointOfInterestType.PORTAL: (0, 5),
+            PointOfInterestType.SHRINE: (1, 8),
+            PointOfInterestType.BRIDGE: (1, 5),
+            PointOfInterestType.GRAVEYARD: (0, 3),
+            PointOfInterestType.MINE: (5, 30),
+            PointOfInterestType.LIGHTHOUSE: (1, 5),
+            PointOfInterestType.OUTPOST: (5, 25),
+        }
+
+        lo, hi = base_ranges.get(poi_type, (1, 10))
+        # Significance amplifies NPC count.
+        sig_mult = {"minor": 1.0, "major": 1.8, "legendary": 3.0}.get(significance, 1.0)
+        return max(0, int(rng.randint(lo, hi) * sig_mult))
 
 
-def get_agent_world_builder() -> AgentWorldBuilder:
-    return AgentWorldBuilder.get_instance()
+# ------------------------------------------------------------------
+# Module-Level Accessor
+# ------------------------------------------------------------------
+
+
+def get_world_builder_engine() -> WorldBuilderEngine:
+    """Get the singleton WorldBuilderEngine instance."""
+    return WorldBuilderEngine.get_instance()
