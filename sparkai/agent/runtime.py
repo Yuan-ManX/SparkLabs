@@ -369,7 +369,7 @@ from sparkai.agent.agent_gameplay_ecosystem import GameplayEcosystemSimulator, g
 from sparkai.agent.agent_creative_director import AgentCreativeDirector, get_creative_director
 from sparkai.agent.agent_social_simulation import AgentSocialSimulation, get_agent_social_simulation
 from sparkai.agent.agent_monetization_designer import AgentMonetizationDesigner, get_monetization_designer
-from sparkai.agent.agent_world_builder import AgentWorldBuilder, get_agent_world_builder
+from sparkai.agent.agent_world_builder import WorldBuilderEngine, get_world_builder_engine
 from sparkai.agent.agent_behavior_designer import AgentBehaviorDesigner, get_agent_behavior_designer
 from sparkai.agent.agent_quest_composer import AgentQuestComposer, get_agent_quest_composer
 from sparkai.agent.agent_multi_agent_coordinator import AgentMultiAgentCoordinator, get_multi_agent_coordinator
@@ -403,7 +403,7 @@ from sparkai.engine.engine_audio_synthesis import EngineAudioSynthesis, get_audi
 from sparkai.engine.engine_environment_manager import EngineEnvironmentManager, get_engine_environment_manager
 from sparkai.agent.agent_world_simulation import AgentWorldSimulation, get_agent_world_simulation
 from sparkai.agent.agent_economy_simulator import AgentEconomySimulator, get_agent_economy_simulator
-from sparkai.engine.engine_weather_system import EngineWeatherSystem, get_weather_system
+from sparkai.engine.engine_weather_system import WeatherSystemEngine, get_weather_system
 from sparkai.engine.engine_water_simulation import EngineWaterSimulation, get_water_simulation
 from sparkai.agent.agent_intelligence_core import AgentIntelligenceCore, get_agent_intelligence_core
 from sparkai.engine.engine_unification_core import EngineUnificationCore, get_engine_unification_core
@@ -528,7 +528,7 @@ from sparkai.engine.fog_of_war import FogOfWarSystem, TileVisibility, FogShape, 
 from sparkai.engine.game_modes import GameModeSystem, BuiltInMode, ModeLayer, get_game_mode_system
 from sparkai.agent.agent_emotion_synthesis import AgentEmotionSynthesis, get_emotion_synthesis
 from sparkai.agent.agent_story_forge import AgentStoryForge, get_story_forge
-from sparkai.agent.agent_quest_generator import AgentQuestGenerator, get_quest_generator
+from sparkai.agent.agent_quest_generator import QuestGeneratorEngine, get_quest_generator
 from sparkai.agent.agent_dialogue_engine import AgentDialogueEngine, get_dialogue_engine
 from sparkai.engine.engine_camera_controller import EngineCameraController, get_camera_controller
 from sparkai.engine.engine_pathfinding import EnginePathfinding, get_pathfinding_engine
@@ -540,6 +540,15 @@ from sparkai.agent.agent_multi_objective_optimizer import AgentMultiObjectiveOpt
 from sparkai.engine.engine_volumetric_rendering import EngineVolumetricRendering, get_volumetric_rendering
 from sparkai.engine.engine_crowd_dynamics import EngineCrowdDynamics, get_crowd_dynamics
 from sparkai.engine.engine_fluid_dynamics import EngineFluidDynamics, get_fluid_dynamics
+
+from sparkai.agent.agent_self_evolution import SelfEvolutionEngine, get_self_evolution_engine
+from sparkai.agent.agent_skill_accumulator import SkillAccumulatorEngine, get_skill_accumulator_engine
+from sparkai.agent.agent_layered_memory import LayeredMemoryEngine, get_layered_memory_engine
+from sparkai.agent.agent_world_simulator import WorldSimulatorEngine, get_world_simulator_engine
+from sparkai.agent.agent_emergent_storyteller import EmergentStorytellerEngine, get_emergent_storyteller_engine
+from sparkai.engine.engine_node_editor import NodeEditorEngine, get_node_editor_engine
+from sparkai.engine.engine_scene_serializer import SceneSerializerEngine, get_scene_serializer_engine
+from sparkai.engine.engine_signal_bus import SignalBus as EngineSignalBus, get_signal_bus as get_engine_signal_bus
 
 
 class RuntimeState(Enum):
@@ -912,7 +921,7 @@ class AgentRuntime:
         self._creative_director: Optional[AgentCreativeDirector] = None
         self._social_simulation: Optional[AgentSocialSimulation] = None
         self._monetization_designer: Optional[AgentMonetizationDesigner] = None
-        self._world_builder: Optional[AgentWorldBuilder] = None
+        self._world_builder: Optional[WorldBuilderEngine] = None
         self._behavior_designer: Optional[AgentBehaviorDesigner] = None
         self._quest_composer: Optional[AgentQuestComposer] = None
         self._multi_agent_coordinator: Optional[AgentMultiAgentCoordinator] = None
@@ -945,14 +954,14 @@ class AgentRuntime:
         self._emotion_synthesis: Optional[AgentEmotionSynthesis] = None
         self._world_simulation: Optional[AgentWorldSimulation] = None
         self._economy_simulator: Optional[AgentEconomySimulator] = None
-        self._weather_system: Optional[EngineWeatherSystem] = None
+        self._weather_system: Optional[WeatherSystemEngine] = None
         self._water_simulation: Optional[EngineWaterSimulation] = None
         self._intelligence_core: Optional[AgentIntelligenceCore] = None
         self._engine_unification_core: Optional[EngineUnificationCore] = None
         self._metacognition: Optional[AgentMetacognition] = None
         self._predictive_intelligence: Optional[AgentPredictiveIntelligence] = None
         self._story_forge: Optional[AgentStoryForge] = None
-        self._quest_generator: Optional[AgentQuestGenerator] = None
+        self._quest_generator: Optional[QuestGeneratorEngine] = None
         self._dialogue_engine: Optional[AgentDialogueEngine] = None
         self._camera_controller: Optional[EngineCameraController] = None
         self._pathfinding_engine: Optional[EnginePathfinding] = None
@@ -964,6 +973,14 @@ class AgentRuntime:
         self._volumetric_rendering: Optional[EngineVolumetricRendering] = None
         self._crowd_dynamics: Optional[EngineCrowdDynamics] = None
         self._fluid_dynamics: Optional[EngineFluidDynamics] = None
+        self._self_evolution: Optional[SelfEvolutionEngine] = None
+        self._skill_accumulator: Optional[SkillAccumulatorEngine] = None
+        self._layered_memory: Optional[LayeredMemoryEngine] = None
+        self._world_simulator: Optional[WorldSimulatorEngine] = None
+        self._emergent_storyteller: Optional[EmergentStorytellerEngine] = None
+        self._node_editor: Optional[NodeEditorEngine] = None
+        self._scene_serializer: Optional[SceneSerializerEngine] = None
+        self._engine_signal_bus: Optional[EngineSignalBus] = None
         self._causal_reasoning_ok: bool = False
         self._multi_objective_optimizer_ok: bool = False
         self._volumetric_rendering_ok: bool = False
@@ -1345,7 +1362,7 @@ class AgentRuntime:
             self._creative_director = get_creative_director()
             self._social_simulation = get_agent_social_simulation()
             self._monetization_designer = get_monetization_designer()
-            self._world_builder = get_agent_world_builder()
+            self._world_builder = get_world_builder_engine()
             self._behavior_designer = get_agent_behavior_designer()
             self._quest_composer = get_agent_quest_composer()
             self._multi_agent_coordinator = get_multi_agent_coordinator()
@@ -1391,6 +1408,14 @@ class AgentRuntime:
             self._volumetric_rendering = get_volumetric_rendering()
             self._crowd_dynamics = get_crowd_dynamics()
             self._fluid_dynamics = get_fluid_dynamics()
+            self._self_evolution = get_self_evolution_engine()
+            self._skill_accumulator = get_skill_accumulator_engine()
+            self._layered_memory = get_layered_memory_engine()
+            self._world_simulator = get_world_simulator_engine()
+            self._emergent_storyteller = get_emergent_storyteller_engine()
+            self._node_editor = get_node_editor_engine()
+            self._scene_serializer = get_scene_serializer_engine()
+            self._engine_signal_bus = get_engine_signal_bus()
             self._world_simulation = get_agent_world_simulation()
             self._economy_simulator = get_agent_economy_simulator()
             self._weather_system = get_weather_system()
@@ -1740,6 +1765,14 @@ class AgentRuntime:
             self._integration.register_subsystem("concurrency_manager", self._concurrency_manager)
             self._integration.register_subsystem("verification_pipeline", self._verification_pipeline)
             self._integration.register_subsystem("playtest_simulator", self._playtest_simulator)
+            self._integration.register_subsystem("self_evolution", self._self_evolution)
+            self._integration.register_subsystem("skill_accumulator", self._skill_accumulator)
+            self._integration.register_subsystem("layered_memory", self._layered_memory)
+            self._integration.register_subsystem("world_simulator", self._world_simulator)
+            self._integration.register_subsystem("emergent_storyteller", self._emergent_storyteller)
+            self._integration.register_subsystem("node_editor", self._node_editor)
+            self._integration.register_subsystem("scene_serializer", self._scene_serializer)
+            self._integration.register_subsystem("engine_signal_bus", self._engine_signal_bus)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -3093,6 +3126,14 @@ class AgentRuntime:
             "volumetric_rendering": self._volumetric_rendering is not None,
             "crowd_dynamics": self._crowd_dynamics is not None,
             "fluid_dynamics": self._fluid_dynamics is not None,
+            "self_evolution": self._self_evolution is not None,
+            "skill_accumulator": self._skill_accumulator is not None,
+            "layered_memory": self._layered_memory is not None,
+            "world_simulator": self._world_simulator is not None,
+            "emergent_storyteller": self._emergent_storyteller is not None,
+            "node_editor": self._node_editor is not None,
+            "scene_serializer": self._scene_serializer is not None,
+            "engine_signal_bus": self._engine_signal_bus is not None,
             },
         }
 
@@ -3750,6 +3791,22 @@ class AgentRuntime:
             status["crowd_dynamics_stats"] = self._crowd_dynamics.get_status()
         if self._fluid_dynamics:
             status["fluid_dynamics_stats"] = self._fluid_dynamics.get_status()
+        if self._self_evolution:
+            status["self_evolution_stats"] = self._self_evolution.get_stats()
+        if self._skill_accumulator:
+            status["skill_accumulator_stats"] = self._skill_accumulator.get_stats()
+        if self._layered_memory:
+            status["layered_memory_stats"] = self._layered_memory.get_stats()
+        if self._world_simulator:
+            status["world_simulator_stats"] = self._world_simulator.get_stats()
+        if self._emergent_storyteller:
+            status["emergent_storyteller_stats"] = self._emergent_storyteller.get_stats()
+        if self._node_editor:
+            status["node_editor_stats"] = self._node_editor.get_stats()
+        if self._scene_serializer:
+            status["scene_serializer_stats"] = self._scene_serializer.get_stats()
+        if self._engine_signal_bus:
+            status["engine_signal_bus_stats"] = self._engine_signal_bus.get_signal_bus_stats()
         return status
 
 
