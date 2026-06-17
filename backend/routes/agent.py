@@ -31925,3 +31925,160 @@ async def dynamic_difficulty_get_profile(request: Request):
         return {"status": "ok", "profile": profile.to_dict() if profile else None}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+# ============================================================
+# World Builder Routes
+# ============================================================
+
+@router.get("/world-builder/stats")
+async def world_builder_stats():
+    try:
+        from sparkai.agent.agent_world_builder import get_world_builder_engine
+        instance = get_world_builder_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/world-builder/create-world")
+async def world_builder_create_world(request: Request):
+    try:
+        from sparkai.agent.agent_world_builder import get_world_builder_engine
+        body = await request.json()
+        instance = get_world_builder_engine()
+        world = instance.create_world(body.get("name",""), body.get("seed",0), body.get("world_size","medium"), body.get("description",""))
+        return {"status": "ok", "world": world.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/world-builder/random-world")
+async def world_builder_random_world(request: Request):
+    try:
+        from sparkai.agent.agent_world_builder import get_world_builder_engine
+        body = await request.json()
+        instance = get_world_builder_engine()
+        world = instance.generate_random_world(body.get("name",""), body.get("num_regions",5))
+        return {"status": "ok", "world": world.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/world-builder/add-region")
+async def world_builder_add_region(request: Request):
+    try:
+        from sparkai.agent.agent_world_builder import get_world_builder_engine
+        body = await request.json()
+        instance = get_world_builder_engine()
+        region = instance.generate_region(body.get("map_id",""), body.get("biome","forest"), body.get("size","medium"), body.get("danger_level",1))
+        return {"status": "ok", "region": region.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/world-builder/add-poi")
+async def world_builder_add_poi(request: Request):
+    try:
+        from sparkai.agent.agent_world_builder import get_world_builder_engine
+        body = await request.json()
+        instance = get_world_builder_engine()
+        poi = instance.add_point_of_interest(body.get("region_id",""), body.get("name",""), body.get("poi_type","village"), body.get("description",""), body.get("significance",""), body.get("npc_count",0), body.get("quest_hooks",[]), body.get("loot_tier",""), body.get("danger_level",1))
+        return {"status": "ok", "poi": poi.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/world-builder/validate")
+async def world_builder_validate(request: Request):
+    try:
+        from sparkai.agent.agent_world_builder import get_world_builder_engine
+        body = await request.json()
+        instance = get_world_builder_engine()
+        result = instance.validate_world(body.get("map_id",""))
+        return {"status": "ok", "validation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/world-builder/worlds")
+async def world_builder_worlds():
+    try:
+        from sparkai.agent.agent_world_builder import get_world_builder_engine
+        instance = get_world_builder_engine()
+        worlds = instance.list_worlds()
+        return {"status": "ok", "worlds": [w.to_dict() for w in worlds]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Character Creator Routes
+# ============================================================
+
+@router.get("/character-creator/stats")
+async def character_creator_stats():
+    try:
+        from sparkai.agent.agent_character_creator import get_character_creator
+        instance = get_character_creator()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/character-creator/create")
+async def character_creator_create(request: Request):
+    try:
+        from sparkai.agent.agent_character_creator import get_character_creator
+        body = await request.json()
+        instance = get_character_creator()
+        char = instance.create_character(body.get("name",""), body.get("role","player"), body.get("char_class","warrior"), body.get("race","human"), body.get("level",1), body.get("alignment","true_neutral"))
+        return {"status": "ok", "character": char.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/character-creator/random")
+async def character_creator_random(request: Request):
+    try:
+        from sparkai.agent.agent_character_creator import get_character_creator
+        body = await request.json()
+        instance = get_character_creator()
+        char = instance.generate_random_character(body.get("role","player"), body.get("level",1))
+        return {"status": "ok", "character": char.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/character-creator/enemy")
+async def character_creator_enemy(request: Request):
+    try:
+        from sparkai.agent.agent_character_creator import get_character_creator
+        body = await request.json()
+        instance = get_character_creator()
+        char = instance.generate_enemy(body.get("name",""), body.get("level",1), body.get("difficulty","normal"))
+        return {"status": "ok", "character": char.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/character-creator/boss")
+async def character_creator_boss(request: Request):
+    try:
+        from sparkai.agent.agent_character_creator import get_character_creator
+        body = await request.json()
+        instance = get_character_creator()
+        char = instance.generate_boss(body.get("name",""), body.get("level",10), body.get("theme","dark"))
+        return {"status": "ok", "character": char.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/character-creator/power-level")
+async def character_creator_power(request: Request):
+    try:
+        from sparkai.agent.agent_character_creator import get_character_creator
+        body = await request.json()
+        instance = get_character_creator()
+        power = instance.calculate_power_level(body.get("profile_id",""))
+        return {"status": "ok", "power_level": power}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/character-creator/characters")
+async def character_creator_characters(request: Request):
+    try:
+        from sparkai.agent.agent_character_creator import get_character_creator
+        instance = get_character_creator()
+        chars = instance.list_characters(request.query_params.get("role"), request.query_params.get("char_class"), request.query_params.get("race"))
+        return {"status": "ok", "characters": [c.to_dict() for c in chars]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
