@@ -205,20 +205,15 @@ from sparkai.engine.engine_animation_controller import (
     get_animation_controller,
 )
 from sparkai.engine.engine_input_mapping import (
-    ActionDefinition,
-    ActionMap,
-    ActionType as InputActionType,
-    ChordDefinition,
-    ChordModifier,
-    DeadZoneMode,
-    EngineInputMapping,
+    InputDevice,
+    InputAction,
+    GestureType,
     InputBinding,
-    InputDevice as MappingInputDevice,
-    InputEventType as MappingInputEventType,
-    InputFrame,
-    InputState,
-    InputZone,
-    get_input_mapping,
+    ControlScheme,
+    GesturePattern,
+    InputBufferEntry,
+    InputMappingEngine,
+    get_input_mapping_engine,
 )
 from sparkai.engine.engine_node_composer import (
     EngineNodeComposer,
@@ -725,6 +720,23 @@ from sparkai.engine.engine_extension_registry import (
     ObjectTypeModule,
     get_extension_registry,
 )
+from sparkai.engine.engine_node_editor import (
+    NodeEditorEngine, NodeCategory, PortDirection, PortDataType,
+    GraphExecutionState, NodePort, NodeConnection, GraphNode,
+    NodeGraph, NodeTemplate,
+    get_node_editor_engine,
+)
+from sparkai.engine.engine_scene_serializer import (
+    SceneSerializerEngine, SerializationFormat, SceneVersion,
+    DiffOperation, MergeStrategy, SceneData, SceneDiff,
+    SceneSavePoint,
+    get_scene_serializer_engine,
+)
+from sparkai.engine.engine_signal_bus import (
+    SignalBus, SignalCategory, ConnectionState,
+    SignalDefinition, SignalConnection, SignalEmission,
+    get_signal_bus as get_engine_signal_bus,
+)
 
 __all__ = [
     # Existing
@@ -903,20 +915,15 @@ __all__ = [
     "TransitionConditionData",
     "get_animation_controller",
     # engine_input_mapping
-    "ActionDefinition",
-    "ActionMap",
-    "InputActionType",
-    "ChordDefinition",
-    "ChordModifier",
-    "DeadZoneMode",
-    "EngineInputMapping",
+    "InputDevice",
+    "InputAction",
+    "GestureType",
     "InputBinding",
-    "MappingInputDevice",
-    "MappingInputEventType",
-    "InputFrame",
-    "InputState",
-    "InputZone",
-    "get_input_mapping",
+    "ControlScheme",
+    "GesturePattern",
+    "InputBufferEntry",
+    "InputMappingEngine",
+    "get_input_mapping_engine",
     # engine_node_composer
     "EngineNodeComposer",
     "NodeGroup",
@@ -1383,4 +1390,34 @@ __all__ = [
     "InstallSource",
     "ObjectTypeModule",
     "get_extension_registry",
+    # Node Editor
+    "NodeEditorEngine",
+    "NodeCategory",
+    "PortDirection",
+    "PortDataType",
+    "GraphExecutionState",
+    "NodePort",
+    "NodeConnection",
+    "GraphNode",
+    "NodeGraph",
+    "NodeTemplate",
+    "get_node_editor_engine",
+    # Scene Serializer
+    "SceneSerializerEngine",
+    "SerializationFormat",
+    "SceneVersion",
+    "DiffOperation",
+    "MergeStrategy",
+    "SceneData",
+    "SceneDiff",
+    "SceneSavePoint",
+    "get_scene_serializer_engine",
+    # Engine Signal Bus
+    "SignalBus",
+    "SignalCategory",
+    "ConnectionState",
+    "SignalDefinition",
+    "SignalConnection",
+    "SignalEmission",
+    "get_engine_signal_bus",
 ]
