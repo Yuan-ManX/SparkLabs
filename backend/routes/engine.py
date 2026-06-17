@@ -6602,3 +6602,148 @@ async def network_layer_find_match(request: Request):
         return {"status": "ok", "match": result}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+# ============================================================
+# Physics World Routes
+# ============================================================
+
+@router.get("/physics-world/stats")
+async def physics_world_stats():
+    try:
+        from sparkai.engine.engine_physics_world import get_physics_world
+        instance = get_physics_world()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/physics-world/create-body")
+async def physics_world_create_body(request: Request):
+    try:
+        from sparkai.engine.engine_physics_world import get_physics_world
+        body = await request.json()
+        instance = get_physics_world()
+        phys_body = instance.create_body(body.get("name",""), body.get("body_type","dynamic"), body.get("shape","box"), body.get("position",{"x":0,"y":0,"z":0}), body.get("mass",1.0), body.get("restitution",0.3), body.get("friction",0.5), body.get("collision_layer",1), body.get("collision_mask",1))
+        return {"status": "ok", "body": phys_body.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/physics-world/apply-force")
+async def physics_world_apply_force(request: Request):
+    try:
+        from sparkai.engine.engine_physics_world import get_physics_world
+        body = await request.json()
+        instance = get_physics_world()
+        result = instance.apply_force(body.get("body_id",""), body.get("force_type","impulse"), body.get("direction",{"x":0,"y":1,"z":0}), body.get("magnitude",10.0), body.get("duration",1.0))
+        return {"status": "ok", "body": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/physics-world/step")
+async def physics_world_step(request: Request):
+    try:
+        from sparkai.engine.engine_physics_world import get_physics_world
+        body = await request.json()
+        instance = get_physics_world()
+        events = instance.step(body.get("delta_time",0.016))
+        return {"status": "ok", "collision_events": [e.to_dict() for e in events]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/physics-world/simulate")
+async def physics_world_simulate(request: Request):
+    try:
+        from sparkai.engine.engine_physics_world import get_physics_world
+        body = await request.json()
+        instance = get_physics_world()
+        result = instance.simulate_frames(body.get("frame_count",60), body.get("delta_time",0.016))
+        return {"status": "ok", "simulation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/physics-world/bodies")
+async def physics_world_bodies(request: Request):
+    try:
+        from sparkai.engine.engine_physics_world import get_physics_world
+        instance = get_physics_world()
+        bodies = instance.list_bodies(request.query_params.get("body_type"))
+        return {"status": "ok", "bodies": [b.to_dict() for b in bodies]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Weather System Routes
+# ============================================================
+
+@router.get("/weather-system/stats")
+async def weather_system_stats():
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/weather-system/set-weather")
+async def weather_system_set_weather(request: Request):
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        body = await request.json()
+        instance = get_weather_system()
+        condition = instance.set_weather(body.get("weather_type","clear"), body.get("intensity","light"), body.get("duration",300.0), body.get("transition_time",5.0))
+        return {"status": "ok", "condition": condition.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/weather-system/transition")
+async def weather_system_transition(request: Request):
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        body = await request.json()
+        instance = get_weather_system()
+        condition = instance.transition_weather(body.get("weather_type","clear"), body.get("intensity","light"), body.get("duration",300.0), body.get("transition_time",10.0))
+        return {"status": "ok", "condition": condition.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/weather-system/current")
+async def weather_system_current():
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        condition = instance.get_current_weather()
+        return {"status": "ok", "condition": condition.to_dict() if condition else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/weather-system/advance-time")
+async def weather_system_advance_time(request: Request):
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        body = await request.json()
+        instance = get_weather_system()
+        cycle = instance.advance_time(body.get("delta_seconds",60.0))
+        return {"status": "ok", "cycle": cycle.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/weather-system/modifiers")
+async def weather_system_modifiers():
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        modifiers = instance.get_gameplay_modifiers()
+        return {"status": "ok", "modifiers": modifiers}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/weather-system/predict")
+async def weather_system_predict(request: Request):
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        body = await request.json()
+        instance = get_weather_system()
+        forecast = instance.predict_weather(body.get("forecast_seconds",3600.0))
+        return {"status": "ok", "forecast": [c.to_dict() for c in forecast]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
