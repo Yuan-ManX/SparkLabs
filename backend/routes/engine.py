@@ -6747,3 +6747,495 @@ async def weather_system_predict(request: Request):
         return {"status": "ok", "forecast": [c.to_dict() for c in forecast]}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Audio System Routes
+# ============================================================
+
+@router.get("/audio-system/stats")
+async def audio_system_stats():
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        instance = get_audio_system()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/audio-system/load-asset")
+async def audio_system_load_asset(request: Request):
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        body = await request.json()
+        instance = get_audio_system()
+        asset = instance.load_asset(body.get("name",""), body.get("category","sfx"), body.get("file_path",""), body.get("duration",1.0), body.get("volume",1.0), body.get("pitch",1.0), body.get("priority","medium"), body.get("playback_mode","once"), body.get("is_3d",False), body.get("tags",[]))
+        return {"status": "ok", "asset": asset.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/audio-system/play")
+async def audio_system_play(request: Request):
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        body = await request.json()
+        instance = get_audio_system()
+        inst = instance.play(body.get("asset_id",""), body.get("position",{"x":0,"y":0,"z":0}), body.get("volume",1.0), body.get("pitch",1.0), body.get("loop",False))
+        return {"status": "ok", "instance": inst.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/audio-system/stop")
+async def audio_system_stop(request: Request):
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        body = await request.json()
+        instance = get_audio_system()
+        inst = instance.stop(body.get("instance_id",""))
+        return {"status": "ok", "instance": inst.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/audio-system/create-channel")
+async def audio_system_create_channel(request: Request):
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        body = await request.json()
+        instance = get_audio_system()
+        channel = instance.create_channel(body.get("name",""), body.get("category","sfx"), body.get("volume",1.0))
+        return {"status": "ok", "channel": channel.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/audio-system/random")
+async def audio_system_random(request: Request):
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        body = await request.json()
+        instance = get_audio_system()
+        inst = instance.play_random_from_category(body.get("category","sfx"), body.get("position",{"x":0,"y":0,"z":0}), body.get("volume",1.0))
+        return {"status": "ok", "instance": inst.to_dict() if inst else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/audio-system/active")
+async def audio_system_active():
+    try:
+        from sparkai.engine.engine_audio_system import get_audio_system
+        instance = get_audio_system()
+        instances = instance.get_active_instances()
+        return {"status": "ok", "instances": [i.to_dict() for i in instances]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Achievement System Routes
+# ============================================================
+
+@router.get("/achievement-system/stats")
+async def achievement_system_stats():
+    try:
+        from sparkai.engine.engine_achievement_system import get_achievement_system_engine
+        instance = get_achievement_system_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/achievement-system/create")
+async def achievement_system_create(request: Request):
+    try:
+        from sparkai.engine.engine_achievement_system import get_achievement_system_engine
+        body = await request.json()
+        instance = get_achievement_system_engine()
+        ach = instance.create_achievement(body.get("name",""), body.get("description",""), body.get("category","combat"), body.get("rarity","common"), body.get("target_value",1), body.get("reward_exp",0), body.get("reward_currency",{}), body.get("reward_items",[]), body.get("is_hidden",False))
+        return {"status": "ok", "achievement": ach.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/achievement-system/update-progress")
+async def achievement_system_update_progress(request: Request):
+    try:
+        from sparkai.engine.engine_achievement_system import get_achievement_system_engine
+        body = await request.json()
+        instance = get_achievement_system_engine()
+        prog = instance.update_progress(body.get("player_id",""), body.get("def_id",""), body.get("progress_increment",1))
+        return {"status": "ok", "progress": prog.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/achievement-system/check-unlocks")
+async def achievement_system_check_unlocks(request: Request):
+    try:
+        from sparkai.engine.engine_achievement_system import get_achievement_system_engine
+        body = await request.json()
+        instance = get_achievement_system_engine()
+        notifications = instance.check_unlocks(body.get("player_id",""))
+        return {"status": "ok", "notifications": [n.to_dict() for n in notifications]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/achievement-system/generate")
+async def achievement_system_generate(request: Request):
+    try:
+        from sparkai.engine.engine_achievement_system import get_achievement_system_engine
+        body = await request.json()
+        instance = get_achievement_system_engine()
+        achievements = instance.generate_achievements_for_category(body.get("category","combat"), body.get("count",10))
+        return {"status": "ok", "achievements": [a.to_dict() for a in achievements]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/achievement-system/recommend")
+async def achievement_system_recommend(request: Request):
+    try:
+        from sparkai.engine.engine_achievement_system import get_achievement_system_engine
+        body = await request.json()
+        instance = get_achievement_system_engine()
+        achievements = instance.recommend_achievements(body.get("player_id",""))
+        return {"status": "ok", "achievements": [a.to_dict() for a in achievements]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Engine Signal Bus Routes
+# ============================================================
+
+@router.get("/signal-bus/stats")
+async def signal_bus_stats():
+    """Get signal bus statistics."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus
+        instance = get_signal_bus()
+        return {"status": "ok", "stats": instance.get_signal_bus_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/signal-bus/define")
+async def signal_bus_define_signal(request: Request):
+    """Define a new signal."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus, SignalCategory
+        body = await request.json()
+        instance = get_signal_bus()
+        cat = SignalCategory(body.get("category", "custom"))
+        sig_id = instance.define_signal(
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            parameters=body.get("parameters", []),
+            category=cat,
+            namespace=body.get("namespace", "default"),
+        )
+        return {"status": "ok", "signal_id": sig_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/signal-bus/connect")
+async def signal_bus_connect(request: Request):
+    """Connect a listener to a signal."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus
+        body = await request.json()
+        instance = get_signal_bus()
+
+        def callback(**kwargs):
+            pass
+
+        conn_id = instance.connect(
+            signal_id=body.get("signal_id", ""),
+            listener_id=body.get("listener_id", ""),
+            callback_name=body.get("callback_name", "default"),
+            callback=callback,
+            priority=body.get("priority", 0),
+            one_shot=body.get("one_shot", False),
+        )
+        return {"status": "ok", "connection_id": conn_id}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/signal-bus/emit")
+async def signal_bus_emit(request: Request):
+    """Emit a signal."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus
+        body = await request.json()
+        instance = get_signal_bus()
+        result = instance.emit(
+            signal_id=body.get("signal_id", ""),
+            payload=body.get("payload", {}),
+            emitted_by=body.get("emitted_by", "api"),
+        )
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/signal-bus/batch-emit")
+async def signal_bus_batch_emit(request: Request):
+    """Batch emit multiple signals."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus
+        body = await request.json()
+        instance = get_signal_bus()
+        result = instance.batch_emit(
+            emissions=body.get("emissions", []),
+            batch_id=body.get("batch_id"),
+        )
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/signal-bus/definitions")
+async def signal_bus_list_definitions(namespace: str = None, category: str = None):
+    """List signal definitions."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus, SignalCategory
+        instance = get_signal_bus()
+        cat = SignalCategory(category) if category else None
+        defs = instance.list_definitions(namespace=namespace, category=cat)
+        return {"status": "ok", "definitions": [d.to_dict() for d in defs]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/signal-bus/namespaces")
+async def signal_bus_list_namespaces():
+    """List signal namespaces."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus
+        instance = get_signal_bus()
+        return {"status": "ok", "namespaces": instance.list_namespaces()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/signal-bus/history")
+async def signal_bus_history(signal_id: str = "", limit: int = 100):
+    """Get signal emission history."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus
+        instance = get_signal_bus()
+        history = instance.get_emission_history(signal_id=signal_id, limit=limit)
+        return {"status": "ok", "history": history}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/signal-bus/disconnect")
+async def signal_bus_disconnect(request: Request):
+    """Disconnect a signal connection."""
+    try:
+        from sparkai.engine.engine_signal_bus import get_signal_bus
+        body = await request.json()
+        instance = get_signal_bus()
+        result = instance.disconnect(connection_id=body.get("connection_id", ""))
+        return {"status": "ok", "disconnected": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Node Editor Routes
+# ============================================================
+
+@router.get("/node-editor/stats")
+async def node_editor_stats():
+    """Get node editor statistics."""
+    try:
+        from sparkai.engine.engine_node_editor import get_node_editor_engine
+        instance = get_node_editor_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/node-editor/create-graph")
+async def node_editor_create_graph(request: Request):
+    """Create a new node graph."""
+    try:
+        from sparkai.engine.engine_node_editor import get_node_editor_engine
+        body = await request.json()
+        instance = get_node_editor_engine()
+        graph = instance.create_graph(
+            name=body.get("name", "Untitled"),
+            description=body.get("description", ""),
+        )
+        return {"status": "ok", "graph": graph.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/node-editor/create-node")
+async def node_editor_create_node(request: Request):
+    """Create a node in a graph."""
+    try:
+        from sparkai.engine.engine_node_editor import get_node_editor_engine
+        body = await request.json()
+        instance = get_node_editor_engine()
+        node = instance.create_node(
+            graph_id=body.get("graph_id", ""),
+            name=body.get("name", "Node"),
+            node_type=body.get("node_type", "custom"),
+            category=body.get("category", "general"),
+            position=body.get("position"),
+            properties=body.get("properties"),
+        )
+        return {"status": "ok", "node": node.to_dict() if node else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/node-editor/connect-nodes")
+async def node_editor_connect_nodes(request: Request):
+    """Connect two nodes in a graph."""
+    try:
+        from sparkai.engine.engine_node_editor import get_node_editor_engine
+        body = await request.json()
+        instance = get_node_editor_engine()
+        conn = instance.connect_nodes(
+            graph_id=body.get("graph_id", ""),
+            source_node_id=body.get("source_node_id", ""),
+            source_port_id=body.get("source_port_id", ""),
+            target_node_id=body.get("target_node_id", ""),
+            target_port_id=body.get("target_port_id", ""),
+        )
+        return {"status": "ok", "connection": conn.to_dict() if conn else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/node-editor/execute-graph")
+async def node_editor_execute_graph(request: Request):
+    """Execute a node graph."""
+    try:
+        from sparkai.engine.engine_node_editor import get_node_editor_engine
+        body = await request.json()
+        instance = get_node_editor_engine()
+        result = instance.execute_graph(
+            graph_id=body.get("graph_id", ""),
+            inputs=body.get("inputs"),
+        )
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/node-editor/graphs")
+async def node_editor_list_graphs():
+    """List all node graphs."""
+    try:
+        from sparkai.engine.engine_node_editor import get_node_editor_engine
+        instance = get_node_editor_engine()
+        graphs = instance.list_graphs()
+        return {"status": "ok", "graphs": [g.to_dict() for g in graphs]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/node-editor/templates")
+async def node_editor_list_templates(category: str = None):
+    """List node templates."""
+    try:
+        from sparkai.engine.engine_node_editor import get_node_editor_engine
+        instance = get_node_editor_engine()
+        templates = instance.get_templates(category=category)
+        return {"status": "ok", "templates": [t.to_dict() for t in templates]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Scene Serializer Routes
+# ============================================================
+
+@router.get("/scene-serializer/stats")
+async def scene_serializer_stats():
+    """Get scene serializer statistics."""
+    try:
+        from sparkai.engine.engine_scene_serializer import get_scene_serializer_engine
+        instance = get_scene_serializer_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/scene-serializer/create-scene")
+async def scene_serializer_create_scene(request: Request):
+    """Create a new scene data object."""
+    try:
+        from sparkai.engine.engine_scene_serializer import get_scene_serializer_engine
+        body = await request.json()
+        instance = get_scene_serializer_engine()
+        scene = instance.create_scene(
+            name=body.get("name", "Untitled"),
+            entities=body.get("entities"),
+            layers=body.get("layers"),
+            settings=body.get("settings"),
+            metadata=body.get("metadata"),
+            asset_references=body.get("asset_references"),
+        )
+        return {"status": "ok", "scene": scene.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/scene-serializer/serialize")
+async def scene_serializer_serialize(request: Request):
+    """Serialize a scene to a specific format."""
+    try:
+        from sparkai.engine.engine_scene_serializer import get_scene_serializer_engine
+        body = await request.json()
+        instance = get_scene_serializer_engine()
+        data = instance.serialize_scene(
+            scene_id=body.get("scene_id", ""),
+            format=body.get("format", "json"),
+            include_metadata=body.get("include_metadata", True),
+        )
+        return {"status": "ok", "data": data}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/scene-serializer/deserialize")
+async def scene_serializer_deserialize(request: Request):
+    """Deserialize scene data into a scene object."""
+    try:
+        from sparkai.engine.engine_scene_serializer import get_scene_serializer_engine
+        body = await request.json()
+        instance = get_scene_serializer_engine()
+        scene = instance.deserialize_scene(
+            data=body.get("data", {}),
+            scene_name=body.get("scene_name"),
+        )
+        return {"status": "ok", "scene": scene.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/scene-serializer/diff")
+async def scene_serializer_diff(request: Request):
+    """Compare two scenes and return the diff."""
+    try:
+        from sparkai.engine.engine_scene_serializer import get_scene_serializer_engine
+        body = await request.json()
+        instance = get_scene_serializer_engine()
+        diff = instance.diff_scenes(
+            source_scene_id=body.get("source_scene_id", ""),
+            target_scene_id=body.get("target_scene_id", ""),
+        )
+        return {"status": "ok", "diff": diff.to_dict() if diff else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/scene-serializer/create-savepoint")
+async def scene_serializer_create_savepoint(request: Request):
+    """Create a save point for a scene."""
+    try:
+        from sparkai.engine.engine_scene_serializer import get_scene_serializer_engine
+        body = await request.json()
+        instance = get_scene_serializer_engine()
+        savepoint = instance.create_save_point(
+            scene_id=body.get("scene_id", ""),
+            label=body.get("label", "Auto Save"),
+            description=body.get("description", ""),
+        )
+        return {"status": "ok", "savepoint": savepoint.to_dict() if savepoint else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/scene-serializer/scenes")
+async def scene_serializer_list_scenes():
+    """List all serialized scenes."""
+    try:
+        from sparkai.engine.engine_scene_serializer import get_scene_serializer_engine
+        instance = get_scene_serializer_engine()
+        scenes = instance.list_scenes()
+        return {"status": "ok", "scenes": scenes}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
