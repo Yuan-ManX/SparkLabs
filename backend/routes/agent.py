@@ -23219,7 +23219,7 @@ from sparkai.agent.agent_social_simulation import get_agent_social_simulation
 from sparkai.agent.agent_monetization_designer import get_monetization_designer
 from sparkai.engine.engine_adaptive_content import get_adaptive_content_engine
 from sparkai.engine.engine_progressive_loading import get_progressive_loading
-from sparkai.agent.agent_world_builder import get_agent_world_builder
+from sparkai.agent.agent_world_builder import get_world_builder_engine
 from sparkai.agent.agent_behavior_designer import get_agent_behavior_designer
 from sparkai.agent.agent_quest_composer import get_agent_quest_composer
 from sparkai.agent.agent_multi_agent_coordinator import get_multi_agent_coordinator
@@ -23283,7 +23283,7 @@ _social_simulation = get_agent_social_simulation()
 _monetization_designer = get_monetization_designer()
 _adaptive_content = get_adaptive_content_engine()
 _progressive_loading = get_progressive_loading()
-_world_builder = get_agent_world_builder()
+_world_builder = get_world_builder_engine()
 _behavior_designer = get_agent_behavior_designer()
 _quest_composer = get_agent_quest_composer()
 _multi_agent_coordinator = get_multi_agent_coordinator()
@@ -32080,5 +32080,594 @@ async def character_creator_characters(request: Request):
         instance = get_character_creator()
         chars = instance.list_characters(request.query_params.get("role"), request.query_params.get("char_class"), request.query_params.get("race"))
         return {"status": "ok", "characters": [c.to_dict() for c in chars]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Skill Tree Routes
+# ============================================================
+
+@router.get("/skill-tree/stats")
+async def skill_tree_stats():
+    try:
+        from sparkai.agent.agent_skill_tree import get_skill_tree_engine
+        instance = get_skill_tree_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-tree/create-tree")
+async def skill_tree_create_tree(request: Request):
+    try:
+        from sparkai.agent.agent_skill_tree import get_skill_tree_engine
+        body = await request.json()
+        instance = get_skill_tree_engine()
+        tree = instance.create_skill_tree(body.get("name",""), body.get("character_class","warrior"), body.get("description",""))
+        return {"status": "ok", "tree": tree.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-tree/add-node")
+async def skill_tree_add_node(request: Request):
+    try:
+        from sparkai.agent.agent_skill_tree import get_skill_tree_engine
+        body = await request.json()
+        instance = get_skill_tree_engine()
+        node = instance.add_skill_node(body.get("tree_id",""), body.get("name",""), body.get("category","combat"), body.get("tier","tier_1"), body.get("skill_type","passive"), body.get("description",""), body.get("effect_description",""), body.get("max_level",5), body.get("unlock_cost",1), body.get("stat_bonuses",{}), body.get("position_x",0), body.get("position_y",0))
+        return {"status": "ok", "node": node.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-tree/generate")
+async def skill_tree_generate(request: Request):
+    try:
+        from sparkai.agent.agent_skill_tree import get_skill_tree_engine
+        body = await request.json()
+        instance = get_skill_tree_engine()
+        tree = instance.generate_class_skill_tree(body.get("character_class","warrior"), body.get("num_nodes",20))
+        return {"status": "ok", "tree": tree.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-tree/optimize")
+async def skill_tree_optimize(request: Request):
+    try:
+        from sparkai.agent.agent_skill_tree import get_skill_tree_engine
+        body = await request.json()
+        instance = get_skill_tree_engine()
+        build = instance.optimize_build(body.get("tree_id",""), body.get("target_role","dps"), body.get("max_points",10))
+        return {"status": "ok", "build": build.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-tree/validate")
+async def skill_tree_validate(request: Request):
+    try:
+        from sparkai.agent.agent_skill_tree import get_skill_tree_engine
+        body = await request.json()
+        instance = get_skill_tree_engine()
+        result = instance.validate_tree(body.get("tree_id",""))
+        return {"status": "ok", "validation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/skill-tree/trees")
+async def skill_tree_trees():
+    try:
+        from sparkai.agent.agent_skill_tree import get_skill_tree_engine
+        instance = get_skill_tree_engine()
+        trees = instance.list_trees()
+        return {"status": "ok", "trees": [t.to_dict() for t in trees]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Economy Balancer Routes
+# ============================================================
+
+@router.get("/economy-balancer/stats")
+async def economy_balancer_stats():
+    try:
+        from sparkai.agent.agent_economy_balancer import get_agent_economy_balancer
+        instance = get_agent_economy_balancer()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/economy-balancer/create-currency")
+async def economy_balancer_create_currency(request: Request):
+    try:
+        from sparkai.agent.agent_economy_balancer import get_agent_economy_balancer
+        body = await request.json()
+        instance = get_agent_economy_balancer()
+        currency = instance.create_currency(body.get("name",""), body.get("currency_type","gold"), body.get("initial_supply",1000000.0))
+        return {"status": "ok", "currency": currency.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/economy-balancer/record-transaction")
+async def economy_balancer_record_transaction(request: Request):
+    try:
+        from sparkai.agent.agent_economy_balancer import get_agent_economy_balancer
+        body = await request.json()
+        instance = get_agent_economy_balancer()
+        tx = instance.record_transaction(body.get("player_id",""), body.get("currency_id",""), body.get("transaction_type","earn"), body.get("amount",0), body.get("description",""))
+        return {"status": "ok", "transaction": tx.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/economy-balancer/add-market-item")
+async def economy_balancer_add_market_item(request: Request):
+    try:
+        from sparkai.agent.agent_economy_balancer import get_agent_economy_balancer
+        body = await request.json()
+        instance = get_agent_economy_balancer()
+        item = instance.add_market_item(body.get("name",""), body.get("category",""), body.get("base_price",100.0), body.get("supply",50))
+        return {"status": "ok", "item": item.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/economy-balancer/simulate-market")
+async def economy_balancer_simulate_market(request: Request):
+    try:
+        from sparkai.agent.agent_economy_balancer import get_agent_economy_balancer
+        body = await request.json()
+        instance = get_agent_economy_balancer()
+        result = instance.simulate_market(body.get("cycles",100))
+        return {"status": "ok", "simulation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/economy-balancer/analyze")
+async def economy_balancer_analyze():
+    try:
+        from sparkai.agent.agent_economy_balancer import get_agent_economy_balancer
+        instance = get_agent_economy_balancer()
+        result = instance.analyze_economy()
+        return {"status": "ok", "analysis": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/economy-balancer/balance-rewards")
+async def economy_balancer_balance_rewards(request: Request):
+    try:
+        from sparkai.agent.agent_economy_balancer import get_agent_economy_balancer
+        body = await request.json()
+        instance = get_agent_economy_balancer()
+        result = instance.balance_rewards(body.get("activity_type",""), body.get("difficulty",5), body.get("target_value",100.0))
+        return {"status": "ok", "rewards": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Self-Evolution Engine Routes
+# ============================================================
+
+@router.get("/self-evolution/stats")
+async def self_evolution_stats():
+    try:
+        from sparkai.agent.agent_self_evolution import get_self_evolution_engine
+        instance = get_self_evolution_engine()
+        return {"status": "ok", "stats": instance.get_evolution_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/self-evolution/capture-trace")
+async def self_evolution_capture_trace(request: Request):
+    try:
+        from sparkai.agent.agent_self_evolution import get_self_evolution_engine
+        body = await request.json()
+        instance = get_self_evolution_engine()
+        trace = instance.capture_trace(
+            agent_id=body.get("agent_id", ""),
+            task_description=body.get("task_description", ""),
+            strategy_type=body.get("strategy_type", "decision_making"),
+            strategy_version=body.get("strategy_version", 1),
+            outcome=body.get("outcome", "success"),
+            duration_ms=body.get("duration_ms", 0.0),
+            metrics=body.get("metrics"),
+            context_snapshot=body.get("context_snapshot"),
+            error_details=body.get("error_details"),
+        )
+        return {"status": "ok", "trace": {"trace_id": trace.trace_id, "outcome": trace.outcome.value}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/self-evolution/analyze")
+async def self_evolution_analyze(request: Request):
+    try:
+        from sparkai.agent.agent_self_evolution import get_self_evolution_engine
+        body = await request.json()
+        instance = get_self_evolution_engine()
+        patterns = instance.analyze_traces(strategy_type=body.get("strategy_type"))
+        return {"status": "ok", "patterns": [
+            {"pattern_id": p.pattern_id, "pattern_name": p.pattern_name, "confidence": p.confidence, "sample_count": p.sample_count}
+            for p in patterns
+        ]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/self-evolution/evolve")
+async def self_evolution_evolve(request: Request):
+    try:
+        from sparkai.agent.agent_self_evolution import get_self_evolution_engine
+        body = await request.json()
+        instance = get_self_evolution_engine()
+        strategies = instance.evolve_strategies(
+            strategy_type=body.get("strategy_type"),
+            target_improvement=body.get("target_improvement", 0.1),
+        )
+        return {"status": "ok", "strategies": [
+            {"strategy_id": s.strategy_id, "strategy_name": s.strategy_name, "version": s.version, "performance_score": s.performance_score}
+            for s in strategies
+        ]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/self-evolution/validate")
+async def self_evolution_validate(request: Request):
+    try:
+        from sparkai.agent.agent_self_evolution import get_self_evolution_engine
+        body = await request.json()
+        instance = get_self_evolution_engine()
+        result = instance.validate_strategy(
+            strategy_id=body.get("strategy_id", ""),
+            validation_metrics=body.get("validation_metrics", {}),
+        )
+        if result:
+            return {"status": "ok", "score": result.performance_score}
+        return {"status": "error", "message": "Strategy not found"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/self-evolution/consolidate")
+async def self_evolution_consolidate():
+    try:
+        from sparkai.agent.agent_self_evolution import get_self_evolution_engine
+        instance = get_self_evolution_engine()
+        result = instance.consolidate_knowledge()
+        return {"status": "ok", "consolidation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/self-evolution/traces")
+async def self_evolution_traces(strategy_type: str = None, limit: int = 50):
+    try:
+        from sparkai.agent.agent_self_evolution import get_self_evolution_engine
+        instance = get_self_evolution_engine()
+        traces = instance.get_traces(strategy_type=strategy_type, limit=limit)
+        return {"status": "ok", "traces": traces}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Skill Accumulator Routes
+# ============================================================
+
+@router.get("/skill-accumulator/stats")
+async def skill_accumulator_stats():
+    try:
+        from sparkai.agent.agent_skill_accumulator import get_skill_accumulator_engine
+        instance = get_skill_accumulator_engine()
+        return {"status": "ok", "stats": instance.get_skill_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-accumulator/accumulate")
+async def skill_accumulator_accumulate(request: Request):
+    try:
+        from sparkai.agent.agent_skill_accumulator import get_skill_accumulator_engine
+        body = await request.json()
+        instance = get_skill_accumulator_engine()
+        skill = instance.accumulate_skill(
+            domain=body.get("domain", "ai_behavior"),
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            steps=body.get("steps", []),
+            preconditions=body.get("preconditions"),
+            postconditions=body.get("postconditions"),
+            tags=body.get("tags"),
+            dependencies=body.get("dependencies"),
+        )
+        return {"status": "ok", "skill": {"skill_id": skill.skill_id, "name": skill.name, "domain": skill.domain.value, "maturity": skill.maturity.value}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-accumulator/execute")
+async def skill_accumulator_execute(request: Request):
+    try:
+        from sparkai.agent.agent_skill_accumulator import get_skill_accumulator_engine
+        body = await request.json()
+        instance = get_skill_accumulator_engine()
+        result = instance.execute_skill(
+            skill_id=body.get("skill_id", ""),
+            context=body.get("context"),
+        )
+        return {"status": "ok", "execution": {"outcome": result.outcome.value, "duration_ms": result.duration_ms, "output": result.output}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-accumulator/compose")
+async def skill_accumulator_compose(request: Request):
+    try:
+        from sparkai.agent.agent_skill_accumulator import get_skill_accumulator_engine
+        body = await request.json()
+        instance = get_skill_accumulator_engine()
+        composition = instance.compose_skills(
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            skill_ids=body.get("skill_ids", []),
+            execution_order=body.get("execution_order"),
+            data_flow=body.get("data_flow"),
+        )
+        return {"status": "ok", "composition": {"composition_id": composition.composition_id, "name": composition.name}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/skill-accumulator/discover")
+async def skill_accumulator_discover(domain: str = None, tags: str = None, maturity: str = None, limit: int = 20):
+    try:
+        from sparkai.agent.agent_skill_accumulator import get_skill_accumulator_engine
+        instance = get_skill_accumulator_engine()
+        tag_list = tags.split(",") if tags else None
+        skills = instance.discover_skills(domain=domain, tags=tag_list, maturity=maturity, limit=limit)
+        return {"status": "ok", "skills": [
+            {"skill_id": s.skill_id, "name": s.name, "domain": s.domain.value, "maturity": s.maturity.value, "usage_count": s.usage_count}
+            for s in skills
+        ]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Layered Memory Routes
+# ============================================================
+
+@router.get("/layered-memory/stats")
+async def layered_memory_stats():
+    try:
+        from sparkai.agent.agent_layered_memory import get_layered_memory_engine
+        instance = get_layered_memory_engine()
+        return {"status": "ok", "stats": instance.get_memory_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/layered-memory/store-core")
+async def layered_memory_store_core(request: Request):
+    try:
+        from sparkai.agent.agent_layered_memory import get_layered_memory_engine
+        body = await request.json()
+        instance = get_layered_memory_engine()
+        entry = instance.store_core(
+            content=body.get("content", ""),
+            category=body.get("category", "knowledge"),
+            priority=body.get("priority", "high"),
+            metadata=body.get("metadata"),
+            source=body.get("source"),
+        )
+        return {"status": "ok", "entry": {"entry_id": entry.entry_id, "layer": entry.layer.value, "category": entry.category.value}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/layered-memory/store-session")
+async def layered_memory_store_session(request: Request):
+    try:
+        from sparkai.agent.agent_layered_memory import get_layered_memory_engine
+        body = await request.json()
+        instance = get_layered_memory_engine()
+        entry = instance.store_session(
+            content=body.get("content", ""),
+            category=body.get("category", "conversation"),
+            priority=body.get("priority", "medium"),
+            metadata=body.get("metadata"),
+            source=body.get("source"),
+        )
+        return {"status": "ok", "entry": {"entry_id": entry.entry_id, "layer": entry.layer.value, "category": entry.category.value}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/layered-memory/search")
+async def layered_memory_search(query: str = "", layers: str = None, limit: int = 20):
+    try:
+        from sparkai.agent.agent_layered_memory import get_layered_memory_engine
+        instance = get_layered_memory_engine()
+        layer_list = layers.split(",") if layers else None
+        results = instance.search(query=query, layers=layer_list, limit=limit)
+        return {"status": "ok", "results": [
+            {"entry_id": r.entry.entry_id, "layer": r.entry.layer.value, "content": r.entry.content[:200], "relevance": r.relevance_score}
+            for r in results
+        ]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/layered-memory/consolidate")
+async def layered_memory_consolidate():
+    try:
+        from sparkai.agent.agent_layered_memory import get_layered_memory_engine
+        instance = get_layered_memory_engine()
+        result = instance.consolidate()
+        return {"status": "ok", "consolidation": {"promoted": result.entries_promoted, "archived": result.entries_archived, "expired": result.entries_expired}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/layered-memory/context")
+async def layered_memory_context(max_tokens: int = 2000):
+    try:
+        from sparkai.agent.agent_layered_memory import get_layered_memory_engine
+        instance = get_layered_memory_engine()
+        context = instance.assemble_context(max_tokens=max_tokens)
+        return {"status": "ok", "context": context}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# World Simulator Routes
+# ============================================================
+
+@router.get("/world-simulator/stats")
+async def world_simulator_stats():
+    try:
+        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
+        instance = get_world_simulator_engine()
+        return {"status": "ok", "stats": instance.get_simulation_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/world-simulator/create-entity")
+async def world_simulator_create_entity(request: Request):
+    try:
+        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
+        body = await request.json()
+        instance = get_world_simulator_engine()
+        entity = instance.create_entity(
+            name=body.get("name", ""),
+            entity_type=body.get("entity_type", "character"),
+            position=body.get("position"),
+            properties=body.get("properties"),
+        )
+        return {"status": "ok", "entity": {"entity_id": entity.entity_id, "name": entity.name, "type": entity.entity_type.value}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/world-simulator/simulate-tick")
+async def world_simulator_simulate_tick(request: Request):
+    try:
+        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
+        body = await request.json()
+        instance = get_world_simulator_engine()
+        snapshot = instance.simulate_tick(num_ticks=body.get("num_ticks", 1))
+        return {"status": "ok", "snapshot": instance.get_world_state()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/world-simulator/interaction")
+async def world_simulator_interaction(request: Request):
+    try:
+        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
+        body = await request.json()
+        instance = get_world_simulator_engine()
+        interaction = instance.create_interaction(
+            source_id=body.get("source_id", ""),
+            target_id=body.get("target_id", ""),
+            interaction_type=body.get("interaction_type", "social"),
+            description=body.get("description", ""),
+            outcome=body.get("outcome"),
+        )
+        if interaction:
+            return {"status": "ok", "interaction": {"interaction_id": interaction.interaction_id, "type": interaction.interaction_type.value}}
+        return {"status": "error", "message": "Entities not found"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/world-simulator/broadcast-event")
+async def world_simulator_broadcast_event(request: Request):
+    try:
+        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
+        body = await request.json()
+        instance = get_world_simulator_engine()
+        event = instance.broadcast_event(
+            category=body.get("category", "random"),
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            affected_entities=body.get("affected_entities"),
+            affected_regions=body.get("affected_regions"),
+            intensity=body.get("intensity", 0.5),
+        )
+        return {"status": "ok", "event": {"event_id": event.event_id, "name": event.name, "category": event.category.value}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# ============================================================
+# Emergent Storyteller Routes
+# ============================================================
+
+@router.get("/emergent-storyteller/stats")
+async def emergent_storyteller_stats():
+    try:
+        from sparkai.agent.agent_emergent_storyteller import get_emergent_storyteller_engine
+        instance = get_emergent_storyteller_engine()
+        return {"status": "ok", "stats": instance.get_storyteller_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/emergent-storyteller/create-beat")
+async def emergent_storyteller_create_beat(request: Request):
+    try:
+        from sparkai.agent.agent_emergent_storyteller import get_emergent_storyteller_engine
+        body = await request.json()
+        instance = get_emergent_storyteller_engine()
+        beat = instance.generate_story_beat(
+            entity_id=body.get("entity_id", ""),
+            beat_type=body.get("beat_type", "rising_action"),
+            title=body.get("title", ""),
+            description=body.get("description", ""),
+            involved_entities=body.get("involved_entities"),
+            parent_arc_id=body.get("parent_arc_id"),
+            themes=body.get("themes"),
+            player_impact=body.get("player_impact", "none"),
+            significance=body.get("significance", 0.5),
+        )
+        return {"status": "ok", "beat": {"beat_id": beat.beat_id, "title": beat.title, "type": beat.beat_type.value}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/emergent-storyteller/create-arc")
+async def emergent_storyteller_create_arc(request: Request):
+    try:
+        from sparkai.agent.agent_emergent_storyteller import get_emergent_storyteller_engine
+        body = await request.json()
+        instance = get_emergent_storyteller_engine()
+        arc = instance.create_character_arc(
+            protagonist_id=body.get("protagonist_id", ""),
+            arc_type=body.get("arc_type", "hero_journey"),
+            title=body.get("title", ""),
+            description=body.get("description", ""),
+            antagonist_id=body.get("antagonist_id"),
+            themes=body.get("themes"),
+            importance=body.get("importance", 0.5),
+        )
+        return {"status": "ok", "arc": {"arc_id": arc.arc_id, "title": arc.title, "stage": arc.stage.value}}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/emergent-storyteller/synthesize")
+async def emergent_storyteller_synthesize(entity_id: str = None, limit: int = 10):
+    try:
+        from sparkai.agent.agent_emergent_storyteller import get_emergent_storyteller_engine
+        instance = get_emergent_storyteller_engine()
+        narrative = instance.synthesize_narrative(entity_id=entity_id, limit=limit)
+        return {"status": "ok", "narrative": narrative}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/emergent-storyteller/active-arcs")
+async def emergent_storyteller_active_arcs():
+    try:
+        from sparkai.agent.agent_emergent_storyteller import get_emergent_storyteller_engine
+        instance = get_emergent_storyteller_engine()
+        arcs = instance.get_active_arcs()
+        return {"status": "ok", "arcs": arcs}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/emergent-storyteller/player-action")
+async def emergent_storyteller_player_action(request: Request):
+    try:
+        from sparkai.agent.agent_emergent_storyteller import get_emergent_storyteller_engine
+        body = await request.json()
+        instance = get_emergent_storyteller_engine()
+        beat = instance.record_player_action(
+            action_description=body.get("action_description", ""),
+            affected_entities=body.get("affected_entities", []),
+            impact_level=body.get("impact_level", "minor"),
+            themes=body.get("themes"),
+        )
+        return {"status": "ok", "beat": {"beat_id": beat.beat_id, "impact": beat.player_impact.value}}
     except Exception as e:
         return {"status": "error", "message": str(e)}
