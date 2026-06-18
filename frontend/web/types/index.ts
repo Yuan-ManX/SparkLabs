@@ -636,7 +636,15 @@ export type ViewMode =
   | 'kanban-coordinator'
   | 'localization-hub'
   | 'metacognition'
-  | 'predictive-intelligence';
+  | 'predictive-intelligence'
+  | 'self-evolution'
+  | 'skill-accumulator'
+  | 'layered-memory'
+  | 'world-simulator'
+  | 'emergent-storyteller'
+  | 'node-editor-panel'
+  | 'scene-serializer'
+  | 'engine-signal-bus';
 
 // Runtime types
 
