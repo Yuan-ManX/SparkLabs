@@ -7239,3 +7239,1404 @@ async def scene_serializer_list_scenes():
         return {"status": "ok", "scenes": scenes}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Ecosystem Dynamics Routes
+# =============================================================================
+
+@router.get("/ecosystem-dynamics/stats")
+async def ecosystem_dynamics_stats():
+    """Get ecosystem dynamics engine statistics."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/register-species")
+async def ecosystem_dynamics_register_species(request: Request):
+    """Register a new species in the ecosystem."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        profile = instance.register_species(
+            name=body.get("name", ""),
+            species_type=body.get("species_type", "producer"),
+            base_growth_rate=body.get("base_growth_rate", 0.1),
+            carrying_capacity=body.get("carrying_capacity", 100.0),
+            metabolic_rate=body.get("metabolic_rate", 0.01),
+            reproduction_age=body.get("reproduction_age", 1.0),
+            lifespan=body.get("lifespan", 10.0),
+            preferred_biomes=body.get("preferred_biomes", ["temperate"]),
+            predator_ids=body.get("predator_ids", []),
+            prey_ids=body.get("prey_ids", []),
+        )
+        return {"status": "ok", "profile": profile.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/create-region")
+async def ecosystem_dynamics_create_region(request: Request):
+    """Create a new ecosystem region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        region = instance.create_region(
+            name=body.get("name", ""),
+            biome=body.get("biome", "temperate"),
+            size=body.get("size", 100.0),
+            initial_species_ids=body.get("initial_species_ids", []),
+            initial_populations=body.get("initial_populations", {}),
+        )
+        return {"status": "ok", "region": region.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/introduce-species")
+async def ecosystem_dynamics_introduce_species(request: Request):
+    """Introduce a species into a region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        snapshot = instance.introduce_species(
+            region_id=body.get("region_id", ""),
+            species_id=body.get("species_id", ""),
+            initial_population=body.get("initial_population", 10),
+        )
+        return {"status": "ok", "snapshot": snapshot.to_dict() if snapshot else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/simulate-tick")
+async def ecosystem_dynamics_simulate_tick(request: Request):
+    """Simulate one tick of ecosystem dynamics."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        report = instance.simulate_tick(
+            region_id=body.get("region_id", ""),
+            season=body.get("season", "spring"),
+        )
+        return {"status": "ok", "report": report.to_dict() if report else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/simulate-ticks")
+async def ecosystem_dynamics_simulate_ticks(request: Request):
+    """Simulate multiple ticks of ecosystem dynamics."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        reports = instance.simulate_ticks(
+            region_id=body.get("region_id", ""),
+            num_ticks=body.get("num_ticks", 10),
+            starting_season=body.get("starting_season", "spring"),
+        )
+        return {"status": "ok", "reports": [r.to_dict() for r in reports]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/trigger-migration")
+async def ecosystem_dynamics_trigger_migration(request: Request):
+    """Trigger a migration event."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        event = instance.trigger_migration(
+            species_id=body.get("species_id", ""),
+            from_region_id=body.get("from_region_id", ""),
+            to_region_id=body.get("to_region_id", ""),
+            migration_size=body.get("migration_size", 10),
+            trigger=body.get("trigger", "seasonal"),
+        )
+        return {"status": "ok", "event": event.to_dict() if event else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/region-state")
+async def ecosystem_dynamics_region_state(region_id: str = ""):
+    """Get the current state of a region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        state = instance.get_region_state(region_id)
+        return {"status": "ok", "state": state.to_dict() if state else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/species")
+async def ecosystem_dynamics_species(species_id: str = ""):
+    """Get species profile."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        profile = instance.get_species(species_id)
+        return {"status": "ok", "profile": profile.to_dict() if profile else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/population-history")
+async def ecosystem_dynamics_population_history(
+    region_id: str = "",
+    species_id: Optional[str] = None,
+    limit: int = 50,
+):
+    """Get population history for a region and species."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        history = instance.get_population_history(
+            region_id=region_id,
+            species_id=species_id,
+            limit=limit,
+        )
+        return {"status": "ok", "history": [h.to_dict() for h in history]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/biodiversity")
+async def ecosystem_dynamics_biodiversity(region_id: str = ""):
+    """Assess biodiversity in a region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        result = instance.assess_biodiversity(region_id)
+        return {"status": "ok", "biodiversity": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/collapse-risk")
+async def ecosystem_dynamics_collapse_risk(region_id: str = ""):
+    """Detect ecosystem collapse risk."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        result = instance.detect_collapse_risk(region_id)
+        return {"status": "ok", "risk": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/interactions")
+async def ecosystem_dynamics_interactions(region_id: str = ""):
+    """Get species interactions in a region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        result = instance.get_species_interactions(region_id)
+        return {"status": "ok", "interactions": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Civilization Evolution Routes
+# =============================================================================
+
+@router.get("/civilization-evolution/stats")
+async def civilization_evolution_stats():
+    """Get civilization evolution engine statistics."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/create-civilization")
+async def civilization_evolution_create(request: Request):
+    """Create a new civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        civ = instance.create_civilization(
+            name=body.get("name", ""),
+            starting_era=body.get("starting_era", "ancient"),
+            government_type=body.get("government_type", "tribal"),
+            initial_population=body.get("initial_population", 1000),
+            territory_size=body.get("territory_size", 100.0),
+            culture=body.get("culture"),
+        )
+        return {"status": "ok", "civilization": civ.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/research-technology")
+async def civilization_evolution_research(request: Request):
+    """Research a new technology."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        tech = instance.research_technology(
+            civ_id=body.get("civ_id", ""),
+            tech_name=body.get("tech_name", ""),
+            era=body.get("era", "ancient"),
+            research_cost=body.get("research_cost", 100.0),
+            prerequisites=body.get("prerequisites", []),
+            effects=body.get("effects", {}),
+        )
+        return {"status": "ok", "technology": tech.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/change-government")
+async def civilization_evolution_government(request: Request):
+    """Change government type of a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        result = instance.change_government(
+            civ_id=body.get("civ_id", ""),
+            new_government=body.get("new_government", "monarchy"),
+        )
+        return {"status": "ok", "civilization": result.to_dict() if result else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/evolve-culture")
+async def civilization_evolution_culture(request: Request):
+    """Evolve the culture of a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        result = instance.evolve_culture(
+            civ_id=body.get("civ_id", ""),
+            aspect=body.get("aspect", "language"),
+            drift_amount=body.get("drift_amount", 0.1),
+        )
+        return {"status": "ok", "culture": result.to_dict() if result else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/establish-relation")
+async def civilization_evolution_relation(request: Request):
+    """Establish a diplomatic relation between civilizations."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        result = instance.establish_relation(
+            civ_id=body.get("civ_id", ""),
+            other_civ_id=body.get("other_civ_id", ""),
+            status=body.get("status", "neutral"),
+            trust=body.get("trust", 0.5),
+            trade_volume=body.get("trade_volume", 0.0),
+        )
+        return {"status": "ok", "relation": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/simulate-tick")
+async def civilization_evolution_simulate_tick(request: Request):
+    """Simulate one tick of civilization evolution."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        snapshot = instance.simulate_tick(civ_id=body.get("civ_id", ""))
+        return {"status": "ok", "snapshot": snapshot.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/simulate-ticks")
+async def civilization_evolution_simulate_ticks(request: Request):
+    """Simulate multiple ticks of civilization evolution."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        snapshots = instance.simulate_ticks(
+            civ_id=body.get("civ_id", ""),
+            num_ticks=body.get("num_ticks", 10),
+        )
+        return {"status": "ok", "snapshots": [s.to_dict() for s in snapshots]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/civilization")
+async def civilization_evolution_get(civ_id: str = ""):
+    """Get civilization state."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        civ = instance.get_civilization(civ_id)
+        return {"status": "ok", "civilization": civ.to_dict() if civ else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/tech-tree")
+async def civilization_evolution_tech_tree(civ_id: str = ""):
+    """Get technology tree for a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        techs = instance.get_tech_tree(civ_id)
+        return {"status": "ok", "technologies": [t.to_dict() for t in techs]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/culture")
+async def civilization_evolution_get_culture(civ_id: str = ""):
+    """Get cultural identity of a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        culture = instance.get_culture(civ_id)
+        return {"status": "ok", "culture": culture.to_dict() if culture else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/relations")
+async def civilization_evolution_relations(civ_id: str = ""):
+    """Get diplomatic relations for a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        relations = instance.get_relations(civ_id)
+        return {"status": "ok", "relations": relations}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/stability")
+async def civilization_evolution_stability(civ_id: str = ""):
+    """Assess civilization stability."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        result = instance.assess_stability(civ_id)
+        return {"status": "ok", "stability": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/history")
+async def civilization_evolution_history(civ_id: str = "", limit: int = 50):
+    """Get civilization history snapshots."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        history = instance.get_history(civ_id=civ_id, limit=limit)
+        return {"status": "ok", "history": [h.to_dict() for h in history]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Procedural City Routes
+# =============================================================================
+
+@router.get("/procedural-city/stats")
+async def procedural_city_stats():
+    """Get procedural city engine statistics."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/generate")
+async def procedural_city_generate(request: Request):
+    """Generate a procedural city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        city = instance.generate_city(
+            name=body.get("name", ""),
+            style=body.get("style"),
+            config=body.get("config"),
+        )
+        return {"status": "ok", "city": city.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/generate-roads")
+async def procedural_city_generate_roads(request: Request):
+    """Generate road network for a city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        roads = instance.generate_road_network(
+            city_id=body.get("city_id", ""),
+            road_count=body.get("road_count", 20),
+            grid_size=body.get("grid_size", 10),
+        )
+        return {"status": "ok", "roads": [r.to_dict() for r in roads]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/generate-districts")
+async def procedural_city_generate_districts(request: Request):
+    """Generate districts for a city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        districts = instance.generate_districts(
+            city_id=body.get("city_id", ""),
+            num_districts=body.get("num_districts", 5),
+        )
+        return {"status": "ok", "districts": [d.to_dict() for d in districts]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/generate-buildings")
+async def procedural_city_generate_buildings(request: Request):
+    """Generate buildings for a district."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        buildings = instance.generate_buildings(
+            city_id=body.get("city_id", ""),
+            district_id=body.get("district_id", ""),
+            num_buildings=body.get("num_buildings", 50),
+        )
+        return {"status": "ok", "buildings": [b.to_dict() for b in buildings]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/place-landmark")
+async def procedural_city_place_landmark(request: Request):
+    """Place a landmark in a city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        landmark = instance.place_landmark(
+            city_id=body.get("city_id", ""),
+            building_type=body.get("building_type", "monument"),
+            x=body.get("x", 0.0),
+            y=body.get("y", 0.0),
+            name=body.get("name", ""),
+        )
+        return {"status": "ok", "landmark": landmark.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/city")
+async def procedural_city_get(city_id: str = ""):
+    """Get a generated city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        city = instance.get_city(city_id)
+        return {"status": "ok", "city": city.to_dict() if city else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/cities")
+async def procedural_city_list():
+    """List all generated cities."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        cities = instance.list_cities()
+        return {"status": "ok", "cities": cities}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/district")
+async def procedural_city_get_district(city_id: str = "", district_id: str = ""):
+    """Get a district in a city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        district = instance.get_district(city_id, district_id)
+        return {"status": "ok", "district": district.to_dict() if district else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/buildings")
+async def procedural_city_get_buildings(city_id: str = "", district_id: str = ""):
+    """Get buildings in a district."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        buildings = instance.get_buildings_in_district(city_id, district_id)
+        return {"status": "ok", "buildings": [b.to_dict() for b in buildings]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/roads")
+async def procedural_city_get_roads(city_id: str = ""):
+    """Get road network of a city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        roads = instance.get_road_network(city_id)
+        return {"status": "ok", "roads": [r.to_dict() for r in roads]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/analyze")
+async def procedural_city_analyze(city_id: str = ""):
+    """Analyze a city layout."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        result = instance.analyze_city(city_id)
+        return {"status": "ok", "analysis": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Flow State Monitor Routes
+# =============================================================================
+
+@router.get("/flow-state-monitor/stats")
+async def flow_state_monitor_stats():
+    """Get flow state monitor engine statistics."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/flow-state-monitor/register-player")
+async def flow_state_monitor_register_player(request: Request):
+    """Register a player for flow state monitoring."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        body = await request.json()
+        instance = get_flow_state_monitor()
+        profile = instance.register_player(
+            player_id=body.get("player_id", ""),
+            initial_skill_level=body.get("initial_skill_level", 0.5),
+            initial_challenge_level=body.get("initial_challenge_level", 0.5),
+        )
+        return {"status": "ok", "profile": profile.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/flow-state-monitor/record-signal")
+async def flow_state_monitor_record_signal(request: Request):
+    """Record a player signal for flow analysis."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        body = await request.json()
+        instance = get_flow_state_monitor()
+        reading = instance.record_signal(
+            player_id=body.get("player_id", ""),
+            signal_type=body.get("signal_type", "performance"),
+            value=body.get("value", 0.5),
+            metadata=body.get("metadata"),
+        )
+        return {"status": "ok", "reading": reading.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/reading")
+async def flow_state_monitor_reading(player_id: str = ""):
+    """Get current flow state reading for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        reading = instance.get_current_reading(player_id)
+        return {"status": "ok", "reading": reading.to_dict() if reading else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/flow-state-monitor/calculate")
+async def flow_state_monitor_calculate(request: Request):
+    """Calculate flow state for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        body = await request.json()
+        instance = get_flow_state_monitor()
+        reading = instance.calculate_flow_state(player_id=body.get("player_id", ""))
+        return {"status": "ok", "reading": reading.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/history")
+async def flow_state_monitor_history(player_id: str = "", limit: int = 50):
+    """Get flow state history for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        history = instance.get_flow_history(player_id=player_id, limit=limit)
+        return {"status": "ok", "history": [h.to_dict() for h in history]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/suggest-adaptation")
+async def flow_state_monitor_suggest(player_id: str = ""):
+    """Get adaptation suggestion for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        suggestion = instance.suggest_adaptation(player_id)
+        return {"status": "ok", "suggestion": suggestion.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/flow-state-monitor/update-skill")
+async def flow_state_monitor_update_skill(request: Request):
+    """Update a player's skill level."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        body = await request.json()
+        instance = get_flow_state_monitor()
+        profile = instance.update_skill_level(
+            player_id=body.get("player_id", ""),
+            new_skill_level=body.get("new_skill_level", 0.5),
+        )
+        return {"status": "ok", "profile": profile.to_dict() if profile else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/flow-patterns")
+async def flow_state_monitor_patterns(player_id: str = ""):
+    """Analyze flow patterns for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        result = instance.analyze_flow_patterns(player_id)
+        return {"status": "ok", "patterns": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/players-in-state")
+async def flow_state_monitor_players_in_state(state: str = "flow"):
+    """Get players currently in a specific flow state."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        players = instance.get_players_in_state(state)
+        return {"status": "ok", "players": players}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/profile")
+async def flow_state_monitor_profile(player_id: str = ""):
+    """Get flow profile for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        profile = instance.get_flow_profile(player_id)
+        return {"status": "ok", "profile": profile.to_dict() if profile else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Ecosystem Dynamics v2 Routes
+# =============================================================================
+
+@router.get("/ecosystem-dynamics/stats")
+async def ecosystem_dynamics_stats():
+    """Get ecosystem dynamics engine statistics."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/register-species")
+async def ecosystem_dynamics_register_species(request: Request):
+    """Register a new species in the ecosystem."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        profile = instance.register_species(
+            species_id=body.get("species_id", ""),
+            name=body.get("name", ""),
+            species_type=body.get("species_type", "producer"),
+            base_population=body.get("base_population", 0),
+            growth_rate=body.get("growth_rate", 0.1),
+            carrying_capacity=body.get("carrying_capacity", 1000),
+            prey_of=body.get("prey_of", None),
+            predator_of=body.get("predator_of", None),
+            preferred_habitat=body.get("preferred_habitat", "general"),
+            migration_threshold=body.get("migration_threshold", 0.3),
+        )
+        return {"status": "ok", "profile": profile.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/species")
+async def ecosystem_dynamics_species(species_id: str = ""):
+    """Get species profile by ID."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        profile = instance.get_species(species_id)
+        return {"status": "ok", "profile": profile.to_dict() if profile else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/create-region")
+async def ecosystem_dynamics_create_region(request: Request):
+    """Create a new ecosystem region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        region = instance.create_region(
+            region_id=body.get("region_id", ""),
+            name=body.get("name", ""),
+            terrain=body.get("terrain", "temperate_forest"),
+            size=body.get("size", 1000.0),
+            initial_species=body.get("initial_species", None),
+        )
+        return {"status": "ok", "region": region.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/region-state")
+async def ecosystem_dynamics_region_state(region_id: str = ""):
+    """Get the current state of a region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        state = instance.get_region_state(region_id)
+        return {"status": "ok", "state": state.to_dict() if state else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/introduce-species")
+async def ecosystem_dynamics_introduce_species(request: Request):
+    """Introduce a species into a region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        success = instance.introduce_species(
+            region_id=body.get("region_id", ""),
+            species_id=body.get("species_id", ""),
+            initial_population=body.get("initial_population", 10),
+        )
+        return {"status": "ok", "success": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/simulate-tick")
+async def ecosystem_dynamics_simulate_tick(request: Request):
+    """Simulate one tick of ecosystem dynamics."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        report = instance.simulate_tick(
+            region_id=body.get("region_id", ""),
+        )
+        return {"status": "ok", "report": report.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/simulate-ticks")
+async def ecosystem_dynamics_simulate_ticks(request: Request):
+    """Simulate multiple ticks of ecosystem dynamics."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        reports = instance.simulate_ticks(
+            region_id=body.get("region_id", ""),
+            num_ticks=body.get("num_ticks", 10),
+        )
+        return {"status": "ok", "reports": [r.to_dict() for r in reports]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/trigger-migration")
+async def ecosystem_dynamics_trigger_migration(request: Request):
+    """Trigger a migration event."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        body = await request.json()
+        instance = get_ecosystem_dynamics()
+        event = instance.trigger_migration(
+            region_id=body.get("region_id", ""),
+            species_id=body.get("species_id", ""),
+            target_region=body.get("target_region", ""),
+            percentage=body.get("percentage", 0.1),
+            reason=body.get("reason", "seasonal"),
+        )
+        return {"status": "ok", "event": event.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/population-history")
+async def ecosystem_dynamics_population_history(
+    region_id: str = "",
+    species_id: Optional[str] = None,
+):
+    """Get population history for a region and optional species."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        result = instance.get_population_history(
+            region_id=region_id,
+            species_id=species_id,
+        )
+        return {"status": "ok", "history": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/biodiversity")
+async def ecosystem_dynamics_biodiversity(region_id: str = ""):
+    """Assess biodiversity in a region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        result = instance.assess_biodiversity(region_id)
+        return {"status": "ok", "biodiversity": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/collapse-risk")
+async def ecosystem_dynamics_collapse_risk(region_id: str = ""):
+    """Detect ecosystem collapse risk."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        result = instance.detect_collapse_risk(region_id)
+        return {"status": "ok", "risk": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ecosystem-dynamics/interactions")
+async def ecosystem_dynamics_interactions(region_id: str = ""):
+    """Get species interactions in a region."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        result = instance.get_species_interactions(region_id)
+        return {"status": "ok", "interactions": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ecosystem-dynamics/reset")
+async def ecosystem_dynamics_reset():
+    """Reset the ecosystem dynamics engine."""
+    try:
+        from sparkai.engine.engine_ecosystem_dynamics import get_ecosystem_dynamics
+        instance = get_ecosystem_dynamics()
+        instance.reset()
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Civilization Evolution v2 Routes
+# =============================================================================
+
+@router.get("/civilization-evolution/stats")
+async def civilization_evolution_stats():
+    """Get civilization evolution engine statistics."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/create-civilization")
+async def civilization_evolution_create_civilization(request: Request):
+    """Create a new civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        civ = instance.create_civilization(
+            civ_id=body.get("civ_id", ""),
+            name=body.get("name", ""),
+            starting_era=body.get("starting_era", "ANCIENT"),
+            population=body.get("population", 1000),
+            government_type=body.get("government_type", "tribal"),
+            territory_size=body.get("territory_size", 100.0),
+            starting_techs=body.get("starting_techs", None),
+            cultural_values=body.get("cultural_values", None),
+        )
+        return {"status": "ok", "civilization": civ.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/civilization")
+async def civilization_evolution_civilization(civ_id: str = ""):
+    """Get a civilization by ID."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        civ = instance.get_civilization(civ_id)
+        return {"status": "ok", "civilization": civ.to_dict() if civ else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/research-technology")
+async def civilization_evolution_research_technology(request: Request):
+    """Research a new technology for a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        tech = instance.research_technology(
+            civ_id=body.get("civ_id", ""),
+            tech_name=body.get("tech_name", ""),
+            description=body.get("description", ""),
+            prerequisites=body.get("prerequisites", None),
+            cost=body.get("cost", 100),
+        )
+        return {"status": "ok", "technology": tech.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/tech-tree")
+async def civilization_evolution_tech_tree(civ_id: str = ""):
+    """Get the technology tree for a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        techs = instance.get_tech_tree(civ_id)
+        return {"status": "ok", "tech_tree": [t.to_dict() for t in techs]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/change-government")
+async def civilization_evolution_change_government(request: Request):
+    """Change the government type of a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        civ = instance.change_government(
+            civ_id=body.get("civ_id", ""),
+            new_government=body.get("new_government", ""),
+            stability=body.get("stability", 0.5),
+        )
+        return {"status": "ok", "civilization": civ.to_dict() if civ else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/evolve-culture")
+async def civilization_evolution_evolve_culture(request: Request):
+    """Evolve a cultural aspect of a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        culture = instance.evolve_culture(
+            civ_id=body.get("civ_id", ""),
+            aspect=body.get("aspect", ""),
+            value=body.get("value", 0.0),
+            description=body.get("description", ""),
+        )
+        return {"status": "ok", "culture": culture.to_dict() if culture else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/culture")
+async def civilization_evolution_culture(civ_id: str = ""):
+    """Get the cultural identity of a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        culture = instance.get_culture(civ_id)
+        return {"status": "ok", "culture": culture.to_dict() if culture else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/establish-relation")
+async def civilization_evolution_establish_relation(request: Request):
+    """Establish a diplomatic relation between two civilizations."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        success = instance.establish_relation(
+            civ_a_id=body.get("civ_a_id", ""),
+            civ_b_id=body.get("civ_b_id", ""),
+            status=body.get("status", "neutral"),
+            trade_volume=body.get("trade_volume", 0.0),
+            diplomatic_standing=body.get("diplomatic_standing", 0.5),
+        )
+        return {"status": "ok", "success": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/relations")
+async def civilization_evolution_relations(civ_id: str = ""):
+    """Get diplomatic relations for a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        result = instance.get_relations(civ_id)
+        return {"status": "ok", "relations": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/simulate-tick")
+async def civilization_evolution_simulate_tick(request: Request):
+    """Simulate one tick of civilization evolution."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        snapshot = instance.simulate_tick(
+            civ_id=body.get("civ_id", ""),
+        )
+        return {"status": "ok", "snapshot": snapshot.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/civilization-evolution/simulate-ticks")
+async def civilization_evolution_simulate_ticks(request: Request):
+    """Simulate multiple ticks of civilization evolution."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        body = await request.json()
+        instance = get_civilization_engine()
+        snapshots = instance.simulate_ticks(
+            civ_id=body.get("civ_id", ""),
+            num_ticks=body.get("num_ticks", 10),
+        )
+        return {"status": "ok", "snapshots": [s.to_dict() for s in snapshots]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/stability")
+async def civilization_evolution_stability(civ_id: str = ""):
+    """Assess the stability of a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        result = instance.assess_stability(civ_id)
+        return {"status": "ok", "stability": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/civilization-evolution/history")
+async def civilization_evolution_history(civ_id: str = "", limit: int = 50):
+    """Get the history of a civilization."""
+    try:
+        from sparkai.engine.engine_civilization_evolution import get_civilization_engine
+        instance = get_civilization_engine()
+        result = instance.get_history(civ_id=civ_id, limit=limit)
+        return {"status": "ok", "history": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Procedural City v2 Routes
+# =============================================================================
+
+@router.get("/procedural-city/stats")
+async def procedural_city_stats():
+    """Get procedural city engine statistics."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/generate")
+async def procedural_city_generate(request: Request):
+    """Generate a new procedural city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        city = instance.generate_city(
+            city_id=body.get("city_id", ""),
+            name=body.get("name", ""),
+            width=body.get("width", 1000),
+            height=body.get("height", 1000),
+            style=body.get("style", "modern"),
+            seed=body.get("seed", None),
+            config=body.get("config", None),
+        )
+        return {"status": "ok", "city": city.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/generate-roads")
+async def procedural_city_generate_roads(request: Request):
+    """Generate road network for a city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        roads = instance.generate_road_network(
+            city_id=body.get("city_id", ""),
+            pattern=body.get("pattern", "grid"),
+            density=body.get("density", 0.5),
+        )
+        return {"status": "ok", "roads": [r.to_dict() for r in roads]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/generate-districts")
+async def procedural_city_generate_districts(request: Request):
+    """Generate districts for a city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        districts = instance.generate_districts(
+            city_id=body.get("city_id", ""),
+            num_districts=body.get("num_districts", 5),
+            types=body.get("types", None),
+        )
+        return {"status": "ok", "districts": [d.to_dict() for d in districts]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/generate-buildings")
+async def procedural_city_generate_buildings(request: Request):
+    """Generate buildings for a district."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        buildings = instance.generate_buildings(
+            city_id=body.get("city_id", ""),
+            district_id=body.get("district_id", ""),
+            building_types=body.get("building_types", None),
+            density=body.get("density", 0.5),
+        )
+        return {"status": "ok", "buildings": [b.to_dict() for b in buildings]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-city/place-landmark")
+async def procedural_city_place_landmark(request: Request):
+    """Place a landmark in a city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        body = await request.json()
+        instance = get_procedural_city_engine()
+        landmark = instance.place_landmark(
+            city_id=body.get("city_id", ""),
+            x=body.get("x", 0),
+            y=body.get("y", 0),
+            landmark_type=body.get("landmark_type", ""),
+            name=body.get("name", ""),
+            scale=body.get("scale", 1.0),
+        )
+        return {"status": "ok", "landmark": landmark.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/city")
+async def procedural_city_city(city_id: str = ""):
+    """Get a city layout by ID."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        city = instance.get_city(city_id)
+        return {"status": "ok", "city": city.to_dict() if city else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/district")
+async def procedural_city_district(city_id: str = "", district_id: str = ""):
+    """Get a district by ID."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        district = instance.get_district(city_id, district_id)
+        return {"status": "ok", "district": district.to_dict() if district else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/buildings")
+async def procedural_city_buildings(city_id: str = "", district_id: str = ""):
+    """Get buildings in a district."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        buildings = instance.get_buildings_in_district(city_id, district_id)
+        return {"status": "ok", "buildings": [b.to_dict() for b in buildings]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/roads")
+async def procedural_city_roads(city_id: str = ""):
+    """Get road network for a city."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        roads = instance.get_road_network(city_id)
+        return {"status": "ok", "roads": [r.to_dict() for r in roads]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/analyze")
+async def procedural_city_analyze(city_id: str = ""):
+    """Analyze a city layout."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        result = instance.analyze_city(city_id)
+        return {"status": "ok", "analysis": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-city/list")
+async def procedural_city_list():
+    """List all generated cities."""
+    try:
+        from sparkai.engine.engine_procedural_city import get_procedural_city_engine
+        instance = get_procedural_city_engine()
+        cities = instance.list_cities()
+        return {"status": "ok", "cities": cities}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Flow State Monitor v2 Routes
+# =============================================================================
+
+@router.get("/flow-state-monitor/stats")
+async def flow_state_monitor_stats():
+    """Get flow state monitor engine statistics."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/flow-state-monitor/register-player")
+async def flow_state_monitor_register_player(request: Request):
+    """Register a new player for flow state monitoring."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        body = await request.json()
+        instance = get_flow_state_monitor()
+        profile = instance.register_player(
+            player_id=body.get("player_id", ""),
+            initial_skill=body.get("initial_skill", 0.5),
+            game_type=body.get("game_type", "general"),
+        )
+        return {"status": "ok", "profile": profile.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/flow-state-monitor/update-skill")
+async def flow_state_monitor_update_skill(request: Request):
+    """Update a player's skill level."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        body = await request.json()
+        instance = get_flow_state_monitor()
+        instance.update_skill_level(
+            player_id=body.get("player_id", ""),
+            new_skill=body.get("new_skill", 0.5),
+            confidence=body.get("confidence", 0.8),
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/profile")
+async def flow_state_monitor_profile(player_id: str = ""):
+    """Get flow profile for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        profile = instance.get_flow_profile(player_id)
+        return {"status": "ok", "profile": profile.to_dict() if profile else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/flow-state-monitor/record-signal")
+async def flow_state_monitor_record_signal(request: Request):
+    """Record a player signal for flow analysis."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        body = await request.json()
+        instance = get_flow_state_monitor()
+        signal = instance.record_signal(
+            player_id=body.get("player_id", ""),
+            signal_type=body.get("signal_type", ""),
+            value=body.get("value", 0.0),
+            session_id=body.get("session_id", ""),
+            timestamp=body.get("timestamp", None),
+        )
+        return {"status": "ok", "signal": signal.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/flow-state-monitor/calculate")
+async def flow_state_monitor_calculate(request: Request):
+    """Calculate flow state for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        body = await request.json()
+        instance = get_flow_state_monitor()
+        reading = instance.calculate_flow_state(
+            player_id=body.get("player_id", ""),
+        )
+        return {"status": "ok", "reading": reading.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/reading")
+async def flow_state_monitor_reading(player_id: str = ""):
+    """Get the current flow reading for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        reading = instance.get_current_reading(player_id)
+        return {"status": "ok", "reading": reading.to_dict() if reading else None}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/history")
+async def flow_state_monitor_history(player_id: str = "", limit: int = 50):
+    """Get flow history for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        history = instance.get_flow_history(player_id=player_id, limit=limit)
+        return {"status": "ok", "history": history.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/suggest-adaptation")
+async def flow_state_monitor_suggest_adaptation(player_id: str = ""):
+    """Suggest adaptation for a player based on flow state."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        suggestion = instance.suggest_adaptation(player_id)
+        return {"status": "ok", "suggestion": suggestion.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/flow-patterns")
+async def flow_state_monitor_patterns(player_id: str = ""):
+    """Analyze flow patterns for a player."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        result = instance.analyze_flow_patterns(player_id)
+        return {"status": "ok", "patterns": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/flow-state-monitor/players-in-state")
+async def flow_state_monitor_players_in_state(state: str = "flow"):
+    """Get players currently in a specific flow state."""
+    try:
+        from sparkai.engine.engine_flow_state_monitor import get_flow_state_monitor
+        instance = get_flow_state_monitor()
+        players = instance.get_players_in_state(state)
+        return {"status": "ok", "players": players}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
