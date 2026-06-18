@@ -32671,3 +32671,659 @@ async def emergent_storyteller_player_action(request: Request):
         return {"status": "ok", "beat": {"beat_id": beat.beat_id, "impact": beat.player_impact.value}}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+# === Theory of Mind ===
+
+@router.get("/theory-of-mind/stats")
+async def theory_of_mind_stats():
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        instance = get_theory_of_mind_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/theory-of-mind/register-belief")
+async def theory_of_mind_register_belief(request: Request):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        body = await request.json()
+        instance = get_theory_of_mind_engine()
+        belief = instance.register_belief(
+            agent_id=body.get("agent_id", ""),
+            target_id=body.get("target_id", ""),
+            content=body.get("content", ""),
+            state_type=body.get("state_type", "belief"),
+            confidence=body.get("confidence", 0.5),
+            evidence=body.get("evidence"),
+            metadata=body.get("metadata"),
+        )
+        return {"status": "ok", "belief": belief.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/theory-of-mind/register-intention")
+async def theory_of_mind_register_intention(request: Request):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        body = await request.json()
+        instance = get_theory_of_mind_engine()
+        intention = instance.register_intention(
+            agent_id=body.get("agent_id", ""),
+            target_id=body.get("target_id", ""),
+            action_description=body.get("action_description", ""),
+            target_outcome=body.get("target_outcome", ""),
+            priority=body.get("priority", 0.5),
+            time_horizon=body.get("time_horizon", 1.0),
+            preconditions=body.get("preconditions"),
+        )
+        return {"status": "ok", "intention": intention.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/theory-of-mind/register-desire")
+async def theory_of_mind_register_desire(request: Request):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        body = await request.json()
+        instance = get_theory_of_mind_engine()
+        desire = instance.register_desire(
+            agent_id=body.get("agent_id", ""),
+            target_id=body.get("target_id", ""),
+            description=body.get("description", ""),
+            intensity=body.get("intensity", 0.5),
+            priority=body.get("priority", 0.5),
+            conflicting_desires=body.get("conflicting_desires"),
+        )
+        return {"status": "ok", "desire": desire.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/theory-of-mind/build-perspective")
+async def theory_of_mind_build_perspective(observer_id: str = "", target_id: str = ""):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        instance = get_theory_of_mind_engine()
+        perspective = instance.build_perspective(observer_id, target_id)
+        return {"status": "ok", "perspective": perspective.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/theory-of-mind/infer-belief")
+async def theory_of_mind_infer_belief(request: Request):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        body = await request.json()
+        instance = get_theory_of_mind_engine()
+        belief = instance.infer_belief(
+            agent_id=body.get("agent_id", ""),
+            target_id=body.get("target_id", ""),
+            evidence=body.get("evidence", []),
+            content_hint=body.get("content_hint", ""),
+        )
+        return {"status": "ok", "belief": belief.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/theory-of-mind/predict-action")
+async def theory_of_mind_predict_action(request: Request):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        body = await request.json()
+        instance = get_theory_of_mind_engine()
+        prediction = instance.predict_action(
+            agent_id=body.get("agent_id", ""),
+            target_id=body.get("target_id", ""),
+            context=body.get("context"),
+        )
+        return {"status": "ok", "prediction": prediction}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/theory-of-mind/revise-belief")
+async def theory_of_mind_revise_belief(request: Request):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        body = await request.json()
+        instance = get_theory_of_mind_engine()
+        belief = instance.revise_belief(
+            belief_id=body.get("belief_id", ""),
+            new_confidence=body.get("new_confidence"),
+            new_status=body.get("new_status"),
+            new_evidence=body.get("new_evidence"),
+        )
+        if belief is not None:
+            return {"status": "ok", "belief": belief.to_dict()}
+        return {"status": "error", "message": "Belief not found"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/theory-of-mind/retract-belief")
+async def theory_of_mind_retract_belief(request: Request):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        body = await request.json()
+        instance = get_theory_of_mind_engine()
+        success = instance.retract_belief(body.get("belief_id", ""))
+        return {"status": "ok", "success": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/theory-of-mind/mental-state")
+async def theory_of_mind_get_mental_state(agent_id: str = ""):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        instance = get_theory_of_mind_engine()
+        snapshot = instance.get_agent_mental_state(agent_id)
+        return {"status": "ok", "mental_state": snapshot.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/theory-of-mind/detect-deception")
+async def theory_of_mind_detect_deception(agent_id: str = "", target_id: str = ""):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        instance = get_theory_of_mind_engine()
+        result = instance.detect_deception(agent_id, target_id)
+        return {"status": "ok", "deception": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/theory-of-mind/resolve-conflict")
+async def theory_of_mind_resolve_conflict(request: Request):
+    try:
+        from sparkai.agent.agent_theory_of_mind import get_theory_of_mind_engine
+        body = await request.json()
+        instance = get_theory_of_mind_engine()
+        result = instance.resolve_conflict(body.get("desire_id", ""))
+        return {"status": "ok", "resolution": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# === Counterfactual Simulator ===
+
+@router.get("/counterfactual-simulator/stats")
+async def counterfactual_simulator_stats():
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        instance = get_counterfactual_simulator()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/counterfactual-simulator/create-scenario")
+async def counterfactual_simulator_create_scenario(request: Request):
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        body = await request.json()
+        instance = get_counterfactual_simulator()
+        scenario = instance.create_scenario(
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            baseline_context=body.get("baseline_context"),
+        )
+        return {"status": "ok", "scenario": scenario.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/counterfactual-simulator/add-change")
+async def counterfactual_simulator_add_change(request: Request):
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        body = await request.json()
+        instance = get_counterfactual_simulator()
+        change = instance.add_change(
+            scenario_id=body.get("scenario_id", ""),
+            change_type=body.get("change_type", ""),
+            target=body.get("target", ""),
+            description=body.get("description", ""),
+            magnitude=body.get("magnitude", 0.5),
+        )
+        return {"status": "ok", "change": change.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/counterfactual-simulator/scenario")
+async def counterfactual_simulator_get_scenario(scenario_id: str = ""):
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        instance = get_counterfactual_simulator()
+        scenario = instance.get_scenario(scenario_id)
+        if scenario is not None:
+            return {"status": "ok", "scenario": scenario.to_dict()}
+        return {"status": "error", "message": "Scenario not found"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/counterfactual-simulator/scenarios")
+async def counterfactual_simulator_list_scenarios(status: Optional[str] = None, limit: int = 50):
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        instance = get_counterfactual_simulator()
+        scenarios = instance.list_scenarios(status=status, limit=limit)
+        return {"status": "ok", "scenarios": scenarios, "count": len(scenarios)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/counterfactual-simulator/rollback")
+async def counterfactual_simulator_rollback_scenario(request: Request):
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        body = await request.json()
+        instance = get_counterfactual_simulator()
+        success = instance.rollback_scenario(body.get("scenario_id", ""))
+        return {"status": "ok", "success": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/counterfactual-simulator/run")
+async def counterfactual_simulator_run_scenario(request: Request):
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        body = await request.json()
+        instance = get_counterfactual_simulator()
+        result = instance.run_scenario(
+            scenario_id=body.get("scenario_id", ""),
+            ticks=body.get("ticks", 10),
+        )
+        return {"status": "ok", "result": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/counterfactual-simulator/evaluate-impact")
+async def counterfactual_simulator_evaluate_impact(scenario_id: str = ""):
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        instance = get_counterfactual_simulator()
+        impact = instance.evaluate_impact(scenario_id)
+        return {"status": "ok", "impact": impact}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/counterfactual-simulator/compare")
+async def counterfactual_simulator_compare_scenarios(scenario_a_id: str = "", scenario_b_id: str = ""):
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        instance = get_counterfactual_simulator()
+        report = instance.compare_scenarios(scenario_a_id, scenario_b_id)
+        if report is not None:
+            return {"status": "ok", "comparison": report.to_dict()}
+        return {"status": "error", "message": "Comparison not available"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/counterfactual-simulator/recommend-action")
+async def counterfactual_simulator_recommend_action(scenario_id: str = ""):
+    try:
+        from sparkai.agent.agent_counterfactual_simulator import get_counterfactual_simulator
+        instance = get_counterfactual_simulator()
+        recommendation = instance.recommend_action(scenario_id)
+        return {"status": "ok", "recommendation": recommendation}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# === Skill Lifecycle ===
+
+@router.get("/skill-lifecycle/stats")
+async def skill_lifecycle_stats():
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        instance = get_skill_lifecycle_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-lifecycle/create-skill")
+async def skill_lifecycle_create_skill(request: Request):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        body = await request.json()
+        instance = get_skill_lifecycle_engine()
+        skill = instance.create_skill(
+            name=body.get("name", ""),
+            domain=body.get("domain", ""),
+            description=body.get("description", ""),
+            initial_steps=body.get("initial_steps"),
+            initial_parameters=body.get("initial_parameters"),
+        )
+        return {"status": "ok", "skill": skill.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/skill-lifecycle/skill")
+async def skill_lifecycle_get_skill(skill_id: str = ""):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        instance = get_skill_lifecycle_engine()
+        skill = instance.get_skill(skill_id)
+        if skill is not None:
+            return {"status": "ok", "skill": skill.to_dict()}
+        return {"status": "error", "message": "Skill not found"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-lifecycle/record-experience")
+async def skill_lifecycle_record_experience(request: Request):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        body = await request.json()
+        instance = get_skill_lifecycle_engine()
+        experience = instance.record_experience(
+            skill_id=body.get("skill_id", ""),
+            success=body.get("success", False),
+            execution_time=body.get("execution_time", 0.0),
+            context=body.get("context"),
+            outcome_notes=body.get("outcome_notes", ""),
+        )
+        return {"status": "ok", "experience": experience.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-lifecycle/refine")
+async def skill_lifecycle_refine_skill(request: Request):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        body = await request.json()
+        instance = get_skill_lifecycle_engine()
+        cycle = instance.refine_skill(
+            skill_id=body.get("skill_id", ""),
+            strategy=body.get("strategy", "PARAMETER_TUNING"),
+            focus_area=body.get("focus_area", ""),
+        )
+        return {"status": "ok", "refinement": cycle.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-lifecycle/evolve-phase")
+async def skill_lifecycle_evolve_phase(request: Request):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        body = await request.json()
+        instance = get_skill_lifecycle_engine()
+        skill = instance.evolve_phase(
+            skill_id=body.get("skill_id", ""),
+            force=body.get("force", False),
+        )
+        if skill is not None:
+            return {"status": "ok", "skill": skill.to_dict()}
+        return {"status": "error", "message": "Skill not found or cannot evolve"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-lifecycle/persist")
+async def skill_lifecycle_persist_skill(request: Request):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        body = await request.json()
+        instance = get_skill_lifecycle_engine()
+        success = instance.persist_skill(
+            skill_id=body.get("skill_id", ""),
+            storage_key=body.get("storage_key", ""),
+        )
+        return {"status": "ok", "success": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-lifecycle/share")
+async def skill_lifecycle_share_skill(request: Request):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        body = await request.json()
+        instance = get_skill_lifecycle_engine()
+        artifact = instance.share_skill(
+            skill_id=body.get("skill_id", ""),
+            target_domain=body.get("target_domain", ""),
+        )
+        if artifact is not None:
+            return {"status": "ok", "artifact": artifact.to_dict()}
+        return {"status": "error", "message": "Skill not found or cannot be shared"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-lifecycle/archive")
+async def skill_lifecycle_archive_skill(request: Request):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        body = await request.json()
+        instance = get_skill_lifecycle_engine()
+        success = instance.archive_skill(
+            skill_id=body.get("skill_id", ""),
+            reason=body.get("reason", ""),
+        )
+        return {"status": "ok", "success": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/skill-lifecycle/artifacts")
+async def skill_lifecycle_get_artifacts(skill_id: str = ""):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        instance = get_skill_lifecycle_engine()
+        artifacts = instance.get_skill_artifacts(skill_id)
+        return {"status": "ok", "artifacts": [a.to_dict() for a in artifacts], "count": len(artifacts)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/skill-lifecycle/add-artifact")
+async def skill_lifecycle_add_artifact(request: Request):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        body = await request.json()
+        instance = get_skill_lifecycle_engine()
+        artifact = instance.add_artifact(
+            skill_id=body.get("skill_id", ""),
+            content_type=body.get("content_type", ""),
+            content=body.get("content"),
+            metadata=body.get("metadata"),
+        )
+        return {"status": "ok", "artifact": artifact.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/skill-lifecycle/history")
+async def skill_lifecycle_get_history(skill_id: str = ""):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        instance = get_skill_lifecycle_engine()
+        events = instance.get_lifecycle_history(skill_id)
+        return {"status": "ok", "events": [e.to_dict() for e in events], "count": len(events)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/skill-lifecycle/discover")
+async def skill_lifecycle_discover_skills(domain: Optional[str] = None, phase: Optional[str] = None, limit: int = 20):
+    try:
+        from sparkai.agent.agent_skill_lifecycle import get_skill_lifecycle_engine
+        instance = get_skill_lifecycle_engine()
+        skills = instance.discover_skills(domain=domain, phase=phase, limit=limit)
+        return {"status": "ok", "skills": skills, "count": len(skills)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# === Timeline Brancher ===
+
+@router.get("/timeline-brancher/stats")
+async def timeline_brancher_stats():
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        instance = get_timeline_brancher()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/timeline-brancher/create-timeline")
+async def timeline_brancher_create_timeline(request: Request):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        body = await request.json()
+        instance = get_timeline_brancher()
+        timeline = instance.create_timeline(
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            initial_state=body.get("initial_state"),
+            parent_timeline_id=body.get("parent_timeline_id"),
+            branch_point_tick=body.get("branch_point_tick"),
+        )
+        return {"status": "ok", "timeline": timeline.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/timeline-brancher/branch")
+async def timeline_brancher_branch_timeline(request: Request):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        body = await request.json()
+        instance = get_timeline_brancher()
+        timeline = instance.branch_timeline(
+            parent_id=body.get("parent_id", ""),
+            name=body.get("name", ""),
+            description=body.get("description", ""),
+            branch_point_tick=body.get("branch_point_tick"),
+        )
+        if timeline is not None:
+            return {"status": "ok", "timeline": timeline.to_dict()}
+        return {"status": "error", "message": "Parent timeline not found or cannot branch"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/timeline-brancher/pause")
+async def timeline_brancher_pause_timeline(request: Request):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        body = await request.json()
+        instance = get_timeline_brancher()
+        success = instance.pause_timeline(body.get("timeline_id", ""))
+        return {"status": "ok", "success": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/timeline-brancher/resume")
+async def timeline_brancher_resume_timeline(request: Request):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        body = await request.json()
+        instance = get_timeline_brancher()
+        success = instance.resume_timeline(body.get("timeline_id", ""))
+        return {"status": "ok", "success": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/timeline-brancher/abandon")
+async def timeline_brancher_abandon_timeline(request: Request):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        body = await request.json()
+        instance = get_timeline_brancher()
+        success = instance.abandon_timeline(
+            timeline_id=body.get("timeline_id", ""),
+            reason=body.get("reason", ""),
+        )
+        return {"status": "ok", "success": success}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/timeline-brancher/record-event")
+async def timeline_brancher_record_event(request: Request):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        body = await request.json()
+        instance = get_timeline_brancher()
+        event = instance.record_event(
+            timeline_id=body.get("timeline_id", ""),
+            event_type=body.get("event_type", ""),
+            description=body.get("description", ""),
+            participants=body.get("participants"),
+            location=body.get("location"),
+            metadata=body.get("metadata"),
+            significance=body.get("significance", 0.5),
+        )
+        return {"status": "ok", "event": event.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/timeline-brancher/save-state")
+async def timeline_brancher_save_state(request: Request):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        body = await request.json()
+        instance = get_timeline_brancher()
+        state = instance.save_state(
+            timeline_id=body.get("timeline_id", ""),
+            state=body.get("state", {}),
+            label=body.get("label", ""),
+        )
+        return {"status": "ok", "state": state.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/timeline-brancher/timeline")
+async def timeline_brancher_get_timeline(timeline_id: str = ""):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        instance = get_timeline_brancher()
+        timeline = instance.get_timeline(timeline_id)
+        if timeline is not None:
+            return {"status": "ok", "timeline": timeline.to_dict()}
+        return {"status": "error", "message": "Timeline not found"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/timeline-brancher/timelines")
+async def timeline_brancher_list_timelines(status: Optional[str] = None, limit: int = 50):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        instance = get_timeline_brancher()
+        timelines = instance.list_timelines(status=status, limit=limit)
+        return {"status": "ok", "timelines": timelines, "count": len(timelines)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/timeline-brancher/events")
+async def timeline_brancher_get_events(timeline_id: str = "", event_type: Optional[str] = None, limit: int = 50):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        instance = get_timeline_brancher()
+        events = instance.get_timeline_events(timeline_id, event_type=event_type, limit=limit)
+        return {"status": "ok", "events": events, "count": len(events)}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/timeline-brancher/replay")
+async def timeline_brancher_replay_timeline(timeline_id: str = "", from_tick: int = 0, to_tick: Optional[int] = None):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        instance = get_timeline_brancher()
+        replay = instance.replay_timeline(timeline_id, from_tick=from_tick, to_tick=to_tick)
+        return {"status": "ok", "replay": replay}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/timeline-brancher/compare")
+async def timeline_brancher_compare_timelines(timeline_a_id: str = "", timeline_b_id: str = ""):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        instance = get_timeline_brancher()
+        comparison = instance.compare_timelines(timeline_a_id, timeline_b_id)
+        return {"status": "ok", "comparison": comparison.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/timeline-brancher/merge")
+async def timeline_brancher_merge_timelines(request: Request):
+    try:
+        from sparkai.agent.agent_timeline_brancher import get_timeline_brancher
+        body = await request.json()
+        instance = get_timeline_brancher()
+        result = instance.merge_timelines(
+            source_id=body.get("source_id", ""),
+            target_id=body.get("target_id", ""),
+            strategy=body.get("strategy", "UNION"),
+            conflict_resolution=body.get("conflict_resolution", "LATEST_WINS"),
+        )
+        return {"status": "ok", "merge": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
