@@ -364,11 +364,10 @@ from sparkai.agent.agent_story_forge import (
     get_story_forge,
 )
 from sparkai.agent.agent_quest_generator import (
-    AgentQuestGenerator, QuestCategory,
+    QuestGeneratorEngine, QuestType,
     QuestStatus as GenQuestStatus,
     ObjectiveType as GenObjectiveType,
-    RewardType, DifficultyLevel,
-    QuestObjective, QuestReward, Quest,
+    QuestDifficulty, QuestObjective, QuestReward, QuestDefinition,
     get_quest_generator,
 )
 from sparkai.agent.agent_dialogue_engine import (
@@ -419,6 +418,33 @@ from sparkai.agent.agent_behavior_designer import (
     StateTransition, StateMachine, ActionPattern,
     NPCBehaviorProfile,
     get_agent_behavior_designer,
+)
+from sparkai.agent.agent_self_evolution import (
+    SelfEvolutionEngine, EvolutionPhase, TraceOutcome, StrategyType,
+    EvolutionMetric, ExecutionTrace, PerformancePattern, EvolutionStrategy,
+    EvolutionCycle,
+    get_self_evolution_engine,
+)
+from sparkai.agent.agent_skill_accumulator import (
+    SkillAccumulatorEngine, SkillDomain, SkillMaturity, ExecutionOutcome,
+    SkillStep, AccumulatedSkill, SkillExecution, ComposedSkill,
+    get_skill_accumulator_engine,
+)
+from sparkai.agent.agent_layered_memory import (
+    LayeredMemoryEngine, MemoryLayer, MemoryPriority, MemoryCategory,
+    MemoryEntry, MemorySearchResult, MemoryConsolidationResult,
+    get_layered_memory_engine,
+)
+from sparkai.agent.agent_world_simulator import (
+    WorldSimulatorEngine, DayPhase, Season, EntityType, EntityState,
+    InteractionType, EventCategory, SimEntity, WorldInteraction,
+    WorldEvent, WorldStateSnapshot,
+    get_world_simulator_engine,
+)
+from sparkai.agent.agent_emergent_storyteller import (
+    EmergentStorytellerEngine, NarrativeTheme, StoryArcType, StoryBeatType,
+    ArcStage, PlayerImpactLevel, StoryBeat, NarrativeArc, WorldChronicle,
+    get_emergent_storyteller_engine,
 )
 
 __all__ = [
@@ -1125,4 +1151,58 @@ __all__ = [
     "ActionPattern",
     "NPCBehaviorProfile",
     "get_agent_behavior_designer",
+    # Self-Evolution
+    "SelfEvolutionEngine",
+    "EvolutionPhase",
+    "TraceOutcome",
+    "StrategyType",
+    "EvolutionMetric",
+    "ExecutionTrace",
+    "PerformancePattern",
+    "EvolutionStrategy",
+    "EvolutionCycle",
+    "get_self_evolution_engine",
+    # Skill Accumulator
+    "SkillAccumulatorEngine",
+    "SkillDomain",
+    "SkillMaturity",
+    "ExecutionOutcome",
+    "SkillStep",
+    "AccumulatedSkill",
+    "SkillExecution",
+    "ComposedSkill",
+    "get_skill_accumulator_engine",
+    # Layered Memory
+    "LayeredMemoryEngine",
+    "MemoryLayer",
+    "MemoryPriority",
+    "MemoryCategory",
+    "MemoryEntry",
+    "MemorySearchResult",
+    "MemoryConsolidationResult",
+    "get_layered_memory_engine",
+    # World Simulator
+    "WorldSimulatorEngine",
+    "DayPhase",
+    "Season",
+    "EntityType",
+    "EntityState",
+    "InteractionType",
+    "EventCategory",
+    "SimEntity",
+    "WorldInteraction",
+    "WorldEvent",
+    "WorldStateSnapshot",
+    "get_world_simulator_engine",
+    # Emergent Storyteller
+    "EmergentStorytellerEngine",
+    "NarrativeTheme",
+    "StoryArcType",
+    "StoryBeatType",
+    "ArcStage",
+    "PlayerImpactLevel",
+    "StoryBeat",
+    "NarrativeArc",
+    "WorldChronicle",
+    "get_emergent_storyteller_engine",
 ]
