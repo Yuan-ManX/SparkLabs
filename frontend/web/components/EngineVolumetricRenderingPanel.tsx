@@ -85,10 +85,10 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
     name: '',
     coverage: 0.5,
     density: 0.3,
-    altitude: 1000,
-    thickness: 500,
-    windSpeed: 10,
-    windDirection: 0,
+    altitude: 2000,
+    thickness: 800,
+    wind_speed: 10,
+    wind_direction: 45,
   });
   const [cloudConfigs, setCloudConfigs] = useState<CloudConfig[]>([]);
 
@@ -616,12 +616,12 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
                 </div>
                 <div>
                   <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 3 }}>Wind Speed</label>
-                  <input type="number" value={cloudForm.windSpeed} onChange={e => setCloudForm(prev => ({ ...prev, windSpeed: parseInt(e.target.value, 10) || 0 }))}
+                  <input type="number" value={cloudForm.wind_speed} onChange={e => setCloudForm(prev => ({ ...prev, windSpeed: parseInt(e.target.value, 10) || 0 }))}
                     style={inputStyle} />
                 </div>
                 <div>
                   <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 3 }}>Wind Direction (deg)</label>
-                  <input type="number" value={cloudForm.windDirection} onChange={e => setCloudForm(prev => ({ ...prev, windDirection: parseInt(e.target.value, 10) || 0 }))}
+                  <input type="number" value={cloudForm.wind_direction} onChange={e => setCloudForm(prev => ({ ...prev, windDirection: parseInt(e.target.value, 10) || 0 }))}
                     style={inputStyle} />
                 </div>
               </div>
