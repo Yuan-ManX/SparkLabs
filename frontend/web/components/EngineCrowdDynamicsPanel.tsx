@@ -47,7 +47,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
   const [agents, setAgents] = useState<CrowdAgent[]>([]);
 
   const [groupForm, setGroupForm] = useState({
-    name: '', cohesionWeight: 0.5, alignmentWeight: 0.3, separationWeight: 0.4, formation: 'none',
+    name: '', cohesion_weight: 0.5, alignment_weight: 0.3, separation_weight: 0.4, formation: 'none',
   });
   const [groups, setGroups] = useState<CrowdGroup[]>([]);
 
@@ -339,18 +339,18 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
                 </div>
                 <div>
                   <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 3 }}>Cohesion Weight</label>
-                  <input type="range" min="0" max="1" step="0.01" value={groupForm.cohesionWeight} onChange={e => setGroupForm(prev => ({ ...prev, cohesionWeight: parseFloat(e.target.value) }))} style={{ width: '100%', accentColor: '#6bcb77' }} />
-                  <span style={{ fontSize: 10, color: '#888' }}>{groupForm.cohesionWeight.toFixed(2)}</span>
+                  <input type="range" min="0" max="1" step="0.01" value={groupForm.cohesion_weight} onChange={e => setGroupForm(prev => ({ ...prev, cohesionWeight: parseFloat(e.target.value) }))} style={{ width: '100%', accentColor: '#6bcb77' }} />
+                  <span style={{ fontSize: 10, color: '#888' }}>{groupForm.cohesion_weight.toFixed(2)}</span>
                 </div>
                 <div>
                   <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 3 }}>Alignment Weight</label>
-                  <input type="range" min="0" max="1" step="0.01" value={groupForm.alignmentWeight} onChange={e => setGroupForm(prev => ({ ...prev, alignmentWeight: parseFloat(e.target.value) }))} style={{ width: '100%', accentColor: '#6bcb77' }} />
-                  <span style={{ fontSize: 10, color: '#888' }}>{groupForm.alignmentWeight.toFixed(2)}</span>
+                  <input type="range" min="0" max="1" step="0.01" value={groupForm.alignment_weight} onChange={e => setGroupForm(prev => ({ ...prev, alignmentWeight: parseFloat(e.target.value) }))} style={{ width: '100%', accentColor: '#6bcb77' }} />
+                  <span style={{ fontSize: 10, color: '#888' }}>{groupForm.alignment_weight.toFixed(2)}</span>
                 </div>
                 <div>
                   <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 3 }}>Separation Weight</label>
-                  <input type="range" min="0" max="1" step="0.01" value={groupForm.separationWeight} onChange={e => setGroupForm(prev => ({ ...prev, separationWeight: parseFloat(e.target.value) }))} style={{ width: '100%', accentColor: '#6bcb77' }} />
-                  <span style={{ fontSize: 10, color: '#888' }}>{groupForm.separationWeight.toFixed(2)}</span>
+                  <input type="range" min="0" max="1" step="0.01" value={groupForm.separation_weight} onChange={e => setGroupForm(prev => ({ ...prev, separationWeight: parseFloat(e.target.value) }))} style={{ width: '100%', accentColor: '#6bcb77' }} />
+                  <span style={{ fontSize: 10, color: '#888' }}>{groupForm.separation_weight.toFixed(2)}</span>
                 </div>
               </div>
               <button onClick={handleCreateGroup} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#0f3460', color: '#6bcb77', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
