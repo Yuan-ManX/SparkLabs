@@ -166,9 +166,9 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
   const [initialVariables, setInitialVariables] = useState("{}");
   const [executeInstanceId, setExecuteInstanceId] = useState("");
   const [executeDeltaTime, setExecuteDeltaTime] = useState("0.016");
-  const [setVarInstanceId, setSetVarInstanceId] = useState("");
-  const [setVarName, setSetVarName] = useState("");
-  const [setVarValue, setSetVarValue] = useState("");
+  const [varInstanceId, setVarInstanceId] = useState("");
+  const [varName, setVarName] = useState("");
+  const [varValue, setVarValue] = useState("");
 
   // ── Events Tab state ──────────────────────────────────────────────
   const [executionResults, setExecutionResults] = useState<
@@ -452,7 +452,7 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
   };
 
   const handleSetVariable = async () => {
-    if (!setVarInstanceId.trim() || !setVarName.trim()) {
+    if (!varInstanceId.trim() || !varName.trim()) {
       showMessage("Instance ID and variable name are required", "error");
       return;
     }
@@ -463,9 +463,9 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
-            instance_id: setVarInstanceId.trim(),
-            name: setVarName.trim(),
-            value: setVarValue,
+            instance_id: varInstanceId.trim(),
+            name: varName.trim(),
+            value: varValue,
           }),
         }
       );
@@ -1200,15 +1200,15 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
                 <div>
                   <div style={labelStyle}>Instance</div>
                   {renderInstanceSelector(
-                    setVarInstanceId,
-                    setSetVarInstanceId
+                    varInstanceId,
+                    setVarInstanceId
                   )}
                 </div>
                 <div style={{ flex: 1, minWidth: 100 }}>
                   <div style={labelStyle}>Variable Name</div>
                   <input
-                    value={setVarName}
-                    onChange={(e) => setSetVarName(e.target.value)}
+                    value={varName}
+                    onChange={(e) => setVarName(e.target.value)}
                     placeholder="health"
                     style={{ ...inputStyle, width: "100%" }}
                   />
@@ -1216,8 +1216,8 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 100 }}>
                   <div style={labelStyle}>Value</div>
                   <input
-                    value={setVarValue}
-                    onChange={(e) => setSetVarValue(e.target.value)}
+                    value={varValue}
+                    onChange={(e) => setVarValue(e.target.value)}
                     placeholder="100"
                     style={{ ...inputStyle, width: "100%" }}
                   />
