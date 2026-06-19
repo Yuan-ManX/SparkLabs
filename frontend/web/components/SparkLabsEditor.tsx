@@ -92,6 +92,12 @@ import AgentTheoryOfMindPanel from './AgentTheoryOfMindPanel';
 import AgentCounterfactualSimulatorPanel from './AgentCounterfactualSimulatorPanel';
 import AgentSkillLifecyclePanel from './AgentSkillLifecyclePanel';
 import AgentTimelineBrancherPanel from './AgentTimelineBrancherPanel';
+import AgentLLMOrchestratorPanel from './AgentLLMOrchestratorPanel';
+import AgentExperienceMemoryPanel from './AgentExperienceMemoryPanel';
+import EnginePhysicsPanel from './EnginePhysicsPanel';
+import EngineBehaviorPanel from './EngineBehaviorPanel';
+import EngineInputManagementPanel from './EngineInputPanel';
+import EngineSceneLifecyclePanel from './EngineSceneLifecyclePanel';
 import EngineEcosystemDynamicsPanel from './EngineEcosystemDynamicsPanel';
 import EngineCivilizationEvolutionPanel from './EngineCivilizationEvolutionPanel';
 import EngineProceduralCityPanel from './EngineProceduralCityPanel';
@@ -720,6 +726,12 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'civilization-evolution': return <EngineCivilizationEvolutionPanel />;
       case 'procedural-city': return <EngineProceduralCityPanel />;
       case 'flow-state-monitor': return <EngineFlowStateMonitorPanel />;
+      case 'llm-orchestrator': return <AgentLLMOrchestratorPanel />;
+      case 'experience-memory': return <AgentExperienceMemoryPanel />;
+      case 'physics-engine': return <EnginePhysicsPanel />;
+      case 'behavior-engine': return <EngineBehaviorPanel />;
+      case 'input-management': return <EngineInputManagementPanel />;
+      case 'scene-lifecycle': return <EngineSceneLifecyclePanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
