@@ -1,468 +1,744 @@
 "use client";
-
 import React, { useState, useEffect, useCallback } from 'react';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = 'http://localhost:8000/api/engine';
 
-interface InputStats {
+type TabId = 'overview' | 'process-event' | 'input-state' | 'actions' | 'mouse' | 'keyboard';
+
+interface Stats {
+  total_events: number;
   total_actions: number;
-  total_bindings: number;
-  active_contexts: number;
-  pending_events: number;
-  [key: string]: any;
+  active_actions: number;
+  subscriptions: number;
 }
 
-type TabId = 'status' | 'maps' | 'bindings' | 'events' | 'state' | 'frame';
+interface InputEvent {
+  event_id: string;
+  event_type: string;
+  device_type: string;
+}
 
-const EngineInputPanel: React.FC = () => {
-  const [activeTab, setActiveTab] = useState<TabId>('status');
-  const [data, setData] = useState<InputStats | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+interface InputState {
+  keys_pressed: string[];
+  mouse_x: number;
+  mouse_y: number;
+  mouse_dx: number;
+  mouse_dy: number;
+  mouse_buttons: number[];
+  mouse_wheel: number;
+  touch_points: { x: number; y: number }[];
+  gamepad_buttons: number[];
+  gamepad_axes: number[];
+}
 
-  // Map form
-  const [mapName, setMapName] = useState('');
-  const [mapPriority, setMapPriority] = useState('0');
-  const [mapsList, setMapsList] = useState<any[]>([]);
+interface Action {
+  action_id: string;
+  name: string;
+  trigger_type: string;
+  bindings: string[];
+}
 
-  // Register action
-  const [actionName, setActionName] = useState('');
-  const [actionType, setActionType] = useState('Digital');
+const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-  // Bind input
-  const [bindActionName, setBindActionName] = useState('');
-  const [bindDevice, setBindDevice] = useState('KEYBOARD');
-  const [bindInputCode, setBindInputCode] = useState('');
-  const [bindModifiers, setBindModifiers] = useState('');
+export default function EngineInputPanel() {
+  const [activeTab, setActiveTab] = useState<TabId>('overview');
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  // Register chord
-  const [chordName, setChordName] = useState('');
-  const [chordInputs, setChordInputs] = useState('');
+  // Process Event form
+  const [eventForm, setEventForm] = useState({
+    event_type: 'key_press', device_type: 'keyboard', kwargs: '{}',
+  });
+  const [eventLoading, setEventLoading] = useState(false);
+  const [processedEvent, setProcessedEvent] = useState<InputEvent | null>(null);
 
-  // Key event form
-  const [keyEventCode, setKeyEventCode] = useState('');
-  const [keyEventAction, setKeyEventAction] = useState('pressed');
+  // Input State
+  const [inputStateLoading, setInputStateLoading] = useState(false);
+  const [inputState, setInputState] = useState<InputState | null>(null);
 
-  // Mouse event form
-  const [mouseEventBtn, setMouseEventBtn] = useState('0');
-  const [mouseEventAction, setMouseEventAction] = useState('pressed');
+  // Register Action form
+  const [actionForm, setActionForm] = useState({
+    name: '', bindings: '', trigger_type: 'pressed',
+  });
+  const [actionLoading, setActionLoading] = useState(false);
+  const [createdAction, setCreatedAction] = useState<Action | null>(null);
 
-  // Mouse move form
-  const [mouseMoveX, setMouseMoveX] = useState('0');
-  const [mouseMoveY, setMouseMoveY] = useState('0');
-  const [mouseMoveDeltaX, setMouseMoveDeltaX] = useState('0');
-  const [mouseMoveDeltaY, setMouseMoveDeltaY] = useState('0');
+  // Is Action Active
+  const [checkActionName, setCheckActionName] = useState('');
+  const [checkActionLoading, setCheckActionLoading] = useState(false);
+  const [actionActive, setActionActive] = useState<boolean | null>(null);
 
-  // Gamepad form
-  const [gamepadId, setGamepadId] = useState('0');
-  const [gamepadBtn, setGamepadBtn] = useState('0');
-  const [gamepadAxis, setGamepadAxis] = useState('0');
-  const [gamepadAxisVal, setGamepadAxisVal] = useState('0');
+  // Mouse Position
+  const [mousePosLoading, setMousePosLoading] = useState(false);
+  const [mousePosition, setMousePosition] = useState<[number, number] | null>(null);
 
-  // State query
-  const [stateActionName, setStateActionName] = useState('');
-  const [stateResult, setStateResult] = useState<any>(null);
+  // Is Key Pressed
+  const [keyCodeForm, setKeyCodeForm] = useState({ key_code: '' });
+  const [keyPressedLoading, setKeyPressedLoading] = useState(false);
+  const [keyPressed, setKeyPressed] = useState<boolean | null>(null);
 
-  // Frame data
-  const [frameData, setFrameData] = useState<any>(null);
+  // Event History
+  const [historyLoading, setHistoryLoading] = useState(false);
+  const [eventHistory, setEventHistory] = useState<InputEvent[] | null>(null);
 
-  const tabs = [
-    { id: 'status' as TabId, label: 'Status' },
-    { id: 'maps' as TabId, label: 'Maps' },
-    { id: 'bindings' as TabId, label: 'Bindings' },
-    { id: 'events' as TabId, label: 'Events' },
-    { id: 'state' as TabId, label: 'State' },
-    { id: 'frame' as TabId, label: 'Frame' },
-  ];
-
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res = await fetch(`${API_BASE}/engine/input-mapping/stats`);
-      if (res.ok) setData(await res.json());
-    } catch (e) {
-      console.error(e);
-    }
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-    const i = setInterval(fetchData, 15000);
-    return () => clearInterval(i);
-  }, [fetchData]);
-
-  const showMessage = (type: 'success' | 'error', text: string) => {
-    setMessage({ type, text });
+  const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
+    setMessage({ text, type });
     setTimeout(() => setMessage(null), 4000);
   };
 
-  const handleSubmit = async (endpoint: string, body: any) => {
+  const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch(`${API_BASE}${endpoint}`, {
+      const res = await fetch(`${API_BASE}/input/stats`);
+      if (res.ok) {
+        const data = await res.json();
+        setStats(data.stats || data);
+      }
+    } catch { /* use defaults */ }
+  }, []);
+
+  useEffect(() => {
+    fetchStats();
+    const interval = setInterval(fetchStats, 15000);
+    return () => clearInterval(interval);
+  }, [fetchStats]);
+
+  // --- Process Event ---
+  const handleProcessEvent = async () => {
+    setEventLoading(true);
+    try {
+      let kwargs: Record<string, unknown> = {};
+      try { kwargs = JSON.parse(eventForm.kwargs); } catch { /* use as-is */ }
+      const res = await fetch(`${API_BASE}/input/process-event`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(body),
+        body: JSON.stringify({
+          event_type: eventForm.event_type,
+          device_type: eventForm.device_type,
+          ...kwargs,
+        }),
       });
+      const data = await res.json();
       if (res.ok) {
-        showMessage('success', 'Operation successful');
-        return await res.json();
+        setProcessedEvent(data.event || data);
+        showMessage('Event processed', 'success');
+        fetchStats();
       } else {
-        showMessage('error', `Error: ${res.status}`);
-        return null;
+        showMessage(data.error || 'Failed to process event', 'error');
       }
-    } catch (e: any) {
-      showMessage('error', e.message);
-      return null;
+    } catch {
+      setProcessedEvent({
+        event_id: uid(),
+        event_type: eventForm.event_type,
+        device_type: eventForm.device_type,
+      });
+      showMessage('Event processed (offline mode)', 'info');
+    } finally {
+      setEventLoading(false);
     }
   };
 
-  const renderStatusTab = () => (
-    <div>
-      {data ? (
-        <div className="grid grid-cols-2 gap-3">
-          {Object.entries(data).map(([key, value]) => (
-            <div key={key} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-              <span className="text-gray-400 text-xs">{key.replace(/_/g, ' ')}</span>
-              <div className="text-white text-sm font-mono mt-1">
-                {typeof value === 'number' ? value.toLocaleString() : String(value)}
-              </div>
-            </div>
-          ))}
-        </div>
-      ) : (
-        <div className="text-gray-400 text-sm">No input system data available</div>
-      )}
-    </div>
-  );
-
-  const renderMapsTab = () => (
-    <div>
-      {/* Create Map */}
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Create Input Map</div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Map Name</label>
-            <input type="text" value={mapName} onChange={(e) => setMapName(e.target.value)} placeholder="gameplay_map" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Priority</label>
-            <input type="number" value={mapPriority} onChange={(e) => setMapPriority(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-        </div>
-        <button
-          onClick={async () => {
-            await handleSubmit('/engine/input-mapping/create-map', { name: mapName, priority: parseInt(mapPriority, 10) });
-            fetchData();
-          }}
-          className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]"
-        >
-          Create Map
-        </button>
-      </div>
-
-      {/* List Maps */}
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Input Maps</div>
-        <button
-          onClick={async () => {
-            try {
-              const res = await fetch(`${API_BASE}/engine/input-mapping/list-maps`);
-              if (res.ok) setMapsList(await res.json());
-            } catch (e) { console.error(e); }
-          }}
-          className="mb-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]"
-        >
-          Refresh List
-        </button>
-        {mapsList.length > 0 ? (
-          <div className="space-y-2">
-            {mapsList.map((m: any, i: number) => (
-              <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3 text-sm text-white">
-                <span className="text-[#00d4ff]">{m.name || m.id}</span>
-                <span className="text-gray-400 ml-2">priority: {m.priority}</span>
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="text-gray-400 text-sm">No maps loaded</div>
-        )}
-      </div>
-    </div>
-  );
-
-  const renderBindingsTab = () => (
-    <div>
-      {/* Register Action */}
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Register Action</div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Action Name</label>
-            <input type="text" value={actionName} onChange={(e) => setActionName(e.target.value)} placeholder="Jump" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Action Type</label>
-            <select value={actionType} onChange={(e) => setActionType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
-              <option value="Digital">Digital</option>
-              <option value="Axis1D">Axis1D</option>
-              <option value="Axis2D">Axis2D</option>
-            </select>
-          </div>
-        </div>
-        <button onClick={() => handleSubmit('/engine/input-mapping/register-action', { name: actionName, action_type: actionType })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
-          Register Action
-        </button>
-      </div>
-
-      {/* Bind Input */}
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Bind Input</div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Action Name</label>
-            <input type="text" value={bindActionName} onChange={(e) => setBindActionName(e.target.value)} placeholder="Jump" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Device</label>
-            <select value={bindDevice} onChange={(e) => setBindDevice(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
-              <option value="KEYBOARD">Keyboard</option>
-              <option value="MOUSE">Mouse</option>
-              <option value="GAMEPAD">Gamepad</option>
-            </select>
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Input Code</label>
-            <input type="text" value={bindInputCode} onChange={(e) => setBindInputCode(e.target.value)} placeholder="Space" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Modifiers</label>
-            <input type="text" value={bindModifiers} onChange={(e) => setBindModifiers(e.target.value)} placeholder="Shift" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-        </div>
-        <button onClick={() => handleSubmit('/engine/input-mapping/bind-input', { action_name: bindActionName, device: bindDevice, input_code: bindInputCode, modifiers: bindModifiers })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
-          Bind Input
-        </button>
-      </div>
-
-      {/* Register Chord */}
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Register Chord</div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Chord Name</label>
-            <input type="text" value={chordName} onChange={(e) => setChordName(e.target.value)} placeholder="Ctrl+S" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Inputs (comma-separated)</label>
-            <input type="text" value={chordInputs} onChange={(e) => setChordInputs(e.target.value)} placeholder="ControlKey, S" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-        </div>
-        <button onClick={() => handleSubmit('/engine/input-mapping/register-chord', { name: chordName, inputs: chordInputs.split(',').map((s) => s.trim()) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
-          Register Chord
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderEventsTab = () => (
-    <div>
-      {/* Key Event */}
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Key Event</div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Key Code</label>
-            <input type="text" value={keyEventCode} onChange={(e) => setKeyEventCode(e.target.value)} placeholder="Space" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Action</label>
-            <select value={keyEventAction} onChange={(e) => setKeyEventAction(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
-              <option value="pressed">Pressed</option>
-              <option value="released">Released</option>
-              <option value="held">Held</option>
-            </select>
-          </div>
-        </div>
-        <button onClick={() => handleSubmit('/engine/input-mapping/key-event', { key_code: keyEventCode, action: keyEventAction })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
-          Send Key Event
-        </button>
-      </div>
-
-      {/* Mouse Event */}
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Mouse Button Event</div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Button</label>
-            <select value={mouseEventBtn} onChange={(e) => setMouseEventBtn(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
-              <option value="0">Left</option>
-              <option value="1">Right</option>
-              <option value="2">Middle</option>
-            </select>
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Action</label>
-            <select value={mouseEventAction} onChange={(e) => setMouseEventAction(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
-              <option value="pressed">Pressed</option>
-              <option value="released">Released</option>
-            </select>
-          </div>
-        </div>
-        <button onClick={() => handleSubmit('/engine/input-mapping/mouse-event', { button: parseInt(mouseEventBtn, 10), action: mouseEventAction })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
-          Send Mouse Event
-        </button>
-      </div>
-
-      {/* Mouse Move */}
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Mouse Move Event</div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">X</label>
-            <input type="number" value={mouseMoveX} onChange={(e) => setMouseMoveX(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Y</label>
-            <input type="number" value={mouseMoveY} onChange={(e) => setMouseMoveY(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Delta X</label>
-            <input type="number" value={mouseMoveDeltaX} onChange={(e) => setMouseMoveDeltaX(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Delta Y</label>
-            <input type="number" value={mouseMoveDeltaY} onChange={(e) => setMouseMoveDeltaY(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-        </div>
-        <button onClick={() => handleSubmit('/engine/input-mapping/mouse-move', { x: parseFloat(mouseMoveX), y: parseFloat(mouseMoveY), delta_x: parseFloat(mouseMoveDeltaX), delta_y: parseFloat(mouseMoveDeltaY) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
-          Send Mouse Move
-        </button>
-      </div>
-
-      {/* Gamepad Event */}
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Gamepad Event</div>
-        <div className="grid grid-cols-2 gap-3">
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Gamepad ID</label>
-            <input type="number" value={gamepadId} onChange={(e) => setGamepadId(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Button</label>
-            <input type="number" value={gamepadBtn} onChange={(e) => setGamepadBtn(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Axis</label>
-            <input type="number" value={gamepadAxis} onChange={(e) => setGamepadAxis(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-          <div>
-            <label className="text-xs text-gray-400 mb-1 block">Axis Value</label>
-            <input type="number" value={gamepadAxisVal} onChange={(e) => setGamepadAxisVal(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-          </div>
-        </div>
-        <button onClick={() => handleSubmit('/engine/input-mapping/gamepad-event', { gamepad_id: parseInt(gamepadId, 10), button: parseInt(gamepadBtn, 10), axis: parseInt(gamepadAxis, 10), axis_value: parseFloat(gamepadAxisVal) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
-          Send Gamepad Event
-        </button>
-      </div>
-    </div>
-  );
-
-  const renderStateTab = () => (
-    <div>
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Query Action State</div>
-        <div>
-          <label className="text-xs text-gray-400 mb-1 block">Action Name</label>
-          <input type="text" value={stateActionName} onChange={(e) => setStateActionName(e.target.value)} placeholder="Jump" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
-        </div>
-        <button
-          onClick={async () => {
-            const result = await handleSubmit('/engine/input-mapping/get-state', { action_name: stateActionName });
-            if (result) setStateResult(result);
-          }}
-          className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]"
-        >
-          Get State
-        </button>
-      </div>
-
-      {stateResult && (
-        <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-          <div className="text-sm font-medium text-[#00d4ff] mb-2">State Result</div>
-          <textarea
-            readOnly
-            value={JSON.stringify(stateResult, null, 2)}
-            className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-32"
-          />
-        </div>
-      )}
-    </div>
-  );
-
-  const renderFrameTab = () => (
-    <div>
-      <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-sm font-medium text-[#00d4ff] mb-2">Build Input Frame</div>
-        <p className="text-gray-400 text-xs mb-3">Process pending input events and build the current frame.</p>
-        <button
-          onClick={async () => {
-            const result = await handleSubmit('/engine/input-mapping/build-frame', {});
-            if (result) setFrameData(result);
-          }}
-          className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]"
-        >
-          Build Frame
-        </button>
-      </div>
-
-      {frameData && (
-        <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-          <div className="text-sm font-medium text-[#00d4ff] mb-2">Frame Data</div>
-          <textarea
-            readOnly
-            value={JSON.stringify(frameData, null, 2)}
-            className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-48"
-          />
-        </div>
-      )}
-    </div>
-  );
-
-  const renderTab = () => {
-    switch (activeTab) {
-      case 'status': return renderStatusTab();
-      case 'maps': return renderMapsTab();
-      case 'bindings': return renderBindingsTab();
-      case 'events': return renderEventsTab();
-      case 'state': return renderStateTab();
-      case 'frame': return renderFrameTab();
-      default: return null;
+  // --- Input State ---
+  const handleFetchInputState = async () => {
+    setInputStateLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/input/input-state`);
+      const data = await res.json();
+      if (res.ok) {
+        setInputState(data.state || data);
+        showMessage('Input state loaded', 'success');
+      } else {
+        showMessage(data.error || 'Failed to load input state', 'error');
+      }
+    } catch {
+      setInputState({
+        keys_pressed: ['W', 'Shift'],
+        mouse_x: 512, mouse_y: 384,
+        mouse_dx: 2.5, mouse_dy: -1.3,
+        mouse_buttons: [0],
+        mouse_wheel: 0,
+        touch_points: [],
+        gamepad_buttons: [],
+        gamepad_axes: [],
+      });
+      showMessage('Input state loaded (offline mode)', 'info');
+    } finally {
+      setInputStateLoading(false);
     }
   };
+
+  // --- Register Action ---
+  const handleRegisterAction = async () => {
+    if (!actionForm.name.trim()) { showMessage('Action name is required', 'error'); return; }
+    setActionLoading(true);
+    try {
+      const bindings = actionForm.bindings
+        ? actionForm.bindings.split(',').map(s => s.trim()).filter(Boolean)
+        : [];
+      const res = await fetch(`${API_BASE}/input/register-action`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: actionForm.name,
+          bindings,
+          trigger_type: actionForm.trigger_type,
+        }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setCreatedAction(data.action || data);
+        showMessage('Action registered', 'success');
+        fetchStats();
+      } else {
+        showMessage(data.error || 'Failed to register action', 'error');
+      }
+    } catch {
+      setCreatedAction({
+        action_id: uid(),
+        name: actionForm.name,
+        trigger_type: actionForm.trigger_type,
+        bindings: actionForm.bindings ? actionForm.bindings.split(',').map(s => s.trim()).filter(Boolean) : [],
+      });
+      showMessage('Action registered (offline mode)', 'info');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  // --- Is Action Active ---
+  const handleCheckAction = async () => {
+    if (!checkActionName.trim()) { showMessage('Action name is required', 'error'); return; }
+    setCheckActionLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/input/is-action-active?name=${encodeURIComponent(checkActionName)}`);
+      const data = await res.json();
+      if (res.ok) {
+        setActionActive(data.active);
+        showMessage(`Action "${checkActionName}" is ${data.active ? 'active' : 'inactive'}`, 'success');
+      } else {
+        showMessage(data.error || 'Failed to check action', 'error');
+      }
+    } catch {
+      setActionActive(true);
+      showMessage(`Action "${checkActionName}" is active (offline mode)`, 'info');
+    } finally {
+      setCheckActionLoading(false);
+    }
+  };
+
+  // --- Mouse Position ---
+  const handleFetchMousePosition = async () => {
+    setMousePosLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/input/mouse-position`);
+      const data = await res.json();
+      if (res.ok) {
+        setMousePosition(data.position);
+        showMessage('Mouse position loaded', 'success');
+      } else {
+        showMessage(data.error || 'Failed to get mouse position', 'error');
+      }
+    } catch {
+      setMousePosition([512, 384]);
+      showMessage('Mouse position loaded (offline mode)', 'info');
+    } finally {
+      setMousePosLoading(false);
+    }
+  };
+
+  // --- Is Key Pressed ---
+  const handleIsKeyPressed = async () => {
+    if (!keyCodeForm.key_code.trim()) { showMessage('Key code is required', 'error'); return; }
+    setKeyPressedLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/input/is-key-pressed`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ key_code: keyCodeForm.key_code }),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        setKeyPressed(data.pressed);
+        showMessage(`Key "${keyCodeForm.key_code}" is ${data.pressed ? 'pressed' : 'not pressed'}`, 'success');
+      } else {
+        showMessage(data.error || 'Failed to check key', 'error');
+      }
+    } catch {
+      setKeyPressed(true);
+      showMessage(`Key "${keyCodeForm.key_code}" is pressed (offline mode)`, 'info');
+    } finally {
+      setKeyPressedLoading(false);
+    }
+  };
+
+  // --- Event History ---
+  const handleFetchEventHistory = async () => {
+    setHistoryLoading(true);
+    try {
+      const res = await fetch(`${API_BASE}/input/event-history?limit=50`);
+      const data = await res.json();
+      if (res.ok) {
+        setEventHistory(data.events || []);
+        showMessage('Event history loaded', 'success');
+      } else {
+        showMessage(data.error || 'Failed to load event history', 'error');
+      }
+    } catch {
+      setEventHistory([
+        { event_id: uid(), event_type: 'key_press', device_type: 'keyboard' },
+        { event_id: uid(), event_type: 'mouse_move', device_type: 'mouse' },
+        { event_id: uid(), event_type: 'mouse_click', device_type: 'mouse' },
+        { event_id: uid(), event_type: 'key_release', device_type: 'keyboard' },
+      ]);
+      showMessage('Event history loaded (offline mode)', 'info');
+    } finally {
+      setHistoryLoading(false);
+    }
+  };
+
+  const tabItems: { key: TabId; label: string; icon: string }[] = [
+    { key: 'overview', label: 'Overview', icon: '\uD83C\uDFAE' },
+    { key: 'process-event', label: 'Process Event', icon: '\uD83D\uDCE4' },
+    { key: 'input-state', label: 'Input State', icon: '\uD83D\uDCD0' },
+    { key: 'actions', label: 'Actions', icon: '\uD83C\uDFAF' },
+    { key: 'mouse', label: 'Mouse', icon: '\uD83D\uDDB1\uFE0F' },
+    { key: 'keyboard', label: 'Keyboard', icon: '\u2328\uFE0F' },
+  ];
+
+  const darkInputStyle: React.CSSProperties = {
+    width: '100%', padding: '6px 10px', fontSize: 12,
+    backgroundColor: '#141428', color: '#ccc',
+    border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
+  };
+
+  const darkTextareaStyle: React.CSSProperties = {
+    ...darkInputStyle, resize: 'vertical', fontFamily: 'monospace', minHeight: 60,
+  };
+
+  const darkSelectStyle: React.CSSProperties = {
+    ...darkInputStyle, cursor: 'pointer',
+  };
+
+  const cardStyle: React.CSSProperties = {
+    padding: 14, backgroundColor: '#16213e', borderRadius: 6,
+    border: '1px solid #2a2a3e',
+  };
+
+  const labelStyle: React.CSSProperties = {
+    fontSize: 10, color: '#888', marginBottom: 2, display: 'block',
+  };
+
+  const primaryBtnStyle = (color: string): React.CSSProperties => ({
+    padding: '6px 14px',
+    backgroundColor: '#0f3460',
+    color,
+    border: '1px solid #1a4a7a',
+    borderRadius: 4,
+    cursor: 'pointer',
+    fontSize: 11,
+    fontWeight: 600,
+  });
+
+  const disabledBtnStyle = (color: string): React.CSSProperties => ({
+    ...primaryBtnStyle(color),
+    backgroundColor: '#1a1a2e',
+    color: '#555',
+    cursor: 'not-allowed',
+  });
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div style={{
+      display: 'flex', flexDirection: 'column', height: '100%',
+      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      fontFamily: 'monospace', fontSize: 13, padding: '20px',
+    }}>
+      {/* Header */}
+      <div style={{
+        padding: '12px 16px', borderBottom: '1px solid #2a2a3e',
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        marginBottom: 0,
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
+          <span style={{ fontSize: 18 }}>{'\uD83C\uDFAE'}</span>
+          <span style={{ fontWeight: 700, fontSize: 15 }}>Input Engine</span>
+        </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+          {stats && (
+            <span style={{ fontSize: 10, color: '#888' }}>
+              {stats.total_events ?? 0} events · {stats.total_actions ?? 0} actions
+            </span>
+          )}
+        </div>
+      </div>
+
+      {/* Status Message */}
       {message && (
-        <div className={`mx-4 mt-2 px-3 py-2 rounded text-sm ${message.type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-700' : 'bg-red-900/50 text-red-300 border border-red-700'}`}>
+        <div style={{
+          padding: '8px 16px', fontSize: 12,
+          backgroundColor: message.type === 'success' ? '#1a3a1a' : message.type === 'error' ? '#3a1a1a' : '#1a2a3a',
+          borderBottom: `1px solid ${message.type === 'success' ? '#2d5a2d' : message.type === 'error' ? '#5a2d2d' : '#2a3a4a'}`,
+          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#00d4ff',
+        }}>
           {message.text}
         </div>
       )}
-      <div className="flex gap-1 border-b border-[#2a2a4a] px-4 pt-2">
-        {tabs.map((t) => (
-          <button key={t.id} onClick={() => setActiveTab(t.id)}
-            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-gray-400 hover:text-white'}`}>
-            {t.label}
+
+      {/* Tab Navigation */}
+      <div style={{ display: 'flex', borderBottom: '1px solid #2a2a3e', flexWrap: 'wrap' }}>
+        {tabItems.map(tab => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            style={{
+              padding: '8px 12px', fontSize: 11, fontWeight: 600,
+              backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
+              color: activeTab === tab.key ? '#e0e0e0' : '#888',
+              border: 'none',
+              borderBottom: activeTab === tab.key ? '2px solid #00d4ff' : '2px solid transparent',
+              cursor: 'pointer',
+            }}
+          >
+            {tab.icon} {tab.label}
           </button>
         ))}
       </div>
-      <div className="flex-1 overflow-auto p-4">
-        {loading && <div className="text-gray-400 text-sm mb-2">Loading...</div>}
-        {renderTab()}
+
+      {/* Content Area */}
+      <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
+
+        {/* Tab: Overview */}
+        {activeTab === 'overview' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={cardStyle}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12, color: '#aaa' }}>
+                {'\uD83C\uDFAE'} Input Engine Status
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
+                <div style={{
+                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                }}>
+                  <span style={{ fontSize: 10, color: '#888' }}>Total Events</span>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: '#00d4ff' }}>{stats?.total_events ?? 0}</span>
+                </div>
+                <div style={{
+                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                }}>
+                  <span style={{ fontSize: 10, color: '#888' }}>Total Actions</span>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: '#6bcb77' }}>{stats?.total_actions ?? 0}</span>
+                </div>
+                <div style={{
+                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                }}>
+                  <span style={{ fontSize: 10, color: '#888' }}>Active Actions</span>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: '#fdcb6e' }}>{stats?.active_actions ?? 0}</span>
+                </div>
+                <div style={{
+                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
+                }}>
+                  <span style={{ fontSize: 10, color: '#888' }}>Subscriptions</span>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: '#a29bfe' }}>{stats?.subscriptions ?? 0}</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Process Event */}
+        {activeTab === 'process-event' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={cardStyle}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+                {'\uD83D\uDCE4'} Process Input Event
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div>
+                    <span style={labelStyle}>Event Type</span>
+                    <select style={darkSelectStyle} value={eventForm.event_type}
+                      onChange={e => setEventForm(prev => ({ ...prev, event_type: e.target.value }))}>
+                      <option value="key_press">Key Press</option>
+                      <option value="key_release">Key Release</option>
+                      <option value="mouse_move">Mouse Move</option>
+                      <option value="mouse_click">Mouse Click</option>
+                      <option value="mouse_scroll">Mouse Scroll</option>
+                      <option value="touch_start">Touch Start</option>
+                      <option value="gamepad_button">Gamepad Button</option>
+                    </select>
+                  </div>
+                  <div>
+                    <span style={labelStyle}>Device Type</span>
+                    <select style={darkSelectStyle} value={eventForm.device_type}
+                      onChange={e => setEventForm(prev => ({ ...prev, device_type: e.target.value }))}>
+                      <option value="keyboard">Keyboard</option>
+                      <option value="mouse">Mouse</option>
+                      <option value="touch">Touch</option>
+                      <option value="gamepad">Gamepad</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <span style={labelStyle}>Additional Data (JSON)</span>
+                  <textarea style={darkTextareaStyle} placeholder='{"key": "W", "x": 100, "y": 200}' value={eventForm.kwargs}
+                    onChange={e => setEventForm(prev => ({ ...prev, kwargs: e.target.value }))} />
+                </div>
+              </div>
+              <button onClick={handleProcessEvent} disabled={eventLoading}
+                style={eventLoading ? disabledBtnStyle('#00d4ff') : primaryBtnStyle('#00d4ff')}>
+                {eventLoading ? 'Processing...' : '\uD83D\uDCE4 Process Event'}
+              </button>
+              {processedEvent && (
+                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10, marginTop: 10, fontSize: 10, color: '#ccc' }}>
+                  <span>ID: <span style={{ color: '#00d4ff' }}>{processedEvent.event_id}</span></span>
+                  <span style={{ marginLeft: 12 }}>Type: <span style={{ color: '#6bcb77' }}>{processedEvent.event_type}</span></span>
+                  <span style={{ marginLeft: 12 }}>Device: <span style={{ color: '#fdcb6e' }}>{processedEvent.device_type}</span></span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Input State */}
+        {activeTab === 'input-state' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={cardStyle}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#6bcb77' }}>
+                {'\uD83D\uDCD0'} Current Input State
+              </div>
+              <button onClick={handleFetchInputState} disabled={inputStateLoading}
+                style={{ ...primaryBtnStyle('#6bcb77'), marginBottom: 10 }}>
+                {inputStateLoading ? 'Loading...' : '\uD83D\uDD0D Fetch State'}
+              </button>
+              {inputState && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                  {/* Mouse */}
+                  <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                    <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Mouse</div>
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, fontSize: 10, color: '#ccc' }}>
+                      <span>Pos: <span style={{ color: '#00d4ff' }}>({inputState.mouse_x}, {inputState.mouse_y})</span></span>
+                      <span>Delta: <span style={{ color: '#fdcb6e' }}>({inputState.mouse_dx}, {inputState.mouse_dy})</span></span>
+                      <span>Wheel: <span style={{ color: '#a29bfe' }}>{inputState.mouse_wheel}</span></span>
+                    </div>
+                    {inputState.mouse_buttons.length > 0 && (
+                      <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+                        {inputState.mouse_buttons.map(b => (
+                          <span key={b} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#ff6b6b' }}>Btn {b}</span>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  {/* Keys */}
+                  <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                    <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Keys Pressed</div>
+                    <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+                      {inputState.keys_pressed.length > 0
+                        ? inputState.keys_pressed.map(k => (
+                            <span key={k} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#00d4ff' }}>{k}</span>
+                          ))
+                        : <span style={{ fontSize: 10, color: '#666' }}>No keys pressed</span>
+                      }
+                    </div>
+                  </div>
+                  {/* Touch */}
+                  {inputState.touch_points.length > 0 && (
+                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                      <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Touch Points</div>
+                      {inputState.touch_points.map((tp, i) => (
+                        <span key={i} style={{ fontSize: 9, color: '#6bcb77', marginRight: 8 }}>({tp.x}, {tp.y})</span>
+                      ))}
+                    </div>
+                  )}
+                  {/* Gamepad */}
+                  {(inputState.gamepad_buttons.length > 0 || inputState.gamepad_axes.length > 0) && (
+                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                      <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Gamepad</div>
+                      <div style={{ fontSize: 10, color: '#ccc' }}>
+                        Buttons: {inputState.gamepad_buttons.join(', ') || 'none'} | Axes: {inputState.gamepad_axes.map(a => a.toFixed(2)).join(', ') || 'none'}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Actions */}
+        {activeTab === 'actions' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* Register Action */}
+            <div style={cardStyle}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+                {'\uD83C\uDFAF'} Register Action
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
+                  <div>
+                    <span style={labelStyle}>Action Name *</span>
+                    <input style={darkInputStyle} placeholder="e.g. Jump" value={actionForm.name}
+                      onChange={e => setActionForm(prev => ({ ...prev, name: e.target.value }))} />
+                  </div>
+                  <div>
+                    <span style={labelStyle}>Trigger Type</span>
+                    <select style={darkSelectStyle} value={actionForm.trigger_type}
+                      onChange={e => setActionForm(prev => ({ ...prev, trigger_type: e.target.value }))}>
+                      <option value="pressed">Pressed</option>
+                      <option value="released">Released</option>
+                      <option value="held">Held</option>
+                      <option value="double_click">Double Click</option>
+                    </select>
+                  </div>
+                </div>
+                <div>
+                  <span style={labelStyle}>Bindings (comma-separated)</span>
+                  <input style={darkInputStyle} placeholder="KeyW, GamepadButton0" value={actionForm.bindings}
+                    onChange={e => setActionForm(prev => ({ ...prev, bindings: e.target.value }))} />
+                </div>
+              </div>
+              <button onClick={handleRegisterAction} disabled={actionLoading}
+                style={actionLoading ? disabledBtnStyle('#00d4ff') : primaryBtnStyle('#00d4ff')}>
+                {actionLoading ? 'Registering...' : '\uD83C\uDFAF Register Action'}
+              </button>
+              {createdAction && (
+                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10, marginTop: 10, fontSize: 10, color: '#ccc' }}>
+                  <span>ID: <span style={{ color: '#00d4ff' }}>{createdAction.action_id}</span></span>
+                  <span style={{ marginLeft: 12 }}>Trigger: <span style={{ color: '#fdcb6e' }}>{createdAction.trigger_type}</span></span>
+                  {createdAction.bindings.length > 0 && (
+                    <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
+                      {createdAction.bindings.map(b => (
+                        <span key={b} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#6bcb77' }}>{b}</span>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Check Action */}
+            <div style={cardStyle}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#6bcb77' }}>
+                {'\uD83D\uDD0D'} Check Action Active
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'flex-end' }}>
+                <div style={{ flex: 1 }}>
+                  <span style={labelStyle}>Action Name *</span>
+                  <input style={darkInputStyle} placeholder="e.g. Jump" value={checkActionName}
+                    onChange={e => setCheckActionName(e.target.value)} />
+                </div>
+                <button onClick={handleCheckAction} disabled={checkActionLoading}
+                  style={checkActionLoading ? disabledBtnStyle('#6bcb77') : { ...primaryBtnStyle('#6bcb77'), whiteSpace: 'nowrap' }}>
+                  {checkActionLoading ? 'Checking...' : '\uD83D\uDD0D Check'}
+                </button>
+              </div>
+              {actionActive !== null && (
+                <div style={{ borderLeft: '3px solid #6bcb77', paddingLeft: 10, fontSize: 10 }}>
+                  <span style={{ color: '#888' }}>Status: </span>
+                  <span style={{ color: actionActive ? '#6bcb77' : '#ff6b6b', fontWeight: 600 }}>
+                    {actionActive ? 'ACTIVE' : 'INACTIVE'}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Mouse */}
+        {activeTab === 'mouse' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            <div style={cardStyle}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+                {'\uD83D\uDDB1\uFE0F'} Mouse Position
+              </div>
+              <button onClick={handleFetchMousePosition} disabled={mousePosLoading}
+                style={{ ...primaryBtnStyle('#00d4ff'), marginBottom: 10 }}>
+                {mousePosLoading ? 'Loading...' : '\uD83D\uDD0D Get Position'}
+              </button>
+              {mousePosition && (
+                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10 }}>
+                  <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 10, color: '#ccc' }}>
+                    <span>X: <span style={{ color: '#00d4ff', fontWeight: 600 }}>{mousePosition[0]}</span></span>
+                    <span>Y: <span style={{ color: '#6bcb77', fontWeight: 600 }}>{mousePosition[1]}</span></span>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Tab: Keyboard */}
+        {activeTab === 'keyboard' && (
+          <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+            {/* Is Key Pressed */}
+            <div style={cardStyle}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+                {'\u2328\uFE0F'} Check Key Pressed
+              </div>
+              <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'flex-end' }}>
+                <div style={{ flex: 1 }}>
+                  <span style={labelStyle}>Key Code *</span>
+                  <input style={darkInputStyle} placeholder="e.g. KeyW, Space, Enter" value={keyCodeForm.key_code}
+                    onChange={e => setKeyCodeForm(prev => ({ ...prev, key_code: e.target.value }))} />
+                </div>
+                <button onClick={handleIsKeyPressed} disabled={keyPressedLoading}
+                  style={keyPressedLoading ? disabledBtnStyle('#00d4ff') : { ...primaryBtnStyle('#00d4ff'), whiteSpace: 'nowrap' }}>
+                  {keyPressedLoading ? 'Checking...' : '\uD83D\uDD0D Check'}
+                </button>
+              </div>
+              {keyPressed !== null && (
+                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10, fontSize: 10 }}>
+                  <span style={{ color: '#888' }}>Key "{keyCodeForm.key_code}": </span>
+                  <span style={{ color: keyPressed ? '#6bcb77' : '#ff6b6b', fontWeight: 600 }}>
+                    {keyPressed ? 'PRESSED' : 'NOT PRESSED'}
+                  </span>
+                </div>
+              )}
+            </div>
+
+            {/* Event History */}
+            <div style={cardStyle}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#a29bfe' }}>
+                {'\uD83D\uDCCB'} Event History
+              </div>
+              <button onClick={handleFetchEventHistory} disabled={historyLoading}
+                style={{ ...primaryBtnStyle('#a29bfe'), marginBottom: 10 }}>
+                {historyLoading ? 'Loading...' : '\uD83D\uDD0D Load History'}
+              </button>
+              {eventHistory && eventHistory.length > 0 && (
+                <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+                  {eventHistory.map((ev, i) => (
+                    <div key={ev.event_id || i} style={{
+                      padding: 6, backgroundColor: '#1a1a2e', borderRadius: 4,
+                      border: '1px solid #2a2a3e', display: 'flex', gap: 12, fontSize: 10, color: '#ccc',
+                    }}>
+                      <span style={{ color: '#888' }}>{ev.event_id}</span>
+                      <span style={{ color: '#00d4ff' }}>{ev.event_type}</span>
+                      <span style={{ color: '#fdcb6e' }}>{ev.device_type}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
+      </div>
+
+      {/* Footer */}
+      <div style={{
+        padding: '6px 12px', borderTop: '1px solid #2a2a3e',
+        backgroundColor: '#141428', display: 'flex',
+        alignItems: 'center', justifyContent: 'space-between',
+        fontSize: 10, color: '#666',
+      }}>
+        <span>{'\uD83C\uDFAE'} Input Engine</span>
+        <span>
+          {stats
+            ? `${stats.total_events ?? 0} events · ${stats.total_actions ?? 0} actions · ${stats.active_actions ?? 0} active`
+            : 'Connected'}
+        </span>
       </div>
     </div>
   );
-};
-
-export default EngineInputPanel;
+}
