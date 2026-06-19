@@ -374,6 +374,30 @@ const modeGroups = [
       { id: 'narrative-branch', label: 'Narrative', icon: 'fa-code-branch' },
     ],
   },
+  {
+    label: 'Agent Intel',
+    items: [
+      { id: 'theory-of-mind', label: 'TheoryMind', icon: 'fa-brain' },
+      { id: 'counterfactual-simulator', label: 'CounterFact', icon: 'fa-code-branch' },
+      { id: 'skill-lifecycle', label: 'SkillLife', icon: 'fa-arrows-spin' },
+      { id: 'timeline-brancher', label: 'Timeline', icon: 'fa-clock-rotate-left' },
+      { id: 'llm-orchestrator', label: 'LLM Orche', icon: 'fa-robot' },
+      { id: 'experience-memory', label: 'ExpMem', icon: 'fa-database' },
+    ],
+  },
+  {
+    label: 'Simulation',
+    items: [
+      { id: 'ecosystem-dynamics', label: 'EcoDyn', icon: 'fa-leaf' },
+      { id: 'civilization-evolution', label: 'CivEvo', icon: 'fa-landmark' },
+      { id: 'procedural-city', label: 'CityGen', icon: 'fa-city' },
+      { id: 'flow-state-monitor', label: 'FlowMon', icon: 'fa-wave-square' },
+      { id: 'physics-engine', label: 'Physics', icon: 'fa-weight-hanging' },
+      { id: 'behavior-engine', label: 'Behavior', icon: 'fa-gears' },
+      { id: 'input-management', label: 'InpMgr', icon: 'fa-keyboard' },
+      { id: 'scene-lifecycle', label: 'ScnLife', icon: 'fa-film' },
+    ],
+  },
 ];
 
 const EditorToolbar: React.FC<EditorToolbarProps> = ({
