@@ -33327,3 +33327,271 @@ async def timeline_brancher_merge_timelines(request: Request):
         return {"status": "ok", "merge": result.to_dict()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+# === LLM Orchestrator ===
+
+@router.get("/llm-orchestrator/stats")
+async def llm_orchestrator_stats():
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        instance = get_llm_orchestrator()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/llm-orchestrator/configure-provider")
+async def llm_orchestrator_configure_provider(request: Request):
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        body = await request.json()
+        instance = get_llm_orchestrator()
+        instance.configure_provider(
+            provider=body.get("provider", ""),
+            api_key=body.get("api_key", ""),
+            model=body.get("model", ""),
+            base_url=body.get("base_url"),
+            **{k: v for k, v in body.items() if k not in ("provider", "api_key", "model", "base_url")},
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/llm-orchestrator/register-template")
+async def llm_orchestrator_register_template(request: Request):
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        body = await request.json()
+        instance = get_llm_orchestrator()
+        result = instance.register_template(
+            name=body.get("name", ""),
+            template=body.get("template", ""),
+            system_prompt=body.get("system_prompt", ""),
+            temperature=body.get("temperature", 0.7),
+            max_tokens=body.get("max_tokens", 2048),
+        )
+        return {"status": "ok", "template": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/llm-orchestrator/templates")
+async def llm_orchestrator_list_templates():
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        instance = get_llm_orchestrator()
+        templates = instance.list_templates()
+        return {"status": "ok", "templates": templates}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/llm-orchestrator/generate")
+async def llm_orchestrator_generate(request: Request):
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        body = await request.json()
+        instance = get_llm_orchestrator()
+        result = instance.generate(
+            request_type=body.get("request_type", ""),
+            template_name=body.get("template_name"),
+            messages=body.get("messages"),
+            prompt=body.get("prompt", ""),
+            variables=body.get("variables"),
+            provider=body.get("provider"),
+        )
+        return {"status": "ok", "result": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/llm-orchestrator/reason-about")
+async def llm_orchestrator_reason_about(request: Request):
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        body = await request.json()
+        instance = get_llm_orchestrator()
+        result = instance.reason_about(
+            prompt=body.get("prompt", ""),
+            context=body.get("context"),
+        )
+        return {"status": "ok", "result": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/llm-orchestrator/analyze-game-state")
+async def llm_orchestrator_analyze_game_state(request: Request):
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        body = await request.json()
+        instance = get_llm_orchestrator()
+        result = instance.analyze_game_state(
+            state=body.get("state", {}),
+            analysis_type=body.get("analysis_type", "general"),
+        )
+        return {"status": "ok", "result": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/llm-orchestrator/generate-dialogue")
+async def llm_orchestrator_generate_dialogue(request: Request):
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        body = await request.json()
+        instance = get_llm_orchestrator()
+        result = instance.generate_dialogue(
+            characters=body.get("characters", []),
+            context=body.get("context", ""),
+            style=body.get("style", "natural"),
+        )
+        return {"status": "ok", "result": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/llm-orchestrator/evaluate-action")
+async def llm_orchestrator_evaluate_action(request: Request):
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        body = await request.json()
+        instance = get_llm_orchestrator()
+        result = instance.evaluate_action(
+            action=body.get("action", {}),
+            game_state=body.get("game_state", {}),
+            criteria=body.get("criteria"),
+        )
+        return {"status": "ok", "result": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/llm-orchestrator/clear-cache")
+async def llm_orchestrator_clear_cache():
+    try:
+        from sparkai.agent.agent_llm_orchestrator import get_llm_orchestrator
+        instance = get_llm_orchestrator()
+        instance.clear_cache()
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# === Experience Memory ===
+
+@router.get("/experience-memory/stats")
+async def experience_memory_stats():
+    try:
+        from sparkai.agent.agent_experience_memory import get_experience_memory
+        instance = get_experience_memory()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/experience-memory/record-experience")
+async def experience_memory_record_experience(request: Request):
+    try:
+        from sparkai.agent.agent_experience_memory import get_experience_memory, MemoryType, ExperienceImportance
+        body = await request.json()
+        instance = get_experience_memory()
+        mt_str = body.get("memory_type", "episodic")
+        try:
+            memory_type = MemoryType(mt_str) if isinstance(mt_str, str) else mt_str
+        except ValueError:
+            memory_type = MemoryType.EPISODIC
+        imp_str = body.get("importance", "moderate")
+        try:
+            importance = ExperienceImportance(imp_str) if isinstance(imp_str, str) else imp_str
+        except ValueError:
+            importance = ExperienceImportance.MODERATE
+        result = instance.record_experience(
+            agent_id=body.get("agent_id", ""),
+            content=body.get("content", ""),
+            memory_type=memory_type,
+            importance=importance,
+            context=body.get("context"),
+            tags=body.get("tags"),
+        )
+        return {"status": "ok", "experience": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/experience-memory/retrieve-memories")
+async def experience_memory_retrieve_memories(
+    agent_id: str = "",
+    query: Optional[str] = None,
+    memory_type: Optional[str] = None,
+    min_importance: float = 0.0,
+    limit: int = 20,
+):
+    try:
+        from sparkai.agent.agent_experience_memory import get_experience_memory
+        instance = get_experience_memory()
+        results = instance.retrieve_memories(
+            agent_id=agent_id,
+            query=query,
+            memory_type=memory_type,
+            min_importance=min_importance,
+            limit=limit,
+        )
+        return {"status": "ok", "memories": [e.to_dict() for e in results]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/experience-memory/retrieve-context")
+async def experience_memory_retrieve_context(request: Request):
+    try:
+        from sparkai.agent.agent_experience_memory import get_experience_memory
+        body = await request.json()
+        instance = get_experience_memory()
+        result = instance.retrieve_context(
+            agent_id=body.get("agent_id", ""),
+            current_context=body.get("current_context", ""),
+            max_tokens=body.get("max_tokens", 4096),
+        )
+        return {"status": "ok", "context": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/experience-memory/compress-trajectory")
+async def experience_memory_compress_trajectory(request: Request):
+    try:
+        from sparkai.agent.agent_experience_memory import get_experience_memory
+        body = await request.json()
+        instance = get_experience_memory()
+        results = instance.compress_trajectory(
+            agent_id=body.get("agent_id", ""),
+            time_window=body.get("time_window"),
+        )
+        return {"status": "ok", "memories": [e.to_dict() for e in results]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/experience-memory/consolidate-memories")
+async def experience_memory_consolidate_memories(request: Request):
+    try:
+        from sparkai.agent.agent_experience_memory import get_experience_memory
+        body = await request.json()
+        instance = get_experience_memory()
+        results = instance.consolidate_memories(
+            agent_id=body.get("agent_id", ""),
+            target_type=body.get("target_type", "general"),
+        )
+        return {"status": "ok", "memories": [e.to_dict() for e in results]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/experience-memory/agent-stats")
+async def experience_memory_agent_stats(agent_id: str = ""):
+    try:
+        from sparkai.agent.agent_experience_memory import get_experience_memory
+        instance = get_experience_memory()
+        stats = instance.get_agent_memory_stats(agent_id)
+        return {"status": "ok", "stats": stats}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/experience-memory/forget")
+async def experience_memory_forget(request: Request):
+    try:
+        from sparkai.agent.agent_experience_memory import get_experience_memory
+        body = await request.json()
+        instance = get_experience_memory()
+        instance.forget_entry(entry_id=body.get("entry_id", ""))
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
