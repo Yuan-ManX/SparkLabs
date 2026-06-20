@@ -33701,8 +33701,8 @@ async def blackboard_snapshot():
     try:
         from sparkai.agent.agent_blackboard import get_blackboard
         instance = get_blackboard()
-        result = instance.get_snapshot()
-        return {"status": "ok", "snapshot": result}
+        result = instance.snapshot()
+        return {"status": "ok", "snapshot": result.to_dict()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -33726,9 +33726,10 @@ async def htn_planner_create_domain(request: Request):
         instance = get_htn_planner()
         result = instance.create_domain(
             name=body.get("name", ""),
-            operators=body.get("operators", []),
-            predicates=body.get("predicates", []),
-            constants=body.get("constants", []),
+            tasks=body.get("tasks"),
+            methods=body.get("methods"),
+            axioms=body.get("axioms"),
+            world_state_defaults=body.get("world_state_defaults"),
         )
         return {"status": "ok", "domain": result.to_dict()}
     except Exception as e:
