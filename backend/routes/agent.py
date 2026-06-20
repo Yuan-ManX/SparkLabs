@@ -33738,18 +33738,27 @@ async def htn_planner_create_domain(request: Request):
 @router.post("/htn-planner/add-task")
 async def htn_planner_add_task(request: Request):
     try:
-        from sparkai.agent.agent_htn_planner import get_htn_planner
+        from sparkai.agent.agent_htn_planner import get_htn_planner, HTNTask
         body = await request.json()
         instance = get_htn_planner()
-        result = instance.add_task(
-            task_id=body.get("task_id", ""),
+        task = HTNTask(
             name=body.get("name", ""),
-            parameters=body.get("parameters", []),
+            task_type=body.get("task_type"),
+            parameters=body.get("parameters", {}),
             preconditions=body.get("preconditions", []),
             effects=body.get("effects", []),
+            is_primitive=body.get("is_primitive", False),
+            cost=body.get("cost", 1.0),
             priority=body.get("priority", 0),
+            timeout=body.get("timeout", 0.0),
+            max_retries=body.get("max_retries", 0),
+            metadata=body.get("metadata", {}),
         )
-        return {"status": "ok", "task": result.to_dict()}
+        result = instance.add_task(
+            domain_id=body.get("domain_id", ""),
+            task=task,
+        )
+        return {"status": "ok", "task": task.to_dict()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
