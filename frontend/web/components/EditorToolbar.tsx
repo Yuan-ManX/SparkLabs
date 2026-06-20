@@ -396,6 +396,59 @@ const modeGroups = [
       { id: 'behavior-engine', label: 'Behavior', icon: 'fa-gears' },
       { id: 'input-management', label: 'InpMgr', icon: 'fa-keyboard' },
       { id: 'scene-lifecycle', label: 'ScnLife', icon: 'fa-film' },
+      { id: 'agent-blackboard', label: 'Blkbrd', icon: 'fa-chalkboard' },
+      { id: 'agent-htn-planner', label: 'HTN', icon: 'fa-diagram-project' },
+      { id: 'agent-belief-reputation', label: 'Belief', icon: 'fa-scale-balanced' },
+      { id: 'engine-job-system', label: 'JobSys', icon: 'fa-server' },
+      { id: 'engine-cloth-physics', label: 'Cloth', icon: 'fa-shirt' },
+      { id: 'engine-lightmapping', label: 'LightMap', icon: 'fa-lightbulb' },
+    ],
+  },
+  {
+    label: 'Visual FX',
+    items: [
+      { id: 'volumetric-rendering', label: 'Volumetric', icon: 'fa-cube' },
+      { id: 'fluid-dynamics', label: 'Fluid', icon: 'fa-droplet' },
+      { id: 'procedural-animation', label: 'ProcAnim', icon: 'fa-film' },
+      { id: 'object-pool', label: 'ObjPool', icon: 'fa-layer-group' },
+    ],
+  },
+  {
+    label: 'World AI',
+    items: [
+      { id: 'crowd-dynamics', label: 'Crowd', icon: 'fa-people-group' },
+      { id: 'world-perception', label: 'WrldPerc', icon: 'fa-eye' },
+      { id: 'dynamic-narrative', label: 'DynNarr', icon: 'fa-book-open' },
+      { id: 'world-simulator', label: 'WrldSim', icon: 'fa-globe' },
+      { id: 'scene-director', label: 'ScnDir', icon: 'fa-clapperboard' },
+      { id: 'world-streamer', label: 'WrldStrm', icon: 'fa-stream' },
+    ],
+  },
+  {
+    label: 'Cognition',
+    items: [
+      { id: 'metacognition', label: 'MetaCog', icon: 'fa-brain' },
+      { id: 'predictive-intelligence', label: 'PredIntel', icon: 'fa-chart-line' },
+      { id: 'causal-reasoning', label: 'Causal', icon: 'fa-link' },
+      { id: 'multi-objective', label: 'MultiObj', icon: 'fa-bullseye' },
+      { id: 'self-evolution', label: 'SelfEvo', icon: 'fa-dna' },
+      { id: 'layered-memory', label: 'LayerMem', icon: 'fa-memory' },
+    ],
+  },
+  {
+    label: 'Agent Systems',
+    items: [
+      { id: 'skill-accumulator', label: 'SkillAcc', icon: 'fa-plus' },
+      { id: 'emergent-storyteller', label: 'EmrgStory', icon: 'fa-feather' },
+      { id: 'runtime-scripting', label: 'RunScript', icon: 'fa-code' },
+    ],
+  },
+  {
+    label: 'Editor Tools',
+    items: [
+      { id: 'node-editor-panel', label: 'NodeEdit', icon: 'fa-project-diagram' },
+      { id: 'scene-serializer', label: 'SceneSer', icon: 'fa-save' },
+      { id: 'engine-signal-bus', label: 'SigBus', icon: 'fa-bolt' },
     ],
   },
 ];
