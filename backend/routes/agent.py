@@ -33743,10 +33743,10 @@ async def htn_planner_add_task(request: Request):
         instance = get_htn_planner()
         task = HTNTask(
             name=body.get("name", ""),
-            task_type=body.get("task_type"),
             parameters=body.get("parameters", {}),
             preconditions=body.get("preconditions", []),
             effects=body.get("effects", []),
+            subtasks=body.get("subtasks", []),
             is_primitive=body.get("is_primitive", False),
             cost=body.get("cost", 1.0),
             priority=body.get("priority", 0),
@@ -33765,17 +33765,23 @@ async def htn_planner_add_task(request: Request):
 @router.post("/htn-planner/add-method")
 async def htn_planner_add_method(request: Request):
     try:
-        from sparkai.agent.agent_htn_planner import get_htn_planner
+        from sparkai.agent.agent_htn_planner import get_htn_planner, HTNMethod
         body = await request.json()
         instance = get_htn_planner()
-        result = instance.add_method(
-            method_id=body.get("method_id", ""),
-            task_name=body.get("task_name", ""),
-            subtasks=body.get("subtasks", []),
+        method = HTNMethod(
+            name=body.get("name", ""),
+            task_id=body.get("task_id", ""),
             preconditions=body.get("preconditions", []),
-            ordering=body.get("ordering", "sequential"),
+            subtask_sequence=body.get("subtask_sequence", []),
+            cost=body.get("cost", 0.0),
+            success_rate=body.get("success_rate", 1.0),
+            metadata=body.get("metadata", {}),
         )
-        return {"status": "ok", "method": result.to_dict()}
+        result = instance.add_method(
+            domain_id=body.get("domain_id", ""),
+            method=method,
+        )
+        return {"status": "ok", "method": method.to_dict()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -33786,10 +33792,10 @@ async def htn_planner_generate_plan(request: Request):
         body = await request.json()
         instance = get_htn_planner()
         result = instance.generate_plan(
-            goal=body.get("goal", []),
-            initial_state=body.get("initial_state", {}),
-            max_depth=body.get("max_depth", 100),
-            timeout=body.get("timeout"),
+            domain_id=body.get("domain_id", ""),
+            goal_task_id=body.get("goal_task_id", ""),
+            initial_world_state=body.get("initial_world_state", {}),
+            strategy=body.get("strategy"),
         )
         return {"status": "ok", "plan": result.to_dict()}
     except Exception as e:
