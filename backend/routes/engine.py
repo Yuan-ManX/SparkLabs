@@ -8527,3 +8527,184 @@ async def scene_lifecycle_engine_update_transition(request: Request):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+
+# === Job System ===
+
+@router.get("/job-system/stats")
+async def job_system_stats():
+    try:
+        from sparkai.engine.engine_job_system import get_job_system, JobSystemEngine
+        instance = get_job_system()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/job-system/start")
+async def job_system_start(request: Request):
+    try:
+        from sparkai.engine.engine_job_system import get_job_system
+        body = await request.json()
+        instance = get_job_system()
+        instance.start(
+            num_workers=body.get("num_workers", 4),
+            queue_size=body.get("queue_size", 100),
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/job-system/submit")
+async def job_system_submit(request: Request):
+    try:
+        from sparkai.engine.engine_job_system import get_job_system
+        body = await request.json()
+        instance = get_job_system()
+        result = instance.submit(
+            job_type=body.get("job_type", ""),
+            payload=body.get("payload", {}),
+            priority=body.get("priority", 0),
+            dependencies=body.get("dependencies"),
+            callback=body.get("callback"),
+        )
+        return {"status": "ok", "job": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/job-system/wait-for-job")
+async def job_system_wait_for_job(request: Request):
+    try:
+        from sparkai.engine.engine_job_system import get_job_system
+        body = await request.json()
+        instance = get_job_system()
+        result = instance.wait_for_job(
+            job_id=body.get("job_id", ""),
+            timeout=body.get("timeout", 30.0),
+        )
+        return {"status": "ok", "result": result.to_dict() if hasattr(result, 'to_dict') else result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/job-system/worker-status")
+async def job_system_worker_status():
+    try:
+        from sparkai.engine.engine_job_system import get_job_system
+        instance = get_job_system()
+        result = instance.get_worker_status()
+        return {"status": "ok", "workers": [w.to_dict() for w in result]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# === Cloth Physics ===
+
+@router.get("/cloth-physics/stats")
+async def cloth_physics_stats():
+    try:
+        from sparkai.engine.engine_cloth_physics import get_cloth_physics, ClothPhysicsEngine
+        instance = get_cloth_physics()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/cloth-physics/create-mesh")
+async def cloth_physics_create_mesh(request: Request):
+    try:
+        from sparkai.engine.engine_cloth_physics import get_cloth_physics
+        body = await request.json()
+        instance = get_cloth_physics()
+        result = instance.create_mesh(
+            width=body.get("width", 1.0),
+            height=body.get("height", 1.0),
+            subdivisions_x=body.get("subdivisions_x", 10),
+            subdivisions_y=body.get("subdivisions_y", 10),
+            material=body.get("material", "cotton"),
+            mass=body.get("mass", 0.5),
+            damping=body.get("damping", 0.99),
+            stiffness=body.get("stiffness", 100.0),
+        )
+        return {"status": "ok", "mesh": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/cloth-physics/step")
+async def cloth_physics_step(request: Request):
+    try:
+        from sparkai.engine.engine_cloth_physics import get_cloth_physics
+        body = await request.json()
+        instance = get_cloth_physics()
+        result = instance.step(
+            delta_time=body.get("delta_time", 0.016),
+            wind=body.get("wind"),
+            collisions=body.get("collisions"),
+            constraints=body.get("constraints"),
+        )
+        return {"status": "ok", "state": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/cloth-physics/get-mesh")
+async def cloth_physics_get_mesh(mesh_id: str = ""):
+    try:
+        from sparkai.engine.engine_cloth_physics import get_cloth_physics
+        instance = get_cloth_physics()
+        result = instance.get_mesh(mesh_id=mesh_id)
+        return {"status": "ok", "mesh": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# === Lightmapping ===
+
+@router.get("/lightmapping/stats")
+async def lightmapping_stats():
+    try:
+        from sparkai.engine.engine_lightmapping import get_lightmapping, LightmappingEngine
+        instance = get_lightmapping()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/lightmapping/create-scene")
+async def lightmapping_create_scene(request: Request):
+    try:
+        from sparkai.engine.engine_lightmapping import get_lightmapping
+        body = await request.json()
+        instance = get_lightmapping()
+        result = instance.create_scene(
+            name=body.get("name", "Untitled"),
+            resolution=body.get("resolution", 1024),
+            lightmap_type=body.get("lightmap_type", "directional"),
+            indirect_samples=body.get("indirect_samples", 64),
+            bounce_count=body.get("bounce_count", 2),
+            ambient_occlusion=body.get("ambient_occlusion", True),
+        )
+        return {"status": "ok", "scene": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/lightmapping/start-bake")
+async def lightmapping_start_bake(request: Request):
+    try:
+        from sparkai.engine.engine_lightmapping import get_lightmapping
+        body = await request.json()
+        instance = get_lightmapping()
+        result = instance.start_bake(
+            scene_id=body.get("scene_id", ""),
+            quality=body.get("quality", "medium"),
+            priority=body.get("priority", "normal"),
+            async_mode=body.get("async_mode", True),
+        )
+        return {"status": "ok", "bake": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/lightmapping/get-bake-status")
+async def lightmapping_get_bake_status(bake_id: str = ""):
+    try:
+        from sparkai.engine.engine_lightmapping import get_lightmapping
+        instance = get_lightmapping()
+        result = instance.get_bake_status(bake_id=bake_id)
+        return {"status": "ok", "bake_status": result.to_dict() if hasattr(result, 'to_dict') else result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
