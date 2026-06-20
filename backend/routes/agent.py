@@ -33638,27 +33638,45 @@ async def blackboard_read(request: Request):
 @router.post("/blackboard/read-all")
 async def blackboard_read_all(request: Request):
     try:
-        from sparkai.agent.agent_blackboard import get_blackboard
+        from sparkai.agent.agent_blackboard import get_blackboard, BlackboardQuery
         body = await request.json()
         instance = get_blackboard()
-        results = instance.read_all(
-            prefix=body.get("prefix"),
-            pattern=body.get("pattern"),
+        query = BlackboardQuery(
+            key_pattern=body.get("key_pattern", body.get("prefix", "*")),
+            entry_types=body.get("entry_types"),
+            source_agents=body.get("source_agents"),
+            tags=body.get("tags"),
+            min_confidence=body.get("min_confidence", 0.0),
+            max_confidence=body.get("max_confidence", 1.0),
+            priority_threshold=body.get("priority_threshold", 0),
+            sort_by=body.get("sort_by", "timestamp"),
+            sort_descending=body.get("sort_descending", True),
+            limit=body.get("limit"),
+            include_expired=body.get("include_expired", False),
         )
-        return {"status": "ok", "entries": results}
+        results = instance.read_all(query=query)
+        return {"status": "ok", "entries": [r.to_dict() for r in results]}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
 @router.post("/blackboard/subscribe")
 async def blackboard_subscribe(request: Request):
     try:
-        from sparkai.agent.agent_blackboard import get_blackboard
+        from sparkai.agent.agent_blackboard import get_blackboard, EntryType
         body = await request.json()
         instance = get_blackboard()
+        entry_type_filters = None
+        if body.get("entry_type_filters"):
+            try:
+                entry_type_filters = {EntryType(et) for et in body["entry_type_filters"]}
+            except ValueError:
+                pass
         instance.subscribe(
-            key=body.get("key", ""),
-            callback_id=body.get("callback_id", ""),
-            filter=body.get("filter"),
+            agent_id=body.get("agent_id", ""),
+            key_patterns=body.get("key_patterns"),
+            entry_type_filters=entry_type_filters,
+            min_confidence=body.get("min_confidence", 0.0),
+            callback_url=body.get("callback_url"),
         )
         return {"status": "ok"}
     except Exception as e:
