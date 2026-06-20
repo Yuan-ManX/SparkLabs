@@ -102,6 +102,12 @@ import EngineEcosystemDynamicsPanel from './EngineEcosystemDynamicsPanel';
 import EngineCivilizationEvolutionPanel from './EngineCivilizationEvolutionPanel';
 import EngineProceduralCityPanel from './EngineProceduralCityPanel';
 import EngineFlowStateMonitorPanel from './EngineFlowStateMonitorPanel';
+import AgentBlackboardPanel from './AgentBlackboardPanel';
+import AgentHTNPlannerPanel from './AgentHTNPlannerPanel';
+import AgentBeliefReputationPanel from './AgentBeliefReputationPanel';
+import EngineJobSystemPanel from './EngineJobSystemPanel';
+import EngineClothPhysicsPanel from './EngineClothPhysicsPanel';
+import EngineLightmappingPanel from './EngineLightmappingPanel';
 import AgentDialogueEnginePanel from './AgentDialogueEnginePanel';
 import AgentIntentRouterPanel from './AgentIntentRouterPanel';
 import AgentGatewayPanel from './AgentGatewayPanel';
@@ -732,6 +738,12 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'behavior-engine': return <EngineBehaviorPanel />;
       case 'input-management': return <EngineInputManagementPanel />;
       case 'scene-lifecycle': return <EngineSceneLifecyclePanel />;
+      case 'agent-blackboard': return <AgentBlackboardPanel />;
+      case 'agent-htn-planner': return <AgentHTNPlannerPanel />;
+      case 'agent-belief-reputation': return <AgentBeliefReputationPanel />;
+      case 'engine-job-system': return <EngineJobSystemPanel />;
+      case 'engine-cloth-physics': return <EngineClothPhysicsPanel />;
+      case 'engine-lightmapping': return <EngineLightmappingPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
