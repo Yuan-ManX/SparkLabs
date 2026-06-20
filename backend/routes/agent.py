@@ -33595,3 +33595,283 @@ async def experience_memory_forget(request: Request):
         return {"status": "ok"}
     except Exception as e:
         return {"status": "error", "message": str(e)}
+
+
+# === Agent Blackboard ===
+
+@router.get("/blackboard/stats")
+async def blackboard_stats():
+    try:
+        from sparkai.agent.agent_blackboard import get_blackboard, BlackboardEngine
+        instance = get_blackboard()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/blackboard/write")
+async def blackboard_write(request: Request):
+    try:
+        from sparkai.agent.agent_blackboard import get_blackboard
+        body = await request.json()
+        instance = get_blackboard()
+        instance.write(
+            key=body.get("key", ""),
+            value=body.get("value", ""),
+            ttl=body.get("ttl"),
+            metadata=body.get("metadata"),
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/blackboard/read")
+async def blackboard_read(request: Request):
+    try:
+        from sparkai.agent.agent_blackboard import get_blackboard
+        body = await request.json()
+        instance = get_blackboard()
+        result = instance.read(key=body.get("key", ""))
+        return {"status": "ok", "value": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/blackboard/read-all")
+async def blackboard_read_all(request: Request):
+    try:
+        from sparkai.agent.agent_blackboard import get_blackboard
+        body = await request.json()
+        instance = get_blackboard()
+        results = instance.read_all(
+            prefix=body.get("prefix"),
+            pattern=body.get("pattern"),
+        )
+        return {"status": "ok", "entries": results}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/blackboard/subscribe")
+async def blackboard_subscribe(request: Request):
+    try:
+        from sparkai.agent.agent_blackboard import get_blackboard
+        body = await request.json()
+        instance = get_blackboard()
+        instance.subscribe(
+            key=body.get("key", ""),
+            callback_id=body.get("callback_id", ""),
+            filter=body.get("filter"),
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/blackboard/unsubscribe")
+async def blackboard_unsubscribe(request: Request):
+    try:
+        from sparkai.agent.agent_blackboard import get_blackboard
+        body = await request.json()
+        instance = get_blackboard()
+        instance.unsubscribe(
+            key=body.get("key", ""),
+            callback_id=body.get("callback_id", ""),
+        )
+        return {"status": "ok"}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/blackboard/snapshot")
+async def blackboard_snapshot():
+    try:
+        from sparkai.agent.agent_blackboard import get_blackboard
+        instance = get_blackboard()
+        result = instance.get_snapshot()
+        return {"status": "ok", "snapshot": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# === Agent HTN Planner ===
+
+@router.get("/htn-planner/stats")
+async def htn_planner_stats():
+    try:
+        from sparkai.agent.agent_htn_planner import get_htn_planner, HTNPlannerEngine
+        instance = get_htn_planner()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/htn-planner/create-domain")
+async def htn_planner_create_domain(request: Request):
+    try:
+        from sparkai.agent.agent_htn_planner import get_htn_planner
+        body = await request.json()
+        instance = get_htn_planner()
+        result = instance.create_domain(
+            name=body.get("name", ""),
+            operators=body.get("operators", []),
+            predicates=body.get("predicates", []),
+            constants=body.get("constants", []),
+        )
+        return {"status": "ok", "domain": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/htn-planner/add-task")
+async def htn_planner_add_task(request: Request):
+    try:
+        from sparkai.agent.agent_htn_planner import get_htn_planner
+        body = await request.json()
+        instance = get_htn_planner()
+        result = instance.add_task(
+            task_id=body.get("task_id", ""),
+            name=body.get("name", ""),
+            parameters=body.get("parameters", []),
+            preconditions=body.get("preconditions", []),
+            effects=body.get("effects", []),
+            priority=body.get("priority", 0),
+        )
+        return {"status": "ok", "task": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/htn-planner/add-method")
+async def htn_planner_add_method(request: Request):
+    try:
+        from sparkai.agent.agent_htn_planner import get_htn_planner
+        body = await request.json()
+        instance = get_htn_planner()
+        result = instance.add_method(
+            method_id=body.get("method_id", ""),
+            task_name=body.get("task_name", ""),
+            subtasks=body.get("subtasks", []),
+            preconditions=body.get("preconditions", []),
+            ordering=body.get("ordering", "sequential"),
+        )
+        return {"status": "ok", "method": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/htn-planner/generate-plan")
+async def htn_planner_generate_plan(request: Request):
+    try:
+        from sparkai.agent.agent_htn_planner import get_htn_planner
+        body = await request.json()
+        instance = get_htn_planner()
+        result = instance.generate_plan(
+            goal=body.get("goal", []),
+            initial_state=body.get("initial_state", {}),
+            max_depth=body.get("max_depth", 100),
+            timeout=body.get("timeout"),
+        )
+        return {"status": "ok", "plan": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/htn-planner/step-plan")
+async def htn_planner_step_plan(request: Request):
+    try:
+        from sparkai.agent.agent_htn_planner import get_htn_planner
+        body = await request.json()
+        instance = get_htn_planner()
+        result = instance.step_plan(
+            plan_id=body.get("plan_id", ""),
+            state_update=body.get("state_update"),
+        )
+        return {"status": "ok", "step_result": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/htn-planner/execute-plan")
+async def htn_planner_execute_plan(request: Request):
+    try:
+        from sparkai.agent.agent_htn_planner import get_htn_planner
+        body = await request.json()
+        instance = get_htn_planner()
+        result = instance.execute_plan(
+            plan_id=body.get("plan_id", ""),
+            executor_id=body.get("executor_id", ""),
+            step_by_step=body.get("step_by_step", False),
+        )
+        return {"status": "ok", "execution": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# === Agent Belief Reputation ===
+
+@router.get("/belief-reputation/stats")
+async def belief_reputation_stats():
+    try:
+        from sparkai.agent.agent_belief_reputation import get_belief_reputation, BeliefReputationEngine
+        instance = get_belief_reputation()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/belief-reputation/form-belief")
+async def belief_reputation_form_belief(request: Request):
+    try:
+        from sparkai.agent.agent_belief_reputation import get_belief_reputation
+        body = await request.json()
+        instance = get_belief_reputation()
+        result = instance.form_belief(
+            agent_id=body.get("agent_id", ""),
+            belief=body.get("belief", ""),
+            confidence=body.get("confidence", 0.5),
+            source=body.get("source", "observation"),
+            evidence=body.get("evidence"),
+        )
+        return {"status": "ok", "belief": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/belief-reputation/record-event")
+async def belief_reputation_record_event(request: Request):
+    try:
+        from sparkai.agent.agent_belief_reputation import get_belief_reputation
+        body = await request.json()
+        instance = get_belief_reputation()
+        result = instance.record_event(
+            agent_id=body.get("agent_id", ""),
+            event_type=body.get("event_type", ""),
+            event_data=body.get("event_data", {}),
+            timestamp=body.get("timestamp"),
+            witness=body.get("witness"),
+        )
+        return {"status": "ok", "event": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/belief-reputation/get-beliefs")
+async def belief_reputation_get_beliefs(
+    agent_id: str = "",
+    subject: Optional[str] = None,
+    min_confidence: float = 0.0,
+):
+    try:
+        from sparkai.agent.agent_belief_reputation import get_belief_reputation
+        instance = get_belief_reputation()
+        results = instance.get_beliefs(
+            agent_id=agent_id,
+            subject=subject,
+            min_confidence=min_confidence,
+        )
+        return {"status": "ok", "beliefs": [b.to_dict() for b in results]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/belief-reputation/get-reputation")
+async def belief_reputation_get_reputation(
+    agent_id: str = "",
+    target_id: Optional[str] = None,
+):
+    try:
+        from sparkai.agent.agent_belief_reputation import get_belief_reputation
+        instance = get_belief_reputation()
+        result = instance.get_reputation(
+            agent_id=agent_id,
+            target_id=target_id,
+        )
+        return {"status": "ok", "reputation": result.to_dict() if hasattr(result, 'to_dict') else result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
