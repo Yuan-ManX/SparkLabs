@@ -451,6 +451,43 @@ const modeGroups = [
       { id: 'engine-signal-bus', label: 'SigBus', icon: 'fa-bolt' },
     ],
   },
+  {
+    label: 'Story AI',
+    items: [
+      { id: 'agent-procedural-story', label: 'StoryAI', icon: 'fa-feather' },
+      { id: 'agent-game-designer', label: 'DesignAI', icon: 'fa-palette' },
+      { id: 'agent-emotion-affect', label: 'Emotion', icon: 'fa-face-smile' },
+      { id: 'agent-player-modeler', label: 'PlayerAI', icon: 'fa-user-gear' },
+      { id: 'agent-autonomous-tester', label: 'TestAI', icon: 'fa-flask' },
+    ],
+  },
+  {
+    label: 'Agent Net',
+    items: [
+      { id: 'agent-game-engine-bridge', label: 'Bridge', icon: 'fa-bridge-water' },
+      { id: 'agent-performance-optimizer', label: 'PerfOpt', icon: 'fa-gauge-high' },
+      { id: 'agent-multi-agent-protocol', label: 'MultiAg', icon: 'fa-network-wired' },
+    ],
+  },
+  {
+    label: 'Engine Ext',
+    items: [
+      { id: 'engine-spatial-partition', label: 'Spatial', icon: 'fa-cube' },
+      { id: 'engine-inverse-kinematics', label: 'IK', icon: 'fa-bone' },
+      { id: 'engine-save-system', label: 'SaveSys', icon: 'fa-floppy-disk' },
+      { id: 'engine-event-system', label: 'EventSys', icon: 'fa-bolt' },
+      { id: 'engine-fluid-simulation', label: 'FluidSim', icon: 'fa-droplet' },
+    ],
+  },
+  {
+    label: 'Engine New',
+    items: [
+      { id: 'engine-post-processing', label: 'PostFX', icon: 'fa-wand-magic-sparkles' },
+      { id: 'engine-ui-system', label: 'UI', icon: 'fa-window-maximize' },
+      { id: 'engine-network-sync', label: 'NetSync', icon: 'fa-wifi' },
+      { id: 'engine-performance-monitor', label: 'PerfMon', icon: 'fa-chart-line' },
+    ],
+  },
 ];
 
 const EditorToolbar: React.FC<EditorToolbarProps> = ({
