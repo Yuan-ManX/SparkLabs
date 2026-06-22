@@ -5993,36 +5993,6 @@ async def entity_blueprint_create(body: dict):
 
 
 # ============================================================
-# Post Processing Routes
-# ============================================================
-
-@router.get("/post-processing/stats")
-async def post_processing_stats():
-    """Get Post Processing system statistics."""
-    try:
-        from sparkai.engine.engine_post_processing import get_post_processing
-        instance = get_post_processing()
-        return {"status": "ok", "stats": instance.get_stats()}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-@router.post("/post-processing/add-effect")
-async def post_processing_add_effect(body: dict):
-    """Add a post-processing effect."""
-    try:
-        from sparkai.engine.engine_post_processing import get_post_processing
-        instance = get_post_processing()
-        instance.add_effect(
-            name=body.get("name"),
-            effect_type=body.get("effect_type"),
-            parameters=body.get("parameters")
-        )
-        return {"status": "ok"}
-    except Exception as e:
-        return {"status": "error", "message": str(e)}
-
-
-# ============================================================
 # Asset Streamer Routes
 # ============================================================
 
@@ -8547,7 +8517,6 @@ async def job_system_start(request: Request):
         instance = get_job_system()
         instance.start(
             num_workers=body.get("num_workers", 4),
-            queue_size=body.get("queue_size", 100),
         )
         return {"status": "ok"}
     except Exception as e:
@@ -8556,15 +8525,21 @@ async def job_system_start(request: Request):
 @router.post("/job-system/submit")
 async def job_system_submit(request: Request):
     try:
-        from sparkai.engine.engine_job_system import get_job_system
+        from sparkai.engine.engine_job_system import get_job_system, JobType
         body = await request.json()
         instance = get_job_system()
-        result = instance.submit(
-            job_type=body.get("job_type", ""),
-            payload=body.get("payload", {}),
+        try:
+            job_type = JobType(body.get("job_type", "physics_step"))
+        except ValueError:
+            job_type = JobType.PHYSICS_STEP
+        result = instance.submit_job(
+            name=body.get("name", ""),
+            job_type=job_type,
+            data=body.get("data", {}),
             priority=body.get("priority", 0),
             dependencies=body.get("dependencies"),
-            callback=body.get("callback"),
+            max_retries=body.get("max_retries", 0),
+            queue_id=body.get("queue_id"),
         )
         return {"status": "ok", "job": result.to_dict()}
     except Exception as e:
@@ -8609,18 +8584,28 @@ async def cloth_physics_stats():
 @router.post("/cloth-physics/create-mesh")
 async def cloth_physics_create_mesh(request: Request):
     try:
-        from sparkai.engine.engine_cloth_physics import get_cloth_physics
+        from sparkai.engine.engine_cloth_physics import get_cloth_physics, ClothMaterial
         body = await request.json()
         instance = get_cloth_physics()
-        result = instance.create_mesh(
-            width=body.get("width", 1.0),
-            height=body.get("height", 1.0),
-            subdivisions_x=body.get("subdivisions_x", 10),
-            subdivisions_y=body.get("subdivisions_y", 10),
-            material=body.get("material", "cotton"),
-            mass=body.get("mass", 0.5),
-            damping=body.get("damping", 0.99),
-            stiffness=body.get("stiffness", 100.0),
+        material = ClothMaterial(
+            name=body.get("material_name", "default_material"),
+            stiffness=body.get("stiffness", 0.9),
+            damping=body.get("damping", 0.01),
+            bend_resistance=body.get("bend_resistance", 0.5),
+            shear_resistance=body.get("shear_resistance", 0.6),
+            mass_per_particle=body.get("mass_per_particle", 1.0),
+            tear_resistance=body.get("tear_resistance", 10.0),
+            wind_affinity=body.get("wind_affinity", 0.8),
+            color=tuple(body.get("color", [1.0, 1.0, 1.0, 1.0])),
+            texture_path=body.get("texture_path", ""),
+        )
+        result = instance.create_cloth_mesh(
+            name=body.get("name", "Untitled"),
+            width_segments=body.get("width_segments", 10),
+            height_segments=body.get("height_segments", 10),
+            anchor_points=body.get("anchor_points", []),
+            material=material,
+            initial_position=tuple(body.get("initial_position", [0.0, 0.0, 0.0])),
         )
         return {"status": "ok", "mesh": result.to_dict()}
     except Exception as e:
@@ -8629,16 +8614,21 @@ async def cloth_physics_create_mesh(request: Request):
 @router.post("/cloth-physics/step")
 async def cloth_physics_step(request: Request):
     try:
-        from sparkai.engine.engine_cloth_physics import get_cloth_physics
+        from sparkai.engine.engine_cloth_physics import get_cloth_physics, ClothSolverType
         body = await request.json()
         instance = get_cloth_physics()
+        solver_type = ClothSolverType.PBD
+        if body.get("solver_type"):
+            try:
+                solver_type = ClothSolverType(body["solver_type"])
+            except ValueError:
+                pass
         result = instance.step(
             delta_time=body.get("delta_time", 0.016),
-            wind=body.get("wind"),
-            collisions=body.get("collisions"),
-            constraints=body.get("constraints"),
+            iterations=body.get("iterations", 5),
+            solver_type=solver_type,
         )
-        return {"status": "ok", "state": result.to_dict()}
+        return {"status": "ok", "state": result}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -8667,16 +8657,24 @@ async def lightmapping_stats():
 @router.post("/lightmapping/create-scene")
 async def lightmapping_create_scene(request: Request):
     try:
-        from sparkai.engine.engine_lightmapping import get_lightmapping
+        from sparkai.engine.engine_lightmapping import get_lightmapping, BakeSettings
         body = await request.json()
         instance = get_lightmapping()
-        result = instance.create_scene(
-            name=body.get("name", "Untitled"),
-            resolution=body.get("resolution", 1024),
-            lightmap_type=body.get("lightmap_type", "directional"),
-            indirect_samples=body.get("indirect_samples", 64),
-            bounce_count=body.get("bounce_count", 2),
+        settings = BakeSettings(
+            name=body.get("settings_name", "DefaultBakeSettings"),
+            resolution_scale=body.get("resolution_scale", 1.0),
+            indirect_bounces=body.get("indirect_bounces", 2),
             ambient_occlusion=body.get("ambient_occlusion", True),
+            ao_radius=body.get("ao_radius", 1.0),
+            ao_samples=body.get("ao_samples", 16),
+            shadow_softness=body.get("shadow_softness", 0.5),
+            denoise_enabled=body.get("denoise_enabled", True),
+            denoise_strength=body.get("denoise_strength", 0.75),
+            photon_count=body.get("photon_count", 100000),
+        )
+        result = instance.create_bake_scene(
+            name=body.get("name", "Untitled"),
+            settings=settings,
         )
         return {"status": "ok", "scene": result.to_dict()}
     except Exception as e:
@@ -8685,16 +8683,20 @@ async def lightmapping_create_scene(request: Request):
 @router.post("/lightmapping/start-bake")
 async def lightmapping_start_bake(request: Request):
     try:
-        from sparkai.engine.engine_lightmapping import get_lightmapping
+        from sparkai.engine.engine_lightmapping import get_lightmapping, GIAlgorithm
         body = await request.json()
         instance = get_lightmapping()
+        algorithm = GIAlgorithm.PATH_TRACER
+        if body.get("algorithm"):
+            try:
+                algorithm = GIAlgorithm(body["algorithm"])
+            except ValueError:
+                pass
         result = instance.start_bake(
             scene_id=body.get("scene_id", ""),
-            quality=body.get("quality", "medium"),
-            priority=body.get("priority", "normal"),
-            async_mode=body.get("async_mode", True),
+            algorithm=algorithm,
         )
-        return {"status": "ok", "bake": result.to_dict()}
+        return {"status": "ok", "bake": result}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
@@ -8705,6 +8707,775 @@ async def lightmapping_get_bake_status(bake_id: str = ""):
         instance = get_lightmapping()
         result = instance.get_bake_status(bake_id=bake_id)
         return {"status": "ok", "bake_status": result.to_dict() if hasattr(result, 'to_dict') else result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# =============================================================================
+# Spatial Partition Engine
+# =============================================================================
+
+@router.post("/spatial-partition/create-tree")
+async def spatial_partition_create_tree(request: Request):
+    try:
+        from sparkai.engine.engine_spatial_partition import get_spatial_partition, PartitionType
+        body = await request.json()
+        instance = get_spatial_partition()
+        partition_type = PartitionType.OCTREE
+        if body.get("partition_type"):
+            try:
+                partition_type = PartitionType(body["partition_type"])
+            except ValueError:
+                pass
+        result = instance.create_tree(
+            name=body.get("name", "default"),
+            partition_type=partition_type,
+            bounds={
+                "min_x": body.get("min_x", -100.0),
+                "min_y": body.get("min_y", -100.0),
+                "min_z": body.get("min_z", -100.0),
+                "max_x": body.get("max_x", 100.0),
+                "max_y": body.get("max_y", 100.0),
+                "max_z": body.get("max_z", 100.0),
+            },
+            max_depth=body.get("max_depth", 8),
+            max_entries=body.get("max_entries", 8),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "tree": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/spatial-partition/insert")
+async def spatial_partition_insert(request: Request):
+    try:
+        from sparkai.engine.engine_spatial_partition import get_spatial_partition
+        body = await request.json()
+        instance = get_spatial_partition()
+        result = instance.insert(
+            tree_id=body.get("tree_id", ""),
+            entity_id=body.get("entity_id", ""),
+            entity_type=body.get("entity_type", ""),
+            bounds={
+                "min_x": body.get("min_x", 0.0),
+                "min_y": body.get("min_y", 0.0),
+                "min_z": body.get("min_z", 0.0),
+                "max_x": body.get("max_x", 1.0),
+                "max_y": body.get("max_y", 1.0),
+                "max_z": body.get("max_z", 1.0),
+            },
+            tags=body.get("tags", []),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "entry": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/spatial-partition/query-range")
+async def spatial_partition_query_range(request: Request):
+    try:
+        from sparkai.engine.engine_spatial_partition import get_spatial_partition
+        body = await request.json()
+        instance = get_spatial_partition()
+        results = instance.query_range(
+            tree_id=body.get("tree_id", ""),
+            bounds={
+                "min_x": body.get("min_x", -10.0),
+                "min_y": body.get("min_y", -10.0),
+                "min_z": body.get("min_z", -10.0),
+                "max_x": body.get("max_x", 10.0),
+                "max_y": body.get("max_y", 10.0),
+                "max_z": body.get("max_z", 10.0),
+            },
+        )
+        return {"status": "ok", "results": [r.to_dict() for r in results]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/spatial-partition/query-knn")
+async def spatial_partition_query_knn(request: Request):
+    try:
+        from sparkai.engine.engine_spatial_partition import get_spatial_partition
+        body = await request.json()
+        instance = get_spatial_partition()
+        results = instance.query_knn(
+            tree_id=body.get("tree_id", ""),
+            point=(body.get("px", 0.0), body.get("py", 0.0), body.get("pz", 0.0)),
+            k=body.get("k", 5),
+        )
+        return {"status": "ok", "results": [r.to_dict() for r in results]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/spatial-partition/stats")
+async def spatial_partition_stats():
+    try:
+        from sparkai.engine.engine_spatial_partition import get_spatial_partition
+        instance = get_spatial_partition()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# =============================================================================
+# Inverse Kinematics Engine
+# =============================================================================
+
+@router.post("/inverse-kinematics/create-chain")
+async def inverse_kinematics_create_chain(request: Request):
+    try:
+        from sparkai.engine.engine_inverse_kinematics import get_inverse_kinematics, IKSolverType
+        body = await request.json()
+        instance = get_inverse_kinematics()
+        solver_type = IKSolverType.FABRIK
+        if body.get("solver_type"):
+            try:
+                solver_type = IKSolverType(body["solver_type"])
+            except ValueError:
+                pass
+        result = instance.create_chain(
+            name=body.get("name", "default"),
+            solver_type=solver_type,
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "chain": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/inverse-kinematics/add-joint")
+async def inverse_kinematics_add_joint(request: Request):
+    try:
+        from sparkai.engine.engine_inverse_kinematics import get_inverse_kinematics, JointType
+        body = await request.json()
+        instance = get_inverse_kinematics()
+        joint_type = JointType.BALL
+        if body.get("joint_type"):
+            try:
+                joint_type = JointType(body["joint_type"])
+            except ValueError:
+                pass
+        result = instance.add_joint(
+            chain_id=body.get("chain_id", ""),
+            name=body.get("name", ""),
+            position=body.get("position", [0.0, 0.0, 0.0]),
+            joint_type=joint_type,
+            parent_id=body.get("parent_id"),
+            bone_length=body.get("bone_length", 1.0),
+            constraints=body.get("constraints", {}),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "joint": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/inverse-kinematics/set-effector")
+async def inverse_kinematics_set_effector(request: Request):
+    try:
+        from sparkai.engine.engine_inverse_kinematics import get_inverse_kinematics
+        body = await request.json()
+        instance = get_inverse_kinematics()
+        result = instance.set_effector(
+            chain_id=body.get("chain_id", ""),
+            target_position=body.get("target_position", [0.0, 0.0, 0.0]),
+            target_rotation=body.get("target_rotation", [1.0, 0.0, 0.0, 0.0]),
+            weight=body.get("weight", 1.0),
+            reach_tolerance=body.get("reach_tolerance", 0.01),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "effector": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/inverse-kinematics/solve")
+async def inverse_kinematics_solve(request: Request):
+    try:
+        from sparkai.engine.engine_inverse_kinematics import get_inverse_kinematics
+        body = await request.json()
+        instance = get_inverse_kinematics()
+        result = instance.solve(
+            chain_id=body.get("chain_id", ""),
+            max_iterations=body.get("max_iterations", 100),
+            tolerance=body.get("tolerance", 0.001),
+        )
+        return {"status": "ok", "solution": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/inverse-kinematics/stats")
+async def inverse_kinematics_stats():
+    try:
+        from sparkai.engine.engine_inverse_kinematics import get_inverse_kinematics
+        instance = get_inverse_kinematics()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# =============================================================================
+# Save System Engine
+# =============================================================================
+
+@router.post("/save-system/create-slot")
+async def save_system_create_slot(request: Request):
+    try:
+        from sparkai.engine.engine_save_system import get_save_system, SaveSlotType
+        body = await request.json()
+        instance = get_save_system()
+        slot_type = SaveSlotType.MANUAL
+        if body.get("slot_type"):
+            try:
+                slot_type = SaveSlotType(body["slot_type"])
+            except ValueError:
+                pass
+        result = instance.create_slot(
+            slot_index=body.get("slot_index", 0),
+            slot_type=slot_type,
+            slot_name=body.get("slot_name", "Save Slot"),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "slot": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/save-system/save")
+async def save_system_save(request: Request):
+    try:
+        from sparkai.engine.engine_save_system import get_save_system
+        body = await request.json()
+        instance = get_save_system()
+        result = instance.save(
+            slot_id=body.get("slot_id", ""),
+            game_state=body.get("game_state", {}),
+            entity_states=body.get("entity_states", {}),
+            variables=body.get("variables", {}),
+            flags=body.get("flags", {}),
+            inventory=body.get("inventory", {}),
+            achievements=body.get("achievements", {}),
+            scene_id=body.get("scene_id", ""),
+            level_name=body.get("level_name", ""),
+            playtime=body.get("playtime", 0.0),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "save": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/save-system/load")
+async def save_system_load(request: Request):
+    try:
+        from sparkai.engine.engine_save_system import get_save_system
+        body = await request.json()
+        instance = get_save_system()
+        result = instance.load(
+            save_id=body.get("save_id", ""),
+        )
+        return {"status": "ok", "save_data": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/save-system/delete-save")
+async def save_system_delete_save(request: Request):
+    try:
+        from sparkai.engine.engine_save_system import get_save_system
+        body = await request.json()
+        instance = get_save_system()
+        result = instance.delete_save(
+            slot_id=body.get("slot_id", ""),
+            save_id=body.get("save_id", ""),
+        )
+        return {"status": "ok", "deleted": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/save-system/list-saves")
+async def save_system_list_saves(slot_id: str = ""):
+    try:
+        from sparkai.engine.engine_save_system import get_save_system
+        instance = get_save_system()
+        result = instance.list_saves(slot_id=slot_id)
+        return {"status": "ok", "saves": [s.to_dict() for s in result]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/save-system/stats")
+async def save_system_stats():
+    try:
+        from sparkai.engine.engine_save_system import get_save_system
+        instance = get_save_system()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# =============================================================================
+# Event System Engine
+# =============================================================================
+
+@router.post("/event-system/emit")
+async def event_system_emit(request: Request):
+    try:
+        from sparkai.engine.engine_event_system import get_event_system, EventPriority, EventChannel
+        body = await request.json()
+        instance = get_event_system()
+        priority = EventPriority.NORMAL
+        channel = EventChannel.GLOBAL
+        if body.get("priority"):
+            try:
+                priority = EventPriority(body["priority"])
+            except ValueError:
+                pass
+        if body.get("channel"):
+            try:
+                channel = EventChannel(body["channel"])
+            except ValueError:
+                pass
+        result = instance.emit(
+            event_type=body.get("event_type", ""),
+            channel=channel,
+            priority=priority,
+            source_id=body.get("source_id", ""),
+            data=body.get("data", {}),
+            ttl=body.get("ttl", 0.0),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "event": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/event-system/subscribe")
+async def event_system_subscribe(request: Request):
+    try:
+        from sparkai.engine.engine_event_system import get_event_system
+        body = await request.json()
+        instance = get_event_system()
+        result = instance.subscribe(
+            listener_id=body.get("listener_id", ""),
+            event_types=body.get("event_types", []),
+            channels=body.get("channels", []),
+            priority=body.get("priority", 0),
+            filter_condition=body.get("filter_condition"),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "listener": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/event-system/unsubscribe")
+async def event_system_unsubscribe(request: Request):
+    try:
+        from sparkai.engine.engine_event_system import get_event_system
+        body = await request.json()
+        instance = get_event_system()
+        result = instance.unsubscribe(
+            listener_id=body.get("listener_id", ""),
+        )
+        return {"status": "ok", "unsubscribed": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/event-system/dispatch")
+async def event_system_dispatch(request: Request):
+    try:
+        from sparkai.engine.engine_event_system import get_event_system
+        body = await request.json()
+        instance = get_event_system()
+        result = instance.dispatch(
+            event_id=body.get("event_id", ""),
+        )
+        return {"status": "ok", "dispatch_result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/event-system/get-history")
+async def event_system_get_history(channel: str = "", limit: int = 50):
+    try:
+        from sparkai.engine.engine_event_system import get_event_system
+        instance = get_event_system()
+        result = instance.get_history(channel=channel, limit=limit)
+        return {"status": "ok", "history": [r.to_dict() for r in result]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/event-system/stats")
+async def event_system_stats():
+    try:
+        from sparkai.engine.engine_event_system import get_event_system
+        instance = get_event_system()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+
+# =============================================================================
+# Fluid Simulation Engine
+# =============================================================================
+
+@router.post("/fluid-simulation/create-grid")
+async def fluid_simulation_create_grid(request: Request):
+    try:
+        from sparkai.engine.engine_fluid_simulation import get_fluid_simulation, FluidSolverType
+        body = await request.json()
+        instance = get_fluid_simulation()
+        solver_type = FluidSolverType.STAM
+        if body.get("solver_type"):
+            try:
+                solver_type = FluidSolverType(body["solver_type"])
+            except ValueError:
+                pass
+        result = instance.create_grid(
+            name=body.get("name", "default"),
+            width=body.get("width", 64),
+            height=body.get("height", 64),
+            cell_size=body.get("cell_size", 1.0),
+            solver_type=solver_type,
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "grid": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/fluid-simulation/add-source")
+async def fluid_simulation_add_source(request: Request):
+    try:
+        from sparkai.engine.engine_fluid_simulation import get_fluid_simulation
+        body = await request.json()
+        instance = get_fluid_simulation()
+        result = instance.add_source(
+            grid_id=body.get("grid_id", ""),
+            position_x=body.get("position_x", 0.0),
+            position_y=body.get("position_y", 0.0),
+            radius=body.get("radius", 1.0),
+            emission_rate=body.get("emission_rate", 1.0),
+            density=body.get("density", 1.0),
+            velocity_x=body.get("velocity_x", 0.0),
+            velocity_y=body.get("velocity_y", 0.0),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "source": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/fluid-simulation/add-obstacle")
+async def fluid_simulation_add_obstacle(request: Request):
+    try:
+        from sparkai.engine.engine_fluid_simulation import get_fluid_simulation
+        body = await request.json()
+        instance = get_fluid_simulation()
+        result = instance.add_obstacle(
+            grid_id=body.get("grid_id", ""),
+            vertices=body.get("vertices", []),
+            is_solid=body.get("is_solid", True),
+            friction=body.get("friction", 0.5),
+            bounce_factor=body.get("bounce_factor", 0.3),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "obstacle": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/fluid-simulation/step")
+async def fluid_simulation_step(request: Request):
+    try:
+        from sparkai.engine.engine_fluid_simulation import get_fluid_simulation
+        body = await request.json()
+        instance = get_fluid_simulation()
+        result = instance.step(
+            grid_id=body.get("grid_id", ""),
+            dt=body.get("dt", 0.016),
+            iterations=body.get("iterations", 4),
+        )
+        return {"status": "ok", "step_result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/fluid-simulation/apply-force")
+async def fluid_simulation_apply_force(request: Request):
+    try:
+        from sparkai.engine.engine_fluid_simulation import get_fluid_simulation
+        body = await request.json()
+        instance = get_fluid_simulation()
+        result = instance.apply_force(
+            grid_id=body.get("grid_id", ""),
+            position_x=body.get("position_x", 0.0),
+            position_y=body.get("position_y", 0.0),
+            radius=body.get("radius", 1.0),
+            force_x=body.get("force_x", 0.0),
+            force_y=body.get("force_y", 0.0),
+        )
+        return {"status": "ok", "force_applied": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/fluid-simulation/get-grid")
+async def fluid_simulation_get_grid(grid_id: str = ""):
+    try:
+        from sparkai.engine.engine_fluid_simulation import get_fluid_simulation
+        instance = get_fluid_simulation()
+        result = instance.get_grid(grid_id=grid_id)
+        return {"status": "ok", "grid": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/fluid-simulation/stats")
+async def fluid_simulation_stats():
+    try:
+        from sparkai.engine.engine_fluid_simulation import get_fluid_simulation
+        instance = get_fluid_simulation()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Post-Processing Engine
+# =============================================================================
+
+@router.post("/post-processing/add-effect")
+async def post_processing_add_effect(request: Request):
+    try:
+        from sparkai.engine.engine_post_processing import get_post_processing, EffectType, BlendMode, QualityLevel, PipelineStage
+        body = await request.json()
+        instance = get_post_processing()
+        effect_type = EffectType.BLOOM
+        blend_mode = BlendMode.NORMAL
+        quality = QualityLevel.HIGH
+        stage = PipelineStage.POST_PROCESS
+        if body.get("effect_type"):
+            try:
+                effect_type = EffectType(body["effect_type"])
+            except ValueError:
+                pass
+        if body.get("blend_mode"):
+            try:
+                blend_mode = BlendMode(body["blend_mode"])
+            except ValueError:
+                pass
+        if body.get("quality"):
+            try:
+                quality = QualityLevel(body["quality"])
+            except ValueError:
+                pass
+        if body.get("stage"):
+            try:
+                stage = PipelineStage(body["stage"])
+            except ValueError:
+                pass
+        result = instance.add_effect(
+            effect_type=effect_type,
+            parameters=body.get("parameters", {}),
+            blend_mode=blend_mode,
+            quality=quality,
+            priority=body.get("priority", 10),
+            stage=stage,
+        )
+        return {"status": "ok", "effect": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/post-processing/remove-effect")
+async def post_processing_remove_effect(request: Request):
+    try:
+        from sparkai.engine.engine_post_processing import get_post_processing
+        body = await request.json()
+        instance = get_post_processing()
+        result = instance.remove_effect(effect_id=body.get("effect_id", ""))
+        return {"status": "ok", "removed": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/post-processing/effects")
+async def post_processing_effects(stage: Optional[str] = None):
+    try:
+        from sparkai.engine.engine_post_processing import get_post_processing, PipelineStage
+        instance = get_post_processing()
+        stage_enum = None
+        if stage:
+            try:
+                stage_enum = PipelineStage(stage)
+            except ValueError:
+                pass
+        result = instance.list_effects(stage=stage_enum)
+        return {"status": "ok", "effects": [e.to_dict() for e in result]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/post-processing/stats")
+async def post_processing_stats():
+    try:
+        from sparkai.engine.engine_post_processing import get_post_processing
+        instance = get_post_processing()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# UI System Engine
+# =============================================================================
+
+@router.post("/ui-system/create-canvas")
+async def ui_system_create_canvas(request: Request):
+    try:
+        from sparkai.engine.engine_ui_system import get_ui_system
+        body = await request.json()
+        instance = get_ui_system()
+        result = instance.create_canvas(
+            name=body.get("name", "main"),
+            width=body.get("width", 1920),
+            height=body.get("height", 1080),
+            scale_factor=body.get("scale_factor", 1.0),
+            sorting_order=body.get("sorting_order", 0),
+        )
+        return {"status": "ok", "canvas": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/ui-system/create-widget")
+async def ui_system_create_widget(request: Request):
+    try:
+        from sparkai.engine.engine_ui_system import get_ui_system, WidgetType, LayoutType, AnchorPoint
+        body = await request.json()
+        instance = get_ui_system()
+        widget_type = WidgetType.BUTTON
+        layout_type = LayoutType.ABSOLUTE
+        anchor = AnchorPoint.CENTER
+        if body.get("widget_type"):
+            try:
+                widget_type = WidgetType(body["widget_type"])
+            except ValueError:
+                pass
+        if body.get("layout_type"):
+            try:
+                layout_type = LayoutType(body["layout_type"])
+            except ValueError:
+                pass
+        if body.get("anchor"):
+            try:
+                anchor = AnchorPoint(body["anchor"])
+            except ValueError:
+                pass
+        result = instance.create_widget(
+            canvas_id=body.get("canvas_id", ""),
+            widget_type=widget_type,
+            parent_id=body.get("parent_id"),
+            rect=body.get("rect", {"x": 0, "y": 0, "width": 100, "height": 50}),
+            layout_type=layout_type,
+            anchor=anchor,
+        )
+        return {"status": "ok", "widget": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ui-system/canvas")
+async def ui_system_get_canvas(canvas_id: str = ""):
+    try:
+        from sparkai.engine.engine_ui_system import get_ui_system
+        instance = get_ui_system()
+        result = instance.get_canvas(canvas_id=canvas_id)
+        return {"status": "ok", "canvas": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/ui-system/stats")
+async def ui_system_stats():
+    try:
+        from sparkai.engine.engine_ui_system import get_ui_system
+        instance = get_ui_system()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Network Sync Engine
+# =============================================================================
+
+@router.post("/network-sync/create-session")
+async def network_sync_create_session(request: Request):
+    try:
+        from sparkai.engine.engine_network_sync import get_network_sync, SyncAuthority, SyncStrategy
+        body = await request.json()
+        instance = get_network_sync()
+        authority = SyncAuthority.SERVER
+        strategy = SyncStrategy.DELTA
+        if body.get("authority"):
+            try:
+                authority = SyncAuthority(body["authority"])
+            except ValueError:
+                pass
+        if body.get("strategy"):
+            try:
+                strategy = SyncStrategy(body["strategy"])
+            except ValueError:
+                pass
+        result = instance.create_session(
+            authority=authority,
+            strategy=strategy,
+            tick_rate=body.get("tick_rate", 30),
+        )
+        return {"status": "ok", "session": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/network-sync/connect")
+async def network_sync_connect(request: Request):
+    try:
+        from sparkai.engine.engine_network_sync import get_network_sync
+        body = await request.json()
+        instance = get_network_sync()
+        result = instance.connect(
+            session_id=body.get("session_id", ""),
+            address=body.get("address", ""),
+        )
+        return {"status": "ok", "connection": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/network-sync/stats")
+async def network_sync_stats():
+    try:
+        from sparkai.engine.engine_network_sync import get_network_sync
+        instance = get_network_sync()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Performance Monitor Engine
+# =============================================================================
+
+@router.post("/performance-monitor/record-frame")
+async def performance_monitor_record_frame(request: Request):
+    try:
+        from sparkai.engine.engine_performance_monitor import get_performance_monitor
+        body = await request.json()
+        instance = get_performance_monitor()
+        result = instance.record_frame(
+            fps=body.get("fps", 60),
+            frame_time_ms=body.get("frame_time_ms", 16.7),
+            draw_calls=body.get("draw_calls", 100),
+            vertices=body.get("vertices", 5000),
+            texture_memory_mb=body.get("texture_memory_mb", 256),
+            buffer_memory_mb=body.get("buffer_memory_mb", 128),
+            gc_memory_mb=body.get("gc_memory_mb", 64),
+        )
+        return {"status": "ok", "frame_report": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/performance-monitor/frame-history")
+async def performance_monitor_frame_history(limit: int = 100):
+    try:
+        from sparkai.engine.engine_performance_monitor import get_performance_monitor
+        instance = get_performance_monitor()
+        result = instance.get_frame_history(limit=limit)
+        return {"status": "ok", "frames": [f.to_dict() for f in result]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/performance-monitor/stats")
+async def performance_monitor_stats():
+    try:
+        from sparkai.engine.engine_performance_monitor import get_performance_monitor
+        instance = get_performance_monitor()
+        return {"status": "ok", "stats": instance.get_stats()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
