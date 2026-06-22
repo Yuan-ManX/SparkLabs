@@ -163,11 +163,11 @@ from sparkai.engine.engine_project_exporter import ProjectExporter, ExportPlatfo
 from sparkai.agent.agent_game_director import GameDirector, get_game_director
 from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_analyzer
 from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
-from sparkai.agent.agent_player_modeler import PlayerModeler, get_player_modeler
+from sparkai.agent.agent_player_modeler import PlayerModelerEngine, get_player_modeler
 from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
 from sparkai.engine.engine_network_layer import NetworkLayerEngine, get_network_layer_engine
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
-from sparkai.engine.engine_save_system import SaveSystem, get_save_system
+from sparkai.engine.engine_save_system import SaveSystemEngine, get_save_system
 from sparkai.engine.engine_node_tree import NodeTreeSystem, get_node_tree, SceneDefinition
 from sparkai.engine.engine_extension_registry import ExtensionRegistry, get_extension_registry, ExtensionDefinition, ExtensionVersion, ExtensionDependency
 from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_export_pipeline, ExportTarget
@@ -17646,37 +17646,6 @@ async def narrative_composer_export_story(story_id: str = ""):
     return _narrative_composer.export_story(story_id)
 
 
-# === Player Modeler Endpoints ===
-
-@router.get("/player-modeler/stats")
-async def player_modeler_stats():
-    return _player_modeler.get_stats()
-
-@router.post("/player-modeler/create-persona")
-async def player_modeler_create_persona(name: str = "", archetype: str = ""):
-    persona = _player_modeler.create_persona(name, archetype)
-    return persona.to_dict()
-
-@router.post("/player-modeler/seed-all-archetypes")
-async def player_modeler_seed_all():
-    return {"personas": [p.to_dict() for p in _player_modeler.seed_all_archetypes()]}
-
-@router.post("/player-modeler/simulate-journey")
-async def player_modeler_simulate_journey(persona_id: str = "", game_id: str = "",
-                                            max_sessions: int = 10):
-    journey = _player_modeler.simulate_journey(persona_id, game_id, max_sessions)
-    return journey.to_dict() if journey else {"error": "persona not found"}
-
-@router.get("/player-modeler/report")
-async def player_modeler_report(game_id: str = ""):
-    report = _player_modeler.generate_report(game_id)
-    return report.to_dict() if report else {"error": "no data for this game"}
-
-@router.get("/player-modeler/compare-archetypes")
-async def player_modeler_compare_archetypes(game_id: str = ""):
-    return _player_modeler.compare_archetypes(game_id)
-
-
 # === Audio System Endpoints ===
 
 @router.get("/audio-system/stats")
@@ -33845,15 +33814,25 @@ async def belief_reputation_stats():
 @router.post("/belief-reputation/form-belief")
 async def belief_reputation_form_belief(request: Request):
     try:
-        from sparkai.agent.agent_belief_reputation import get_belief_reputation
+        from sparkai.agent.agent_belief_reputation import get_belief_reputation, BeliefSource
         body = await request.json()
         instance = get_belief_reputation()
+        source = BeliefSource.DIRECT
+        if body.get("source"):
+            try:
+                source = BeliefSource(body["source"])
+            except ValueError:
+                pass
         result = instance.form_belief(
-            agent_id=body.get("agent_id", ""),
-            belief=body.get("belief", ""),
+            holder_id=body.get("agent_id", ""),
+            target_id=body.get("target_id", ""),
+            predicate=body.get("predicate", ""),
+            value=body.get("value"),
             confidence=body.get("confidence", 0.5),
-            source=body.get("source", "observation"),
+            source=source,
             evidence=body.get("evidence"),
+            decay_rate=body.get("decay_rate", 0.0),
+            metadata=body.get("metadata"),
         )
         return {"status": "ok", "belief": result.to_dict()}
     except Exception as e:
@@ -33862,16 +33841,21 @@ async def belief_reputation_form_belief(request: Request):
 @router.post("/belief-reputation/record-event")
 async def belief_reputation_record_event(request: Request):
     try:
-        from sparkai.agent.agent_belief_reputation import get_belief_reputation
+        from sparkai.agent.agent_belief_reputation import get_belief_reputation, SocialEvent
         body = await request.json()
         instance = get_belief_reputation()
-        result = instance.record_event(
-            agent_id=body.get("agent_id", ""),
-            event_type=body.get("event_type", ""),
-            event_data=body.get("event_data", {}),
-            timestamp=body.get("timestamp"),
-            witness=body.get("witness"),
+        event = SocialEvent(
+            event_type=body.get("event_type", "witnessed"),
+            actor_id=body.get("actor_id", ""),
+            target_id=body.get("target_id", ""),
+            action=body.get("action", ""),
+            outcome=body.get("outcome", ""),
+            magnitude=body.get("magnitude", 0.5),
+            witnesses=body.get("witnesses", []),
+            timestamp=body.get("timestamp", 0.0),
+            location=body.get("location"),
         )
+        result = instance.record_social_event(event=event)
         return {"status": "ok", "event": result.to_dict()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -33879,15 +33863,17 @@ async def belief_reputation_record_event(request: Request):
 @router.get("/belief-reputation/get-beliefs")
 async def belief_reputation_get_beliefs(
     agent_id: str = "",
-    subject: Optional[str] = None,
+    target_id: Optional[str] = None,
+    predicate: Optional[str] = None,
     min_confidence: float = 0.0,
 ):
     try:
         from sparkai.agent.agent_belief_reputation import get_belief_reputation
         instance = get_belief_reputation()
         results = instance.get_beliefs(
-            agent_id=agent_id,
-            subject=subject,
+            holder_id=agent_id,
+            target_id=target_id,
+            predicate=predicate,
             min_confidence=min_confidence,
         )
         return {"status": "ok", "beliefs": [b.to_dict() for b in results]}
@@ -33897,15 +33883,934 @@ async def belief_reputation_get_beliefs(
 @router.get("/belief-reputation/get-reputation")
 async def belief_reputation_get_reputation(
     agent_id: str = "",
-    target_id: Optional[str] = None,
 ):
     try:
         from sparkai.agent.agent_belief_reputation import get_belief_reputation
         instance = get_belief_reputation()
         result = instance.get_reputation(
             agent_id=agent_id,
-            target_id=target_id,
         )
         return {"status": "ok", "reputation": result.to_dict() if hasattr(result, 'to_dict') else result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Procedural Story Engine
+# =============================================================================
+
+@router.post("/procedural-story/create-story")
+async def procedural_story_create_story(request: Request):
+    try:
+        from sparkai.agent.agent_procedural_story import get_story_engine, StoryGenre
+        body = await request.json()
+        instance = get_story_engine()
+        genre = StoryGenre.ADVENTURE
+        if body.get("genre"):
+            try:
+                genre = StoryGenre(body["genre"])
+            except ValueError:
+                pass
+        result = instance.create_story(
+            title=body.get("title", "Untitled Story"),
+            genre=genre,
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "story": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-story/add-scene")
+async def procedural_story_add_scene(request: Request):
+    try:
+        from sparkai.agent.agent_procedural_story import get_story_engine, PlotNodeType, StoryArc
+        body = await request.json()
+        instance = get_story_engine()
+        node_type = PlotNodeType.SCENE
+        arc = StoryArc.RISING_ACTION
+        if body.get("node_type"):
+            try:
+                node_type = PlotNodeType(body["node_type"])
+            except ValueError:
+                pass
+        if body.get("arc"):
+            try:
+                arc = StoryArc(body["arc"])
+            except ValueError:
+                pass
+        result = instance.add_scene(
+            story_id=body.get("story_id", ""),
+            title=body.get("title", ""),
+            content=body.get("content", ""),
+            node_type=node_type,
+            arc=arc,
+            parent_id=body.get("parent_id"),
+            emotional_tone=body.get("emotional_tone", "neutral"),
+            tension_level=body.get("tension_level", 0.5),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "node": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-story/add-choice")
+async def procedural_story_add_choice(request: Request):
+    try:
+        from sparkai.agent.agent_procedural_story import get_story_engine
+        body = await request.json()
+        instance = get_story_engine()
+        result = instance.add_choice(
+            story_id=body.get("story_id", ""),
+            node_id=body.get("node_id", ""),
+            choices=body.get("choices", []),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-story/add-character-arc")
+async def procedural_story_add_character_arc(request: Request):
+    try:
+        from sparkai.agent.agent_procedural_story import get_story_engine
+        body = await request.json()
+        instance = get_story_engine()
+        result = instance.add_character_arc(
+            story_id=body.get("story_id", ""),
+            character_name=body.get("character_name", ""),
+            starting_state=body.get("starting_state", ""),
+            ending_state=body.get("ending_state", ""),
+            arc_type=body.get("arc_type", "growth"),
+            milestones=body.get("milestones", []),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "arc": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/procedural-story/add-world-lore")
+async def procedural_story_add_world_lore(request: Request):
+    try:
+        from sparkai.agent.agent_procedural_story import get_story_engine
+        body = await request.json()
+        instance = get_story_engine()
+        result = instance.add_world_lore(
+            story_id=body.get("story_id", ""),
+            world_name=body.get("world_name", ""),
+            history=body.get("history", ""),
+            factions=body.get("factions", []),
+            locations=body.get("locations", []),
+            rules=body.get("rules", []),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "lore": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-story/get-story")
+async def procedural_story_get_story(story_id: str = ""):
+    try:
+        from sparkai.agent.agent_procedural_story import get_story_engine
+        instance = get_story_engine()
+        result = instance.get_story(story_id=story_id)
+        return {"status": "ok", "story": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/procedural-story/stats")
+async def procedural_story_stats():
+    try:
+        from sparkai.agent.agent_procedural_story import get_story_engine
+        instance = get_story_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Game Designer Engine
+# =============================================================================
+
+@router.post("/game-designer/create-mechanic")
+async def game_designer_create_mechanic(request: Request):
+    try:
+        from sparkai.agent.agent_game_designer import get_game_designer, MechanicType
+        body = await request.json()
+        instance = get_game_designer()
+        mechanic_type = MechanicType.COMBAT
+        if body.get("mechanic_type"):
+            try:
+                mechanic_type = MechanicType(body["mechanic_type"])
+            except ValueError:
+                pass
+        result = instance.create_mechanic(
+            name=body.get("name", ""),
+            mechanic_type=mechanic_type,
+            description=body.get("description", ""),
+            parameters=body.get("parameters", {}),
+            prerequisites=body.get("prerequisites", []),
+            unlocks=body.get("unlocks", []),
+            balance_weights=body.get("balance_weights", {}),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "mechanic": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-designer/create-level")
+async def game_designer_create_level(request: Request):
+    try:
+        from sparkai.agent.agent_game_designer import get_game_designer, DifficultyTier
+        body = await request.json()
+        instance = get_game_designer()
+        difficulty = DifficultyTier.NORMAL
+        if body.get("difficulty"):
+            try:
+                difficulty = DifficultyTier(body["difficulty"])
+            except ValueError:
+                pass
+        result = instance.create_level(
+            name=body.get("name", ""),
+            theme=body.get("theme", ""),
+            difficulty=difficulty,
+            mechanics=body.get("mechanics", []),
+            spawn_points=body.get("spawn_points", []),
+            objectives=body.get("objectives", []),
+            layout_data=body.get("layout_data", {}),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "level": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-designer/create-balance-profile")
+async def game_designer_create_balance_profile(request: Request):
+    try:
+        from sparkai.agent.agent_game_designer import get_game_designer, BalanceMetric
+        body = await request.json()
+        instance = get_game_designer()
+        target_metric = BalanceMetric.DAMAGE
+        if body.get("target_metric"):
+            try:
+                target_metric = BalanceMetric(body["target_metric"])
+            except ValueError:
+                pass
+        result = instance.create_balance_profile(
+            target_metric=target_metric,
+            base_value=body.get("base_value", 0.0),
+            scaling_factor=body.get("scaling_factor", 1.0),
+            min_value=body.get("min_value", 0.0),
+            max_value=body.get("max_value", 100.0),
+            tier_modifiers=body.get("tier_modifiers", {}),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "profile": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-designer/create-game-loop")
+async def game_designer_create_game_loop(request: Request):
+    try:
+        from sparkai.agent.agent_game_designer import get_game_designer
+        body = await request.json()
+        instance = get_game_designer()
+        result = instance.create_game_loop(
+            name=body.get("name", ""),
+            phases=body.get("phases", []),
+            trigger_conditions=body.get("trigger_conditions", {}),
+            transitions=body.get("transitions", {}),
+            rewards=body.get("rewards", {}),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "game_loop": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-designer/analyze-balance")
+async def game_designer_analyze_balance(request: Request):
+    try:
+        from sparkai.agent.agent_game_designer import get_game_designer
+        body = await request.json()
+        instance = get_game_designer()
+        result = instance.analyze_balance(
+            profile_id=body.get("profile_id", ""),
+            current_value=body.get("current_value", 0.0),
+            context=body.get("context", {}),
+        )
+        return {"status": "ok", "analysis": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-designer/generate-encounter")
+async def game_designer_generate_encounter(request: Request):
+    try:
+        from sparkai.agent.agent_game_designer import get_game_designer, DifficultyTier
+        body = await request.json()
+        instance = get_game_designer()
+        difficulty = DifficultyTier.NORMAL
+        if body.get("difficulty"):
+            try:
+                difficulty = DifficultyTier(body["difficulty"])
+            except ValueError:
+                pass
+        result = instance.generate_encounter(
+            theme=body.get("theme", ""),
+            difficulty=difficulty,
+            player_level=body.get("player_level", 1),
+            mechanics=body.get("mechanics", []),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "encounter": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/game-designer/stats")
+async def game_designer_stats():
+    try:
+        from sparkai.agent.agent_game_designer import get_game_designer
+        instance = get_game_designer()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Emotion & Affect Engine
+# =============================================================================
+
+@router.post("/emotion-affect/set-personality")
+async def emotion_affect_set_personality(request: Request):
+    try:
+        from sparkai.agent.agent_emotion_affect import get_emotion_engine
+        body = await request.json()
+        instance = get_emotion_engine()
+        result = instance.set_personality(
+            entity_id=body.get("entity_id", ""),
+            traits=body.get("traits", {}),
+            baseline_mood=body.get("baseline_mood", "neutral"),
+            emotional_volatility=body.get("emotional_volatility", 0.5),
+            empathy=body.get("empathy", 0.5),
+            social_influence=body.get("social_influence", 0.5),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "personality": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/emotion-affect/set-emotion")
+async def emotion_affect_set_emotion(request: Request):
+    try:
+        from sparkai.agent.agent_emotion_affect import get_emotion_engine, EmotionType
+        body = await request.json()
+        instance = get_emotion_engine()
+        emotion_values = {}
+        for k, v in body.get("emotion_values", {}).items():
+            try:
+                emotion_values[EmotionType(k)] = v
+            except ValueError:
+                pass
+        result = instance.set_emotion(
+            entity_id=body.get("entity_id", ""),
+            emotion_values=emotion_values,
+            intensity=body.get("intensity", 0.5),
+            decay_rate=body.get("decay_rate", 0.1),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "emotion": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/emotion-affect/apply-stimulus")
+async def emotion_affect_apply_stimulus(request: Request):
+    try:
+        from sparkai.agent.agent_emotion_affect import get_emotion_engine, EmotionType
+        body = await request.json()
+        instance = get_emotion_engine()
+        stimulus = {}
+        for k, v in body.get("stimulus", {}).items():
+            try:
+                stimulus[EmotionType(k)] = v
+            except ValueError:
+                pass
+        result = instance.apply_stimulus(
+            entity_id=body.get("entity_id", ""),
+            stimulus=stimulus,
+            source_id=body.get("source_id", ""),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "result": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/emotion-affect/record-social-event")
+async def emotion_affect_record_social_event(request: Request):
+    try:
+        from sparkai.agent.agent_emotion_affect import get_emotion_engine
+        body = await request.json()
+        instance = get_emotion_engine()
+        result = instance.record_social_event(
+            source_id=body.get("source_id", ""),
+            target_id=body.get("target_id", ""),
+            event_type=body.get("event_type", ""),
+            emotional_impact=body.get("emotional_impact", {}),
+            ripple_radius=body.get("ripple_radius", 1.0),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "event": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/emotion-affect/compute-contagion")
+async def emotion_affect_compute_contagion(request: Request):
+    try:
+        from sparkai.agent.agent_emotion_affect import get_emotion_engine
+        body = await request.json()
+        instance = get_emotion_engine()
+        result = instance.compute_contagion(
+            source_id=body.get("source_id", ""),
+            target_ids=body.get("target_ids", []),
+            radius=body.get("radius", 1.0),
+        )
+        return {"status": "ok", "contagion": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/emotion-affect/get-emotional-state")
+async def emotion_affect_get_emotional_state(entity_id: str = ""):
+    try:
+        from sparkai.agent.agent_emotion_affect import get_emotion_engine
+        instance = get_emotion_engine()
+        result = instance.get_emotional_state(entity_id=entity_id)
+        return {"status": "ok", "state": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/emotion-affect/stats")
+async def emotion_affect_stats():
+    try:
+        from sparkai.agent.agent_emotion_affect import get_emotion_engine
+        instance = get_emotion_engine()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Player Modeler Engine
+# =============================================================================
+
+@router.post("/player-modeler/create-profile")
+async def player_modeler_create_profile(request: Request):
+    try:
+        from sparkai.agent.agent_player_modeler import get_player_modeler
+        body = await request.json()
+        instance = get_player_modeler()
+        result = instance.create_profile(
+            player_id=body.get("player_id", ""),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "profile": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/player-modeler/record-session")
+async def player_modeler_record_session(request: Request):
+    try:
+        from sparkai.agent.agent_player_modeler import get_player_modeler
+        body = await request.json()
+        instance = get_player_modeler()
+        result = instance.record_session(
+            player_id=body.get("player_id", ""),
+            actions=body.get("actions", []),
+            decisions=body.get("decisions", []),
+            failures=body.get("failures", 0),
+            successes=body.get("successes", 0),
+            time_spent=body.get("time_spent", 0.0),
+            phase=body.get("phase", "mid_game"),
+            metrics=body.get("metrics", {}),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "session": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/player-modeler/classify-playstyle")
+async def player_modeler_classify_playstyle(request: Request):
+    try:
+        from sparkai.agent.agent_player_modeler import get_player_modeler
+        body = await request.json()
+        instance = get_player_modeler()
+        result = instance.classify_playstyle(
+            player_id=body.get("player_id", ""),
+        )
+        return {"status": "ok", "playstyle": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/player-modeler/estimate-skill")
+async def player_modeler_estimate_skill(request: Request):
+    try:
+        from sparkai.agent.agent_player_modeler import get_player_modeler
+        body = await request.json()
+        instance = get_player_modeler()
+        result = instance.estimate_skill(
+            player_id=body.get("player_id", ""),
+        )
+        return {"status": "ok", "skill_ratings": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/player-modeler/predict-behavior")
+async def player_modeler_predict_behavior(request: Request):
+    try:
+        from sparkai.agent.agent_player_modeler import get_player_modeler
+        body = await request.json()
+        instance = get_player_modeler()
+        result = instance.predict_behavior(
+            player_id=body.get("player_id", ""),
+            context=body.get("context", {}),
+        )
+        return {"status": "ok", "prediction": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/player-modeler/suggest-difficulty")
+async def player_modeler_suggest_difficulty(request: Request):
+    try:
+        from sparkai.agent.agent_player_modeler import get_player_modeler
+        body = await request.json()
+        instance = get_player_modeler()
+        result = instance.suggest_difficulty(
+            player_id=body.get("player_id", ""),
+        )
+        return {"status": "ok", "suggestion": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/player-modeler/get-profile")
+async def player_modeler_get_profile(player_id: str = ""):
+    try:
+        from sparkai.agent.agent_player_modeler import get_player_modeler
+        instance = get_player_modeler()
+        result = instance.get_profile(player_id=player_id)
+        return {"status": "ok", "profile": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/player-modeler/stats")
+async def player_modeler_stats():
+    try:
+        from sparkai.agent.agent_player_modeler import get_player_modeler
+        instance = get_player_modeler()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Autonomous Tester Engine
+# =============================================================================
+
+@router.post("/autonomous-tester/create-session")
+async def autonomous_tester_create_session(request: Request):
+    try:
+        from sparkai.agent.agent_autonomous_tester import get_autonomous_tester, TestStrategy
+        body = await request.json()
+        instance = get_autonomous_tester()
+        strategy = TestStrategy.RANDOM_WALK
+        if body.get("strategy"):
+            try:
+                strategy = TestStrategy(body["strategy"])
+            except ValueError:
+                pass
+        result = instance.create_session(
+            game_id=body.get("game_id", ""),
+            strategy=strategy,
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "session": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/autonomous-tester/add-test-case")
+async def autonomous_tester_add_test_case(request: Request):
+    try:
+        from sparkai.agent.agent_autonomous_tester import get_autonomous_tester
+        body = await request.json()
+        instance = get_autonomous_tester()
+        result = instance.add_test_case(
+            session_id=body.get("session_id", ""),
+            name=body.get("name", ""),
+            strategy=body.get("strategy", "random_walk"),
+            preconditions=body.get("preconditions", {}),
+            steps=body.get("steps", []),
+            expected_result=body.get("expected_result", ""),
+            timeout=body.get("timeout", 30.0),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "test_case": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/autonomous-tester/run-exploration")
+async def autonomous_tester_run_exploration(request: Request):
+    try:
+        from sparkai.agent.agent_autonomous_tester import get_autonomous_tester
+        body = await request.json()
+        instance = get_autonomous_tester()
+        result = instance.run_exploration(
+            session_id=body.get("session_id", ""),
+            max_steps=body.get("max_steps", 100),
+            duration=body.get("duration", 60.0),
+        )
+        return {"status": "ok", "exploration": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/autonomous-tester/record-bug")
+async def autonomous_tester_record_bug(request: Request):
+    try:
+        from sparkai.agent.agent_autonomous_tester import get_autonomous_tester, BugSeverity, BugCategory
+        body = await request.json()
+        instance = get_autonomous_tester()
+        severity = BugSeverity.MINOR
+        category = BugCategory.LOGIC
+        if body.get("severity"):
+            try:
+                severity = BugSeverity(body["severity"])
+            except ValueError:
+                pass
+        if body.get("category"):
+            try:
+                category = BugCategory(body["category"])
+            except ValueError:
+                pass
+        result = instance.record_bug(
+            session_id=body.get("session_id", ""),
+            title=body.get("title", ""),
+            severity=severity,
+            category=category,
+            description=body.get("description", ""),
+            reproduction_steps=body.get("reproduction_steps", []),
+            game_state=body.get("game_state", {}),
+            screenshot_ref=body.get("screenshot_ref", ""),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "bug": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/autonomous-tester/capture-state")
+async def autonomous_tester_capture_state(request: Request):
+    try:
+        from sparkai.agent.agent_autonomous_tester import get_autonomous_tester
+        body = await request.json()
+        instance = get_autonomous_tester()
+        result = instance.capture_state(
+            session_id=body.get("session_id", ""),
+            entities=body.get("entities", {}),
+            variables=body.get("variables", {}),
+            position=body.get("position", {}),
+            metadata=body.get("metadata", {}),
+        )
+        return {"status": "ok", "snapshot": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/autonomous-tester/generate-report")
+async def autonomous_tester_generate_report(request: Request):
+    try:
+        from sparkai.agent.agent_autonomous_tester import get_autonomous_tester
+        body = await request.json()
+        instance = get_autonomous_tester()
+        result = instance.generate_report(
+            session_id=body.get("session_id", ""),
+        )
+        return {"status": "ok", "report": result}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/autonomous-tester/get-session")
+async def autonomous_tester_get_session(session_id: str = ""):
+    try:
+        from sparkai.agent.agent_autonomous_tester import get_autonomous_tester
+        instance = get_autonomous_tester()
+        result = instance.get_session(session_id=session_id)
+        return {"status": "ok", "session": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/autonomous-tester/stats")
+async def autonomous_tester_stats():
+    try:
+        from sparkai.agent.agent_autonomous_tester import get_autonomous_tester
+        instance = get_autonomous_tester()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Game Engine Bridge
+# =============================================================================
+
+@router.post("/game-engine-bridge/query")
+async def game_engine_bridge_query(request: Request):
+    try:
+        from sparkai.agent.agent_game_engine_bridge import get_agent_game_engine_bridge, CommandPriority
+        body = await request.json()
+        instance = get_agent_game_engine_bridge()
+        priority = CommandPriority.NORMAL
+        if body.get("priority"):
+            try:
+                priority = CommandPriority(body["priority"])
+            except ValueError:
+                pass
+        result = instance.query_engine(
+            query_type=body.get("query_type", "state"),
+            target=body.get("target", ""),
+            parameters=body.get("parameters", {}),
+            priority=priority,
+            timeout=body.get("timeout", 5.0),
+        )
+        return {"status": "ok", "query": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-engine-bridge/send-command")
+async def game_engine_bridge_send_command(request: Request):
+    try:
+        from sparkai.agent.agent_game_engine_bridge import get_agent_game_engine_bridge, BridgeCommandType, CommandPriority, BridgeChannel
+        body = await request.json()
+        instance = get_agent_game_engine_bridge()
+        cmd_type = BridgeCommandType.RUNTIME_ACTION
+        priority = CommandPriority.NORMAL
+        channel = BridgeChannel.COMMAND
+        if body.get("command_type"):
+            try:
+                cmd_type = BridgeCommandType(body["command_type"])
+            except ValueError:
+                pass
+        if body.get("priority"):
+            try:
+                priority = CommandPriority(body["priority"])
+            except ValueError:
+                pass
+        if body.get("channel"):
+            try:
+                channel = BridgeChannel(body["channel"])
+            except ValueError:
+                pass
+        result = instance.send_command(
+            command_type=cmd_type,
+            target_entity=body.get("target_entity", ""),
+            payload=body.get("payload", {}),
+            priority=priority,
+            channel=channel,
+        )
+        return {"status": "ok", "command": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/game-engine-bridge/inject-state")
+async def game_engine_bridge_inject_state(request: Request):
+    try:
+        from sparkai.agent.agent_game_engine_bridge import get_agent_game_engine_bridge
+        body = await request.json()
+        instance = get_agent_game_engine_bridge()
+        result = instance.inject_state(
+            entity_id=body.get("entity_id", ""),
+            component_data=body.get("component_data", {}),
+        )
+        return {"status": "ok", "snapshot": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/game-engine-bridge/session")
+async def game_engine_bridge_get_session(session_id: str = ""):
+    try:
+        from sparkai.agent.agent_game_engine_bridge import get_agent_game_engine_bridge
+        instance = get_agent_game_engine_bridge()
+        result = instance.get_session(session_id=session_id)
+        return {"status": "ok", "session": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/game-engine-bridge/stats")
+async def game_engine_bridge_stats():
+    try:
+        from sparkai.agent.agent_game_engine_bridge import get_agent_game_engine_bridge
+        instance = get_agent_game_engine_bridge()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Performance Optimizer
+# =============================================================================
+
+@router.post("/performance-optimizer/record-metric")
+async def performance_optimizer_record_metric(request: Request):
+    try:
+        from sparkai.agent.agent_performance_optimizer import get_performance_optimizer, MetricDomain
+        body = await request.json()
+        instance = get_performance_optimizer()
+        domain = MetricDomain.FRAME_RATE
+        if body.get("domain"):
+            try:
+                domain = MetricDomain(body["domain"])
+            except ValueError:
+                pass
+        result = instance.record_metric(
+            domain=domain,
+            name=body.get("name", ""),
+            value=body.get("value", 0.0),
+            unit=body.get("unit", ""),
+            threshold_warning=body.get("threshold_warning", 0.0),
+            threshold_critical=body.get("threshold_critical", 0.0),
+        )
+        return {"status": "ok", "metric": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/performance-optimizer/detect-bottlenecks")
+async def performance_optimizer_detect_bottlenecks():
+    try:
+        from sparkai.agent.agent_performance_optimizer import get_performance_optimizer
+        instance = get_performance_optimizer()
+        result = instance.detect_bottlenecks()
+        return {"status": "ok", "bottlenecks": [b.to_dict() for b in result]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/performance-optimizer/snapshot")
+async def performance_optimizer_snapshot():
+    try:
+        from sparkai.agent.agent_performance_optimizer import get_performance_optimizer
+        instance = get_performance_optimizer()
+        result = instance.take_snapshot()
+        return {"status": "ok", "snapshot": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/performance-optimizer/report")
+async def performance_optimizer_report():
+    try:
+        from sparkai.agent.agent_performance_optimizer import get_performance_optimizer
+        instance = get_performance_optimizer()
+        result = instance.generate_report()
+        return {"status": "ok", "report": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/performance-optimizer/stats")
+async def performance_optimizer_stats():
+    try:
+        from sparkai.agent.agent_performance_optimizer import get_performance_optimizer
+        instance = get_performance_optimizer()
+        return {"status": "ok", "stats": instance.get_stats()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+# =============================================================================
+# Multi-Agent Protocol
+# =============================================================================
+
+@router.post("/multi-agent-protocol/register-agent")
+async def multi_agent_protocol_register_agent(request: Request):
+    try:
+        from sparkai.agent.agent_multi_agent_protocol import get_multi_agent_protocol, AgentRole
+        body = await request.json()
+        instance = get_multi_agent_protocol()
+        role = AgentRole.WORKER
+        if body.get("role"):
+            try:
+                role = AgentRole(body["role"])
+            except ValueError:
+                pass
+        result = instance.register_agent(
+            name=body.get("name", ""),
+            role=role,
+            capabilities=body.get("capabilities", []),
+        )
+        return {"status": "ok", "agent": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/multi-agent-protocol/send-message")
+async def multi_agent_protocol_send_message(request: Request):
+    try:
+        from sparkai.agent.agent_multi_agent_protocol import get_multi_agent_protocol, ProtocolType
+        body = await request.json()
+        instance = get_multi_agent_protocol()
+        protocol_type = ProtocolType.REQUEST_RESPONSE
+        priority = 0
+        if body.get("protocol_type"):
+            try:
+                protocol_type = ProtocolType(body["protocol_type"])
+            except ValueError:
+                pass
+        result = instance.send_message(
+            protocol_type=protocol_type,
+            sender_id=body.get("sender_id", ""),
+            recipient_id=body.get("recipient_id", ""),
+            subject=body.get("subject", ""),
+            body=body.get("body", ""),
+            priority=body.get("priority", priority),
+            ttl=body.get("ttl", 60),
+        )
+        return {"status": "ok", "message": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/multi-agent-protocol/create-delegation")
+async def multi_agent_protocol_create_delegation(request: Request):
+    try:
+        from sparkai.agent.agent_multi_agent_protocol import get_multi_agent_protocol
+        body = await request.json()
+        instance = get_multi_agent_protocol()
+        result = instance.create_delegation(
+            task_description=body.get("task_description", ""),
+            delegator_id=body.get("delegator_id", ""),
+            delegate_id=body.get("delegate_id", ""),
+            requirements=body.get("requirements", {}),
+            deadline=body.get("deadline"),
+        )
+        return {"status": "ok", "delegation": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/multi-agent-protocol/propose-consensus")
+async def multi_agent_protocol_propose_consensus(request: Request):
+    try:
+        from sparkai.agent.agent_multi_agent_protocol import get_multi_agent_protocol, ConsensusAlgorithm
+        body = await request.json()
+        instance = get_multi_agent_protocol()
+        algorithm = ConsensusAlgorithm.MAJORITY_VOTE
+        if body.get("algorithm"):
+            try:
+                algorithm = ConsensusAlgorithm(body["algorithm"])
+            except ValueError:
+                pass
+        result = instance.propose_consensus(
+            proposal=body.get("proposal", ""),
+            proposer_id=body.get("proposer_id", ""),
+            algorithm=algorithm,
+            options=body.get("options", []),
+        )
+        return {"status": "ok", "proposal": result.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/multi-agent-protocol/agents")
+async def multi_agent_protocol_agents():
+    try:
+        from sparkai.agent.agent_multi_agent_protocol import get_multi_agent_protocol
+        instance = get_multi_agent_protocol()
+        result = instance.list_agents()
+        return {"status": "ok", "agents": [a.to_dict() for a in result]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/multi-agent-protocol/stats")
+async def multi_agent_protocol_stats():
+    try:
+        from sparkai.agent.agent_multi_agent_protocol import get_multi_agent_protocol
+        instance = get_multi_agent_protocol()
+        return {"status": "ok", "stats": instance.get_stats()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
