@@ -6,7 +6,11 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from sparkai.config import SparkAIConfig
-from backend.routes import engine, agent, scene, workflow, narrative, npc
+from backend.routes import (
+    engine, agent, scene, workflow, narrative, npc,
+    agent_memory, agent_goals, engine_level, engine_weather,
+    engine_terrain, agent_social,
+)
 from backend.websocket import router as ws_router
 
 config = SparkAIConfig()
@@ -32,6 +36,12 @@ app.include_router(workflow.router, prefix="/api/workflow", tags=["Workflow"])
 app.include_router(narrative.router, prefix="/api/narrative", tags=["Narrative"])
 app.include_router(npc.router, prefix="/api/npc", tags=["NPC"])
 app.include_router(ws_router, prefix="/ws", tags=["WebSocket"])
+app.include_router(agent_memory.router, prefix="/api/agent", tags=["Agent Memory"])
+app.include_router(agent_goals.router, prefix="/api/agent", tags=["Agent Goals"])
+app.include_router(agent_social.router, prefix="/api/agent", tags=["Agent Social"])
+app.include_router(engine_level.router, prefix="/api/engine", tags=["Engine Level"])
+app.include_router(engine_weather.router, prefix="/api/engine", tags=["Engine Weather"])
+app.include_router(engine_terrain.router, prefix="/api/engine", tags=["Engine Terrain"])
 
 
 @app.get("/api/health")
