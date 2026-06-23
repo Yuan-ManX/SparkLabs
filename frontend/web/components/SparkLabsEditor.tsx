@@ -169,7 +169,12 @@ import ExperimentFrameworkPanel from './ExperimentFrameworkPanel';
 import FederatedLearnerPanel from './FederatedLearnerPanel';
 import TestingDashboard from './TestingDashboard';
 import ECSPanel from './ECSPanel';
+import LLMPipelinePanel from './LLMPipelinePanel';
+import GameCreatorPanel from './GameCreatorPanel';
+import SwarmIntelligencePanel from './SwarmIntelligencePanel';
 import RenderPipelinePanel from './RenderPipelinePanel';
+import SceneGraphPanel from './SceneGraphPanel';
+import AISystemPanel from './AISystemPanel';
 import RenderLayerPanel from './RenderLayerPanel';
 import RenderPassPanel from './RenderPassPanel';
 import AudioSynthesisPanel from './AudioSynthesisPanel';
@@ -775,6 +780,11 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'engine-ui-system': return <EngineUISystemPanel />;
       case 'engine-network-sync': return <EngineNetworkSyncPanel />;
       case 'engine-performance-monitor': return <EnginePerformanceMonitorPanel />;
+      case 'llm-pipeline': return <LLMPipelinePanel />;
+      case 'game-creator': return <GameCreatorPanel />;
+      case 'swarm-intelligence': return <SwarmIntelligencePanel />;
+      case 'scene-graph': return <SceneGraphPanel />;
+      case 'ai-system': return <AISystemPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
