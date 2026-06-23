@@ -20,13 +20,18 @@ from sparkai.engine.ecs.system import System, SystemRegistry
 from sparkai.engine.ecs.resource import ResourceManager
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
-from sparkai.engine.animation_system import AnimationPlayer, get_animation_player
+from sparkai.engine.animation_system import (
+    AnimationPlayer, get_animation_player,
+    AnimationSystem, get_animation_system,
+)
 from sparkai.engine.collision_system import CollisionSystem, get_collision_system
 from sparkai.engine.input_manager import InputManager, get_input_manager
 from sparkai.engine.physics_system import PhysicsSystem, get_physics_system
 from sparkai.engine.particle_system import ParticleSystem, get_particle_system
-from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding
-from sparkai.engine.audio_system import AudioSystem, get_audio_system
+from sparkai.engine.pathfinding_system import (
+    PathfindingSystem, get_pathfinding, get_pathfinding_system,
+)
+from sparkai.engine.audio_system import AudioSystem, get_audio_system as get_audio_system_legacy
 from sparkai.engine.state_machine import StateMachine, get_state_machine
 from sparkai.engine.resource_manager import ResourceManager as EngineResourceManager, get_resource_manager
 from sparkai.engine.behavior_system import BehaviorSystem, get_behavior_system
@@ -60,9 +65,8 @@ from sparkai.engine.asset_pipeline import AssetPipeline, get_asset_pipeline
 from sparkai.engine.rendering_server import RenderingServer, get_rendering_server
 from sparkai.engine.input_event_system import InputEventSystem, get_input_event_system
 from sparkai.engine.game_object import GameObject, GameObjectRegistry, get_game_object_registry
-from sparkai.engine.scene_manager import SceneManager, get_scene_manager
-from sparkai.engine.terrain_system import TerrainSystem, get_terrain_system
-from sparkai.engine.save_system import SaveSystem, get_save_system
+from sparkai.engine.scene_manager import SceneManager, get_scene_manager as get_legacy_scene_manager
+from sparkai.engine.engine_save_system import SaveSystemEngine, get_save_system
 from sparkai.engine.network_sync import NetworkSync, get_network_sync
 from sparkai.engine.behavior_tree import BehaviorTree, get_behavior_tree
 from sparkai.engine.math_utils import MathUtils, Vector2, Vector3, Rect2, Transform2D, get_math_utils
@@ -102,7 +106,6 @@ from sparkai.engine.reputation_system import ReputationSystem, ReputationTier, R
 from sparkai.engine.level_streaming import LevelStreamingSystem, ChunkState, get_level_streaming
 from sparkai.engine.water_system import WaterSystem, WaterBody, get_water_system
 from sparkai.engine.spline_system import SplineSystem, SplineType, SplinePath, get_spline_system
-from sparkai.engine.post_processing import PostProcessingSystem, PostProcessEffect, get_post_processing
 from sparkai.engine.trigger_system import TriggerSystem, TriggerType, TriggerEvent, get_trigger_system
 from sparkai.engine.material_system import MaterialSystem, MaterialDomain, MaterialDefinition, get_material_system
 from sparkai.engine.navmesh_system import NavMeshSystem, NavArea, NavMeshQuery, get_navmesh_system
@@ -118,10 +121,7 @@ from sparkai.engine.build_pipeline import BuildPipeline, get_build_pipeline
 from sparkai.engine.tileset_system import TileSetSystem, get_tileset_system
 from sparkai.engine.resource_pack import ResourcePack, get_resource_pack
 from sparkai.engine.input_profile_system import InputProfileSystem, get_input_profile_system
-from sparkai.engine.scene_tree import SceneTree, get_scene_tree
 from sparkai.engine.event_system import EventSystem, get_event_system
-from sparkai.engine.animation_system import AnimationSystem, get_animation_system
-from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding_system
 from sparkai.engine.ui_layout_system import UILayoutSystem, get_ui_layout_system
 from sparkai.engine.performance_overlay import PerformanceOverlay, get_performance_overlay
 from sparkai.engine.engine_scene_streamer import SceneStreamer, get_scene_streamer
@@ -129,7 +129,6 @@ from sparkai.engine.engine_project_exporter import ProjectExporter, get_project_
 from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
 from sparkai.engine.engine_network_layer import NetworkLayerEngine, get_network_layer_engine
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
-from sparkai.engine.engine_save_system import SaveSystem, get_save_system
 from sparkai.engine.engine_node_tree import NodeTreeSystem, get_node_tree
 from sparkai.engine.engine_extension_registry import ExtensionRegistry, get_extension_registry
 from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_export_pipeline
@@ -152,7 +151,7 @@ from sparkai.engine.engine_material_graph import MaterialGraphSystem, get_materi
 from sparkai.engine.engine_occlusion_culling import OcclusionCullingSystem, get_occlusion_culling
 from sparkai.engine.engine_lod_system import LODSystem, get_lod_system
 from sparkai.engine.engine_decal_system import DecalSystem, get_decal_system
-from sparkai.engine.engine_post_processing import PostProcessingSystem, get_post_processing
+from sparkai.engine.engine_post_processing import PostProcessingEngine, get_post_processing as get_engine_post_processing
 from sparkai.engine.engine_skeleton_deformer import SkeletonDeformerSystem, get_skeleton_deformer
 from sparkai.engine.engine_lighting_2d import Lighting2DEngine, get_lighting_2d
 from sparkai.engine.engine_parallax_background import ParallaxBackgroundSystem, get_parallax_background
@@ -200,10 +199,19 @@ from sparkai.engine.engine_tilemap_runtime import EngineTileMapRuntime, get_tile
 from sparkai.engine.engine_entity_component_system import EngineEntityComponentSystem, get_entity_component_system
 from sparkai.engine.engine_physics_world_2d import EnginePhysicsWorld2D, get_engine_physics_world_2d
 from sparkai.engine.engine_visual_scripting import EngineVisualScripting, get_engine_visual_scripting
-from sparkai.engine.engine_scene_manager import EngineSceneManager, get_scene_manager
-from sparkai.engine.engine_animation_system import EngineAnimationSystem, get_animation_system
-from sparkai.engine.engine_particle_system import EngineParticleSystem, get_particle_system
+from sparkai.engine.engine_scene_manager import EngineSceneManager, get_scene_manager as get_engine_scene_manager
+from sparkai.engine.engine_animation_system import EngineAnimationSystem, get_animation_system as get_engine_animation_system
+from sparkai.engine.engine_particle_system import EngineParticleSystem, get_particle_system as get_engine_particle_system
 from sparkai.engine.engine_navigation_system import EngineNavigationSystem, get_navigation_system
+from sparkai.engine.engine_entity_component import EntityComponentEngine, get_entity_component_engine
+from sparkai.engine.engine_spatial_audio import SpatialAudioEngine, get_spatial_audio_engine
+from sparkai.engine.engine_level_streaming import LevelStreamingEngine, get_level_streaming_engine
+from sparkai.engine.engine_dynamic_weather import DynamicWeatherEngine, get_dynamic_weather_engine
+from sparkai.engine.engine_procedural_terrain import ProceduralTerrainEngine, get_procedural_terrain_engine
+from sparkai.engine.engine_destruction_system import DestructionPhysicsEngine, get_destruction_physics_engine
+from sparkai.engine.engine_render_pipeline import RenderPipeline, get_render_pipeline
+from sparkai.engine.engine_scene_graph import SceneGraphEngine, get_scene_graph
+from sparkai.engine.engine_ai_system import GameAISystem, get_ai_system
 
 
 class SparkEngine:
@@ -268,9 +276,9 @@ class SparkEngine:
         self._rendering_server: RenderingServer = get_rendering_server()
         self._input_event_system: InputEventSystem = get_input_event_system()
         self._game_object_registry: GameObjectRegistry = get_game_object_registry()
-        self._scene_manager: SceneManager = get_scene_manager()
+        self._scene_manager: SceneManager = get_legacy_scene_manager()
         self._terrain_system: TerrainSystem = get_terrain_system()
-        self._save_system: SaveSystem = get_save_system()
+        self._save_system: SaveSystemEngine = get_save_system()
         self._network_sync: NetworkSync = get_network_sync()
         self._behavior_tree: BehaviorTree = get_behavior_tree()
         self._math_utils: MathUtils = get_math_utils()
@@ -310,7 +318,7 @@ class SparkEngine:
         self._level_streaming: LevelStreamingSystem = get_level_streaming()
         self._water_system: WaterSystem = get_water_system()
         self._spline_system: SplineSystem = get_spline_system()
-        self._post_processing: PostProcessingSystem = get_post_processing()
+        self._post_processing: PostProcessingEngine = get_engine_post_processing()
         self._trigger_system: TriggerSystem = get_trigger_system()
         self._material_system: MaterialSystem = get_material_system()
         self._navmesh_system: NavMeshSystem = get_navmesh_system()
@@ -403,10 +411,19 @@ class SparkEngine:
         self._ecs = get_entity_component_system()
         self._physics_world_2d = get_engine_physics_world_2d()
         self._visual_scripting = get_engine_visual_scripting()
-        self._scene_manager = get_scene_manager()
-        self._animation_system = get_animation_system()
-        self._particle_engine = get_particle_system()
+        self._engine_scene_manager = get_engine_scene_manager()
+        self._engine_animation_system = get_engine_animation_system()
+        self._particle_engine = get_engine_particle_system()
         self._navigation_system = get_navigation_system()
+        self._entity_component_engine = get_entity_component_engine()
+        self._spatial_audio_engine = get_spatial_audio_engine()
+        self._level_streaming_engine = get_level_streaming_engine()
+        self._dynamic_weather_engine = get_dynamic_weather_engine()
+        self._procedural_terrain_engine = get_procedural_terrain_engine()
+        self._destruction_physics_engine = get_destruction_physics_engine()
+        self._render_pipeline = get_render_pipeline()
+        self._scene_graph = get_scene_graph()
+        self._ai_system = get_ai_system()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -757,6 +774,15 @@ class SparkEngine:
             "animation_engine": self._animation_system.get_stats(),
             "particle_engine": self._particle_engine.get_stats(),
             "navigation_system": self._navigation_system.get_stats(),
+            "entity_component_engine": self._entity_component_engine.get_stats(),
+            "spatial_audio_engine": self._spatial_audio_engine.get_stats(),
+            "level_streaming_engine": self._level_streaming_engine.get_stats(),
+            "dynamic_weather_engine": self._dynamic_weather_engine.get_stats(),
+            "procedural_terrain_engine": self._procedural_terrain_engine.get_stats(),
+            "destruction_physics_engine": self._destruction_physics_engine.get_stats(),
+            "render_pipeline": self._render_pipeline.get_stats(),
+            "scene_graph": self._scene_graph.get_stats(),
+            "ai_system": self._ai_system.get_stats(),
         }
 
     @property
@@ -920,7 +946,7 @@ class SparkEngine:
         return self._terrain_system
 
     @property
-    def save_system(self) -> SaveSystem:
+    def save_system(self) -> SaveSystemEngine:
         return self._save_system
 
     @property
@@ -1072,7 +1098,7 @@ class SparkEngine:
         return self._decal_system
 
     @property
-    def post_processing(self) -> PostProcessingSystem:
+    def post_processing(self) -> PostProcessingEngine:
         return self._post_processing
 
     @property
@@ -1278,6 +1304,42 @@ class SparkEngine:
     @property
     def navigation_system(self) -> EngineNavigationSystem:
         return self._navigation_system
+
+    @property
+    def entity_component_engine(self) -> EntityComponentEngine:
+        return self._entity_component_engine
+
+    @property
+    def spatial_audio_engine(self) -> SpatialAudioEngine:
+        return self._spatial_audio_engine
+
+    @property
+    def level_streaming_engine(self) -> LevelStreamingEngine:
+        return self._level_streaming_engine
+
+    @property
+    def dynamic_weather_engine(self) -> DynamicWeatherEngine:
+        return self._dynamic_weather_engine
+
+    @property
+    def procedural_terrain_engine(self) -> ProceduralTerrainEngine:
+        return self._procedural_terrain_engine
+
+    @property
+    def destruction_physics_engine(self) -> DestructionPhysicsEngine:
+        return self._destruction_physics_engine
+
+    @property
+    def render_pipeline(self) -> RenderPipeline:
+        return self._render_pipeline
+
+    @property
+    def scene_graph(self) -> SceneGraphEngine:
+        return self._scene_graph
+
+    @property
+    def ai_system(self) -> GameAISystem:
+        return self._ai_system
 
 
 @dataclass
