@@ -9,7 +9,7 @@ from sparkai.config import SparkAIConfig
 from backend.routes import (
     engine, agent, scene, workflow, narrative, npc,
     agent_memory, agent_goals, engine_level, engine_weather,
-    engine_terrain, agent_social,
+    engine_terrain, agent_social, agent_llm, agent_game_creation, agent_swarm,
 )
 from backend.websocket import router as ws_router
 
@@ -42,6 +42,9 @@ app.include_router(agent_social.router, prefix="/api/agent", tags=["Agent Social
 app.include_router(engine_level.router, prefix="/api/engine", tags=["Engine Level"])
 app.include_router(engine_weather.router, prefix="/api/engine", tags=["Engine Weather"])
 app.include_router(engine_terrain.router, prefix="/api/engine", tags=["Engine Terrain"])
+app.include_router(agent_llm.router, prefix="/api/agent", tags=["Agent LLM"])
+app.include_router(agent_game_creation.router, prefix="/api/agent", tags=["Agent Game Creation"])
+app.include_router(agent_swarm.router, prefix="/api/agent", tags=["Agent Swarm"])
 
 
 @app.get("/api/health")
