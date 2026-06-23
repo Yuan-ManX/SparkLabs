@@ -283,7 +283,19 @@ from sparkai.agent.agent_developer_assistant import DeveloperAssistant, Assistan
 from sparkai.agent.agent_game_director import GameDirector, get_game_director
 from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_analyzer
 from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
-from sparkai.agent.agent_player_modeler import PlayerModeler, get_player_modeler
+from sparkai.agent.agent_player_modeler import PlayerModelerEngine, get_player_modeler
+from sparkai.agent.agent_game_engine_bridge import AgentGameEngineBridge, get_agent_game_engine_bridge
+from sparkai.agent.agent_performance_optimizer import PerformanceOptimizerEngine, get_performance_optimizer
+from sparkai.agent.agent_multi_agent_protocol import MultiAgentProtocolEngine, get_multi_agent_protocol
+from sparkai.agent.agent_unified_memory import UnifiedMemorySystem, get_unified_memory
+from sparkai.agent.agent_goal_management import GoalManagementSystem, get_goal_management
+from sparkai.agent.agent_utility_engine import UtilityEngine, get_utility_engine
+from sparkai.agent.agent_skill_learning import SkillLearningSystem, get_skill_learning
+from sparkai.agent.agent_perception_fusion import PerceptionFusionSystem, get_perception_fusion
+from sparkai.agent.agent_social_cognition import SocialCognitionSystem, get_social_cognition
+from sparkai.agent.agent_llm_pipeline import LLMPipelineEngine, get_llm_pipeline
+from sparkai.agent.agent_game_creator import GameCreatorEngine, get_game_creator
+from sparkai.agent.agent_swarm_intelligence import SwarmIntelligenceEngine, get_swarm_intelligence
 from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
 from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
 from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
@@ -291,7 +303,7 @@ from sparkai.agent.agent_gateway import AgentGateway, get_gateway
 from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
 from sparkai.engine.engine_network_layer import NetworkLayerEngine, get_network_layer_engine
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
-from sparkai.engine.engine_save_system import SaveSystem, get_save_system
+from sparkai.engine.engine_save_system import SaveSystemEngine, get_save_system
 from sparkai.engine.engine_node_tree import NodeTreeSystem, get_node_tree
 from sparkai.engine.engine_extension_registry import ExtensionRegistry, get_extension_registry
 from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_export_pipeline
@@ -381,7 +393,7 @@ from sparkai.agent.agent_learning_loop import AgentLearningLoop, get_learning_lo
 from sparkai.agent.agent_social_dynamics import AgentSocialDynamics, get_social_dynamics
 from sparkai.agent.agent_emergent_narrative import AgentEmergentNarrative, get_emergent_narrative
 from sparkai.engine.engine_procedural_world import EngineProceduralWorld, get_procedural_world
-from sparkai.engine.engine_render_pipeline import EngineRenderPipeline, get_render_pipeline
+from sparkai.engine.engine_render_pipeline import RenderPipeline, get_render_pipeline
 from sparkai.engine.engine_physics_dynamics import EnginePhysicsDynamics, get_physics_dynamics
 from sparkai.engine.engine_audio_spatial import EngineAudioSpatial, get_audio_spatial
 from sparkai.engine.engine_behavior_orchestrator import EngineBehaviorOrchestrator, get_engine_behavior_orchestrator
@@ -549,6 +561,26 @@ from sparkai.agent.agent_emergent_storyteller import EmergentStorytellerEngine, 
 from sparkai.engine.engine_node_editor import NodeEditorEngine, get_node_editor_engine
 from sparkai.engine.engine_scene_serializer import SceneSerializerEngine, get_scene_serializer_engine
 from sparkai.engine.engine_signal_bus import SignalBus as EngineSignalBus, get_signal_bus as get_engine_signal_bus
+from sparkai.agent.agent_theory_of_mind import TheoryOfMindEngine, get_theory_of_mind_engine
+from sparkai.agent.agent_counterfactual_simulator import CounterfactualSimulatorEngine, get_counterfactual_simulator
+from sparkai.agent.agent_skill_lifecycle import SkillLifecycleEngine, get_skill_lifecycle_engine
+from sparkai.agent.agent_timeline_brancher import TimelineBrancherEngine, get_timeline_brancher
+from sparkai.engine.engine_ecosystem_dynamics import EcosystemDynamicsEngine, get_ecosystem_dynamics
+from sparkai.engine.engine_civilization_evolution import CivilizationEvolutionEngine, get_civilization_engine
+from sparkai.engine.engine_procedural_city import ProceduralCityEngine, get_procedural_city_engine
+from sparkai.engine.engine_flow_state_monitor import FlowStateMonitorEngine, get_flow_state_monitor
+from sparkai.agent.agent_llm_orchestrator import LLMOrchestratorEngine, get_llm_orchestrator
+from sparkai.agent.agent_experience_memory import ExperienceMemoryEngine, get_experience_memory
+from sparkai.engine.engine_physics import PhysicsEngine, get_physics_engine
+from sparkai.engine.engine_behavior import BehaviorEngine, get_behavior_engine
+from sparkai.engine.engine_input import InputEngine, get_input_engine
+from sparkai.engine.engine_scene_lifecycle import SceneLifecycleEngine, get_scene_lifecycle_engine
+from sparkai.agent.agent_blackboard import BlackboardEngine, get_blackboard
+from sparkai.agent.agent_htn_planner import HTNPlannerEngine, get_htn_planner
+from sparkai.agent.agent_belief_reputation import BeliefReputationEngine, get_belief_reputation
+from sparkai.engine.engine_job_system import JobSystemEngine, get_job_system
+from sparkai.engine.engine_cloth_physics import ClothPhysicsEngine, get_cloth_physics
+from sparkai.engine.engine_lightmapping import LightmappingEngine, get_lightmapping
 
 
 class RuntimeState(Enum):
@@ -754,7 +786,7 @@ class AgentRuntime:
         self._multi_modal_agent: Optional[MultiModalAgent] = None
         self._import_pipeline: Optional[ImportPipelineEngine] = None
         self._terrain_system: Optional[TerrainSystem] = None
-        self._save_system: Optional[SaveSystem] = None
+        self._save_system: Optional[SaveSystemEngine] = None
         self._node_tree: Optional[NodeTreeSystem] = None
         self._extension_registry: Optional[ExtensionRegistry] = None
         self._export_pipeline: Optional[MultiExportPipeline] = None
@@ -839,7 +871,10 @@ class AgentRuntime:
         self._game_director: Optional[GameDirector] = None
         self._balance_analyzer: Optional[BalanceAnalyzer] = None
         self._narrative_composer: Optional[NarrativeComposer] = None
-        self._player_modeler: Optional[PlayerModeler] = None
+        self._player_modeler: Optional[PlayerModelerEngine] = None
+        self._game_engine_bridge: Optional[AgentGameEngineBridge] = None
+        self._performance_optimizer: Optional[PerformanceOptimizerEngine] = None
+        self._multi_agent_protocol: Optional[MultiAgentProtocolEngine] = None
         self._learning_loop: Optional[LearningLoop] = None
         self._cron_scheduler: Optional[AgentCronScheduler] = None
         self._memory_graph: Optional[AgentMemoryGraph] = None
@@ -849,7 +884,7 @@ class AgentRuntime:
         self._audio_system: Optional[GameAudioSystem] = None
         self._network_layer: Optional[NetworkLayerEngine] = None
         self._behavior_runtime: Optional[BehaviorRuntime] = None
-        self._save_system: Optional[SaveSystem] = None
+        self._save_system: Optional[SaveSystemEngine] = None
         self._session_snapshot: Optional[SessionSnapshotSystem] = None
         self._trajectory_compressor: Optional[TrajectoryCompressor] = None
         self._skills_hub: Optional[SkillsHub] = None
@@ -933,7 +968,7 @@ class AgentRuntime:
         self._social_dynamics: Optional[AgentSocialDynamics] = None
         self._emergent_narrative: Optional[AgentEmergentNarrative] = None
         self._procedural_world: Optional[EngineProceduralWorld] = None
-        self._render_pipeline: Optional[EngineRenderPipeline] = None
+        self._render_pipeline: Optional[RenderPipeline] = None
         self._physics_dynamics: Optional[EnginePhysicsDynamics] = None
         self._audio_spatial: Optional[EngineAudioSpatial] = None
         self._behavior_orchestrator: Optional[EngineBehaviorOrchestrator] = None
@@ -981,6 +1016,35 @@ class AgentRuntime:
         self._node_editor: Optional[NodeEditorEngine] = None
         self._scene_serializer: Optional[SceneSerializerEngine] = None
         self._engine_signal_bus: Optional[EngineSignalBus] = None
+        self._theory_of_mind: Optional[TheoryOfMindEngine] = None
+        self._counterfactual_simulator: Optional[CounterfactualSimulatorEngine] = None
+        self._skill_lifecycle: Optional[SkillLifecycleEngine] = None
+        self._timeline_brancher: Optional[TimelineBrancherEngine] = None
+        self._ecosystem_dynamics: Optional[EcosystemDynamicsEngine] = None
+        self._civilization_evolution: Optional[CivilizationEvolutionEngine] = None
+        self._procedural_city: Optional[ProceduralCityEngine] = None
+        self._flow_state_monitor: Optional[FlowStateMonitorEngine] = None
+        self._llm_orchestrator: Optional[LLMOrchestratorEngine] = None
+        self._experience_memory: Optional[ExperienceMemoryEngine] = None
+        self._physics_engine: Optional[PhysicsEngine] = None
+        self._behavior_engine: Optional[BehaviorEngine] = None
+        self._input_engine: Optional[InputEngine] = None
+        self._scene_lifecycle: Optional[SceneLifecycleEngine] = None
+        self._blackboard: Optional[BlackboardEngine] = None
+        self._htn_planner: Optional[HTNPlannerEngine] = None
+        self._belief_reputation: Optional[BeliefReputationEngine] = None
+        self._job_system: Optional[JobSystemEngine] = None
+        self._cloth_physics: Optional[ClothPhysicsEngine] = None
+        self._lightmapping: Optional[LightmappingEngine] = None
+        self._unified_memory: Optional[UnifiedMemorySystem] = None
+        self._goal_management: Optional[GoalManagementSystem] = None
+        self._utility_engine: Optional[UtilityEngine] = None
+        self._skill_learning: Optional[SkillLearningSystem] = None
+        self._perception_fusion: Optional[PerceptionFusionSystem] = None
+        self._social_cognition: Optional[SocialCognitionSystem] = None
+        self._llm_pipeline: Any = None
+        self._game_creator: Any = None
+        self._swarm_intelligence: Any = None
         self._causal_reasoning_ok: bool = False
         self._multi_objective_optimizer_ok: bool = False
         self._volumetric_rendering_ok: bool = False
@@ -1279,6 +1343,9 @@ class AgentRuntime:
             self._balance_analyzer = get_balance_analyzer()
             self._narrative_composer = get_narrative_composer()
             self._player_modeler = get_player_modeler()
+            self._game_engine_bridge = get_agent_game_engine_bridge()
+            self._performance_optimizer = get_performance_optimizer()
+            self._multi_agent_protocol = get_multi_agent_protocol()
             self._learning_loop = get_learning_loop()
             self._cron_scheduler = get_cron_scheduler()
             self._memory_graph = get_memory_graph()
@@ -1424,6 +1491,35 @@ class AgentRuntime:
             self._engine_unification_core = get_engine_unification_core()
             self._metacognition = get_agent_metacognition()
             self._predictive_intelligence = get_predictive_intelligence()
+            self._theory_of_mind = get_theory_of_mind_engine()
+            self._counterfactual_simulator = get_counterfactual_simulator()
+            self._skill_lifecycle = get_skill_lifecycle_engine()
+            self._timeline_brancher = get_timeline_brancher()
+            self._ecosystem_dynamics = get_ecosystem_dynamics()
+            self._civilization_evolution = get_civilization_engine()
+            self._procedural_city = get_procedural_city_engine()
+            self._flow_state_monitor = get_flow_state_monitor()
+            self._llm_orchestrator = get_llm_orchestrator()
+            self._experience_memory = get_experience_memory()
+            self._physics_engine = get_physics_engine()
+            self._behavior_engine = get_behavior_engine()
+            self._input_engine = get_input_engine()
+            self._scene_lifecycle = get_scene_lifecycle_engine()
+            self._blackboard = get_blackboard()
+            self._htn_planner = get_htn_planner()
+            self._belief_reputation = get_belief_reputation()
+            self._job_system = get_job_system()
+            self._cloth_physics = get_cloth_physics()
+            self._lightmapping = get_lightmapping()
+            self._unified_memory = get_unified_memory()
+            self._goal_management = get_goal_management()
+            self._utility_engine = get_utility_engine()
+            self._skill_learning = get_skill_learning()
+            self._perception_fusion = get_perception_fusion()
+            self._social_cognition = get_social_cognition()
+            self._llm_pipeline = get_llm_pipeline()
+            self._game_creator = get_game_creator()
+            self._swarm_intelligence = get_swarm_intelligence()
             self._session_snapshot_ok = self._session_snapshot is not None
             self._trajectory_compressor_ok = self._trajectory_compressor is not None
             self._skills_hub_ok = self._skills_hub is not None
@@ -1514,6 +1610,12 @@ class AgentRuntime:
             self._economy_simulator_ok = self._economy_simulator is not None
             self._weather_system_ok = self._weather_system is not None
             self._water_simulation_ok = self._water_simulation is not None
+            self._unified_memory_ok = self._unified_memory is not None
+            self._goal_management_ok = self._goal_management is not None
+            self._utility_engine_ok = self._utility_engine is not None
+            self._skill_learning_ok = self._skill_learning is not None
+            self._perception_fusion_ok = self._perception_fusion is not None
+            self._social_cognition_ok = self._social_cognition is not None
 
         # Wire credential manager into LLM router for key rotation on API failures
             if self._llm_router and self._credential_manager:
@@ -1721,6 +1823,9 @@ class AgentRuntime:
             self._integration.register_subsystem("balance_analyzer", self._balance_analyzer)
             self._integration.register_subsystem("narrative_composer", self._narrative_composer)
             self._integration.register_subsystem("player_modeler", self._player_modeler)
+            self._integration.register_subsystem("game_engine_bridge", self._game_engine_bridge)
+            self._integration.register_subsystem("performance_optimizer", self._performance_optimizer)
+            self._integration.register_subsystem("multi_agent_protocol", self._multi_agent_protocol)
             self._integration.register_subsystem("learning_loop", self._learning_loop)
             self._integration.register_subsystem("cron_scheduler", self._cron_scheduler)
             self._integration.register_subsystem("memory_graph", self._memory_graph)
@@ -1773,6 +1878,26 @@ class AgentRuntime:
             self._integration.register_subsystem("node_editor", self._node_editor)
             self._integration.register_subsystem("scene_serializer", self._scene_serializer)
             self._integration.register_subsystem("engine_signal_bus", self._engine_signal_bus)
+            self._integration.register_subsystem("theory_of_mind", self._theory_of_mind)
+            self._integration.register_subsystem("counterfactual_simulator", self._counterfactual_simulator)
+            self._integration.register_subsystem("skill_lifecycle", self._skill_lifecycle)
+            self._integration.register_subsystem("timeline_brancher", self._timeline_brancher)
+            self._integration.register_subsystem("ecosystem_dynamics", self._ecosystem_dynamics)
+            self._integration.register_subsystem("civilization_evolution", self._civilization_evolution)
+            self._integration.register_subsystem("procedural_city", self._procedural_city)
+            self._integration.register_subsystem("flow_state_monitor", self._flow_state_monitor)
+            self._integration.register_subsystem("llm_orchestrator", self._llm_orchestrator)
+            self._integration.register_subsystem("experience_memory", self._experience_memory)
+            self._integration.register_subsystem("physics_engine", self._physics_engine)
+            self._integration.register_subsystem("behavior_engine", self._behavior_engine)
+            self._integration.register_subsystem("input_engine", self._input_engine)
+            self._integration.register_subsystem("scene_lifecycle", self._scene_lifecycle)
+            self._integration.register_subsystem("blackboard", self._blackboard)
+            self._integration.register_subsystem("htn_planner", self._htn_planner)
+            self._integration.register_subsystem("belief_reputation", self._belief_reputation)
+            self._integration.register_subsystem("job_system", self._job_system)
+            self._integration.register_subsystem("cloth_physics", self._cloth_physics)
+            self._integration.register_subsystem("lightmapping", self._lightmapping)
             self._integration.connect_all()
 
             self._recovery_engine.register_action_handler("compact_session", lambda params: self._compression_engine and self._compression_engine.compress(params.get("session_id", "default"), params.get("max_tokens", 4000)) is not None)
@@ -2628,7 +2753,7 @@ class AgentRuntime:
         return self._terrain_system
 
     @property
-    def save_system(self) -> Optional[SaveSystem]:
+    def save_system(self) -> Optional[SaveSystemEngine]:
         return self._save_system
 
     @property
@@ -3023,6 +3148,9 @@ class AgentRuntime:
                 "balance_analyzer": self._balance_analyzer is not None,
                 "narrative_composer": self._narrative_composer is not None,
                 "player_modeler": self._player_modeler is not None,
+                "game_engine_bridge": self._game_engine_bridge is not None,
+                "performance_optimizer": self._performance_optimizer is not None,
+                "multi_agent_protocol": self._multi_agent_protocol is not None,
                 "learning_loop": self._learning_loop is not None,
                 "cron_scheduler": self._cron_scheduler is not None,
                 "memory_graph": self._memory_graph is not None,
@@ -3134,6 +3262,29 @@ class AgentRuntime:
             "node_editor": self._node_editor is not None,
             "scene_serializer": self._scene_serializer is not None,
             "engine_signal_bus": self._engine_signal_bus is not None,
+            "theory_of_mind": self._theory_of_mind is not None,
+            "counterfactual_simulator": self._counterfactual_simulator is not None,
+            "skill_lifecycle": self._skill_lifecycle is not None,
+            "timeline_brancher": self._timeline_brancher is not None,
+            "ecosystem_dynamics": self._ecosystem_dynamics is not None,
+            "civilization_evolution": self._civilization_evolution is not None,
+            "procedural_city": self._procedural_city is not None,
+            "flow_state_monitor": self._flow_state_monitor is not None,
+            "llm_orchestrator": self._llm_orchestrator is not None,
+            "experience_memory": self._experience_memory is not None,
+            "physics_engine": self._physics_engine is not None,
+            "behavior_engine": self._behavior_engine is not None,
+            "input_engine": self._input_engine is not None,
+            "scene_lifecycle": self._scene_lifecycle is not None,
+            "blackboard": self._blackboard is not None,
+            "htn_planner": self._htn_planner is not None,
+            "belief_reputation": self._belief_reputation is not None,
+            "job_system": self._job_system is not None,
+            "cloth_physics": self._cloth_physics is not None,
+            "lightmapping": self._lightmapping is not None,
+            "llm_pipeline": self._llm_pipeline is not None,
+            "game_creator": self._game_creator is not None,
+            "swarm_intelligence": self._swarm_intelligence is not None,
             },
         }
 
@@ -3807,6 +3958,46 @@ class AgentRuntime:
             status["scene_serializer_stats"] = self._scene_serializer.get_stats()
         if self._engine_signal_bus:
             status["engine_signal_bus_stats"] = self._engine_signal_bus.get_signal_bus_stats()
+        if self._theory_of_mind:
+            status["theory_of_mind_stats"] = self._theory_of_mind.get_stats()
+        if self._counterfactual_simulator:
+            status["counterfactual_simulator_stats"] = self._counterfactual_simulator.get_stats()
+        if self._skill_lifecycle:
+            status["skill_lifecycle_stats"] = self._skill_lifecycle.get_stats()
+        if self._timeline_brancher:
+            status["timeline_brancher_stats"] = self._timeline_brancher.get_stats()
+        if self._ecosystem_dynamics:
+            status["ecosystem_dynamics_stats"] = self._ecosystem_dynamics.get_stats()
+        if self._civilization_evolution:
+            status["civilization_evolution_stats"] = self._civilization_evolution.get_stats()
+        if self._procedural_city:
+            status["procedural_city_stats"] = self._procedural_city.get_stats()
+        if self._flow_state_monitor:
+            status["flow_state_monitor_stats"] = self._flow_state_monitor.get_stats()
+        if self._llm_orchestrator:
+            status["llm_orchestrator_stats"] = self._llm_orchestrator.get_stats()
+        if self._experience_memory:
+            status["experience_memory_stats"] = self._experience_memory.get_stats()
+        if self._physics_engine:
+            status["physics_engine_stats"] = self._physics_engine.get_stats()
+        if self._behavior_engine:
+            status["behavior_engine_stats"] = self._behavior_engine.get_stats()
+        if self._input_engine:
+            status["input_engine_stats"] = self._input_engine.get_stats()
+        if self._scene_lifecycle:
+            status["scene_lifecycle_stats"] = self._scene_lifecycle.get_stats()
+        if self._blackboard:
+            status["blackboard_stats"] = self._blackboard.get_stats()
+        if self._htn_planner:
+            status["htn_planner_stats"] = self._htn_planner.get_stats()
+        if self._belief_reputation:
+            status["belief_reputation_stats"] = self._belief_reputation.get_stats()
+        if self._job_system:
+            status["job_system_stats"] = self._job_system.get_stats()
+        if self._cloth_physics:
+            status["cloth_physics_stats"] = self._cloth_physics.get_stats()
+        if self._lightmapping:
+            status["lightmapping_stats"] = self._lightmapping.get_stats()
         return status
 
 
