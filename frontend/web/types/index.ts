@@ -681,7 +681,12 @@ export type ViewMode =
   | 'engine-post-processing'
   | 'engine-ui-system'
   | 'engine-network-sync'
-  | 'engine-performance-monitor';
+  | 'engine-performance-monitor'
+  | 'llm-pipeline'
+  | 'game-creator'
+  | 'swarm-intelligence'
+  | 'scene-graph'
+  | 'ai-system';
 
 // Runtime types
 
