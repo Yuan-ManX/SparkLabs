@@ -64,6 +64,9 @@ const modeGroups = [
       { id: 'game-code-generator', label: 'Code Gen', icon: 'fa-code' },
       { id: 'balance-optimizer', label: 'Balance', icon: 'fa-scale-balanced' },
       { id: 'agent-engine-orchestrator', label: 'Pipeline', icon: 'fa-diagram-project' },
+      { id: 'llm-pipeline', label: 'LLM Pipeline', icon: 'fa-brain' },
+      { id: 'game-creator', label: 'Game Creator', icon: 'fa-wand-magic-sparkles' },
+      { id: 'swarm-intelligence', label: 'Swarm Intel', icon: 'fa-network-wired' },
     ],
   },
   {
@@ -477,6 +480,9 @@ const modeGroups = [
       { id: 'engine-save-system', label: 'SaveSys', icon: 'fa-floppy-disk' },
       { id: 'engine-event-system', label: 'EventSys', icon: 'fa-bolt' },
       { id: 'engine-fluid-simulation', label: 'FluidSim', icon: 'fa-droplet' },
+      { id: 'render-pipeline', label: 'Render Pipeline', icon: 'fa-palette' },
+      { id: 'scene-graph', label: 'Scene Graph', icon: 'fa-code-branch' },
+      { id: 'ai-system', label: 'AI System', icon: 'fa-microchip' },
     ],
   },
   {
