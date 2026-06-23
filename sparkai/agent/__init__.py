@@ -577,6 +577,26 @@ from sparkai.agent.agent_social_cognition import (
     RelationshipType, TrustLevel, ReputationCategory, NormType, AllianceType,
     get_social_cognition,
 )
+from sparkai.agent.agent_llm_pipeline import (
+    LLMPipelineEngine, PromptTemplateEngine, ChainOfThoughtRouter,
+    MultiModelOrchestrator, ContextAssemblyEngine, ResponseParser,
+    LLMInteractionLogger,
+    TemplateCategory, ReasoningStrategy, ProviderCapability,
+    get_llm_pipeline,
+)
+from sparkai.agent.agent_game_creator import (
+    GameCreatorEngine, GameSpecParser, GameAssembler,
+    GameBlueprint, CreationPipeline,
+    GameGenre, VisualStyle, CoreMechanic, TargetPlatform,
+    CreationPhase, ComplexityTier,
+    get_game_creator,
+)
+from sparkai.agent.agent_swarm_intelligence import (
+    SwarmIntelligenceEngine, SwarmAgent, ConsensusCompiler,
+    TaskDisperser, InsightReservoir, PatternOracle,
+    VoteProtocol, ConsensusPhase,
+    get_swarm_intelligence,
+)
 
 __all__ = [
     "SparkAgent",
@@ -1595,4 +1615,39 @@ __all__ = [
     "NormType",
     "AllianceType",
     "get_social_cognition",
+    # LLM Pipeline
+    "LLMPipelineEngine",
+    "PromptTemplateEngine",
+    "ChainOfThoughtRouter",
+    "MultiModelOrchestrator",
+    "ContextAssemblyEngine",
+    "ResponseParser",
+    "LLMInteractionLogger",
+    "TemplateCategory",
+    "ReasoningStrategy",
+    "ProviderCapability",
+    "get_llm_pipeline",
+    # Game Creator
+    "GameCreatorEngine",
+    "GameSpecParser",
+    "GameAssembler",
+    "GameBlueprint",
+    "CreationPipeline",
+    "GameGenre",
+    "VisualStyle",
+    "CoreMechanic",
+    "TargetPlatform",
+    "CreationPhase",
+    "ComplexityTier",
+    "get_game_creator",
+    # Swarm Intelligence
+    "SwarmIntelligenceEngine",
+    "SwarmAgent",
+    "ConsensusCompiler",
+    "TaskDisperser",
+    "InsightReservoir",
+    "PatternOracle",
+    "VoteProtocol",
+    "ConsensusPhase",
+    "get_swarm_intelligence",
 ]
