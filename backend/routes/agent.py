@@ -148,7 +148,7 @@ from sparkai.agent.agent_physics_tuner import PhysicsTuner, get_physics_tuner
 from sparkai.agent.agent_rag_pipeline import RAGPipeline, get_rag_pipeline
 from sparkai.agent.agent_tree_of_thought import TreeOfThought, get_tree_of_thought
 from sparkai.agent.agent_reflection_loop import ReflectionLoop, get_reflection_loop
-from sparkai.engine.scene_tree import SceneTree, get_scene_tree
+from sparkai.engine.engine_scene_tree import SceneTree, get_scene_tree
 from sparkai.engine.event_system import EventSystem, get_event_system
 from sparkai.engine.animation_system import AnimationSystem, get_animation_system
 from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding_system
@@ -164,7 +164,7 @@ from sparkai.agent.agent_game_director import GameDirector, get_game_director
 from sparkai.agent.agent_balance_analyzer import BalanceAnalyzer, get_balance_analyzer
 from sparkai.agent.agent_narrative_composer import NarrativeComposer, get_narrative_composer
 from sparkai.agent.agent_player_modeler import PlayerModelerEngine, get_player_modeler
-from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
+from sparkai.engine.engine_audio_system import AudioSystemEngine, get_audio_system
 from sparkai.engine.engine_network_layer import NetworkLayerEngine, get_network_layer_engine
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
 from sparkai.engine.engine_save_system import SaveSystemEngine, get_save_system
@@ -174,11 +174,11 @@ from sparkai.engine.engine_export_pipeline import MultiExportPipeline, get_expor
 from sparkai.engine.engine_server_architecture import GameServerPool, get_server_pool
 from sparkai.engine.engine_gizmo_system import GizmoSystem, get_gizmo_system
 from sparkai.engine.engine_pivot_system import PivotSystem, get_pivot_system
-from sparkai.agent.agent_learning_loop import AgentLearningLoop, get_learning_loop
+from sparkai.agent.agent_learning_loop import LearningLoopEngine, get_learning_loop
 from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
 from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
 from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
-from sparkai.agent.agent_gateway import AgentGateway, get_gateway
+from sparkai.agent.agent_gateway import AgentGateway, get_agent_gateway
 from sparkai.agent.agent_session_snapshot import get_session_snapshot
 from sparkai.agent.agent_trajectory_compressor import get_trajectory_compressor
 from sparkai.agent.agent_skills_hub import get_skills_hub
@@ -3496,7 +3496,7 @@ _cron_scheduler = get_cron_scheduler()
 _memory_graph = get_memory_graph()
 _context_compressor = get_context_compressor()
 _tool_forge = get_tool_forge()
-_gateway = get_gateway()
+_gateway = get_agent_gateway()
 _session_snapshot = get_session_snapshot()
 _trajectory_compressor = get_trajectory_compressor()
 _skills_hub = get_skills_hub()
@@ -3704,14 +3704,14 @@ def _init_new_subsystems():
     from sparkai.agent.agent_memory_graph import get_memory_graph
     from sparkai.agent.agent_context_compressor import get_context_compressor
     from sparkai.agent.agent_tool_forge import get_tool_forge
-    from sparkai.agent.agent_gateway import get_gateway
+    from sparkai.agent.agent_gateway import get_agent_gateway
     global _learning_loop, _cron_scheduler, _memory_graph, _context_compressor, _tool_forge, _gateway
     _learning_loop = get_learning_loop()
     _cron_scheduler = get_cron_scheduler()
     _memory_graph = get_memory_graph()
     _context_compressor = get_context_compressor()
     _tool_forge = get_tool_forge()
-    _gateway = get_gateway()
+    _gateway = get_agent_gateway()
 
     from sparkai.agent.agent_skill_synthesizer import get_skill_synthesizer
     from sparkai.agent.agent_security_scanner import get_security_scanner
@@ -6930,9 +6930,9 @@ async def particle_update(dt: float = 0.016):
 
 # === Pathfinding ===
 
-from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding
+from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding_system
 
-_pathfinding = get_pathfinding()
+_pathfinding = get_pathfinding_system()
 
 
 class PathRequest(BaseModel):
@@ -7890,7 +7890,7 @@ async def event_scripting_run_all(context: Optional[Dict[str, Any]] = None):
 
 # === Scene Tree ===
 
-from sparkai.engine.scene_tree import SceneTree, get_scene_tree
+from sparkai.engine.engine_scene_tree import SceneTree, get_scene_tree
 
 _scene_tree = get_scene_tree()
 
@@ -7929,7 +7929,7 @@ async def scene_tree_create_node(request: SceneNodeCreateRequest):
         parent = _scene_tree.root
     if not parent:
         return {"error": "Root node does not exist"}
-    from sparkai.engine.scene_tree import SceneNode
+    from sparkai.engine.engine_scene_tree import SceneNode
     node = SceneNode(name=request.name)
     node.transform.x = request.x
     node.transform.y = request.y
@@ -16851,7 +16851,7 @@ async def scene_tree_create(name: str = "", description: str = ""):
 @router.post("/scene-tree/add-node")
 async def scene_tree_add_node(scene_id: str = "", parent_id: str = "",
                                 name: str = "", node_type: str = "node2d", x: float = 0, y: float = 0):
-    from sparkai.engine.scene_tree import NodeType
+    from sparkai.engine.engine_scene_tree import NodeType
     node = _scene_tree.add_node(scene_id, parent_id, name, NodeType(node_type), x, y)
     return node.__dict__ if hasattr(node, '__dict__') else str(node)
 
@@ -23194,7 +23194,7 @@ from sparkai.agent.agent_quest_composer import get_agent_quest_composer
 from sparkai.agent.agent_multi_agent_coordinator import get_multi_agent_coordinator
 from sparkai.agent.agent_memory_orchestrator import get_memory_orchestrator
 from sparkai.agent.agent_simulation_controller import get_simulation_controller, AgentState
-from sparkai.agent.agent_timeline_manager import get_timeline_manager, EventType
+from sparkai.agent.agent_timeline import get_timeline_manager, TimelineEvent
 from sparkai.agent.agent_skill_generator import get_skill_generator
 from sparkai.agent.agent_learning_loop import get_learning_loop
 from sparkai.agent.agent_social_dynamics import get_social_dynamics
@@ -23207,7 +23207,7 @@ from sparkai.engine.engine_behavior_orchestrator import get_engine_behavior_orch
 from sparkai.agent.agent_cross_module_orchestrator import get_cross_module_orchestrator
 from sparkai.agent.agent_intent_router import get_agent_intent_router
 from sparkai.agent.agent_world_architect import get_agent_world_architect
-from sparkai.agent.agent_god_mode_controller import get_god_mode_controller
+from sparkai.agent.agent_god_mode import get_god_mode_controller
 from sparkai.engine.engine_event_scripting import get_engine_event_scripting
 from sparkai.engine.engine_gpu_batch_rendering import get_gpu_batch_rendering
 from sparkai.engine.engine_server_orchestrator import get_engine_server_orchestrator
@@ -27755,9 +27755,9 @@ async def economy_create_trade_route(request: Request):
 # Agent Intelligence Core Endpoints
 # ============================================================
 
-from sparkai.agent.agent_intelligence_core import get_agent_intelligence_core
+from sparkai.agent.agent_intelligence_core import get_intelligence_core
 
-_intelligence_core = get_agent_intelligence_core()
+_intelligence_core = get_intelligence_core()
 
 @router.get("/intelligence-core/status")
 async def intelligence_core_status():
@@ -32481,8 +32481,8 @@ async def layered_memory_context(max_tokens: int = 2000):
 @router.get("/world-simulator/stats")
 async def world_simulator_stats():
     try:
-        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
-        instance = get_world_simulator_engine()
+        from sparkai.agent.agent_world_simulator import get_world_simulator
+        instance = get_world_simulator()
         return {"status": "ok", "stats": instance.get_simulation_stats()}
     except Exception as e:
         return {"status": "error", "message": str(e)}
@@ -32490,9 +32490,9 @@ async def world_simulator_stats():
 @router.post("/world-simulator/create-entity")
 async def world_simulator_create_entity(request: Request):
     try:
-        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
+        from sparkai.agent.agent_world_simulator import get_world_simulator
         body = await request.json()
-        instance = get_world_simulator_engine()
+        instance = get_world_simulator()
         entity = instance.create_entity(
             name=body.get("name", ""),
             entity_type=body.get("entity_type", "character"),
@@ -32506,9 +32506,9 @@ async def world_simulator_create_entity(request: Request):
 @router.post("/world-simulator/simulate-tick")
 async def world_simulator_simulate_tick(request: Request):
     try:
-        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
+        from sparkai.agent.agent_world_simulator import get_world_simulator
         body = await request.json()
-        instance = get_world_simulator_engine()
+        instance = get_world_simulator()
         snapshot = instance.simulate_tick(num_ticks=body.get("num_ticks", 1))
         return {"status": "ok", "snapshot": instance.get_world_state()}
     except Exception as e:
@@ -32517,9 +32517,9 @@ async def world_simulator_simulate_tick(request: Request):
 @router.post("/world-simulator/interaction")
 async def world_simulator_interaction(request: Request):
     try:
-        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
+        from sparkai.agent.agent_world_simulator import get_world_simulator
         body = await request.json()
-        instance = get_world_simulator_engine()
+        instance = get_world_simulator()
         interaction = instance.create_interaction(
             source_id=body.get("source_id", ""),
             target_id=body.get("target_id", ""),
@@ -32536,9 +32536,9 @@ async def world_simulator_interaction(request: Request):
 @router.post("/world-simulator/broadcast-event")
 async def world_simulator_broadcast_event(request: Request):
     try:
-        from sparkai.agent.agent_world_simulator import get_world_simulator_engine
+        from sparkai.agent.agent_world_simulator import get_world_simulator
         body = await request.json()
-        instance = get_world_simulator_engine()
+        instance = get_world_simulator()
         event = instance.broadcast_event(
             category=body.get("category", "random"),
             name=body.get("name", ""),
