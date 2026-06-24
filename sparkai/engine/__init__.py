@@ -941,6 +941,30 @@ from sparkai.engine.engine_destruction_system import (
     CollapseMode,
     get_destruction_physics_engine,
 )
+from sparkai.engine.engine_behavior_composer import (
+    BehaviorComposerEngine,
+    BehaviorTemplate,
+    BehaviorInstance,
+    BehaviorComposition,
+    BehaviorCategory,
+    BehaviorPriority,
+    BehaviorLifecycle,
+    CompositionMode,
+    get_behavior_composer,
+)
+from sparkai.engine.engine_asset_compiler import (
+    AssetCompilerEngine,
+    AssetType,
+    AssetFormat,
+    AssetSource,
+    CompileResult,
+    AssetBundle,
+    CompileConfig,
+    CompileStatus,
+    CompressionLevel,
+    BundleStrategy,
+    get_asset_compiler,
+)
 
 __all__ = [
     # Existing
@@ -1947,4 +1971,26 @@ __all__ = [
     "StructureType",
     "CollapseMode",
     "get_destruction_physics_engine",
+    # engine_behavior_composer
+    "BehaviorComposerEngine",
+    "BehaviorTemplate",
+    "BehaviorInstance",
+    "BehaviorComposition",
+    "BehaviorCategory",
+    "BehaviorPriority",
+    "BehaviorLifecycle",
+    "CompositionMode",
+    "get_behavior_composer",
+    # engine_asset_compiler
+    "AssetCompilerEngine",
+    "AssetType",
+    "AssetFormat",
+    "AssetSource",
+    "CompileResult",
+    "AssetBundle",
+    "CompileConfig",
+    "CompileStatus",
+    "CompressionLevel",
+    "BundleStrategy",
+    "get_asset_compiler",
 ]
