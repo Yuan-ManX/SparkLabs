@@ -597,6 +597,28 @@ from sparkai.agent.agent_swarm_intelligence import (
     VoteProtocol, ConsensusPhase,
     get_swarm_intelligence,
 )
+from sparkai.agent.agent_cognitive_synthesis import (
+    CognitiveSynthesisEngine, SynthesisPhase, SynthesisConfidence,
+    CognitiveContext, SynthesisReport,
+    get_cognitive_synthesis,
+)
+from sparkai.agent.agent_game_intelligence import (
+    GameIntelligenceEngine, AnalysisDomain, DesignPattern,
+    QualityDimension, GameStateSnapshot, DesignAnalysis,
+    QualityEvaluation, ImprovementSuggestion,
+    get_game_intelligence,
+)
+from sparkai.agent.agent_autonomous_creator import (
+    AutonomousCreatorEngine, ContentCategory, ContentSpec,
+    GeneratedContent, LevelBlueprint, QuestDefinition, NPCProfile,
+    get_autonomous_creator,
+)
+from sparkai.agent.agent_interaction_loop import (
+    InteractionLoopEngine, LoopPhase, ActionType, PerceptionFrame,
+    ActionDecision, ExecutionResult, InteractionCycle,
+    get_interaction_loop,
+)
+
 
 __all__ = [
     "SparkAgent",
@@ -1650,4 +1672,39 @@ __all__ = [
     "VoteProtocol",
     "ConsensusPhase",
     "get_swarm_intelligence",
+    # Cognitive Synthesis
+    "CognitiveSynthesisEngine",
+    "SynthesisPhase",
+    "SynthesisConfidence",
+    "CognitiveContext",
+    "SynthesisReport",
+    "get_cognitive_synthesis",
+    # Game Intelligence
+    "GameIntelligenceEngine",
+    "AnalysisDomain",
+    "DesignPattern",
+    "QualityDimension",
+    "GameStateSnapshot",
+    "DesignAnalysis",
+    "QualityEvaluation",
+    "ImprovementSuggestion",
+    "get_game_intelligence",
+    # Autonomous Creator
+    "AutonomousCreatorEngine",
+    "ContentCategory",
+    "ContentSpec",
+    "GeneratedContent",
+    "LevelBlueprint",
+    "QuestDefinition",
+    "NPCProfile",
+    "get_autonomous_creator",
+    # Interaction Loop
+    "InteractionLoopEngine",
+    "LoopPhase",
+    "ActionType",
+    "PerceptionFrame",
+    "ActionDecision",
+    "ExecutionResult",
+    "InteractionCycle",
+    "get_interaction_loop",
 ]
