@@ -167,27 +167,64 @@ const AgentGatewayPanel: React.FC = () => {
 
   const fetchStats = useCallback(async () => {
     try {
-      const res = await fetch(`${apiBase}/gateway/stats`);
-      const data = await res.json();
-      if (data.endpoints) setEndpoints(data.endpoints);
-      if (data.stats) setStats(data.stats);
+      const statusRes = await fetch(`${apiBase}/gateway/status`);
+      const statusData = await statusRes.json();
+      if (statusData.status === 'success' && statusData.data) {
+        const d = statusData.data;
+        setStats({
+          total_endpoints: d.providers || 0,
+          active_connections: d.active_requests || 0,
+          queue_depth: 0,
+          messages_routed_total: d.total_requests || 0,
+          bytes_transferred_total: 0,
+          avg_latency_ms: 0,
+          uptime: `${Math.floor((d.uptime_seconds || 0) / 3600)}h`,
+        });
+      }
     } catch {}
   }, []);
 
   const fetchConnections = useCallback(async () => {
     try {
-      const res = await fetch(`${apiBase}/gateway/active-connections`);
+      const res = await fetch(`${apiBase}/gateway/providers`);
       const data = await res.json();
-      if (data.connections) setConnections(data.connections);
+      if (data.status === 'success' && data.data) {
+        const conns: ActiveConnection[] = [];
+        for (const [key, provider] of Object.entries(data.data)) {
+          const p = provider as any;
+          conns.push({
+            id: key,
+            endpoint_name: p.name || key,
+            source: 'gateway',
+            destination: `${key}-provider`,
+            status: p.connected ? 'connected' : 'disconnected',
+            established_at: 'active',
+            bytes_transferred: 0,
+            latency_ms: p.avg_latency_ms || 0,
+          });
+        }
+        setConnections(conns);
+      }
     } catch {}
   }, []);
 
   const fetchQueue = useCallback(async () => {
     try {
-      const res = await fetch(`${apiBase}/gateway/message-queue`);
+      const res = await fetch(`${apiBase}/gateway/history?limit=20`);
       const data = await res.json();
-      if (data.queue) setMessageQueue(data.queue);
-      if (data.logs) setDeliveryLogs(data.logs);
+      if (data.status === 'success' && data.data) {
+        const queue: MessageQueueEntry[] = (data.data as any[]).map((h: any, i: number) => ({
+          id: h.id || `${i}`,
+          endpoint: h.mode || 'auto',
+          priority: (h.priority || 5) >= 7 ? 'high' : (h.priority || 5) >= 4 ? 'normal' : 'low',
+          payload_preview: h.prompt ? h.prompt.substring(0, 50) : 'N/A',
+          status: h.status === 'completed' ? 'delivered' : h.status === 'failed' ? 'failed' : 'pending',
+          size_bytes: 0,
+          retries: 0,
+          timestamp: h.created_at || Date.now() / 1000,
+        }));
+        setMessageQueue(queue);
+      }
     } catch {}
   }, []);
 
@@ -204,13 +241,13 @@ const AgentGatewayPanel: React.FC = () => {
 
   const handleRegisterEndpoint = async () => {
     try {
-      await fetch(`${apiBase}/gateway/register-endpoint`, {
+      await fetch(`${apiBase}/gateway/route`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          name: `New Endpoint ${endpoints.length + 1}`,
-          url: `http://localhost:${9000 + endpoints.length + 1}/service`,
-          protocol: 'http',
+          prompt: `Register endpoint: New Endpoint ${endpoints.length + 1}`,
+          context: { url: `http://localhost:${9000 + endpoints.length + 1}/service`, protocol: 'http' },
+          mode: 'auto_route',
         }),
       });
       showMessage('Endpoint registered successfully', 'success');
@@ -238,10 +275,10 @@ const AgentGatewayPanel: React.FC = () => {
     }
     const ep = endpoints.find(e => e.id === selectedEndpoint);
     try {
-      await fetch(`${apiBase}/gateway/open-connection`, {
+      await fetch(`${apiBase}/gateway/route`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ endpoint_id: selectedEndpoint }),
+        body: JSON.stringify({ endpoint_id: selectedEndpoint, prompt: 'open connection', context: {}, mode: 'auto_route' }),
       });
       showMessage(`Connection opened for ${ep?.name || 'endpoint'}`, 'success');
       fetchConnections();
@@ -271,13 +308,13 @@ const AgentGatewayPanel: React.FC = () => {
     }
     const ep = endpoints.find(e => e.id === selectedEndpoint);
     try {
-      await fetch(`${apiBase}/gateway/route-message`, {
+      await fetch(`${apiBase}/gateway/route`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          endpoint_id: selectedEndpoint,
-          payload: { action: 'test', data: 'sample' },
-          priority: 'normal',
+          prompt: 'route message',
+          context: { endpoint_id: selectedEndpoint, payload: { action: 'test', data: 'sample' } },
+          mode: 'auto_route',
         }),
       });
       showMessage(`Message routed to ${ep?.name || 'endpoint'}`, 'success');
@@ -301,12 +338,13 @@ const AgentGatewayPanel: React.FC = () => {
 
   const handleBroadcast = async () => {
     try {
-      await fetch(`${apiBase}/gateway/broadcast-message`, {
+      await fetch(`${apiBase}/gateway/route`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          payload: { action: 'broadcast', type: 'health_check' },
-          target_endpoints: endpoints.filter(e => e.status === 'connected').map(e => e.id),
+          prompt: 'broadcast health check',
+          context: { action: 'broadcast', type: 'health_check', target_count: endpoints.filter(e => e.status === 'connected').length },
+          mode: 'auto_route',
         }),
       });
       showMessage('Broadcast sent to all connected endpoints', 'success');
