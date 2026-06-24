@@ -169,6 +169,10 @@ const modeGroups = [
       { id: 'capability-registry', label: 'Caps', icon: 'fa-list-check' },
       { id: 'self-optimization', label: 'SelfOpt', icon: 'fa-arrow-up' },
       { id: 'concurrency-manager', label: 'Concur', icon: 'fa-spinner' },
+      { id: 'cognitive-synthesis', label: 'CogSynth', icon: 'fa-brain' },
+      { id: 'game-intelligence', label: 'GameIntel', icon: 'fa-chess' },
+      { id: 'autonomous-creator', label: 'AutoCreate', icon: 'fa-wand-magic-sparkles' },
+      { id: 'interaction-loop', label: 'IntLoop', icon: 'fa-rotate' },
     ],
   },
   {
