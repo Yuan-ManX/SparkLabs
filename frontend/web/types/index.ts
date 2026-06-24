@@ -686,7 +686,13 @@ export type ViewMode =
   | 'game-creator'
   | 'swarm-intelligence'
   | 'scene-graph'
-  | 'ai-system';
+  | 'ai-system'
+  | 'cognitive-synthesis'
+  | 'game-intelligence'
+  | 'autonomous-creator'
+  | 'interaction-loop'
+  | 'behavior-composer'
+  | 'asset-compiler';
 
 // Runtime types
 
