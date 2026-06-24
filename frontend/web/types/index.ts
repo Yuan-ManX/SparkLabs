@@ -461,6 +461,8 @@ export type ViewMode =
   | 'network-replication'
   | 'terrain-system'
   | 'agent-engine-orchestrator'
+  | 'unified-orchestration'
+  | 'unified-runtime'
   | 'agent-dashboard'
   | 'learning-loop-panel'
   | 'memory-graph'
@@ -692,7 +694,13 @@ export type ViewMode =
   | 'autonomous-creator'
   | 'interaction-loop'
   | 'behavior-composer'
-  | 'asset-compiler';
+  | 'asset-compiler'
+  | 'strategic-synthesis'
+  | 'game-vision'
+  | 'adaptive-rendering'
+  | 'physics-optimizer'
+  | 'team-factory'
+  | 'ai-native-engine';
 
 // Runtime types
 
