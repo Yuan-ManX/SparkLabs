@@ -1,294 +1,392 @@
 """
-SparkLabs Engine - Post Processing System
+SparkLabs Engine Post-Processing Effects Pipeline
 
-Screen-space post-processing effects pipeline for cinematic rendering
-and gameplay-driven visual feedback. Manages composable effect chains
-with quality profiles, pass ordering, and parameter-driven effect
-configuration for bloom, depth of field, motion blur, SSAO, vignette,
-chromatic aberration, color grading, film grain, tone mapping,
-and anti-aliasing.
+A full suite of screen-space post-processing effects for the AI-native
+game engine. Provides composable effect chains with quality profiles,
+blend mode control, and stage-based ordering for bloom, blur, color
+grading, vignette, chromatic aberration, motion blur, depth of field,
+ambient occlusion, film grain, lens flare, tone mapping, anti-aliasing,
+sharpen, and pixelate effects.
 
 Architecture:
-  PostProcessingSystem
-    |-- PostEffect (individual effect with typed parameters)
-    |-- EffectChain (ordered sequence of effects per render pass)
-    |-- RenderPass (target binding with pass-order semantics)
-    |-- PipelineProfile (named collection of chains for scene presets)
+  PostProcessingEngine (Singleton-per-name)
+    |-- PostProcessEffect   — individual effect with typed parameters
+    |-- EffectParameter     — parameter metadata with min/max/description
+    |-- PipelineConfig      — named collection of ordered effects
+    |-- EffectResult        — execution outcome with timing diagnostics
+
+Pipeline Stages:
+  1. PRE_PROCESS   — effects applied before the main render pass
+  2. MAIN_PROCESS  — effects composited during the main render pass
+  3. POST_PROCESS  — effects applied after the main render pass
+  4. OVERLAY       — screen-space overlay effects rendered last
 """
 
 from __future__ import annotations
 
 import threading
-import time
 import uuid
+from collections import OrderedDict
 from dataclasses import dataclass, field
+from datetime import datetime
 from enum import Enum
 from typing import Any, Dict, List, Optional
 
 
+# ---------------------------------------------------------------------------
+# Enums
+# ---------------------------------------------------------------------------
+
 class EffectType(Enum):
+    """Screen-space post-processing effect identifiers."""
     BLOOM = "bloom"
-    DOF = "dof"
-    MOTION_BLUR = "motion_blur"
-    SSAO = "ssao"
+    BLUR = "blur"
+    COLOR_GRADING = "color_grading"
     VIGNETTE = "vignette"
     CHROMATIC_ABERRATION = "chromatic_aberration"
-    COLOR_GRADING = "color_grading"
+    MOTION_BLUR = "motion_blur"
+    DEPTH_OF_FIELD = "depth_of_field"
+    AMBIENT_OCCLUSION = "ambient_occlusion"
     FILM_GRAIN = "film_grain"
+    LENS_FLARE = "lens_flare"
     TONE_MAPPING = "tone_mapping"
-    ANTI_ALIASING = "anti_aliasing"
+    ANTIALIASING = "antialiasing"
+    SHARPEN = "sharpen"
+    PIXELATE = "pixelate"
 
 
-class EffectQuality(Enum):
+class BlendMode(Enum):
+    """Compositing blend mode for combining effect output with the framebuffer."""
+    NORMAL = "normal"
+    ADDITIVE = "additive"
+    MULTIPLY = "multiply"
+    SCREEN = "screen"
+    OVERLAY = "overlay"
+    SOFT_LIGHT = "soft_light"
+
+
+class QualityLevel(Enum):
+    """Quality presets that control sample counts and internal precision."""
     LOW = "low"
     MEDIUM = "medium"
     HIGH = "high"
     ULTRA = "ultra"
-    BESPOKE = "bespoke"
 
 
-class PassOrder(Enum):
-    PRE_FX = "pre_fx"
-    MAIN = "main"
-    POST_FX = "post_fx"
+class PipelineStage(Enum):
+    """Ordered stages within the post-processing pipeline."""
+    PRE_PROCESS = "pre_process"
+    MAIN_PROCESS = "main_process"
+    POST_PROCESS = "post_process"
     OVERLAY = "overlay"
-    UI = "ui"
 
+
+# ---------------------------------------------------------------------------
+# Default Effect Parameters
+# ---------------------------------------------------------------------------
 
 DEFAULT_EFFECT_PARAMETERS: Dict[EffectType, Dict[str, Any]] = {
     EffectType.BLOOM: {
-        "intensity": 0.5, "threshold": 0.8, "radius": 1.5,
-        "scatter": 0.7, "tint_r": 1.0, "tint_g": 1.0, "tint_b": 1.0,
+        "intensity": 0.5,
+        "threshold": 0.8,
+        "radius": 1.5,
+        "scatter": 0.7,
+        "tint_r": 1.0,
+        "tint_g": 1.0,
+        "tint_b": 1.0,
     },
-    EffectType.DOF: {
-        "focus_distance": 10.0, "aperture": 1.4, "focal_length": 50.0,
-        "max_blur": 4.0, "near_transition": 0.2, "far_transition": 0.8,
-    },
-    EffectType.MOTION_BLUR: {
-        "intensity": 0.6, "sample_count": 8, "shutter_speed": 0.02,
-        "max_velocity": 10.0, "tile_size": 16,
-    },
-    EffectType.SSAO: {
-        "radius": 1.0, "intensity": 0.8, "bias": 0.025,
-        "sample_count": 16, "occlusion_power": 2.0, "blur_radius": 2.0,
-    },
-    EffectType.VIGNETTE: {
-        "intensity": 0.4, "radius": 0.9, "softness": 0.3,
-        "center_x": 0.5, "center_y": 0.5, "color_r": 0.0, "color_g": 0.0, "color_b": 0.0,
-    },
-    EffectType.CHROMATIC_ABERRATION: {
-        "intensity": 0.3, "radial_amount": 0.5, "tangential_amount": 0.1,
-        "center_x": 0.5, "center_y": 0.5, "max_samples": 3,
+    EffectType.BLUR: {
+        "radius": 4.0,
+        "iterations": 2,
+        "sigma": 1.0,
+        "direction": "both",
     },
     EffectType.COLOR_GRADING: {
-        "intensity": 1.0, "lookup_texture": "",
-        "contrast": 1.0, "saturation": 1.0, "brightness": 0.0,
-        "temperature": 6500.0, "tint": 0.0,
+        "intensity": 1.0,
+        "lookup_texture": "",
+        "contrast": 1.0,
+        "saturation": 1.0,
+        "brightness": 0.0,
+        "temperature": 6500.0,
+        "tint": 0.0,
+    },
+    EffectType.VIGNETTE: {
+        "intensity": 0.4,
+        "radius": 0.9,
+        "softness": 0.3,
+        "center_x": 0.5,
+        "center_y": 0.5,
+        "color_r": 0.0,
+        "color_g": 0.0,
+        "color_b": 0.0,
+    },
+    EffectType.CHROMATIC_ABERRATION: {
+        "intensity": 0.3,
+        "radial_amount": 0.5,
+        "tangential_amount": 0.1,
+        "center_x": 0.5,
+        "center_y": 0.5,
+        "max_samples": 3,
+    },
+    EffectType.MOTION_BLUR: {
+        "intensity": 0.6,
+        "sample_count": 8,
+        "shutter_speed": 0.02,
+        "max_velocity": 10.0,
+        "tile_size": 16,
+    },
+    EffectType.DEPTH_OF_FIELD: {
+        "focus_distance": 10.0,
+        "aperture": 1.4,
+        "focal_length": 50.0,
+        "max_blur": 4.0,
+        "near_transition": 0.2,
+        "far_transition": 0.8,
+    },
+    EffectType.AMBIENT_OCCLUSION: {
+        "radius": 1.0,
+        "intensity": 0.8,
+        "bias": 0.025,
+        "sample_count": 16,
+        "occlusion_power": 2.0,
+        "blur_radius": 2.0,
     },
     EffectType.FILM_GRAIN: {
-        "intensity": 0.15, "grain_size": 1.6, "luminance_contribution": 0.5,
-        "color_shift": 0.1, "animate": True, "seed": 0,
+        "intensity": 0.15,
+        "grain_size": 1.6,
+        "luminance_contribution": 0.5,
+        "color_shift": 0.1,
+        "animate": True,
+        "seed": 0,
+    },
+    EffectType.LENS_FLARE: {
+        "intensity": 0.6,
+        "ghost_count": 4,
+        "halo_width": 0.5,
+        "distortion": 0.3,
+        "threshold": 0.9,
+        "chromatic_spread": 0.02,
     },
     EffectType.TONE_MAPPING: {
-        "exposure": 1.0, "method": "aces",
-        "white_point": 4.0, "gamma": 2.2,
+        "exposure": 1.0,
+        "method": "aces",
+        "white_point": 4.0,
+        "gamma": 2.2,
     },
-    EffectType.ANTI_ALIASING: {
-        "method": "taa", "sample_count": 4, "jitter_scale": 1.0,
-        "feedback_min": 0.88, "feedback_max": 0.97,
+    EffectType.ANTIALIASING: {
+        "method": "taa",
+        "sample_count": 4,
+        "jitter_scale": 1.0,
+        "feedback_min": 0.88,
+        "feedback_max": 0.97,
     },
+    EffectType.SHARPEN: {
+        "intensity": 0.5,
+        "radius": 1.0,
+        "threshold": 0.05,
+        "clamp": 0.2,
+    },
+    EffectType.PIXELATE: {
+        "pixel_size": 4,
+        "resolution_x": 320,
+        "resolution_y": 180,
+        "maintain_aspect": True,
+        "filter": "nearest",
+    },
+}
+
+# ---------------------------------------------------------------------------
+# Quality sample multipliers
+# ---------------------------------------------------------------------------
+
+_QUALITY_SAMPLE_MULTIPLIERS: Dict[QualityLevel, float] = {
+    QualityLevel.LOW: 0.25,
+    QualityLevel.MEDIUM: 0.5,
+    QualityLevel.HIGH: 1.0,
+    QualityLevel.ULTRA: 2.0,
+}
+
+# ---------------------------------------------------------------------------
+# Stage ordering priority
+# ---------------------------------------------------------------------------
+
+_STAGE_PRIORITY: Dict[PipelineStage, int] = {
+    PipelineStage.PRE_PROCESS: 0,
+    PipelineStage.MAIN_PROCESS: 1,
+    PipelineStage.POST_PROCESS: 2,
+    PipelineStage.OVERLAY: 3,
 }
 
 
 # ---------------------------------------------------------------------------
-# Data Classes
+# Dataclasses
 # ---------------------------------------------------------------------------
+
+@dataclass
+class EffectParameter:
+    """Metadata describing a configurable parameter for an effect type."""
+
+    name: str = ""
+    value: Any = None
+    min_val: Any = None
+    max_val: Any = None
+    default_val: Any = None
+    description: str = ""
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "name": self.name,
+            "value": self.value,
+            "min_val": self.min_val,
+            "max_val": self.max_val,
+            "default_val": self.default_val,
+            "description": self.description,
+        }
 
 
 @dataclass
-class PostEffect:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    effect_type: str = "bloom"
-    quality: str = "medium"
+class PostProcessEffect:
+    """A single post-processing effect with typed configuration and
+    stage-based ordering."""
+
+    id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    effect_type: EffectType = EffectType.BLOOM
     enabled: bool = True
     parameters: Dict[str, Any] = field(default_factory=dict)
-    pass_order: str = "post_fx"
-    blend_weight: float = 1.0
-    render_scale: float = 1.0
-    created_at: float = field(default_factory=time.time)
+    blend_mode: BlendMode = BlendMode.NORMAL
+    quality: QualityLevel = QualityLevel.MEDIUM
+    priority: int = 0
+    stage: PipelineStage = PipelineStage.POST_PROCESS
+    created_at: str = field(
+        default_factory=lambda: datetime.utcnow().isoformat()
+    )
+    updated_at: str = field(
+        default_factory=lambda: datetime.utcnow().isoformat()
+    )
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
-            "effect_type": self.effect_type,
-            "quality": self.quality,
+            "effect_type": self.effect_type.value,
             "enabled": self.enabled,
             "parameters": dict(self.parameters),
-            "pass_order": self.pass_order,
-            "blend_weight": round(self.blend_weight, 3),
-            "render_scale": round(self.render_scale, 3),
-            "created_at": self.created_at,
-        }
-
-
-@dataclass
-class EffectChain:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = ""
-    pass_order: str = "post_fx"
-    effect_ids: List[str] = field(default_factory=list)
-    render_scale: float = 1.0
-    target_width: int = 1920
-    target_height: int = 1080
-    is_active: bool = True
-    created_at: float = field(default_factory=time.time)
-    updated_at: float = field(default_factory=time.time)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "pass_order": self.pass_order,
-            "effect_count": len(self.effect_ids),
-            "effect_ids": list(self.effect_ids),
-            "render_scale": round(self.render_scale, 3),
-            "target_width": self.target_width,
-            "target_height": self.target_height,
-            "is_active": self.is_active,
+            "blend_mode": self.blend_mode.value,
+            "quality": self.quality.value,
+            "priority": self.priority,
+            "stage": self.stage.value,
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
 
 
 @dataclass
-class RenderPass:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+class PipelineConfig:
+    """A named, ordered collection of post-processing effects that form a
+    complete pipeline configuration."""
+
+    id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    effects: List[str] = field(default_factory=list)
+    resolution_scale: float = 1.0
+    quality: QualityLevel = QualityLevel.MEDIUM
+    enabled: bool = True
     name: str = ""
-    pass_order: str = "post_fx"
-    chain_ids: List[str] = field(default_factory=list)
-    source_texture: str = "_main_color"
-    target_texture: str = "_post_color"
-    clear_buffer: bool = True
-    render_scale: float = 1.0
-    created_at: float = field(default_factory=time.time)
+    created_at: str = field(
+        default_factory=lambda: datetime.utcnow().isoformat()
+    )
+    updated_at: str = field(
+        default_factory=lambda: datetime.utcnow().isoformat()
+    )
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
+            "effects": list(self.effects),
+            "resolution_scale": self.resolution_scale,
+            "quality": self.quality.value,
+            "enabled": self.enabled,
             "name": self.name,
-            "pass_order": self.pass_order,
-            "chain_count": len(self.chain_ids),
-            "chain_ids": list(self.chain_ids),
-            "source_texture": self.source_texture,
-            "target_texture": self.target_texture,
-            "clear_buffer": self.clear_buffer,
-            "render_scale": round(self.render_scale, 3),
-            "created_at": self.created_at,
-        }
-
-
-@dataclass
-class PipelineProfile:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = ""
-    chain_ids: List[str] = field(default_factory=list)
-    render_pass_id: str = ""
-    description: str = ""
-    default_quality: str = "medium"
-    is_active: bool = False
-    created_at: float = field(default_factory=time.time)
-    updated_at: float = field(default_factory=time.time)
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "chain_count": len(self.chain_ids),
-            "chain_ids": list(self.chain_ids),
-            "render_pass_id": self.render_pass_id,
-            "description": self.description,
-            "default_quality": self.default_quality,
-            "is_active": self.is_active,
+            "effect_count": len(self.effects),
             "created_at": self.created_at,
             "updated_at": self.updated_at,
         }
 
 
-# ---------------------------------------------------------------------------
-# Parameter Helpers
-# ---------------------------------------------------------------------------
+@dataclass
+class EffectResult:
+    """The outcome of applying a single effect within a pipeline."""
 
+    effect_id: str = ""
+    effect_type: EffectType = EffectType.BLOOM
+    execution_time_ms: float = 0.0
+    success: bool = False
+    error: str = ""
 
-_QUALITY_SAMPLE_MULTIPLIERS: Dict[str, float] = {
-    "low": 0.25,
-    "medium": 0.5,
-    "high": 1.0,
-    "ultra": 2.0,
-    "bespoke": 1.0,
-}
-
-
-def _merge_parameters(
-    defaults: Dict[str, Any],
-    overrides: Dict[str, Any],
-) -> Dict[str, Any]:
-    merged = dict(defaults)
-    for key, value in overrides.items():
-        merged[key] = value
-    return merged
-
-
-def _resolve_effect_type(effect_type: str) -> Optional[EffectType]:
-    try:
-        return EffectType(effect_type.lower())
-    except ValueError:
-        pass
-    return None
-
-
-def _resolve_quality(quality: str) -> str:
-    try:
-        EffectQuality(quality.lower())
-        return quality.lower()
-    except ValueError:
-        return "medium"
-
-
-def _resolve_pass_order(pass_order: str) -> str:
-    try:
-        PassOrder(pass_order.lower())
-        return pass_order.lower()
-    except ValueError:
-        return "post_fx"
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "effect_id": self.effect_id,
+            "effect_type": self.effect_type.value,
+            "execution_time_ms": self.execution_time_ms,
+            "success": self.success,
+            "error": self.error,
+        }
 
 
 # ---------------------------------------------------------------------------
-# Post Processing System (Singleton)
+# Post-Processing Engine
 # ---------------------------------------------------------------------------
 
+class PostProcessingEngine:
+    """
+    Post-processing effects pipeline for screen-space visual effects.
 
-class PostProcessingSystem:
-    _instance: Optional["PostProcessingSystem"] = None
-    _lock: threading.RLock = threading.RLock()
+    Manages composable effect chains with quality profiles, blend mode
+    control, and stage-based ordering. Each named instance maintains its
+    own effect registry, pipeline configurations, and execution statistics.
+    """
 
-    def __init__(self) -> None:
-        self._effects: Dict[str, PostEffect] = {}
-        self._chains: Dict[str, EffectChain] = {}
-        self._render_passes: Dict[str, RenderPass] = {}
-        self._profiles: Dict[str, PipelineProfile] = {}
-        self._active_profile_id: str = ""
-        self._effect_count: int = 0
-        self._chain_count: int = 0
-        self._profile_count: int = 0
-        self._frames_processed: int = 0
+    _instances: Dict[str, "PostProcessingEngine"] = {}
+    _lock = threading.RLock()
+
+    def __new__(cls, name: str = "default") -> "PostProcessingEngine":
+        if name not in cls._instances:
+            with cls._lock:
+                if name not in cls._instances:
+                    instance = super().__new__(cls)
+                    instance._initialized = False
+                    cls._instances[name] = instance
+        return cls._instances[name]
 
     @classmethod
-    def get_instance(cls) -> "PostProcessingSystem":
-        if cls._instance is None:
+    def get_instance(cls, name: str = "default") -> "PostProcessingEngine":
+        """Get or create a named PostProcessingEngine instance."""
+        if name not in cls._instances:
             with cls._lock:
-                if cls._instance is None:
-                    cls._instance = cls()
-        return cls._instance
+                if name not in cls._instances:
+                    instance = cls(name)
+                    instance._initialized = False
+                    cls._instances[name] = instance
+        return cls._instances[name]
+
+    def __init__(self, name: str = "default") -> None:
+        if getattr(self, "_initialized", False):
+            return
+        self._initialized = True
+
+        self._name: str = name
+        self._effects: Dict[str, PostProcessEffect] = OrderedDict()
+        self._pipelines: Dict[str, PipelineConfig] = OrderedDict()
+        self._max_effects: int = 128
+        self._effect_count: int = 0
+        self._pipeline_count: int = 0
+        self._stats: Dict[str, Any] = {
+            "total_effects_added": 0,
+            "total_effects_removed": 0,
+            "total_pipelines_created": 0,
+            "total_pipelines_applied": 0,
+            "total_frames_processed": 0,
+            "total_execution_time_ms": 0.0,
+            "last_error": "",
+        }
 
     # ------------------------------------------------------------------
     # Effect Management
@@ -296,488 +394,495 @@ class PostProcessingSystem:
 
     def add_effect(
         self,
-        effect_type: str = "bloom",
+        effect_type: EffectType,
         parameters: Optional[Dict[str, Any]] = None,
-        quality: str = "medium",
-    ) -> Optional[PostEffect]:
+        blend_mode: BlendMode = BlendMode.NORMAL,
+        quality: QualityLevel = QualityLevel.MEDIUM,
+        priority: int = 0,
+        stage: PipelineStage = PipelineStage.POST_PROCESS,
+    ) -> PostProcessEffect:
+        """Add a new post-processing effect to the engine.
+
+        Merges the supplied parameters with the default parameter set for
+        the effect type, then applies quality-based sample count scaling.
+        """
         with self._lock:
-            resolved_type = _resolve_effect_type(effect_type)
-            if resolved_type is None:
-                return None
+            if self._effect_count >= self._max_effects:
+                raise RuntimeError(
+                    f"Maximum effect limit reached ({self._max_effects})"
+                )
 
-            resolved_quality = _resolve_quality(quality)
-            defaults = dict(DEFAULT_EFFECT_PARAMETERS.get(resolved_type, {}))
-            merged_params = _merge_parameters(defaults, parameters or {})
+            defaults = dict(DEFAULT_EFFECT_PARAMETERS.get(effect_type, {}))
+            merged_params = dict(defaults)
+            if parameters:
+                merged_params.update(parameters)
 
-            sample_count = merged_params.get("sample_count", 4)
-            multiplier = _QUALITY_SAMPLE_MULTIPLIERS.get(resolved_quality, 0.5)
-            if "sample_count" in defaults and quality != "bespoke":
-                merged_params["sample_count"] = max(1, int(sample_count * multiplier))
+            # Apply quality-based sample count scaling
+            sample_key = "sample_count"
+            if sample_key in defaults:
+                multiplier = _QUALITY_SAMPLE_MULTIPLIERS.get(quality, 0.5)
+                base = defaults[sample_key]
+                merged_params[sample_key] = max(1, int(base * multiplier))
 
-            effect = PostEffect(
-                effect_type=resolved_type.value,
-                quality=resolved_quality,
+            now = datetime.utcnow().isoformat()
+            effect = PostProcessEffect(
+                effect_type=effect_type,
+                enabled=True,
                 parameters=merged_params,
+                blend_mode=blend_mode,
+                quality=quality,
+                priority=priority,
+                stage=stage,
+                created_at=now,
+                updated_at=now,
             )
             self._effects[effect.id] = effect
             self._effect_count += 1
+            self._stats["total_effects_added"] += 1
             return effect
 
-    def get_effect(self, effect_id: str) -> Optional[PostEffect]:
-        return self._effects.get(effect_id)
-
     def remove_effect(self, effect_id: str) -> bool:
+        """Remove an effect by its ID. Returns True if the effect was found
+        and removed."""
         with self._lock:
             if effect_id not in self._effects:
                 return False
 
-            for chain in self._chains.values():
-                if effect_id in chain.effect_ids:
-                    chain.effect_ids.remove(effect_id)
-                    chain.updated_at = time.time()
+            # Remove references from all pipelines
+            for pipeline in self._pipelines.values():
+                if effect_id in pipeline.effects:
+                    pipeline.effects.remove(effect_id)
+                    pipeline.updated_at = datetime.utcnow().isoformat()
 
             del self._effects[effect_id]
             self._effect_count = max(0, self._effect_count - 1)
+            self._stats["total_effects_removed"] += 1
             return True
 
-    def toggle_effect(self, effect_id: str, enabled: bool) -> bool:
-        with self._lock:
-            effect = self._effects.get(effect_id)
-            if effect is None:
-                return False
-            effect.enabled = enabled
-            return True
-
-    def update_effect_parameter(
+    def update_effect(
         self,
         effect_id: str,
-        param_name: str,
-        value: Any,
-    ) -> bool:
+        parameters: Optional[Dict[str, Any]] = None,
+    ) -> Optional[PostProcessEffect]:
+        """Update the parameters of an existing effect. Returns the updated
+        effect or None if not found."""
+        with self._lock:
+            effect = self._effects.get(effect_id)
+            if effect is None:
+                return None
+
+            if parameters:
+                effect.parameters.update(parameters)
+
+            effect.updated_at = datetime.utcnow().isoformat()
+            return effect
+
+    def enable_effect(self, effect_id: str) -> bool:
+        """Enable an effect. Returns True if the effect was found and
+        successfully enabled."""
         with self._lock:
             effect = self._effects.get(effect_id)
             if effect is None:
                 return False
-            effect.parameters[param_name] = value
+            effect.enabled = True
+            effect.updated_at = datetime.utcnow().isoformat()
             return True
 
-    def set_effect_quality(self, effect_id: str, quality: str) -> bool:
+    def disable_effect(self, effect_id: str) -> bool:
+        """Disable an effect. Returns True if the effect was found and
+        successfully disabled."""
         with self._lock:
             effect = self._effects.get(effect_id)
             if effect is None:
                 return False
-
-            resolved_quality = _resolve_quality(quality)
-            effect.quality = resolved_quality
-
-            sample_key = "sample_count"
-            if sample_key in effect.parameters and quality != "bespoke":
-                base_defaults = DEFAULT_EFFECT_PARAMETERS.get(
-                    EffectType(effect.effect_type), {}
-                )
-                base_samples = base_defaults.get(sample_key, 4)
-                multiplier = _QUALITY_SAMPLE_MULTIPLIERS.get(resolved_quality, 0.5)
-                effect.parameters[sample_key] = max(1, int(base_samples * multiplier))
-
+            effect.enabled = False
+            effect.updated_at = datetime.utcnow().isoformat()
             return True
 
-    # ------------------------------------------------------------------
-    # Chain Management
-    # ------------------------------------------------------------------
-
-    def create_chain(
-        self,
-        name: str,
-        pass_order: str = "post_fx",
-    ) -> Optional[EffectChain]:
+    def reorder_effects(self, effect_ids: List[str]) -> bool:
+        """Reorder effects in the registry according to the provided list of
+        effect IDs. Effects not in the list retain their relative order at
+        the end. Returns True if the reorder succeeded."""
         with self._lock:
-            resolved_order = _resolve_pass_order(pass_order)
-            chain = EffectChain(
-                name=name,
-                pass_order=resolved_order,
-            )
-            self._chains[chain.id] = chain
-            self._chain_count += 1
-            return chain
-
-    def get_chain(self, chain_id: str) -> Optional[EffectChain]:
-        return self._chains.get(chain_id)
-
-    def remove_chain(self, chain_id: str) -> bool:
-        with self._lock:
-            if chain_id not in self._chains:
+            if not effect_ids:
                 return False
 
-            for render_pass in self._render_passes.values():
-                if chain_id in render_pass.chain_ids:
-                    render_pass.chain_ids.remove(chain_id)
-
-            for profile in self._profiles.values():
-                if chain_id in profile.chain_ids:
-                    profile.chain_ids.remove(chain_id)
-                    profile.updated_at = time.time()
-
-            del self._chains[chain_id]
-            self._chain_count = max(0, self._chain_count - 1)
-            return True
-
-    def add_effect_to_chain(
-        self,
-        chain_id: str,
-        effect_id: str,
-        index: int = -1,
-    ) -> bool:
-        with self._lock:
-            chain = self._chains.get(chain_id)
-            if chain is None:
-                return False
-
-            effect = self._effects.get(effect_id)
-            if effect is None:
-                return False
-
-            if effect_id in chain.effect_ids:
-                return False
-
-            if index < 0 or index >= len(chain.effect_ids):
-                chain.effect_ids.append(effect_id)
-            else:
-                chain.effect_ids.insert(index, effect_id)
-
-            chain.updated_at = time.time()
-            return True
-
-    def remove_effect_from_chain(
-        self,
-        chain_id: str,
-        effect_id: str,
-    ) -> bool:
-        with self._lock:
-            chain = self._chains.get(chain_id)
-            if chain is None:
-                return False
-
-            if effect_id not in chain.effect_ids:
-                return False
-
-            chain.effect_ids.remove(effect_id)
-            chain.updated_at = time.time()
-            return True
-
-    def reorder_chain(
-        self,
-        chain_id: str,
-        effect_ids: Optional[List[str]] = None,
-    ) -> bool:
-        with self._lock:
-            chain = self._chains.get(chain_id)
-            if chain is None:
-                return False
-
-            if effect_ids is None:
-                return False
-
-            valid_ids: List[str] = []
+            # Build a new ordered dict from the specified order
+            new_order: Dict[str, PostProcessEffect] = OrderedDict()
             seen: set = set()
+
             for eid in effect_ids:
-                if eid not in seen and eid in self._effects:
-                    valid_ids.append(eid)
+                effect = self._effects.get(eid)
+                if effect is not None and eid not in seen:
+                    new_order[eid] = effect
                     seen.add(eid)
 
-            chain.effect_ids = valid_ids
-            chain.updated_at = time.time()
+            # Append any remaining effects not in the reorder list
+            for eid, effect in self._effects.items():
+                if eid not in seen:
+                    new_order[eid] = effect
+
+            self._effects = new_order
             return True
 
     # ------------------------------------------------------------------
-    # Render Pass Management
+    # Pipeline Management
     # ------------------------------------------------------------------
 
-    def create_render_pass(
+    def create_pipeline(
         self,
         name: str,
-        pass_order: str = "post_fx",
-        source_texture: str = "_main_color",
-        target_texture: str = "_post_color",
-    ) -> RenderPass:
+        effect_ids: Optional[List[str]] = None,
+        quality: QualityLevel = QualityLevel.MEDIUM,
+    ) -> PipelineConfig:
+        """Create a named pipeline configuration from a list of effect IDs.
+
+        Only effects that exist in the registry are included. Effects are
+        ordered by stage priority, then by their individual priority value.
+        """
         with self._lock:
-            resolved_order = _resolve_pass_order(pass_order)
-            render_pass = RenderPass(
-                name=name,
-                pass_order=resolved_order,
-                source_texture=source_texture,
-                target_texture=target_texture,
-            )
-            self._render_passes[render_pass.id] = render_pass
-            return render_pass
+            valid_effects: List[str] = []
+            if effect_ids:
+                for eid in effect_ids:
+                    if eid in self._effects:
+                        valid_effects.append(eid)
 
-    def add_chain_to_render_pass(
-        self,
-        pass_id: str,
-        chain_id: str,
-    ) -> bool:
-        with self._lock:
-            render_pass = self._render_passes.get(pass_id)
-            if render_pass is None:
-                return False
-
-            if chain_id not in self._chains:
-                return False
-
-            if chain_id in render_pass.chain_ids:
-                return False
-
-            render_pass.chain_ids.append(chain_id)
-            return True
-
-    # ------------------------------------------------------------------
-    # Profile Management
-    # ------------------------------------------------------------------
-
-    def create_profile(
-        self,
-        name: str,
-        chain_ids: Optional[List[str]] = None,
-    ) -> Optional[PipelineProfile]:
-        with self._lock:
-            valid_chains: List[str] = []
-            if chain_ids:
-                for cid in chain_ids:
-                    if cid in self._chains:
-                        valid_chains.append(cid)
-
-            profile = PipelineProfile(
-                name=name,
-                chain_ids=valid_chains,
-            )
-            self._profiles[profile.id] = profile
-            self._profile_count += 1
-            return profile
-
-    def get_profile(self, profile_id: str) -> Optional[PipelineProfile]:
-        return self._profiles.get(profile_id)
-
-    def remove_profile(self, profile_id: str) -> bool:
-        with self._lock:
-            if profile_id not in self._profiles:
-                return False
-
-            if self._active_profile_id == profile_id:
-                self._active_profile_id = ""
-
-            del self._profiles[profile_id]
-            self._profile_count = max(0, self._profile_count - 1)
-            return True
-
-    def apply_profile(self, profile_id: str) -> bool:
-        with self._lock:
-            profile = self._profiles.get(profile_id)
-            if profile is None:
-                return False
-
-            for pid, p in self._profiles.items():
-                if pid != profile_id:
-                    p.is_active = False
-
-            profile.is_active = True
-            self._active_profile_id = profile_id
-            return True
-
-    def update_profile(
-        self,
-        profile_id: str,
-        chain_ids: Optional[List[str]] = None,
-        description: Optional[str] = None,
-    ) -> bool:
-        with self._lock:
-            profile = self._profiles.get(profile_id)
-            if profile is None:
-                return False
-
-            if chain_ids is not None:
-                valid_chains: List[str] = []
-                for cid in chain_ids:
-                    if cid in self._chains:
-                        valid_chains.append(cid)
-                profile.chain_ids = valid_chains
-
-            if description is not None:
-                profile.description = description
-
-            profile.updated_at = time.time()
-            return True
-
-    # ------------------------------------------------------------------
-    # Preview
-    # ------------------------------------------------------------------
-
-    def preview_effect(
-        self,
-        effect_type: str,
-        source_texture: str = "",
-    ) -> Dict[str, Any]:
-        resolved_type = _resolve_effect_type(effect_type)
-        if resolved_type is None:
-            return {"error": f"unknown effect type: {effect_type}"}
-
-        defaults = DEFAULT_EFFECT_PARAMETERS.get(resolved_type, {})
-        return {
-            "effect_type": resolved_type.value,
-            "source_texture": source_texture or "_main_color",
-            "default_parameters": dict(defaults),
-            "parameter_count": len(defaults),
-            "supported_qualities": [q.value for q in EffectQuality],
-            "compatible_pass_orders": self._get_compatible_passes(resolved_type),
-        }
-
-    def _get_compatible_passes(self, effect_type: EffectType) -> List[str]:
-        overlay_effects = {
-            EffectType.VIGNETTE,
-            EffectType.CHROMATIC_ABERRATION,
-            EffectType.FILM_GRAIN,
-        }
-        ui_effects = {
-            EffectType.TONE_MAPPING,
-        }
-        if effect_type in overlay_effects:
-            return [PassOrder.OVERLAY.value, PassOrder.POST_FX.value]
-        if effect_type in ui_effects:
-            return [PassOrder.UI.value, PassOrder.POST_FX.value]
-        return [PassOrder.POST_FX.value, PassOrder.MAIN.value]
-
-    # ------------------------------------------------------------------
-    # Process Frame
-    # ------------------------------------------------------------------
-
-    def process_frame(self) -> Dict[str, Any]:
-        with self._lock:
-            self._frames_processed += 1
-
-            active_profile = self._profiles.get(self._active_profile_id)
-            applied_effects: List[str] = []
-            chain_order: List[str] = []
-
-            if active_profile is not None:
-                for chain_id in active_profile.chain_ids:
-                    chain = self._chains.get(chain_id)
-                    if chain is None or not chain.is_active:
-                        continue
-                    chain_order.append(chain.name)
-                    for effect_id in chain.effect_ids:
-                        effect = self._effects.get(effect_id)
-                        if effect is not None and effect.enabled:
-                            applied_effects.append(effect.effect_type)
-            else:
-                sorted_chains = sorted(
-                    self._chains.values(),
-                    key=lambda c: _pass_order_priority(c.pass_order),
+            # Sort effects by stage priority, then by individual priority
+            valid_effects.sort(
+                key=lambda eid: (
+                    _STAGE_PRIORITY.get(
+                        self._effects[eid].stage,
+                        2,
+                    ),
+                    -self._effects[eid].priority,
                 )
-                for chain in sorted_chains:
-                    if not chain.is_active:
-                        continue
-                    chain_order.append(chain.name)
-                    for effect_id in chain.effect_ids:
-                        effect = self._effects.get(effect_id)
-                        if effect is not None and effect.enabled:
-                            applied_effects.append(effect.effect_type)
+            )
 
-            return {
-                "frame": self._frames_processed,
-                "active_profile": self._active_profile_id,
-                "chain_order": chain_order,
-                "applied_effects": applied_effects,
-                "total_applied": len(applied_effects),
-            }
+            now = datetime.utcnow().isoformat()
+            pipeline = PipelineConfig(
+                effects=valid_effects,
+                quality=quality,
+                name=name,
+                created_at=now,
+                updated_at=now,
+            )
+            self._pipelines[pipeline.id] = pipeline
+            self._pipeline_count += 1
+            self._stats["total_pipelines_created"] += 1
+            return pipeline
+
+    def apply_pipeline(self, pipeline_id: str) -> List[EffectResult]:
+        """Apply a pipeline by executing all enabled effects in order.
+
+        Returns a list of EffectResult objects describing the outcome of
+        each effect execution.
+        """
+        with self._lock:
+            pipeline = self._pipelines.get(pipeline_id)
+            if pipeline is None or not pipeline.enabled:
+                return []
+
+            results: List[EffectResult] = []
+            for effect_id in pipeline.effects:
+                effect = self._effects.get(effect_id)
+                if effect is None or not effect.enabled:
+                    continue
+
+                # Simulate effect execution with timing
+                t_start = datetime.utcnow()
+                success = True
+                error = ""
+                try:
+                    # Placeholder for actual GPU/compute shader dispatch
+                    self._execute_effect(effect, pipeline)
+                except Exception as exc:
+                    success = False
+                    error = str(exc)
+                    self._stats["last_error"] = error
+
+                t_end = datetime.utcnow()
+                execution_time_ms = (
+                    t_end - t_start
+                ).total_seconds() * 1000.0
+
+                result = EffectResult(
+                    effect_id=effect.id,
+                    effect_type=effect.effect_type,
+                    execution_time_ms=round(execution_time_ms, 4),
+                    success=success,
+                    error=error,
+                )
+                results.append(result)
+
+            self._stats["total_pipelines_applied"] += 1
+            self._stats["total_frames_processed"] += 1
+            self._stats["total_execution_time_ms"] += sum(
+                r.execution_time_ms for r in results
+            )
+            return results
+
+    def _execute_effect(
+        self,
+        effect: PostProcessEffect,
+        pipeline: PipelineConfig,
+    ) -> None:
+        """Internal dispatch for effect execution. This is a placeholder
+        that would be replaced with actual GPU shader invocation."""
+        _ = effect.parameters
+        _ = pipeline.resolution_scale
+        _ = pipeline.quality
 
     # ------------------------------------------------------------------
-    # Stats
+    # Query
+    # ------------------------------------------------------------------
+
+    def get_effect(self, effect_id: str) -> Optional[PostProcessEffect]:
+        """Get an effect by its ID."""
+        return self._effects.get(effect_id)
+
+    def list_effects(
+        self,
+        stage: Optional[PipelineStage] = None,
+    ) -> List[PostProcessEffect]:
+        """List all effects, optionally filtered by pipeline stage."""
+        with self._lock:
+            if stage is None:
+                return list(self._effects.values())
+            return [
+                e for e in self._effects.values()
+                if e.stage == stage
+            ]
+
+    def get_available_parameters(
+        self,
+        effect_type: EffectType,
+    ) -> List[EffectParameter]:
+        """Get the list of available parameters for a given effect type,
+        including metadata such as min/max values and descriptions."""
+        defaults = DEFAULT_EFFECT_PARAMETERS.get(effect_type, {})
+        param_infos = _EFFECT_PARAMETER_METADATA.get(effect_type, {})
+
+        result: List[EffectParameter] = []
+        for param_name, default_val in defaults.items():
+            info = param_infos.get(param_name, {})
+            result.append(
+                EffectParameter(
+                    name=param_name,
+                    value=default_val,
+                    min_val=info.get("min"),
+                    max_val=info.get("max"),
+                    default_val=default_val,
+                    description=info.get("description", ""),
+                )
+            )
+        return result
+
+    def get_pipeline(self, pipeline_id: str) -> Optional[PipelineConfig]:
+        """Get a pipeline configuration by its ID."""
+        return self._pipelines.get(pipeline_id)
+
+    def list_pipelines(self) -> List[PipelineConfig]:
+        """List all pipeline configurations."""
+        with self._lock:
+            return list(self._pipelines.values())
+
+    def remove_pipeline(self, pipeline_id: str) -> bool:
+        """Remove a pipeline configuration by its ID."""
+        with self._lock:
+            if pipeline_id not in self._pipelines:
+                return False
+            del self._pipelines[pipeline_id]
+            self._pipeline_count = max(0, self._pipeline_count - 1)
+            return True
+
+    def set_max_effects(self, limit: int) -> None:
+        """Set the maximum number of effects allowed."""
+        with self._lock:
+            self._max_effects = max(1, limit)
+
+    # ------------------------------------------------------------------
+    # Statistics
     # ------------------------------------------------------------------
 
     def get_stats(self) -> Dict[str, Any]:
-        total_chain_effects = sum(
-            len(c.effect_ids) for c in self._chains.values()
-        )
-        enabled_effects = sum(
-            1 for e in self._effects.values() if e.enabled
-        )
-        active_chains = sum(
-            1 for c in self._chains.values() if c.is_active
-        )
-        active_profile_name = ""
-        active = self._profiles.get(self._active_profile_id)
-        if active is not None:
-            active_profile_name = active.name
+        """Get comprehensive engine statistics."""
+        with self._lock:
+            enabled_count = sum(
+                1 for e in self._effects.values() if e.enabled
+            )
+            disabled_count = self._effect_count - enabled_count
 
-        return {
-            "effect_count": self._effect_count,
-            "chain_count": self._chain_count,
-            "profile_count": self._profile_count,
-            "render_pass_count": len(self._render_passes),
-            "stored_effects": len(self._effects),
-            "stored_chains": len(self._chains),
-            "stored_profiles": len(self._profiles),
-            "total_chain_effects": total_chain_effects,
-            "enabled_effects": enabled_effects,
-            "active_chains": active_chains,
-            "active_profile_id": self._active_profile_id,
-            "active_profile_name": active_profile_name,
-            "frames_processed": self._frames_processed,
-        }
+            stage_distribution: Dict[str, int] = {}
+            for e in self._effects.values():
+                key = e.stage.value
+                stage_distribution[key] = stage_distribution.get(key, 0) + 1
+
+            type_distribution: Dict[str, int] = {}
+            for e in self._effects.values():
+                key = e.effect_type.value
+                type_distribution[key] = type_distribution.get(key, 0) + 1
+
+            quality_distribution: Dict[str, int] = {}
+            for e in self._effects.values():
+                key = e.quality.value
+                quality_distribution[key] = quality_distribution.get(key, 0) + 1
+
+            return {
+                "instance_name": self._name,
+                "effect_count": self._effect_count,
+                "enabled_effects": enabled_count,
+                "disabled_effects": disabled_count,
+                "max_effects": self._max_effects,
+                "pipeline_count": self._pipeline_count,
+                "stage_distribution": stage_distribution,
+                "effect_type_distribution": type_distribution,
+                "quality_distribution": quality_distribution,
+                "total_effects_added": self._stats["total_effects_added"],
+                "total_effects_removed": self._stats["total_effects_removed"],
+                "total_pipelines_created": self._stats["total_pipelines_created"],
+                "total_pipelines_applied": self._stats["total_pipelines_applied"],
+                "total_frames_processed": self._stats["total_frames_processed"],
+                "total_execution_time_ms": round(
+                    self._stats["total_execution_time_ms"], 4
+                ),
+                "last_error": self._stats["last_error"],
+            }
 
     # ------------------------------------------------------------------
     # Reset
     # ------------------------------------------------------------------
 
     def reset(self) -> None:
+        """Reset the entire post-processing engine state."""
         with self._lock:
-            self._effects.clear()
-            self._chains.clear()
-            self._render_passes.clear()
-            self._profiles.clear()
-            self._active_profile_id = ""
+            self._effects = OrderedDict()
+            self._pipelines = OrderedDict()
             self._effect_count = 0
-            self._chain_count = 0
-            self._profile_count = 0
-            self._frames_processed = 0
-
-    # ------------------------------------------------------------------
-    # Query Helpers
-    # ------------------------------------------------------------------
-
-    def get_effects_by_type(self, effect_type: str) -> List[PostEffect]:
-        resolved = _resolve_effect_type(effect_type)
-        if resolved is None:
-            return []
-        return [
-            e for e in self._effects.values()
-            if e.effect_type == resolved.value
-        ]
-
-    def get_chains_by_pass_order(self, pass_order: str) -> List[EffectChain]:
-        resolved = _resolve_pass_order(pass_order)
-        return [
-            c for c in self._chains.values()
-            if c.pass_order == resolved
-        ]
-
-    def get_all_effects(self) -> Dict[str, Dict[str, Any]]:
-        return {eid: e.to_dict() for eid, e in self._effects.items()}
-
-    def get_all_chains(self) -> Dict[str, Dict[str, Any]]:
-        return {cid: c.to_dict() for cid, c in self._chains.items()}
-
-    def get_all_profiles(self) -> Dict[str, Dict[str, Any]]:
-        return {pid: p.to_dict() for pid, p in self._profiles.items()}
+            self._pipeline_count = 0
+            self._stats = {
+                "total_effects_added": 0,
+                "total_effects_removed": 0,
+                "total_pipelines_created": 0,
+                "total_pipelines_applied": 0,
+                "total_frames_processed": 0,
+                "total_execution_time_ms": 0.0,
+                "last_error": "",
+            }
 
 
-def _pass_order_priority(pass_order: str) -> int:
-    order_map = {
-        PassOrder.PRE_FX.value: 0,
-        PassOrder.MAIN.value: 1,
-        PassOrder.POST_FX.value: 2,
-        PassOrder.OVERLAY.value: 3,
-        PassOrder.UI.value: 4,
-    }
-    return order_map.get(pass_order, 2)
+# ---------------------------------------------------------------------------
+# Effect Parameter Metadata
+# ---------------------------------------------------------------------------
+
+_EFFECT_PARAMETER_METADATA: Dict[EffectType, Dict[str, Dict[str, Any]]] = {
+    EffectType.BLOOM: {
+        "intensity": {"min": 0.0, "max": 2.0, "description": "Overall bloom intensity multiplier"},
+        "threshold": {"min": 0.0, "max": 1.0, "description": "Luminance threshold for bloom contribution"},
+        "radius": {"min": 0.1, "max": 10.0, "description": "Blur radius for bloom spread"},
+        "scatter": {"min": 0.0, "max": 1.0, "description": "Light scatter diffusion amount"},
+        "tint_r": {"min": 0.0, "max": 1.0, "description": "Red channel tint for bloom"},
+        "tint_g": {"min": 0.0, "max": 1.0, "description": "Green channel tint for bloom"},
+        "tint_b": {"min": 0.0, "max": 1.0, "description": "Blue channel tint for bloom"},
+    },
+    EffectType.BLUR: {
+        "radius": {"min": 0.0, "max": 32.0, "description": "Blur kernel radius in pixels"},
+        "iterations": {"min": 1, "max": 8, "description": "Number of blur passes"},
+        "sigma": {"min": 0.1, "max": 10.0, "description": "Gaussian sigma value"},
+        "direction": {"min": None, "max": None, "description": "Blur direction: horizontal, vertical, or both"},
+    },
+    EffectType.COLOR_GRADING: {
+        "intensity": {"min": 0.0, "max": 2.0, "description": "Color grading influence strength"},
+        "lookup_texture": {"min": None, "max": None, "description": "Path to LUT texture asset"},
+        "contrast": {"min": 0.0, "max": 3.0, "description": "Contrast adjustment multiplier"},
+        "saturation": {"min": 0.0, "max": 3.0, "description": "Saturation adjustment multiplier"},
+        "brightness": {"min": -1.0, "max": 1.0, "description": "Brightness offset"},
+        "temperature": {"min": 1000.0, "max": 40000.0, "description": "White balance temperature in Kelvin"},
+        "tint": {"min": -1.0, "max": 1.0, "description": "Green/magenta tint adjustment"},
+    },
+    EffectType.VIGNETTE: {
+        "intensity": {"min": 0.0, "max": 1.0, "description": "Vignette darkening strength"},
+        "radius": {"min": 0.1, "max": 1.0, "description": "Radius of the vignette circle"},
+        "softness": {"min": 0.0, "max": 1.0, "description": "Edge softness transition"},
+        "center_x": {"min": 0.0, "max": 1.0, "description": "Horizontal center of vignette"},
+        "center_y": {"min": 0.0, "max": 1.0, "description": "Vertical center of vignette"},
+        "color_r": {"min": 0.0, "max": 1.0, "description": "Red channel of vignette color"},
+        "color_g": {"min": 0.0, "max": 1.0, "description": "Green channel of vignette color"},
+        "color_b": {"min": 0.0, "max": 1.0, "description": "Blue channel of vignette color"},
+    },
+    EffectType.CHROMATIC_ABERRATION: {
+        "intensity": {"min": 0.0, "max": 1.0, "description": "Overall chromatic aberration strength"},
+        "radial_amount": {"min": 0.0, "max": 1.0, "description": "Radial distortion component"},
+        "tangential_amount": {"min": 0.0, "max": 1.0, "description": "Tangential distortion component"},
+        "center_x": {"min": 0.0, "max": 1.0, "description": "Horizontal distortion center"},
+        "center_y": {"min": 0.0, "max": 1.0, "description": "Vertical distortion center"},
+        "max_samples": {"min": 1, "max": 16, "description": "Maximum sample count for color separation"},
+    },
+    EffectType.MOTION_BLUR: {
+        "intensity": {"min": 0.0, "max": 1.0, "description": "Motion blur strength"},
+        "sample_count": {"min": 2, "max": 32, "description": "Number of velocity samples per pixel"},
+        "shutter_speed": {"min": 0.0, "max": 0.5, "description": "Virtual shutter speed in seconds"},
+        "max_velocity": {"min": 1.0, "max": 100.0, "description": "Maximum velocity clamp"},
+        "tile_size": {"min": 8, "max": 64, "description": "Tile size for velocity buffer"},
+    },
+    EffectType.DEPTH_OF_FIELD: {
+        "focus_distance": {"min": 0.1, "max": 1000.0, "description": "Distance to the focal plane"},
+        "aperture": {"min": 0.1, "max": 32.0, "description": "Aperture f-stop value"},
+        "focal_length": {"min": 1.0, "max": 300.0, "description": "Focal length in millimeters"},
+        "max_blur": {"min": 0.0, "max": 16.0, "description": "Maximum blur radius in pixels"},
+        "near_transition": {"min": 0.0, "max": 1.0, "description": "Near-field focus transition zone"},
+        "far_transition": {"min": 0.0, "max": 1.0, "description": "Far-field focus transition zone"},
+    },
+    EffectType.AMBIENT_OCCLUSION: {
+        "radius": {"min": 0.1, "max": 10.0, "description": "AO sampling radius in world units"},
+        "intensity": {"min": 0.0, "max": 2.0, "description": "AO darkening intensity"},
+        "bias": {"min": 0.0, "max": 0.1, "description": "Depth bias to prevent self-occlusion"},
+        "sample_count": {"min": 4, "max": 64, "description": "Number of AO samples per pixel"},
+        "occlusion_power": {"min": 0.5, "max": 5.0, "description": "Exponent applied to occlusion value"},
+        "blur_radius": {"min": 0.0, "max": 8.0, "description": "Bilateral blur radius for AO"},
+    },
+    EffectType.FILM_GRAIN: {
+        "intensity": {"min": 0.0, "max": 1.0, "description": "Film grain intensity"},
+        "grain_size": {"min": 0.1, "max": 5.0, "description": "Grain particle size"},
+        "luminance_contribution": {"min": 0.0, "max": 1.0, "description": "How much grain affects luminance"},
+        "color_shift": {"min": 0.0, "max": 1.0, "description": "Chromatic variation in grain"},
+        "animate": {"min": None, "max": None, "description": "Whether grain pattern animates each frame"},
+        "seed": {"min": 0, "max": 65535, "description": "Random seed for grain pattern"},
+    },
+    EffectType.LENS_FLARE: {
+        "intensity": {"min": 0.0, "max": 2.0, "description": "Overall lens flare intensity"},
+        "ghost_count": {"min": 1, "max": 16, "description": "Number of ghost reflections"},
+        "halo_width": {"min": 0.0, "max": 1.0, "description": "Width of the central halo"},
+        "distortion": {"min": 0.0, "max": 1.0, "description": "Anamorphic distortion amount"},
+        "threshold": {"min": 0.0, "max": 1.0, "description": "Brightness threshold for flare generation"},
+        "chromatic_spread": {"min": 0.0, "max": 0.1, "description": "Color separation in flare elements"},
+    },
+    EffectType.TONE_MAPPING: {
+        "exposure": {"min": 0.0, "max": 10.0, "description": "Exposure multiplier"},
+        "method": {"min": None, "max": None, "description": "Tone mapping method: aces, filmic, reinhard, uncharted2"},
+        "white_point": {"min": 0.0, "max": 20.0, "description": "White point luminance"},
+        "gamma": {"min": 1.0, "max": 3.0, "description": "Gamma correction value"},
+    },
+    EffectType.ANTIALIASING: {
+        "method": {"min": None, "max": None, "description": "AA method: taa, fxaa, smaa, msaa"},
+        "sample_count": {"min": 2, "max": 16, "description": "Number of samples per pixel"},
+        "jitter_scale": {"min": 0.0, "max": 2.0, "description": "TAA jitter pattern scale"},
+        "feedback_min": {"min": 0.0, "max": 1.0, "description": "Minimum temporal feedback blend"},
+        "feedback_max": {"min": 0.0, "max": 1.0, "description": "Maximum temporal feedback blend"},
+    },
+    EffectType.SHARPEN: {
+        "intensity": {"min": 0.0, "max": 2.0, "description": "Sharpening intensity"},
+        "radius": {"min": 0.0, "max": 8.0, "description": "Sharpening kernel radius"},
+        "threshold": {"min": 0.0, "max": 1.0, "description": "Edge detection threshold for selective sharpening"},
+        "clamp": {"min": 0.0, "max": 1.0, "description": "Maximum sharpening delta clamp"},
+    },
+    EffectType.PIXELATE: {
+        "pixel_size": {"min": 1, "max": 64, "description": "Size of each pixel block"},
+        "resolution_x": {"min": 1, "max": 1920, "description": "Target horizontal resolution"},
+        "resolution_y": {"min": 1, "max": 1080, "description": "Target vertical resolution"},
+        "maintain_aspect": {"min": None, "max": None, "description": "Whether to preserve aspect ratio"},
+        "filter": {"min": None, "max": None, "description": "Downsample filter: nearest, bilinear"},
+    },
+}
 
 
 # ---------------------------------------------------------------------------
@@ -785,5 +890,13 @@ def _pass_order_priority(pass_order: str) -> int:
 # ---------------------------------------------------------------------------
 
 
-def get_post_processing() -> PostProcessingSystem:
-    return PostProcessingSystem.get_instance()
+def get_post_processing(name: str = "default") -> PostProcessingEngine:
+    """Get or create a named PostProcessingEngine instance.
+
+    Args:
+        name: A unique name for the engine instance. Defaults to 'default'.
+
+    Returns:
+        The PostProcessingEngine singleton instance for the given name.
+    """
+    return PostProcessingEngine.get_instance(name)
