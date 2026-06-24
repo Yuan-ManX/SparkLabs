@@ -270,6 +270,10 @@ import InteractionDesignerPanel from './InteractionDesignerPanel';
 import NarrativeBranchPanel from './NarrativeBranchPanel';
 import ConcurrencyManagerPanel from './ConcurrencyManagerPanel';
 import DelegationBrokerPanel from './DelegationBrokerPanel';
+import CognitiveSynthesisPanel from './CognitiveSynthesisPanel';
+import GameIntelligencePanel from './GameIntelligencePanel';
+import AutonomousCreatorPanel from './AutonomousCreatorPanel';
+import InteractionLoopPanel from './InteractionLoopPanel';
 import { LifecyclePanel, SlashCommandsPanel, ValidationHooksPanel } from './LifecyclePanels';
 import { TaskExecutorPanel } from './TaskExecutorPanel';
 import NotificationToast from './NotificationToast';
@@ -785,6 +789,10 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'swarm-intelligence': return <SwarmIntelligencePanel />;
       case 'scene-graph': return <SceneGraphPanel />;
       case 'ai-system': return <AISystemPanel />;
+      case 'cognitive-synthesis': return <CognitiveSynthesisPanel />;
+      case 'game-intelligence': return <GameIntelligencePanel />;
+      case 'autonomous-creator': return <AutonomousCreatorPanel />;
+      case 'interaction-loop': return <InteractionLoopPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
