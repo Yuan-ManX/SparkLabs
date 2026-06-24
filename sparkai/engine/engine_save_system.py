@@ -1,488 +1,826 @@
 """
-SparkLabs Engine - Save System
+SparkLabs Engine - Save System Engine
 
-Game state persistence engine providing save/load functionality with
-slot management, auto-save scheduling, checkpoint support, and cloud
-sync readiness. Handles serialization of game objects, scene state,
-player progress, and configuration settings.
+Game save/load serialization with versioning, compression, cloud sync
+support, and backwards compatibility. Provides save slot management,
+checksum verification, and export/import functionality.
 
 Architecture:
-  SaveSystem
-    |-- SlotManager (create, delete, and enumerate save slots)
-    |-- Serializer (game object to byte/slot representation)
-    |-- AutoSaveScheduler (time-based and event-based auto-save triggers)
-    |-- CheckpointManager (named save points within a playthrough)
-    |-- MigrationEngine (save format versioning and compatibility)
+  SaveSystemEngine (Singleton)
+    |-- SaveSlot         — named save slot with history and metadata
+    |-- SaveData         — serialized game state with entity and variable data
+    |-- SaveMetadata     — descriptive metadata for each save entry
 
-Save Features:
-  - SLOTS: up to 10 manual save slots with metadata preview
-  - AUTO_SAVE: configurable interval-based and milestone-based saving
-  - CHECKPOINTS: named restore points during gameplay
-  - METADATA: playtime, progress %, screenshot reference, timestamp
-  - MIGRATION: version-tagged saves with forward compatibility
+Save Pipeline:
+  1. Save     — serialize game state, compute checksum, store in slot
+  2. Load     — verify integrity, deserialize, apply state
+  3. Verify   — validate checksum and data structure
+  4. Export   — serialize to portable format
+  5. Import   — deserialize from portable format with version migration
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
+import math
 import threading
 import time
 import uuid
 import zlib
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple, Set
 
 
-class SaveType(Enum):
-    MANUAL = "manual"
-    AUTO = "auto"
-    CHECKPOINT = "checkpoint"
-    QUICK = "quick"
+# ---------------------------------------------------------------------------
+# Enums
+# ---------------------------------------------------------------------------
+
+class SaveFormat(Enum):
+    """Format type for save data serialization."""
+    JSON = "json"
+    BINARY = "binary"
+    COMPRESSED = "compressed"
     CLOUD = "cloud"
 
 
-class SaveSlotState(Enum):
-    EMPTY = "empty"
-    ACTIVE = "active"
+class SaveSlotType(Enum):
+    """Classification of a save slot by creation method."""
+    AUTO = "auto"
+    MANUAL = "manual"
+    QUICK = "quick"
+    CHECKPOINT = "checkpoint"
+
+
+class SaveStatus(Enum):
+    """Current status of a save operation or save data."""
+    IDLE = "idle"
+    SAVING = "saving"
+    LOADING = "loading"
+    VERIFYING = "verifying"
     CORRUPTED = "corrupted"
-    LOCKED = "locked"
-    SYNCING = "syncing"
 
 
-class AutoSaveTrigger(Enum):
-    INTERVAL = "interval"
-    LEVEL_START = "level_start"
-    LEVEL_END = "level_end"
-    BOSS_DEFEATED = "boss_defeated"
-    ITEM_ACQUIRED = "item_acquired"
-    DANGER_ZONE = "danger_zone"
+# ---------------------------------------------------------------------------
+# Dataclasses
+# ---------------------------------------------------------------------------
+
+@dataclass
+class SaveMetadata:
+    """Descriptive metadata for a save data entry."""
+
+    id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    slot_name: str = ""
+    slot_type: SaveSlotType = SaveSlotType.MANUAL
+    game_version: str = "1.0.0"
+    timestamp: float = field(default_factory=time.time)
+    playtime: float = 0.0
+    level_name: str = ""
+    thumbnail_ref: str = ""
+    checksum: str = ""
+    description: str = ""
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "slot_name": self.slot_name,
+            "slot_type": self.slot_type.value,
+            "game_version": self.game_version,
+            "timestamp": self.timestamp,
+            "playtime": self.playtime,
+            "level_name": self.level_name,
+            "thumbnail_ref": self.thumbnail_ref,
+            "checksum": self.checksum,
+            "description": self.description,
+            "metadata": dict(self.metadata),
+        }
 
 
-class SaveVersion(Enum):
-    V1_0 = "1.0"
-    V1_1 = "1.1"
-    V2_0 = "2.0"
+@dataclass
+class SaveData:
+    """Complete save data containing game state and entity information."""
+
+    id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    metadata: SaveMetadata = field(default_factory=SaveMetadata)
+    game_state: Dict[str, Any] = field(default_factory=dict)
+    entity_states: Dict[str, Dict[str, Any]] = field(default_factory=dict)
+    variables: Dict[str, Any] = field(default_factory=dict)
+    flags: Dict[str, bool] = field(default_factory=dict)
+    inventory: List[Dict[str, Any]] = field(default_factory=list)
+    achievements: List[Dict[str, Any]] = field(default_factory=list)
+    scene_id: str = ""
+    format: SaveFormat = SaveFormat.JSON
+    metadata: Dict[str, Any] = field(default_factory=dict)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "metadata": self.metadata.to_dict(),
+            "game_state": dict(self.game_state),
+            "entity_states": {
+                eid: dict(state) for eid, state in self.entity_states.items()
+            },
+            "variables": dict(self.variables),
+            "flags": dict(self.flags),
+            "inventory": list(self.inventory),
+            "achievements": list(self.achievements),
+            "scene_id": self.scene_id,
+            "format": self.format.value,
+            "metadata": dict(self.metadata),
+        }
 
 
 @dataclass
 class SaveSlot:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    slot_number: int = 0
-    save_type: SaveType = SaveType.MANUAL
-    state: SaveSlotState = SaveSlotState.EMPTY
-    profile_name: str = ""
-    playtime_seconds: float = 0.0
-    progress_pct: float = 0.0
-    level_name: str = ""
-    player_position: Dict[str, float] = field(default_factory=dict)
-    timestamp: float = 0.0
-    file_size_bytes: int = 0
-    version: SaveVersion = SaveVersion.V1_0
-    scene_id: str = ""
-    screenshot_id: str = ""
-    game_data: Dict[str, Any] = field(default_factory=dict)
+    """A named save slot with history of save data entries."""
+
+    id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    slot_index: int = 0
+    slot_type: SaveSlotType = SaveSlotType.MANUAL
+    current_save: Optional[SaveData] = None
+    save_history: List[SaveData] = field(default_factory=list)
+    max_history: int = 10
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
-            "slot_number": self.slot_number,
-            "save_type": self.save_type.value,
-            "state": self.state.value,
-            "profile_name": self.profile_name,
-            "playtime_seconds": round(self.playtime_seconds, 1),
-            "progress_pct": round(self.progress_pct, 1),
-            "level_name": self.level_name,
-            "player_position": self.player_position,
-            "timestamp": self.timestamp,
-            "file_size_bytes": self.file_size_bytes,
-            "version": self.version.value,
-            "scene_id": self.scene_id,
-            "screenshot_id": self.screenshot_id,
+            "slot_index": self.slot_index,
+            "slot_type": self.slot_type.value,
+            "has_current_save": self.current_save is not None,
+            "history_count": len(self.save_history),
+            "max_history": self.max_history,
+            "metadata": dict(self.metadata),
         }
 
 
-@dataclass
-class Checkpoint:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    name: str = ""
-    slot_id: str = ""
-    description: str = ""
-    playtime_at_checkpoint: float = 0.0
-    progress_at_checkpoint: float = 0.0
-    is_one_shot: bool = True
-    has_been_used: bool = False
-    game_data_snapshot: Dict[str, Any] = field(default_factory=dict)
-    created_at: float = field(default_factory=time.time)
+# ---------------------------------------------------------------------------
+# Save System Engine
+# ---------------------------------------------------------------------------
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "name": self.name,
-            "slot_id": self.slot_id,
-            "description": self.description,
-            "playtime_at_checkpoint": round(self.playtime_at_checkpoint, 1),
-            "progress_at_checkpoint": round(self.progress_at_checkpoint, 1),
-            "is_one_shot": self.is_one_shot,
-            "has_been_used": self.has_been_used,
-            "created_at": self.created_at,
-        }
+class SaveSystemEngine:
+    """
+    Game save/load system with serialization, versioning, and verification.
 
+    Manages save slots, supports multiple save formats, automatic backups
+    through history, and integrity verification via checksums. Provides
+    export and import for save data portability.
+    """
 
-@dataclass
-class AutoSaveConfig:
-    interval_seconds: float = 300.0
-    max_auto_saves: int = 3
-    enabled_triggers: List[AutoSaveTrigger] = field(default_factory=lambda: [
-        AutoSaveTrigger.INTERVAL,
-        AutoSaveTrigger.LEVEL_START,
-        AutoSaveTrigger.BOSS_DEFEATED,
-    ])
-    is_enabled: bool = True
-    last_auto_save: float = 0.0
-
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "interval_seconds": self.interval_seconds,
-            "max_auto_saves": self.max_auto_saves,
-            "enabled_triggers": [t.value for t in self.enabled_triggers],
-            "is_enabled": self.is_enabled,
-            "last_auto_save": self.last_auto_save,
-        }
-
-
-class SaveSystem:
-    """Game state persistence engine with slot and checkpoint management."""
-
-    _instance: Optional["SaveSystem"] = None
+    _instance: Optional["SaveSystemEngine"] = None
     _lock = threading.RLock()
 
-    MAX_SLOTS = 10
-    MAX_CHECKPOINTS = 50
+    _DEFAULT_MAX_HISTORY: int = 10
+    _DEFAULT_GAME_VERSION: str = "1.0.0"
 
-    def __init__(self) -> None:
-        self._slots: Dict[str, SaveSlot] = {}
-        self._checkpoints: Dict[str, Checkpoint] = {}
-        self._auto_save_config = AutoSaveConfig()
-        self._active_slot_id: Optional[str] = None
-        self._total_playtime: float = 0.0
-        self._progress_pct: float = 0.0
-        self._save_log: List[Dict[str, Any]] = []
-        self._auto_save_timer: float = 0.0
+    def __new__(cls) -> "SaveSystemEngine":
+        if cls._instance is None:
+            with cls._lock:
+                if cls._instance is None:
+                    cls._instance = super().__new__(cls)
+                    cls._instance._initialized = False
+        return cls._instance
 
     @classmethod
-    def get_instance(cls) -> "SaveSystem":
+    def get_instance(cls) -> "SaveSystemEngine":
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
                     cls._instance = cls()
+                    cls._instance._initialized = False
         return cls._instance
 
-    # ---- Slot Management ----
+    def __init__(self) -> None:
+        if self._initialized:
+            return
+        self._initialized = True
 
-    def initialize_slots(self) -> List[SaveSlot]:
-        slots = []
-        for i in range(1, self.MAX_SLOTS + 1):
-            slot = SaveSlot(slot_number=i)
+        self._slots: Dict[str, SaveSlot] = {}
+        self._slot_index_map: Dict[int, str] = {}
+        self._status: SaveStatus = SaveStatus.IDLE
+        self._save_count: int = 0
+        self._load_count: int = 0
+        self._verify_count: int = 0
+        self._corrupted_count: int = 0
+        self._creation_time: float = time.time()
+        self._version_migrations: Dict[str, Callable[[SaveData], SaveData]] = {}
+
+    # ------------------------------------------------------------------
+    # Slot Management
+    # ------------------------------------------------------------------
+
+    def create_slot(
+        self,
+        slot_index: int,
+        slot_type: SaveSlotType = SaveSlotType.MANUAL,
+        max_history: int = _DEFAULT_MAX_HISTORY,
+        metadata: Optional[Dict[str, Any]] = None,
+    ) -> SaveSlot:
+        """Create a new save slot.
+
+        If a slot with the given index already exists, returns the existing slot.
+
+        Args:
+            slot_index: Numeric index for the slot (e.g., 0, 1, 2).
+            slot_type: Type classification for the slot.
+            max_history: Maximum number of historical saves to retain.
+            metadata: Optional arbitrary metadata.
+
+        Returns:
+            The created or existing SaveSlot.
+        """
+        with self._lock:
+            existing_id = self._slot_index_map.get(slot_index)
+            if existing_id is not None and existing_id in self._slots:
+                return self._slots[existing_id]
+
+            slot = SaveSlot(
+                slot_index=slot_index,
+                slot_type=slot_type,
+                max_history=max_history,
+                metadata=metadata or {},
+            )
             self._slots[slot.id] = slot
-            slots.append(slot)
-        return slots
+            self._slot_index_map[slot_index] = slot.id
+            return slot
 
-    def create_save(self,
-                    slot_number: int,
-                    save_type: str = "manual",
-                    profile_name: str = "",
-                    level_name: str = "",
-                    player_position: Optional[Dict[str, float]] = None,
-                    scene_id: str = "",
-                    game_data: Optional[Dict[str, Any]] = None) -> Optional[SaveSlot]:
-        if slot_number < 1 or slot_number > self.MAX_SLOTS:
+    def get_slot(self, slot_index: int) -> Optional[SaveSlot]:
+        """Get a save slot by its index."""
+        slot_id = self._slot_index_map.get(slot_index)
+        if slot_id is None:
             return None
-
-        try:
-            st = SaveType(save_type.lower())
-        except ValueError:
-            st = SaveType.MANUAL
-
-        existing = self._find_slot_by_number(slot_number)
-        if existing:
-            slot = existing
-        else:
-            slot = SaveSlot(slot_number=slot_number)
-
-        slot.save_type = st
-        slot.state = SaveSlotState.ACTIVE
-        slot.profile_name = profile_name
-        slot.playtime_seconds = self._total_playtime
-        slot.progress_pct = self._progress_pct
-        slot.level_name = level_name
-        slot.player_position = player_position or {}
-        slot.timestamp = time.time()
-        slot.scene_id = scene_id
-        slot.version = SaveVersion.V1_0
-        slot.game_data = game_data or {}
-        serialized = json.dumps(slot.to_dict())
-        slot.file_size_bytes = len(serialized.encode("utf-8"))
-
-        self._slots[slot.id] = slot
-        self._active_slot_id = slot.id
-        self._save_log.append({
-            "action": "save_created",
-            "slot": slot_number,
-            "type": st.value,
-            "timestamp": time.time(),
-        })
-        return slot
-
-    def load_save(self, slot_id: str) -> Optional[Dict[str, Any]]:
-        slot = self._slots.get(slot_id)
-        if slot is None or slot.state == SaveSlotState.EMPTY:
-            return None
-        if slot.state == SaveSlotState.CORRUPTED:
-            return {"error": "corrupted_save", "slot_id": slot_id}
-        self._active_slot_id = slot_id
-        self._total_playtime = slot.playtime_seconds
-        self._progress_pct = slot.progress_pct
-        self._save_log.append({
-            "action": "save_loaded",
-            "slot": slot.slot_number,
-            "timestamp": time.time(),
-        })
-        return {
-            "loaded": True,
-            "slot": slot.to_dict(),
-            "game_data": slot.game_data,
-        }
-
-    def delete_save(self, slot_id: str) -> bool:
-        slot = self._slots.get(slot_id)
-        if slot is None:
-            return False
-        slot.state = SaveSlotState.EMPTY
-        slot.game_data = {}
-        slot.profile_name = ""
-        slot.playtime_seconds = 0.0
-        slot.progress_pct = 0.0
-        slot.file_size_bytes = 0
-        if self._active_slot_id == slot_id:
-            self._active_slot_id = None
-        self._save_log.append({
-            "action": "save_deleted",
-            "slot": slot.slot_number,
-            "timestamp": time.time(),
-        })
-        return True
-
-    def list_slots(self) -> List[SaveSlot]:
-        return sorted(
-            self._slots.values(),
-            key=lambda s: s.slot_number,
-        )
-
-    def get_slot(self, slot_id: str) -> Optional[SaveSlot]:
         return self._slots.get(slot_id)
 
-    def get_active_slot(self) -> Optional[SaveSlot]:
-        if self._active_slot_id:
-            return self._slots.get(self._active_slot_id)
-        return None
+    def list_slots(self) -> List[SaveSlot]:
+        """List all save slots sorted by slot index."""
+        with self._lock:
+            return sorted(
+                self._slots.values(), key=lambda s: s.slot_index
+            )
 
-    def _find_slot_by_number(self, number: int) -> Optional[SaveSlot]:
-        for slot in self._slots.values():
-            if slot.slot_number == number:
-                return slot
-        return None
-
-    # ---- Auto-Save ----
-
-    def configure_auto_save(self,
-                            interval_seconds: float = 300.0,
-                            max_auto_saves: int = 3,
-                            enabled: bool = True) -> AutoSaveConfig:
-        self._auto_save_config.interval_seconds = max(30.0, interval_seconds)
-        self._auto_save_config.max_auto_saves = max(1, min(10, max_auto_saves))
-        self._auto_save_config.is_enabled = enabled
-        return self._auto_save_config
-
-    def enable_auto_save_trigger(self,
-                                 trigger: str,
-                                 enabled: bool = True) -> bool:
-        try:
-            t = AutoSaveTrigger(trigger.lower())
-        except ValueError:
+    def delete_slot(self, slot_index: int) -> bool:
+        """Delete a save slot and all its save data."""
+        with self._lock:
+            slot_id = self._slot_index_map.pop(slot_index, None)
+            if slot_id is None:
+                return False
+            if slot_id in self._slots:
+                del self._slots[slot_id]
+                return True
             return False
-        triggers = self._auto_save_config.enabled_triggers
-        if enabled and t not in triggers:
-            triggers.append(t)
-        elif not enabled and t in triggers:
-            triggers.remove(t)
-        return True
 
-    def trigger_auto_save(self,
-                          trigger: str) -> Optional[SaveSlot]:
-        try:
-            t = AutoSaveTrigger(trigger.lower())
-        except ValueError:
-            return None
-        if not self._auto_save_config.is_enabled:
-            return None
-        if t not in self._auto_save_config.enabled_triggers:
-            return None
+    # ------------------------------------------------------------------
+    # Save
+    # ------------------------------------------------------------------
 
-        auto_slots = [
-            s for s in self._slots.values()
-            if s.save_type == SaveType.AUTO and s.state == SaveSlotState.ACTIVE
-        ]
-        auto_slots.sort(key=lambda s: s.timestamp)
+    def save(
+        self,
+        slot_index: int,
+        game_state: Dict[str, Any],
+        entity_states: Optional[Dict[str, Dict[str, Any]]] = None,
+        variables: Optional[Dict[str, Any]] = None,
+        flags: Optional[Dict[str, bool]] = None,
+        inventory: Optional[List[Dict[str, Any]]] = None,
+        achievements: Optional[List[Dict[str, Any]]] = None,
+        scene_id: str = "",
+        format: SaveFormat = SaveFormat.JSON,
+        description: str = "",
+        level_name: str = "",
+        playtime: float = 0.0,
+        game_version: str = _DEFAULT_GAME_VERSION,
+    ) -> Optional[SaveData]:
+        """Save game state to a slot.
 
-        target_number: int
-        if len(auto_slots) >= self._auto_save_config.max_auto_saves:
-            oldest = auto_slots[0]
-            target_number = oldest.slot_number
-        else:
-            used = {s.slot_number for s in auto_slots}
-            target_number = 1
-            while target_number in used and target_number <= self.MAX_SLOTS:
-                target_number += 1
+        Creates a SaveData entry with metadata, computes a checksum for
+        integrity verification, and stores it in the slot. The previous
+        save is moved to the history, and old history entries are pruned.
 
-        self._auto_save_config.last_auto_save = time.time()
-        return self.create_save(
-            slot_number=target_number,
-            save_type="auto",
-            profile_name=f"AutoSave_{target_number}",
-            level_name="auto_save_level",
+        Returns:
+            The newly created SaveData, or None if the slot doesn't exist.
+        """
+        with self._lock:
+            self._status = SaveStatus.SAVING
+
+            slot = self.get_slot(slot_index)
+            if slot is None:
+                self._status = SaveStatus.IDLE
+                return None
+
+            metadata = SaveMetadata(
+                slot_name=f"slot_{slot_index}",
+                slot_type=slot.slot_type,
+                game_version=game_version,
+                timestamp=time.time(),
+                playtime=playtime,
+                level_name=level_name,
+                description=description,
+            )
+
+            save_data = SaveData(
+                metadata=metadata,
+                game_state=dict(game_state),
+                entity_states=entity_states or {},
+                variables=variables or {},
+                flags=flags or {},
+                inventory=inventory or [],
+                achievements=achievements or [],
+                scene_id=scene_id,
+                format=format,
+            )
+
+            # Compute checksum
+            save_data.metadata.checksum = self._compute_checksum(save_data)
+
+            # Move current save to history
+            if slot.current_save is not None:
+                slot.save_history.append(slot.current_save)
+                # Prune old history
+                while len(slot.save_history) > slot.max_history:
+                    slot.save_history.pop(0)
+
+            slot.current_save = save_data
+            self._save_count += 1
+            self._status = SaveStatus.IDLE
+
+            return save_data
+
+    def quick_save(
+        self,
+        game_state: Dict[str, Any],
+        slot_index: int = 0,
+        **kwargs: Any,
+    ) -> Optional[SaveData]:
+        """Convenience method for a quick save to the default slot."""
+        return self.save(
+            slot_index=slot_index,
+            game_state=game_state,
+            **kwargs,
         )
 
-    def get_auto_save_config(self) -> AutoSaveConfig:
-        return self._auto_save_config
-
-    # ---- Checkpoints ----
-
-    def create_checkpoint(self,
-                          name: str,
-                          description: str = "",
-                          is_one_shot: bool = True,
-                          game_data_snapshot: Optional[Dict[str, Any]] = None) -> Optional[Checkpoint]:
-        if len(self._checkpoints) >= self.MAX_CHECKPOINTS:
-            oldest = min(self._checkpoints.values(),
-                        key=lambda c: c.created_at)
-            del self._checkpoints[oldest.id]
-
-        checkpoint = Checkpoint(
-            name=name,
-            slot_id=self._active_slot_id or "",
-            description=description,
-            playtime_at_checkpoint=self._total_playtime,
-            progress_at_checkpoint=self._progress_pct,
-            is_one_shot=is_one_shot,
-            game_data_snapshot=game_data_snapshot or {},
+    def auto_save(
+        self,
+        game_state: Dict[str, Any],
+        slot_index: int = -1,
+        **kwargs: Any,
+    ) -> Optional[SaveData]:
+        """Convenience method for an auto-save to a dedicated auto-save slot."""
+        # Create the auto-save slot if it doesn't exist
+        self.create_slot(slot_index, slot_type=SaveSlotType.AUTO)
+        return self.save(
+            slot_index=slot_index,
+            game_state=game_state,
+            **kwargs,
         )
-        self._checkpoints[checkpoint.id] = checkpoint
-        self._save_log.append({
-            "action": "checkpoint_created",
-            "checkpoint": name,
-            "timestamp": time.time(),
-        })
-        return checkpoint
 
-    def restore_checkpoint(self, checkpoint_id: str) -> Optional[Dict[str, Any]]:
-        checkpoint = self._checkpoints.get(checkpoint_id)
-        if checkpoint is None:
-            return None
-        if checkpoint.is_one_shot and checkpoint.has_been_used:
-            return {"error": "checkpoint_already_used"}
-        checkpoint.has_been_used = True
-        self._total_playtime = checkpoint.playtime_at_checkpoint
-        self._progress_pct = checkpoint.progress_at_checkpoint
-        self._save_log.append({
-            "action": "checkpoint_restored",
-            "checkpoint": checkpoint.name,
-            "timestamp": time.time(),
-        })
-        return {
-            "restored": True,
-            "checkpoint": checkpoint.to_dict(),
-            "snapshot_data": checkpoint.game_data_snapshot,
-        }
+    # ------------------------------------------------------------------
+    # Load
+    # ------------------------------------------------------------------
 
-    def list_checkpoints(self,
-                         include_used: bool = False) -> List[Checkpoint]:
-        checkpoints = list(self._checkpoints.values())
-        if not include_used:
-            checkpoints = [c for c in checkpoints if not c.has_been_used]
-        return sorted(checkpoints, key=lambda c: c.created_at, reverse=True)
+    def load(self, slot_index: int, verify: bool = True) -> Optional[SaveData]:
+        """Load the current save data from a slot.
 
-    def get_checkpoint(self, checkpoint_id: str) -> Optional[Checkpoint]:
-        return self._checkpoints.get(checkpoint_id)
+        If verify is True, checks the integrity of the save data before
+        returning it. If verification fails, the save is marked as corrupted.
 
-    def delete_checkpoint(self, checkpoint_id: str) -> bool:
-        if checkpoint_id in self._checkpoints:
-            del self._checkpoints[checkpoint_id]
+        Returns:
+            The loaded SaveData, or None if the slot is empty or corrupted.
+        """
+        with self._lock:
+            self._status = SaveStatus.LOADING
+
+            slot = self.get_slot(slot_index)
+            if slot is None or slot.current_save is None:
+                self._status = SaveStatus.IDLE
+                return None
+
+            if verify:
+                self._status = SaveStatus.VERIFYING
+                self._verify_count += 1
+                if not self._verify_data(slot.current_save):
+                    slot.current_save.metadata.metadata["corrupted"] = True
+                    self._corrupted_count += 1
+                    self._status = SaveStatus.CORRUPTED
+                    return None
+
+            self._load_count += 1
+            self._status = SaveStatus.IDLE
+            return slot.current_save
+
+    def load_from_history(
+        self, slot_index: int, history_index: int, verify: bool = True
+    ) -> Optional[SaveData]:
+        """Load a historical save from a slot's history.
+
+        Args:
+            slot_index: The slot to load from.
+            history_index: Index into the slot's save_history (0 is oldest).
+            verify: Whether to verify integrity before returning.
+
+        Returns:
+            The historical SaveData, or None if not found or corrupted.
+        """
+        with self._lock:
+            slot = self.get_slot(slot_index)
+            if slot is None:
+                return None
+            if history_index < 0 or history_index >= len(slot.save_history):
+                return None
+
+            save_data = slot.save_history[history_index]
+
+            if verify:
+                self._verify_count += 1
+                if not self._verify_data(save_data):
+                    self._corrupted_count += 1
+                    return None
+
+            self._load_count += 1
+            return save_data
+
+    def get_latest_save(self, slot_type: Optional[SaveSlotType] = None) -> Optional[SaveData]:
+        """Get the most recent save across all slots, optionally filtered by type.
+
+        Returns:
+            The SaveData with the most recent timestamp, or None if no saves exist.
+        """
+        with self._lock:
+            latest: Optional[SaveData] = None
+            latest_time = 0.0
+
+            for slot in self._slots.values():
+                if slot_type is not None and slot.slot_type != slot_type:
+                    continue
+                if slot.current_save is not None:
+                    ts = slot.current_save.metadata.timestamp
+                    if ts > latest_time:
+                        latest_time = ts
+                        latest = slot.current_save
+
+            return latest
+
+    # ------------------------------------------------------------------
+    # Delete
+    # ------------------------------------------------------------------
+
+    def delete_save(self, slot_index: int) -> bool:
+        """Delete the current save from a slot without removing the slot.
+
+        The most recent historical save becomes the current save if available.
+        """
+        with self._lock:
+            slot = self.get_slot(slot_index)
+            if slot is None or slot.current_save is None:
+                return False
+
+            slot.current_save = None
+
+            # Promote the most recent history entry
+            if slot.save_history:
+                slot.current_save = slot.save_history.pop()
+
             return True
-        return False
 
-    # ---- Runtime State ----
+    # ------------------------------------------------------------------
+    # List Saves
+    # ------------------------------------------------------------------
 
-    def update_progress(self,
-                        playtime_delta: float,
-                        progress_pct: float) -> None:
-        self._total_playtime += playtime_delta
-        self._progress_pct = max(0.0, min(100.0, progress_pct))
+    def list_saves(self, slot_type: Optional[SaveSlotType] = None) -> List[Dict[str, Any]]:
+        """List all current saves across slots, optionally filtered by type.
 
-    def tick(self, delta_time: float = 0.016) -> None:
-        self._total_playtime += delta_time
+        Returns:
+            A list of dictionaries with slot info and save metadata.
+        """
+        with self._lock:
+            result: List[Dict[str, Any]] = []
+            for slot in self._slots.values():
+                if slot_type is not None and slot.slot_type != slot_type:
+                    continue
+                if slot.current_save is None:
+                    continue
+                result.append({
+                    "slot_index": slot.slot_index,
+                    "slot_type": slot.slot_type.value,
+                    "save_id": slot.current_save.id,
+                    "metadata": slot.current_save.metadata.to_dict(),
+                    "history_count": len(slot.save_history),
+                    "scene_id": slot.current_save.scene_id,
+                })
+            result.sort(key=lambda s: s["metadata"].get("timestamp", 0), reverse=True)
+            return result
 
-        if not self._auto_save_config.is_enabled:
-            return
-        if AutoSaveTrigger.INTERVAL not in self._auto_save_config.enabled_triggers:
-            return
+    # ------------------------------------------------------------------
+    # Verify
+    # ------------------------------------------------------------------
 
-        self._auto_save_timer += delta_time
-        if self._auto_save_timer >= self._auto_save_config.interval_seconds:
-            self._auto_save_timer = 0.0
-            self.trigger_auto_save("interval")
+    def verify_save(self, slot_index: int) -> bool:
+        """Verify the integrity of a slot's current save data."""
+        with self._lock:
+            slot = self.get_slot(slot_index)
+            if slot is None or slot.current_save is None:
+                return False
 
-    def get_progress(self) -> Dict[str, Any]:
-        active_slot = self.get_active_slot()
-        return {
-            "total_playtime": round(self._total_playtime, 1),
-            "progress_pct": round(self._progress_pct, 1),
-            "active_slot": active_slot.slot_number if active_slot else None,
-            "active_save_id": self._active_slot_id,
-        }
+            self._status = SaveStatus.VERIFYING
+            self._verify_count += 1
+            valid = self._verify_data(slot.current_save)
 
-    def get_save_log(self, limit: int = 50) -> List[Dict[str, Any]]:
-        return self._save_log[-limit:]
+            if not valid:
+                self._corrupted_count += 1
+                self._status = SaveStatus.CORRUPTED
+            else:
+                self._status = SaveStatus.IDLE
+
+            return valid
+
+    def _verify_data(self, save_data: SaveData) -> bool:
+        """Verify the integrity of save data by recomputing the checksum."""
+        if not save_data.metadata.checksum:
+            return False
+
+        computed = self._compute_checksum(save_data)
+        return computed == save_data.metadata.checksum
+
+    def _compute_checksum(self, save_data: SaveData) -> str:
+        """Compute an SHA-256 checksum of the save data's content."""
+        content = json.dumps({
+            "game_state": save_data.game_state,
+            "entity_states": save_data.entity_states,
+            "variables": save_data.variables,
+            "flags": save_data.flags,
+            "inventory": save_data.inventory,
+            "achievements": save_data.achievements,
+            "scene_id": save_data.scene_id,
+            "version": save_data.metadata.game_version,
+        }, sort_keys=True, default=str)
+
+        return hashlib.sha256(content.encode("utf-8")).hexdigest()
+
+    # ------------------------------------------------------------------
+    # Export / Import
+    # ------------------------------------------------------------------
+
+    def export_save(
+        self,
+        slot_index: int,
+        format: SaveFormat = SaveFormat.JSON,
+    ) -> Optional[bytes]:
+        """Export a save to a portable byte representation.
+
+        Supports JSON (human-readable), BINARY (compact), and COMPRESSED
+        (zlib-compressed JSON) formats.
+
+        Args:
+            slot_index: The slot to export.
+            format: The desired output format.
+
+        Returns:
+            Bytes of the serialized save data, or None if export fails.
+        """
+        with self._lock:
+            slot = self.get_slot(slot_index)
+            if slot is None or slot.current_save is None:
+                return None
+
+            save_data = slot.current_save
+            save_dict = save_data.to_dict()
+
+            if format == SaveFormat.JSON:
+                return json.dumps(save_dict, indent=2, default=str).encode("utf-8")
+            elif format == SaveFormat.BINARY:
+                return json.dumps(save_dict, separators=(",", ":"), default=str).encode("utf-8")
+            elif format == SaveFormat.COMPRESSED:
+                json_bytes = json.dumps(save_dict, separators=(",", ":"), default=str).encode("utf-8")
+                return zlib.compress(json_bytes)
+            elif format == SaveFormat.CLOUD:
+                # Cloud format wraps compressed data with a header
+                compressed = zlib.compress(
+                    json.dumps(save_dict, separators=(",", ":"), default=str).encode("utf-8")
+                )
+                header = json.dumps({
+                    "version": save_data.metadata.game_version,
+                    "timestamp": save_data.metadata.timestamp,
+                    "checksum": save_data.metadata.checksum,
+                    "size": len(compressed),
+                }).encode("utf-8")
+                header_len = len(header).to_bytes(4, "big")
+                return header_len + header + compressed
+
+            return None
+
+    def import_save(
+        self,
+        slot_index: int,
+        data: bytes,
+        format: SaveFormat = SaveFormat.JSON,
+    ) -> Optional[SaveData]:
+        """Import save data from a byte representation into a slot.
+
+        Supports the same formats as export_save. The imported save
+        replaces the current save in the slot.
+
+        Args:
+            slot_index: The target slot for the imported save.
+            data: The serialized save data bytes.
+            format: The format of the input data.
+
+        Returns:
+            The imported SaveData, or None if import fails.
+        """
+        with self._lock:
+            self._status = SaveStatus.LOADING
+
+            try:
+                if format == SaveFormat.JSON:
+                    save_dict = json.loads(data.decode("utf-8"))
+                elif format == SaveFormat.BINARY:
+                    save_dict = json.loads(data.decode("utf-8"))
+                elif format == SaveFormat.COMPRESSED:
+                    decompressed = zlib.decompress(data)
+                    save_dict = json.loads(decompressed.decode("utf-8"))
+                elif format == SaveFormat.CLOUD:
+                    header_len = int.from_bytes(data[:4], "big")
+                    header = json.loads(data[4:4 + header_len].decode("utf-8"))
+                    compressed = data[4 + header_len:]
+                    decompressed = zlib.decompress(compressed)
+                    save_dict = json.loads(decompressed.decode("utf-8"))
+                else:
+                    return None
+            except (json.JSONDecodeError, zlib.error, UnicodeDecodeError, KeyError):
+                self._status = SaveStatus.CORRUPTED
+                self._corrupted_count += 1
+                return None
+
+            # Reconstruct SaveData from dict
+            save_data = self._dict_to_save_data(save_dict)
+
+            # Run version migrations if needed
+            save_data = self._apply_migrations(save_data)
+
+            # Ensure the slot exists
+            slot = self.get_slot(slot_index)
+            if slot is None:
+                slot = self.create_slot(slot_index)
+
+            # Move current save to history
+            if slot.current_save is not None:
+                slot.save_history.append(slot.current_save)
+                while len(slot.save_history) > slot.max_history:
+                    slot.save_history.pop(0)
+
+            slot.current_save = save_data
+            self._save_count += 1
+            self._status = SaveStatus.IDLE
+            return save_data
+
+    def _dict_to_save_data(self, d: Dict[str, Any]) -> SaveData:
+        """Reconstruct a SaveData object from a dictionary."""
+        meta_dict = d.get("metadata", {})
+        metadata = SaveMetadata(
+            id=meta_dict.get("id", uuid.uuid4().hex[:12]),
+            slot_name=meta_dict.get("slot_name", ""),
+            slot_type=SaveSlotType(meta_dict.get("slot_type", "manual")),
+            game_version=meta_dict.get("game_version", "1.0.0"),
+            timestamp=meta_dict.get("timestamp", time.time()),
+            playtime=meta_dict.get("playtime", 0.0),
+            level_name=meta_dict.get("level_name", ""),
+            thumbnail_ref=meta_dict.get("thumbnail_ref", ""),
+            checksum=meta_dict.get("checksum", ""),
+            description=meta_dict.get("description", ""),
+            metadata=meta_dict.get("metadata", {}),
+        )
+
+        try:
+            fmt = SaveFormat(d.get("format", "json"))
+        except ValueError:
+            fmt = SaveFormat.JSON
+
+        return SaveData(
+            id=d.get("id", uuid.uuid4().hex[:12]),
+            metadata=metadata,
+            game_state=d.get("game_state", {}),
+            entity_states=d.get("entity_states", {}),
+            variables=d.get("variables", {}),
+            flags=d.get("flags", {}),
+            inventory=d.get("inventory", []),
+            achievements=d.get("achievements", []),
+            scene_id=d.get("scene_id", ""),
+            format=fmt,
+        )
+
+    # ------------------------------------------------------------------
+    # Version Migration
+    # ------------------------------------------------------------------
+
+    def register_migration(
+        self,
+        from_version: str,
+        to_version: str,
+        migration_fn: Callable[[SaveData], SaveData],
+    ) -> bool:
+        """Register a migration function for upgrading save data versions.
+
+        Args:
+            from_version: The source game version.
+            to_version: The target game version after migration.
+            migration_fn: A function that takes a SaveData and returns a migrated SaveData.
+
+        Returns:
+            True if the migration was registered successfully.
+        """
+        with self._lock:
+            key = f"{from_version}->{to_version}"
+            if key in self._version_migrations:
+                return False
+            self._version_migrations[key] = migration_fn
+            return True
+
+    def _apply_migrations(self, save_data: SaveData) -> SaveData:
+        """Apply all registered version migrations to a save data.
+
+        Migrations are applied sequentially until the save version matches
+        the current game version.
+        """
+        current_version = save_data.metadata.game_version
+
+        # Build a chain of migrations
+        applied = True
+        while applied:
+            applied = False
+            for key, migration_fn in list(self._version_migrations.items()):
+                from_ver, to_ver = key.split("->", 1)
+                if from_ver == current_version:
+                    save_data = migration_fn(save_data)
+                    save_data.metadata.game_version = to_ver
+                    current_version = to_ver
+                    applied = True
+                    break
+
+        return save_data
+
+    # ------------------------------------------------------------------
+    # Statistics
+    # ------------------------------------------------------------------
 
     def get_stats(self) -> Dict[str, Any]:
-        active_saves = sum(
-            1 for s in self._slots.values()
-            if s.state == SaveSlotState.ACTIVE
-        )
-        total_size = sum(
-            s.file_size_bytes for s in self._slots.values()
-            if s.state == SaveSlotState.ACTIVE
-        )
-        unused_checkpoints = sum(
-            1 for c in self._checkpoints.values()
-            if not c.has_been_used
-        )
-        return {
-            "total_slots": len(self._slots),
-            "active_saves": active_saves,
-            "empty_slots": self.MAX_SLOTS - active_saves,
-            "total_save_size_bytes": total_size,
-            "total_checkpoints": len(self._checkpoints),
-            "unused_checkpoints": unused_checkpoints,
-            "auto_save_enabled": self._auto_save_config.is_enabled,
-            "auto_save_interval": self._auto_save_config.interval_seconds,
-            "total_playtime": round(self._total_playtime, 1),
-            "progress_pct": round(self._progress_pct, 1),
-            "active_slot_exists": self._active_slot_id is not None,
-            "max_slots": self.MAX_SLOTS,
-            "max_checkpoints": self.MAX_CHECKPOINTS,
-        }
+        """Get engine statistics including save counts and slot information."""
+        with self._lock:
+            total_saves = 0
+            total_history = 0
+            slot_details: List[Dict[str, Any]] = []
+
+            for slot in self._slots.values():
+                has_save = slot.current_save is not None
+                if has_save:
+                    total_saves += 1
+                total_history += len(slot.save_history)
+                slot_details.append({
+                    "slot_index": slot.slot_index,
+                    "slot_type": slot.slot_type.value,
+                    "has_current_save": has_save,
+                    "history_count": len(slot.save_history),
+                    "max_history": slot.max_history,
+                })
+
+            slot_details.sort(key=lambda s: s["slot_index"])
+
+            return {
+                "slot_count": len(self._slots),
+                "total_saves": total_saves,
+                "total_history_entries": total_history,
+                "save_count": self._save_count,
+                "load_count": self._load_count,
+                "verify_count": self._verify_count,
+                "corrupted_count": self._corrupted_count,
+                "status": self._status.value,
+                "migration_count": len(self._version_migrations),
+                "uptime_seconds": round(time.time() - self._creation_time, 1),
+                "slots": slot_details,
+            }
+
+    # ------------------------------------------------------------------
+    # Reset
+    # ------------------------------------------------------------------
+
+    def reset(self) -> None:
+        """Reset the entire save system engine state."""
+        with self._lock:
+            self._slots.clear()
+            self._slot_index_map.clear()
+            self._status = SaveStatus.IDLE
+            self._save_count = 0
+            self._load_count = 0
+            self._verify_count = 0
+            self._corrupted_count = 0
+            self._version_migrations.clear()
+            self._creation_time = time.time()
 
 
-def get_save_system() -> SaveSystem:
-    return SaveSystem.get_instance()
+# ---------------------------------------------------------------------------
+# Factory Function
+# ---------------------------------------------------------------------------
+
+
+def get_save_system() -> SaveSystemEngine:
+    """Get or create the singleton SaveSystemEngine instance."""
+    return SaveSystemEngine.get_instance()
