@@ -299,8 +299,8 @@ from sparkai.agent.agent_swarm_intelligence import SwarmIntelligenceEngine, get_
 from sparkai.agent.agent_memory_graph import AgentMemoryGraph, get_memory_graph
 from sparkai.agent.agent_context_compressor import AgentContextCompressor, get_context_compressor
 from sparkai.agent.agent_tool_forge import AgentToolForge, get_tool_forge
-from sparkai.agent.agent_gateway import AgentGateway, get_gateway
-from sparkai.engine.engine_audio_system import GameAudioSystem, get_audio_system
+from sparkai.agent.agent_gateway import AgentGateway, get_agent_gateway
+from sparkai.engine.engine_audio_system import AudioSystemEngine, get_audio_system
 from sparkai.engine.engine_network_layer import NetworkLayerEngine, get_network_layer_engine
 from sparkai.engine.engine_behavior_runtime import BehaviorRuntime, get_behavior_runtime
 from sparkai.engine.engine_save_system import SaveSystemEngine, get_save_system
@@ -387,9 +387,9 @@ from sparkai.agent.agent_quest_composer import AgentQuestComposer, get_agent_que
 from sparkai.agent.agent_multi_agent_coordinator import AgentMultiAgentCoordinator, get_multi_agent_coordinator
 from sparkai.agent.agent_memory_orchestrator import AgentMemoryOrchestrator, get_memory_orchestrator
 from sparkai.agent.agent_simulation_controller import AgentSimulationController, get_simulation_controller
-from sparkai.agent.agent_timeline_manager import AgentTimelineManager, get_timeline_manager
+from sparkai.agent.agent_timeline import TimelineManager, get_timeline_manager
 from sparkai.agent.agent_skill_generator import AgentSkillGenerator, get_skill_generator
-from sparkai.agent.agent_learning_loop import AgentLearningLoop, get_learning_loop
+from sparkai.agent.agent_learning_loop import LearningLoopEngine, get_learning_loop
 from sparkai.agent.agent_social_dynamics import AgentSocialDynamics, get_social_dynamics
 from sparkai.agent.agent_emergent_narrative import AgentEmergentNarrative, get_emergent_narrative
 from sparkai.engine.engine_procedural_world import EngineProceduralWorld, get_procedural_world
@@ -400,7 +400,7 @@ from sparkai.engine.engine_behavior_orchestrator import EngineBehaviorOrchestrat
 from sparkai.agent.agent_cross_module_orchestrator import AgentCrossModuleOrchestrator, get_cross_module_orchestrator
 from sparkai.agent.agent_intent_router import AgentIntentRouter, get_agent_intent_router
 from sparkai.agent.agent_world_architect import AgentWorldArchitect, get_agent_world_architect
-from sparkai.agent.agent_god_mode_controller import AgentGodModeController, get_god_mode_controller
+from sparkai.agent.agent_god_mode import GodModeController, get_god_mode_controller
 from sparkai.engine.engine_event_scripting import EngineEventScripting, get_engine_event_scripting
 from sparkai.engine.engine_gpu_batch_rendering import EngineGPUBatchRendering, get_gpu_batch_rendering
 from sparkai.engine.engine_server_orchestrator import EngineServerOrchestrator, get_engine_server_orchestrator
@@ -417,7 +417,7 @@ from sparkai.agent.agent_world_simulation import AgentWorldSimulation, get_agent
 from sparkai.agent.agent_economy_simulator import AgentEconomySimulator, get_agent_economy_simulator
 from sparkai.engine.engine_weather_system import WeatherSystemEngine, get_weather_system
 from sparkai.engine.engine_water_simulation import EngineWaterSimulation, get_water_simulation
-from sparkai.agent.agent_intelligence_core import AgentIntelligenceCore, get_agent_intelligence_core
+from sparkai.agent.agent_intelligence_core import AgentIntelligenceCore, get_intelligence_core
 from sparkai.engine.engine_unification_core import EngineUnificationCore, get_engine_unification_core
 
 from sparkai.agent.agent_metacognition import AgentMetacognition, get_agent_metacognition
@@ -430,7 +430,7 @@ from sparkai.engine.collision_system import CollisionSystem, get_collision_syste
 from sparkai.engine.input_manager import InputManager, get_input_manager
 from sparkai.engine.physics_system import PhysicsSystem, get_physics_system
 from sparkai.engine.particle_system import ParticleSystem, get_particle_system
-from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding
+from sparkai.engine.pathfinding_system import PathfindingSystem, get_pathfinding_system
 from sparkai.engine.audio_system import AudioSystem as LegacyAudioSystem
 from sparkai.engine.state_machine import StateMachine, get_state_machine
 from sparkai.engine.resource_manager import ResourceManager, get_resource_manager
@@ -442,7 +442,7 @@ from sparkai.engine.ui_system import UISystem, get_ui_system
 from sparkai.engine.layer_system import LayerSystem, get_layer_system
 from sparkai.engine.profiler import Profiler, get_profiler
 from sparkai.engine.event_scripting import EventScriptingSystem, get_event_scripting_system
-from sparkai.engine.scene_tree import SceneTree, get_scene_tree
+from sparkai.engine.engine_scene_tree import SceneTree, get_scene_tree
 from sparkai.engine.shader_system import ShaderSystem, get_shader_system
 from sparkai.engine.variable_system import VariableSystem, get_variable_system
 from sparkai.engine.resource_loader import ResourceLoader, get_resource_loader
@@ -556,7 +556,7 @@ from sparkai.engine.engine_fluid_dynamics import EngineFluidDynamics, get_fluid_
 from sparkai.agent.agent_self_evolution import SelfEvolutionEngine, get_self_evolution_engine
 from sparkai.agent.agent_skill_accumulator import SkillAccumulatorEngine, get_skill_accumulator_engine
 from sparkai.agent.agent_layered_memory import LayeredMemoryEngine, get_layered_memory_engine
-from sparkai.agent.agent_world_simulator import WorldSimulatorEngine, get_world_simulator_engine
+from sparkai.agent.agent_world_simulator import WorldSimulator, get_world_simulator
 from sparkai.agent.agent_emergent_storyteller import EmergentStorytellerEngine, get_emergent_storyteller_engine
 from sparkai.engine.engine_node_editor import NodeEditorEngine, get_node_editor_engine
 from sparkai.engine.engine_scene_serializer import SceneSerializerEngine, get_scene_serializer_engine
@@ -716,7 +716,7 @@ class AgentRuntime:
         self._physics_system: Optional[PhysicsSystem] = None
         self._particle_system: Optional[ParticleSystem] = None
         self._pathfinding: Optional[PathfindingSystem] = None
-        self._audio_system: Optional[GameAudioSystem] = None
+        self._audio_system: Optional[AudioSystemEngine] = None
         self._state_machine: Optional[StateMachine] = None
         self._resource_manager: Optional[ResourceManager] = None
         self._behavior_system: Optional[BehaviorSystem] = None
@@ -875,13 +875,12 @@ class AgentRuntime:
         self._game_engine_bridge: Optional[AgentGameEngineBridge] = None
         self._performance_optimizer: Optional[PerformanceOptimizerEngine] = None
         self._multi_agent_protocol: Optional[MultiAgentProtocolEngine] = None
-        self._learning_loop: Optional[LearningLoop] = None
         self._cron_scheduler: Optional[AgentCronScheduler] = None
         self._memory_graph: Optional[AgentMemoryGraph] = None
         self._context_compressor: Optional[AgentContextCompressor] = None
         self._tool_forge: Optional[AgentToolForge] = None
         self._gateway: Optional[AgentGateway] = None
-        self._audio_system: Optional[GameAudioSystem] = None
+        self._audio_system: Optional[AudioSystemEngine] = None
         self._network_layer: Optional[NetworkLayerEngine] = None
         self._behavior_runtime: Optional[BehaviorRuntime] = None
         self._save_system: Optional[SaveSystemEngine] = None
@@ -947,7 +946,6 @@ class AgentRuntime:
         self._prompt_library: Optional[PromptLibrary] = None
         self._reflection_loop: Optional[ReflectionLoop] = None
         self._skill_forge: Optional[SkillForge] = None
-        self._learning_loop: Optional[LearningLoop] = None
         self._memory_consolidator: Optional[MemoryConsolidator] = None
         self._delegation_broker: Optional[DelegationBroker] = None
         self._game_design_intelligence: Optional[GameDesignIntelligence] = None
@@ -962,9 +960,9 @@ class AgentRuntime:
         self._multi_agent_coordinator: Optional[AgentMultiAgentCoordinator] = None
         self._memory_orchestrator: Optional[AgentMemoryOrchestrator] = None
         self._simulation_controller: Optional[AgentSimulationController] = None
-        self._timeline_manager: Optional[AgentTimelineManager] = None
+        self._timeline_manager: Optional[TimelineManager] = None
         self._skill_generator: Optional[AgentSkillGenerator] = None
-        self._learning_loop: Optional[AgentLearningLoop] = None
+        self._learning_loop: Optional[LearningLoopEngine] = None
         self._social_dynamics: Optional[AgentSocialDynamics] = None
         self._emergent_narrative: Optional[AgentEmergentNarrative] = None
         self._procedural_world: Optional[EngineProceduralWorld] = None
@@ -975,7 +973,7 @@ class AgentRuntime:
         self._cross_module_orchestrator: Optional[AgentCrossModuleOrchestrator] = None
         self._intent_router: Optional[AgentIntentRouter] = None
         self._world_architect: Optional[AgentWorldArchitect] = None
-        self._god_mode_controller: Optional[AgentGodModeController] = None
+        self._god_mode_controller: Optional[GodModeController] = None
         self._engine_event_scripting: Optional[EngineEventScripting] = None
         self._gpu_batch_rendering: Optional[EngineGPUBatchRendering] = None
         self._server_orchestrator: Optional[EngineServerOrchestrator] = None
@@ -1011,7 +1009,7 @@ class AgentRuntime:
         self._self_evolution: Optional[SelfEvolutionEngine] = None
         self._skill_accumulator: Optional[SkillAccumulatorEngine] = None
         self._layered_memory: Optional[LayeredMemoryEngine] = None
-        self._world_simulator: Optional[WorldSimulatorEngine] = None
+        self._world_simulator: Optional[WorldSimulator] = None
         self._emergent_storyteller: Optional[EmergentStorytellerEngine] = None
         self._node_editor: Optional[NodeEditorEngine] = None
         self._scene_serializer: Optional[SceneSerializerEngine] = None
@@ -1187,7 +1185,7 @@ class AgentRuntime:
             self._result_storage = get_result_storage()
             self._physics_system = get_physics_system()
             self._particle_system = get_particle_system()
-            self._pathfinding = get_pathfinding()
+            self._pathfinding = get_pathfinding_system()
             self._audio_system = get_audio_system()
             self._state_machine = get_state_machine()
             self._resource_manager = get_resource_manager()
@@ -1351,7 +1349,7 @@ class AgentRuntime:
             self._memory_graph = get_memory_graph()
             self._context_compressor = get_context_compressor()
             self._tool_forge = get_tool_forge()
-            self._gateway = get_gateway()
+            self._gateway = get_agent_gateway()
             self._audio_system = get_audio_system()
             self._network_layer = get_network_layer_engine()
             self._behavior_runtime = get_behavior_runtime()
@@ -1466,7 +1464,7 @@ class AgentRuntime:
             self._quest_generator = get_quest_generator()
             self._dialogue_engine = get_dialogue_engine()
             self._camera_controller = get_camera_controller()
-            self._pathfinding_engine = get_pathfinding_engine()
+            self._pathfinding_engine = get_pathfinding_system_engine()
             self._state_machine_engine = get_state_machine_engine()
             self._scene_director = get_scene_director()
             self._world_streamer = get_world_streamer()
@@ -1478,7 +1476,7 @@ class AgentRuntime:
             self._self_evolution = get_self_evolution_engine()
             self._skill_accumulator = get_skill_accumulator_engine()
             self._layered_memory = get_layered_memory_engine()
-            self._world_simulator = get_world_simulator_engine()
+            self._world_simulator = get_world_simulator()
             self._emergent_storyteller = get_emergent_storyteller_engine()
             self._node_editor = get_node_editor_engine()
             self._scene_serializer = get_scene_serializer_engine()
@@ -1487,7 +1485,7 @@ class AgentRuntime:
             self._economy_simulator = get_agent_economy_simulator()
             self._weather_system = get_weather_system()
             self._water_simulation = get_water_simulation()
-            self._intelligence_core = get_agent_intelligence_core()
+            self._intelligence_core = get_intelligence_core()
             self._engine_unification_core = get_engine_unification_core()
             self._metacognition = get_agent_metacognition()
             self._predictive_intelligence = get_predictive_intelligence()
@@ -2473,7 +2471,7 @@ class AgentRuntime:
         return self._pathfinding
 
     @property
-    def audio_system(self) -> Optional[GameAudioSystem]:
+    def audio_system(self) -> Optional[AudioSystemEngine]:
         return self._audio_system
 
     @property
