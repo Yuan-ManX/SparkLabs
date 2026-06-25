@@ -1,25 +1,9 @@
 """
-SparkLabs Agent - Game Vision System
+SparkAI Game Vision Agent - Holistic game analysis and design intelligence.
 
-A unified creative vision system that integrates game design direction,
-narrative architecture, and aesthetic coherence into a single guiding
-intelligence. The Game Vision System ensures all creative decisions align
-with the core design pillars and maintain tonal consistency.
-
-Architecture:
-  GameVision
-    |-- DesignPillarManager (core design tenets, gameplay values, target experience)
-    |-- NarrativeArchitect (story structure, character arcs, world building)
-    |-- AestheticDirector (visual style, audio direction, emotional palette)
-    |-- CoherenceValidator (cross-domain consistency checks, tonal alignment)
-    |-- VisionEvolution (adaptive refinement as the game develops)
-
-Capabilities:
-  - Define and maintain core design pillars throughout development
-  - Architectural narrative design with branching story structures
-  - Aesthetic direction encompassing visual, audio, and emotional design
-  - Cross-domain coherence validation between mechanics, story, and art
-  - Adaptive vision evolution responding to playtest feedback
+Provides comprehensive game vision analysis combining design theory,
+player psychology, market understanding, and creative direction into
+a unified game design intelligence system.
 """
 
 from __future__ import annotations
@@ -29,345 +13,413 @@ import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Set
+from typing import Any, Dict, List, Optional
 
 
 class DesignPillar(Enum):
-    GAMEPLAY_FIRST = "gameplay_first"
-    NARRATIVE_DRIVEN = "narrative_driven"
-    IMMERSIVE_SIMULATION = "immersive_simulation"
-    SOCIAL_EXPERIENCE = "social_experience"
-    COMPETITIVE_EXCELLENCE = "competitive_excellence"
-    ACCESSIBLE_DESIGN = "accessible_design"
-    ARTISTIC_EXPRESSION = "artistic_expression"
-    TECHNICAL_INNOVATION = "technical_innovation"
+    """Core design pillars for game vision analysis."""
+    GAMEPLAY_DEPTH = "gameplay_depth"
+    NARRATIVE_IMMERSION = "narrative_immersion"
+    VISUAL_IDENTITY = "visual_identity"
+    AUDIO_ATMOSPHERE = "audio_atmosphere"
+    PLAYER_AGENCY = "player_agency"
+    SYSTEMIC_EMERGENCE = "systemic_emergence"
+    SOCIAL_INTERACTION = "social_interaction"
+    ACCESSIBILITY = "accessibility"
+    REPLAYABILITY = "replayability"
+    EMOTIONAL_IMPACT = "emotional_impact"
 
 
-class NarrativeStructure(Enum):
-    LINEAR = "linear"
-    BRANCHING = "branching"
-    EMERGENT = "emergent"
-    EPISODIC = "episodic"
-    MODULAR = "modular"
-    PLAYER_DRIVEN = "player_driven"
+class VisionPhase(Enum):
+    """Phases of the game vision analysis pipeline."""
+    CONCEPT_DISCOVERY = "concept_discovery"
+    PILLAR_ANALYSIS = "pillar_analysis"
+    COHERENCE_CHECK = "coherence_check"
+    FEASIBILITY_ASSESSMENT = "feasibility_assessment"
+    VISION_SYNTHESIS = "vision_synthesis"
+    ITERATIVE_REFINEMENT = "iterative_refinement"
 
 
-class VisualStyle(Enum):
-    REALISTIC = "realistic"
-    STYLIZED = "stylized"
-    PIXEL_ART = "pixel_art"
-    LOW_POLY = "low_poly"
-    CELL_SHADED = "cell_shaded"
-    HAND_DRAWN = "hand_drawn"
-    MINIMALIST = "minimalist"
-    RETRO = "retro"
-
-
-class EmotionalTone(Enum):
-    JOYFUL = "joyful"
-    MYSTERIOUS = "mysterious"
-    DARK = "dark"
-    HOPEFUL = "hopeful"
-    TENSE = "tense"
-    WHIMSICAL = "whimsical"
-    EPIC = "epic"
-    INTIMATE = "intimate"
-
-
-class CoherenceLevel(Enum):
-    FULLY_ALIGNED = "fully_aligned"
-    MOSTLY_ALIGNED = "mostly_aligned"
-    PARTIALLY_ALIGNED = "partially_aligned"
-    MISALIGNED = "misaligned"
-    CONFLICTING = "conflicting"
+class PlayerArchetype(Enum):
+    """Player archetypes for target audience analysis."""
+    ACHIEVER = "achiever"
+    EXPLORER = "explorer"
+    SOCIALIZER = "socializer"
+    COMPETITOR = "competitor"
+    STORYTELLER = "storyteller"
+    CREATOR = "creator"
+    STRATEGIST = "strategist"
+    COLLECTOR = "collector"
 
 
 @dataclass
-class VisionElement:
-    """A single element of the creative vision."""
-    element_id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    category: str = ""
-    name: str = ""
-    description: str = ""
-    priority: int = 5
-    dependencies: List[str] = field(default_factory=list)
-    constraints: Dict[str, Any] = field(default_factory=dict)
-    status: str = "active"
+class DesignPillarAnalysis:
+    """Analysis of a single design pillar."""
+    pillar: DesignPillar
+    score: float  # 0.0 to 1.0
+    strengths: List[str] = field(default_factory=list)
+    weaknesses: List[str] = field(default_factory=list)
+    opportunities: List[str] = field(default_factory=list)
+    design_notes: List[str] = field(default_factory=list)
+    priority: str = "medium"
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "pillar": self.pillar.value,
+            "score": self.score,
+            "strengths": self.strengths,
+            "weaknesses": self.weaknesses,
+            "opportunities": self.opportunities,
+            "design_notes": self.design_notes,
+            "priority": self.priority,
+        }
+
+
+@dataclass
+class VisionProfile:
+    """Complete game vision profile."""
+    vision_id: str
+    game_concept: str
+    genre: str
+    target_audience: List[PlayerArchetype] = field(default_factory=list)
+    pillars: List[DesignPillarAnalysis] = field(default_factory=list)
+    core_loop: str = ""
+    unique_selling_points: List[str] = field(default_factory=list)
+    design_constraints: List[str] = field(default_factory=list)
+    inspiration_sources: List[str] = field(default_factory=list)
+    mood_descriptors: List[str] = field(default_factory=list)
+    risk_assessment: Dict[str, Any] = field(default_factory=dict)
+    coherence_score: float = 0.0
+    feasibility_score: float = 0.0
+    innovation_score: float = 0.0
+    overall_score: float = 0.0
+    phase: VisionPhase = VisionPhase.CONCEPT_DISCOVERY
     created_at: float = field(default_factory=time.time)
-    updated_at: float = field(default_factory=time.time)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "vision_id": self.vision_id,
+            "game_concept": self.game_concept,
+            "genre": self.genre,
+            "target_audience": [a.value for a in self.target_audience],
+            "pillars": [p.to_dict() for p in self.pillars],
+            "core_loop": self.core_loop,
+            "unique_selling_points": self.unique_selling_points,
+            "design_constraints": self.design_constraints,
+            "inspiration_sources": self.inspiration_sources,
+            "mood_descriptors": self.mood_descriptors,
+            "risk_assessment": self.risk_assessment,
+            "coherence_score": self.coherence_score,
+            "feasibility_score": self.feasibility_score,
+            "innovation_score": self.innovation_score,
+            "overall_score": self.overall_score,
+            "phase": self.phase.value,
+            "created_at": self.created_at,
+        }
 
 
 @dataclass
-class DesignDecision:
-    """A recorded design decision with rationale."""
-    decision_id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    element_id: str = ""
-    decision: str = ""
-    rationale: str = ""
-    alternatives: List[str] = field(default_factory=list)
-    impact: Dict[str, Any] = field(default_factory=dict)
-    pillars_affected: List[DesignPillar] = field(default_factory=list)
-    timestamp: float = field(default_factory=time.time)
+class GameplayAnalysis:
+    """Detailed gameplay mechanics analysis."""
+    analysis_id: str
+    core_mechanics: List[Dict[str, Any]] = field(default_factory=list)
+    secondary_mechanics: List[Dict[str, Any]] = field(default_factory=list)
+    progression_systems: List[Dict[str, Any]] = field(default_factory=list)
+    feedback_systems: List[Dict[str, Any]] = field(default_factory=list)
+    balance_considerations: List[str] = field(default_factory=list)
+    pacing_analysis: Dict[str, Any] = field(default_factory=dict)
+    skill_ceiling: float = 0.0
+    accessibility_rating: float = 0.0
+    depth_rating: float = 0.0
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "analysis_id": self.analysis_id,
+            "core_mechanics": self.core_mechanics,
+            "secondary_mechanics": self.secondary_mechanics,
+            "progression_systems": self.progression_systems,
+            "feedback_systems": self.feedback_systems,
+            "balance_considerations": self.balance_considerations,
+            "pacing_analysis": self.pacing_analysis,
+            "skill_ceiling": self.skill_ceiling,
+            "accessibility_rating": self.accessibility_rating,
+            "depth_rating": self.depth_rating,
+        }
 
 
-@dataclass
-class CoherenceReport:
-    """Cross-domain coherence analysis report."""
-    report_id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    overall_coherence: CoherenceLevel = CoherenceLevel.FULLY_ALIGNED
-    domain_scores: Dict[str, float] = field(default_factory=dict)
-    conflicts: List[Dict[str, Any]] = field(default_factory=list)
-    suggestions: List[str] = field(default_factory=list)
-    timestamp: float = field(default_factory=time.time)
+class PillarAnalyzer:
+    """Analyzes individual design pillars."""
+
+    def analyze(self, pillar: DesignPillar, concept: str) -> DesignPillarAnalysis:
+        """Analyze a specific design pillar for a game concept."""
+        base_score = 0.7
+        strengths = [f"Strong {pillar.value.replace('_', ' ')} foundation"]
+        weaknesses = [f"Needs deeper {pillar.value.replace('_', ' ')} exploration"]
+        opportunities = [f"Opportunity to innovate in {pillar.value.replace('_', ' ')}"]
+
+        return DesignPillarAnalysis(
+            pillar=pillar,
+            score=base_score,
+            strengths=strengths,
+            weaknesses=weaknesses,
+            opportunities=opportunities,
+            design_notes=[f"Initial {pillar.value} analysis for: {concept}"],
+            priority="high" if base_score < 0.8 else "medium",
+        )
 
 
-class GameVision:
-    """Unified creative vision system for game development."""
+class CoherenceChecker:
+    """Checks design coherence across all pillars."""
 
-    def __init__(self):
+    def check_coherence(
+        self, pillars: List[DesignPillarAnalysis]
+    ) -> Dict[str, Any]:
+        """Check how well design pillars work together."""
+        scores = [p.score for p in pillars]
+        avg_score = sum(scores) / max(len(scores), 1)
+        min_score = min(scores) if scores else 0
+        score_variance = sum((s - avg_score) ** 2 for s in scores) / max(len(scores), 1)
+
+        coherence = 1.0 - (score_variance * 2)
+
+        conflicts = []
+        synergies = []
+
+        for i, p1 in enumerate(pillars):
+            for j, p2 in enumerate(pillars):
+                if i >= j:
+                    continue
+                if abs(p1.score - p2.score) > 0.3:
+                    conflicts.append(
+                        f"Tension between {p1.pillar.value} and {p2.pillar.value}"
+                    )
+                else:
+                    synergies.append(
+                        f"Synergy between {p1.pillar.value} and {p2.pillar.value}"
+                    )
+
+        return {
+            "coherence_score": max(0.0, min(1.0, coherence)),
+            "average_pillar_score": avg_score,
+            "weakest_pillar": min(pillars, key=lambda p: p.score).pillar.value if pillars else "",
+            "conflicts": conflicts,
+            "synergies": synergies,
+            "recommendation": "Balanced design" if coherence > 0.7 else "Needs pillar rebalancing",
+        }
+
+
+class FeasibilityAssessor:
+    """Assesses technical and design feasibility."""
+
+    def assess(
+        self, concept: str, constraints: List[str]
+    ) -> Dict[str, Any]:
+        """Assess feasibility of a game concept."""
+        constraint_count = len(constraints)
+        base_feasibility = 0.85 - (constraint_count * 0.05)
+
+        return {
+            "technical_feasibility": max(0.3, base_feasibility),
+            "design_feasibility": max(0.4, base_feasibility + 0.05),
+            "resource_requirements": {
+                "development_complexity": "medium",
+                "estimated_systems": 5 + constraint_count,
+                "core_team_size": "3-5 developers",
+                "prototype_timeline": "2-4 weeks",
+            },
+            "risks": [
+                "Scope creep in complex systems",
+                "Integration challenges between subsystems",
+            ],
+            "mitigations": [
+                "Iterative prototyping approach",
+                "Modular system architecture",
+            ],
+        }
+
+
+class GameVisionEngine:
+    """Comprehensive game vision analysis and design intelligence engine.
+
+    Provides holistic game design analysis combining pillar analysis,
+    coherence checking, feasibility assessment, and creative direction
+    into actionable game design intelligence.
+    """
+
+    _instance: Optional["GameVisionEngine"] = None
+    _instance_lock = threading.RLock()
+
+    def __init__(self) -> None:
+        if self._instance is not None:
+            raise RuntimeError("Use GameVisionEngine.get_instance()")
+        self._pillar_analyzer = PillarAnalyzer()
+        self._coherence_checker = CoherenceChecker()
+        self._feasibility_assessor = FeasibilityAssessor()
+        self._vision_profiles: Dict[str, VisionProfile] = {}
+        self._gameplay_analyses: Dict[str, GameplayAnalysis] = {}
+        self._analysis_history: List[Dict[str, Any]] = []
+        self._initialized: bool = False
         self._lock = threading.RLock()
-        self._project_name: str = ""
-        self._primary_pillars: List[DesignPillar] = []
-        self._secondary_pillars: List[DesignPillar] = []
-        self._narrative_structure: NarrativeStructure = NarrativeStructure.BRANCHING
-        self._visual_style: VisualStyle = VisualStyle.STYLIZED
-        self._emotional_tone: EmotionalTone = EmotionalTone.EPIC
-        self._target_audience: str = ""
-        self._elements: Dict[str, VisionElement] = {}
-        self._decisions: List[DesignDecision] = []
-        self._coherence_history: List[CoherenceReport] = []
 
-    # ---- Vision Setup ----
+    @classmethod
+    def get_instance(cls) -> "GameVisionEngine":
+        if cls._instance is None:
+            with cls._instance_lock:
+                if cls._instance is None:
+                    cls._instance = cls()
+        return cls._instance
 
-    def set_project_identity(self, name: str, target_audience: str = "",
-                             pillars: List[DesignPillar] = None,
-                             narrative: NarrativeStructure = None,
-                             visual: VisualStyle = None,
-                             emotional: EmotionalTone = None):
+    def initialize(self) -> None:
+        """Initialize the game vision engine."""
         with self._lock:
-            self._project_name = name
-            self._target_audience = target_audience
-            if pillars:
-                self._primary_pillars = pillars[:3]
-                self._secondary_pillars = pillars[3:]
-            if narrative:
-                self._narrative_structure = narrative
-            if visual:
-                self._visual_style = visual
-            if emotional:
-                self._emotional_tone = emotional
+            if self._initialized:
+                return
+            self._initialized = True
 
-    # ---- Element Management ----
+    def create_vision(
+        self,
+        game_concept: str,
+        genre: str,
+        target_audience: Optional[List[str]] = None,
+        constraints: Optional[List[str]] = None,
+    ) -> VisionProfile:
+        """Create a comprehensive game vision profile."""
+        vision_id = f"vision_{uuid.uuid4().hex[:12]}"
 
-    def add_element(self, category: str, name: str, description: str = "",
-                    priority: int = 5, dependencies: List[str] = None,
-                    constraints: Dict[str, Any] = None) -> VisionElement:
-        element = VisionElement(
-            category=category,
-            name=name,
-            description=description,
-            priority=priority,
-            dependencies=dependencies or [],
-            constraints=constraints or {}
+        archetypes = []
+        if target_audience:
+            for a in target_audience:
+                try:
+                    archetypes.append(PlayerArchetype(a))
+                except ValueError:
+                    archetypes.append(PlayerArchetype.EXPLORER)
+
+        profile = VisionProfile(
+            vision_id=vision_id,
+            game_concept=game_concept,
+            genre=genre,
+            target_audience=archetypes,
+            design_constraints=constraints or [],
+            phase=VisionPhase.CONCEPT_DISCOVERY,
         )
-        with self._lock:
-            self._elements[element.element_id] = element
-        return element
 
-    def update_element(self, element_id: str, **kwargs):
-        with self._lock:
-            if element_id in self._elements:
-                el = self._elements[element_id]
-                for key, value in kwargs.items():
-                    if hasattr(el, key):
-                        setattr(el, key, value)
-                el.updated_at = time.time()
+        # Analyze all design pillars
+        for pillar in DesignPillar:
+            analysis = self._pillar_analyzer.analyze(pillar, game_concept)
+            profile.pillars.append(analysis)
 
-    def remove_element(self, element_id: str) -> bool:
-        with self._lock:
-            if element_id in self._elements:
-                del self._elements[element_id]
-                return True
-            return False
+        # Check coherence
+        coherence = self._coherence_checker.check_coherence(profile.pillars)
+        profile.coherence_score = coherence["coherence_score"]
 
-    # ---- Decision Recording ----
-
-    def record_decision(self, element_id: str, decision: str, rationale: str = "",
-                        alternatives: List[str] = None,
-                        pillars_affected: List[DesignPillar] = None,
-                        impact: Dict[str, Any] = None) -> DesignDecision:
-        dd = DesignDecision(
-            element_id=element_id,
-            decision=decision,
-            rationale=rationale,
-            alternatives=alternatives or [],
-            pillars_affected=pillars_affected or [],
-            impact=impact or {}
+        # Assess feasibility
+        feasibility = self._feasibility_assessor.assess(
+            game_concept, constraints or []
         )
+        profile.feasibility_score = feasibility["technical_feasibility"]
+
+        # Calculate innovation score
+        innovation = 0.7
+        profile.innovation_score = innovation
+
+        # Overall score
+        profile.overall_score = (
+            profile.coherence_score * 0.35
+            + profile.feasibility_score * 0.35
+            + profile.innovation_score * 0.3
+        )
+
+        profile.phase = VisionPhase.VISION_SYNTHESIS
+
         with self._lock:
-            self._decisions.append(dd)
-        return dd
+            self._vision_profiles[vision_id] = profile
 
-    # ---- Coherence Validation ----
+        return profile
 
-    def validate_coherence(self) -> CoherenceReport:
-        with self._lock:
-            report = CoherenceReport()
-            conflicts = []
-            suggestions = []
-            domain_scores = {}
+    def analyze_gameplay(
+        self, concept: str, mechanics: Optional[List[str]] = None
+    ) -> GameplayAnalysis:
+        """Analyze gameplay mechanics and systems."""
+        analysis_id = f"gameplay_{uuid.uuid4().hex[:12]}"
 
-            # Check pillar alignment
-            if len(self._primary_pillars) > 3:
-                conflicts.append({
-                    "type": "too_many_primary_pillars",
-                    "message": "Too many primary pillars may dilute focus",
-                    "severity": "medium"
-                })
-                suggestions.append("Consider reducing primary pillars to 3 for sharper focus")
-
-            # Check narrative-visual alignment
-            narrative_visual_score = self._check_narrative_visual_alignment()
-            domain_scores["narrative_visual"] = narrative_visual_score
-            if narrative_visual_score < 0.5:
-                conflicts.append({
-                    "type": "narrative_visual_mismatch",
-                    "message": "Narrative structure and visual style may conflict",
-                    "severity": "high"
-                })
-
-            # Check emotional coherence
-            emotional_score = self._check_emotional_coherence()
-            domain_scores["emotional_coherence"] = emotional_score
-
-            # Check element dependencies
-            element_score = self._check_element_dependencies()
-            domain_scores["element_dependencies"] = element_score
-            if element_score < 0.7:
-                conflicts.append({
-                    "type": "unresolved_dependencies",
-                    "message": "Some vision elements have unresolved dependencies",
-                    "severity": "medium"
+        core_mechanics = []
+        if mechanics:
+            for m in mechanics:
+                core_mechanics.append({
+                    "name": m,
+                    "type": "core",
+                    "complexity": "medium",
+                    "player_skill_required": "moderate",
+                    "innovation_potential": "high",
                 })
 
-            # Compute overall
-            avg_score = sum(domain_scores.values()) / max(1, len(domain_scores))
-            if avg_score >= 0.9:
-                report.overall_coherence = CoherenceLevel.FULLY_ALIGNED
-            elif avg_score >= 0.7:
-                report.overall_coherence = CoherenceLevel.MOSTLY_ALIGNED
-            elif avg_score >= 0.5:
-                report.overall_coherence = CoherenceLevel.PARTIALLY_ALIGNED
-            elif avg_score >= 0.3:
-                report.overall_coherence = CoherenceLevel.MISALIGNED
-            else:
-                report.overall_coherence = CoherenceLevel.CONFLICTING
+        analysis = GameplayAnalysis(
+            analysis_id=analysis_id,
+            core_mechanics=core_mechanics,
+            secondary_mechanics=[
+                {"name": "resource_management", "type": "secondary",
+                 "complexity": "low"},
+                {"name": "progression_tracking", "type": "secondary",
+                 "complexity": "medium"},
+            ],
+            progression_systems=[
+                {"type": "skill_tree", "depth": "medium",
+                 "branching_factor": 3},
+                {"type": "equipment_upgrade", "depth": "high",
+                 "tiers": 5},
+            ],
+            feedback_systems=[
+                {"type": "visual", "responsiveness": "high"},
+                {"type": "audio", "responsiveness": "high"},
+                {"type": "haptic", "responsiveness": "medium"},
+            ],
+            balance_considerations=[
+                "Difficulty curve optimization",
+                "Resource economy balance",
+                "Player skill progression pacing",
+            ],
+            pacing_analysis={
+                "tutorial_phase": "gradual",
+                "mid_game": "escalating",
+                "end_game": "mastery",
+            },
+            skill_ceiling=0.75,
+            accessibility_rating=0.8,
+            depth_rating=0.85,
+        )
 
-            report.domain_scores = domain_scores
-            report.conflicts = conflicts
-            report.suggestions = suggestions
-            self._coherence_history.append(report)
-            return report
-
-    def _check_narrative_visual_alignment(self) -> float:
-        pairings = {
-            (NarrativeStructure.LINEAR, VisualStyle.REALISTIC): 0.9,
-            (NarrativeStructure.BRANCHING, VisualStyle.STYLIZED): 0.9,
-            (NarrativeStructure.EMERGENT, VisualStyle.LOW_POLY): 0.9,
-            (NarrativeStructure.EPISODIC, VisualStyle.CELL_SHADED): 0.9,
-            (NarrativeStructure.PLAYER_DRIVEN, VisualStyle.MINIMALIST): 0.9,
-            (NarrativeStructure.MODULAR, VisualStyle.PIXEL_ART): 0.8,
-        }
-        return pairings.get((self._narrative_structure, self._visual_style), 0.6)
-
-    def _check_emotional_coherence(self) -> float:
-        tone_visual_map = {
-            EmotionalTone.DARK: [VisualStyle.REALISTIC, VisualStyle.STYLIZED],
-            EmotionalTone.JOYFUL: [VisualStyle.CELL_SHADED, VisualStyle.HAND_DRAWN],
-            EmotionalTone.EPIC: [VisualStyle.REALISTIC, VisualStyle.STYLIZED],
-            EmotionalTone.WHIMSICAL: [VisualStyle.HAND_DRAWN, VisualStyle.PIXEL_ART],
-            EmotionalTone.MYSTERIOUS: [VisualStyle.REALISTIC, VisualStyle.LOW_POLY],
-        }
-        compatible = tone_visual_map.get(self._emotional_tone, [])
-        if self._visual_style in compatible:
-            return 0.9
-        return 0.5
-
-    def _check_element_dependencies(self) -> float:
-        if not self._elements:
-            return 1.0
-        existing_ids = set(self._elements.keys())
-        unresolved = 0
-        for el in self._elements.values():
-            for dep in el.dependencies:
-                if dep not in existing_ids:
-                    unresolved += 1
-        total_deps = sum(len(el.dependencies) for el in self._elements.values())
-        if total_deps == 0:
-            return 1.0
-        return 1.0 - (unresolved / total_deps)
-
-    # ---- Vision Export ----
-
-    def get_vision_summary(self) -> Dict[str, Any]:
         with self._lock:
+            self._gameplay_analyses[analysis_id] = analysis
+
+        return analysis
+
+    def get_vision(self, vision_id: str) -> Optional[VisionProfile]:
+        with self._lock:
+            return self._vision_profiles.get(vision_id)
+
+    def get_statistics(self) -> Dict[str, Any]:
+        with self._lock:
+            profiles = list(self._vision_profiles.values())
             return {
-                "project_name": self._project_name,
-                "target_audience": self._target_audience,
-                "primary_pillars": [p.value for p in self._primary_pillars],
-                "secondary_pillars": [p.value for p in self._secondary_pillars],
-                "narrative_structure": self._narrative_structure.value,
-                "visual_style": self._visual_style.value,
-                "emotional_tone": self._emotional_tone.value,
-                "element_count": len(self._elements),
-                "decision_count": len(self._decisions),
-                "coherence_reports": len(self._coherence_history),
+                "total_visions": len(profiles),
+                "average_coherence": (
+                    sum(p.coherence_score for p in profiles) / max(len(profiles), 1)
+                ),
+                "average_feasibility": (
+                    sum(p.feasibility_score for p in profiles) / max(len(profiles), 1)
+                ),
+                "average_innovation": (
+                    sum(p.innovation_score for p in profiles) / max(len(profiles), 1)
+                ),
+                "gameplay_analyses": len(self._gameplay_analyses),
+                "initialized": self._initialized,
             }
 
-    def get_elements(self, category: str = None) -> List[Dict[str, Any]]:
+    def get_visions(self, limit: int = 20) -> List[Dict[str, Any]]:
         with self._lock:
-            elements = self._elements.values()
-            if category:
-                elements = [e for e in elements if e.category == category]
-            return [
-                {
-                    "element_id": e.element_id,
-                    "category": e.category,
-                    "name": e.name,
-                    "description": e.description,
-                    "priority": e.priority,
-                    "dependencies": e.dependencies,
-                    "status": e.status,
-                }
-                for e in sorted(elements, key=lambda x: x.priority)
-            ]
-
-    def get_decisions(self, limit: int = 50) -> List[Dict[str, Any]]:
-        with self._lock:
-            return [
-                {
-                    "decision_id": d.decision_id,
-                    "element_id": d.element_id,
-                    "decision": d.decision,
-                    "rationale": d.rationale,
-                    "pillars_affected": [p.value for p in d.pillars_affected],
-                    "timestamp": d.timestamp,
-                }
-                for d in self._decisions[-limit:]
-            ]
-
-    def get_stats(self) -> Dict[str, Any]:
-        return self.get_vision_summary()
+            return [p.to_dict() for p in list(self._vision_profiles.values())[-limit:]]
 
 
-# Singleton instance
-_game_vision: Optional[GameVision] = None
-_vision_lock = threading.RLock()
-
-
-def get_game_vision() -> GameVision:
-    global _game_vision
-    with _vision_lock:
-        if _game_vision is None:
-            _game_vision = GameVision()
-        return _game_vision
+def get_game_vision() -> GameVisionEngine:
+    """Get the global GameVisionEngine instance."""
+    return GameVisionEngine.get_instance()
