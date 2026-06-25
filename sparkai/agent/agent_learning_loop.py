@@ -1,544 +1,566 @@
 """
-SparkLabs Agent - Learning Loop Engine
+SparkLabs Agent Learning Loop - Self-Improving Agent with Memory Hierarchy
 
-Self-improving learning loop that creates skills from experience, refines
-them through usage, and persists knowledge across sessions. The engine
-maintains a continuous cycle of observation, pattern extraction, skill
-creation, and self-evaluation.
-
-Architecture:
-  AgentLearningLoop (Singleton)
-    |-- Experience Buffer (recent execution traces)
-    |-- Pattern Extractor (identify recurring success/failure patterns)
-    |-- Skill Factory (create skills from learned patterns)
-    |-- Skill Refinery (improve existing skills based on usage)
-    |-- Self Evaluator (periodic performance assessment)
-    |-- Nudge Engine (trigger self-improvement cycles)
-    |-- Knowledge Compactor (consolidate and prune knowledge)
+Core self-improving agent system that learns from every interaction through
+a three-tier memory architecture and autonomous skill generation.
 """
 
 from __future__ import annotations
 
-import hashlib
+import json
 import threading
-import time as _time_module
+import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Callable, Dict, List, Optional, Tuple
 
 
-class ExperienceType(Enum):
-    SUCCESS = "success"
-    FAILURE = "failure"
-    RECOVERY = "recovery"
-    DISCOVERY = "discovery"
-    OPTIMIZATION = "optimization"
-
-
-class PatternCategory(Enum):
-    WORKFLOW = "workflow"
-    CODING = "coding"
-    DEBUGGING = "debugging"
-    DESIGN = "design"
-    COMMUNICATION = "communication"
-    OPTIMIZATION = "optimization"
-    GAME_LOGIC = "game_logic"
-    LEVEL_DESIGN = "level_design"
+class MemoryLayer(Enum):
+    """Memory tier classification."""
+    EPISODIC = "episodic"        # What happened - conversation and task outcomes
+    SEMANTIC = "semantic"        # What is known - preferences, context, facts
+    PROCEDURAL = "procedural"    # How to do it - skills, patterns, workflows
+    REFLECTIVE = "reflective"    # Meta-cognition - self-analysis and improvement
 
 
 class LearningPhase(Enum):
-    OBSERVING = "observing"
-    EXTRACTING = "extracting"
-    CREATING = "creating"
-    REFINING = "refining"
-    EVALUATING = "evaluating"
-    IDLE = "idle"
+    """Phases of the self-improving learning loop."""
+    OBSERVE = "observe"          # Gather context and understand the task
+    EXECUTE = "execute"          # Perform the task using available tools
+    EVALUATE = "evaluate"        # Assess outcomes and identify patterns
+    CONSOLIDATE = "consolidate"  # Distill learnings into persistent memory
+    IMPROVE = "improve"          # Generate or update skills from experience
+
+
+class SkillLifecycle(Enum):
+    """Lifecycle stages of an autonomous skill."""
+    DRAFT = "draft"              # Newly created, not yet validated
+    ACTIVE = "active"            # Validated and in use
+    DEPRECATED = "deprecated"    # No longer useful, pending removal
+    ARCHIVED = "archived"        # Stored for reference, not active
 
 
 @dataclass
-class ExperienceRecord:
-    """Single execution trace entry."""
-    experience_id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    experience_type: ExperienceType = ExperienceType.SUCCESS
-    category: PatternCategory = PatternCategory.WORKFLOW
-    context: str = ""
-    action_taken: str = ""
-    outcome: str = ""
-    metrics: Dict[str, float] = field(default_factory=dict)
-    timestamp: float = field(default_factory=_time_module.time)
-    related_skills: List[str] = field(default_factory=list)
-    session_id: str = ""
-    iteration_count: int = 0
+class MemoryEntry:
+    """A single entry in the memory system."""
+    entry_id: str
+    layer: MemoryLayer
+    content: str
+    metadata: Dict[str, Any] = field(default_factory=dict)
+    importance: float = 0.5
+    created_at: float = field(default_factory=time.time)
+    accessed_at: float = field(default_factory=time.time)
+    access_count: int = 0
+    tags: List[str] = field(default_factory=list)
+    embedding: Optional[List[float]] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "experience_id": self.experience_id,
-            "experience_type": self.experience_type.value,
-            "category": self.category.value,
-            "context": self.context,
-            "action_taken": self.action_taken,
-            "outcome": self.outcome,
-            "metrics": self.metrics,
-            "timestamp": self.timestamp,
-            "related_skills": self.related_skills,
-            "session_id": self.session_id,
-            "iteration_count": self.iteration_count,
+            "entry_id": self.entry_id,
+            "layer": self.layer.value,
+            "content": self.content,
+            "metadata": self.metadata,
+            "importance": self.importance,
+            "created_at": self.created_at,
+            "accessed_at": self.accessed_at,
+            "access_count": self.access_count,
+            "tags": self.tags,
         }
 
 
 @dataclass
-class LearnedPattern:
-    """Recurring pattern extracted from experiences."""
-    pattern_id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    pattern_name: str = ""
-    pattern_category: PatternCategory = PatternCategory.WORKFLOW
-    description: str = ""
-    trigger_conditions: List[str] = field(default_factory=list)
-    action_sequence: List[str] = field(default_factory=list)
+class SkillManifest:
+    """A reusable skill generated from learning experiences."""
+    skill_id: str
+    name: str
+    description: str
+    trigger_patterns: List[str]
+    steps: List[Dict[str, Any]]
+    prerequisites: List[str] = field(default_factory=list)
     success_rate: float = 0.0
-    occurrence_count: int = 0
-    last_seen: float = field(default_factory=_time_module.time)
-    derived_skill_id: str = ""
-    confidence: float = 0.0
-    source_experiences: List[str] = field(default_factory=list)
+    usage_count: int = 0
+    lifecycle: SkillLifecycle = SkillLifecycle.DRAFT
+    parent_skill_id: Optional[str] = None
+    version: int = 1
+    created_at: float = field(default_factory=time.time)
+    updated_at: float = field(default_factory=time.time)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "pattern_id": self.pattern_id,
-            "pattern_name": self.pattern_name,
-            "pattern_category": self.pattern_category.value,
+            "skill_id": self.skill_id,
+            "name": self.name,
             "description": self.description,
-            "trigger_conditions": self.trigger_conditions,
-            "action_sequence": self.action_sequence,
+            "trigger_patterns": self.trigger_patterns,
+            "steps": self.steps,
+            "prerequisites": self.prerequisites,
             "success_rate": self.success_rate,
-            "occurrence_count": self.occurrence_count,
-            "last_seen": self.last_seen,
-            "derived_skill_id": self.derived_skill_id,
-            "confidence": self.confidence,
-            "source_experiences": self.source_experiences,
+            "usage_count": self.usage_count,
+            "lifecycle": self.lifecycle.value,
+            "version": self.version,
+            "created_at": self.created_at,
+            "updated_at": self.updated_at,
         }
 
 
 @dataclass
-class LearningReport:
-    """Periodic self-evaluation report."""
-    report_id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    timestamp: float = field(default_factory=_time_module.time)
-    total_experiences: int = 0
-    total_patterns: int = 0
-    total_skills_created: int = 0
-    total_skills_refined: int = 0
-    average_success_rate: float = 0.0
-    improvement_areas: List[str] = field(default_factory=list)
-    recommendations: List[str] = field(default_factory=list)
-    phase: LearningPhase = LearningPhase.IDLE
+class LearningSession:
+    """Tracks a single learning session from task to improvement."""
+    session_id: str
+    task_description: str
+    phase: LearningPhase = LearningPhase.OBSERVE
+    observations: List[Dict[str, Any]] = field(default_factory=list)
+    actions_taken: List[Dict[str, Any]] = field(default_factory=list)
+    outcomes: Dict[str, Any] = field(default_factory=dict)
+    lessons_learned: List[str] = field(default_factory=list)
+    skills_generated: List[str] = field(default_factory=list)
+    started_at: float = field(default_factory=time.time)
+    completed_at: Optional[float] = None
+    success: Optional[bool] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "report_id": self.report_id,
-            "timestamp": self.timestamp,
-            "total_experiences": self.total_experiences,
-            "total_patterns": self.total_patterns,
-            "total_skills_created": self.total_skills_created,
-            "total_skills_refined": self.total_skills_refined,
-            "average_success_rate": self.average_success_rate,
-            "improvement_areas": self.improvement_areas,
-            "recommendations": self.recommendations,
+            "session_id": self.session_id,
+            "task_description": self.task_description,
             "phase": self.phase.value,
+            "observations": self.observations,
+            "actions_taken": self.actions_taken,
+            "outcomes": self.outcomes,
+            "lessons_learned": self.lessons_learned,
+            "skills_generated": self.skills_generated,
+            "started_at": self.started_at,
+            "completed_at": self.completed_at,
+            "success": self.success,
         }
 
 
-class AgentLearningLoop:
-    """
-    Self-improving learning loop engine.
+class MemoryStore:
+    """Three-tier memory storage with importance-based retention."""
 
-    Continuously observes agent execution, extracts patterns from
-    successes and failures, creates new skills, and refines existing
-    skills based on usage data. Periodically evaluates overall
-    performance and generates improvement recommendations.
-    """
+    def __init__(self, max_episodic: int = 10000, max_semantic: int = 5000,
+                 max_procedural: int = 2000, max_reflective: int = 1000) -> None:
+        self._episodic: List[MemoryEntry] = []
+        self._semantic: List[MemoryEntry] = []
+        self._procedural: List[MemoryEntry] = []
+        self._reflective: List[MemoryEntry] = []
+        self._max_sizes: Dict[MemoryLayer, int] = {
+            MemoryLayer.EPISODIC: max_episodic,
+            MemoryLayer.SEMANTIC: max_semantic,
+            MemoryLayer.PROCEDURAL: max_procedural,
+            MemoryLayer.REFLECTIVE: max_reflective,
+        }
+        self._lock = threading.RLock()
 
-    _instance = None
-    _lock = threading.RLock()
+    def _get_layer(self, layer: MemoryLayer) -> List[MemoryEntry]:
+        if layer == MemoryLayer.EPISODIC:
+            return self._episodic
+        elif layer == MemoryLayer.SEMANTIC:
+            return self._semantic
+        elif layer == MemoryLayer.PROCEDURAL:
+            return self._procedural
+        return self._reflective
 
-    def __new__(cls):
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super().__new__(cls)
-        return cls._instance
-
-    def __init__(self):
-        if hasattr(self, "_initialized") and self._initialized:
-            return
-        self._initialized = True
-        self._experiences: Dict[str, ExperienceRecord] = {}
-        self._patterns: Dict[str, LearnedPattern] = {}
-        self._reports: List[LearningReport] = []
-        self._phase: LearningPhase = LearningPhase.OBSERVING
-        self._total_skills_created: int = 0
-        self._total_skills_refined: int = 0
-        self._nudge_interval: float = 300.0  # 5 minutes
-        self._last_nudge_time: float = _time_module.time()
-        self._pattern_threshold: int = 3  # min experiences to form a pattern
-        self._confidence_threshold: float = 0.6
-        self._on_skill_created: Optional[Callable] = None
-        self._on_skill_refined: Optional[Callable] = None
-        self._on_pattern_detected: Optional[Callable] = None
-
-    @classmethod
-    def get_instance(cls) -> "AgentLearningLoop":
-        return cls()
-
-    # ---- Experience Recording ----
-
-    def record_experience(
-        self,
-        experience_type: ExperienceType,
-        category: PatternCategory,
-        context: str,
-        action_taken: str,
-        outcome: str,
-        metrics: Optional[Dict[str, float]] = None,
-        session_id: str = "",
-        iteration_count: int = 0,
-    ) -> ExperienceRecord:
-        """Record an execution experience for learning."""
+    def store(self, entry: MemoryEntry) -> None:
         with self._lock:
-            exp = ExperienceRecord(
-                experience_type=experience_type,
-                category=category,
-                context=context,
-                action_taken=action_taken,
-                outcome=outcome,
-                metrics=metrics or {},
-                session_id=session_id,
-                iteration_count=iteration_count,
-            )
-            self._experiences[exp.experience_id] = exp
-            self._maybe_trigger_nudge()
-            return exp
+            layer_entries = self._get_layer(entry.layer)
+            layer_entries.append(entry)
+            max_size = self._max_sizes[entry.layer]
+            if len(layer_entries) > max_size:
+                # Remove least important entries first
+                layer_entries.sort(key=lambda e: (e.importance, e.accessed_at))
+                layer_entries[:len(layer_entries) - max_size] = []
 
-    def record_success(
-        self,
-        category: PatternCategory,
-        context: str,
-        action: str,
-        outcome: str,
-        **kwargs,
-    ) -> ExperienceRecord:
-        """Convenience method to record a success."""
-        return self.record_experience(
-            ExperienceType.SUCCESS, category, context, action, outcome, **kwargs,
-        )
-
-    def record_failure(
-        self,
-        category: PatternCategory,
-        context: str,
-        action: str,
-        outcome: str,
-        **kwargs,
-    ) -> ExperienceRecord:
-        """Convenience method to record a failure."""
-        return self.record_experience(
-            ExperienceType.FAILURE, category, context, action, outcome, **kwargs,
-        )
-
-    def record_discovery(
-        self,
-        category: PatternCategory,
-        context: str,
-        action: str,
-        outcome: str,
-        **kwargs,
-    ) -> ExperienceRecord:
-        """Convenience method to record a discovery."""
-        return self.record_experience(
-            ExperienceType.DISCOVERY, category, context, action, outcome, **kwargs,
-        )
-
-    # ---- Pattern Extraction ----
-
-    def extract_patterns(self, category: Optional[PatternCategory] = None) -> List[LearnedPattern]:
-        """
-        Extract recurring patterns from the experience buffer.
-
-        Groups experiences by category and context similarity, identifies
-        recurring action sequences, and creates learned patterns when
-        occurrence thresholds are met.
-        """
+    def retrieve(self, layer: MemoryLayer, query_tags: Optional[List[str]] = None,
+                 min_importance: float = 0.0, limit: int = 50) -> List[MemoryEntry]:
         with self._lock:
-            self._phase = LearningPhase.EXTRACTING
-            new_patterns: List[LearnedPattern] = []
+            entries = self._get_layer(layer)
+            results = entries[:]
+            if query_tags:
+                results = [e for e in results
+                          if any(t in e.tags for t in query_tags)]
+            results = [e for e in results if e.importance >= min_importance]
+            results.sort(key=lambda e: (e.importance, e.accessed_at), reverse=True)
+            for e in results[:limit]:
+                e.access_count += 1
+                e.accessed_at = time.time()
+            return results[:limit]
 
-            experiences = list(self._experiences.values())
-            if category is not None:
-                experiences = [e for e in experiences if e.category == category]
-
-            # Group by category and context hash
-            groups: Dict[str, List[ExperienceRecord]] = {}
-            for exp in experiences:
-                key = f"{exp.category.value}:{_hash_context(exp.context)}"
-                if key not in groups:
-                    groups[key] = []
-                groups[key].append(exp)
-
-            for key, group in groups.items():
-                if len(group) < self._pattern_threshold:
-                    continue
-
-                cat = group[0].category
-                successes = sum(1 for e in group if e.experience_type == ExperienceType.SUCCESS)
-                success_rate = successes / len(group) if group else 0.0
-
-                if success_rate < self._confidence_threshold:
-                    continue
-
-                # Extract common action steps
-                actions = list(set(e.action_taken for e in group if e.action_taken))
-                triggers = list(set(e.context for e in group if e.context))
-
-                pattern = LearnedPattern(
-                    pattern_name=f"auto_pattern_{cat.value}_{len(self._patterns)}",
-                    pattern_category=cat,
-                    description=f"Auto-extracted pattern from {len(group)} experiences",
-                    trigger_conditions=triggers[:5],
-                    action_sequence=actions[:10],
-                    success_rate=success_rate,
-                    occurrence_count=len(group),
-                    confidence=success_rate,
-                    source_experiences=[e.experience_id for e in group],
-                )
-                self._patterns[pattern.pattern_id] = pattern
-                new_patterns.append(pattern)
-
-                if self._on_pattern_detected:
-                    self._on_pattern_detected(pattern)
-
-            self._phase = LearningPhase.IDLE
-            return new_patterns
-
-    # ---- Skill Creation ----
-
-    def create_skill_from_pattern(
-        self,
-        pattern_id: str,
-        skill_name: str,
-        skill_description: str = "",
-    ) -> Optional[LearnedPattern]:
-        """
-        Convert a learned pattern into a concrete skill.
-
-        The pattern is marked as having a derived skill, enabling
-        the skill system to reference it during execution.
-        """
+    def search(self, keyword: str, layers: Optional[List[MemoryLayer]] = None,
+               limit: int = 20) -> List[MemoryEntry]:
         with self._lock:
-            self._phase = LearningPhase.CREATING
-            pattern = self._patterns.get(pattern_id)
-            if pattern is None:
-                self._phase = LearningPhase.IDLE
-                return None
+            search_layers = layers or list(MemoryLayer)
+            results: List[MemoryEntry] = []
+            for layer in search_layers:
+                for entry in self._get_layer(layer):
+                    if keyword.lower() in entry.content.lower():
+                        results.append(entry)
+            results.sort(key=lambda e: (e.importance, e.accessed_at), reverse=True)
+            return results[:limit]
 
-            pattern.derived_skill_id = uuid.uuid4().hex
-            pattern.pattern_name = skill_name
-            if skill_description:
-                pattern.description = skill_description
-
-            self._total_skills_created += 1
-
-            if self._on_skill_created:
-                self._on_skill_created(pattern)
-
-            self._phase = LearningPhase.IDLE
-            return pattern
-
-    # ---- Skill Refinement ----
-
-    def refine_skill(
-        self,
-        skill_id: str,
-        new_action_sequence: Optional[List[str]] = None,
-        new_trigger_conditions: Optional[List[str]] = None,
-        updated_success_rate: Optional[float] = None,
-    ) -> Optional[LearnedPattern]:
-        """Refine an existing skill with new information."""
+    def consolidate(self, source_layer: MemoryLayer, target_layer: MemoryLayer,
+                    entry_ids: List[str]) -> None:
+        """Move or copy entries between memory layers."""
         with self._lock:
-            self._phase = LearningPhase.REFINING
-            for pattern in self._patterns.values():
-                if pattern.derived_skill_id == skill_id:
-                    if new_action_sequence:
-                        pattern.action_sequence = new_action_sequence
-                    if new_trigger_conditions:
-                        pattern.trigger_conditions = new_trigger_conditions
-                    if updated_success_rate is not None:
-                        pattern.success_rate = updated_success_rate
-                    pattern.occurrence_count += 1
-                    pattern.last_seen = _time_module.time()
-                    self._total_skills_refined += 1
-
-                    if self._on_skill_refined:
-                        self._on_skill_refined(pattern)
-
-                    self._phase = LearningPhase.IDLE
-                    return pattern
-            self._phase = LearningPhase.IDLE
-            return None
-
-    # ---- Self Evaluation ----
-
-    def evaluate(self) -> LearningReport:
-        """Generate a periodic self-evaluation report."""
-        with self._lock:
-            self._phase = LearningPhase.EVALUATING
-            success_count = sum(
-                1 for e in self._experiences.values()
-                if e.experience_type == ExperienceType.SUCCESS
-            )
-            total = len(self._experiences)
-            avg_success = success_count / total if total > 0 else 0.0
-
-            improvement_areas = []
-            recommendations = []
-
-            # Identify underperforming categories
-            for cat in PatternCategory:
-                cat_exps = [e for e in self._experiences.values() if e.category == cat]
-                if not cat_exps:
-                    continue
-                cat_failures = sum(
-                    1 for e in cat_exps if e.experience_type == ExperienceType.FAILURE
-                )
-                cat_rate = 1.0 - (cat_failures / len(cat_exps))
-                if cat_rate < 0.5:
-                    improvement_areas.append(cat.value)
-                    recommendations.append(
-                        f"Focus learning on {cat.value} patterns - current success rate {cat_rate:.0%}"
+            source = self._get_layer(source_layer)
+            for entry in source:
+                if entry.entry_id in entry_ids:
+                    new_entry = MemoryEntry(
+                        entry_id=f"consolidated_{uuid.uuid4().hex[:12]}",
+                        layer=target_layer,
+                        content=entry.content,
+                        metadata={**entry.metadata, "consolidated_from": source_layer.value},
+                        importance=min(entry.importance * 1.2, 1.0),
+                        tags=entry.tags,
                     )
+                    self._get_layer(target_layer).append(new_entry)
 
-            if not self._patterns:
-                recommendations.append(
-                    "No patterns extracted yet. Continue recording experiences to build knowledge."
-                )
-
-            report = LearningReport(
-                total_experiences=total,
-                total_patterns=len(self._patterns),
-                total_skills_created=self._total_skills_created,
-                total_skills_refined=self._total_skills_refined,
-                average_success_rate=avg_success,
-                improvement_areas=improvement_areas,
-                recommendations=recommendations,
-                phase=self._phase,
-            )
-            self._reports.append(report)
-            self._phase = LearningPhase.IDLE
-            return report
-
-    # ---- Nudge Engine ----
-
-    def nudge(self) -> Optional[LearningReport]:
-        """
-        Trigger a self-improvement cycle.
-
-        Extracts patterns, creates skills from high-confidence patterns,
-        refines existing skills, and generates an evaluation report.
-        """
-        with self._lock:
-            self.extract_patterns()
-            for pattern in list(self._patterns.values()):
-                if (
-                    pattern.confidence >= self._confidence_threshold
-                    and not pattern.derived_skill_id
-                ):
-                    self.create_skill_from_pattern(
-                        pattern.pattern_id,
-                        f"learned_{pattern.pattern_category.value}",
-                    )
-            self._last_nudge_time = _time_module.time()
-            return self.evaluate()
-
-    def _maybe_trigger_nudge(self):
-        """Auto-trigger nudge if interval has elapsed."""
-        if _time_module.time() - self._last_nudge_time >= self._nudge_interval:
-            self.nudge()
-
-    # ---- Query Methods ----
-
-    def get_experiences(
-        self,
-        experience_type: Optional[ExperienceType] = None,
-        category: Optional[PatternCategory] = None,
-        limit: int = 100,
-    ) -> List[Dict[str, Any]]:
-        """Query experiences with optional filtering."""
-        with self._lock:
-            results = list(self._experiences.values())
-            if experience_type is not None:
-                results = [e for e in results if e.experience_type == experience_type]
-            if category is not None:
-                results = [e for e in results if e.category == category]
-            results.sort(key=lambda e: e.timestamp, reverse=True)
-            return [e.to_dict() for e in results[:limit]]
-
-    def get_patterns(
-        self,
-        category: Optional[PatternCategory] = None,
-        min_confidence: float = 0.0,
-    ) -> List[Dict[str, Any]]:
-        """Query learned patterns with optional filtering."""
-        with self._lock:
-            results = list(self._patterns.values())
-            if category is not None:
-                results = [p for p in results if p.pattern_category == category]
-            if min_confidence > 0.0:
-                results = [p for p in results if p.confidence >= min_confidence]
-            results.sort(key=lambda p: p.confidence, reverse=True)
-            return [p.to_dict() for p in results]
-
-    def get_stats(self) -> Dict[str, Any]:
-        """Get learning loop statistics."""
+    def get_statistics(self) -> Dict[str, Any]:
         with self._lock:
             return {
-                "total_experiences": len(self._experiences),
-                "total_patterns": len(self._patterns),
-                "total_skills_created": self._total_skills_created,
-                "total_skills_refined": self._total_skills_refined,
-                "current_phase": self._phase.value,
-                "last_nudge_time": self._last_nudge_time,
-                "nudge_interval": self._nudge_interval,
-                "pattern_threshold": self._pattern_threshold,
-                "confidence_threshold": self._confidence_threshold,
-                "recent_reports": len(self._reports),
+                "episodic": {"count": len(self._episodic),
+                            "max": self._max_sizes[MemoryLayer.EPISODIC]},
+                "semantic": {"count": len(self._semantic),
+                            "max": self._max_sizes[MemoryLayer.SEMANTIC]},
+                "procedural": {"count": len(self._procedural),
+                              "max": self._max_sizes[MemoryLayer.PROCEDURAL]},
+                "reflective": {"count": len(self._reflective),
+                              "max": self._max_sizes[MemoryLayer.REFLECTIVE]},
             }
 
-    def set_callback(
-        self,
-        on_skill_created: Optional[Callable] = None,
-        on_skill_refined: Optional[Callable] = None,
-        on_pattern_detected: Optional[Callable] = None,
-    ) -> None:
-        """Register callbacks for learning events."""
-        self._on_skill_created = on_skill_created
-        self._on_skill_refined = on_skill_refined
-        self._on_pattern_detected = on_pattern_detected
+
+class SkillLibrary:
+    """Library of autonomously generated and refined skills."""
+
+    def __init__(self, max_skills: int = 500) -> None:
+        self._skills: Dict[str, SkillManifest] = {}
+        self._max_skills = max_skills
+        self._lock = threading.RLock()
+
+    def register(self, skill: SkillManifest) -> bool:
+        with self._lock:
+            if len(self._skills) >= self._max_skills:
+                # Evict least used deprecated skills
+                deprecated = [s for s in self._skills.values()
+                             if s.lifecycle == SkillLifecycle.DEPRECATED]
+                deprecated.sort(key=lambda s: s.usage_count)
+                for s in deprecated[:max(1, len(deprecated) // 2)]:
+                    del self._skills[s.skill_id]
+                if len(self._skills) >= self._max_skills:
+                    return False
+            self._skills[skill.skill_id] = skill
+            return True
+
+    def get(self, skill_id: str) -> Optional[SkillManifest]:
+        with self._lock:
+            return self._skills.get(skill_id)
+
+    def find_by_trigger(self, trigger: str) -> List[SkillManifest]:
+        with self._lock:
+            results = []
+            for skill in self._skills.values():
+                if skill.lifecycle != SkillLifecycle.ACTIVE:
+                    continue
+                for pattern in skill.trigger_patterns:
+                    if pattern.lower() in trigger.lower():
+                        results.append(skill)
+                        break
+            results.sort(key=lambda s: (s.success_rate, s.usage_count), reverse=True)
+            return results
+
+    def record_usage(self, skill_id: str, success: bool) -> None:
+        with self._lock:
+            skill = self._skills.get(skill_id)
+            if skill:
+                skill.usage_count += 1
+                # Update success rate with exponential moving average
+                alpha = 0.1
+                skill.success_rate = (1 - alpha) * skill.success_rate + alpha * (1.0 if success else 0.0)
+                skill.updated_at = time.time()
+
+    def get_all_active(self) -> List[SkillManifest]:
+        with self._lock:
+            return [s for s in self._skills.values()
+                   if s.lifecycle == SkillLifecycle.ACTIVE]
+
+    def get_statistics(self) -> Dict[str, Any]:
+        with self._lock:
+            drafts = sum(1 for s in self._skills.values()
+                        if s.lifecycle == SkillLifecycle.DRAFT)
+            active = sum(1 for s in self._skills.values()
+                        if s.lifecycle == SkillLifecycle.ACTIVE)
+            deprecated = sum(1 for s in self._skills.values()
+                            if s.lifecycle == SkillLifecycle.DEPRECATED)
+            archived = sum(1 for s in self._skills.values()
+                          if s.lifecycle == SkillLifecycle.ARCHIVED)
+            return {
+                "total": len(self._skills),
+                "draft": drafts,
+                "active": active,
+                "deprecated": deprecated,
+                "archived": archived,
+                "average_success_rate": (
+                    sum(s.success_rate for s in self._skills.values()) / max(len(self._skills), 1)
+                ),
+            }
 
 
-def _hash_context(context: str) -> str:
-    """Generate a similarity hash for context grouping."""
-    if not context:
-        return "empty"
-    normalized = " ".join(context.lower().split()[:20])
-    return hashlib.md5(normalized.encode()).hexdigest()[:12]
+class LearningLoopEngine:
+    """Core self-improving learning loop based on the Do-Learn-Improve cycle.
+
+    This engine drives continuous agent improvement through three phases:
+    1. DO: Execute tasks using best available tools and reasoning
+    2. LEARN: Evaluate outcomes, record in multi-tier memory
+    3. IMPROVE: Generate and refine reusable skills from patterns
+    """
+
+    _instance: Optional["LearningLoopEngine"] = None
+    _instance_lock = threading.RLock()
+
+    def __init__(self) -> None:
+        if self._instance is not None:
+            raise RuntimeError("Use LearningLoopEngine.get_instance()")
+        self._memory_store = MemoryStore()
+        self._skill_library = SkillLibrary()
+        self._active_sessions: Dict[str, LearningSession] = {}
+        self._session_history: List[LearningSession] = []
+        self._initialized: bool = False
+        self._improvement_callbacks: List[Callable[[SkillManifest], None]] = []
+        self._lock = threading.RLock()
+
+    @classmethod
+    def get_instance(cls) -> "LearningLoopEngine":
+        if cls._instance is None:
+            with cls._instance_lock:
+                if cls._instance is None:
+                    cls._instance = cls()
+        return cls._instance
+
+    def initialize(self) -> None:
+        with self._lock:
+            self._initialized = True
+
+    def start_session(self, task_description: str) -> LearningSession:
+        session = LearningSession(
+            session_id=f"session_{uuid.uuid4().hex[:12]}",
+            task_description=task_description,
+        )
+        with self._lock:
+            self._active_sessions[session.session_id] = session
+            self._record_observation(
+                session,
+                "session_started",
+                {"task": task_description},
+                MemoryLayer.EPISODIC,
+            )
+        return session
+
+    def observe(self, session_id: str, observation_type: str,
+                data: Dict[str, Any]) -> None:
+        with self._lock:
+            session = self._active_sessions.get(session_id)
+            if session:
+                session.phase = LearningPhase.OBSERVE
+                self._record_observation(session, observation_type, data,
+                                        MemoryLayer.EPISODIC)
+
+    def record_action(self, session_id: str, action: str,
+                      params: Dict[str, Any], result: Any) -> None:
+        with self._lock:
+            session = self._active_sessions.get(session_id)
+            if session:
+                session.phase = LearningPhase.EXECUTE
+                action_record = {
+                    "action": action,
+                    "params": params,
+                    "result": str(result)[:500],
+                    "timestamp": time.time(),
+                }
+                session.actions_taken.append(action_record)
+                self._record_observation(
+                    session, f"action_{action}",
+                    action_record, MemoryLayer.EPISODIC,
+                )
+
+    def evaluate(self, session_id: str, success: bool,
+                 metrics: Optional[Dict[str, Any]] = None) -> List[str]:
+        with self._lock:
+            session = self._active_sessions.get(session_id)
+            if not session:
+                return []
+            session.phase = LearningPhase.EVALUATE
+            session.success = success
+            session.outcomes = {"success": success, "metrics": metrics or {}}
+
+            # Generate lessons learned
+            lessons = self._derive_lessons(session)
+            session.lessons_learned = lessons
+
+            # Store as semantic memory for future reference
+            for lesson in lessons:
+                entry = MemoryEntry(
+                    entry_id=f"mem_{uuid.uuid4().hex[:12]}",
+                    layer=MemoryLayer.SEMANTIC,
+                    content=lesson,
+                    importance=0.7 if success else 0.9,
+                    tags=["lesson", "success" if success else "failure"],
+                )
+                self._memory_store.store(entry)
+
+            return lessons
+
+    def consolidate(self, session_id: str) -> Optional[SkillManifest]:
+        """Consolidate learnings and potentially generate a new skill."""
+        with self._lock:
+            session = self._active_sessions.get(session_id)
+            if not session:
+                return None
+            session.phase = LearningPhase.CONSOLIDATE
+
+            # Check if this session pattern warrants a new skill
+            skill = self._generate_skill(session)
+            if skill:
+                session.phase = LearningPhase.IMPROVE
+                session.skills_generated.append(skill.skill_id)
+                session.completed_at = time.time()
+
+                # Move session to history
+                self._session_history.append(session)
+                del self._active_sessions[session_id]
+
+                # Notify improvement callbacks
+                for callback in self._improvement_callbacks:
+                    try:
+                        callback(skill)
+                    except Exception:
+                        pass
+                return skill
+
+            session.completed_at = time.time()
+            self._session_history.append(session)
+            del self._active_sessions[session_id]
+            return None
+
+    def add_improvement_callback(self, callback: Callable[[SkillManifest], None]) -> None:
+        with self._lock:
+            self._improvement_callbacks.append(callback)
+
+    def find_skill_for_task(self, task_description: str) -> Optional[SkillManifest]:
+        skills = self._skill_library.find_by_trigger(task_description)
+        return skills[0] if skills else None
+
+    def _record_observation(self, session: LearningSession,
+                            obs_type: str, data: Dict[str, Any],
+                            layer: MemoryLayer) -> None:
+        entry = MemoryEntry(
+            entry_id=f"mem_{uuid.uuid4().hex[:12]}",
+            layer=layer,
+            content=f"{obs_type}: {json.dumps(data, default=str)}",
+            metadata={"session_id": session.session_id, "type": obs_type},
+            importance=0.5,
+            tags=[obs_type, session.task_description[:30]],
+        )
+        self._memory_store.store(entry)
+        session.observations.append({"type": obs_type, "data": data,
+                                    "timestamp": time.time()})
+
+    def _derive_lessons(self, session: LearningSession) -> List[str]:
+        lessons = []
+        if session.success:
+            lessons.append(
+                f"Task '{session.task_description[:80]}' completed successfully "
+                f"with {len(session.actions_taken)} actions."
+            )
+            if session.actions_taken:
+                actions = [a["action"] for a in session.actions_taken]
+                lessons.append(f"Effective action sequence: {' -> '.join(actions)}")
+        else:
+            lessons.append(
+                f"Task '{session.task_description[:80]}' failed. "
+                f"Review action sequence for improvement."
+            )
+            if session.actions_taken:
+                last_action = session.actions_taken[-1]
+                lessons.append(
+                    f"Last action '{last_action['action']}' may need refinement."
+                )
+        return lessons
+
+    def _generate_skill(self, session: LearningSession) -> Optional[SkillManifest]:
+        """Generate a skill from a session if it represents a repeatable pattern."""
+        if not session.success or len(session.actions_taken) < 2:
+            return None
+
+        # Check if a similar skill already exists
+        existing = self._skill_library.find_by_trigger(session.task_description)
+        if existing:
+            # Update existing skill instead
+            existing_skill = existing[0]
+            existing_skill.usage_count += 1
+            existing_skill.updated_at = time.time()
+            existing_skill.version += 1
+            return existing_skill
+
+        # Generate new skill
+        skill = SkillManifest(
+            skill_id=f"skill_{uuid.uuid4().hex[:12]}",
+            name=f"auto_{session.task_description[:40].replace(' ', '_')}",
+            description=session.task_description[:200],
+            trigger_patterns=[
+                session.task_description.lower()[:60],
+                *[a["action"] for a in session.actions_taken[:3]],
+            ],
+            steps=[
+                {"step": i + 1, "action": a["action"], "params": a["params"]}
+                for i, a in enumerate(session.actions_taken)
+            ],
+            success_rate=1.0,
+            usage_count=1,
+            lifecycle=SkillLifecycle.DRAFT,
+        )
+
+        if self._skill_library.register(skill):
+            return skill
+        return None
+
+    def get_memory_statistics(self) -> Dict[str, Any]:
+        return self._memory_store.get_statistics()
+
+    def get_skill_statistics(self) -> Dict[str, Any]:
+        return self._skill_library.get_statistics()
+
+    def get_active_sessions(self) -> List[Dict[str, Any]]:
+        with self._lock:
+            return [s.to_dict() for s in self._active_sessions.values()]
+
+    def get_session_history(self, limit: int = 50) -> List[Dict[str, Any]]:
+        with self._lock:
+            return [s.to_dict()
+                   for s in self._session_history[-limit:]]
+
+    def search_memory(self, keyword: str, limit: int = 20) -> List[Dict[str, Any]]:
+        results = self._memory_store.search(keyword, limit=limit)
+        return [r.to_dict() for r in results]
+
+    def get_skills(self) -> List[Dict[str, Any]]:
+        return [s.to_dict() for s in self._skill_library.get_all_active()]
+
+    def promote_skill(self, skill_id: str) -> bool:
+        with self._lock:
+            skill = self._skill_library.get(skill_id)
+            if skill and skill.lifecycle == SkillLifecycle.DRAFT:
+                skill.lifecycle = SkillLifecycle.ACTIVE
+                return True
+            return False
+
+    def deprecate_skill(self, skill_id: str) -> bool:
+        with self._lock:
+            skill = self._skill_library.get(skill_id)
+            if skill:
+                skill.lifecycle = SkillLifecycle.DEPRECATED
+                return True
+            return False
 
 
-# Module-level accessor
-_learning_loop: Optional[AgentLearningLoop] = None
-
-
-def get_learning_loop() -> AgentLearningLoop:
-    global _learning_loop
-    if _learning_loop is None:
-        _learning_loop = AgentLearningLoop()
-    return _learning_loop
+def get_learning_loop() -> LearningLoopEngine:
+    """Get the global LearningLoopEngine instance."""
+    return LearningLoopEngine.get_instance()
