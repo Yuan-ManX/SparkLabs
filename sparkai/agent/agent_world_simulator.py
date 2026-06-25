@@ -1,698 +1,579 @@
 """
-SparkLabs Agent World Simulator
+SparkLabs Agent World Simulator - Autonomous AI-Driven World Simulation
 
-Provides autonomous world simulation capabilities for AI-native game worlds.
-Characters make decisions, interact with the environment, form relationships,
-and drive emergent narratives without pre-scripted storylines.
-
-Core architecture:
-  - Entity Management: Tracks all world entities and their states
-  - Decision Engine: Autonomous decision-making for NPCs
-  - Interaction System: Entity-to-entity and entity-to-environment interactions
-  - Time Progression: Day/night cycles, seasons, and temporal events
-  - State Persistence: World state snapshots and timeline management
-  - Event System: Broadcast and reactive event handling
+Comprehensive world simulation engine with autonomous agents that perceive,
+decide, act, and create emergent narratives in AI-generated worlds.
 """
 
+from __future__ import annotations
+
+import json
 import threading
 import time
 import uuid
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 
-# ---------------------------------------------------------------------------
-# Enums
-# ---------------------------------------------------------------------------
-
-class DayPhase(Enum):
-    """Phases of the day/night cycle."""
-    DAWN = "dawn"
-    MORNING = "morning"
-    NOON = "noon"
-    AFTERNOON = "afternoon"
-    DUSK = "dusk"
-    EVENING = "evening"
-    NIGHT = "night"
-    MIDNIGHT = "midnight"
+class WorldState(Enum):
+    """Overall world simulation state."""
+    CREATING = "creating"        # World is being generated
+    RUNNING = "running"          # Simulation is active
+    PAUSED = "paused"            # Simulation is paused
+    STOPPED = "stopped"          # Simulation has ended
 
 
-class Season(Enum):
-    """Seasons affecting world behavior."""
-    SPRING = "spring"
-    SUMMER = "summer"
-    AUTUMN = "autumn"
-    WINTER = "winter"
+class AgentState(Enum):
+    """Individual agent state within the simulation."""
+    IDLE = "idle"                # Waiting for next action
+    PERCEIVING = "perceiving"    # Observing environment
+    DECIDING = "deciding"        # Planning next action
+    ACTING = "acting"            # Executing an action
+    INTERACTING = "interacting"  # Engaging with another agent
+    RESTING = "resting"          # Inactive/dormant
 
 
-class EntityType(Enum):
-    """Types of entities in the simulated world."""
-    CHARACTER = "character"
-    ITEM = "item"
-    STRUCTURE = "structure"
-    LOCATION = "location"
-    FACTION = "faction"
-    RESOURCE = "resource"
-    EVENT = "event"
+class ActionType(Enum):
+    """Types of actions an agent can perform."""
+    MOVE = "move"                # Navigate to a location
+    INTERACT = "interact"        # Interact with an object
+    SPEAK = "speak"              # Communicate with another agent
+    USE_ITEM = "use_item"        # Use an inventory item
+    OBSERVE = "observe"          # Scan the environment
+    WAIT = "wait"                # Do nothing for a tick
+    CRAFT = "craft"              # Create a new item
+    TRADE = "trade"              # Exchange items with another agent
 
 
-class EntityState(Enum):
-    """Operational states for world entities."""
-    ACTIVE = "active"
-    IDLE = "idle"
-    SLEEPING = "sleeping"
-    BUSY = "busy"
-    DISABLED = "disabled"
-    DESTROYED = "destroyed"
+class EmotionType(Enum):
+    """Emotional states for agents."""
+    NEUTRAL = "neutral"
+    HAPPY = "happy"
+    SAD = "sad"
+    ANGRY = "angry"
+    FEARFUL = "fearful"
+    SURPRISED = "surprised"
+    CURIOUS = "curious"
+    BORED = "bored"
 
-
-class InteractionType(Enum):
-    """Types of interactions between entities."""
-    SOCIAL = "social"
-    COMBAT = "combat"
-    TRADE = "trade"
-    EXPLORE = "explore"
-    GATHER = "gather"
-    BUILD = "build"
-    TRAVEL = "travel"
-    REST = "rest"
-    DIALOGUE = "dialogue"
-    QUEST = "quest"
-
-
-class EventCategory(Enum):
-    """Categories of world events."""
-    NATURAL = "natural"
-    SOCIAL = "social"
-    POLITICAL = "political"
-    ECONOMIC = "economic"
-    MYSTICAL = "mystical"
-    PLAYER_ACTION = "player_action"
-    RANDOM = "random"
-
-
-# ---------------------------------------------------------------------------
-# Data Classes
-# ---------------------------------------------------------------------------
 
 @dataclass
-class SimEntity:
-    """A simulated entity in the world."""
-    entity_id: str
+class WorldConfig:
+    """Configuration for a simulated world."""
     name: str
-    entity_type: EntityType
-    state: EntityState = EntityState.ACTIVE
-    position: Dict[str, float] = field(default_factory=lambda: {"x": 0.0, "y": 0.0})
-    properties: Dict[str, Any] = field(default_factory=dict)
-    relationships: Dict[str, float] = field(default_factory=dict)
-    inventory: List[str] = field(default_factory=list)
-    memory: List[str] = field(default_factory=list)
-    current_goal: Optional[str] = None
-    created_at: float = field(default_factory=time.time)
-    last_updated_at: float = field(default_factory=time.time)
+    description: str
+    size: Tuple[int, int] = (100, 100)
+    agent_count: int = 10
+    max_ticks: int = 10000
+    tick_rate: float = 1.0  # seconds per tick
+    seed: Optional[int] = None
+    rules: Dict[str, Any] = field(default_factory=dict)
 
 
 @dataclass
-class WorldInteraction:
-    """An interaction between two entities in the world."""
-    interaction_id: str
-    source_id: str
-    target_id: str
-    interaction_type: InteractionType
-    description: str
-    outcome: Dict[str, Any] = field(default_factory=dict)
-    duration_ms: float = 0.0
-    succeeded: bool = True
-    timestamp: float = field(default_factory=time.time)
+class Position:
+    """2D position in the world."""
+    x: float = 0.0
+    y: float = 0.0
+
+    def distance_to(self, other: "Position") -> float:
+        return ((self.x - other.x) ** 2 + (self.y - other.y) ** 2) ** 0.5
+
+    def to_dict(self) -> Dict[str, float]:
+        return {"x": self.x, "y": self.y}
+
+
+@dataclass
+class AgentMemory:
+    """Memory structure for a simulated agent."""
+    recent_events: List[Dict[str, Any]] = field(default_factory=list)
+    relationships: Dict[str, float] = field(default_factory=dict)
+    known_locations: List[Position] = field(default_factory=list)
+    goals: List[str] = field(default_factory=list)
+    max_events: int = 100
+
+    def record_event(self, event: Dict[str, Any]) -> None:
+        self.recent_events.append(event)
+        if len(self.recent_events) > self.max_events:
+            self.recent_events = self.recent_events[-self.max_events:]
+
+    def update_relationship(self, agent_id: str, delta: float) -> None:
+        current = self.relationships.get(agent_id, 0.0)
+        self.relationships[agent_id] = max(-1.0, min(1.0, current + delta))
+
+
+@dataclass
+class SimulatedAgent:
+    """An autonomous agent in the simulated world."""
+    agent_id: str
+    name: str
+    personality: Dict[str, float]  # Trait name -> intensity (0.0-1.0)
+    position: Position
+    state: AgentState = AgentState.IDLE
+    emotion: EmotionType = EmotionType.NEUTRAL
+    emotion_intensity: float = 0.5
+    inventory: List[str] = field(default_factory=list)
+    memory: AgentMemory = field(default_factory=AgentMemory)
+    current_goal: Optional[str] = None
+    interaction_target: Optional[str] = None
+    age_ticks: int = 0
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "agent_id": self.agent_id,
+            "name": self.name,
+            "personality": self.personality,
+            "position": self.position.to_dict(),
+            "state": self.state.value,
+            "emotion": self.emotion.value,
+            "emotion_intensity": self.emotion_intensity,
+            "inventory": self.inventory,
+            "current_goal": self.current_goal,
+            "interaction_target": self.interaction_target,
+            "age_ticks": self.age_ticks,
+            "memory_size": len(self.memory.recent_events),
+            "relationship_count": len(self.memory.relationships),
+        }
+
+
+@dataclass
+class WorldObject:
+    """An interactive object in the simulated world."""
+    object_id: str
+    name: str
+    object_type: str
+    position: Position
+    properties: Dict[str, Any] = field(default_factory=dict)
+    interactable: bool = True
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "object_id": self.object_id,
+            "name": self.name,
+            "object_type": self.object_type,
+            "position": self.position.to_dict(),
+            "properties": self.properties,
+            "interactable": self.interactable,
+        }
 
 
 @dataclass
 class WorldEvent:
-    """A world-level event that affects multiple entities."""
+    """An event that occurred in the simulation."""
     event_id: str
-    category: EventCategory
-    name: str
+    event_type: str
     description: str
-    affected_entities: List[str] = field(default_factory=list)
-    affected_regions: List[str] = field(default_factory=list)
-    duration_ms: float = 0.0
-    intensity: float = 0.5
-    resolved: bool = False
+    source_agent: Optional[str] = None
+    target_agent: Optional[str] = None
+    position: Optional[Position] = None
+    tick: int = 0
     timestamp: float = field(default_factory=time.time)
 
-
-@dataclass
-class WorldStateSnapshot:
-    """A complete snapshot of the world state at a point in time."""
-    snapshot_id: str
-    tick: int
-    day_phase: DayPhase
-    season: Season
-    active_entities: int
-    pending_events: int
-    interactions_this_tick: int
-    world_data: Dict[str, Any] = field(default_factory=dict)
-    created_at: float = field(default_factory=time.time)
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "event_id": self.event_id,
+            "event_type": self.event_type,
+            "description": self.description,
+            "source_agent": self.source_agent,
+            "target_agent": self.target_agent,
+            "position": self.position.to_dict() if self.position else None,
+            "tick": self.tick,
+            "timestamp": self.timestamp,
+        }
 
 
-# ---------------------------------------------------------------------------
-# World Simulator Engine
-# ---------------------------------------------------------------------------
+class WorldSimulator:
+    """Autonomous AI-driven world simulation engine.
 
-class WorldSimulatorEngine:
-    """Autonomous world simulation engine for AI-native game worlds.
-
-    Drives a living, breathing game world where entities make autonomous
-    decisions, interact with each other, and respond to world events.
-    Supports multi-day evolution with persistent state and timeline
-    management.
-
-    Usage:
-        engine = get_world_simulator_engine()
-        entity = engine.create_entity("Village Elder", "character", position={"x": 100, "y": 200})
-        engine.simulate_tick()
-        snapshot = engine.get_world_state()
+    Creates living worlds where agents perceive, decide, act, and generate
+    emergent narratives through their interactions. Supports God Mode for
+    real-time intervention.
     """
 
-    _instance: Optional["WorldSimulatorEngine"] = None
-    _lock: threading.RLock = threading.RLock()
+    _instance: Optional["WorldSimulator"] = None
+    _instance_lock = threading.RLock()
 
-    MAX_ENTITIES: int = 10000
-    MAX_INTERACTIONS_PER_TICK: int = 500
-    MAX_EVENTS: int = 1000
-    TICK_DURATION_MS: float = 1000.0  # 1 second per tick
-    DAY_TICKS: int = 86400  # Ticks per in-game day
-
-    def __new__(cls) -> "WorldSimulatorEngine":
-        if cls._instance is None:
-            with cls._lock:
-                if cls._instance is None:
-                    cls._instance = super().__new__(cls)
-        return cls._instance
+    def __init__(self) -> None:
+        if self._instance is not None:
+            raise RuntimeError("Use WorldSimulator.get_instance()")
+        self._config: Optional[WorldConfig] = None
+        self._state: WorldState = WorldState.STOPPED
+        self._agents: Dict[str, SimulatedAgent] = {}
+        self._objects: Dict[str, WorldObject] = {}
+        self._events: List[WorldEvent] = []
+        self._tick_count: int = 0
+        self._initialized: bool = False
+        self._running: bool = False
+        self._simulation_thread: Optional[threading.Thread] = None
+        self._event_callbacks: List[Callable] = []
+        self._lock = threading.RLock()
 
     @classmethod
-    def get_instance(cls) -> "WorldSimulatorEngine":
+    def get_instance(cls) -> "WorldSimulator":
         if cls._instance is None:
-            with cls._lock:
+            with cls._instance_lock:
                 if cls._instance is None:
                     cls._instance = cls()
         return cls._instance
 
-    def __init__(self) -> None:
-        time.sleep(0.001)
-        if not hasattr(self, "_initialized"):
-            self._entities: Dict[str, SimEntity] = {}
-            self._interactions: List[WorldInteraction] = []
-            self._events: Dict[str, WorldEvent] = []
-            self._snapshots: Dict[str, WorldStateSnapshot] = {}
-            self._tick: int = 0
-            self._day: int = 1
-            self._day_phase: DayPhase = DayPhase.MORNING
-            self._season: Season = Season.SPRING
-            self._simulation_speed: float = 1.0
-            self._is_running: bool = False
-            self._total_entities_created: int = 0
-            self._total_interactions: int = 0
-            self._total_events: int = 0
+    def initialize(self, config: WorldConfig) -> None:
+        with self._lock:
+            self._config = config
+            self._state = WorldState.CREATING
+            self._generate_world(config)
+            self._state = WorldState.RUNNING
             self._initialized = True
 
-    # ------------------------------------------------------------------
-    # Entity Management
-    # ------------------------------------------------------------------
-
-    def create_entity(
-        self,
-        name: str,
-        entity_type: str,
-        position: Optional[Dict[str, float]] = None,
-        properties: Optional[Dict[str, Any]] = None,
-    ) -> SimEntity:
-        """Create a new entity in the simulated world.
-
-        Args:
-            name: Display name for the entity.
-            entity_type: Type of entity (character, item, structure, etc.).
-            position: World position coordinates.
-            properties: Custom properties for the entity.
-
-        Returns:
-            The created SimEntity.
-        """
-        time.sleep(0.001)
+    def start(self) -> None:
         with self._lock:
-            entity = SimEntity(
-                entity_id=uuid.uuid4().hex,
+            if not self._initialized:
+                raise RuntimeError("World not initialized")
+            self._running = True
+            self._state = WorldState.RUNNING
+
+    def pause(self) -> None:
+        with self._lock:
+            self._state = WorldState.PAUSED
+
+    def resume(self) -> None:
+        with self._lock:
+            if self._state == WorldState.PAUSED:
+                self._state = WorldState.RUNNING
+
+    def stop(self) -> None:
+        with self._lock:
+            self._running = False
+            self._state = WorldState.STOPPED
+
+    def tick(self) -> List[WorldEvent]:
+        """Advance the simulation by one tick."""
+        with self._lock:
+            if self._state != WorldState.RUNNING:
+                return []
+
+            self._tick_count += 1
+            events: List[WorldEvent] = []
+
+            # Update each agent
+            for agent in self._agents.values():
+                agent.age_ticks += 1
+                agent_events = self._update_agent(agent)
+                events.extend(agent_events)
+
+            # Check world-level events
+            config = self._config
+            if config and self._tick_count >= config.max_ticks:
+                self._state = WorldState.STOPPED
+                events.append(WorldEvent(
+                    event_id=f"evt_{uuid.uuid4().hex[:8]}",
+                    event_type="world_end",
+                    description=f"World simulation ended after {self._tick_count} ticks",
+                    tick=self._tick_count,
+                ))
+
+            self._events.extend(events)
+            for callback in self._event_callbacks:
+                try:
+                    callback(events)
+                except Exception:
+                    pass
+
+            return events
+
+    def add_event_callback(self, callback: Callable) -> None:
+        self._event_callbacks.append(callback)
+
+    def add_agent(self, name: str, personality: Dict[str, float],
+                  position: Optional[Position] = None) -> SimulatedAgent:
+        with self._lock:
+            agent_id = f"agent_{uuid.uuid4().hex[:8]}"
+            if position is None:
+                config = self._config
+                if config:
+                    position = Position(
+                        x=hash(name) % config.size[0],
+                        y=hash(name + "y") % config.size[1],
+                    )
+                else:
+                    position = Position(0, 0)
+            agent = SimulatedAgent(
+                agent_id=agent_id,
                 name=name,
-                entity_type=EntityType(entity_type),
-                position=position or {"x": 0.0, "y": 0.0},
+                personality=personality,
+                position=position,
+            )
+            self._agents[agent_id] = agent
+            return agent
+
+    def add_object(self, name: str, object_type: str,
+                   position: Position,
+                   properties: Optional[Dict[str, Any]] = None) -> WorldObject:
+        with self._lock:
+            object_id = f"obj_{uuid.uuid4().hex[:8]}"
+            obj = WorldObject(
+                object_id=object_id,
+                name=name,
+                object_type=object_type,
+                position=position,
                 properties=properties or {},
             )
-            self._entities[entity.entity_id] = entity
-            self._total_entities_created += 1
-            return entity
+            self._objects[object_id] = obj
+            return obj
 
-    def update_entity(
-        self,
-        entity_id: str,
-        updates: Dict[str, Any],
-    ) -> Optional[SimEntity]:
-        """Update properties of an existing entity.
-
-        Args:
-            entity_id: The entity to update.
-            updates: Dictionary of properties to update.
-
-        Returns:
-            The updated entity, or None if not found.
-        """
-        with self._lock:
-            if entity_id not in self._entities:
-                return None
-
-            entity = self._entities[entity_id]
-
-            if "state" in updates:
-                entity.state = EntityState(updates["state"])
-            if "position" in updates:
-                entity.position.update(updates["position"])
-            if "properties" in updates:
-                entity.properties.update(updates["properties"])
-            if "current_goal" in updates:
-                entity.current_goal = updates["current_goal"]
-
-            entity.last_updated_at = time.time()
-            return entity
-
-    def get_entity(self, entity_id: str) -> Optional[SimEntity]:
-        """Get an entity by ID."""
-        with self._lock:
-            return self._entities.get(entity_id)
-
-    def get_entities_in_region(
-        self,
-        center_x: float,
-        center_y: float,
-        radius: float,
-        entity_type: Optional[str] = None,
-    ) -> List[SimEntity]:
-        """Get entities within a circular region.
-
-        Args:
-            center_x: Center X coordinate.
-            center_y: Center Y coordinate.
-            radius: Search radius.
-            entity_type: Optional filter by entity type.
-
-        Returns:
-            List of entities within the region.
-        """
-        with self._lock:
-            results = []
-            for entity in self._entities.values():
-                if entity.state in (EntityState.DISABLED, EntityState.DESTROYED):
-                    continue
-                if entity_type and entity.entity_type.value != entity_type:
-                    continue
-
-                dx = entity.position.get("x", 0) - center_x
-                dy = entity.position.get("y", 0) - center_y
-                if (dx * dx + dy * dy) <= radius * radius:
-                    results.append(entity)
-
-            return results
-
-    # ------------------------------------------------------------------
-    # Interaction System
-    # ------------------------------------------------------------------
-
-    def create_interaction(
-        self,
-        source_id: str,
-        target_id: str,
-        interaction_type: str,
-        description: str,
-        outcome: Optional[Dict[str, Any]] = None,
-    ) -> Optional[WorldInteraction]:
-        """Create an interaction between two entities.
-
-        Args:
-            source_id: Initiating entity ID.
-            target_id: Target entity ID.
-            interaction_type: Type of interaction.
-            description: Description of the interaction.
-            outcome: Outcome data for the interaction.
-
-        Returns:
-            The created WorldInteraction, or None if entities not found.
-        """
-        time.sleep(0.001)
-        with self._lock:
-            if source_id not in self._entities or target_id not in self._entities:
-                return None
-
-            interaction = WorldInteraction(
-                interaction_id=uuid.uuid4().hex,
-                source_id=source_id,
-                target_id=target_id,
-                interaction_type=InteractionType(interaction_type),
-                description=description,
-                outcome=outcome or {},
-            )
-
-            self._interactions.append(interaction)
-            self._total_interactions += 1
-
-            # Update relationships
-            source = self._entities[source_id]
-            current_relation = source.relationships.get(target_id, 0.0)
-            source.relationships[target_id] = current_relation + 0.1
-
-            # Prune old interactions
-            if len(self._interactions) > self.MAX_INTERACTIONS_PER_TICK * 10:
-                self._interactions = self._interactions[-self.MAX_INTERACTIONS_PER_TICK * 5:]
-
-            return interaction
-
-    # ------------------------------------------------------------------
-    # Event System
-    # ------------------------------------------------------------------
-
-    def broadcast_event(
-        self,
-        category: str,
-        name: str,
-        description: str,
-        affected_entities: Optional[List[str]] = None,
-        affected_regions: Optional[List[str]] = None,
-        intensity: float = 0.5,
-    ) -> WorldEvent:
-        """Broadcast a world event affecting multiple entities.
-
-        Args:
-            category: Event category.
-            name: Event name.
-            description: Event description.
-            affected_entities: Entities affected by this event.
-            affected_regions: Regions affected by this event.
-            intensity: Event intensity (0.0 to 1.0).
-
-        Returns:
-            The created WorldEvent.
-        """
-        time.sleep(0.001)
+    def broadcast_event(self, event_type: str, description: str,
+                        target_agents: Optional[List[str]] = None) -> WorldEvent:
+        """God Mode: broadcast an event to all or specific agents."""
         with self._lock:
             event = WorldEvent(
-                event_id=uuid.uuid4().hex,
-                category=EventCategory(category),
-                name=name,
+                event_id=f"evt_{uuid.uuid4().hex[:8]}",
+                event_type=event_type,
                 description=description,
-                affected_entities=affected_entities or [],
-                affected_regions=affected_regions or [],
-                intensity=intensity,
+                tick=self._tick_count,
             )
-
             self._events.append(event)
-            self._total_events += 1
-
-            # Prune old events
-            if len(self._events) > self.MAX_EVENTS:
-                self._events = self._events[-self.MAX_EVENTS:]
-
+            if target_agents:
+                for agent_id in target_agents:
+                    agent = self._agents.get(agent_id)
+                    if agent:
+                        agent.memory.record_event({
+                            "type": event_type,
+                            "description": description,
+                            "tick": self._tick_count,
+                        })
             return event
 
-    def resolve_event(self, event_id: str) -> Optional[WorldEvent]:
-        """Mark a world event as resolved."""
+    def edit_agent(self, agent_id: str,
+                   updates: Dict[str, Any]) -> Optional[SimulatedAgent]:
+        """God Mode: modify an agent's state."""
         with self._lock:
-            for event in self._events:
-                if event.event_id == event_id:
-                    event.resolved = True
-                    event.duration_ms = (time.time() - event.timestamp) * 1000
-                    return event
-            return None
+            agent = self._agents.get(agent_id)
+            if not agent:
+                return None
+            for key, value in updates.items():
+                if hasattr(agent, key):
+                    setattr(agent, key, value)
+            return agent
 
-    # ------------------------------------------------------------------
-    # Time Progression
-    # ------------------------------------------------------------------
+    def get_agent(self, agent_id: str) -> Optional[Dict[str, Any]]:
+        agent = self._agents.get(agent_id)
+        return agent.to_dict() if agent else None
 
-    def simulate_tick(self, num_ticks: int = 1) -> WorldStateSnapshot:
-        """Advance the simulation by one or more ticks.
+    def get_all_agents(self) -> List[Dict[str, Any]]:
+        return [a.to_dict() for a in self._agents.values()]
 
-        Each tick processes entity states, interactions, and events.
-        Updates the day/night cycle and seasonal progression.
+    def get_all_objects(self) -> List[Dict[str, Any]]:
+        return [o.to_dict() for o in self._objects.values()]
 
-        Args:
-            num_ticks: Number of ticks to simulate.
-
-        Returns:
-            WorldStateSnapshot after the simulation.
-        """
-        time.sleep(0.001)
-        with self._lock:
-            for _ in range(num_ticks):
-                self._tick += 1
-
-                # Update day phase
-                tick_in_day = self._tick % self.DAY_TICKS
-                self._day_phase = self._calculate_day_phase(tick_in_day)
-
-                # Advance day
-                if tick_in_day == 0 and self._tick > 0:
-                    self._day += 1
-
-                # Update season
-                if self._tick % (self.DAY_TICKS * 30) == 0:
-                    self._advance_season()
-
-                # Process entity states
-                self._process_entity_states()
-
-                # Process pending events
-                self._process_events()
-
-            # Create snapshot
-            snapshot = WorldStateSnapshot(
-                snapshot_id=uuid.uuid4().hex,
-                tick=self._tick,
-                day_phase=self._day_phase,
-                season=self._season,
-                active_entities=sum(
-                    1 for e in self._entities.values()
-                    if e.state == EntityState.ACTIVE
-                ),
-                pending_events=sum(
-                    1 for e in self._events if not e.resolved
-                ),
-                interactions_this_tick=len(self._interactions),
-            )
-            self._snapshots[snapshot.snapshot_id] = snapshot
-
-            return snapshot
-
-    def _calculate_day_phase(self, tick_in_day: int) -> DayPhase:
-        """Calculate the day phase based on tick position."""
-        segment = self.DAY_TICKS // 8
-        if tick_in_day < segment:
-            return DayPhase.DAWN
-        elif tick_in_day < segment * 2:
-            return DayPhase.MORNING
-        elif tick_in_day < segment * 3:
-            return DayPhase.NOON
-        elif tick_in_day < segment * 4:
-            return DayPhase.AFTERNOON
-        elif tick_in_day < segment * 5:
-            return DayPhase.DUSK
-        elif tick_in_day < segment * 6:
-            return DayPhase.EVENING
-        elif tick_in_day < segment * 7:
-            return DayPhase.NIGHT
-        else:
-            return DayPhase.MIDNIGHT
-
-    def _advance_season(self) -> None:
-        """Advance to the next season."""
-        season_order = [Season.SPRING, Season.SUMMER, Season.AUTUMN, Season.WINTER]
-        idx = season_order.index(self._season)
-        self._season = season_order[(idx + 1) % 4]
-
-    def _process_entity_states(self) -> None:
-        """Process entity state transitions based on time and conditions."""
-        for entity in list(self._entities.values()):
-            if entity.state == EntityState.DESTROYED:
-                continue
-
-            # Characters sleep at night
-            if entity.entity_type == EntityType.CHARACTER:
-                if self._day_phase in (DayPhase.NIGHT, DayPhase.MIDNIGHT):
-                    if entity.state == EntityState.ACTIVE:
-                        entity.state = EntityState.SLEEPING
-                elif self._day_phase == DayPhase.DAWN:
-                    if entity.state == EntityState.SLEEPING:
-                        entity.state = EntityState.ACTIVE
-
-            entity.last_updated_at = time.time()
-
-    def _process_events(self) -> None:
-        """Process active world events."""
-        for event in list(self._events):
-            if event.resolved:
-                continue
-
-            # Apply event effects to affected entities
-            for entity_id in event.affected_entities:
-                if entity_id in self._entities:
-                    entity = self._entities[entity_id]
-                    entity.memory.append(f"Event: {event.name} - {event.description}")
-
-                    # Keep memory bounded
-                    if len(entity.memory) > 50:
-                        entity.memory = entity.memory[-50:]
-
-    # ------------------------------------------------------------------
-    # Timeline Management
-    # ------------------------------------------------------------------
-
-    def create_timeline_branch(
-        self,
-        branch_name: str,
-        from_tick: Optional[int] = None,
-    ) -> str:
-        """Create a branch in the world timeline.
-
-        Args:
-            branch_name: Name for the new timeline branch.
-            from_tick: Starting tick for the branch (defaults to current).
-
-        Returns:
-            The branch identifier.
-        """
-        time.sleep(0.001)
-        with self._lock:
-            branch_id = f"timeline_{branch_name}_{uuid.uuid4().hex[:8]}"
-            source_tick = from_tick or self._tick
-
-            # Save current state as branch point
-            snapshot = WorldStateSnapshot(
-                snapshot_id=branch_id,
-                tick=source_tick,
-                day_phase=self._day_phase,
-                season=self._season,
-                active_entities=len(self._entities),
-                pending_events=len(self._events),
-                interactions_this_tick=len(self._interactions),
-            )
-            self._snapshots[branch_id] = snapshot
-
-            return branch_id
-
-    def restore_timeline(self, snapshot_id: str) -> bool:
-        """Restore the world to a previous snapshot.
-
-        Args:
-            snapshot_id: The snapshot to restore from.
-
-        Returns:
-            True if successful, False if snapshot not found.
-        """
-        with self._lock:
-            if snapshot_id not in self._snapshots:
-                return False
-
-            snapshot = self._snapshots[snapshot_id]
-            self._tick = snapshot.tick
-            self._day_phase = snapshot.day_phase
-            self._season = snapshot.season
-            return True
-
-    # ------------------------------------------------------------------
-    # Query API
-    # ------------------------------------------------------------------
+    def get_events(self, limit: int = 100) -> List[Dict[str, Any]]:
+        return [e.to_dict() for e in self._events[-limit:]]
 
     def get_world_state(self) -> Dict[str, Any]:
-        """Get the current world state summary."""
-        with self._lock:
-            return {
-                "tick": self._tick,
-                "day": self._day,
-                "day_phase": self._day_phase.value,
-                "season": self._season.value,
-                "total_entities": len(self._entities),
-                "active_entities": sum(
-                    1 for e in self._entities.values()
-                    if e.state == EntityState.ACTIVE
-                ),
-                "pending_events": sum(
-                    1 for e in self._events if not e.resolved
-                ),
-                "total_interactions": self._total_interactions,
-                "total_events": self._total_events,
-                "is_running": self._is_running,
-            }
+        return {
+            "state": self._state.value,
+            "tick_count": self._tick_count,
+            "agent_count": len(self._agents),
+            "object_count": len(self._objects),
+            "event_count": len(self._events),
+            "initialized": self._initialized,
+            "config": self._config.__dict__ if self._config else None,
+        }
 
-    def get_simulation_stats(self) -> Dict[str, Any]:
-        """Get comprehensive simulation statistics."""
-        with self._lock:
-            entity_type_counts = {}
-            for entity in self._entities.values():
-                etype = entity.entity_type.value
-                entity_type_counts[etype] = entity_type_counts.get(etype, 0) + 1
+    def _generate_world(self, config: WorldConfig) -> None:
+        """Generate the initial world state."""
+        # Generate agents with diverse personalities
+        personalities = [
+            {"openness": 0.8, "conscientiousness": 0.6, "extraversion": 0.7,
+             "agreeableness": 0.5, "curiosity": 0.9},
+            {"openness": 0.3, "conscientiousness": 0.9, "extraversion": 0.2,
+             "agreeableness": 0.8, "caution": 0.7},
+            {"openness": 0.7, "conscientiousness": 0.4, "extraversion": 0.9,
+             "agreeableness": 0.3, "ambition": 0.8},
+            {"openness": 0.5, "conscientiousness": 0.7, "extraversion": 0.5,
+             "agreeableness": 0.6, "creativity": 0.7},
+            {"openness": 0.9, "conscientiousness": 0.3, "extraversion": 0.8,
+             "agreeableness": 0.7, "exploration": 0.9},
+        ]
 
-            return {
-                **self.get_world_state(),
-                "entity_type_counts": entity_type_counts,
-                "total_entities_created": self._total_entities_created,
-                "snapshots_stored": len(self._snapshots),
-                "simulation_speed": self._simulation_speed,
-            }
+        for i in range(config.agent_count):
+            personality = personalities[i % len(personalities)].copy()
+            pos = Position(
+                x=(hash(f"agent_{i}") % config.size[0]),
+                y=(hash(f"agent_{i}_y") % config.size[1]),
+            )
+            agent = SimulatedAgent(
+                agent_id=f"agent_{uuid.uuid4().hex[:8]}",
+                name=f"Agent_{i}",
+                personality=personality,
+                position=pos,
+            )
+            self._agents[agent.agent_id] = agent
 
-    def get_recent_interactions(
-        self,
-        limit: int = 20,
-    ) -> List[Dict[str, Any]]:
-        """Get recent world interactions."""
-        with self._lock:
-            recent = self._interactions[-limit:]
-            return [
-                {
-                    "interaction_id": i.interaction_id,
-                    "source_id": i.source_id,
-                    "target_id": i.target_id,
-                    "interaction_type": i.interaction_type.value,
-                    "description": i.description,
-                    "outcome": i.outcome,
-                    "succeeded": i.succeeded,
-                    "timestamp": i.timestamp,
-                }
-                for i in recent
-            ]
+        # Generate some world objects
+        object_types = ["resource", "structure", "decoration", "interactive"]
+        for i in range(min(config.agent_count * 2, 50)):
+            obj_type = object_types[i % len(object_types)]
+            pos = Position(
+                x=(hash(f"obj_{i}") % config.size[0]),
+                y=(hash(f"obj_{i}_y") % config.size[1]),
+            )
+            obj = WorldObject(
+                object_id=f"obj_{uuid.uuid4().hex[:8]}",
+                name=f"{obj_type}_{i}",
+                object_type=obj_type,
+                position=pos,
+            )
+            self._objects[obj.object_id] = obj
 
-    def get_pending_events(self) -> List[Dict[str, Any]]:
-        """Get unresolved world events."""
-        with self._lock:
-            return [
-                {
-                    "event_id": e.event_id,
-                    "category": e.category.value,
-                    "name": e.name,
-                    "description": e.description,
-                    "intensity": e.intensity,
-                    "affected_entities": len(e.affected_entities),
-                    "timestamp": e.timestamp,
-                }
-                for e in self._events
-                if not e.resolved
-            ]
+        self._events.append(WorldEvent(
+            event_id=f"evt_{uuid.uuid4().hex[:8]}",
+            event_type="world_created",
+            description=f"World '{config.name}' created with {config.agent_count} agents",
+            tick=0,
+        ))
 
-    def set_simulation_speed(self, speed: float) -> None:
-        """Set the simulation speed multiplier."""
-        with self._lock:
-            self._simulation_speed = max(0.1, min(10.0, speed))
+    def _update_agent(self, agent: SimulatedAgent) -> List[WorldEvent]:
+        """Update a single agent for one tick - perceive, decide, act."""
+        events: List[WorldEvent] = []
+
+        # Phase 1: Perceive
+        agent.state = AgentState.PERCEIVING
+        nearby_agents = self._find_nearby_agents(agent, radius=10.0)
+        nearby_objects = self._find_nearby_objects(agent, radius=5.0)
+
+        # Phase 2: Decide
+        agent.state = AgentState.DECIDING
+        action = self._decide_action(agent, nearby_agents, nearby_objects)
+
+        # Phase 3: Act
+        agent.state = AgentState.ACTING
+        action_events = self._execute_action(agent, action, nearby_agents,
+                                            nearby_objects)
+        events.extend(action_events)
+
+        # Update emotional state
+        self._update_emotion(agent, events)
+
+        agent.state = AgentState.IDLE
+        return events
+
+    def _find_nearby_agents(self, agent: SimulatedAgent,
+                            radius: float) -> List[SimulatedAgent]:
+        nearby = []
+        for other in self._agents.values():
+            if other.agent_id != agent.agent_id:
+                dist = agent.position.distance_to(other.position)
+                if dist <= radius:
+                    nearby.append(other)
+        return nearby
+
+    def _find_nearby_objects(self, agent: SimulatedAgent,
+                             radius: float) -> List[WorldObject]:
+        nearby = []
+        for obj in self._objects.values():
+            if obj.interactable:
+                dist = agent.position.distance_to(obj.position)
+                if dist <= radius:
+                    nearby.append(obj)
+        return nearby
+
+    def _decide_action(self, agent: SimulatedAgent,
+                       nearby_agents: List[SimulatedAgent],
+                       nearby_objects: List[WorldObject]) -> Tuple[ActionType, Dict[str, Any]]:
+        """Decide what action the agent should take this tick."""
+        # Simple decision-making based on personality and context
+        extraversion = agent.personality.get("extraversion", 0.5)
+        curiosity = agent.personality.get("curiosity", 0.5)
+
+        # If there are nearby agents, interact based on extraversion
+        if nearby_agents and extraversion > 0.4:
+            target = nearby_agents[0]
+            return (ActionType.INTERACT, {"target_id": target.agent_id})
+
+        # If there are nearby objects, investigate based on curiosity
+        if nearby_objects and curiosity > 0.3:
+            target = nearby_objects[0]
+            return (ActionType.INTERACT, {"target_id": target.object_id})
+
+        # Otherwise, move randomly
+        config = self._config
+        if config:
+            new_x = agent.position.x + (hash(str(self._tick_count)) % 5 - 2)
+            new_y = agent.position.y + (hash(str(self._tick_count + 1)) % 5 - 2)
+            new_x = max(0, min(config.size[0], new_x))
+            new_y = max(0, min(config.size[1], new_y))
+            return (ActionType.MOVE, {"target": Position(new_x, new_y)})
+
+        return (ActionType.WAIT, {})
+
+    def _execute_action(self, agent: SimulatedAgent,
+                        action: Tuple[ActionType, Dict[str, Any]],
+                        nearby_agents: List[SimulatedAgent],
+                        nearby_objects: List[WorldObject]) -> List[WorldEvent]:
+        """Execute the decided action and return resulting events."""
+        action_type, params = action
+        events: List[WorldEvent] = []
+
+        if action_type == ActionType.MOVE:
+            target = params.get("target")
+            if isinstance(target, Position):
+                agent.position = target
+                agent.memory.known_locations.append(target)
+
+        elif action_type == ActionType.INTERACT:
+            target_id = params.get("target_id", "")
+            # Check if target is an agent
+            target_agent = self._agents.get(target_id)
+            if target_agent:
+                agent.state = AgentState.INTERACTING
+                agent.interaction_target = target_id
+                agent.memory.update_relationship(target_id, 0.05)
+                target_agent.memory.update_relationship(agent.agent_id, 0.05)
+                events.append(WorldEvent(
+                    event_id=f"evt_{uuid.uuid4().hex[:8]}",
+                    event_type="interaction",
+                    description=f"{agent.name} interacted with {target_agent.name}",
+                    source_agent=agent.agent_id,
+                    target_agent=target_id,
+                    position=agent.position,
+                    tick=self._tick_count,
+                ))
+
+            # Check if target is an object
+            target_obj = self._objects.get(target_id)
+            if target_obj:
+                events.append(WorldEvent(
+                    event_id=f"evt_{uuid.uuid4().hex[:8]}",
+                    event_type="object_interaction",
+                    description=f"{agent.name} used {target_obj.name}",
+                    source_agent=agent.agent_id,
+                    position=target_obj.position,
+                    tick=self._tick_count,
+                ))
+
+        elif action_type == ActionType.WAIT:
+            pass
+
+        return events
+
+    def _update_emotion(self, agent: SimulatedAgent,
+                        events: List[WorldEvent]) -> None:
+        """Update agent's emotional state based on events."""
+        # Natural decay toward neutral
+        if agent.emotion != EmotionType.NEUTRAL:
+            agent.emotion_intensity = max(0.0, agent.emotion_intensity - 0.01)
+            if agent.emotion_intensity < 0.1:
+                agent.emotion = EmotionType.NEUTRAL
+                agent.emotion_intensity = 0.5
+
+        # Event-driven emotion changes
+        for event in events:
+            if event.event_type == "interaction":
+                if event.target_agent == agent.agent_id:
+                    agent.emotion = EmotionType.HAPPY
+                    agent.emotion_intensity = min(1.0, agent.emotion_intensity + 0.2)
 
 
-# ---------------------------------------------------------------------------
-# Singleton Accessor
-# ---------------------------------------------------------------------------
-
-def get_world_simulator_engine() -> WorldSimulatorEngine:
-    """Get the singleton WorldSimulatorEngine instance."""
-    return WorldSimulatorEngine.get_instance()
+def get_world_simulator() -> WorldSimulator:
+    """Get the global WorldSimulator instance."""
+    return WorldSimulator.get_instance()
