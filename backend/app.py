@@ -10,7 +10,9 @@ from backend.routes import (
     engine, agent, scene, workflow, narrative, npc,
     agent_memory, agent_goals, engine_level, engine_weather,
     engine_terrain, agent_social, agent_llm, agent_game_creation, agent_swarm,
-    engine_behavior, agent_cognitive, agent_creator,
+    engine_behavior, agent_cognitive, agent_creator, agent_orchestration,
+    agent_strategic, engine_optimization, agent_learning, agent_ai_native,
+    agent_core_systems,
 )
 from backend.websocket import router as ws_router
 
@@ -49,6 +51,12 @@ app.include_router(agent_swarm.router, prefix="/api/agent", tags=["Agent Swarm"]
 app.include_router(agent_cognitive.router, prefix="/api/agent", tags=["Agent Cognitive"])
 app.include_router(agent_creator.router, prefix="/api/agent", tags=["Agent Creator"])
 app.include_router(engine_behavior.router, prefix="/api/engine", tags=["Engine Behavior"])
+app.include_router(agent_orchestration.router, prefix="/api/agent", tags=["Agent Orchestration"])
+app.include_router(agent_strategic.router, prefix="/api/agent", tags=["Agent Strategic"])
+app.include_router(engine_optimization.router, prefix="/api/engine", tags=["Engine Optimization"])
+app.include_router(agent_learning.router, prefix="/api/agent", tags=["Agent Learning"])
+app.include_router(agent_ai_native.router, prefix="/api/agent", tags=["Agent AI-Native"])
+app.include_router(agent_core_systems.router, prefix="/api/agent", tags=["Agent Core Systems"])
 
 
 @app.get("/api/health")
