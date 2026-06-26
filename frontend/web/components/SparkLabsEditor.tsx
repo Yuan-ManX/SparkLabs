@@ -282,6 +282,7 @@ import AdaptiveRenderingPanel from './AdaptiveRenderingPanel';
 import PhysicsOptimizerPanel from './PhysicsOptimizerPanel';
 import AgentTeamFactoryPanel from './AgentTeamFactoryPanel';
 import AINativeEnginePanel from './AINativeEnginePanel';
+import AgentEngineUnifiedPanel from './AgentEngineUnifiedPanel';
 import { LifecyclePanel, SlashCommandsPanel, ValidationHooksPanel } from './LifecyclePanels';
 import { TaskExecutorPanel } from './TaskExecutorPanel';
 import NotificationToast from './NotificationToast';
@@ -809,6 +810,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'physics-optimizer': return <PhysicsOptimizerPanel />;
       case 'team-factory': return <AgentTeamFactoryPanel />;
       case 'ai-native-engine': return <AINativeEnginePanel />;
+      case 'agent-engine-unified': return <AgentEngineUnifiedPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
