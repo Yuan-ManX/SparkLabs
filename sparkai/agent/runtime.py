@@ -367,7 +367,7 @@ from sparkai.agent.agent_federated_learner import FederatedLearner, get_federate
 from sparkai.agent.agent_swarm_planner import SwarmPlanner, get_swarm_planner
 from sparkai.agent.agent_world_composer import WorldComposer, get_world_composer
 from sparkai.agent.agent_playtest_orchestrator import PlaytestOrchestrator, get_playtest_orchestrator
-from sparkai.agent.agent_reasoning_chain import ReasoningChain, get_reasoning_chain
+from sparkai.agent.agent_reasoning_chain import ReasoningChainEngine, get_reasoning_chain
 from sparkai.agent.agent_memory_hierarchy import MemoryHierarchy, get_memory_hierarchy
 from sparkai.agent.agent_tool_registry import ToolRegistry, get_tool_registry
 from sparkai.agent.agent_prompt_templates import PromptLibrary, get_prompt_library
@@ -940,7 +940,7 @@ class AgentRuntime:
         self._swarm_planner: Optional[SwarmPlanner] = None
         self._world_composer: Optional[WorldComposer] = None
         self._playtest_orchestrator: Optional[PlaytestOrchestrator] = None
-        self._reasoning_chain: Optional[ReasoningChain] = None
+        self._reasoning_chain: Optional[ReasoningChainEngine] = None
         self._memory_hierarchy: Optional[MemoryHierarchy] = None
         self._tool_registry: Optional[ToolRegistry] = None
         self._prompt_library: Optional[PromptLibrary] = None
@@ -2795,7 +2795,7 @@ class AgentRuntime:
         return self._platform_bridge
 
     @property
-    def reasoning_chain(self) -> Optional[ReasoningChain]:
+    def reasoning_chain(self) -> Optional[ReasoningChainEngine]:
         return self._reasoning_chain
 
     @property
