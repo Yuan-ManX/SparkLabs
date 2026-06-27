@@ -223,7 +223,7 @@ async def god_mode_status():
     try:
         from sparkai.agent.agent_god_mode import get_god_mode_controller
         gm = get_god_mode_controller()
-        if not gm._initialized:
+        if not gm._is_initialized:
             gm.initialize()
         status = gm.get_status()
         return JSONResponse({"status": "success", "data": status})
@@ -239,7 +239,7 @@ async def god_mode_observe_agent(request: Request):
         body = await request.json()
         agent_id = body.get("agent_id", "")
         gm = get_god_mode_controller()
-        if not gm._initialized:
+        if not gm._is_initialized:
             gm.initialize()
         data = gm.observe_agent(agent_id)
         return JSONResponse({"status": "success", "data": data})
@@ -255,7 +255,7 @@ async def god_mode_observe_world(request: Request):
         body = await request.json()
         world_id = body.get("world_id", "")
         gm = get_god_mode_controller()
-        if not gm._initialized:
+        if not gm._is_initialized:
             gm.initialize()
         data = gm.observe_world(world_id)
         return JSONResponse({"status": "success", "data": data})
@@ -274,7 +274,7 @@ async def god_mode_edit_memory(request: Request):
         new_value = body.get("new_value", "")
         operation = body.get("operation", "UPDATE")
         gm = get_god_mode_controller()
-        if not gm._initialized:
+        if not gm._is_initialized:
             gm.initialize()
         result = gm.edit_agent_memory(agent_id, memory_key, new_value, operation)
         return JSONResponse({"status": "success", "data": result.to_dict()})
@@ -292,7 +292,7 @@ async def god_mode_edit_personality(request: Request):
         trait_name = body.get("trait_name", "")
         new_value = body.get("new_value", 0.5)
         gm = get_god_mode_controller()
-        if not gm._initialized:
+        if not gm._is_initialized:
             gm.initialize()
         result = gm.edit_agent_personality(agent_id, trait_name, new_value)
         return JSONResponse({"status": "success", "data": result.to_dict()})
@@ -312,7 +312,7 @@ async def god_mode_inject_event(request: Request):
         affected_agents = body.get("affected_agents", [])
         intensity = body.get("intensity", 0.5)
         gm = get_god_mode_controller()
-        if not gm._initialized:
+        if not gm._is_initialized:
             gm.initialize()
         result = gm.inject_world_event(event_type, description, target_location, affected_agents, intensity)
         return JSONResponse({"status": "success", "data": result.to_dict()})
@@ -330,7 +330,7 @@ async def god_mode_broadcast(request: Request):
         scope = body.get("scope", "ALL_AGENTS")
         target_ids = body.get("target_ids", [])
         gm = get_god_mode_controller()
-        if not gm._initialized:
+        if not gm._is_initialized:
             gm.initialize()
         result = gm.broadcast_message(message, scope, target_ids)
         return JSONResponse({"status": "success", "data": result})
