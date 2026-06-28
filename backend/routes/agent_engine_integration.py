@@ -1974,7 +1974,7 @@ async def lifecycle_manager_status():
         manager = get_game_lifecycle_manager()
         if not manager._initialized:
             manager.initialize()
-        return JSONResponse({"status": "success", "data": manager.get_status().to_dict()})
+        return JSONResponse({"status": "success", "data": manager.get_status()})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -2066,7 +2066,7 @@ async def content_synthesis_status():
         engine = get_content_synthesis_engine()
         if not engine._initialized:
             engine.initialize()
-        return JSONResponse({"status": "success", "data": engine.get_status().to_dict()})
+        return JSONResponse({"status": "success", "data": engine.get_status()})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -2087,7 +2087,7 @@ async def content_synthesis_synthesize(request: Request):
             content_type=ContentType(body.get("content_type", "level")),
             strategy=SynthesisStrategy(body.get("strategy", "procedural")),
             quality_tier=QualityTier(body.get("quality_tier", "standard")),
-            parameters=body.get("parameters", {}),
+            constraints=body.get("parameters", {}),
             style_profile_id=body.get("style_profile_id"),
         )
         result = engine.synthesize(req)
@@ -2115,7 +2115,7 @@ async def content_synthesis_batch(request: Request):
                 content_type=ContentType(r.get("content_type", "level")),
                 strategy=SynthesisStrategy(r.get("strategy", "procedural")),
                 quality_tier=QualityTier(r.get("quality_tier", "standard")),
-                parameters=r.get("parameters", {}),
+                constraints=r.get("parameters", {}),
             ))
         batch = engine.synthesize_batch(requests_list)
         return JSONResponse({"status": "success", "data": batch.to_dict()})
@@ -2167,6 +2167,8 @@ async def qa_orchestrator_run_check(request: Request):
         if not qa._initialized:
             qa.initialize()
         result = qa.run_check(check_name, target)
+        if result is None:
+            return JSONResponse({"status": "success", "data": {"check_name": check_name, "result": "not_found"}})
         return JSONResponse({"status": "success", "data": result.to_dict()})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
@@ -2240,11 +2242,11 @@ async def qa_orchestrator_report_defect(request: Request):
 async def state_manager_status():
     """Get the game state manager status."""
     try:
-        from sparkai.engine.engine_game_state_manager import get_game_state_manager, StateConfig
+        from sparkai.engine.engine_game_state_manager import get_game_state_manager
         manager = get_game_state_manager()
-        if not manager._initialized:
-            manager.initialize(StateConfig())
-        return JSONResponse({"status": "success", "data": manager.get_status().to_dict()})
+        if not manager._is_initialized:
+            manager.initialize()
+        return JSONResponse({"status": "success", "data": manager.get_status()})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -2254,22 +2256,22 @@ async def state_manager_save(request: Request):
     """Save game state to a slot."""
     try:
         from sparkai.engine.engine_game_state_manager import (
-            get_game_state_manager, StateConfig, GameState, SaveSlot
+            get_game_state_manager, GameState, SaveSlot
         )
         body = await request.json()
         slot = SaveSlot(body.get("slot", "slot_1"))
         state_data = body.get("state_data", {})
         manager = get_game_state_manager()
-        if not manager._initialized:
-            manager.initialize(StateConfig())
+        if not manager._is_initialized:
+            manager.initialize()
         state = GameState(
-            state_id=f"state_{uuid.uuid4().hex[:8]}",
-            state_type="global",
-            data=state_data,
+            id=f"state_{uuid.uuid4().hex[:8]}",
+            global_data=state_data,
             timestamp=time.time(),
         )
         result = manager.save_state(slot, state)
-        return JSONResponse({"status": "success", "data": {"saved": result, "slot": slot.value}})
+        saved = result is not None
+        return JSONResponse({"status": "success", "data": {"saved": saved, "slot": slot.value}})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -2279,13 +2281,13 @@ async def state_manager_load(request: Request):
     """Load game state from a slot."""
     try:
         from sparkai.engine.engine_game_state_manager import (
-            get_game_state_manager, StateConfig, SaveSlot
+            get_game_state_manager, SaveSlot
         )
         body = await request.json()
         slot = SaveSlot(body.get("slot", "slot_1"))
         manager = get_game_state_manager()
-        if not manager._initialized:
-            manager.initialize(StateConfig())
+        if not manager._is_initialized:
+            manager.initialize()
         state = manager.load_state(slot)
         if state is None:
             return JSONResponse({"status": "error", "message": "No save data in slot"}, status_code=404)
@@ -2299,21 +2301,22 @@ async def state_manager_checkpoint(request: Request):
     """Create a checkpoint."""
     try:
         from sparkai.engine.engine_game_state_manager import (
-            get_game_state_manager, StateConfig, GameState
+            get_game_state_manager, GameState
         )
         body = await request.json()
         name = body.get("name", f"checkpoint_{uuid.uuid4().hex[:8]}")
         state_data = body.get("state_data", {})
         manager = get_game_state_manager()
-        if not manager._initialized:
-            manager.initialize(StateConfig())
+        if not manager._is_initialized:
+            manager.initialize()
         state = GameState(
-            state_id=f"state_{uuid.uuid4().hex[:8]}",
-            state_type="checkpoint",
-            data=state_data,
+            id=f"state_{uuid.uuid4().hex[:8]}",
+            global_data=state_data,
             timestamp=time.time(),
         )
         checkpoint = manager.create_checkpoint(name, state)
+        if checkpoint is None:
+            return JSONResponse({"status": "error", "message": "Failed to create checkpoint"}, status_code=500)
         return JSONResponse({"status": "success", "data": checkpoint.to_dict()})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
@@ -2323,12 +2326,12 @@ async def state_manager_checkpoint(request: Request):
 async def state_manager_slots():
     """Get all save slots info."""
     try:
-        from sparkai.engine.engine_game_state_manager import get_game_state_manager, StateConfig
+        from sparkai.engine.engine_game_state_manager import get_game_state_manager
         manager = get_game_state_manager()
-        if not manager._initialized:
-            manager.initialize(StateConfig())
+        if not manager._is_initialized:
+            manager.initialize()
         slots = manager.get_save_slots()
-        return JSONResponse({"status": "success", "data": [s.to_dict() for s in slots]})
+        return JSONResponse({"status": "success", "data": slots})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -2342,11 +2345,11 @@ async def state_manager_slots():
 async def ui_rendering_status():
     """Get the UI rendering pipeline status."""
     try:
-        from sparkai.engine.engine_ui_rendering import get_ui_rendering_pipeline, UIRenderConfig
+        from sparkai.engine.engine_ui_rendering import get_ui_rendering_pipeline
         pipeline = get_ui_rendering_pipeline()
-        if not pipeline._initialized:
-            pipeline.initialize(UIRenderConfig())
-        return JSONResponse({"status": "success", "data": pipeline.get_status().to_dict()})
+        if not pipeline._initialized_pipeline:
+            pipeline.initialize()
+        return JSONResponse({"status": "success", "data": pipeline.get_status()})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
@@ -2356,15 +2359,17 @@ async def ui_rendering_create_widget(request: Request):
     """Create a UI widget."""
     try:
         from sparkai.engine.engine_ui_rendering import (
-            get_ui_rendering_pipeline, UIRenderConfig, WidgetType
+            get_ui_rendering_pipeline, WidgetType
         )
         body = await request.json()
         pipeline = get_ui_rendering_pipeline()
-        if not pipeline._initialized:
-            pipeline.initialize(UIRenderConfig())
+        if not pipeline._initialized_pipeline:
+            pipeline.initialize()
         widget_type = WidgetType(body.get("type", "button"))
         properties = body.get("properties", {})
         widget = pipeline.create_widget(widget_type, properties)
+        if widget is None:
+            return JSONResponse({"status": "error", "message": "Widget type not found"}, status_code=404)
         return JSONResponse({"status": "success", "data": widget.to_dict()})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
@@ -2374,10 +2379,10 @@ async def ui_rendering_create_widget(request: Request):
 async def ui_rendering_render_frame():
     """Render a complete UI frame."""
     try:
-        from sparkai.engine.engine_ui_rendering import get_ui_rendering_pipeline, UIRenderConfig
+        from sparkai.engine.engine_ui_rendering import get_ui_rendering_pipeline
         pipeline = get_ui_rendering_pipeline()
-        if not pipeline._initialized:
-            pipeline.initialize(UIRenderConfig())
+        if not pipeline._initialized_pipeline:
+            pipeline.initialize()
         stats = pipeline.render_frame()
         return JSONResponse({"status": "success", "data": stats.to_dict()})
     except Exception as e:
@@ -2388,10 +2393,10 @@ async def ui_rendering_render_frame():
 async def ui_rendering_stats():
     """Get UI rendering statistics."""
     try:
-        from sparkai.engine.engine_ui_rendering import get_ui_rendering_pipeline, UIRenderConfig
+        from sparkai.engine.engine_ui_rendering import get_ui_rendering_pipeline
         pipeline = get_ui_rendering_pipeline()
-        if not pipeline._initialized:
-            pipeline.initialize(UIRenderConfig())
+        if not pipeline._initialized_pipeline:
+            pipeline.initialize()
         stats = pipeline.get_render_stats()
         return JSONResponse({"status": "success", "data": stats.to_dict()})
     except Exception as e:
@@ -2407,10 +2412,10 @@ async def ui_rendering_stats():
 async def modding_status():
     """Get the modding framework status."""
     try:
-        from sparkai.engine.engine_modding_framework import get_modding_framework, ModConfig
+        from sparkai.engine.engine_modding_framework import get_modding_framework
         framework = get_modding_framework()
-        if not framework._initialized:
-            framework.initialize(ModConfig())
+        if not framework._is_initialized:
+            framework.initialize()
         return JSONResponse({"status": "success", "data": framework.get_status().to_dict()})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
@@ -2421,12 +2426,12 @@ async def modding_register(request: Request):
     """Register a mod."""
     try:
         from sparkai.engine.engine_modding_framework import (
-            get_modding_framework, ModConfig, ModDescriptor, ModType
+            get_modding_framework, ModDescriptor, ModType
         )
         body = await request.json()
         framework = get_modding_framework()
-        if not framework._initialized:
-            framework.initialize(ModConfig())
+        if not framework._is_initialized:
+            framework.initialize()
         descriptor = ModDescriptor(
             mod_id=body.get("mod_id", f"mod_{uuid.uuid4().hex[:8]}"),
             name=body.get("name", "Untitled Mod"),
@@ -2445,10 +2450,10 @@ async def modding_register(request: Request):
 async def modding_load(mod_id: str):
     """Load a mod."""
     try:
-        from sparkai.engine.engine_modding_framework import get_modding_framework, ModConfig
+        from sparkai.engine.engine_modding_framework import get_modding_framework
         framework = get_modding_framework()
-        if not framework._initialized:
-            framework.initialize(ModConfig())
+        if not framework._is_initialized:
+            framework.initialize()
         result = framework.load_mod(mod_id)
         return JSONResponse({"status": "success", "data": {"loaded": result, "mod_id": mod_id}})
     except Exception as e:
@@ -2459,10 +2464,10 @@ async def modding_load(mod_id: str):
 async def modding_enable(mod_id: str):
     """Enable a loaded mod."""
     try:
-        from sparkai.engine.engine_modding_framework import get_modding_framework, ModConfig
+        from sparkai.engine.engine_modding_framework import get_modding_framework
         framework = get_modding_framework()
-        if not framework._initialized:
-            framework.initialize(ModConfig())
+        if not framework._is_initialized:
+            framework.initialize()
         result = framework.enable_mod(mod_id)
         return JSONResponse({"status": "success", "data": {"enabled": result, "mod_id": mod_id}})
     except Exception as e:
@@ -2473,10 +2478,10 @@ async def modding_enable(mod_id: str):
 async def modding_disable(mod_id: str):
     """Disable a loaded mod."""
     try:
-        from sparkai.engine.engine_modding_framework import get_modding_framework, ModConfig
+        from sparkai.engine.engine_modding_framework import get_modding_framework
         framework = get_modding_framework()
-        if not framework._initialized:
-            framework.initialize(ModConfig())
+        if not framework._is_initialized:
+            framework.initialize()
         result = framework.disable_mod(mod_id)
         return JSONResponse({"status": "success", "data": {"disabled": result, "mod_id": mod_id}})
     except Exception as e:
@@ -2487,11 +2492,11 @@ async def modding_disable(mod_id: str):
 async def modding_loaded():
     """Get all loaded mods."""
     try:
-        from sparkai.engine.engine_modding_framework import get_modding_framework, ModConfig
+        from sparkai.engine.engine_modding_framework import get_modding_framework
         framework = get_modding_framework()
-        if not framework._initialized:
-            framework.initialize(ModConfig())
+        if not framework._is_initialized:
+            framework.initialize()
         mods = framework.get_loaded_mods()
-        return JSONResponse({"status": "success", "data": [m.to_dict() for m in mods]})
+        return JSONResponse({"status": "success", "data": mods})
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
