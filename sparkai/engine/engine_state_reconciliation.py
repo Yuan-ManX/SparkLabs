@@ -571,3 +571,8 @@ class StateReconciliationEngine:
             self._current_state.clear()
             self._current_tick = 0
             self._initialized = False
+
+
+def get_state_reconciliation_engine() -> StateReconciliationEngine:
+    """Get the StateReconciliationEngine singleton instance."""
+    return StateReconciliationEngine.get_instance()
