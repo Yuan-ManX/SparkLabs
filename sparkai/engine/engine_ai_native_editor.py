@@ -3902,4 +3902,175 @@ class PhysicsEditor:
 
         Args:
             entity_id: The entity to attach physics to.
-            body_type: Type of physics body
+            body_type: Type of physics body (dynamic, static, kinematic).
+            mass: Mass of the physics body in kilograms.
+            options: Additional physics configuration options.
+
+        Returns:
+            PhysicsBodyConfig with the configured physics properties.
+        """
+        config = PhysicsBodyConfig(
+            entity_id=entity_id,
+            body_type=body_type,
+            mass=mass,
+            gravity_scale=options.get("gravity_scale", 1.0) if options else 1.0,
+            linear_damping=options.get("linear_damping", 0.1) if options else 0.1,
+            angular_damping=options.get("angular_damping", 0.1) if options else 0.1,
+            fixed_rotation=options.get("fixed_rotation", False) if options else False,
+            is_bullet=options.get("is_bullet", False) if options else False,
+            allow_sleep=options.get("allow_sleep", True) if options else True,
+            awake=options.get("awake", True) if options else True,
+        )
+        with self._lock:
+            self._bodies[entity_id] = config
+        return config
+
+    # ------------------------------------------------------------------
+    # Collision Shape Configuration
+    # ------------------------------------------------------------------
+
+    def add_collision_shape(
+        self,
+        entity_id: str,
+        shape_type: CollisionShapeType = CollisionShapeType.BOX,
+        size: Optional[Tuple[float, float]] = None,
+        offset: Optional[Tuple[float, float]] = None,
+        is_sensor: bool = False,
+    ) -> CollisionShapeConfig:
+        """Add a collision shape to an entity's physics body.
+
+        Args:
+            entity_id: The entity to add the collision shape to.
+            shape_type: Type of collision shape.
+            size: Size of the shape (width, height).
+            offset: Offset from the entity's origin.
+            is_sensor: Whether the shape is a sensor (no physical collision).
+
+        Returns:
+            CollisionShapeConfig with the configured shape properties.
+        """
+        shape = CollisionShapeConfig(
+            entity_id=entity_id,
+            shape_type=shape_type,
+            size=size or (1.0, 1.0),
+            offset=offset or (0.0, 0.0),
+            is_sensor=is_sensor,
+            density=1.0,
+            friction=0.5,
+            restitution=0.3,
+            category_bits=0x0001,
+            mask_bits=0xFFFF,
+        )
+        with self._lock:
+            self._shapes[entity_id] = shape
+        return shape
+
+    # ------------------------------------------------------------------
+    # Physics Simulation
+    # ------------------------------------------------------------------
+
+    def run_simulation(
+        self,
+        entity_id: str,
+        duration: float = 1.0,
+        time_step: float = 0.016,
+    ) -> List[SimulationStep]:
+        """Run a physics simulation preview for an entity.
+
+        Args:
+            entity_id: The entity to simulate.
+            duration: Duration of the simulation in seconds.
+            time_step: Time step for each simulation tick.
+
+        Returns:
+            List of SimulationStep results containing position, velocity, etc.
+        """
+        steps: List[SimulationStep] = []
+        body = self._bodies.get(entity_id)
+        if body is None:
+            return steps
+
+        num_steps = int(duration / time_step)
+        pos_x, pos_y = 0.0, 0.0
+        vel_x, vel_y = 0.0, 0.0
+
+        for i in range(num_steps):
+            t = i * time_step
+            vel_y -= 9.81 * body.gravity_scale * time_step
+            vel_x *= (1.0 - body.linear_damping * time_step)
+            vel_y *= (1.0 - body.linear_damping * time_step)
+            pos_x += vel_x * time_step
+            pos_y += vel_y * time_step
+
+            step = SimulationStep(
+                step_index=i,
+                timestamp=t,
+                position=(pos_x, pos_y),
+                velocity=(vel_x, vel_y),
+                angular_velocity=0.0,
+                contacts=[],
+            )
+            steps.append(step)
+
+        with self._lock:
+            self._simulation_results[entity_id] = steps
+        return steps
+
+    # ------------------------------------------------------------------
+    # Physics Optimization
+    # ------------------------------------------------------------------
+
+    def optimize_physics(self) -> PhysicsOptimizationResult:
+        """Analyze and optimize physics configuration for all entities.
+
+        Returns:
+            PhysicsOptimizationResult with optimization suggestions.
+        """
+        suggestions: List[str] = []
+        total_bodies = len(self._bodies)
+        total_shapes = len(self._shapes)
+
+        if total_bodies > 100:
+            suggestions.append(
+                f"Consider reducing physics bodies ({total_bodies}) "
+                "by combining static bodies into compound shapes."
+            )
+        if total_shapes > 200:
+            suggestions.append(
+                f"High collision shape count ({total_shapes}). "
+                "Use simplified collision meshes where possible."
+            )
+
+        return PhysicsOptimizationResult(
+            total_bodies=total_bodies,
+            total_shapes=total_shapes,
+            suggestions=suggestions,
+            estimated_cost_ms=total_bodies * 0.05 + total_shapes * 0.02,
+        )
+
+    # ------------------------------------------------------------------
+    # Query Methods
+    # ------------------------------------------------------------------
+
+    def get_body_config(self, entity_id: str) -> Optional[PhysicsBodyConfig]:
+        """Get the physics body configuration for an entity."""
+        return self._bodies.get(entity_id)
+
+    def get_shape_config(self, entity_id: str) -> Optional[CollisionShapeConfig]:
+        """Get the collision shape configuration for an entity."""
+        return self._shapes.get(entity_id)
+
+    def remove_physics(self, entity_id: str) -> bool:
+        """Remove physics configuration from an entity."""
+        with self._lock:
+            removed_body = self._bodies.pop(entity_id, None) is not None
+            removed_shape = self._shapes.pop(entity_id, None) is not None
+        return removed_body or removed_shape
+
+    def get_all_bodies(self) -> Dict[str, PhysicsBodyConfig]:
+        """Get all registered physics body configurations."""
+        return dict(self._bodies)
+
+    def get_simulation_history(self, entity_id: str) -> List[SimulationStep]:
+        """Get the simulation history for an entity."""
+        return self._simulation_results.get(entity_id, [])
