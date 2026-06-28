@@ -1926,3 +1926,316 @@ export const nodeComposerApi = {
   createGroup: (treeId: string, name: string, nodeIds?: string[]) =>
     api.post('/engine/node-composer/create-group', { tree_id: treeId, name, node_ids: nodeIds }),
 };
+
+// ============================================================
+// Agent Engine Unified API
+// ============================================================
+export const agentEngineUnifiedApi = {
+  // Action Space
+  actionSpaceStatus: () => api.get('/agent/action-space/status'),
+  actionSpaceActions: () => api.get('/agent/action-space/actions'),
+  actionSpaceExecute: (actionName: string, parameters?: Record<string, unknown>, context?: Record<string, unknown>) =>
+    api.post('/agent/action-space/execute', { action_name: actionName, parameters, context }),
+  actionSpacePlan: (goal: string, maxSteps?: number, context?: Record<string, unknown>) =>
+    api.post('/agent/action-space/plan', { goal, max_steps: maxSteps, context }),
+  actionSpaceHistory: (limit?: number) =>
+    api.get(`/agent/action-space/history${limit ? `?limit=${limit}` : ''}`),
+
+  // Self-Reflection
+  selfReflectionStatus: () => api.get('/agent/self-reflection/status'),
+  selfReflectionStartSession: (goal?: string, context?: Record<string, unknown>) =>
+    api.post('/agent/self-reflection/start-session', { goal, context }),
+  selfReflectionRecordTrace: (sessionId: string, trace: Record<string, unknown>) =>
+    api.post('/agent/self-reflection/record-trace', { session_id: sessionId, trace }),
+  selfReflectionReflect: (sessionId: string) =>
+    api.post('/agent/self-reflection/reflect', { session_id: sessionId }),
+  selfReflectionAdapt: (sessionId: string) =>
+    api.post('/agent/self-reflection/adapt', { session_id: sessionId }),
+  selfReflectionSessions: () => api.get('/agent/self-reflection/sessions'),
+  selfReflectionInsights: () => api.get('/agent/self-reflection/insights'),
+
+  // Reasoning Chain
+  reasoningChainStatus: () => api.get('/agent/reasoning-chain/status'),
+  reasoningChainReason: (problem: string, mode?: string, maxSteps?: number, context?: Record<string, unknown>, initialBeliefs?: Record<string, unknown>) =>
+    api.post('/agent/reasoning-chain/reason', { problem, mode, max_steps: maxSteps, context, initial_beliefs: initialBeliefs }),
+  reasoningChainChains: () => api.get('/agent/reasoning-chain/chains'),
+  reasoningChainGet: (chainId: string) => api.get(`/agent/reasoning-chain/${chainId}`),
+  reasoningChainBeliefs: () => api.get('/agent/reasoning-chain/beliefs'),
+
+  // Task Decomposer
+  taskDecomposerStatus: () => api.get('/agent/task-decomposer/status'),
+  taskDecomposerDecompose: (goal: string, strategy?: string, context?: Record<string, unknown>) =>
+    api.post('/agent/task-decomposer/decompose', { goal, strategy, context }),
+  taskDecomposerPlans: () => api.get('/agent/task-decomposer/plans'),
+
+  // Perception Pipeline
+  perceptionPipelineStatus: () => api.get('/agent/perception/status'),
+  perceptionPipelinePerceive: (agentId: string, worldState?: Record<string, unknown>, channels?: string[], agentPosition?: number[], maxPercepts?: number) =>
+    api.post('/agent/perception/perceive', { agent_id: agentId, world_state: worldState, channels, agent_position: agentPosition, max_percepts: maxPercepts }),
+  perceptionPipelineSnapshots: (agentId: string) =>
+    api.get(`/agent/perception/snapshots/${agentId}`),
+
+  // Decision Graph
+  decisionGraphStatus: () => api.get('/agent/decision-graph/status'),
+  decisionGraphCreate: (name: string, nodes?: Record<string, unknown>[], edges?: Record<string, unknown>[]) =>
+    api.post('/agent/decision-graph/create', { name, nodes, edges }),
+  decisionGraphEvaluate: (graphId: string, worldState?: Record<string, unknown>, variables?: Record<string, unknown>) =>
+    api.post('/agent/decision-graph/evaluate', { graph_id: graphId, world_state: worldState, variables }),
+  decisionGraphGraphs: () => api.get('/agent/decision-graph/graphs'),
+
+  // Context Hypergraph
+  contextHypergraphStatus: () => api.get('/agent/context-hypergraph/status'),
+  contextHypergraphQuery: (queryText?: string, nodeIds?: string[], layers?: string[], maxDepth?: number, maxResults?: number) =>
+    api.post('/agent/context-hypergraph/query', { query_text: queryText, node_ids: nodeIds, layers, max_depth: maxDepth, max_results: maxResults }),
+  contextHypergraphNodes: () => api.get('/agent/context-hypergraph/nodes'),
+
+  // Event Bus
+  eventBusStatus: () => api.get('/agent/event-bus/status'),
+  eventBusCreateChannel: (name: string, category?: string, priority?: string) =>
+    api.post('/agent/event-bus/create-channel', { name, category, priority }),
+  eventBusPublish: (channelName: string, eventType: string, data?: Record<string, unknown>, source?: string) =>
+    api.post('/agent/event-bus/publish', { channel_name: channelName, event_type: eventType, data, source }),
+  eventBusChannels: () => api.get('/agent/event-bus/channels'),
+
+  // Tile Map
+  tileMapStatus: () => api.get('/agent/tilemap/status'),
+  tileMapCreate: (name: string, width?: number, height?: number, tileSize?: number) =>
+    api.post('/agent/tilemap/create', { name, width, height, tile_size: tileSize }),
+  tileMapMaps: () => api.get('/agent/tilemap/maps'),
+  tileMapGenerate: (mapName: string, algorithm?: string, config?: Record<string, unknown>) =>
+    api.post('/agent/tilemap/generate', { map_name: mapName, algorithm, config }),
+  tileMapAddLayer: (mapName: string, layerName: string, layerType?: string, zIndex?: number) =>
+    api.post('/agent/tilemap/add-layer', { map_name: mapName, layer_name: layerName, layer_type: layerType, z_index: zIndex }),
+  tileMapPaint: (mapName: string, layerName: string, tiles: Array<Record<string, unknown>>) =>
+    api.post('/agent/tilemap/paint', { map_name: mapName, layer_name: layerName, tiles }),
+  tileMapGet: (mapName: string) => api.get(`/agent/tilemap/${mapName}`),
+
+  // Prefab System
+  prefabSystemStatus: () => api.get('/agent/prefab/status'),
+  prefabSystemCreate: (name: string, category?: string, properties?: Record<string, unknown>, components?: Record<string, unknown>[]) =>
+    api.post('/agent/prefab/create', { name, category, properties, components }),
+  prefabSystemInstantiate: (prefabName: string, position?: number[], rotation?: number[], scale?: number[], overrides?: Record<string, unknown>, sceneId?: string) =>
+    api.post('/agent/prefab/instantiate', { prefab_name: prefabName, position, rotation, scale, overrides, scene_id: sceneId }),
+  prefabSystemGenerate: (description: string, count?: number) =>
+    api.post('/agent/prefab/generate', { description, count }),
+  prefabSystemPrefabs: () => api.get('/agent/prefab/prefabs'),
+  prefabSystemInstances: () => api.get('/agent/prefab/instances'),
+
+  // Input Action
+  inputActionStatus: () => api.get('/agent/input-action/status'),
+  inputActionRegister: (name: string, deviceType?: string, triggerType?: string, bindings?: Record<string, unknown>[]) =>
+    api.post('/agent/input-action/register', { name, device_type: deviceType, trigger_type: triggerType, bindings }),
+  inputActionActions: () => api.get('/agent/input-action/actions'),
+
+  // Shader Material
+  shaderMaterialStatus: () => api.get('/agent/shader-material/status'),
+  shaderMaterialCreate: (name: string, domain?: string, shaderSource?: string, properties?: Record<string, unknown>[]) =>
+    api.post('/agent/shader-material/create', { name, domain, shader_source: shaderSource, properties }),
+  shaderMaterialMaterials: () => api.get('/agent/shader-material/materials'),
+
+  // Resource Streaming
+  resourceStreamingStatus: () => api.get('/agent/resource-streaming/status'),
+  resourceStreamingCreateZone: (name: string, centerX?: number, centerY?: number, radius?: number, priority?: number) =>
+    api.post('/agent/resource-streaming/create-zone', { name, center_x: centerX, center_y: centerY, radius, priority }),
+  resourceStreamingZones: () => api.get('/agent/resource-streaming/zones'),
+
+  // State Reconciliation
+  stateReconciliationStatus: () => api.get('/agent/state-reconciliation/status'),
+  stateReconciliationReconcile: (localState?: Record<string, unknown>, remoteState?: Record<string, unknown>, strategy?: string) =>
+    api.post('/agent/state-reconciliation/reconcile', { local_state: localState, remote_state: remoteState, strategy }),
+  stateReconciliationHistory: (limit?: number) =>
+    api.get(`/agent/state-reconciliation/history${limit ? `?limit=${limit}` : ''}`),
+
+  // Tool Orchestrator
+  toolOrchestratorStatus: () => api.get('/agent/tool-orchestrator/status'),
+  toolOrchestratorTools: () => api.get('/agent/tool-orchestrator/tools'),
+  toolOrchestratorExecute: (toolName: string, parameters?: Record<string, unknown>) =>
+    api.post('/agent/tool-orchestrator/execute', { tool_name: toolName, parameters }),
+  toolOrchestratorCompose: (steps: Array<{ tool_name: string; parameters?: Record<string, unknown>; step_id?: string; condition?: string; on_failure?: string }>, strategy?: string) =>
+    api.post('/agent/tool-orchestrator/compose', { steps, strategy }),
+  toolOrchestratorHistory: (limit?: number) =>
+    api.get(`/agent/tool-orchestrator/history${limit ? `?limit=${limit}` : ''}`),
+
+  // World Synthesizer
+  worldSynthesizerStatus: () => api.get('/agent/world-synthesizer/status'),
+  worldSynthesizerGenerate: (theme?: string, size?: number, seed?: number, biomeCount?: number) =>
+    api.post('/agent/world-synthesizer/generate', { theme, size, seed, biome_count: biomeCount }),
+  worldSynthesizerTerrain: (theme?: string, size?: number, seed?: number) =>
+    api.post('/agent/world-synthesizer/terrain', { theme, size, seed }),
+
+  // Semantic Planner
+  semanticPlannerStatus: () => api.get('/agent/semantic-planner/status'),
+  semanticPlannerParseIntent: (text: string, context?: Record<string, unknown>) =>
+    api.post('/agent/semantic-planner/parse-intent', { text, context }),
+  semanticPlannerGeneratePlan: (goal: string, strategy?: string, context?: Record<string, unknown>, templateName?: string, maxSteps?: number, constraints?: Array<Record<string, unknown>>) =>
+    api.post('/agent/semantic-planner/generate-plan', { goal, strategy, context, template_name: templateName, max_steps: maxSteps, constraints }),
+  semanticPlannerValidate: (planId: string) =>
+    api.post('/agent/semantic-planner/validate', { plan_id: planId }),
+  semanticPlannerExecute: (planId: string, context?: Record<string, unknown>) =>
+    api.post('/agent/semantic-planner/execute', { plan_id: planId, context }),
+  semanticPlannerPlans: () => api.get('/agent/semantic-planner/plans'),
+
+  // Visual Scripting
+  visualScriptingStatus: () => api.get('/agent/visual-scripting/status'),
+  visualScriptingGraphs: () => api.get('/agent/visual-scripting/graphs'),
+  visualScriptingCreateGraph: (name: string, description?: string, tags?: string[]) =>
+    api.post('/agent/visual-scripting/create-graph', { name, description, tags }),
+  visualScriptingAddNode: (graphId: string, nodeType: string, position?: number[], properties?: Record<string, unknown>, name?: string) =>
+    api.post('/agent/visual-scripting/add-node', { graph_id: graphId, node_type: nodeType, position, properties, name }),
+  visualScriptingConnect: (graphId: string, sourceNodeId: string, targetNodeId: string, sourcePort?: string, targetPort?: string, portType?: string, label?: string) =>
+    api.post('/agent/visual-scripting/connect', { graph_id: graphId, source_node_id: sourceNodeId, target_node_id: targetNodeId, source_port: sourcePort, target_port: targetPort, port_type: portType, label }),
+  visualScriptingExecute: (graphId: string, context?: Record<string, unknown>, entryNodeId?: string) =>
+    api.post('/agent/visual-scripting/execute', { graph_id: graphId, context, entry_node_id: entryNodeId }),
+  visualScriptingTemplates: () => api.get('/agent/visual-scripting/templates'),
+
+  // Cross Platform Builder
+  crossPlatformStatus: () => api.get('/agent/cross-platform/status'),
+  crossPlatformProfiles: () => api.get('/agent/cross-platform/profiles'),
+  crossPlatformCreateProfile: (platform: string, overrides?: Record<string, unknown>) =>
+    api.post('/agent/cross-platform/create-profile', { platform, overrides }),
+  crossPlatformBuild: (projectId: string, platform?: string, profileId?: string) =>
+    api.post('/agent/cross-platform/build', { project_id: projectId, platform, profile_id: profileId }),
+  crossPlatformBuilds: (projectId?: string) =>
+    api.get(`/agent/cross-platform/builds${projectId ? `?project_id=${projectId}` : ''}`),
+  crossPlatformPackage: (assetPaths: string[], platform?: string, compression?: string) =>
+    api.post('/agent/cross-platform/package', { asset_paths: assetPaths, platform, compression }),
+  crossPlatformDefaults: (platform: string) => api.get(`/agent/cross-platform/defaults/${platform}`),
+
+  // Procedural Animation
+  proceduralAnimationStatus: () => api.get('/agent/procedural-animation/status'),
+  proceduralAnimationSkeletons: () => api.get('/agent/procedural-animation/skeletons'),
+  proceduralAnimationCreateChain: (chainName: string, boneIds: string[], algorithm?: string) =>
+    api.post('/agent/procedural-animation/create-chain', { chain_name: chainName, bone_ids: boneIds, algorithm }),
+  proceduralAnimationSolveIK: (chainId: string, skeletonId: string, target?: number[]) =>
+    api.post('/agent/procedural-animation/solve-ik', { chain_id: chainId, skeleton_id: skeletonId, target }),
+  proceduralAnimationLocomotion: (entityId: string, locomotionType?: string, speed?: number, direction?: number[]) =>
+    api.post('/agent/procedural-animation/locomotion', { entity_id: entityId, locomotion_type: locomotionType, speed, direction }),
+  proceduralAnimationUpdate: (entityId: string, deltaTime?: number) =>
+    api.post('/agent/procedural-animation/update', { entity_id: entityId, delta_time: deltaTime }),
+
+  // AI-Native Brain
+  aiNativeBrainStatus: () => api.get('/agent/ai-native-brain/status'),
+  aiNativeBrainSnapshot: () => api.get('/agent/ai-native-brain/snapshot'),
+  aiNativeBrainReason: (query: string, context?: Record<string, unknown>, maxSteps?: number) =>
+    api.post('/agent/ai-native-brain/reason', { query, context, max_steps: maxSteps }),
+  aiNativeBrainPlan: (goal: string, context?: Record<string, unknown>, maxActions?: number) =>
+    api.post('/agent/ai-native-brain/plan', { goal, context, max_actions: maxActions }),
+  aiNativeBrainExecutePlan: (planId: string) =>
+    api.post('/agent/ai-native-brain/execute-plan', { plan_id: planId }),
+  aiNativeBrainStoreMemory: (content: Record<string, unknown>, importance?: number) =>
+    api.post('/agent/ai-native-brain/memory/store', { content, importance }),
+  aiNativeBrainRecallMemory: (query: string, maxResults?: number) =>
+    api.post('/agent/ai-native-brain/memory/recall', { query, max_results: maxResults }),
+  aiNativeBrainLearn: (experience: Record<string, unknown>) =>
+    api.post('/agent/ai-native-brain/learn', { experience }),
+  aiNativeBrainReflect: () => api.post('/agent/ai-native-brain/reflect'),
+  aiNativeBrainWorldState: () => api.get('/agent/ai-native-brain/world-state'),
+  aiNativeBrainPredict: (stepsAhead?: number) =>
+    api.post('/agent/ai-native-brain/predict', { steps_ahead: stepsAhead }),
+  aiNativeBrainReset: () => api.post('/agent/ai-native-brain/reset'),
+
+  // AI-Native Runtime
+  aiNativeRuntimeStatus: () => api.get('/agent/ai-native-runtime/status'),
+  aiNativeRuntimeTick: (deltaTime?: number) =>
+    api.post('/agent/ai-native-runtime/tick', { delta_time: deltaTime }),
+  aiNativeRuntimeCreateScene: (name: string, config?: Record<string, unknown>) =>
+    api.post('/agent/ai-native-runtime/scene/create', { name, config }),
+  aiNativeRuntimeLoadScene: (sceneId: string) =>
+    api.post('/agent/ai-native-runtime/scene/load', { scene_id: sceneId }),
+  aiNativeRuntimeScenes: () => api.get('/agent/ai-native-runtime/scenes'),
+  aiNativeRuntimeCreateEntity: (name: string, components?: Record<string, unknown>, tags?: string[]) =>
+    api.post('/agent/ai-native-runtime/entity/create', { name, components, tags }),
+  aiNativeRuntimeDestroyEntity: (entityId: string) =>
+    api.post('/agent/ai-native-runtime/entity/destroy', { entity_id: entityId }),
+  aiNativeRuntimeGetEntity: (entityId: string) => api.get(`/agent/ai-native-runtime/entity/${entityId}`),
+  aiNativeRuntimeSetComponent: (entityId: string, componentName: string, data: Record<string, unknown>) =>
+    api.post('/agent/ai-native-runtime/component/set', { entity_id: entityId, component_name: componentName, data }),
+  aiNativeRuntimeSimulateInput: (action: string, value?: number) =>
+    api.post('/agent/ai-native-runtime/input/simulate', { action, value }),
+  aiNativeRuntimePerformance: () => api.get('/agent/ai-native-runtime/performance'),
+  aiNativeRuntimeFrames: (count?: number) =>
+    api.get(`/agent/ai-native-runtime/frames${count ? `?count=${count}` : ''}`),
+  aiNativeRuntimeSave: () => api.post('/agent/ai-native-runtime/save'),
+  aiNativeRuntimeLoad: (state: Record<string, unknown>) =>
+    api.post('/agent/ai-native-runtime/load', { state }),
+  aiNativeRuntimeSnapshot: () => api.get('/agent/ai-native-runtime/snapshot'),
+  aiNativeRuntimeReset: () => api.post('/agent/ai-native-runtime/reset'),
+
+  // Agent-Engine Bridge
+  agentEngineBridgeStatus: () => api.get('/agent/agent-engine-bridge/status'),
+  agentEngineBridgeCommand: (commandType: string, parameters?: Record<string, unknown>, agentId?: string) =>
+    api.post('/agent/agent-engine-bridge/command', { command_type: commandType, parameters, agent_id: agentId }),
+  agentEngineBridgeQuery: (queryType: string, parameters?: Record<string, unknown>) =>
+    api.post('/agent/agent-engine-bridge/query', { query_type: queryType, parameters }),
+  agentEngineBridgeAction: (actionType: string, parameters?: Record<string, unknown>) =>
+    api.post('/agent/agent-engine-bridge/action', { action_type: actionType, parameters }),
+  agentEngineBridgeEvents: (count?: number) =>
+    api.get(`/agent/agent-engine-bridge/events${count ? `?count=${count}` : ''}`),
+  agentEngineBridgeSync: () => api.post('/agent/agent-engine-bridge/sync'),
+  agentEngineBridgeReset: () => api.post('/agent/agent-engine-bridge/reset'),
+
+  // Unified Systems
+  unifiedStatus: () => api.get('/agent/unified/status'),
+  unifiedInitializeAll: () => api.post('/agent/unified/initialize-all'),
+};
+
+// ============================================================
+// AI-Native Orchestrator API
+// ============================================================
+export const aiNativeOrchestratorApi = {
+  // Core
+  status: () => api.get('/agent/ai-native-orchestrator/status'),
+  initialize: () => api.post('/agent/ai-native-orchestrator/initialize'),
+  shutdown: () => api.post('/agent/ai-native-orchestrator/shutdown'),
+  subsystems: () => api.get('/agent/ai-native-orchestrator/subsystems'),
+  history: (limit?: number) =>
+    api.get(`/agent/ai-native-orchestrator/history${limit ? `?limit=${limit}` : ''}`),
+
+  // Game Creation Pipeline
+  createGame: (description: string, context?: Record<string, unknown>) =>
+    api.post('/agent/ai-native-orchestrator/create-game', { description, context }),
+  parseIdea: (description: string, context?: Record<string, unknown>) =>
+    api.post('/agent/ai-native-orchestrator/parse-idea', { description, context }),
+  designGame: (ideaId: string) =>
+    api.post('/agent/ai-native-orchestrator/design-game', { idea_id: ideaId }),
+  scaffoldProject: (designId: string) =>
+    api.post('/agent/ai-native-orchestrator/scaffold-project', { design_id: designId }),
+  generateCode: (designId: string, language?: string) =>
+    api.post('/agent/ai-native-orchestrator/generate-code', { design_id: designId, language }),
+  generateAssets: (designId: string) =>
+    api.post('/agent/ai-native-orchestrator/generate-assets', { design_id: designId }),
+  buildScenes: (designId: string) =>
+    api.post('/agent/ai-native-orchestrator/build-scenes', { design_id: designId }),
+
+  // Game Execution Pipeline
+  launchGame: (projectId: string) =>
+    api.post('/agent/ai-native-orchestrator/launch-game', { project_id: projectId }),
+  stopGame: (gameId: string) =>
+    api.post('/agent/ai-native-orchestrator/stop-game', { game_id: gameId }),
+  runningGames: () => api.get('/agent/ai-native-orchestrator/running-games'),
+  performanceMetrics: (gameId?: string) =>
+    api.get(`/agent/ai-native-orchestrator/performance-metrics${gameId ? `?game_id=${gameId}` : ''}`),
+
+  // World Generation Pipeline
+  generateWorld: (worldName?: string, theme?: string, width?: number, height?: number) =>
+    api.post('/agent/ai-native-orchestrator/generate-world', {
+      world_name: worldName, theme, width, height,
+    }),
+  simulateWorld: (worldId: string, ticks?: number) =>
+    api.post('/agent/ai-native-orchestrator/simulate-world', { world_id: worldId, ticks }),
+
+  // Quality Pipeline
+  runQuality: (projectId: string) =>
+    api.post('/agent/ai-native-orchestrator/run-quality', { project_id: projectId }),
+  runTests: (projectId: string) =>
+    api.post('/agent/ai-native-orchestrator/run-tests', { project_id: projectId }),
+  analyzeQuality: (projectId: string) =>
+    api.post('/agent/ai-native-orchestrator/analyze-quality', { project_id: projectId }),
+
+  // Deployment Pipeline
+  deploy: (projectId: string, platform?: string) =>
+    api.post('/agent/ai-native-orchestrator/deploy', { project_id: projectId, platform }),
+  optimizePerformance: (projectId: string) =>
+    api.post('/agent/ai-native-orchestrator/optimize-performance', { project_id: projectId }),
+  platforms: () => api.get('/agent/ai-native-orchestrator/platforms'),
+};
