@@ -559,6 +559,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'skill-evolution': return <SkillEvolution />;
       case 'evaluator': return <GameEvaluator />;
       case 'lifecycle': return <LifecyclePanel />;
+      case 'lifecycle-panels': return <LifecyclePanel />;
       case 'slash-commands': return <SlashCommandsPanel />;
       case 'validation-hooks': return <ValidationHooksPanel />;
       case 'task-executor': return <TaskExecutorPanel />;
