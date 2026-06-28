@@ -14,6 +14,7 @@ from backend.routes import (
     agent_strategic, engine_optimization, agent_learning, agent_ai_native,
     agent_core_systems, agent_engine_unified, agent_orchestrator,
     agent_game_forge, agent_engine_unified_v2, agent_ai_native_orchestrator,
+    agent_engine_integration,
 )
 from backend.websocket import router as ws_router
 
@@ -63,6 +64,7 @@ app.include_router(agent_orchestrator.router, prefix="/api/agent", tags=["Agent 
 app.include_router(agent_game_forge.router, prefix="/api/agent", tags=["Agent Game Forge"])
 app.include_router(agent_engine_unified_v2.router, prefix="/api", tags=["Unified Agent & Engine Core v2"])
 app.include_router(agent_ai_native_orchestrator.router, prefix="/api/agent", tags=["AI-Native Game Orchestrator"])
+app.include_router(agent_engine_integration.router, prefix="/api", tags=["Agent & Engine Integration"])
 
 
 @app.get("/api/health")
