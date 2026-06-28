@@ -666,6 +666,125 @@ from sparkai.agent.agent_god_mode import (
     WorldEventInjection, GodModeSession,
     get_god_mode_controller,
 )
+from sparkai.agent.agent_action_space import (
+    ActionSpaceEngine, ActionCategory, ActionPriority, ActionExecutionStatus,
+    ActionEffectType, ActionParameter, ActionPrecondition, ActionEffect,
+    ActionDefinition, ActionExecution, ActionPlan, ActionDomain,
+    get_action_space,
+)
+from sparkai.agent.agent_self_reflection import (
+    SelfReflectionEngine, ReflectionPhase, InsightType, StrategyType,
+    TraceOutcome, InsightConfidence, PerformanceTrace, ReflectionInsight,
+    ImprovementStrategy, ReflectionSession, ReflectionReport,
+    get_self_reflection,
+)
+from sparkai.agent.agent_reasoning_chain import (
+    ReasoningChainEngine, ReasoningMode, StepStatus, ValidationVerdict,
+    ConfidenceLevel, Premise, Conclusion, ReasoningStep, BeliefState,
+    ReasoningResult,
+    get_reasoning_chain,
+)
+from sparkai.agent.agent_task_decomposer import (
+    TaskDecomposerEngine, DecompositionStrategy, TaskType, TaskStatus,
+    TaskPriority, DependencyType, TaskDependency, TaskNode, ExecutionPlan,
+    get_task_decomposer,
+)
+from sparkai.agent.agent_perception_pipeline import (
+    PerceptionPipeline, PerceptionChannel, PerceptType, AttentionPriority,
+    Percept, AttentionFocus, PerceptionSnapshot,
+    get_perception_pipeline,
+)
+from sparkai.agent.agent_decision_graph import (
+    DecisionGraphEngine, DecisionNodeType, DecisionStatus,
+    GraphOptimizationStrategy, DecisionNode, DecisionEdge,
+    DecisionGraph, DecisionPath, EvaluationContext,
+)
+from sparkai.agent.agent_context_hypergraph import (
+    ContextHypergraphEngine, ContextLayer, NodeType as HyperNodeType,
+    HyperEdgeType, QueryMode, HyperNode, HyperEdge, ContextSubgraph,
+    ContextQuery,
+)
+from sparkai.agent.agent_ai_native_brain import (
+    AINativeBrain, BrainState, PerceptionChannel, ReasoningStrategy,
+    ActionDomain, ConfidenceLevel, MemoryType, LearningMode,
+    SensoryInput, PerceptionFrame, ReasoningStep, ReasoningChain,
+    ActionPlan, MemoryEntry as BrainMemoryEntry, BrainSnapshot,
+    get_ai_native_brain,
+)
+from sparkai.agent.agent_tool_orchestrator import (
+    AgentToolOrchestrator, ToolCategory, ToolExecutionMode, ToolExecutionStatus,
+    CompositionStrategy, ToolParameter, ToolDefinition, ToolExecution,
+    ToolStep, PipelineResult, ToolAuditEntry,
+    get_tool_orchestrator,
+)
+from sparkai.agent.agent_world_synthesizer import (
+    AgentWorldSynthesizer, WorldTheme, BiomeType, StructureType,
+    TerrainLayer, WorldConfig, TerrainData, EcosystemData,
+    StructureData, NarrativeData,
+    get_world_synthesizer,
+)
+from sparkai.agent.agent_semantic_planner import (
+    AgentSemanticPlanner, PlanningStrategy, PlanState, StepType,
+    ConstraintType, SemanticDomain, PlanningConstraint, PlanStep,
+    SemanticPlan, ValidationResult, ExecutionResult, SemanticIntent,
+    get_semantic_planner,
+)
+from sparkai.agent.agent_ai_native_orchestrator import (
+    AINativeGameOrchestrator, OrchestratorMode, GameDevelopmentPhase,
+    OrchestratorEvent, DevelopmentSession, GameAnalysis, OrchestratorMetrics,
+    get_ai_native_orchestrator,
+)
+
+
+from sparkai.agent.agent_game_forge import (
+    AgentGameForge, ForgePhase, GameGenre, DesignFidelity, CodeQuality, AssetStyle,
+    GameConcept, MechanicDefinition, GameArchitecture, CodeModule,
+    AssetSpecification, PlaytestReport, ForgeProject,
+    DesignSynthesizer, MechanicsForge, CodeSynthesizer,
+    get_agent_game_forge,
+)
+
+from sparkai.agent.agent_game_intelligence_hub import (
+    GameIntelligenceHub, IntelligenceMode, GameAnalysisDimension,
+    DecisionPriority, ContentCategory, GameAnalysis, DecisionRecord,
+    ContentGenerationRequest, ContentGenerationResult, IntelligenceSnapshot,
+    get_game_intelligence_hub,
+)
+
+from sparkai.agent.agent_engine_communication_protocol import (
+    AgentEngineCommunicationProtocol, CommandType, QueryType, EventType,
+    ProtocolState, SyncMode, AgentCommand, CommandResult, EngineQuery,
+    QueryResult, EngineEvent, StateSync, ProtocolStats, ProtocolSnapshot,
+    get_communication_protocol,
+)
+
+from sparkai.agent.agent_game_playtest_suite import (
+    GamePlaytestSuite, PlaytestMode, PlayerArchetype, IssueSeverity,
+    IssueCategory, PlaytestConfig, PlaytestResult, DesignIssue,
+    PlayerSimulation, QualityReport, PlaytestSnapshot,
+    get_game_playtest_suite,
+)
+
+from sparkai.agent.agent_game_lifecycle import (
+    GameLifecycleManager, GameLifecycleState, TransitionTrigger,
+    VersionChannel, LifecyclePhase, LifecycleConfig, GameLifecycleRecord,
+    StateTransition, VersionRelease, LifecycleMetrics, LifecycleSnapshot,
+    get_game_lifecycle_manager,
+)
+
+from sparkai.agent.agent_content_synthesis import (
+    ContentSynthesisEngine, ContentType, SynthesisStrategy,
+    QualityTier, ConsistencyMode, SynthesisRequest, SynthesisResult,
+    ContentBatch, StyleProfile, SynthesisMetrics, ContentSynthesisSnapshot,
+    get_content_synthesis_engine,
+)
+
+from sparkai.agent.agent_quality_assurance import (
+    QualityAssuranceOrchestrator, QACategory, QASeverity, QAState,
+    QAPhase, QAConfig, QACheckResult, QABatchResult, QAReport,
+    Defect, QualityAssuranceSnapshot,
+    get_quality_assurance,
+)
 
 
 __all__ = [
@@ -1850,4 +1969,253 @@ __all__ = [
     "WorldEventInjection",
     "GodModeSession",
     "get_god_mode_controller",
+    # Action Space
+    "ActionSpaceEngine",
+    "ActionCategory",
+    "ActionPriority",
+    "ActionExecutionStatus",
+    "ActionEffectType",
+    "ActionParameter",
+    "ActionPrecondition",
+    "ActionEffect",
+    "ActionDefinition",
+    "ActionExecution",
+    "ActionPlan",
+    "ActionDomain",
+    "get_action_space",
+    # Self Reflection
+    "SelfReflectionEngine",
+    "ReflectionPhase",
+    "InsightType",
+    "StrategyType",
+    "TraceOutcome",
+    "InsightConfidence",
+    "PerformanceTrace",
+    "ReflectionInsight",
+    "ImprovementStrategy",
+    "ReflectionSession",
+    "ReflectionReport",
+    "get_self_reflection",
+    # Reasoning Chain
+    "ReasoningChainEngine",
+    "ReasoningMode",
+    "StepStatus",
+    "ValidationVerdict",
+    "ConfidenceLevel",
+    "Premise",
+    "Conclusion",
+    "ReasoningStep",
+    "BeliefState",
+    "ReasoningResult",
+    "get_reasoning_chain",
+    # Task Decomposer
+    "TaskDecomposerEngine",
+    "DecompositionStrategy",
+    "TaskType",
+    "TaskStatus",
+    "TaskPriority",
+    "DependencyType",
+    "TaskDependency",
+    "TaskNode",
+    "ExecutionPlan",
+    "get_task_decomposer",
+    # Perception Pipeline
+    "PerceptionPipeline",
+    "PerceptionChannel",
+    "PerceptType",
+    "AttentionPriority",
+    "Percept",
+    "AttentionFocus",
+    "PerceptionSnapshot",
+    "get_perception_pipeline",
+    # Decision Graph
+    "DecisionGraphEngine",
+    "DecisionNodeType",
+    "DecisionStatus",
+    "GraphOptimizationStrategy",
+    "DecisionNode",
+    "DecisionEdge",
+    "DecisionGraph",
+    "DecisionPath",
+    "EvaluationContext",
+    # Context Hypergraph
+    "ContextHypergraphEngine",
+    "ContextLayer",
+    "HyperNodeType",
+    "HyperEdgeType",
+    "QueryMode",
+    "HyperNode",
+    "HyperEdge",
+    "ContextSubgraph",
+    "ContextQuery",
+    # AI-Native Brain
+    "AINativeBrain",
+    "BrainState",
+    "PerceptionChannel",
+    "ReasoningStrategy",
+    "ActionDomain",
+    "ConfidenceLevel",
+    "MemoryType",
+    "LearningMode",
+    "SensoryInput",
+    "PerceptionFrame",
+    "ReasoningStep",
+    "ReasoningChain",
+    "ActionPlan",
+    "BrainMemoryEntry",
+    "BrainSnapshot",
+    "get_ai_native_brain",
+    # Tool Orchestrator
+    "AgentToolOrchestrator",
+    "ToolCategory",
+    "ToolExecutionMode",
+    "ToolExecutionStatus",
+    "CompositionStrategy",
+    "ToolParameter",
+    "ToolDefinition",
+    "ToolExecution",
+    "ToolStep",
+    "PipelineResult",
+    "ToolAuditEntry",
+    "get_tool_orchestrator",
+    # World Synthesizer
+    "AgentWorldSynthesizer",
+    "WorldTheme",
+    "BiomeType",
+    "StructureType",
+    "TerrainLayer",
+    "WorldConfig",
+    "TerrainData",
+    "EcosystemData",
+    "StructureData",
+    "NarrativeData",
+    "get_world_synthesizer",
+    # Semantic Planner
+    "AgentSemanticPlanner",
+    "PlanningStrategy",
+    "PlanState",
+    "StepType",
+    "ConstraintType",
+    "SemanticDomain",
+    "PlanningConstraint",
+    "PlanStep",
+    "SemanticPlan",
+    "ValidationResult",
+    "ExecutionResult",
+    "SemanticIntent",
+    "get_semantic_planner",
+    # AI-Native Game Orchestrator
+    "AINativeGameOrchestrator",
+    "OrchestratorMode",
+    "GameDevelopmentPhase",
+    "OrchestratorEvent",
+    "DevelopmentSession",
+    "GameAnalysis",
+    "OrchestratorMetrics",
+    "get_ai_native_orchestrator",
+
+    # Agent Game Forge
+    "AgentGameForge",
+    "ForgePhase",
+    "GameGenre",
+    "DesignFidelity",
+    "CodeQuality",
+    "AssetStyle",
+    "GameConcept",
+    "MechanicDefinition",
+    "GameArchitecture",
+    "CodeModule",
+    "AssetSpecification",
+    "PlaytestReport",
+    "ForgeProject",
+    "DesignSynthesizer",
+    "MechanicsForge",
+    "CodeSynthesizer",
+    "get_agent_game_forge",
+
+    # Game Intelligence Hub
+    "GameIntelligenceHub",
+    "IntelligenceMode",
+    "GameAnalysisDimension",
+    "DecisionPriority",
+    "ContentCategory",
+    "GameAnalysis",
+    "DecisionRecord",
+    "ContentGenerationRequest",
+    "ContentGenerationResult",
+    "IntelligenceSnapshot",
+    "get_game_intelligence_hub",
+
+    # Agent-Engine Communication Protocol
+    "AgentEngineCommunicationProtocol",
+    "CommandType",
+    "QueryType",
+    "EventType",
+    "ProtocolState",
+    "SyncMode",
+    "AgentCommand",
+    "CommandResult",
+    "EngineQuery",
+    "QueryResult",
+    "EngineEvent",
+    "StateSync",
+    "ProtocolStats",
+    "ProtocolSnapshot",
+    "get_communication_protocol",
+
+    # Game Playtest Suite
+    "GamePlaytestSuite",
+    "PlaytestMode",
+    "PlayerArchetype",
+    "IssueSeverity",
+    "IssueCategory",
+    "PlaytestConfig",
+    "PlaytestResult",
+    "DesignIssue",
+    "PlayerSimulation",
+    "QualityReport",
+    "PlaytestSnapshot",
+    "get_game_playtest_suite",
+
+    # Game Lifecycle Manager
+    "GameLifecycleManager",
+    "GameLifecycleState",
+    "TransitionTrigger",
+    "VersionChannel",
+    "LifecyclePhase",
+    "LifecycleConfig",
+    "GameLifecycleRecord",
+    "StateTransition",
+    "VersionRelease",
+    "LifecycleMetrics",
+    "LifecycleSnapshot",
+    "get_game_lifecycle_manager",
+
+    # Content Synthesis Engine
+    "ContentSynthesisEngine",
+    "ContentType",
+    "SynthesisStrategy",
+    "QualityTier",
+    "ConsistencyMode",
+    "SynthesisRequest",
+    "SynthesisResult",
+    "ContentBatch",
+    "StyleProfile",
+    "SynthesisMetrics",
+    "ContentSynthesisSnapshot",
+    "get_content_synthesis_engine",
+
+    # Quality Assurance Orchestrator
+    "QualityAssuranceOrchestrator",
+    "QACategory",
+    "QASeverity",
+    "QAState",
+    "QAPhase",
+    "QAConfig",
+    "QACheckResult",
+    "QABatchResult",
+    "QAReport",
+    "Defect",
+    "QualityAssuranceSnapshot",
+    "get_quality_assurance",
 ]
