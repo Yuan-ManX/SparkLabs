@@ -612,7 +612,7 @@ const AdaptiveContentPanel: React.FC = () => {
                 }}>
                   <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8, color: '#a29bfe' }}>{'\u2705'} Completion Rates</div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                    {Object.entries(profile.completion_rates).map(([key, val]) => (
+                    {Object.entries(profile.completion_rates).map(([key, val]: [string, any]) => (
                       <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ fontSize: 10, color: '#888', width: 80, textTransform: 'capitalize' }}>{key.replace(/_/g, ' ')}</span>
                         <div style={{ flex: 1, height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
@@ -635,7 +635,7 @@ const AdaptiveContentPanel: React.FC = () => {
                   }}>
                     <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 8, color: '#a29bfe' }}>{'\uD83C\uDF1F'} Skill Areas</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
-                      {Object.entries(profile.skill_areas).map(([skill, val]) => (
+                      {Object.entries(profile.skill_areas).map(([skill, val]: [string, any]) => (
                         <div key={skill} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{ fontSize: 10, color: '#888', width: 80, textTransform: 'capitalize' }}>{skill}</span>
                           <div style={{ flex: 1, height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
