@@ -786,6 +786,89 @@ from sparkai.agent.agent_quality_assurance import (
     get_quality_assurance,
 )
 
+# New modules - SparkLabs original cognitive and synthesis systems.
+# Aliases are used where names already exist on the package surface.
+from sparkai.agent.agent_cognitive_kernel import (
+    CognitiveKernel,
+    CognitiveProcess,
+    CognitiveState as KernelCognitiveState,
+    AttentionStrategy,
+    ReflectionMode,
+    CognitiveCycle,
+    AttentionTarget,
+    MetacognitiveReport,
+    CognitiveSnapshot,
+    get_cognitive_kernel,
+)
+from sparkai.agent.agent_reasoning_synthesis import (
+    ReasoningSynthesisEngine,
+    ReasoningStrategy as SynthesisReasoningStrategy,
+    SynthesisMode,
+    ReasoningState as SynthesisReasoningState,
+    ReasoningPath,
+    ReasoningResult as SynthesisReasoningResult,
+    ReasoningSnapshot,
+    get_reasoning_synthesis_engine,
+)
+from sparkai.agent.agent_behavioral_genome import (
+    BehavioralGenomeSystem, GenomeTrait, BehavioralGenome,
+    GenomeExpression, BehavioralGenomeSnapshot,
+    get_behavioral_genome_system,
+)
+from sparkai.agent.agent_autonomous_mission import (
+    AutonomousMissionSystem, MissionPriority, MissionStatus,
+    MissionObjective, MissionPlan, Mission, MissionSystemSnapshot,
+    get_autonomous_mission_system,
+)
+from sparkai.agent.agent_contextual_intelligence import (
+    ContextualIntelligenceEngine, ContextType,
+    ContextFeature, SceneContext, SituationAssessment,
+    ContextualIntelligenceSnapshot,
+    get_contextual_intelligence_engine,
+)
+from sparkai.agent.agent_creative_synthesis import (
+    CreativeSynthesisEngine, CreativeDomain,
+    CreativeInput, CreativeOutput, CreativeSynthesisSnapshot,
+    get_creative_synthesis_engine,
+)
+from sparkai.agent.agent_temporal_reasoning import (
+    TemporalReasoningEngine, TemporalRelation, UrgencyLevel,
+    TimeInterval, ScheduleEntry, TemporalConstraint,
+    TemporalReasoningSnapshot,
+    get_temporal_reasoning_engine,
+)
+from sparkai.agent.agent_spatial_reasoning import (
+    SpatialReasoningEngine, SpatialRelation, DistanceMetric,
+    SpatialEntity, SpatialRegion, SpatialConstraint,
+    SpatialReasoningSnapshot,
+    get_spatial_reasoning_engine,
+)
+from sparkai.agent.agent_ethical_reasoning import (
+    EthicalReasoningEngine, EthicalPrinciple,
+    ViolationSeverity, EvaluationVerdict,
+    EthicalRule, EthicalEvaluation, EthicalReasoningSnapshot,
+    get_ethical_reasoning_engine,
+)
+from sparkai.agent.agent_engine_semantic_translator import (
+    SemanticTranslatorEngine, IntentCategory, OperationStatus,
+    RuleScope, SemanticIntent, EngineOperation, TranslationRule,
+    TranslationPlan, TranslationResult, SemanticTranslatorSnapshot,
+    get_semantic_translator_engine,
+)
+from sparkai.agent.agent_game_generation_pipeline import (
+    GameGenerationPipeline, GenerationPhaseType, PhaseStatus,
+    RunStatus, SpecFormat, GameSpec, GenerationPhase, PhaseResult,
+    GenerationRun, GenerationSnapshot,
+    get_game_generation_pipeline,
+)
+from sparkai.agent.agent_command_console import (
+    CommandConsoleEngine, CommandStatus, RouteChannel, IntentVerb,
+    MacroScope, SuggestionKind, ParsedIntent, ConsoleCommand,
+    MacroDefinition, AutocompleteSuggestion, ConversationTurn,
+    ConsoleSnapshot, RouteHandler, IntentPattern,
+    get_command_console,
+)
+
 
 __all__ = [
     "SparkAgent",
@@ -2218,4 +2301,132 @@ __all__ = [
     "Defect",
     "QualityAssuranceSnapshot",
     "get_quality_assurance",
+
+    # Cognitive Kernel
+    "CognitiveKernel",
+    "CognitiveProcess",
+    "KernelCognitiveState",
+    "AttentionStrategy",
+    "ReflectionMode",
+    "CognitiveCycle",
+    "AttentionTarget",
+    "MetacognitiveReport",
+    "CognitiveSnapshot",
+    "get_cognitive_kernel",
+
+    # Reasoning Synthesis
+    "ReasoningSynthesisEngine",
+    "SynthesisReasoningStrategy",
+    "SynthesisMode",
+    "SynthesisReasoningState",
+    "ReasoningPath",
+    "SynthesisReasoningResult",
+    "ReasoningSnapshot",
+    "get_reasoning_synthesis_engine",
+
+    # Behavioral Genome
+    "BehavioralGenomeSystem",
+    "GenomeTrait",
+    "BehavioralGenome",
+    "GenomeExpression",
+    "BehavioralGenomeSnapshot",
+    "get_behavioral_genome_system",
+
+    # Autonomous Mission
+    "AutonomousMissionSystem",
+    "MissionPriority",
+    "MissionStatus",
+    "MissionObjective",
+    "MissionPlan",
+    "Mission",
+    "MissionSystemSnapshot",
+    "get_autonomous_mission_system",
+
+    # Contextual Intelligence
+    "ContextualIntelligenceEngine",
+    "ContextType",
+    "ContextFeature",
+    "SceneContext",
+    "SituationAssessment",
+    "ContextualIntelligenceSnapshot",
+    "get_contextual_intelligence_engine",
+
+    # Creative Synthesis
+    "CreativeSynthesisEngine",
+    "CreativeDomain",
+    "CreativeInput",
+    "CreativeOutput",
+    "CreativeSynthesisSnapshot",
+    "get_creative_synthesis_engine",
+
+    # Temporal Reasoning
+    "TemporalReasoningEngine",
+    "TemporalRelation",
+    "UrgencyLevel",
+    "TimeInterval",
+    "ScheduleEntry",
+    "TemporalConstraint",
+    "TemporalReasoningSnapshot",
+    "get_temporal_reasoning_engine",
+
+    # Spatial Reasoning
+    "SpatialReasoningEngine",
+    "SpatialRelation",
+    "DistanceMetric",
+    "SpatialEntity",
+    "SpatialRegion",
+    "SpatialConstraint",
+    "SpatialReasoningSnapshot",
+    "get_spatial_reasoning_engine",
+
+    # Ethical Reasoning
+    "EthicalReasoningEngine",
+    "EthicalPrinciple",
+    "ViolationSeverity",
+    "EvaluationVerdict",
+    "EthicalRule",
+    "EthicalEvaluation",
+    "EthicalReasoningSnapshot",
+    "get_ethical_reasoning_engine",
+
+    # Semantic Translator
+    "SemanticTranslatorEngine",
+    "IntentCategory",
+    "OperationStatus",
+    "RuleScope",
+    "SemanticIntent",
+    "EngineOperation",
+    "TranslationRule",
+    "TranslationPlan",
+    "TranslationResult",
+    "SemanticTranslatorSnapshot",
+    "get_semantic_translator_engine",
+
+    # Game Generation Pipeline
+    "GameGenerationPipeline",
+    "GenerationPhaseType",
+    "PhaseStatus",
+    "RunStatus",
+    "SpecFormat",
+    "GameSpec",
+    "GenerationPhase",
+    "PhaseResult",
+    "GenerationRun",
+    "GenerationSnapshot",
+    "get_game_generation_pipeline",
+    "CommandConsoleEngine",
+    "CommandStatus",
+    "RouteChannel",
+    "IntentVerb",
+    "MacroScope",
+    "SuggestionKind",
+    "ParsedIntent",
+    "ConsoleCommand",
+    "MacroDefinition",
+    "AutocompleteSuggestion",
+    "ConversationTurn",
+    "ConsoleSnapshot",
+    "RouteHandler",
+    "IntentPattern",
+    "get_command_console",
 ]
