@@ -1152,6 +1152,114 @@ from sparkai.engine.engine_visual_composer import (
     get_visual_composer,
 )
 
+# New modules - SparkLabs original engine subsystems.
+# Aliases are used where names already exist on the package surface.
+from sparkai.engine.engine_signal_graph import (
+    SignalGraph,
+    SignalConnection,
+    SignalNode as GraphSignalNode,
+    SignalGraphSnapshot,
+    get_signal_graph,
+)
+from sparkai.engine.engine_scene_inheritance import (
+    SceneInheritanceSystem,
+    SceneNode as InheritanceSceneNode,
+    SceneTemplate as InheritanceSceneTemplate,
+    SceneInstance,
+    SceneInheritanceSnapshot,
+    get_scene_inheritance_system,
+)
+from sparkai.engine.engine_hot_reload_system import (
+    HotReloadSystem,
+    ReloadType,
+    ReloadEvent,
+    WatchEntry,
+    HotReloadSnapshot,
+    get_hot_reload_system,
+)
+from sparkai.engine.engine_logic_ir import (
+    LogicIRSystem,
+    IRNodeType,
+    IRNode,
+    IREvent,
+    LogicIR,
+    LogicIRSnapshot,
+    get_logic_ir_system,
+)
+from sparkai.engine.engine_resource_system import (
+    ResourceSystem,
+    ResourceType as EngineResourceType,
+    Resource as EngineResource,
+    ResourceTypeEntry,
+    ResourceSystemSnapshot,
+    get_resource_system,
+)
+from sparkai.engine.engine_property_animator import (
+    PropertyAnimator,
+    AnimationCurve as PropertyAnimationCurve,
+    AnimationLoop as PropertyAnimationLoop,
+    AnimationTrack as PropertyAnimationTrack,
+    AnimationClip as PropertyAnimationClip,
+    PropertyAnimatorSnapshot,
+    get_property_animator,
+)
+from sparkai.engine.engine_coroutine_system import (
+    CoroutineSystem,
+    CoroutineState,
+    YieldType,
+    YieldInstruction,
+    Coroutine,
+    CoroutineSystemSnapshot,
+    get_coroutine_system,
+)
+from sparkai.engine.engine_ai_capability_surface import (
+    AICapabilitySurface,
+    CapabilityStatus,
+    ParameterType,
+    CapabilityTier,
+    ParameterDescriptor,
+    CapabilityDescriptor,
+    CapabilityInvocation,
+    CapabilitySubscription,
+    CapabilitySnapshot,
+    get_ai_capability_surface,
+)
+from sparkai.engine.engine_narrative_director import (
+    NarrativeDirectorEngine,
+    BeatStatus,
+    ArcStatus,
+    BeatType,
+    ChoiceImpact,
+    GateType,
+    NarrativeEventKind,
+    StoryFlag,
+    NarrativeChoice,
+    NarrativeBeat,
+    StoryArc,
+    NarrativeEvent,
+    NarrativeDirectorSnapshot,
+    get_narrative_director,
+)
+from sparkai.engine.engine_frame_capture import (
+    FrameCaptureEngine,
+    PixelFormat,
+    CaptureMode,
+    FrameSourceKind,
+    SyntheticPattern,
+    SampleFormat,
+    CaptureStatus,
+    FrameDimensions,
+    CapturedFrame,
+    FrameCaptureRequest,
+    RegionSample,
+    PointSample,
+    FrameHistogram,
+    FrameHistorySnapshot,
+    FrameSourceDescriptor,
+    FrameCaptureSnapshot,
+    get_frame_capture,
+)
+
 
 __all__ = [
     # Existing
@@ -2545,4 +2653,107 @@ __all__ = [
     "SelectionState",
     "SceneDocument",
     "get_visual_composer",
+
+    # Signal Graph
+    "SignalGraph",
+    "SignalConnection",
+    "GraphSignalNode",
+    "SignalGraphSnapshot",
+    "get_signal_graph",
+
+    # Scene Inheritance
+    "SceneInheritanceSystem",
+    "InheritanceSceneNode",
+    "InheritanceSceneTemplate",
+    "SceneInstance",
+    "SceneInheritanceSnapshot",
+    "get_scene_inheritance_system",
+
+    # Hot Reload System
+    "HotReloadSystem",
+    "ReloadType",
+    "ReloadEvent",
+    "WatchEntry",
+    "HotReloadSnapshot",
+    "get_hot_reload_system",
+
+    # Logic IR
+    "LogicIRSystem",
+    "IRNodeType",
+    "IRNode",
+    "IREvent",
+    "LogicIR",
+    "LogicIRSnapshot",
+    "get_logic_ir_system",
+
+    # Resource System
+    "ResourceSystem",
+    "EngineResourceType",
+    "EngineResource",
+    "ResourceTypeEntry",
+    "ResourceSystemSnapshot",
+    "get_resource_system",
+
+    # Property Animator
+    "PropertyAnimator",
+    "PropertyAnimationCurve",
+    "PropertyAnimationLoop",
+    "PropertyAnimationTrack",
+    "PropertyAnimationClip",
+    "PropertyAnimatorSnapshot",
+    "get_property_animator",
+
+    # Coroutine System
+    "CoroutineSystem",
+    "CoroutineState",
+    "YieldType",
+    "YieldInstruction",
+    "Coroutine",
+    "CoroutineSystemSnapshot",
+    "get_coroutine_system",
+
+    # AI Capability Surface
+    "AICapabilitySurface",
+    "CapabilityStatus",
+    "ParameterType",
+    "CapabilityTier",
+    "ParameterDescriptor",
+    "CapabilityDescriptor",
+    "CapabilityInvocation",
+    "CapabilitySubscription",
+    "CapabilitySnapshot",
+    "get_ai_capability_surface",
+    # Narrative Director
+    "NarrativeDirectorEngine",
+    "BeatStatus",
+    "ArcStatus",
+    "BeatType",
+    "ChoiceImpact",
+    "GateType",
+    "NarrativeEventKind",
+    "StoryFlag",
+    "NarrativeChoice",
+    "NarrativeBeat",
+    "StoryArc",
+    "NarrativeEvent",
+    "NarrativeDirectorSnapshot",
+    "get_narrative_director",
+    # Frame Capture
+    "FrameCaptureEngine",
+    "PixelFormat",
+    "CaptureMode",
+    "FrameSourceKind",
+    "SyntheticPattern",
+    "SampleFormat",
+    "CaptureStatus",
+    "FrameDimensions",
+    "CapturedFrame",
+    "FrameCaptureRequest",
+    "RegionSample",
+    "PointSample",
+    "FrameHistogram",
+    "FrameHistorySnapshot",
+    "FrameSourceDescriptor",
+    "FrameCaptureSnapshot",
+    "get_frame_capture",
 ]
