@@ -5788,6 +5788,8 @@ async def command_console_expand_macro(request: Request):
         console = get_command_console()
         expanded = console.expand_macro(name, parameters)
         return JSONResponse({"status": "success", "data": expanded})
+    except KeyError as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=404)
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
 
