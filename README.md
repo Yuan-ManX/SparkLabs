@@ -119,18 +119,6 @@ cmake ..
 cmake --build . --config Release
 ```
 
-### Setting Up the Official Website
-
-```bash
-# Navigate to website directory
-cd frontend/website
-
-# Install dependencies
-npm install
-
-# Start website server
-npm run dev
-```
 
 ### Setting Up the AI-Native Game Engine Editor
 
