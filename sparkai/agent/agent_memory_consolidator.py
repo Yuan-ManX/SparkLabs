@@ -1,831 +1,1542 @@
 """
-SparkLabs Agent - Memory Consolidator
+SparkLabs Agent - Memory Consolidation & Dream System
 
-Cross-session memory consolidation system
-L1-L4 memory layers with FTS5 semantic search. Bridges ephemeral
-session memory into durable, searchable knowledge fragments that
-persist across agent sessions and inform future decision-making.
+Offline memory consolidation engine that processes short-term episodic
+memories into stabilized long-term memories, mirroring how the human
+brain consolidates experience during sleep. The system replays,
+integrates, and prunes memory fragments, and additionally generates
+"dream" sequences that creatively recombine memory fragments to
+discover novel associations and strengthen important memory pathways.
 
 Architecture:
-  MemoryConsolidator (thread-safe singleton)
-    |-- MemoryFragment    (atomic knowledge unit with embedding hint)
-    |-- ConsolidationResult (post-consolidation statistics)
-    |-- FragmentType      (taxonomy of memory fragment kinds)
-    |-- ConsolidationStrategy (how fragments are merged/compressed)
-    |-- SemanticIndex     (TF-IDF vector space for similarity search)
-    |-- RetentionRanker   (importance-weighted fragment prioritization)
-    |-- SessionDigester   (cross-session summary generation)
+  MemoryConsolidatorEngine (thread-safe singleton)
+    |-- MemoryFragment       (atomic memory unit with salience & strength)
+    |-- ConsolidationTask    (offline consolidation work item)
+    |-- ReplaySession        (ordered re-retrieval of fragments)
+    |-- DreamSequence        (creatively recombined memory narrative)
+    |-- SleepCycle           (a single sleep stage execution window)
+    |-- Event System         (consolidation lifecycle notifications)
+    |-- Forgetting Curve     (Ebbinghaus-style retention modeling)
 
-Memory Layers (L1-L4):
-  L1 - Working fragments: active session context, high churn
-  L2 - Episodic fragments: recent session snapshots, medium retention
-  L3 - Semantic fragments: consolidated knowledge, low churn
-  L4 - Archival fragments: compressed long-term memory, read-optimized
+Consolidation Lifecycle:
+  1. register_fragment      - ingest a short-term episodic memory
+  2. start_consolidation    - schedule a consolidation task (encode/stabilize/...)
+  3. complete_consolidation - finalize a task with a result summary
+  4. start_replay           - replay fragments to reinforce pathways
+  5. complete_replay        - apply strengthening from a replay session
+  6. integrate_fragments    - merge several fragments into a single one
+  7. prune_fragment         - retire a low-strength fragment
+  8. generate_dream         - recombine fragments into a dream sequence
+  9. start_sleep_cycle      - open a sleep stage window
+ 10. complete_sleep_cycle   - close a sleep stage window
 
-Consolidation Flow:
-  1. New fragments enter L1 (working memory)
-  2. Similarity search groups related fragments
-  3. Configurable strategy merges/compresses L1 → L2 → L3
-  4. Importance-driven retention ranking manages capacity
-  5. Session digest generation for cross-session context transfer
+Sleep stages loosely mirror human sleep:
+  LIGHT - light encoding & stabilization
+  DEEP  - slow-wave stabilization & integration
+  REM   - dreaming and associative replay
+  AWAKE - active retrieval & pruning
+
+Usage:
+    engine = get_memory_consolidator()
+    frag = engine.register_fragment(
+        agent_id="agent_alpha",
+        memory_type=MemoryType.EPISODIC,
+        content="Discovered a shortcut through the canyon",
+        salience=0.8,
+        emotional_weight=0.3,
+    )
+    task = engine.start_consolidation(
+        agent_id="agent_alpha",
+        fragment_ids=[frag.id],
+        phase=ConsolidationPhase.STABILIZE,
+    )
+    engine.complete_consolidation(task.id, result_summary="Stabilized 1 fragment")
+    dream = engine.generate_dream("agent_alpha", [frag.id])
 """
 
 from __future__ import annotations
 
+import datetime
 import math
-import re
+import random
 import threading
-import time
 import uuid
-from collections import Counter, defaultdict
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
 
-_time_module = time
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
 
-class FragmentType(Enum):
-    FACT = "fact"
-    PREFERENCE = "preference"
-    DECISION = "decision"
-    PATTERN = "pattern"
-    WORKFLOW = "workflow"
-    INSIGHT = "insight"
-    CONVENTION = "convention"
+def _now_iso() -> str:
+    """Return the current UTC time as an ISO-8601 string."""
+    return datetime.datetime.utcnow().isoformat()
 
 
-class ConsolidationStrategy(Enum):
-    SUMMARIZE = "summarize"
-    MERGE = "merge"
-    PRIORITIZE = "prioritize"
-    COMPRESS = "compress"
-    ARCHIVE = "archive"
+def _parse_iso(value: str) -> Optional[datetime.datetime]:
+    """Best-effort parse of an ISO-8601 timestamp string."""
+    if not value:
+        return None
+    try:
+        return datetime.datetime.fromisoformat(value)
+    except (ValueError, TypeError):
+        return None
 
 
-# ------------------------------------------------------------------
+# ---------------------------------------------------------------------------
+# Enums
+# ---------------------------------------------------------------------------
+
+
+class SleepStage(Enum):
+    """Sleep stage mirrors human sleep architecture."""
+    LIGHT = "light"
+    DEEP = "deep"
+    REM = "rem"
+    AWAKE = "awake"
+
+
+class ConsolidationPhase(Enum):
+    """Phase of a consolidation task in the offline pipeline."""
+    ENCODE = "encode"
+    STABILIZE = "stabilize"
+    INTEGRATE = "integrate"
+    PRUNE = "prune"
+    REPLAY = "replay"
+    DREAM = "dream"
+
+
+class MemoryType(Enum):
+    """Taxonomy of memory fragment kinds."""
+    EPISODIC = "episodic"
+    SEMANTIC = "semantic"
+    PROCEDURAL = "procedural"
+    EMOTIONAL = "emotional"
+    SPATIAL = "spatial"
+
+
+class ReplayStrategy(Enum):
+    """Strategy used to order fragments during a replay session."""
+    SEQUENTIAL = "sequential"
+    RANDOM = "random"
+    PRIORITIZED = "prioritized"
+    SPATIOTEMPORAL = "spatiotemporal"
+
+
+class ConsolidationStatus(Enum):
+    """Lifecycle status of a consolidation task."""
+    PENDING = "pending"
+    PROCESSING = "processing"
+    CONSOLIDATED = "consolidated"
+    INTEGRATED = "integrated"
+    PRUNED = "pruned"
+    ARCHIVED = "archived"
+
+
+class MemoryEventKind(Enum):
+    """Kinds of events emitted by the consolidation engine."""
+    CONSOLIDATION_STARTED = "consolidation_started"
+    CONSOLIDATION_COMPLETED = "consolidation_completed"
+    MEMORY_STRENGTHENED = "memory_strengthened"
+    MEMORY_INTEGRATED = "memory_integrated"
+    MEMORY_PRUNED = "memory_pruned"
+    DREAM_GENERATED = "dream_generated"
+    REPLAY_COMPLETED = "replay_completed"
+    SLEEP_CYCLE_STARTED = "sleep_cycle_started"
+    SLEEP_CYCLE_COMPLETED = "sleep_cycle_completed"
+
+
+# ---------------------------------------------------------------------------
 # Dataclasses
-# ------------------------------------------------------------------
+# ---------------------------------------------------------------------------
 
 
 @dataclass
 class MemoryFragment:
+    """An atomic memory unit with salience, emotion, and a strength score.
+
+    Salience drives replay prioritization, emotional weight biases which
+    memories survive pruning, and strength is the stabilized long-term
+    retention score that decays over time per the Ebbinghaus curve.
+    """
     id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    agent_id: str = ""
+    memory_type: MemoryType = MemoryType.EPISODIC
     content: str = ""
-    fragment_type: FragmentType = FragmentType.FACT
-    source_session: str = ""
-    embedding_hint: List[float] = field(default_factory=list)
-    keywords: List[str] = field(default_factory=list)
-    importance_score: float = 0.5
+    salience: float = 0.5
+    emotional_weight: float = 0.0
+    timestamp: str = field(default_factory=_now_iso)
     access_count: int = 0
-    created_at: float = field(default_factory=_time_module.time)
-    last_accessed: float = field(default_factory=_time_module.time)
+    last_accessed: str = field(default_factory=_now_iso)
+    strength: float = 0.5
+    source_fragments: List[str] = field(default_factory=list)
+    metadata: Dict[str, Any] = field(default_factory=dict)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
+            "agent_id": self.agent_id,
+            "memory_type": self.memory_type.value,
             "content": self.content,
-            "fragment_type": self.fragment_type.value,
-            "source_session": self.source_session,
-            "embedding_hint": list(self.embedding_hint),
-            "keywords": list(self.keywords),
-            "importance_score": self.importance_score,
+            "salience": self.salience,
+            "emotional_weight": self.emotional_weight,
+            "timestamp": self.timestamp,
             "access_count": self.access_count,
-            "created_at": self.created_at,
             "last_accessed": self.last_accessed,
+            "strength": self.strength,
+            "source_fragments": list(self.source_fragments),
+            "metadata": dict(self.metadata),
         }
-
-    def age_seconds(self) -> float:
-        return max(0.0, _time_module.time() - self.created_at)
-
-    def staleness_seconds(self) -> float:
-        return max(0.0, _time_module.time() - self.last_accessed)
 
 
 @dataclass
-class ConsolidationResult:
+class ConsolidationTask:
+    """A single offline consolidation work item spanning one phase."""
     id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    fragments_count: int = 0
-    merged_count: int = 0
-    summary: str = ""
-    compact_ratio: float = 0.0
-    duration_ms: float = 0.0
-    created_at: float = field(default_factory=_time_module.time)
+    agent_id: str = ""
+    phase: ConsolidationPhase = ConsolidationPhase.STABILIZE
+    fragment_ids: List[str] = field(default_factory=list)
+    status: ConsolidationStatus = ConsolidationStatus.PENDING
+    started_at: str = field(default_factory=_now_iso)
+    completed_at: str = ""
+    result_summary: str = ""
 
     def to_dict(self) -> Dict[str, Any]:
         return {
             "id": self.id,
-            "fragments_count": self.fragments_count,
-            "merged_count": self.merged_count,
-            "summary": self.summary,
-            "compact_ratio": round(self.compact_ratio, 4),
-            "duration_ms": self.duration_ms,
+            "agent_id": self.agent_id,
+            "phase": self.phase.value,
+            "fragment_ids": list(self.fragment_ids),
+            "status": self.status.value,
+            "started_at": self.started_at,
+            "completed_at": self.completed_at,
+            "result_summary": self.result_summary,
+        }
+
+
+@dataclass
+class DreamSequence:
+    """A creatively recombined memory narrative generated during REM sleep."""
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    agent_id: str = ""
+    fragment_ids: List[str] = field(default_factory=list)
+    narrative: str = ""
+    novelty_score: float = 0.0
+    coherence_score: float = 0.0
+    created_at: str = field(default_factory=_now_iso)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "agent_id": self.agent_id,
+            "fragment_ids": list(self.fragment_ids),
+            "narrative": self.narrative,
+            "novelty_score": self.novelty_score,
+            "coherence_score": self.coherence_score,
             "created_at": self.created_at,
         }
 
 
-# ------------------------------------------------------------------
-# Internal: TF-IDF Semantic Index
-# ------------------------------------------------------------------
+@dataclass
+class ReplaySession:
+    """An ordered re-retrieval of fragments that strengthens their pathways."""
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    agent_id: str = ""
+    strategy: ReplayStrategy = ReplayStrategy.SEQUENTIAL
+    fragment_ids: List[str] = field(default_factory=list)
+    order: List[int] = field(default_factory=list)
+    started_at: str = field(default_factory=_now_iso)
+    completed_at: str = ""
+    strengthening_applied: Dict[str, float] = field(default_factory=dict)
 
-
-class _SemanticIndex:
-    """Pure-Python TF-IDF vector index for fragment similarity search.
-
-    Uses a bag-of-words term-frequency model with inverse document
-    frequency weighting. Operates in O(N * V) where N is the number
-    of indexed fragments and V is the average vocabulary size per
-    fragment. No external dependencies required.
-    """
-
-    def __init__(self) -> None:
-        self._fragments: Dict[str, MemoryFragment] = {}
-        self._term_index: Dict[str, Dict[str, float]] = {}
-        self._document_frequency: Counter = Counter()
-        self._total_documents: int = 0
-        self._stop_words: set = {
-            "a", "an", "the", "and", "or", "but", "in", "on", "at",
-            "to", "for", "of", "with", "by", "from", "is", "are",
-            "was", "were", "be", "been", "being", "have", "has", "had",
-            "do", "does", "did", "will", "would", "could", "should",
-            "may", "might", "shall", "can", "this", "that", "these",
-            "those", "it", "its", "not", "no", "nor", "so", "if",
-            "then", "than", "too", "very", "just", "about", "into",
-            "over", "also", "up", "out", "when", "who", "how", "what",
-            "which", "where", "why", "all", "each", "every", "both",
-            "few", "more", "most", "other", "some", "such", "only",
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "agent_id": self.agent_id,
+            "strategy": self.strategy.value,
+            "fragment_ids": list(self.fragment_ids),
+            "order": list(self.order),
+            "started_at": self.started_at,
+            "completed_at": self.completed_at,
+            "strengthening_applied": dict(self.strengthening_applied),
         }
 
-    def index(self, fragment: MemoryFragment) -> None:
-        self._fragments[fragment.id] = fragment
-        tokens = self._tokenize(fragment.content)
-        if not tokens:
-            return
-        self._total_documents += 1
-        unique_tokens = set(tokens)
-        for token in unique_tokens:
-            self._document_frequency[token] += 1
-        token_counts = Counter(tokens)
-        total_terms = len(tokens)
-        tf_vector: Dict[str, float] = {}
-        for token, count in token_counts.items():
-            tf_vector[token] = count / total_terms
-        self._term_index[fragment.id] = tf_vector
 
-    def remove(self, fragment_id: str) -> None:
-        if fragment_id not in self._fragments:
-            return
-        tokens = self._tokenize(self._fragments[fragment_id].content)
-        unique_tokens = set(tokens)
-        for token in unique_tokens:
-            if self._document_frequency[token] > 0:
-                self._document_frequency[token] -= 1
-                if self._document_frequency[token] == 0:
-                    del self._document_frequency[token]
-        self._total_documents = max(0, self._total_documents - 1)
-        self._term_index.pop(fragment_id, None)
-        self._fragments.pop(fragment_id, None)
+@dataclass
+class SleepCycle:
+    """A single sleep stage execution window for an agent."""
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    agent_id: str = ""
+    stage: SleepStage = SleepStage.LIGHT
+    started_at: str = field(default_factory=_now_iso)
+    completed_at: str = ""
+    duration_seconds: float = 0.0
+    fragments_processed: int = 0
+    dreams_generated: int = 0
 
-    def search(self, query_text: str, top_k: int = 10, min_score: float = 0.05) -> List[Tuple[MemoryFragment, float]]:
-        if not self._fragments:
-            return []
-        query_tokens = self._tokenize(query_text)
-        if not query_tokens:
-            return []
-        query_vector = self._compute_query_tfidf(query_tokens)
-        results: List[Tuple[MemoryFragment, float]] = []
-        for fragment_id, fragment in self._fragments.items():
-            doc_vector = self._term_index.get(fragment_id, {})
-            score = self._cosine_similarity(query_vector, doc_vector)
-            if score >= min_score:
-                results.append((fragment, score))
-        results.sort(key=lambda pair: pair[1], reverse=True)
-        return results[:top_k]
-
-    def pairwise_similarity(self, fragment_id_a: str, fragment_id_b: str) -> float:
-        vec_a = self._term_index.get(fragment_id_a, {})
-        vec_b = self._term_index.get(fragment_id_b, {})
-        return self._cosine_similarity(vec_a, vec_b)
-
-    def _tokenize(self, text: str) -> List[str]:
-        raw_tokens = re.findall(r"[a-zA-Z0-9_]+", text.lower())
-        return [t for t in raw_tokens if len(t) > 1 and t not in self._stop_words]
-
-    def _idf(self, term: str) -> float:
-        doc_count = self._document_frequency.get(term, 0)
-        return math.log((self._total_documents + 1) / (doc_count + 1)) + 1.0
-
-    def _compute_query_tfidf(self, tokens: List[str]) -> Dict[str, float]:
-        token_counts = Counter(tokens)
-        total_terms = len(tokens)
-        tfidf: Dict[str, float] = {}
-        for token, count in token_counts.items():
-            tf = count / total_terms
-            tfidf[token] = tf * self._idf(token)
-        return tfidf
-
-    def _cosine_similarity(self, vec_a: Dict[str, float], vec_b: Dict[str, float]) -> float:
-        if not vec_a or not vec_b:
-            return 0.0
-        dot_product = sum(vec_a.get(k, 0.0) * vec_b.get(k, 0.0) for k in vec_a)
-        norm_a = math.sqrt(sum(v * v for v in vec_a.values()))
-        norm_b = math.sqrt(sum(v * v for v in vec_b.values()))
-        if norm_a == 0.0 or norm_b == 0.0:
-            return 0.0
-        similarity = dot_product / (norm_a * norm_b)
-        return similarity
-
-    @property
-    def document_count(self) -> int:
-        return len(self._fragments)
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "agent_id": self.agent_id,
+            "stage": self.stage.value,
+            "started_at": self.started_at,
+            "completed_at": self.completed_at,
+            "duration_seconds": self.duration_seconds,
+            "fragments_processed": self.fragments_processed,
+            "dreams_generated": self.dreams_generated,
+        }
 
 
-# ------------------------------------------------------------------
-# Internal: Retention Ranker
-# ------------------------------------------------------------------
+@dataclass
+class ConsolidationStats:
+    """Aggregate statistics for the consolidation engine."""
+    total_fragments: int = 0
+    total_consolidated: int = 0
+    total_integrated: int = 0
+    total_pruned: int = 0
+    total_dreams: int = 0
+    total_replays: int = 0
+    total_sleep_cycles: int = 0
+    avg_strength: float = 0.0
+    last_updated_at: str = field(default_factory=_now_iso)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "total_fragments": self.total_fragments,
+            "total_consolidated": self.total_consolidated,
+            "total_integrated": self.total_integrated,
+            "total_pruned": self.total_pruned,
+            "total_dreams": self.total_dreams,
+            "total_replays": self.total_replays,
+            "total_sleep_cycles": self.total_sleep_cycles,
+            "avg_strength": self.avg_strength,
+            "last_updated_at": self.last_updated_at,
+        }
 
 
-class _RetentionRanker:
-    """Scores fragments by composite importance for retention decisions.
+@dataclass
+class ConsolidationSnapshot:
+    """Point-in-time snapshot of the engine state."""
+    agent_count: int = 0
+    total_fragments: int = 0
+    total_tasks: int = 0
+    total_dreams: int = 0
+    stats: ConsolidationStats = field(default_factory=ConsolidationStats)
+    timestamp: str = field(default_factory=_now_iso)
 
-    Factors in: base importance_score, access frequency, recency of
-    last access, fragment type weight, and keyword richness. Produces
-    a normalized ranking that drives pruning and consolidation
-    priority.
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "agent_count": self.agent_count,
+            "total_fragments": self.total_fragments,
+            "total_tasks": self.total_tasks,
+            "total_dreams": self.total_dreams,
+            "stats": self.stats.to_dict(),
+            "timestamp": self.timestamp,
+        }
+
+
+@dataclass
+class MemoryEvent:
+    """A consolidation lifecycle event emitted to subscribed handlers."""
+    id: str = field(default_factory=lambda: uuid.uuid4().hex)
+    kind: MemoryEventKind = MemoryEventKind.CONSOLIDATION_STARTED
+    agent_id: str = ""
+    payload: Dict[str, Any] = field(default_factory=dict)
+    timestamp: str = field(default_factory=_now_iso)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "kind": self.kind.value,
+            "agent_id": self.agent_id,
+            "payload": dict(self.payload),
+            "timestamp": self.timestamp,
+        }
+
+
+# ---------------------------------------------------------------------------
+# MemoryConsolidatorEngine Singleton
+# ---------------------------------------------------------------------------
+
+
+class MemoryConsolidatorEngine:
+    """Offline memory consolidation and dream system for AI agents.
+
+    The engine ingests short-term episodic fragments, processes them
+    through a consolidation pipeline (encode, stabilize, integrate,
+    prune, replay), models forgetting via the Ebbinghaus retention
+    curve, and generates dream sequences that creatively recombine
+    memory fragments to surface novel associations.
+
+    Thread-safe singleton usable concurrently from multiple agents.
+    All public methods are guarded by a re-entrant lock.
     """
 
-    _type_weights: Dict[FragmentType, float] = {
-        FragmentType.FACT: 0.7,
-        FragmentType.PREFERENCE: 0.9,
-        FragmentType.DECISION: 0.85,
-        FragmentType.PATTERN: 0.8,
-        FragmentType.WORKFLOW: 0.75,
-        FragmentType.INSIGHT: 0.95,
-        FragmentType.CONVENTION: 0.8,
-    }
-
-    def rank(self, fragments: List[MemoryFragment]) -> List[Tuple[MemoryFragment, float]]:
-        if not fragments:
-            return []
-        scored: List[Tuple[MemoryFragment, float]] = []
-        now = _time_module.time()
-        for fragment in fragments:
-            score = self._compute_retention_score(fragment, now)
-            scored.append((fragment, score))
-        scored.sort(key=lambda pair: pair[1], reverse=True)
-        return scored
-
-    def _compute_retention_score(self, fragment: MemoryFragment, now: float) -> float:
-        base = fragment.importance_score
-        access_bonus = min(0.25, fragment.access_count * 0.03)
-        recency = max(0.0, now - fragment.last_accessed)
-        recency_decay = 1.0 / (1.0 + recency / 86400.0)
-        type_weight = self._type_weights.get(fragment.fragment_type, 0.7)
-        keyword_bonus = min(0.1, len(fragment.keywords) * 0.02)
-        score = (base * 0.4 + type_weight * 0.3 + access_bonus * 0.15 + keyword_bonus * 0.15) * recency_decay
-        return min(1.0, max(0.0, score))
-
-
-# ------------------------------------------------------------------
-# Internal: Session Digest Builder
-# ------------------------------------------------------------------
-
-
-class _SessionDigester:
-    """Builds human-readable session summaries from fragment clusters."""
-
-    def digest(self, session_id: str, fragments: List[MemoryFragment]) -> str:
-        if not fragments:
-            return f"Session {session_id}: no fragments recorded."
-        type_groups: Dict[FragmentType, List[MemoryFragment]] = defaultdict(list)
-        for fragment in fragments:
-            type_groups[fragment.fragment_type].append(fragment)
-        parts: List[str] = []
-        parts.append(f"Session: {session_id}")
-        parts.append(f"Total fragments: {len(fragments)}")
-        for frag_type, group in sorted(type_groups.items(), key=lambda x: x[0].value):
-            parts.append(f"  [{frag_type.value}] {len(group)} fragments")
-            top_fragments = sorted(group, key=lambda f: f.importance_score, reverse=True)[:3]
-            for fragment in top_fragments:
-                snippet = fragment.content[:120].replace("\n", " ")
-                parts.append(f"    - {snippet}")
-        parts.append(f"---")
-        return "\n".join(parts)
-
-    def summarize(
-        self, fragments: List[MemoryFragment], max_length: int = 500
-    ) -> str:
-        if not fragments:
-            return ""
-        sorted_fragments = sorted(fragments, key=lambda f: f.importance_score, reverse=True)
-        combined_parts: List[str] = []
-        total_chars = 0
-        for fragment in sorted_fragments:
-            snippet = fragment.content[:150].strip()
-            if total_chars + len(snippet) > max_length:
-                remaining = max_length - total_chars
-                if remaining > 20:
-                    combined_parts.append(snippet[:remaining] + "...")
-                break
-            combined_parts.append(snippet)
-            total_chars += len(snippet)
-        return " | ".join(combined_parts)
-
-
-# ------------------------------------------------------------------
-# Thread-Safe Singleton
-# ------------------------------------------------------------------
-
-
-DEFAULT_MAX_WORKING_FRAGMENTS: int = 200
-DEFAULT_SIMILARITY_THRESHOLD: float = 0.3
-DEFAULT_RETENTION_LIMIT: int = 1000
-DEFAULT_MERGE_SIMILARITY: float = 0.6
-
-
-class MemoryConsolidator:
-    """Cross-session memory consolidation system with semantic search.
-
-    Maintains L1-L4 memory layers for durable knowledge retention
-    across agent sessions. Supports TF-IDF semantic search over
-    fragment content, configurable consolidation strategies, and
-    importance-driven retention ranking.
-
-    Thread-safe singleton usable concurrently from multiple sessions.
-
-    Usage:
-        consolidator = get_memory_consolidator()
-        consolidator.add_fragment(
-            content="User prefers dark theme in code editors",
-            fragment_type=FragmentType.PREFERENCE,
-            source_session="session_abc",
-        )
-        results = consolidator.semantic_search("dark theme preference")
-        consolidator.consolidate(ConsolidationStrategy.MERGE)
-    """
-
-    _instance: Optional[MemoryConsolidator] = None
+    _instance: Optional["MemoryConsolidatorEngine"] = None
     _lock: threading.RLock = threading.RLock()
 
-    def __new__(cls) -> MemoryConsolidator:
+    _MAX_FRAGMENTS = 10000
+    _MAX_TASKS = 5000
+    _MAX_REPLAYS = 5000
+    _MAX_DREAMS = 5000
+    _MAX_SLEEP_CYCLES = 5000
+    _MAX_EVENTS = 2000
+
+    # Strengthening applied per replay, scaled by fragment salience.
+    _REPLAY_STRENGTHEN_BASE = 0.12
+    # Cap so a single fragment never exceeds unit strength.
+    _MAX_STRENGTH = 1.0
+    _MIN_STRENGTH = 0.0
+    # Fragments below this strength threshold are candidates for pruning.
+    _PRUNE_STRENGTH_THRESHOLD = 0.15
+    # Stability scaling for the Ebbinghaus forgetting curve (hours per unit strength).
+    _FORGETTING_STABILITY_HOURS = 240.0
+
+    @classmethod
+    def get_instance(cls) -> "MemoryConsolidatorEngine":
+        """Get or create the global singleton engine (double-checked locking)."""
         if cls._instance is None:
             with cls._lock:
                 if cls._instance is None:
-                    instance = super().__new__(cls)
-                    instance._initialized = False
-                    cls._instance = instance
-        return cls._instance
-
-    @classmethod
-    def get_instance(cls) -> MemoryConsolidator:
-        if cls._instance is None:
-            cls()
+                    cls._instance = cls()
         return cls._instance
 
     def __init__(self) -> None:
-        if self._initialized:
+        if getattr(self, "_initialized", False):
             return
-        self._initialized = True
-        self._working: Dict[str, MemoryFragment] = {}
-        self._episodic: Dict[str, MemoryFragment] = {}
-        self._semantic_store: Dict[str, MemoryFragment] = {}
-        self._archival: Dict[str, MemoryFragment] = {}
-        self._index: _SemanticIndex = _SemanticIndex()
-        self._ranker: _RetentionRanker = _RetentionRanker()
-        self._digester: _SessionDigester = _SessionDigester()
-        self._consolidation_history: List[ConsolidationResult] = []
-        self._total_consolidations: int = 0
-        self._max_working: int = DEFAULT_MAX_WORKING_FRAGMENTS
-        self._similarity_threshold: float = DEFAULT_SIMILARITY_THRESHOLD
-        self._retention_limit: int = DEFAULT_RETENTION_LIMIT
-        self._merge_similarity: float = DEFAULT_MERGE_SIMILARITY
+        self._fragments: Dict[str, MemoryFragment] = {}
+        self._fragment_order: List[str] = []
+        self._tasks: Dict[str, ConsolidationTask] = {}
+        self._task_order: List[str] = []
+        self._replays: Dict[str, ReplaySession] = {}
+        self._dreams: Dict[str, DreamSequence] = {}
+        self._dream_order: List[str] = []
+        self._sleep_cycles: Dict[str, SleepCycle] = {}
+        self._pruned_ids: set = set()
+        self._event_handlers: Dict[str, List[Tuple[str, Callable[[Dict[str, Any]], None]]]] = {}
+        self._events: List[MemoryEvent] = []
+        self._counters: Dict[str, int] = {
+            "fragments_registered": 0,
+            "consolidations_started": 0,
+            "consolidations_completed": 0,
+            "fragments_strengthened": 0,
+            "fragments_integrated": 0,
+            "fragments_pruned": 0,
+            "dreams_generated": 0,
+            "replays_completed": 0,
+            "sleep_cycles_started": 0,
+            "sleep_cycles_completed": 0,
+        }
+        self._initialized: bool = True
+        self._seed_default_data()
 
-    # --- Public API ---
+    # ------------------------------------------------------------------
+    # Seeding
+    # ------------------------------------------------------------------
 
-    def add_fragment(
+    def _seed_default_data(self) -> None:
+        """Seed demo agents, fragments, tasks, a replay, a dream, and a
+        sleep cycle so the engine is immediately useful without setup."""
+        now = _now_iso()
+
+        # --- Agent alpha: 5 fragments (mix of EPISODIC, SEMANTIC, PROCEDURAL) ---
+        alpha_fragments: List[MemoryFragment] = []
+
+        alpha_fragments.append(MemoryFragment(
+            agent_id="agent_alpha",
+            memory_type=MemoryType.EPISODIC,
+            content="Located a hidden supply cache behind the waterfall at grid H7",
+            salience=0.82,
+            emotional_weight=0.35,
+            strength=0.74,
+            metadata={"location": "H7", "session": "alpha_session_1"},
+        ))
+        alpha_fragments.append(MemoryFragment(
+            agent_id="agent_alpha",
+            memory_type=MemoryType.SEMANTIC,
+            content="Waterfalls in this region frequently conceal cave systems",
+            salience=0.61,
+            emotional_weight=0.10,
+            strength=0.66,
+            metadata={"domain": "geography", "confidence": 0.8},
+        ))
+        alpha_fragments.append(MemoryFragment(
+            agent_id="agent_alpha",
+            memory_type=MemoryType.PROCEDURAL,
+            content="Sequence to disarm the southern gate trap: lever, lever, plate, plate",
+            salience=0.90,
+            emotional_weight=0.20,
+            strength=0.88,
+            metadata={"steps": 4, "success_rate": 0.95},
+        ))
+        alpha_fragments.append(MemoryFragment(
+            agent_id="agent_alpha",
+            memory_type=MemoryType.EPISODIC,
+            content="Ally agent_beta warned of a patrol approaching the ridge at dusk",
+            salience=0.71,
+            emotional_weight=0.55,
+            strength=0.60,
+            metadata={"source": "agent_beta", "time_of_day": "dusk"},
+        ))
+        alpha_fragments.append(MemoryFragment(
+            agent_id="agent_alpha",
+            memory_type=MemoryType.PROCEDURAL,
+            content="Crafting a smoke bomb requires sulfur, charcoal, and a wet binding agent",
+            salience=0.55,
+            emotional_weight=0.05,
+            strength=0.52,
+            metadata={"recipe": True, "yield": 1},
+        ))
+
+        # --- Agent beta: 5 fragments (mix of EPISODIC, SEMANTIC, PROCEDURAL) ---
+        beta_fragments: List[MemoryFragment] = []
+
+        beta_fragments.append(MemoryFragment(
+            agent_id="agent_beta",
+            memory_type=MemoryType.EPISODIC,
+            content="Witnessed the southern gate trap triggering on a stray animal at dawn",
+            salience=0.78,
+            emotional_weight=0.40,
+            strength=0.69,
+            metadata={"location": "southern_gate", "time_of_day": "dawn"},
+        ))
+        beta_fragments.append(MemoryFragment(
+            agent_id="agent_beta",
+            memory_type=MemoryType.SEMANTIC,
+            content="Patrol routes rotate clockwise every three hours around the central keep",
+            salience=0.84,
+            emotional_weight=0.15,
+            strength=0.80,
+            metadata={"domain": "tactics", "rotation_hours": 3},
+        ))
+        beta_fragments.append(MemoryFragment(
+            agent_id="agent_beta",
+            memory_type=MemoryType.PROCEDURAL,
+            content="To cross the moat silently, time movement with the wind gusts at 12-second intervals",
+            salience=0.67,
+            emotional_weight=0.10,
+            strength=0.58,
+            metadata={"interval_seconds": 12},
+        ))
+        beta_fragments.append(MemoryFragment(
+            agent_id="agent_beta",
+            memory_type=MemoryType.EPISODIC,
+            content="Discovered a sealed cellar entrance beneath the abandoned tavern",
+            salience=0.73,
+            emotional_weight=0.45,
+            strength=0.63,
+            metadata={"location": "abandoned_tavern"},
+        ))
+        beta_fragments.append(MemoryFragment(
+            agent_id="agent_beta",
+            memory_type=MemoryType.SEMANTIC,
+            content="Tavern cellars in this district historically connect to the old aqueduct network",
+            salience=0.59,
+            emotional_weight=0.08,
+            strength=0.50,
+            metadata={"domain": "history", "confidence": 0.6},
+        ))
+
+        for fragment in alpha_fragments + beta_fragments:
+            self._fragments[fragment.id] = fragment
+            self._fragment_order.append(fragment.id)
+
+        self._counters["fragments_registered"] = len(self._fragments)
+
+        # --- 2 consolidation tasks ---
+        task1 = ConsolidationTask(
+            agent_id="agent_alpha",
+            phase=ConsolidationPhase.STABILIZE,
+            fragment_ids=[alpha_fragments[0].id, alpha_fragments[2].id],
+            status=ConsolidationStatus.PROCESSING,
+            started_at=now,
+        )
+        self._tasks[task1.id] = task1
+        self._task_order.append(task1.id)
+
+        task2 = ConsolidationTask(
+            agent_id="agent_beta",
+            phase=ConsolidationPhase.INTEGRATE,
+            fragment_ids=[beta_fragments[3].id, beta_fragments[4].id],
+            status=ConsolidationStatus.CONSOLIDATED,
+            started_at=now,
+            completed_at=now,
+            result_summary="Merged tavern cellar discovery with historical aqueduct knowledge",
+        )
+        self._tasks[task2.id] = task2
+        self._task_order.append(task2.id)
+
+        self._counters["consolidations_started"] = 2
+        self._counters["consolidations_completed"] = 1
+
+        # --- 1 replay session (already completed, strengthening applied) ---
+        replay_fragments = [alpha_fragments[2].id, alpha_fragments[0].id, alpha_fragments[3].id]
+        replay = ReplaySession(
+            agent_id="agent_alpha",
+            strategy=ReplayStrategy.PRIORITIZED,
+            fragment_ids=list(replay_fragments),
+            order=[0, 1, 2],
+            started_at=now,
+            completed_at=now,
+            strengthening_applied={
+                alpha_fragments[2].id: 0.108,
+                alpha_fragments[0].id: 0.098,
+                alpha_fragments[3].id: 0.085,
+            },
+        )
+        self._replays[replay.id] = replay
+        self._counters["replays_completed"] = 1
+        self._counters["fragments_strengthened"] = 3
+
+        # --- 1 dream sequence ---
+        dream = DreamSequence(
+            agent_id="agent_beta",
+            fragment_ids=[beta_fragments[0].id, beta_fragments[1].id, beta_fragments[2].id],
+            narrative=(
+                "In the dream, the patrol route rotated around a silent moat "
+                "while a stray animal crossed at dawn, revealing a hidden path "
+                "beneath the abandoned tavern cellar."
+            ),
+            novelty_score=0.62,
+            coherence_score=0.71,
+            created_at=now,
+        )
+        self._dreams[dream.id] = dream
+        self._dream_order.append(dream.id)
+        self._counters["dreams_generated"] = 1
+
+        # --- 1 sleep cycle (completed REM cycle) ---
+        cycle = SleepCycle(
+            agent_id="agent_alpha",
+            stage=SleepStage.REM,
+            started_at=now,
+            completed_at=now,
+            duration_seconds=1800.0,
+            fragments_processed=3,
+            dreams_generated=1,
+        )
+        self._sleep_cycles[cycle.id] = cycle
+        self._counters["sleep_cycles_started"] = 1
+        self._counters["sleep_cycles_completed"] = 1
+
+    # ------------------------------------------------------------------
+    # Event dispatch
+    # ------------------------------------------------------------------
+
+    def _emit_event(
         self,
+        kind: MemoryEventKind,
+        agent_id: str,
+        payload: Dict[str, Any],
+    ) -> MemoryEvent:
+        """Record an event and invoke any registered handlers.
+
+        A faulty handler must never break engine operation; all handler
+        exceptions are swallowed.
+        """
+        event = MemoryEvent(
+            kind=kind,
+            agent_id=agent_id,
+            payload=payload,
+        )
+        self._events.append(event)
+        if len(self._events) > self._MAX_EVENTS:
+            self._events = self._events[-self._MAX_EVENTS:]
+        handlers = self._event_handlers.get(kind.value, [])
+        for _handler_id, handler in handlers:
+            try:
+                handler(event.to_dict())
+            except Exception:
+                pass
+        return event
+
+    # ------------------------------------------------------------------
+    # Fragment management
+    # ------------------------------------------------------------------
+
+    def register_fragment(
+        self,
+        agent_id: str,
+        memory_type: MemoryType,
         content: str,
-        fragment_type: str = "fact",
-        source_session: str = "",
-        embedding_hint: Optional[List[float]] = None,
-        keywords: Optional[List[str]] = None,
-        importance_score: float = 0.5,
+        salience: float = 0.5,
+        emotional_weight: float = 0.0,
+        source_fragments: Optional[List[str]] = None,
+        metadata: Optional[Dict[str, Any]] = None,
     ) -> MemoryFragment:
-        frag_type = FragmentType(fragment_type)
-        fragment = MemoryFragment(
-            content=content,
-            fragment_type=frag_type,
-            source_session=source_session,
-            embedding_hint=embedding_hint if embedding_hint is not None else [],
-            keywords=keywords if keywords is not None else self._extract_keywords(content),
-            importance_score=max(0.0, min(1.0, importance_score)),
-        )
-        with self._lock:
-            self._working[fragment.id] = fragment
-            self._index.index(fragment)
-            self._enforce_working_limit()
-        return fragment
+        """Register a new memory fragment for an agent.
 
-    def semantic_search(
-        self,
-        query: str,
-        top_k: int = 10,
-        min_score: float = 0.05,
-        fragment_type: Optional[str] = None,
-    ) -> List[Dict[str, Any]]:
+        Salience and emotional weight are clamped to [0, 1]. Newly
+        registered fragments start at a baseline strength equal to their
+        salience, reflecting that salient events form stronger initial
+        traces.
+        """
         with self._lock:
-            results = self._index.search(query, top_k=top_k, min_score=min_score)
-        filtered: List[Tuple[MemoryFragment, float]] = []
-        for fragment, score in results:
-            if fragment_type is not None and fragment.fragment_type.value != fragment_type:
-                continue
-            fragment.last_accessed = _time_module.time()
+            fragment = MemoryFragment(
+                agent_id=agent_id,
+                memory_type=memory_type,
+                content=content,
+                salience=max(0.0, min(1.0, salience)),
+                emotional_weight=max(0.0, min(1.0, emotional_weight)),
+                strength=max(0.0, min(1.0, salience)),
+                source_fragments=list(source_fragments or []),
+                metadata=dict(metadata or {}),
+            )
+            self._fragments[fragment.id] = fragment
+            self._fragment_order.append(fragment.id)
+            self._enforce_fragment_capacity()
+            self._counters["fragments_registered"] += 1
+            return fragment
+
+    def get_fragment(self, fragment_id: str) -> Optional[MemoryFragment]:
+        """Retrieve a fragment by id, updating access statistics.
+
+        Returns None if the fragment does not exist.
+        """
+        with self._lock:
+            fragment = self._fragments.get(fragment_id)
+            if fragment is None:
+                return None
             fragment.access_count += 1
-            filtered.append((fragment, score))
-        return [
-            {**fragment.to_dict(), "similarity_score": round(score, 4)}
-            for fragment, score in filtered
-        ]
+            fragment.last_accessed = _now_iso()
+            return fragment
 
-    def consolidate(
+    def list_fragments(
         self,
-        strategy: str = "merge",
-        source_session: Optional[str] = None,
-    ) -> ConsolidationResult:
-        start_time = _time_module.time()
-        strat = ConsolidationStrategy(strategy)
+        agent_id: Optional[str] = None,
+        memory_type: Optional[MemoryType] = None,
+        min_strength: float = 0.0,
+        include_pruned: bool = False,
+    ) -> List[MemoryFragment]:
+        """List fragments, optionally filtered by agent, type, and strength.
+
+        Pruned fragments are excluded by default; pass include_pruned=True
+        to surface them.
+        """
         with self._lock:
-            if source_session is not None:
-                candidates = {
-                    fid: frag
-                    for fid, frag in self._working.items()
-                    if frag.source_session == source_session
-                }
-            else:
-                candidates = dict(self._working)
-            before_count = len(candidates)
-            if strat == ConsolidationStrategy.MERGE:
-                merged = self._execute_merge(candidates)
-            elif strat == ConsolidationStrategy.SUMMARIZE:
-                merged = self._execute_summarize(candidates)
-            elif strat == ConsolidationStrategy.PRIORITIZE:
-                merged = self._execute_prioritize(candidates)
-            elif strat == ConsolidationStrategy.COMPRESS:
-                merged = self._execute_compress(candidates)
-            elif strat == ConsolidationStrategy.ARCHIVE:
-                merged = self._execute_archive(candidates)
-            else:
-                merged = self._execute_merge(candidates)
-            for fragment_id in candidates:
-                self._working.pop(fragment_id, None)
-            summary = self._digester.summarize(list(self._semantic_store.values())[-10:])
-            duration_ms = (_time_module.time() - start_time) * 1000
-            after_count = len(self._working)
-            compact_ratio = after_count / max(before_count, 1)
-            result = ConsolidationResult(
-                fragments_count=before_count,
-                merged_count=merged,
-                summary=summary,
-                compact_ratio=compact_ratio,
-                duration_ms=round(duration_ms, 2),
-            )
-            self._consolidation_history.append(result)
-            self._total_consolidations += 1
-            if len(self._consolidation_history) > 100:
-                self._consolidation_history = self._consolidation_history[-100:]
-            self._enforce_retention_limit()
-        return result
-
-    def generate_context(
-        self,
-        session_id: str = "",
-        max_fragments: int = 15,
-        include_archival: bool = False,
-    ) -> Dict[str, Any]:
-        with self._lock:
-            relevant: List[MemoryFragment] = []
-            for store in [self._working, self._episodic, self._semantic_store]:
-                for fragment in store.values():
-                    if not session_id or fragment.source_session == session_id:
-                        relevant.append(fragment)
-                        fragment.last_accessed = _time_module.time()
-                        fragment.access_count += 1
-            if include_archival:
-                for fragment in self._archival.values():
-                    if not session_id or fragment.source_session == session_id:
-                        relevant.append(fragment)
-            ranked = self._ranker.rank(relevant)
-            top_fragments = [fragment for fragment, _ in ranked[:max_fragments]]
-            context_text = self._digester.summarize(top_fragments, max_length=2000)
-            return {
-                "session_id": session_id,
-                "fragments_included": len(top_fragments),
-                "total_candidates": len(relevant),
-                "context": context_text,
-                "fragments": [f.to_dict() for f in top_fragments],
-            }
-
-    def summarize_sessions(self, session_ids: Optional[List[str]] = None) -> List[Dict[str, Any]]:
-        with self._lock:
-            all_fragments = (
-                list(self._working.values())
-                + list(self._episodic.values())
-                + list(self._semantic_store.values())
-                + list(self._archival.values())
-            )
-        sessions: Dict[str, List[MemoryFragment]] = defaultdict(list)
-        for fragment in all_fragments:
-            if session_ids is None or fragment.source_session in session_ids:
-                sessions[fragment.source_session].append(fragment)
-        results: List[Dict[str, Any]] = []
-        for sid, fragments in sorted(sessions.items()):
-            digest_text = self._digester.digest(sid, fragments)
-            type_counts: Dict[str, int] = {}
-            for fragment in fragments:
-                type_counts[fragment.fragment_type.value] = (
-                    type_counts.get(fragment.fragment_type.value, 0) + 1
-                )
-            avg_importance = 0.0
-            if fragments:
-                avg_importance = sum(f.importance_score for f in fragments) / len(fragments)
-            results.append({
-                "session_id": sid,
-                "fragment_count": len(fragments),
-                "type_distribution": type_counts,
-                "average_importance": round(avg_importance, 4),
-                "digest": digest_text,
-            })
-        return results
-
-    def prioritize_retention(self, limit: Optional[int] = None) -> List[Dict[str, Any]]:
-        effective_limit = limit or self._retention_limit
-        with self._lock:
-            all_fragments = (
-                list(self._working.values())
-                + list(self._episodic.values())
-                + list(self._semantic_store.values())
-                + list(self._archival.values())
-            )
-        ranked = self._ranker.rank(all_fragments)
-        retained = ranked[:effective_limit]
-        pruned = ranked[effective_limit:]
-        return [
-            {
-                "retained": [fragment.to_dict() for fragment, score in retained],
-                "retained_scores": [round(score, 4) for _, score in retained],
-                "pruned_count": len(pruned),
-                "total_ranked": len(ranked),
-                "retention_limit": effective_limit,
-            }
-        ]
-
-    def get_memory_stats(self) -> Dict[str, Any]:
-        with self._lock:
-            total_fragments = (
-                len(self._working)
-                + len(self._episodic)
-                + len(self._semantic_store)
-                + len(self._archival)
-            )
-            type_distribution: Dict[str, int] = {}
-            for store in [self._working, self._episodic, self._semantic_store, self._archival]:
-                for fragment in store.values():
-                    type_distribution[fragment.fragment_type.value] = (
-                        type_distribution.get(fragment.fragment_type.value, 0) + 1
-                    )
-            avg_importance_working = self._avg_importance(self._working)
-            avg_importance_episodic = self._avg_importance(self._episodic)
-            avg_importance_semantic = self._avg_importance(self._semantic_store)
-            avg_importance_archival = self._avg_importance(self._archival)
-            recent_consolidations = [
-                r.to_dict() for r in self._consolidation_history[-5:]
-            ]
-            return {
-                "total_fragments": total_fragments,
-                "working_count": len(self._working),
-                "episodic_count": len(self._episodic),
-                "semantic_count": len(self._semantic_store),
-                "archival_count": len(self._archival),
-                "indexed_documents": self._index.document_count,
-                "type_distribution": type_distribution,
-                "avg_importance_working": round(avg_importance_working, 4),
-                "avg_importance_episodic": round(avg_importance_episodic, 4),
-                "avg_importance_semantic": round(avg_importance_semantic, 4),
-                "avg_importance_archival": round(avg_importance_archival, 4),
-                "total_consolidations": self._total_consolidations,
-                "retention_limit": self._retention_limit,
-                "similarity_threshold": self._similarity_threshold,
-                "max_working": self._max_working,
-                "merge_similarity": self._merge_similarity,
-                "recent_consolidations": recent_consolidations,
-            }
-
-    # --- Consolidation Strategy Implementations ---
-
-    def _execute_merge(self, candidates: Dict[str, MemoryFragment]) -> int:
-        merged = 0
-        fragment_list = list(candidates.items())
-        grouped: Dict[str, List[str]] = defaultdict(list)
-        processed: set = set()
-        for i, (fid_a, frag_a) in enumerate(fragment_list):
-            if fid_a in processed:
-                continue
-            for j, (fid_b, frag_b) in enumerate(fragment_list):
-                if j <= i or fid_b in processed:
+            results: List[MemoryFragment] = []
+            for fragment in self._fragments.values():
+                if agent_id is not None and fragment.agent_id != agent_id:
                     continue
-                similarity = self._index.pairwise_similarity(fid_a, fid_b)
-                if similarity >= self._merge_similarity:
-                    grouped[fid_a].append(fid_b)
-                    processed.add(fid_b)
-            if grouped.get(fid_a):
-                processed.add(fid_a)
-        for primary_id, secondary_ids in grouped.items():
-            primary = candidates.get(primary_id)
-            if primary is None:
-                continue
-            secondaries = [candidates[sid] for sid in secondary_ids if sid in candidates]
-            if not secondaries:
-                continue
-            merged_content = self._merge_fragment_content(primary, secondaries)
-            merged_keywords = list(set(primary.keywords))
-            for sec in secondaries:
-                merged_keywords.extend(sec.keywords)
-            merged_keywords = list(set(merged_keywords))
-            merged_importance = max(
-                primary.importance_score,
-                max((s.importance_score for s in secondaries), default=primary.importance_score),
-            )
-            merged_fragment = MemoryFragment(
-                content=merged_content,
-                fragment_type=primary.fragment_type,
-                source_session=primary.source_session,
-                keywords=merged_keywords[:20],
-                importance_score=merged_importance,
-            )
-            self._semantic_store[merged_fragment.id] = merged_fragment
-            self._index.index(merged_fragment)
-            for sid in secondary_ids:
-                self._index.remove(sid)
-            self._index.remove(primary_id)
-            self._index.index(merged_fragment)
-            merged += len(secondary_ids)
-        return merged
+                if memory_type is not None and fragment.memory_type != memory_type:
+                    continue
+                if fragment.strength < min_strength:
+                    continue
+                if not include_pruned and fragment.id in self._pruned_ids:
+                    continue
+                results.append(fragment)
+            results.sort(key=lambda f: (f.agent_id, f.timestamp))
+            return results
 
-    def _execute_summarize(self, candidates: Dict[str, MemoryFragment]) -> int:
-        if not candidates:
-            return 0
-        fragments = sorted(
-            candidates.values(), key=lambda f: f.importance_score, reverse=True
-        )
-        group_size = max(1, len(fragments) // 4)
-        summarized = 0
-        for i in range(0, len(fragments), group_size):
-            group = fragments[i : i + group_size]
-            if len(group) <= 1:
-                for fragment in group:
-                    self._semantic_store[fragment.id] = fragment
-                continue
-            summary_content = self._digester.summarize(group, max_length=300)
-            merged_fragment = MemoryFragment(
-                content=summary_content,
-                fragment_type=FragmentType.INSIGHT,
-                source_session=group[0].source_session,
-                keywords=self._extract_keywords(summary_content),
-                importance_score=sum(f.importance_score for f in group) / len(group),
+    def remove_fragment(self, fragment_id: str) -> bool:
+        """Remove a fragment entirely from the engine.
+
+        Returns True if a fragment was removed, False otherwise.
+        """
+        with self._lock:
+            if fragment_id not in self._fragments:
+                return False
+            self._fragments.pop(fragment_id, None)
+            if fragment_id in self._fragment_order:
+                self._fragment_order.remove(fragment_id)
+            self._pruned_ids.discard(fragment_id)
+            return True
+
+    def strengthen_fragment(
+        self, fragment_id: str, amount: float = 0.1
+    ) -> Optional[MemoryFragment]:
+        """Increase a fragment's strength by a given amount.
+
+        Strength is clamped to [0, 1]. Emits a MEMORY_STRENGTHENED event.
+        Returns the updated fragment, or None if not found.
+        """
+        with self._lock:
+            fragment = self._fragments.get(fragment_id)
+            if fragment is None:
+                return None
+            fragment.strength = max(
+                self._MIN_STRENGTH, min(self._MAX_STRENGTH, fragment.strength + amount)
             )
-            self._semantic_store[merged_fragment.id] = merged_fragment
-            self._index.index(merged_fragment)
-            summarized += len(group) - 1
-        return summarized
+            self._counters["fragments_strengthened"] += 1
+            self._emit_event(
+                MemoryEventKind.MEMORY_STRENGTHENED,
+                fragment.agent_id,
+                {
+                    "fragment_id": fragment.id,
+                    "amount": amount,
+                    "new_strength": fragment.strength,
+                },
+            )
+            return fragment
 
-    def _execute_prioritize(self, candidates: Dict[str, MemoryFragment]) -> int:
-        ranked = self._ranker.rank(list(candidates.values()))
-        retained_ids = {fragment.id for fragment, score in ranked[:self._retention_limit]}
-        moved = 0
-        for fragment_id, fragment in candidates.items():
-            if fragment_id in retained_ids:
-                self._episodic[fragment_id] = fragment
-            else:
-                self._semantic_store[fragment_id] = fragment
-                moved += 1
-        return moved
+    # ------------------------------------------------------------------
+    # Consolidation tasks
+    # ------------------------------------------------------------------
 
-    def _execute_compress(self, candidates: Dict[str, MemoryFragment]) -> int:
-        if not candidates:
-            return 0
-        fragments = list(candidates.values())
-        session_groups: Dict[str, List[MemoryFragment]] = defaultdict(list)
-        for frag in fragments:
-            session_groups[frag.source_session].append(frag)
-        compressed = 0
-        for session_id, group in session_groups.items():
-            if len(group) <= 3:
-                for fragment in group:
-                    self._episodic[fragment.id] = fragment
-                continue
-            sorted_group = sorted(group, key=lambda f: f.importance_score, reverse=True)
-            top = sorted_group[:2]
-            rest = sorted_group[2:]
-            for fragment in top:
-                self._episodic[fragment.id] = fragment
-            if rest:
-                compressed_content = self._digester.summarize(rest, max_length=400)
-                compressed_fragment = MemoryFragment(
-                    content=compressed_content,
-                    fragment_type=FragmentType.INSIGHT,
-                    source_session=session_id,
-                    keywords=self._extract_keywords(compressed_content),
-                    importance_score=sum(f.importance_score for f in rest) / len(rest),
+    def start_consolidation(
+        self,
+        agent_id: str,
+        fragment_ids: List[str],
+        phase: ConsolidationPhase = ConsolidationPhase.STABILIZE,
+    ) -> ConsolidationTask:
+        """Start a new consolidation task in the PROCESSING state.
+
+        Emits a CONSOLIDATION_STARTED event. The task references the
+        provided fragment ids; missing ids are silently ignored.
+        """
+        with self._lock:
+            valid_ids = [fid for fid in fragment_ids if fid in self._fragments]
+            task = ConsolidationTask(
+                agent_id=agent_id,
+                phase=phase,
+                fragment_ids=valid_ids,
+                status=ConsolidationStatus.PROCESSING,
+            )
+            self._tasks[task.id] = task
+            self._task_order.append(task.id)
+            self._enforce_task_capacity()
+            self._counters["consolidations_started"] += 1
+            self._emit_event(
+                MemoryEventKind.CONSOLIDATION_STARTED,
+                agent_id,
+                {
+                    "task_id": task.id,
+                    "phase": phase.value,
+                    "fragment_ids": list(valid_ids),
+                },
+            )
+            return task
+
+    def complete_consolidation(
+        self, task_id: str, result_summary: str = ""
+    ) -> Optional[ConsolidationTask]:
+        """Complete a consolidation task, marking it CONSOLIDATED.
+
+        Strengthens the associated fragments slightly to reflect
+        stabilization. Emits CONSOLIDATION_COMPLETED. Returns the task,
+        or None if not found or already completed.
+        """
+        with self._lock:
+            task = self._tasks.get(task_id)
+            if task is None or task.status == ConsolidationStatus.CONSOLIDATED:
+                return None
+            task.status = ConsolidationStatus.CONSOLIDATED
+            task.completed_at = _now_iso()
+            task.result_summary = result_summary
+            for fragment_id in task.fragment_ids:
+                fragment = self._fragments.get(fragment_id)
+                if fragment is not None:
+                    fragment.strength = min(
+                        self._MAX_STRENGTH,
+                        fragment.strength + self._REPLAY_STRENGTHEN_BASE * 0.5,
+                    )
+            self._counters["consolidations_completed"] += 1
+            self._emit_event(
+                MemoryEventKind.CONSOLIDATION_COMPLETED,
+                task.agent_id,
+                {
+                    "task_id": task.id,
+                    "result_summary": result_summary,
+                    "fragment_count": len(task.fragment_ids),
+                },
+            )
+            return task
+
+    def integrate_fragments(
+        self,
+        agent_id: str,
+        source_ids: List[str],
+        target_content: str,
+        salience: Optional[float] = None,
+        memory_type: MemoryType = MemoryType.SEMANTIC,
+    ) -> Optional[MemoryFragment]:
+        """Integrate several source fragments into a single new fragment.
+
+        The new fragment inherits the maximum strength of its sources plus
+        a small integration bonus. Source fragments are marked as
+        integrated (tracked via metadata and reduced strength). Emits a
+        MEMORY_INTEGRATED event. Returns the new fragment, or None if no
+        valid source fragments were supplied.
+        """
+        with self._lock:
+            sources: List[MemoryFragment] = []
+            for source_id in source_ids:
+                fragment = self._fragments.get(source_id)
+                if fragment is not None and fragment.agent_id == agent_id:
+                    sources.append(fragment)
+            if not sources:
+                return None
+            inherited_strength = max(s.strength for s in sources)
+            inherited_emotion = max(s.emotional_weight for s in sources)
+            effective_salience = (
+                salience if salience is not None else max(s.salience for s in sources)
+            )
+            integrated = MemoryFragment(
+                agent_id=agent_id,
+                memory_type=memory_type,
+                content=target_content,
+                salience=max(0.0, min(1.0, effective_salience)),
+                emotional_weight=max(0.0, min(1.0, inherited_emotion)),
+                strength=min(
+                    self._MAX_STRENGTH,
+                    inherited_strength + self._REPLAY_STRENGTHEN_BASE,
+                ),
+                source_fragments=[s.id for s in sources],
+                metadata={
+                    "integrated_from": [s.id for s in sources],
+                    "integration_time": _now_iso(),
+                },
+            )
+            self._fragments[integrated.id] = integrated
+            self._fragment_order.append(integrated.id)
+            for source in sources:
+                source.metadata["integrated_into"] = integrated.id
+                source.strength = max(
+                    self._MIN_STRENGTH, source.strength - self._REPLAY_STRENGTHEN_BASE
                 )
-                self._semantic_store[compressed_fragment.id] = compressed_fragment
-                self._index.index(compressed_fragment)
-                compressed += len(rest)
-        return compressed
+            self._enforce_fragment_capacity()
+            self._counters["fragments_integrated"] += 1
+            self._emit_event(
+                MemoryEventKind.MEMORY_INTEGRATED,
+                agent_id,
+                {
+                    "new_fragment_id": integrated.id,
+                    "source_ids": [s.id for s in sources],
+                    "memory_type": memory_type.value,
+                },
+            )
+            return integrated
 
-    def _execute_archive(self, candidates: Dict[str, MemoryFragment]) -> int:
-        archived = 0
-        for fragment_id, fragment in candidates.items():
-            if fragment.importance_score >= 0.6:
-                self._semantic_store[fragment_id] = fragment
-            else:
-                self._archival[fragment_id] = fragment
-                archived += 1
-        return archived
+    def prune_fragment(self, fragment_id: str) -> Optional[MemoryFragment]:
+        """Mark a fragment as pruned due to low strength.
 
-    # --- Helpers ---
+        The fragment is retained for audit purposes but flagged as pruned
+        and its strength is driven to zero. Emits MEMORY_PRUNED. Returns
+        the fragment, or None if not found.
+        """
+        with self._lock:
+            fragment = self._fragments.get(fragment_id)
+            if fragment is None:
+                return None
+            self._pruned_ids.add(fragment_id)
+            fragment.strength = self._MIN_STRENGTH
+            fragment.metadata["pruned"] = True
+            fragment.metadata["pruned_at"] = _now_iso()
+            self._counters["fragments_pruned"] += 1
+            self._emit_event(
+                MemoryEventKind.MEMORY_PRUNED,
+                fragment.agent_id,
+                {
+                    "fragment_id": fragment.id,
+                    "memory_type": fragment.memory_type.value,
+                },
+            )
+            return fragment
 
-    def _enforce_working_limit(self) -> None:
-        while len(self._working) > self._max_working:
-            ranked = self._ranker.rank(list(self._working.values()))
-            if not ranked:
-                break
-            lowest_fragment, _ = ranked[-1]
-            self._working.pop(lowest_fragment.id, None)
+    # ------------------------------------------------------------------
+    # Replay sessions
+    # ------------------------------------------------------------------
 
-    def _enforce_retention_limit(self) -> None:
-        all_fragments = (
-            list(self._working.values())
-            + list(self._episodic.values())
-            + list(self._semantic_store.values())
-            + list(self._archival.values())
+    def start_replay(
+        self,
+        agent_id: str,
+        fragment_ids: List[str],
+        strategy: ReplayStrategy = ReplayStrategy.SEQUENTIAL,
+    ) -> ReplaySession:
+        """Start a replay session that re-retrieves fragments in a
+        strategy-defined order.
+
+        Emits no dedicated event until completion; the session is opened
+        in a non-terminal state.
+        """
+        with self._lock:
+            valid_ids = [
+                fid
+                for fid in fragment_ids
+                if fid in self._fragments
+                and self._fragments[fid].agent_id == agent_id
+            ]
+            order = self._compute_replay_order(valid_ids, strategy)
+            session = ReplaySession(
+                agent_id=agent_id,
+                strategy=strategy,
+                fragment_ids=list(valid_ids),
+                order=list(order),
+            )
+            self._replays[session.id] = session
+            self._enforce_replay_capacity()
+            return session
+
+    def complete_replay(self, replay_id: str) -> Optional[ReplaySession]:
+        """Complete a replay session and apply strengthening to fragments.
+
+        Each fragment receives a strength boost proportional to its
+        salience. Updates access statistics. Emits REPLAY_COMPLETED.
+        Returns the session, or None if not found or already completed.
+        """
+        with self._lock:
+            session = self._replays.get(replay_id)
+            if session is None or session.completed_at:
+                return None
+            strengthening: Dict[str, float] = {}
+            for fragment_id in session.fragment_ids:
+                fragment = self._fragments.get(fragment_id)
+                if fragment is None:
+                    continue
+                boost = self._REPLAY_STRENGTHEN_BASE * fragment.salience
+                fragment.strength = min(
+                    self._MAX_STRENGTH, fragment.strength + boost
+                )
+                fragment.access_count += 1
+                fragment.last_accessed = _now_iso()
+                strengthening[fragment_id] = round(boost, 4)
+            session.strengthening_applied = strengthening
+            session.completed_at = _now_iso()
+            self._counters["replays_completed"] += 1
+            self._counters["fragments_strengthened"] += len(strengthening)
+            self._emit_event(
+                MemoryEventKind.REPLAY_COMPLETED,
+                session.agent_id,
+                {
+                    "replay_id": session.id,
+                    "strategy": session.strategy.value,
+                    "strengthened_count": len(strengthening),
+                },
+            )
+            return session
+
+    def _compute_replay_order(
+        self, fragment_ids: List[str], strategy: ReplayStrategy
+    ) -> List[int]:
+        """Compute the playback order (indices into fragment_ids) for a
+        replay session based on the chosen strategy."""
+        n = len(fragment_ids)
+        if n == 0:
+            return []
+        if strategy == ReplayStrategy.SEQUENTIAL:
+            return list(range(n))
+        if strategy == ReplayStrategy.RANDOM:
+            order = list(range(n))
+            random.shuffle(order)
+            return order
+        if strategy == ReplayStrategy.PRIORITIZED:
+            fragments = [self._fragments[fid] for fid in fragment_ids]
+            indexed = list(enumerate(fragments))
+            indexed.sort(
+                key=lambda pair: (pair[1].salience, pair[1].strength),
+                reverse=True,
+            )
+            return [index for index, _ in indexed]
+        # SPATIOTEMPORAL: chronological by timestamp, then salience desc
+        fragments = [self._fragments[fid] for fid in fragment_ids]
+        indexed = list(enumerate(fragments))
+        indexed.sort(
+            key=lambda pair: (pair[1].timestamp, -pair[1].salience)
         )
-        if len(all_fragments) <= self._retention_limit:
-            return
-        ranked = self._ranker.rank(all_fragments)
-        retained_ids = {
-            fragment.id for fragment, _ in ranked[:self._retention_limit]
-        }
-        for store in [self._working, self._episodic, self._semantic_store, self._archival]:
-            for fragment_id in list(store.keys()):
-                if fragment_id not in retained_ids:
-                    self._index.remove(fragment_id)
-                    store.pop(fragment_id, None)
+        return [index for index, _ in indexed]
 
-    def _extract_keywords(self, content: str) -> List[str]:
-        tokens = re.findall(r"[a-zA-Z0-9_]{3,}", content.lower())
-        stop_words = {
-            "the", "and", "for", "that", "this", "with", "from",
-            "are", "was", "has", "not", "but", "have", "been",
-            "will", "can", "all", "its", "when", "into", "over",
-        }
-        filtered = [t for t in tokens if t not in stop_words]
-        counter = Counter(filtered)
-        return [word for word, _ in counter.most_common(10)]
+    # ------------------------------------------------------------------
+    # Dream generation
+    # ------------------------------------------------------------------
 
-    def _merge_fragment_content(
-        self, primary: MemoryFragment, secondaries: List[MemoryFragment]
+    def generate_dream(
+        self,
+        agent_id: str,
+        fragment_ids: List[str],
+    ) -> Optional[DreamSequence]:
+        """Generate a dream sequence by creatively recombining fragments.
+
+        The narrative weaves fragment content snippets together and
+        surfaces a novel association. Novelty is estimated from how
+        dissimilar the combined fragments are; coherence is estimated
+        from average strength. Emits DREAM_GENERATED.
+        """
+        with self._lock:
+            sources: List[MemoryFragment] = []
+            for fid in fragment_ids:
+                fragment = self._fragments.get(fid)
+                if fragment is not None and fragment.agent_id == agent_id:
+                    sources.append(fragment)
+            if not sources:
+                return None
+            narrative = self._build_dream_narrative(agent_id, sources)
+            novelty = self._compute_novelty_score(sources)
+            coherence = self._compute_coherence_score(sources)
+            dream = DreamSequence(
+                agent_id=agent_id,
+                fragment_ids=[s.id for s in sources],
+                narrative=narrative,
+                novelty_score=round(novelty, 4),
+                coherence_score=round(coherence, 4),
+            )
+            self._dreams[dream.id] = dream
+            self._dream_order.append(dream.id)
+            self._enforce_dream_capacity()
+            self._counters["dreams_generated"] += 1
+            # Dreaming lightly reinforces the pathways it touched.
+            for source in sources:
+                source.access_count += 1
+                source.last_accessed = _now_iso()
+                source.strength = min(
+                    self._MAX_STRENGTH,
+                    source.strength + self._REPLAY_STRENGTHEN_BASE * 0.25,
+                )
+            self._emit_event(
+                MemoryEventKind.DREAM_GENERATED,
+                agent_id,
+                {
+                    "dream_id": dream.id,
+                    "fragment_count": len(sources),
+                    "novelty_score": dream.novelty_score,
+                    "coherence_score": dream.coherence_score,
+                },
+            )
+            return dream
+
+    def _build_dream_narrative(
+        self, agent_id: str, fragments: List[MemoryFragment]
     ) -> str:
-        parts = [primary.content]
-        for secondary in secondaries[:5]:
-            if secondary.content not in parts:
-                parts.append(secondary.content)
-        return " | ".join(parts)
+        """Weave a creative narrative from fragment content snippets.
 
-    @staticmethod
-    def _avg_importance(store: Dict[str, MemoryFragment]) -> float:
-        if not store:
+        Snippets are trimmed and joined with dreamlike connective tissue,
+        and a novel association is appended that links the two highest
+        salience fragments.
+        """
+        snippets: List[str] = []
+        for fragment in fragments:
+            snippet = fragment.content.strip().replace("\n", " ")
+            if len(snippet) > 90:
+                snippet = snippet[:87] + "..."
+            snippets.append(snippet)
+        body = ". ".join(snippets)
+        # Identify the two most salient fragments to surface an association.
+        ranked = sorted(fragments, key=lambda f: f.salience, reverse=True)
+        association = ""
+        if len(ranked) >= 2:
+            a = ranked[0].memory_type.value
+            b = ranked[1].memory_type.value
+            association = (
+                f" A novel association surfaces between a {a} thread and a "
+                f"{b} thread, hinting at an unseen connection."
+            )
+        elif ranked:
+            association = (
+                f" A lone {ranked[0].memory_type.value} memory echoes "
+                f"through the dreamscape."
+            )
+        return f"Dream of {agent_id}: {body}.{association}"
+
+    def _compute_novelty_score(
+        self, fragments: List[MemoryFragment]
+    ) -> float:
+        """Estimate novelty from the diversity of memory types involved.
+
+        More distinct memory types and a wider spread of salience values
+        yield a higher novelty score in [0, 1].
+        """
+        if not fragments:
             return 0.0
-        return sum(f.importance_score for f in store.values()) / len(store)
+        type_diversity = len({f.memory_type for f in fragments}) / len(MemoryType)
+        salience_values = [f.salience for f in fragments]
+        if len(salience_values) > 1:
+            mean = sum(salience_values) / len(salience_values)
+            variance = sum((v - mean) ** 2 for v in salience_values) / len(salience_values)
+            spread = min(1.0, math.sqrt(variance) * 2.0)
+        else:
+            spread = 0.0
+        return max(0.0, min(1.0, 0.6 * type_diversity + 0.4 * spread))
 
-    def get_stats(self) -> Dict[str, Any]:
-        """Return comprehensive MemoryConsolidator subsystem statistics."""
-        all_fragments = {
-            **{f"working_{k}": v for k, v in self._working.items()},
-            **{f"episodic_{k}": v for k, v in self._episodic.items()},
-            **{f"semantic_{k}": v for k, v in self._semantic_store.items()},
-            **{f"archival_{k}": v for k, v in self._archival.items()},
-        }
-        return {
-            "total_fragments": len(all_fragments),
-            "working_count": len(self._working),
-            "episodic_count": len(self._episodic),
-            "semantic_count": len(self._semantic_store),
-            "archival_count": len(self._archival),
-            "total_consolidations": self._total_consolidations,
-            "consolidation_history_size": len(self._consolidation_history),
-        }
+    def _compute_coherence_score(
+        self, fragments: List[MemoryFragment]
+    ) -> float:
+        """Estimate coherence from average strength and shared agent scope.
+
+        Stronger, more emotionally consistent fragments produce a more
+        coherent dream narrative.
+        """
+        if not fragments:
+            return 0.0
+        avg_strength = sum(f.strength for f in fragments) / len(fragments)
+        emotional_values = [f.emotional_weight for f in fragments]
+        if len(emotional_values) > 1:
+            mean = sum(emotional_values) / len(emotional_values)
+            variance = sum((v - mean) ** 2 for v in emotional_values) / len(emotional_values)
+            consistency = max(0.0, 1.0 - math.sqrt(variance) * 2.0)
+        else:
+            consistency = 1.0
+        return max(0.0, min(1.0, 0.7 * avg_strength + 0.3 * consistency))
+
+    # ------------------------------------------------------------------
+    # Sleep cycles
+    # ------------------------------------------------------------------
+
+    def start_sleep_cycle(
+        self,
+        agent_id: str,
+        stage: SleepStage = SleepStage.LIGHT,
+        duration_seconds: float = 0.0,
+    ) -> SleepCycle:
+        """Open a sleep cycle window for an agent.
+
+        Emits SLEEP_CYCLE_STARTED. The cycle is left open until
+        complete_sleep_cycle is called.
+        """
+        with self._lock:
+            cycle = SleepCycle(
+                agent_id=agent_id,
+                stage=stage,
+                duration_seconds=max(0.0, duration_seconds),
+            )
+            self._sleep_cycles[cycle.id] = cycle
+            self._enforce_sleep_cycle_capacity()
+            self._counters["sleep_cycles_started"] += 1
+            self._emit_event(
+                MemoryEventKind.SLEEP_CYCLE_STARTED,
+                agent_id,
+                {
+                    "cycle_id": cycle.id,
+                    "stage": stage.value,
+                    "duration_seconds": cycle.duration_seconds,
+                },
+            )
+            return cycle
+
+    def complete_sleep_cycle(
+        self,
+        cycle_id: str,
+        fragments_processed: int = 0,
+        dreams_generated: int = 0,
+    ) -> Optional[SleepCycle]:
+        """Close a sleep cycle window with final statistics.
+
+        Emits SLEEP_CYCLE_COMPLETED. Returns the cycle, or None if not
+        found or already completed.
+        """
+        with self._lock:
+            cycle = self._sleep_cycles.get(cycle_id)
+            if cycle is None or cycle.completed_at:
+                return None
+            cycle.completed_at = _now_iso()
+            cycle.fragments_processed = max(0, fragments_processed)
+            cycle.dreams_generated = max(0, dreams_generated)
+            # Infer duration from timestamps if not explicitly provided.
+            if cycle.duration_seconds <= 0.0:
+                started = _parse_iso(cycle.started_at)
+                completed = _parse_iso(cycle.completed_at)
+                if started is not None and completed is not None:
+                    cycle.duration_seconds = max(
+                        0.0, (completed - started).total_seconds()
+                    )
+            self._counters["sleep_cycles_completed"] += 1
+            self._emit_event(
+                MemoryEventKind.SLEEP_CYCLE_COMPLETED,
+                cycle.agent_id,
+                {
+                    "cycle_id": cycle.id,
+                    "stage": cycle.stage.value,
+                    "fragments_processed": cycle.fragments_processed,
+                    "dreams_generated": cycle.dreams_generated,
+                },
+            )
+            return cycle
+
+    # ------------------------------------------------------------------
+    # Forgetting curve
+    # ------------------------------------------------------------------
+
+    def compute_forgetting_curve(
+        self,
+        fragment_id: str,
+        time_elapsed_hours: float = 0.0,
+    ) -> Optional[Dict[str, Any]]:
+        """Compute retention for a fragment using the Ebbinghaus curve.
+
+        R = e^(-t / S), where t is elapsed hours and S is the memory
+        stability derived from the fragment's strength. Stronger
+        memories decay more slowly. Returns a dictionary with the
+        retention ratio, stability, and inputs, or None if the fragment
+        is not found.
+        """
+        with self._lock:
+            fragment = self._fragments.get(fragment_id)
+            if fragment is None:
+                return None
+            stability_hours = max(
+                1.0, fragment.strength * self._FORGETTING_STABILITY_HOURS
+            )
+            elapsed = max(0.0, time_elapsed_hours)
+            retention = math.exp(-elapsed / stability_hours)
+            return {
+                "fragment_id": fragment.id,
+                "time_elapsed_hours": elapsed,
+                "stability_hours": round(stability_hours, 4),
+                "retention": round(retention, 4),
+                "current_strength": fragment.strength,
+                "salience": fragment.salience,
+            }
+
+    # ------------------------------------------------------------------
+    # Queries
+    # ------------------------------------------------------------------
+
+    def get_consolidation_tasks(
+        self,
+        agent_id: Optional[str] = None,
+        status: Optional[ConsolidationStatus] = None,
+    ) -> List[ConsolidationTask]:
+        """List consolidation tasks, optionally filtered by agent/status."""
+        with self._lock:
+            results: List[ConsolidationTask] = []
+            for task_id in reversed(self._task_order):
+                task = self._tasks.get(task_id)
+                if task is None:
+                    continue
+                if agent_id is not None and task.agent_id != agent_id:
+                    continue
+                if status is not None and task.status != status:
+                    continue
+                results.append(task)
+            return list(reversed(results))
+
+    def get_dreams(
+        self,
+        agent_id: Optional[str] = None,
+        limit: int = 50,
+    ) -> List[DreamSequence]:
+        """List dream sequences, optionally filtered by agent, most recent first."""
+        with self._lock:
+            results: List[DreamSequence] = []
+            for dream_id in reversed(self._dream_order):
+                dream = self._dreams.get(dream_id)
+                if dream is None:
+                    continue
+                if agent_id is not None and dream.agent_id != agent_id:
+                    continue
+                results.append(dream)
+                if len(results) >= limit:
+                    break
+            return list(reversed(results))
+
+    def get_replays(
+        self, agent_id: Optional[str] = None, limit: int = 50
+    ) -> List[ReplaySession]:
+        """List replay sessions, optionally filtered by agent."""
+        with self._lock:
+            results: List[ReplaySession] = []
+            for session in reversed(list(self._replays.values())):
+                if agent_id is not None and session.agent_id != agent_id:
+                    continue
+                results.append(session)
+                if len(results) >= limit:
+                    break
+            return list(reversed(results))
+
+    def get_sleep_cycles(
+        self, agent_id: Optional[str] = None, limit: int = 50
+    ) -> List[SleepCycle]:
+        """List sleep cycles, optionally filtered by agent."""
+        with self._lock:
+            results: List[SleepCycle] = []
+            for cycle in reversed(list(self._sleep_cycles.values())):
+                if agent_id is not None and cycle.agent_id != agent_id:
+                    continue
+                results.append(cycle)
+                if len(results) >= limit:
+                    break
+            return list(reversed(results))
+
+    # ------------------------------------------------------------------
+    # Event handlers and event listing
+    # ------------------------------------------------------------------
+
+    def register_event_handler(
+        self,
+        kind: MemoryEventKind,
+        handler: Callable[[Dict[str, Any]], None],
+    ) -> str:
+        """Register a handler for a specific event kind.
+
+        Returns a handler id that can be used for future de-registration.
+        """
+        with self._lock:
+            handler_id = uuid.uuid4().hex
+            key = kind.value
+            if key not in self._event_handlers:
+                self._event_handlers[key] = []
+            self._event_handlers[key].append((handler_id, handler))
+            return handler_id
+
+    def unregister_event_handler(self, handler_id: str) -> bool:
+        """Remove a previously registered handler by id.
+
+        Returns True if a handler was removed, False otherwise.
+        """
+        with self._lock:
+            for key, handlers in self._event_handlers.items():
+                for index, (existing_id, _handler) in enumerate(handlers):
+                    if existing_id == handler_id:
+                        handlers.pop(index)
+                        return True
+            return False
+
+    def list_events(
+        self,
+        event_kind: Optional[MemoryEventKind] = None,
+        limit: int = 100,
+    ) -> List[Dict[str, Any]]:
+        """Return recent events, optionally filtered by kind."""
+        with self._lock:
+            events = list(self._events)
+            if event_kind is not None:
+                events = [e for e in events if e.kind == event_kind]
+            return [e.to_dict() for e in events[-limit:]]
+
+    # ------------------------------------------------------------------
+    # Stats, status, snapshot, and lifecycle
+    # ------------------------------------------------------------------
+
+    def _compute_stats(self) -> ConsolidationStats:
+        """Compute aggregate statistics from the current engine state."""
+        fragments = list(self._fragments.values())
+        total_fragments = len(fragments)
+        avg_strength = (
+            sum(f.strength for f in fragments) / total_fragments
+            if total_fragments
+            else 0.0
+        )
+        total_pruned = len(self._pruned_ids)
+        total_integrated = sum(
+            1 for f in fragments if f.metadata.get("integrated_into")
+        )
+        return ConsolidationStats(
+            total_fragments=total_fragments,
+            total_consolidated=self._counters["consolidations_completed"],
+            total_integrated=total_integrated,
+            total_pruned=total_pruned,
+            total_dreams=len(self._dreams),
+            total_replays=len(self._replays),
+            total_sleep_cycles=len(self._sleep_cycles),
+            avg_strength=round(avg_strength, 4),
+            last_updated_at=_now_iso(),
+        )
+
+    def get_stats(self) -> ConsolidationStats:
+        """Compute and return aggregate consolidation statistics."""
+        with self._lock:
+            return self._compute_stats()
+
+    def get_status(self) -> Dict[str, Any]:
+        """Return the current operational status of the engine."""
+        with self._lock:
+            stats = self._compute_stats()
+            agents = {f.agent_id for f in self._fragments.values()}
+            return {
+                "engine_id": id(self),
+                "initialized": self._initialized,
+                "agent_count": len(agents),
+                "total_fragments": len(self._fragments),
+                "total_tasks": len(self._tasks),
+                "total_replays": len(self._replays),
+                "total_dreams": len(self._dreams),
+                "total_sleep_cycles": len(self._sleep_cycles),
+                "total_events": len(self._events),
+                "pruned_fragment_count": len(self._pruned_ids),
+                "counters": dict(self._counters),
+                "stats": stats.to_dict(),
+            }
+
+    def get_snapshot(self) -> ConsolidationSnapshot:
+        """Capture a point-in-time snapshot of the engine state."""
+        with self._lock:
+            stats = self._compute_stats()
+            agents = {f.agent_id for f in self._fragments.values()}
+            return ConsolidationSnapshot(
+                agent_count=len(agents),
+                total_fragments=len(self._fragments),
+                total_tasks=len(self._tasks),
+                total_dreams=len(self._dreams),
+                stats=stats,
+            )
+
+    def reset(self) -> None:
+        """Reset the engine to its initial seeded state."""
+        with self._lock:
+            self._fragments.clear()
+            self._fragment_order.clear()
+            self._tasks.clear()
+            self._task_order.clear()
+            self._replays.clear()
+            self._dreams.clear()
+            self._dream_order.clear()
+            self._sleep_cycles.clear()
+            self._pruned_ids.clear()
+            self._event_handlers.clear()
+            self._events.clear()
+            self._counters = {
+                "fragments_registered": 0,
+                "consolidations_started": 0,
+                "consolidations_completed": 0,
+                "fragments_strengthened": 0,
+                "fragments_integrated": 0,
+                "fragments_pruned": 0,
+                "dreams_generated": 0,
+                "replays_completed": 0,
+                "sleep_cycles_started": 0,
+                "sleep_cycles_completed": 0,
+            }
+            self._seed_default_data()
+
+    # ------------------------------------------------------------------
+    # Capacity management
+    # ------------------------------------------------------------------
+
+    def _enforce_fragment_capacity(self) -> None:
+        """Evict the oldest fragments when the capacity is exceeded."""
+        while len(self._fragment_order) > self._MAX_FRAGMENTS:
+            oldest_id = self._fragment_order.pop(0)
+            self._fragments.pop(oldest_id, None)
+            self._pruned_ids.discard(oldest_id)
+
+    def _enforce_task_capacity(self) -> None:
+        """Evict the oldest tasks when the capacity is exceeded."""
+        while len(self._task_order) > self._MAX_TASKS:
+            oldest_id = self._task_order.pop(0)
+            self._tasks.pop(oldest_id, None)
+
+    def _enforce_replay_capacity(self) -> None:
+        """Evict the oldest replay sessions when the capacity is exceeded."""
+        replay_ids = list(self._replays.keys())
+        while len(replay_ids) > self._MAX_REPLAYS:
+            oldest_id = replay_ids.pop(0)
+            self._replays.pop(oldest_id, None)
+
+    def _enforce_dream_capacity(self) -> None:
+        """Evict the oldest dream sequences when the capacity is exceeded."""
+        while len(self._dream_order) > self._MAX_DREAMS:
+            oldest_id = self._dream_order.pop(0)
+            self._dreams.pop(oldest_id, None)
+
+    def _enforce_sleep_cycle_capacity(self) -> None:
+        """Evict the oldest sleep cycles when the capacity is exceeded."""
+        cycle_ids = list(self._sleep_cycles.keys())
+        while len(cycle_ids) > self._MAX_SLEEP_CYCLES:
+            oldest_id = cycle_ids.pop(0)
+            self._sleep_cycles.pop(oldest_id, None)
 
 
-def get_memory_consolidator() -> MemoryConsolidator:
-    return MemoryConsolidator.get_instance()
+# ---------------------------------------------------------------------------
+# Module-level factory
+# ---------------------------------------------------------------------------
+
+
+def get_memory_consolidator() -> MemoryConsolidatorEngine:
+    """Get or create the global MemoryConsolidatorEngine singleton."""
+    return MemoryConsolidatorEngine.get_instance()
+
+
+# Backward-compatible alias used by legacy callers that reference the
+# original short class name.
+MemoryConsolidator = MemoryConsolidatorEngine
