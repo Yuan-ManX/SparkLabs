@@ -325,7 +325,6 @@ class AttentionAllocatorEngine:
             with cls._lock:
                 if cls._instance is None:
                     cls._instance = cls()
-                    cls._instance._initialized = False
         return cls._instance
 
     def __init__(self) -> None:
