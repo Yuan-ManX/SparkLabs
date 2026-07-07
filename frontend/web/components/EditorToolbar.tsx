@@ -498,6 +498,12 @@ const modeGroups = [
       { id: 'engine-performance-monitor', label: 'PerfMon', icon: 'fa-chart-line' },
     ],
   },
+  {
+    label: 'Block System',
+    items: [
+      { id: 'block-programmer', label: 'BlockProg', icon: 'fa-cubes' },
+    ],
+  },
 ];
 
 const EditorToolbar: React.FC<EditorToolbarProps> = ({
