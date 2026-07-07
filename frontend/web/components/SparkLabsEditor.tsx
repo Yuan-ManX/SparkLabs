@@ -293,6 +293,7 @@ import { sceneBridge } from '../services/sceneBridge';
 import { useWebSocket } from '../hooks/useWebSocket';
 import type { ViewMode } from '../types';
 import type { ShortcutDef } from './KeyboardShortcuts';
+import BlockProgrammerPanel from './BlockProgrammerPanel';
 
 type TransformTool = 'move' | 'rotate' | 'scale';
 
@@ -812,6 +813,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'team-factory': return <AgentTeamFactoryPanel />;
       case 'ai-native-engine': return <AINativeEnginePanel />;
       case 'agent-engine-unified': return <AgentEngineUnifiedPanel />;
+      case 'block-programmer': return <BlockProgrammerPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
