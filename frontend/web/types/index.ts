@@ -678,7 +678,8 @@ export type ViewMode =
   | 'physics-optimizer'
   | 'team-factory'
   | 'ai-native-engine'
-  | 'agent-engine-unified';
+  | 'agent-engine-unified'
+  | 'block-programmer';
 
 // Runtime types
 
