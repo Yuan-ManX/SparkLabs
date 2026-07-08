@@ -1970,6 +1970,24 @@ from sparkai.agent.agent_photo_director import (
     PhotoEvent,
     get_photo_director,
 )
+from sparkai.agent.agent_pacing_director import (
+    PacingDirector,
+    PacingPhase,
+    EngagementLevel,
+    DirectiveKind,
+    TelemetryKind,
+    PacingEventKind,
+    IntensityKeyframe,
+    PacingCurve,
+    TelemetrySample,
+    PacingDirective,
+    EngagementState,
+    PacingConfig,
+    PacingStats,
+    PacingSnapshot,
+    PacingEvent,
+    get_pacing_director,
+)
 
 
 __all__ = [
@@ -4524,4 +4542,21 @@ __all__ = [
     "PhotoSnapshot",
     "PhotoEvent",
     "get_photo_director",
+    # Pacing Director
+    "PacingDirector",
+    "PacingPhase",
+    "EngagementLevel",
+    "DirectiveKind",
+    "TelemetryKind",
+    "PacingEventKind",
+    "IntensityKeyframe",
+    "PacingCurve",
+    "TelemetrySample",
+    "PacingDirective",
+    "EngagementState",
+    "PacingConfig",
+    "PacingStats",
+    "PacingSnapshot",
+    "PacingEvent",
+    "get_pacing_director",
 ]
