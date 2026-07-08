@@ -53,18 +53,18 @@ def _clamp(value: float, lo: float, hi: float) -> float:
 
 
 def _dataclass_to_dict(obj: Any) -> Dict[str, Any]:
-    if hasattr(obj, "to_dict") and callable(obj.to_dict):
-        return obj.to_dict()
     if hasattr(obj, "__dataclass_fields__"):
         result: Dict[str, Any] = {}
         for k in obj.__dataclass_fields__:
             v = getattr(obj, k)
-            if hasattr(v, "to_dict"):
+            if hasattr(v, "to_dict") and callable(v.to_dict):
                 result[k] = v.to_dict()
             elif isinstance(v, list):
                 result[k] = [_dataclass_to_dict(i) for i in v]
             elif isinstance(v, dict):
                 result[k] = {kk: _dataclass_to_dict(vv) for kk, vv in v.items()}
+            elif isinstance(v, tuple):
+                result[k] = list(v)
             else:
                 result[k] = v
         return result
