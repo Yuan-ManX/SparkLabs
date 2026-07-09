@@ -6810,3 +6810,2121 @@ export const craftingApi = {
     return api.get(`/crafting/events${qs ? `?${qs}` : ''}`);
   },
 };
+
+// Round 25 - Gacha System API
+export const gachaApi = {
+  status: () => api.get('/gacha/status'),
+  snapshot: () => api.get('/gacha/snapshot'),
+  stats: () => api.get('/gacha/stats'),
+  reset: () => api.post('/gacha/reset'),
+  listBanners: (params?: { banner_type?: string; active?: boolean; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.banner_type) sp.set('banner_type', params.banner_type);
+    if (params?.active !== undefined) sp.set('active', String(params.active));
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/gacha/banners${qs ? `?${qs}` : ''}`);
+  },
+  registerBanner: (data: Record<string, unknown>) => api.post('/gacha/banners', data),
+  getBanner: (bannerId: string) => api.get(`/gacha/banners/${bannerId}`),
+  removeBanner: (bannerId: string) => api.delete(`/gacha/banners/${bannerId}`),
+  activateBanner: (bannerId: string) => api.post(`/gacha/banners/${bannerId}/activate`),
+  deactivateBanner: (bannerId: string) => api.post(`/gacha/banners/${bannerId}/deactivate`),
+  pull: (data: { banner_id: string; player_id: string; owned_items?: string[] }) =>
+    api.post('/gacha/pull', data),
+  multiPull: (data: { banner_id: string; player_id: string; count?: number; owned_items?: string[] }) =>
+    api.post('/gacha/multi-pull', data),
+  getPity: (bannerId: string, playerId: string) =>
+    api.get(`/gacha/pity?banner_id=${encodeURIComponent(bannerId)}&player_id=${encodeURIComponent(playerId)}`),
+  resetPity: (data: { banner_id: string; player_id: string }) => api.post('/gacha/pity/reset', data),
+  history: (params?: { player_id?: string; banner_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.banner_id) sp.set('banner_id', params.banner_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/gacha/history${qs ? `?${qs}` : ''}`);
+  },
+  listSparkExchanges: (params?: { banner_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.banner_id) sp.set('banner_id', params.banner_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/gacha/spark-exchanges${qs ? `?${qs}` : ''}`);
+  },
+  registerSparkExchange: (data: Record<string, unknown>) => api.post('/gacha/spark-exchanges', data),
+  sparkBalance: (playerId: string) => api.get(`/gacha/spark-balance/${playerId}`),
+  redeemSpark: (exchangeId: string, data: { player_id: string }) =>
+    api.post(`/gacha/spark-exchanges/${exchangeId}/redeem`, data),
+  tick: (data: Record<string, unknown>) => api.post('/gacha/tick', data),
+  getConfig: () => api.get('/gacha/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/gacha/config', data),
+  listEvents: (params?: { banner_id?: string; player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.banner_id) sp.set('banner_id', params.banner_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/gacha/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 25 - Gathering System API
+export const gatheringApi = {
+  status: () => api.get('/gathering/status'),
+  snapshot: () => api.get('/gathering/snapshot'),
+  stats: () => api.get('/gathering/stats'),
+  reset: () => api.post('/gathering/reset'),
+  listNodes: (params?: { resource_type?: string; state?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.resource_type) sp.set('resource_type', params.resource_type);
+    if (params?.state) sp.set('state', params.state);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/gathering/nodes${qs ? `?${qs}` : ''}`);
+  },
+  registerNode: (data: Record<string, unknown>) => api.post('/gathering/nodes', data),
+  getNode: (nodeId: string) => api.get(`/gathering/nodes/${nodeId}`),
+  removeNode: (nodeId: string) => api.delete(`/gathering/nodes/${nodeId}`),
+  listTools: (params?: { tool_type?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.tool_type) sp.set('tool_type', params.tool_type);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/gathering/tools${qs ? `?${qs}` : ''}`);
+  },
+  registerTool: (data: Record<string, unknown>) => api.post('/gathering/tools', data),
+  getTool: (toolId: string) => api.get(`/gathering/tools/${toolId}`),
+  startGather: (data: { node_id: string; player_id: string; tool_id?: string; skill_level?: number }) =>
+    api.post('/gathering/start', data),
+  completeGather: (data: { session_id: string }) => api.post('/gathering/complete', data),
+  cancelGather: (data: { session_id: string }) => api.post('/gathering/cancel', data),
+  listSessions: (params?: { player_id?: string; node_id?: string; phase?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.node_id) sp.set('node_id', params.node_id);
+    if (params?.phase) sp.set('phase', params.phase);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/gathering/sessions${qs ? `?${qs}` : ''}`);
+  },
+  getSession: (sessionId: string) => api.get(`/gathering/sessions/${sessionId}`),
+  tick: (data: Record<string, unknown>) => api.post('/gathering/tick', data),
+  getConfig: () => api.get('/gathering/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/gathering/config', data),
+  listEvents: (params?: { node_id?: string; player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.node_id) sp.set('node_id', params.node_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/gathering/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 25 - Replay System API
+export const replayApi = {
+  status: () => api.get('/replay/status'),
+  snapshot: () => api.get('/replay/snapshot'),
+  stats: () => api.get('/replay/stats'),
+  reset: () => api.post('/replay/reset'),
+  startRecording: (data: {
+    name?: string;
+    map_id?: string;
+    game_mode?: string;
+    player_ids?: string[];
+    capture_rate_hz?: number;
+  }) => api.post('/replay/recordings/start', data),
+  stopRecording: () => api.post('/replay/recordings/stop'),
+  pauseRecording: () => api.post('/replay/recordings/pause'),
+  resumeRecording: () => api.post('/replay/recordings/resume'),
+  listRecordings: (params?: { map_id?: string; game_mode?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.map_id) sp.set('map_id', params.map_id);
+    if (params?.game_mode) sp.set('game_mode', params.game_mode);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/replay/recordings${qs ? `?${qs}` : ''}`);
+  },
+  getRecording: (recordingId: string) => api.get(`/replay/recordings/${recordingId}`),
+  removeRecording: (recordingId: string) => api.delete(`/replay/recordings/${recordingId}`),
+  addKeyframe: (data: Record<string, unknown>) => api.post('/replay/recordings/keyframes', data),
+  addInputEvent: (data: Record<string, unknown>) => api.post('/replay/recordings/input-events', data),
+  addHighlight: (recordingId: string, data: Record<string, unknown>) =>
+    api.post(`/replay/recordings/${recordingId}/highlights`, data),
+  removeHighlight: (recordingId: string, highlightId: string) =>
+    api.delete(`/replay/recordings/${recordingId}/highlights/${highlightId}`),
+  listHighlights: (recordingId: string, params?: { highlight_type?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.highlight_type) sp.set('highlight_type', params.highlight_type);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/replay/recordings/${recordingId}/highlights${qs ? `?${qs}` : ''}`);
+  },
+  startPlayback: (data: {
+    recording_id: string;
+    spectator_id?: string;
+    camera_entity_id?: string;
+    playback_speed?: number;
+    loop?: boolean;
+  }) => api.post('/replay/playback/start', data),
+  stopPlayback: (playbackId: string) => api.post(`/replay/playback/${playbackId}/stop`),
+  seekPlayback: (playbackId: string, data: { timestamp: number }) =>
+    api.post(`/replay/playback/${playbackId}/seek`, data),
+  setPlaybackSpeed: (playbackId: string, data: { speed: number }) =>
+    api.post(`/replay/playback/${playbackId}/speed`, data),
+  getPlayback: (playbackId: string) => api.get(`/replay/playback/${playbackId}`),
+  getPlaybackState: (playbackId: string) => api.get(`/replay/playback/${playbackId}/state`),
+  tick: (data: Record<string, unknown>) => api.post('/replay/tick', data),
+  getConfig: () => api.get('/replay/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/replay/config', data),
+  listEvents: (params?: { recording_id?: string; playback_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.recording_id) sp.set('recording_id', params.recording_id);
+    if (params?.playback_id) sp.set('playback_id', params.playback_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/replay/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 26 - Housing System API
+export const housingApi = {
+  status: () => api.get('/housing/status'),
+  snapshot: () => api.get('/housing/snapshot'),
+  stats: () => api.get('/housing/stats'),
+  reset: () => api.post('/housing/reset'),
+  listPlots: (params?: { owner_id?: string; plot_type?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.owner_id) sp.set('owner_id', params.owner_id);
+    if (params?.plot_type) sp.set('plot_type', params.plot_type);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/housing/plots${qs ? `?${qs}` : ''}`);
+  },
+  registerPlot: (data: Record<string, unknown>) => api.post('/housing/plots', data),
+  getPlot: (plotId: string) => api.get(`/housing/plots/${plotId}`),
+  removePlot: (plotId: string) => api.delete(`/housing/plots/${plotId}`),
+  listFurniture: (params?: { category?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.category) sp.set('category', params.category);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/housing/furniture${qs ? `?${qs}` : ''}`);
+  },
+  registerFurniture: (data: Record<string, unknown>) => api.post('/housing/furniture', data),
+  getFurniture: (furnitureId: string) => api.get(`/housing/furniture/${furnitureId}`),
+  removeFurniture: (furnitureId: string) => api.delete(`/housing/furniture/${furnitureId}`),
+  placeFurniture: (plotId: string, data: Record<string, unknown>) => api.post(`/housing/plots/${plotId}/place`, data),
+  removePlacement: (plotId: string, data: { placement_id: string }) => api.post(`/housing/plots/${plotId}/remove-placement`, data),
+  movePlacement: (plotId: string, data: Record<string, unknown>) => api.post(`/housing/plots/${plotId}/move`, data),
+  rotatePlacement: (plotId: string, data: { placement_id: string; rotation_y: number }) => api.post(`/housing/plots/${plotId}/rotate`, data),
+  setPermission: (plotId: string, data: { permission: string }) => api.post(`/housing/plots/${plotId}/permission`, data),
+  getPermission: (plotId: string) => api.get(`/housing/plots/${plotId}/permission`),
+  inviteVisitor: (plotId: string, data: Record<string, unknown>) => api.post(`/housing/plots/${plotId}/invite`, data),
+  revokeVisitor: (plotId: string, data: { visitor_id: string }) => api.post(`/housing/plots/${plotId}/revoke`, data),
+  listVisitors: (plotId: string, limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/housing/plots/${plotId}/visitors${qs ? `?${qs}` : ''}`);
+  },
+  saveTemplate: (data: Record<string, unknown>) => api.post('/housing/templates', data),
+  loadTemplate: (data: { template_id: string; plot_id: string }) => api.post('/housing/templates/load', data),
+  listTemplates: (params?: { plot_type?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.plot_type) sp.set('plot_type', params.plot_type);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/housing/templates${qs ? `?${qs}` : ''}`);
+  },
+  removeTemplate: (templateId: string) => api.delete(`/housing/templates/${templateId}`),
+  tick: (data: Record<string, unknown>) => api.post('/housing/tick', data),
+  getConfig: () => api.get('/housing/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/housing/config', data),
+  listEvents: (params?: { plot_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.plot_id) sp.set('plot_id', params.plot_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/housing/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 26 - Enchantment System API
+export const enchantmentApi = {
+  status: () => api.get('/enchantment/status'),
+  snapshot: () => api.get('/enchantment/snapshot'),
+  stats: () => api.get('/enchantment/stats'),
+  reset: () => api.post('/enchantment/reset'),
+  listGems: (params?: { rarity?: string; element_type?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    if (params?.element_type) sp.set('element_type', params.element_type);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/enchantment/gems${qs ? `?${qs}` : ''}`);
+  },
+  registerGem: (data: Record<string, unknown>) => api.post('/enchantment/gems', data),
+  getGem: (gemId: string) => api.get(`/enchantment/gems/${gemId}`),
+  removeGem: (gemId: string) => api.delete(`/enchantment/gems/${gemId}`),
+  listDefinitions: (params?: { tier?: string; element_type?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.tier) sp.set('tier', params.tier);
+    if (params?.element_type) sp.set('element_type', params.element_type);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/enchantment/definitions${qs ? `?${qs}` : ''}`);
+  },
+  registerDefinition: (data: Record<string, unknown>) => api.post('/enchantment/definitions', data),
+  getDefinition: (enchantmentId: string) => api.get(`/enchantment/definitions/${enchantmentId}`),
+  removeDefinition: (enchantmentId: string) => api.delete(`/enchantment/definitions/${enchantmentId}`),
+  listItems: (params?: { owner_id?: string; item_category?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.owner_id) sp.set('owner_id', params.owner_id);
+    if (params?.item_category) sp.set('item_category', params.item_category);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/enchantment/items${qs ? `?${qs}` : ''}`);
+  },
+  registerItem: (data: Record<string, unknown>) => api.post('/enchantment/items', data),
+  getItem: (itemId: string) => api.get(`/enchantment/items/${itemId}`),
+  removeItem: (itemId: string) => api.delete(`/enchantment/items/${itemId}`),
+  insertGem: (itemId: string, data: { slot_index: number; gem_id: string }) => api.post(`/enchantment/items/${itemId}/insert-gem`, data),
+  removeGemFromSocket: (itemId: string, data: { slot_index: number }) => api.post(`/enchantment/items/${itemId}/remove-gem`, data),
+  unlockSocket: (itemId: string, data: { slot_index: number }) => api.post(`/enchantment/items/${itemId}/unlock-socket`, data),
+  applyEnchantment: (itemId: string, data: { enchantment_id: string }) => api.post(`/enchantment/items/${itemId}/apply`, data),
+  removeEnchantment: (itemId: string, data: { instance_id: string }) => api.post(`/enchantment/items/${itemId}/remove-enchantment`, data),
+  repair: (itemId: string, data: { instance_id: string; amount?: number }) => api.post(`/enchantment/items/${itemId}/repair`, data),
+  tick: (data: Record<string, unknown>) => api.post('/enchantment/tick', data),
+  getConfig: () => api.get('/enchantment/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/enchantment/config', data),
+  listEvents: (params?: { item_id?: string; gem_id?: string; enchantment_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.item_id) sp.set('item_id', params.item_id);
+    if (params?.gem_id) sp.set('gem_id', params.gem_id);
+    if (params?.enchantment_id) sp.set('enchantment_id', params.enchantment_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/enchantment/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 26 - Wardrobe System API
+export const wardrobeApi = {
+  status: () => api.get('/wardrobe/status'),
+  snapshot: () => api.get('/wardrobe/snapshot'),
+  stats: () => api.get('/wardrobe/stats'),
+  reset: () => api.post('/wardrobe/reset'),
+  listDyes: (params?: { rarity?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/wardrobe/dyes${qs ? `?${qs}` : ''}`);
+  },
+  registerDye: (data: Record<string, unknown>) => api.post('/wardrobe/dyes', data),
+  getDye: (dyeId: string) => api.get(`/wardrobe/dyes/${dyeId}`),
+  removeDyeDefinition: (dyeId: string) => api.delete(`/wardrobe/dyes/${dyeId}`),
+  listCosmetics: (params?: { slot?: string; rarity?: string; collection?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.slot) sp.set('slot', params.slot);
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    if (params?.collection) sp.set('collection', params.collection);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/wardrobe/cosmetics${qs ? `?${qs}` : ''}`);
+  },
+  registerCosmetic: (data: Record<string, unknown>) => api.post('/wardrobe/cosmetics', data),
+  getCosmetic: (cosmeticId: string) => api.get(`/wardrobe/cosmetics/${cosmeticId}`),
+  removeCosmetic: (cosmeticId: string) => api.delete(`/wardrobe/cosmetics/${cosmeticId}`),
+  listOutfits: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/wardrobe/outfits${qs ? `?${qs}` : ''}`);
+  },
+  registerOutfit: (data: Record<string, unknown>) => api.post('/wardrobe/outfits', data),
+  getOutfit: (outfitId: string) => api.get(`/wardrobe/outfits/${outfitId}`),
+  removeOutfit: (outfitId: string) => api.delete(`/wardrobe/outfits/${outfitId}`),
+  listProfiles: (params?: { character_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.character_id) sp.set('character_id', params.character_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/wardrobe/profiles${qs ? `?${qs}` : ''}`);
+  },
+  registerProfile: (data: Record<string, unknown>) => api.post('/wardrobe/profiles', data),
+  getProfile: (profileId: string) => api.get(`/wardrobe/profiles/${profileId}`),
+  removeProfile: (profileId: string) => api.delete(`/wardrobe/profiles/${profileId}`),
+  equip: (profileId: string, data: { slot: string; cosmetic_id: string }) => api.post(`/wardrobe/profiles/${profileId}/equip`, data),
+  unequip: (profileId: string, data: { slot: string }) => api.post(`/wardrobe/profiles/${profileId}/unequip`, data),
+  applyDye: (profileId: string, data: { slot: string; channel: number; dye_id: string }) => api.post(`/wardrobe/profiles/${profileId}/apply-dye`, data),
+  removeDye: (profileId: string, data: { slot: string; channel: number }) => api.post(`/wardrobe/profiles/${profileId}/remove-dye`, data),
+  unlock: (profileId: string, data: { cosmetic_id: string }) => api.post(`/wardrobe/profiles/${profileId}/unlock`, data),
+  activateOutfit: (profileId: string, data: { outfit_id: string }) => api.post(`/wardrobe/profiles/${profileId}/activate-outfit`, data),
+  tick: (data: Record<string, unknown>) => api.post('/wardrobe/tick', data),
+  getConfig: () => api.get('/wardrobe/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/wardrobe/config', data),
+  listEvents: (params?: { profile_id?: string; cosmetic_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.profile_id) sp.set('profile_id', params.profile_id);
+    if (params?.cosmetic_id) sp.set('cosmetic_id', params.cosmetic_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/wardrobe/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 27 - Pet Companion System API
+export const petApi = {
+  status: () => api.get('/pet/status'),
+  snapshot: () => api.get('/pet/snapshot'),
+  stats: () => api.get('/pet/stats'),
+  reset: () => api.post('/pet/reset'),
+  listSpecies: (params?: { role?: string; rarity?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.role) sp.set('role', params.role);
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/pet/species${qs ? `?${qs}` : ''}`);
+  },
+  registerSpecies: (data: Record<string, unknown>) => api.post('/pet/species', data),
+  getSpecies: (speciesId: string) => api.get(`/pet/species/${speciesId}`),
+  removeSpecies: (speciesId: string) => api.delete(`/pet/species/${speciesId}`),
+  listPets: (params?: { owner_id?: string; summoned?: boolean; species_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.owner_id) sp.set('owner_id', params.owner_id);
+    if (params?.summoned !== undefined) sp.set('summoned', String(params.summoned));
+    if (params?.species_id) sp.set('species_id', params.species_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/pet/pets${qs ? `?${qs}` : ''}`);
+  },
+  registerPet: (data: Record<string, unknown>) => api.post('/pet/pets', data),
+  getPet: (petId: string) => api.get(`/pet/pets/${petId}`),
+  removePet: (petId: string) => api.delete(`/pet/pets/${petId}`),
+  summon: (petId: string) => api.post(`/pet/pets/${petId}/summon`),
+  dismiss: (petId: string) => api.post(`/pet/pets/${petId}/dismiss`),
+  gainExperience: (petId: string, data: { amount: number }) => api.post(`/pet/pets/${petId}/gain-experience`, data),
+  levelUp: (petId: string) => api.post(`/pet/pets/${petId}/level-up`),
+  evolve: (petId: string) => api.post(`/pet/pets/${petId}/evolve`),
+  increaseAffinity: (petId: string, data: { amount: number }) => api.post(`/pet/pets/${petId}/increase-affinity`, data),
+  getAffinity: (petId: string) => api.get(`/pet/pets/${petId}/affinity`),
+  learnSkill: (petId: string, data: { skill_id: string }) => api.post(`/pet/pets/${petId}/learn-skill`, data),
+  equipSkill: (petId: string, data: { skill_id: string }) => api.post(`/pet/pets/${petId}/equip-skill`, data),
+  unequipSkill: (petId: string, data: { skill_id: string }) => api.post(`/pet/pets/${petId}/unequip-skill`, data),
+  listAccessories: (params?: { slot?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.slot) sp.set('slot', params.slot);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/pet/accessories${qs ? `?${qs}` : ''}`);
+  },
+  registerAccessory: (data: Record<string, unknown>) => api.post('/pet/accessories', data),
+  getAccessory: (accessoryId: string) => api.get(`/pet/accessories/${accessoryId}`),
+  equipAccessory: (petId: string, data: { accessory_id: string }) => api.post(`/pet/pets/${petId}/equip-accessory`, data),
+  unequipAccessory: (petId: string, data: { accessory_id: string }) => api.post(`/pet/pets/${petId}/unequip-accessory`, data),
+  setMount: (petId: string, data: { enabled: boolean }) => api.post(`/pet/pets/${petId}/mount`, data),
+  getMount: (petId: string) => api.get(`/pet/pets/${petId}/mount`),
+  tick: (data: Record<string, unknown>) => api.post('/pet/tick', data),
+  getConfig: () => api.get('/pet/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/pet/config', data),
+  listEvents: (params?: { species_id?: string; pet_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.species_id) sp.set('species_id', params.species_id);
+    if (params?.pet_id) sp.set('pet_id', params.pet_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/pet/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 27 - Mail System API
+export const mailApi = {
+  status: () => api.get('/mail/status'),
+  snapshot: () => api.get('/mail/snapshot'),
+  stats: () => api.get('/mail/stats'),
+  reset: () => api.post('/mail/reset'),
+  list: (params?: { recipient_id?: string; sender_id?: string; folder?: string; unread?: boolean; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.recipient_id) sp.set('recipient_id', params.recipient_id);
+    if (params?.sender_id) sp.set('sender_id', params.sender_id);
+    if (params?.folder) sp.set('folder', params.folder);
+    if (params?.unread !== undefined) sp.set('unread', String(params.unread));
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/mail${qs ? `?${qs}` : ''}`);
+  },
+  send: (data: Record<string, unknown>) => api.post('/mail', data),
+  get: (mailId: string) => api.get(`/mail/${mailId}`),
+  remove: (mailId: string) => api.delete(`/mail/${mailId}`),
+  markRead: (mailId: string) => api.post(`/mail/${mailId}/read`),
+  markUnread: (mailId: string) => api.post(`/mail/${mailId}/unread`),
+  claim: (mailId: string) => api.post(`/mail/${mailId}/claim`),
+  payCod: (mailId: string) => api.post(`/mail/${mailId}/pay-cod`),
+  returnMail: (mailId: string) => api.post(`/mail/${mailId}/return`),
+  bulkSend: (data: Record<string, unknown>) => api.post('/mail/bulk', data),
+  move: (mailId: string, data: { folder: string }) => api.post(`/mail/${mailId}/move`, data),
+  expire: (mailId: string) => api.post(`/mail/${mailId}/expire`),
+  listTemplates: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/mail/templates${qs ? `?${qs}` : ''}`);
+  },
+  registerTemplate: (data: Record<string, unknown>) => api.post('/mail/templates', data),
+  getTemplate: (templateId: string) => api.get(`/mail/templates/${templateId}`),
+  removeTemplate: (templateId: string) => api.delete(`/mail/templates/${templateId}`),
+  tick: (data: Record<string, unknown>) => api.post('/mail/tick', data),
+  getConfig: () => api.get('/mail/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/mail/config', data),
+  listEvents: (params?: { mail_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.mail_id) sp.set('mail_id', params.mail_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/mail/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 27 - Calendar System API
+export const calendarApi = {
+  status: () => api.get('/calendar/status'),
+  snapshot: () => api.get('/calendar/snapshot'),
+  stats: () => api.get('/calendar/stats'),
+  reset: () => api.post('/calendar/reset'),
+  listEvents: (params?: { phase?: string; event_type?: string; active?: boolean; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.phase) sp.set('phase', params.phase);
+    if (params?.event_type) sp.set('event_type', params.event_type);
+    if (params?.active !== undefined) sp.set('active', String(params.active));
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/calendar/events${qs ? `?${qs}` : ''}`);
+  },
+  registerEvent: (data: Record<string, unknown>) => api.post('/calendar/events', data),
+  getEvent: (eventId: string) => api.get(`/calendar/events/${eventId}`),
+  removeEvent: (eventId: string) => api.delete(`/calendar/events/${eventId}`),
+  activate: (eventId: string) => api.post(`/calendar/events/${eventId}/activate`),
+  deactivate: (eventId: string) => api.post(`/calendar/events/${eventId}/deactivate`),
+  advancePhase: (eventId: string) => api.post(`/calendar/events/${eventId}/advance-phase`),
+  getPhase: (eventId: string) => api.get(`/calendar/events/${eventId}/phase`),
+  setRecurrence: (eventId: string, data: Record<string, unknown>) => api.post(`/calendar/events/${eventId}/recurrence`, data),
+  getNextOccurrence: (eventId: string) => api.get(`/calendar/events/${eventId}/next-occurrence`),
+  getUpcoming: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/calendar/upcoming${qs ? `?${qs}` : ''}`);
+  },
+  getActive: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/calendar/active${qs ? `?${qs}` : ''}`);
+  },
+  getExpired: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/calendar/expired${qs ? `?${qs}` : ''}`);
+  },
+  listTracks: (params?: { event_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.event_id) sp.set('event_id', params.event_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/calendar/tracks${qs ? `?${qs}` : ''}`);
+  },
+  registerTrack: (data: Record<string, unknown>) => api.post('/calendar/tracks', data),
+  getTrack: (trackId: string) => api.get(`/calendar/tracks/${trackId}`),
+  addTrackPoints: (trackId: string, data: { points: number }) => api.post(`/calendar/tracks/${trackId}/points`, data),
+  claimReward: (trackId: string, data: { reward_id: string }) => api.post(`/calendar/tracks/${trackId}/claim`, data),
+  trackParticipation: (data: Record<string, unknown>) => api.post('/calendar/participate', data),
+  listParticipations: (params?: { event_id?: string; player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.event_id) sp.set('event_id', params.event_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/calendar/participations${qs ? `?${qs}` : ''}`);
+  },
+  getParticipation: (eventId: string, playerId: string) => api.get(`/calendar/participations/${eventId}/${playerId}`),
+  tick: (data: Record<string, unknown>) => api.post('/calendar/tick', data),
+  getConfig: () => api.get('/calendar/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/calendar/config', data),
+  listAudit: (params?: { event_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.event_id) sp.set('event_id', params.event_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/calendar/audit${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 28 - PvP Arena System API
+export const arenaApi = {
+  status: () => api.get('/arena/status'),
+  snapshot: () => api.get('/arena/snapshot'),
+  stats: () => api.get('/arena/stats'),
+  reset: () => api.post('/arena/reset'),
+  listPlayers: (params?: { tier?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.tier) sp.set('tier', params.tier);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/arena/players${qs ? `?${qs}` : ''}`);
+  },
+  registerPlayer: (data: Record<string, unknown>) => api.post('/arena/players', data),
+  getPlayer: (playerId: string) => api.get(`/arena/players/${playerId}`),
+  removePlayer: (playerId: string) => api.delete(`/arena/players/${playerId}`),
+  listMatches: (params?: { state?: string; mode?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.state) sp.set('state', params.state);
+    if (params?.mode) sp.set('mode', params.mode);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/arena/matches${qs ? `?${qs}` : ''}`);
+  },
+  createMatch: (data: Record<string, unknown>) => api.post('/arena/matches', data),
+  getMatch: (matchId: string) => api.get(`/arena/matches/${matchId}`),
+  cancelMatch: (matchId: string) => api.post(`/arena/matches/${matchId}/cancel`),
+  startMatch: (matchId: string) => api.post(`/arena/matches/${matchId}/start`),
+  endMatch: (matchId: string) => api.post(`/arena/matches/${matchId}/end`),
+  submitResult: (matchId: string, data: { winner_id: string; loser_id: string; outcome?: string }) => api.post(`/arena/matches/${matchId}/result`, data),
+  startRound: (matchId: string) => api.post(`/arena/matches/${matchId}/rounds`),
+  getRound: (matchId: string, roundNumber: number) => api.get(`/arena/matches/${matchId}/rounds/${roundNumber}`),
+  findMatch: (data: { player_id: string; mode?: string; tolerance?: number }) => api.post('/arena/matchmaking/find', data),
+  listSeasons: (params?: { active_only?: boolean; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.active_only !== undefined) sp.set('active_only', String(params.active_only));
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/arena/seasons${qs ? `?${qs}` : ''}`);
+  },
+  registerSeason: (data: Record<string, unknown>) => api.post('/arena/seasons', data),
+  getSeason: (seasonId: string) => api.get(`/arena/seasons/${seasonId}`),
+  activateSeason: (seasonId: string) => api.post(`/arena/seasons/${seasonId}/activate`),
+  endSeason: (seasonId: string) => api.post(`/arena/seasons/${seasonId}/end`),
+  listTournaments: (params?: { active_only?: boolean; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.active_only !== undefined) sp.set('active_only', String(params.active_only));
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/arena/tournaments${qs ? `?${qs}` : ''}`);
+  },
+  registerTournament: (data: Record<string, unknown>) => api.post('/arena/tournaments', data),
+  getTournament: (tournamentId: string) => api.get(`/arena/tournaments/${tournamentId}`),
+  startTournament: (tournamentId: string) => api.post(`/arena/tournaments/${tournamentId}/start`),
+  advanceTournament: (tournamentId: string) => api.post(`/arena/tournaments/${tournamentId}/advance`),
+  registerTournamentEntry: (tournamentId: string, data: Record<string, unknown>) => api.post(`/arena/tournaments/${tournamentId}/entries`, data),
+  removeTournamentEntry: (tournamentId: string, entryId: string) => api.delete(`/arena/tournaments/${tournamentId}/entries/${entryId}`),
+  tick: (data: Record<string, unknown>) => api.post('/arena/tick', data),
+  getConfig: () => api.get('/arena/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/arena/config', data),
+  listEvents: (params?: { player_id?: string; match_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.match_id) sp.set('match_id', params.match_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/arena/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 28 - Minigame Arcade System API
+export const arcadeApi = {
+  status: () => api.get('/arcade/status'),
+  snapshot: () => api.get('/arcade/snapshot'),
+  stats: () => api.get('/arcade/stats'),
+  reset: () => api.post('/arcade/reset'),
+  listMinigames: (params?: { game_type?: string; enabled_only?: boolean; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.game_type) sp.set('game_type', params.game_type);
+    if (params?.enabled_only !== undefined) sp.set('enabled_only', String(params.enabled_only));
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/arcade/minigames${qs ? `?${qs}` : ''}`);
+  },
+  registerMinigame: (data: Record<string, unknown>) => api.post('/arcade/minigames', data),
+  getMinigame: (minigameId: string) => api.get(`/arcade/minigames/${minigameId}`),
+  removeMinigame: (minigameId: string) => api.delete(`/arcade/minigames/${minigameId}`),
+  listSessions: (params?: { minigame_id?: string; player_id?: string; state?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.minigame_id) sp.set('minigame_id', params.minigame_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.state) sp.set('state', params.state);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/arcade/sessions${qs ? `?${qs}` : ''}`);
+  },
+  startSession: (data: { minigame_id: string; player_id: string; difficulty?: string }) => api.post('/arcade/sessions', data),
+  getSession: (sessionId: string) => api.get(`/arcade/sessions/${sessionId}`),
+  endSession: (sessionId: string, data: { state?: string }) => api.post(`/arcade/sessions/${sessionId}/end`, data),
+  submitScore: (data: { minigame_id: string; player_id: string; score: number; difficulty?: string; session_id?: string }) => api.post('/arcade/scores', data),
+  getHighScores: (minigameId: string, limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/arcade/scores/high/${minigameId}${qs ? `?${qs}` : ''}`);
+  },
+  getPlayerBest: (minigameId: string, playerId: string) => api.get(`/arcade/scores/best/${minigameId}/${playerId}`),
+  listChallenges: (params?: { active_only?: boolean; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.active_only !== undefined) sp.set('active_only', String(params.active_only));
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/arcade/challenges${qs ? `?${qs}` : ''}`);
+  },
+  registerChallenge: (data: Record<string, unknown>) => api.post('/arcade/challenges', data),
+  getChallenge: (challengeId: string) => api.get(`/arcade/challenges/${challengeId}`),
+  completeChallenge: (challengeId: string, data: { player_id: string; score?: number }) => api.post(`/arcade/challenges/${challengeId}/complete`, data),
+  listPrizes: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/arcade/prizes${qs ? `?${qs}` : ''}`);
+  },
+  registerPrize: (data: Record<string, unknown>) => api.post('/arcade/prizes', data),
+  removePrize: (prizeId: string) => api.delete(`/arcade/prizes/${prizeId}`),
+  redeemPrize: (prizeId: string, data: { player_id: string }) => api.post(`/arcade/prizes/${prizeId}/redeem`, data),
+  awardTokens: (data: { player_id: string; amount: number; reason?: string }) => api.post('/arcade/tokens/award', data),
+  spendTokens: (data: { player_id: string; amount: number; reason?: string }) => api.post('/arcade/tokens/spend', data),
+  getTokenBalance: (playerId: string) => api.get(`/arcade/tokens/${playerId}`),
+  tick: (data: Record<string, unknown>) => api.post('/arcade/tick', data),
+  getConfig: () => api.get('/arcade/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/arcade/config', data),
+  listEvents: (params?: { minigame_id?: string; player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.minigame_id) sp.set('minigame_id', params.minigame_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/arcade/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 28 - Banking & Vault System API
+export const bankingApi = {
+  status: () => api.get('/banking/status'),
+  snapshot: () => api.get('/banking/snapshot'),
+  stats: () => api.get('/banking/stats'),
+  reset: () => api.post('/banking/reset'),
+  listAccounts: (params?: { owner_id?: string; account_type?: string; status?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.owner_id) sp.set('owner_id', params.owner_id);
+    if (params?.account_type) sp.set('account_type', params.account_type);
+    if (params?.status) sp.set('status', params.status);
+    const qs = sp.toString();
+    return api.get(`/banking/accounts${qs ? `?${qs}` : ''}`);
+  },
+  registerAccount: (data: Record<string, unknown>) => api.post('/banking/accounts', data),
+  getAccount: (accountId: string) => api.get(`/banking/accounts/${accountId}`),
+  closeAccount: (accountId: string) => api.post(`/banking/accounts/${accountId}/close`),
+  freezeAccount: (accountId: string, data: { frozen?: boolean }) => api.post(`/banking/accounts/${accountId}/freeze`, data),
+  deposit: (accountId: string, data: { amount: number; description?: string; currency?: string }) => api.post(`/banking/accounts/${accountId}/deposit`, data),
+  withdraw: (accountId: string, data: { amount: number; description?: string; currency?: string }) => api.post(`/banking/accounts/${accountId}/withdraw`, data),
+  transfer: (data: { from_account_id: string; to_account_id: string; amount: number; description?: string }) => api.post('/banking/transfer', data),
+  accrueInterest: (accountId: string) => api.post(`/banking/accounts/${accountId}/interest`),
+  accrueAllInterest: () => api.post('/banking/interest/all'),
+  listLoans: (params?: { borrower_id?: string; status?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.borrower_id) sp.set('borrower_id', params.borrower_id);
+    if (params?.status) sp.set('status', params.status);
+    const qs = sp.toString();
+    return api.get(`/banking/loans${qs ? `?${qs}` : ''}`);
+  },
+  requestLoan: (data: Record<string, unknown>) => api.post('/banking/loans', data),
+  getLoan: (loanId: string) => api.get(`/banking/loans/${loanId}`),
+  approveLoan: (loanId: string, data: { disbursement_account_id: string }) => api.post(`/banking/loans/${loanId}/approve`, data),
+  rejectLoan: (loanId: string) => api.post(`/banking/loans/${loanId}/reject`),
+  repayLoan: (loanId: string, data: { amount: number; from_account_id: string }) => api.post(`/banking/loans/${loanId}/repay`, data),
+  defaultLoan: (loanId: string) => api.post(`/banking/loans/${loanId}/default`),
+  listBoxes: (params?: { owner_id?: string; size?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.owner_id) sp.set('owner_id', params.owner_id);
+    if (params?.size) sp.set('size', params.size);
+    const qs = sp.toString();
+    return api.get(`/banking/boxes${qs ? `?${qs}` : ''}`);
+  },
+  rentBox: (data: Record<string, unknown>) => api.post('/banking/boxes', data),
+  getBox: (boxId: string) => api.get(`/banking/boxes/${boxId}`),
+  openBox: (boxId: string, data: { opener_id: string }) => api.post(`/banking/boxes/${boxId}/open`, data),
+  closeBox: (boxId: string) => api.post(`/banking/boxes/${boxId}/close`),
+  renewBox: (boxId: string, data: { duration?: number }) => api.post(`/banking/boxes/${boxId}/renew`, data),
+  storeItem: (boxId: string, data: Record<string, unknown>) => api.post(`/banking/boxes/${boxId}/items`, data),
+  retrieveItem: (boxId: string, itemId: string, data: { quantity?: number }) => api.post(`/banking/boxes/${boxId}/items/${itemId}/retrieve`, data),
+  addBoxAccess: (boxId: string, data: Record<string, unknown>) => api.post(`/banking/boxes/${boxId}/access`, data),
+  removeBoxAccess: (boxId: string, playerId: string) => api.delete(`/banking/boxes/${boxId}/access/${playerId}`),
+  listExchangeRates: () => api.get('/banking/exchange-rates'),
+  setExchangeRate: (data: { from_currency: string; to_currency: string; rate: number; fee_percent?: number }) => api.post('/banking/exchange-rates', data),
+  getExchangeRate: (fromCurrency: string, toCurrency: string) => api.get(`/banking/exchange-rates/${fromCurrency}/${toCurrency}`),
+  exchangeCurrency: (data: { account_id: string; from_currency: string; to_currency: string; amount: number }) => api.post('/banking/exchange', data),
+  listTransactions: (params?: { account_id?: string; tx_type?: string; status?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.account_id) sp.set('account_id', params.account_id);
+    if (params?.tx_type) sp.set('tx_type', params.tx_type);
+    if (params?.status) sp.set('status', params.status);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/banking/transactions${qs ? `?${qs}` : ''}`);
+  },
+  getTransaction: (txId: string) => api.get(`/banking/transactions/${txId}`),
+  tick: (data: Record<string, unknown>) => api.post('/banking/tick', data),
+  getConfig: () => api.get('/banking/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/banking/config', data),
+  listEvents: (params?: { account_id?: string; event_type?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.account_id) sp.set('account_id', params.account_id);
+    if (params?.event_type) sp.set('event_type', params.event_type);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/banking/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// ============================================================================
+// Round 29 - Raid / Bounty / Expedition API
+// ============================================================================
+
+export const raidApi = {
+  getStatus: () => api.get('/raid/status'),
+  getSnapshot: () => api.get('/raid/snapshot'),
+  getStats: () => api.get('/raid/stats'),
+  reset: () => api.post('/raid/reset'),
+
+  // Boss management
+  registerBoss: (data: {
+    boss_id: string; name: string; max_health?: number; armor?: number;
+    damage?: number; level?: number; max_phases?: number; enrage_timer?: number;
+    mechanics?: Array<Record<string, unknown>>; loot_table?: Array<Record<string, unknown>>;
+    metadata?: Record<string, unknown>;
+  }) => api.post('/raid/bosses', data),
+  removeBoss: (bossId: string) => api.delete(`/raid/bosses/${bossId}`),
+  getBoss: (bossId: string) => api.get(`/raid/bosses/${bossId}`),
+  listBosses: (params?: { state?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.state) sp.set('state', params.state);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/raid/bosses${qs ? `?${qs}` : ''}`);
+  },
+  engageBoss: (bossId: string) => api.post(`/raid/bosses/${bossId}/engage`),
+  damageBoss: (bossId: string, data: { damage: number; player_id?: string }) => api.post(`/raid/bosses/${bossId}/damage`, data),
+  defeatBoss: (bossId: string, data: { player_id?: string }) => api.post(`/raid/bosses/${bossId}/defeat`, data),
+  enrageBoss: (bossId: string) => api.post(`/raid/bosses/${bossId}/enrage`),
+
+  // Raid management
+  registerRaid: (data: {
+    raid_id: string; name: string; boss_id: string; difficulty?: string;
+    max_players?: number; min_players?: number; metadata?: Record<string, unknown>;
+  }) => api.post('/raid/raids', data),
+  removeRaid: (raidId: string) => api.delete(`/raid/raids/${raidId}`),
+  getRaid: (raidId: string) => api.get(`/raid/raids/${raidId}`),
+  listRaids: (params?: { state?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.state) sp.set('state', params.state);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/raid/raids${qs ? `?${qs}` : ''}`);
+  },
+  joinRaid: (raidId: string, data: { player_id: string; player_name?: string; role?: string; level?: number }) => api.post(`/raid/raids/${raidId}/join`, data),
+  leaveRaid: (raidId: string, data: { player_id: string }) => api.post(`/raid/raids/${raidId}/leave`, data),
+  startRaid: (raidId: string) => api.post(`/raid/raids/${raidId}/start`),
+  endRaid: (raidId: string, data: { successful?: boolean }) => api.post(`/raid/raids/${raidId}/end`, data),
+
+  // Bounty management
+  postBounty: (data: {
+    bounty_id: string; name: string; bounty_type?: string; description?: string;
+    target_name?: string; target_count?: number; reward_gold?: number; reward_xp?: number;
+    reward_items?: Array<Record<string, unknown>>; posted_by?: string; expires_at?: number;
+    difficulty?: string; metadata?: Record<string, unknown>;
+  }) => api.post('/raid/bounties', data),
+  removeBounty: (bountyId: string) => api.delete(`/raid/bounties/${bountyId}`),
+  getBounty: (bountyId: string) => api.get(`/raid/bounties/${bountyId}`),
+  listBounties: (params?: { status?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/raid/bounties${qs ? `?${qs}` : ''}`);
+  },
+  acceptBounty: (bountyId: string, data: { player_id: string }) => api.post(`/raid/bounties/${bountyId}/accept`, data),
+  updateBountyProgress: (bountyId: string, data: { count: number }) => api.post(`/raid/bounties/${bountyId}/progress`, data),
+  completeBounty: (bountyId: string) => api.post(`/raid/bounties/${bountyId}/complete`),
+  claimBounty: (bountyId: string) => api.post(`/raid/bounties/${bountyId}/claim`),
+
+  // Expedition management
+  registerExpedition: (data: {
+    expedition_id: string; name: string; expedition_type?: string; destination?: string;
+    description?: string; max_members?: number; duration_seconds?: number;
+    success_chance?: number; metadata?: Record<string, unknown>;
+  }) => api.post('/raid/expeditions', data),
+  removeExpedition: (expeditionId: string) => api.delete(`/raid/expeditions/${expeditionId}`),
+  getExpedition: (expeditionId: string) => api.get(`/raid/expeditions/${expeditionId}`),
+  listExpeditions: (params?: { state?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.state) sp.set('state', params.state);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/raid/expeditions${qs ? `?${qs}` : ''}`);
+  },
+  addExpeditionMember: (expeditionId: string, data: { member_id: string; name?: string; role?: string; level?: number }) => api.post(`/raid/expeditions/${expeditionId}/members`, data),
+  removeExpeditionMember: (expeditionId: string, memberId: string) => api.delete(`/raid/expeditions/${expeditionId}/members/${memberId}`),
+  launchExpedition: (expeditionId: string) => api.post(`/raid/expeditions/${expeditionId}/launch`),
+  returnExpedition: (expeditionId: string, data: { success?: boolean }) => api.post(`/raid/expeditions/${expeditionId}/return`, data),
+
+  // Tick / config / events
+  tick: (data: Record<string, unknown>) => api.post('/raid/tick', data),
+  getConfig: () => api.get('/raid/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/raid/config', data),
+  listEvents: (params?: { kind?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/raid/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// ============================================================================
+// Round 29 - Title / Honor / Prestige API
+// ============================================================================
+
+export const titleApi = {
+  getStatus: () => api.get('/title/status'),
+  getSnapshot: () => api.get('/title/snapshot'),
+  getStats: () => api.get('/title/stats'),
+  reset: () => api.post('/title/reset'),
+
+  // Title management
+  registerTitle: (data: {
+    title_id: string; name: string; category?: string; rarity?: string;
+    description?: string; prefix?: string; suffix?: string; icon?: string;
+    color_hex?: string; is_secret?: boolean; obtainable?: boolean;
+    metadata?: Record<string, unknown>;
+  }) => api.post('/title/titles', data),
+  removeTitle: (titleId: string) => api.delete(`/title/titles/${titleId}`),
+  getTitle: (titleId: string) => api.get(`/title/titles/${titleId}`),
+  listTitles: (params?: { category?: string; rarity?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.category) sp.set('category', params.category);
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/title/titles${qs ? `?${qs}` : ''}`);
+  },
+  awardTitle: (playerId: string, titleId: string, data: { source?: string }) => api.post(`/title/players/${playerId}/titles/${titleId}/award`, data),
+  revokeTitle: (playerId: string, titleId: string) => api.delete(`/title/players/${playerId}/titles/${titleId}`),
+  activateTitle: (playerId: string, titleId: string) => api.post(`/title/players/${playerId}/titles/${titleId}/activate`),
+  getPlayerTitles: (playerId: string) => api.get(`/title/players/${playerId}/titles`),
+
+  // Badge management
+  registerBadge: (data: {
+    badge_id: string; name: string; badge_type?: string; description?: string;
+    icon?: string; rarity?: string; requirement?: string; reward_honor?: number;
+    obtainable?: boolean; metadata?: Record<string, unknown>;
+  }) => api.post('/title/badges', data),
+  removeBadge: (badgeId: string) => api.delete(`/title/badges/${badgeId}`),
+  getBadge: (badgeId: string) => api.get(`/title/badges/${badgeId}`),
+  listBadges: (params?: { badge_type?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.badge_type) sp.set('badge_type', params.badge_type);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/title/badges${qs ? `?${qs}` : ''}`);
+  },
+  awardBadge: (playerId: string, badgeId: string, data: { progress?: number }) => api.post(`/title/players/${playerId}/badges/${badgeId}/award`, data),
+  revokeBadge: (playerId: string, badgeId: string) => api.delete(`/title/players/${playerId}/badges/${badgeId}`),
+  getPlayerBadges: (playerId: string) => api.get(`/title/players/${playerId}/badges`),
+
+  // Medal management
+  registerMedal: (data: {
+    medal_id: string; name: string; tier?: string; description?: string;
+    icon?: string; requirement?: string; reward_honor?: number; reward_prestige_xp?: number;
+    obtainable?: boolean; metadata?: Record<string, unknown>;
+  }) => api.post('/title/medals', data),
+  removeMedal: (medalId: string) => api.delete(`/title/medals/${medalId}`),
+  getMedal: (medalId: string) => api.get(`/title/medals/${medalId}`),
+  listMedals: (params?: { tier?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.tier) sp.set('tier', params.tier);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/title/medals${qs ? `?${qs}` : ''}`);
+  },
+  awardMedal: (playerId: string, medalId: string, data: { showcase_slot?: number }) => api.post(`/title/players/${playerId}/medals/${medalId}/award`, data),
+  revokeMedal: (playerId: string, medalId: string) => api.delete(`/title/players/${playerId}/medals/${medalId}`),
+  getPlayerMedals: (playerId: string) => api.get(`/title/players/${playerId}/medals`),
+
+  // Honor management
+  awardHonor: (playerId: string, data: { amount: number; source?: string; description?: string }) => api.post(`/title/players/${playerId}/honor/award`, data),
+  spendHonor: (playerId: string, data: { amount: number; description?: string }) => api.post(`/title/players/${playerId}/honor/spend`, data),
+  getHonorBalance: (playerId: string) => api.get(`/title/players/${playerId}/honor`),
+  getHonorRanking: (limit?: number) => api.get(`/title/honor/ranking?limit=${limit || 100}`),
+
+  // Prestige management
+  registerPrestigeRank: (data: {
+    rank_id: string; name: string; tier?: string; level?: number;
+    required_prestige_xp?: number; honor_multiplier?: number; xp_multiplier?: number;
+    unlock_description?: string; icon?: string; metadata?: Record<string, unknown>;
+  }) => api.post('/title/prestige/ranks', data),
+  getPrestigeRank: (rankId: string) => api.get(`/title/prestige/ranks/${rankId}`),
+  listPrestigeRanks: (params?: { tier?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.tier) sp.set('tier', params.tier);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/title/prestige/ranks${qs ? `?${qs}` : ''}`);
+  },
+  prestigePlayer: (playerId: string) => api.post(`/title/players/${playerId}/prestige`),
+  getPlayerPrestige: (playerId: string) => api.get(`/title/players/${playerId}/prestige`),
+
+  // Tick / config / events
+  tick: (data: Record<string, unknown>) => api.post('/title/tick', data),
+  getConfig: () => api.get('/title/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/title/config', data),
+  listEvents: (params?: { kind?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/title/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// ============================================================================
+// Round 29 - Casino / Betting / Wager API
+// ============================================================================
+
+export const casinoApi = {
+  getStatus: () => api.get('/casino/status'),
+  getSnapshot: () => api.get('/casino/snapshot'),
+  getStats: () => api.get('/casino/stats'),
+  reset: () => api.post('/casino/reset'),
+
+  // Game management
+  registerGame: (data: {
+    game_id: string; name: string; game_type?: string; description?: string;
+    min_bet?: number; max_bet?: number; house_edge?: number; base_payout?: number;
+    jackpot_payout?: number; jackpot_chance?: number; enabled?: boolean;
+    icon?: string; metadata?: Record<string, unknown>;
+  }) => api.post('/casino/games', data),
+  removeGame: (gameId: string) => api.delete(`/casino/games/${gameId}`),
+  getGame: (gameId: string) => api.get(`/casino/games/${gameId}`),
+  listGames: (params?: { game_type?: string; enabled_only?: boolean; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.game_type) sp.set('game_type', params.game_type);
+    if (params?.enabled_only) sp.set('enabled_only', String(params.enabled_only));
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/casino/games${qs ? `?${qs}` : ''}`);
+  },
+  playGame: (gameId: string, data: { player_id: string; bet_amount?: number }) => api.post(`/casino/games/${gameId}/play`, data),
+  getSession: (sessionId: string) => api.get(`/casino/sessions/${sessionId}`),
+  listSessions: (params?: { player_id?: string; game_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.game_id) sp.set('game_id', params.game_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/casino/sessions${qs ? `?${qs}` : ''}`);
+  },
+
+  // Market management
+  registerMarket: (data: {
+    market_id: string; name: string; description?: string;
+    options?: Array<Record<string, unknown>>; closes_at?: number;
+    metadata?: Record<string, unknown>;
+  }) => api.post('/casino/markets', data),
+  removeMarket: (marketId: string) => api.delete(`/casino/markets/${marketId}`),
+  getMarket: (marketId: string) => api.get(`/casino/markets/${marketId}`),
+  listMarkets: (params?: { state?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.state) sp.set('state', params.state);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/casino/markets${qs ? `?${qs}` : ''}`);
+  },
+  settleMarket: (marketId: string, data: { winning_option: string }) => api.post(`/casino/markets/${marketId}/settle`, data),
+
+  // Bet management
+  placeBet: (marketId: string, data: { player_id: string; option: string; amount?: number }) => api.post(`/casino/markets/${marketId}/bets`, data),
+  cancelBet: (betId: string) => api.post(`/casino/bets/${betId}/cancel`),
+  settleBet: (betId: string, data: { won: boolean }) => api.post(`/casino/bets/${betId}/settle`, data),
+  getBet: (betId: string) => api.get(`/casino/bets/${betId}`),
+  listBets: (params?: { player_id?: string; market_id?: string; status?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.market_id) sp.set('market_id', params.market_id);
+    if (params?.status) sp.set('status', params.status);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/casino/bets${qs ? `?${qs}` : ''}`);
+  },
+
+  // Wager management
+  createWager: (data: {
+    wager_id: string; creator_id: string; description?: string;
+    stake_amount?: number; expires_at?: number; metadata?: Record<string, unknown>;
+  }) => api.post('/casino/wagers', data),
+  acceptWager: (wagerId: string, data: { opponent_id: string }) => api.post(`/casino/wagers/${wagerId}/accept`, data),
+  cancelWager: (wagerId: string) => api.post(`/casino/wagers/${wagerId}/cancel`),
+  settleWager: (wagerId: string, data: { winner_id: string }) => api.post(`/casino/wagers/${wagerId}/settle`, data),
+  getWager: (wagerId: string) => api.get(`/casino/wagers/${wagerId}`),
+  listWagers: (params?: { status?: string; player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/casino/wagers${qs ? `?${qs}` : ''}`);
+  },
+
+  // Player stats and leaderboard
+  getPlayerStats: (playerId: string) => api.get(`/casino/players/${playerId}/stats`),
+  getLeaderboard: (limit?: number) => api.get(`/casino/leaderboard?limit=${limit || 100}`),
+
+  // Tick / config / events
+  tick: (data: Record<string, unknown>) => api.post('/casino/tick', data),
+  getConfig: () => api.get('/casino/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/casino/config', data),
+  listEvents: (params?: { kind?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/casino/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+
+// Round 30 - Guild & Clan System API Client
+export const guildApi = {
+  getStatus: () => api.get('/guild/status'),
+  getSnapshot: () => api.get('/guild/snapshot'),
+  getStats: () => api.get('/guild/stats'),
+  reset: () => api.post('/guild/reset'),
+  registerGuild: (params: { guild_id: string; name: string; tag?: string; description?: string; leader_id?: string; motd?: string; emblem?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('guild_id', params.guild_id);
+    sp.set('name', params.name);
+    if (params.tag) sp.set('tag', params.tag);
+    if (params.description) sp.set('description', params.description);
+    if (params.leader_id) sp.set('leader_id', params.leader_id);
+    if (params.motd) sp.set('motd', params.motd);
+    if (params.emblem) sp.set('emblem', params.emblem);
+    return api.post(`/guild/register?${sp.toString()}`);
+  },
+  removeGuild: (guildId: string) => api.delete(`/guild/${guildId}`),
+  listGuilds: (params?: { state?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.state) sp.set('state', params.state);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/guild/list?${sp.toString()}`);
+  },
+  getGuild: (guildId: string) => api.get(`/guild/${guildId}`),
+  updateGuildInfo: (guildId: string, params: { name?: string; tag?: string; description?: string; motd?: string; emblem?: string }) => {
+    const sp = new URLSearchParams();
+    if (params.name) sp.set('name', params.name);
+    if (params.tag) sp.set('tag', params.tag);
+    if (params.description) sp.set('description', params.description);
+    if (params.motd) sp.set('motd', params.motd);
+    if (params.emblem) sp.set('emblem', params.emblem);
+    return api.put(`/guild/${guildId}/info?${sp.toString()}`);
+  },
+  addMember: (guildId: string, params: { player_id: string; player_name?: string; rank?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', params.player_id);
+    if (params.player_name) sp.set('player_name', params.player_name);
+    if (params.rank) sp.set('rank', params.rank);
+    return api.post(`/guild/${guildId}/members/add?${sp.toString()}`);
+  },
+  removeMember: (guildId: string, playerId: string) => api.post(`/guild/${guildId}/members/${playerId}/remove`),
+  kickMember: (guildId: string, playerId: string, kickerId?: string) => {
+    const sp = new URLSearchParams();
+    if (kickerId) sp.set('kicker_id', kickerId);
+    return api.post(`/guild/${guildId}/members/${playerId}/kick?${sp.toString()}`);
+  },
+  promoteMember: (guildId: string, playerId: string) => api.post(`/guild/${guildId}/members/${playerId}/promote`),
+  demoteMember: (guildId: string, playerId: string) => api.post(`/guild/${guildId}/members/${playerId}/demote`),
+  listMembers: (guildId: string, params?: { rank?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.rank) sp.set('rank', params.rank);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/guild/${guildId}/members?${sp.toString()}`);
+  },
+  getMember: (guildId: string, playerId: string) => api.get(`/guild/${guildId}/members/${playerId}`),
+  depositTreasury: (guildId: string, params: { player_id: string; currency?: string; amount: number; description?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', params.player_id);
+    if (params.currency) sp.set('currency', params.currency);
+    sp.set('amount', String(params.amount));
+    if (params.description) sp.set('description', params.description);
+    return api.post(`/guild/${guildId}/treasury/deposit?${sp.toString()}`);
+  },
+  withdrawTreasury: (guildId: string, params: { player_id: string; currency?: string; amount: number; description?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', params.player_id);
+    if (params.currency) sp.set('currency', params.currency);
+    sp.set('amount', String(params.amount));
+    if (params.description) sp.set('description', params.description);
+    return api.post(`/guild/${guildId}/treasury/withdraw?${sp.toString()}`);
+  },
+  getTreasuryBalance: (guildId: string) => api.get(`/guild/${guildId}/treasury/balance`),
+  listTreasuryEntries: (guildId: string, params?: { limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/guild/${guildId}/treasury/entries?${sp.toString()}`);
+  },
+  registerQuest: (guildId: string, params: { quest_id: string; name: string; quest_type?: string; description?: string; target_count?: number; reward_gold?: number; reward_xp?: number; reward_guild_xp?: number; difficulty?: string; duration_seconds?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('quest_id', params.quest_id);
+    sp.set('name', params.name);
+    if (params.quest_type) sp.set('quest_type', params.quest_type);
+    if (params.description) sp.set('description', params.description);
+    if (params.target_count !== undefined) sp.set('target_count', String(params.target_count));
+    if (params.reward_gold !== undefined) sp.set('reward_gold', String(params.reward_gold));
+    if (params.reward_xp !== undefined) sp.set('reward_xp', String(params.reward_xp));
+    if (params.reward_guild_xp !== undefined) sp.set('reward_guild_xp', String(params.reward_guild_xp));
+    if (params.difficulty) sp.set('difficulty', params.difficulty);
+    if (params.duration_seconds !== undefined) sp.set('duration_seconds', String(params.duration_seconds));
+    return api.post(`/guild/${guildId}/quests/register?${sp.toString()}`);
+  },
+  acceptQuest: (guildId: string, questId: string) => api.post(`/guild/${guildId}/quests/${questId}/accept`),
+  updateQuestProgress: (guildId: string, questId: string, count: number = 1) => {
+    const sp = new URLSearchParams();
+    sp.set('count', String(count));
+    return api.post(`/guild/${guildId}/quests/${questId}/progress?${sp.toString()}`);
+  },
+  completeQuest: (guildId: string, questId: string) => api.post(`/guild/${guildId}/quests/${questId}/complete`),
+  claimQuest: (guildId: string, questId: string) => api.post(`/guild/${guildId}/quests/${questId}/claim`),
+  listQuests: (guildId: string, params?: { status?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/guild/${guildId}/quests?${sp.toString()}`);
+  },
+  getQuest: (guildId: string, questId: string) => api.get(`/guild/${guildId}/quests/${questId}`),
+  declareWar: (params: { war_id: string; attacker_id: string; defender_id: string; stakes_gold?: number; duration_seconds?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('war_id', params.war_id);
+    sp.set('attacker_id', params.attacker_id);
+    sp.set('defender_id', params.defender_id);
+    if (params.stakes_gold !== undefined) sp.set('stakes_gold', String(params.stakes_gold));
+    if (params.duration_seconds !== undefined) sp.set('duration_seconds', String(params.duration_seconds));
+    return api.post(`/guild/wars/declare?${sp.toString()}`);
+  },
+  startWar: (warId: string) => api.post(`/guild/wars/${warId}/start`),
+  endWar: (warId: string, winnerId?: string) => {
+    const sp = new URLSearchParams();
+    if (winnerId) sp.set('winner_id', winnerId);
+    return api.post(`/guild/wars/${warId}/end?${sp.toString()}`);
+  },
+  cancelWar: (warId: string) => api.post(`/guild/wars/${warId}/cancel`),
+  listWars: (params?: { state?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.state) sp.set('state', params.state);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/guild/wars/list?${sp.toString()}`);
+  },
+  getWar: (warId: string) => api.get(`/guild/wars/${warId}`),
+  registerPerk: (guildId: string, params: { perk_id: string; name: string; description?: string; perk_type?: string; effect_value?: number; cost_gold?: number; required_guild_level?: number; duration_seconds?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('perk_id', params.perk_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.perk_type) sp.set('perk_type', params.perk_type);
+    if (params.effect_value !== undefined) sp.set('effect_value', String(params.effect_value));
+    if (params.cost_gold !== undefined) sp.set('cost_gold', String(params.cost_gold));
+    if (params.required_guild_level !== undefined) sp.set('required_guild_level', String(params.required_guild_level));
+    if (params.duration_seconds !== undefined) sp.set('duration_seconds', String(params.duration_seconds));
+    return api.post(`/guild/${guildId}/perks/register?${sp.toString()}`);
+  },
+  activatePerk: (guildId: string, perkId: string) => api.post(`/guild/${guildId}/perks/${perkId}/activate`),
+  deactivatePerk: (guildId: string, perkId: string) => api.post(`/guild/${guildId}/perks/${perkId}/deactivate`),
+  listPerks: (guildId: string, params?: { active_only?: boolean; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.active_only) sp.set('active_only', 'true');
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/guild/${guildId}/perks?${sp.toString()}`);
+  },
+  getPerk: (guildId: string, perkId: string) => api.get(`/guild/${guildId}/perks/${perkId}`),
+  registerRank: (guildId: string, params: { rank_id: string; name: string; level?: number; permissions?: string; can_manage_ranks?: boolean; max_members?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('rank_id', params.rank_id);
+    sp.set('name', params.name);
+    if (params.level !== undefined) sp.set('level', String(params.level));
+    if (params.permissions) sp.set('permissions', params.permissions);
+    if (params.can_manage_ranks !== undefined) sp.set('can_manage_ranks', String(params.can_manage_ranks));
+    if (params.max_members !== undefined) sp.set('max_members', String(params.max_members));
+    return api.post(`/guild/${guildId}/ranks/register?${sp.toString()}`);
+  },
+  listRanks: (guildId: string) => api.get(`/guild/${guildId}/ranks`),
+  getRank: (guildId: string, rankId: string) => api.get(`/guild/${guildId}/ranks/${rankId}`),
+  tick: () => api.post('/guild/tick'),
+  setConfig: (config: Record<string, unknown>) => api.put('/guild/config', config),
+  getConfig: () => api.get('/guild/config'),
+  listEvents: (params?: { guild_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.guild_id) sp.set('guild_id', params.guild_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    return api.get(`/guild/events?${sp.toString()}`);
+  },
+};
+
+// Round 30 - Trading & Market System API Client
+export const tradingApi = {
+  getStatus: () => api.get('/trading/status'),
+  getSnapshot: () => api.get('/trading/snapshot'),
+  getStats: () => api.get('/trading/stats'),
+  reset: () => api.post('/trading/reset'),
+  registerListing: (params: { listing_id: string; seller_id: string; seller_name?: string; item_id?: string; item_name?: string; item_quantity?: number; listing_type?: string; price?: number; currency?: string; buyout_price?: number; category?: string; rarity?: string; duration_seconds?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('listing_id', params.listing_id);
+    sp.set('seller_id', params.seller_id);
+    if (params.seller_name) sp.set('seller_name', params.seller_name);
+    if (params.item_id) sp.set('item_id', params.item_id);
+    if (params.item_name) sp.set('item_name', params.item_name);
+    if (params.item_quantity !== undefined) sp.set('item_quantity', String(params.item_quantity));
+    if (params.listing_type) sp.set('listing_type', params.listing_type);
+    if (params.price !== undefined) sp.set('price', String(params.price));
+    if (params.currency) sp.set('currency', params.currency);
+    if (params.buyout_price !== undefined) sp.set('buyout_price', String(params.buyout_price));
+    if (params.category) sp.set('category', params.category);
+    if (params.rarity) sp.set('rarity', params.rarity);
+    if (params.duration_seconds !== undefined) sp.set('duration_seconds', String(params.duration_seconds));
+    return api.post(`/trading/listings/register?${sp.toString()}`);
+  },
+  removeListing: (listingId: string) => api.delete(`/trading/listings/${listingId}`),
+  buyListing: (listingId: string, params: { buyer_id: string; buyer_name?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('buyer_id', params.buyer_id);
+    if (params.buyer_name) sp.set('buyer_name', params.buyer_name);
+    return api.post(`/trading/listings/${listingId}/buy?${sp.toString()}`);
+  },
+  placeBid: (listingId: string, params: { bidder_id: string; bidder_name?: string; amount: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('bidder_id', params.bidder_id);
+    if (params.bidder_name) sp.set('bidder_name', params.bidder_name);
+    sp.set('amount', String(params.amount));
+    return api.post(`/trading/listings/${listingId}/bid?${sp.toString()}`);
+  },
+  buyoutListing: (listingId: string, params: { buyer_id: string; buyer_name?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('buyer_id', params.buyer_id);
+    if (params.buyer_name) sp.set('buyer_name', params.buyer_name);
+    return api.post(`/trading/listings/${listingId}/buyout?${sp.toString()}`);
+  },
+  listListings: (params?: { status?: string; category?: string; seller_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.category) sp.set('category', params.category);
+    if (params?.seller_id) sp.set('seller_id', params.seller_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/trading/listings?${sp.toString()}`);
+  },
+  getListing: (listingId: string) => api.get(`/trading/listings/${listingId}`),
+  placeOrder: (params: { order_id: string; trader_id: string; trader_name?: string; order_type?: string; item_id?: string; item_name?: string; quantity?: number; price_per_unit?: number; currency?: string; duration_seconds?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('order_id', params.order_id);
+    sp.set('trader_id', params.trader_id);
+    if (params.trader_name) sp.set('trader_name', params.trader_name);
+    if (params.order_type) sp.set('order_type', params.order_type);
+    if (params.item_id) sp.set('item_id', params.item_id);
+    if (params.item_name) sp.set('item_name', params.item_name);
+    if (params.quantity !== undefined) sp.set('quantity', String(params.quantity));
+    if (params.price_per_unit !== undefined) sp.set('price_per_unit', String(params.price_per_unit));
+    if (params.currency) sp.set('currency', params.currency);
+    if (params.duration_seconds !== undefined) sp.set('duration_seconds', String(params.duration_seconds));
+    return api.post(`/trading/orders/place?${sp.toString()}`);
+  },
+  cancelOrder: (orderId: string) => api.post(`/trading/orders/${orderId}/cancel`),
+  fillOrder: (orderId: string, params?: { fill_quantity?: number; filler_id?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.fill_quantity !== undefined) sp.set('fill_quantity', String(params.fill_quantity));
+    if (params?.filler_id) sp.set('filler_id', params.filler_id);
+    return api.post(`/trading/orders/${orderId}/fill?${sp.toString()}`);
+  },
+  listOrders: (params?: { status?: string; order_type?: string; item_id?: string; trader_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.order_type) sp.set('order_type', params.order_type);
+    if (params?.item_id) sp.set('item_id', params.item_id);
+    if (params?.trader_id) sp.set('trader_id', params.trader_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/trading/orders?${sp.toString()}`);
+  },
+  getOrder: (orderId: string) => api.get(`/trading/orders/${orderId}`),
+  createOffer: (params: { offer_id: string; offerer_id: string; offerer_name?: string; target_id?: string; target_name?: string; offered_gold?: number; requested_gold?: number; message?: string; duration_seconds?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('offer_id', params.offer_id);
+    sp.set('offerer_id', params.offerer_id);
+    if (params.offerer_name) sp.set('offerer_name', params.offerer_name);
+    if (params.target_id) sp.set('target_id', params.target_id);
+    if (params.target_name) sp.set('target_name', params.target_name);
+    if (params.offered_gold !== undefined) sp.set('offered_gold', String(params.offered_gold));
+    if (params.requested_gold !== undefined) sp.set('requested_gold', String(params.requested_gold));
+    if (params.message) sp.set('message', params.message);
+    if (params.duration_seconds !== undefined) sp.set('duration_seconds', String(params.duration_seconds));
+    return api.post(`/trading/offers/create?${sp.toString()}`);
+  },
+  acceptOffer: (offerId: string) => api.post(`/trading/offers/${offerId}/accept`),
+  rejectOffer: (offerId: string) => api.post(`/trading/offers/${offerId}/reject`),
+  cancelOffer: (offerId: string) => api.post(`/trading/offers/${offerId}/cancel`),
+  listOffers: (params?: { status?: string; offerer_id?: string; target_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.offerer_id) sp.set('offerer_id', params.offerer_id);
+    if (params?.target_id) sp.set('target_id', params.target_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/trading/offers?${sp.toString()}`);
+  },
+  getOffer: (offerId: string) => api.get(`/trading/offers/${offerId}`),
+  openShop: (params: { shop_id: string; owner_id: string; owner_name?: string; name?: string; description?: string; location?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('shop_id', params.shop_id);
+    sp.set('owner_id', params.owner_id);
+    if (params.owner_name) sp.set('owner_name', params.owner_name);
+    if (params.name) sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.location) sp.set('location', params.location);
+    return api.post(`/trading/shops/open?${sp.toString()}`);
+  },
+  closeShop: (shopId: string) => api.post(`/trading/shops/${shopId}/close`),
+  removeShop: (shopId: string) => api.delete(`/trading/shops/${shopId}`),
+  addShopListing: (shopId: string, params: { item_id: string; item_name?: string; quantity?: number; price?: number; currency?: string; category?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('item_id', params.item_id);
+    if (params.item_name) sp.set('item_name', params.item_name);
+    if (params.quantity !== undefined) sp.set('quantity', String(params.quantity));
+    if (params.price !== undefined) sp.set('price', String(params.price));
+    if (params.currency) sp.set('currency', params.currency);
+    if (params.category) sp.set('category', params.category);
+    return api.post(`/trading/shops/${shopId}/listings/add?${sp.toString()}`);
+  },
+  buyFromShop: (shopId: string, listingId: string, params?: { buyer_id?: string; quantity?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.buyer_id) sp.set('buyer_id', params.buyer_id);
+    if (params?.quantity !== undefined) sp.set('quantity', String(params.quantity));
+    return api.post(`/trading/shops/${shopId}/listings/${listingId}/buy?${sp.toString()}`);
+  },
+  listShops: (params?: { status?: string; owner_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.owner_id) sp.set('owner_id', params.owner_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/trading/shops?${sp.toString()}`);
+  },
+  getShop: (shopId: string) => api.get(`/trading/shops/${shopId}`),
+  getPriceHistory: (params?: { item_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.item_id) sp.set('item_id', params.item_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/trading/price-history?${sp.toString()}`);
+  },
+  getMarketAnalytics: (itemId: string) => api.get(`/trading/analytics/${itemId}`),
+  tick: () => api.post('/trading/tick'),
+  setConfig: (config: Record<string, unknown>) => api.put('/trading/config', config),
+  getConfig: () => api.get('/trading/config'),
+  listEvents: (params?: { listing_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.listing_id) sp.set('listing_id', params.listing_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    return api.get(`/trading/events?${sp.toString()}`);
+  },
+};
+
+// Round 30 - Achievement & Quest System API Client
+export const achievementApi = {
+  getStatus: () => api.get('/achievement/status'),
+  getSnapshot: () => api.get('/achievement/snapshot'),
+  getStats: () => api.get('/achievement/stats'),
+  reset: () => api.post('/achievement/reset'),
+  registerAchievement: (params: { achievement_id: string; name: string; description?: string; category?: string; tier?: string; reward_gold?: number; reward_xp?: number; points?: number; hidden?: boolean }) => {
+    const sp = new URLSearchParams();
+    sp.set('achievement_id', params.achievement_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.category) sp.set('category', params.category);
+    if (params.tier) sp.set('tier', params.tier);
+    if (params.reward_gold !== undefined) sp.set('reward_gold', String(params.reward_gold));
+    if (params.reward_xp !== undefined) sp.set('reward_xp', String(params.reward_xp));
+    if (params.points !== undefined) sp.set('points', String(params.points));
+    if (params.hidden !== undefined) sp.set('hidden', String(params.hidden));
+    return api.post(`/achievement/register?${sp.toString()}`);
+  },
+  removeAchievement: (achievementId: string) => api.delete(`/achievement/${achievementId}`),
+  listAchievements: (params?: { category?: string; tier?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.category) sp.set('category', params.category);
+    if (params?.tier) sp.set('tier', params.tier);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/achievement/list?${sp.toString()}`);
+  },
+  getAchievement: (achievementId: string) => api.get(`/achievement/${achievementId}`),
+  unlockAchievement: (achievementId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/achievement/${achievementId}/unlock?${sp.toString()}`);
+  },
+  updateAchievementProgress: (achievementId: string, params: { player_id: string; criteria_id: string; value: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', params.player_id);
+    sp.set('criteria_id', params.criteria_id);
+    sp.set('value', String(params.value));
+    return api.post(`/achievement/${achievementId}/progress?${sp.toString()}`);
+  },
+  claimAchievement: (achievementId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/achievement/${achievementId}/claim?${sp.toString()}`);
+  },
+  listPlayerAchievements: (playerId: string, params?: { status?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/achievement/player/${playerId}?${sp.toString()}`);
+  },
+  getPlayerAchievement: (playerId: string, achievementId: string) => api.get(`/achievement/player/${playerId}/${achievementId}`),
+  getPlayerPoints: (playerId: string) => api.get(`/achievement/player/${playerId}/points`),
+  registerQuest: (params: { quest_id: string; name: string; description?: string; quest_type?: string; category?: string; min_level?: number; reward_gold?: number; reward_xp?: number; repeatable?: boolean; daily?: boolean; weekly?: boolean; chain_id?: string; next_quest_id?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('quest_id', params.quest_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.quest_type) sp.set('quest_type', params.quest_type);
+    if (params.category) sp.set('category', params.category);
+    if (params.min_level !== undefined) sp.set('min_level', String(params.min_level));
+    if (params.reward_gold !== undefined) sp.set('reward_gold', String(params.reward_gold));
+    if (params.reward_xp !== undefined) sp.set('reward_xp', String(params.reward_xp));
+    if (params.repeatable !== undefined) sp.set('repeatable', String(params.repeatable));
+    if (params.daily !== undefined) sp.set('daily', String(params.daily));
+    if (params.weekly !== undefined) sp.set('weekly', String(params.weekly));
+    if (params.chain_id) sp.set('chain_id', params.chain_id);
+    if (params.next_quest_id) sp.set('next_quest_id', params.next_quest_id);
+    return api.post(`/quest/register?${sp.toString()}`);
+  },
+  removeQuest: (questId: string) => api.delete(`/quest/${questId}`),
+  listQuests: (params?: { quest_type?: string; category?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.quest_type) sp.set('quest_type', params.quest_type);
+    if (params?.category) sp.set('category', params.category);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/quest/list?${sp.toString()}`);
+  },
+  getQuest: (questId: string) => api.get(`/quest/${questId}`),
+  acceptQuest: (questId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/quest/${questId}/accept?${sp.toString()}`);
+  },
+  updateQuestProgress: (questId: string, params: { player_id: string; objective_id: string; count?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', params.player_id);
+    sp.set('objective_id', params.objective_id);
+    if (params.count !== undefined) sp.set('count', String(params.count));
+    return api.post(`/quest/${questId}/progress?${sp.toString()}`);
+  },
+  completeQuest: (questId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/quest/${questId}/complete?${sp.toString()}`);
+  },
+  failQuest: (questId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/quest/${questId}/fail?${sp.toString()}`);
+  },
+  abandonQuest: (questId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/quest/${questId}/abandon?${sp.toString()}`);
+  },
+  claimQuest: (questId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/quest/${questId}/claim?${sp.toString()}`);
+  },
+  listPlayerQuests: (playerId: string, params?: { status?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/quest/player/${playerId}?${sp.toString()}`);
+  },
+  getPlayerQuest: (playerId: string, questId: string) => api.get(`/quest/player/${playerId}/${questId}`),
+  registerChain: (params: { chain_id: string; name: string; description?: string; reward_gold?: number; reward_xp?: number; reward_achievement_id?: string; required_level?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('chain_id', params.chain_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.reward_gold !== undefined) sp.set('reward_gold', String(params.reward_gold));
+    if (params.reward_xp !== undefined) sp.set('reward_xp', String(params.reward_xp));
+    if (params.reward_achievement_id) sp.set('reward_achievement_id', params.reward_achievement_id);
+    if (params.required_level !== undefined) sp.set('required_level', String(params.required_level));
+    return api.post(`/quest/chains/register?${sp.toString()}`);
+  },
+  listChains: (params?: { status?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/quest/chains?${sp.toString()}`);
+  },
+  getChain: (chainId: string) => api.get(`/quest/chains/${chainId}`),
+  tick: () => api.post('/achievement/tick'),
+  setConfig: (config: Record<string, unknown>) => api.put('/achievement/config', config),
+  getConfig: () => api.get('/achievement/config'),
+  listEvents: (params?: { player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    return api.get(`/achievement/events?${sp.toString()}`);
+  },
+};
+
+// Round 31 - Faction Reputation System API Client
+export const factionApi = {
+  getStatus: () => api.get('/faction/status'),
+  getSnapshot: () => api.get('/faction/snapshot'),
+  getStats: () => api.get('/faction/stats'),
+  getConfig: () => api.get('/faction/config'),
+  setConfig: (config: Record<string, unknown>) => api.post('/faction/config', config),
+  tick: () => api.post('/faction/tick'),
+  reset: () => api.post('/faction/reset'),
+  listEvents: (params?: { faction_id?: string; player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.faction_id) sp.set('faction_id', params.faction_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    return api.get(`/faction/events?${sp.toString()}`);
+  },
+  listEntries: (params?: { faction_id?: string; player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.faction_id) sp.set('faction_id', params.faction_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    return api.get(`/faction/entries?${sp.toString()}`);
+  },
+  registerFaction: (params: { faction_id: string; name: string; description?: string; default_attitude?: string; base_reputation?: number; icon?: string; color?: string; leader_npc?: string; headquarters_location?: string; is_hostile_by_default?: boolean }) => {
+    const sp = new URLSearchParams();
+    sp.set('faction_id', params.faction_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.default_attitude) sp.set('default_attitude', params.default_attitude);
+    if (params.base_reputation !== undefined) sp.set('base_reputation', String(params.base_reputation));
+    if (params.icon) sp.set('icon', params.icon);
+    if (params.color) sp.set('color', params.color);
+    if (params.leader_npc) sp.set('leader_npc', params.leader_npc);
+    if (params.headquarters_location) sp.set('headquarters_location', params.headquarters_location);
+    if (params.is_hostile_by_default !== undefined) sp.set('is_hostile_by_default', String(params.is_hostile_by_default));
+    return api.post(`/faction/register?${sp.toString()}`);
+  },
+  removeFaction: (factionId: string) => api.delete(`/faction/${factionId}`),
+  getFaction: (factionId: string) => api.get(`/faction/${factionId}`),
+  listFactions: (params?: { attitude?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.attitude) sp.set('attitude', params.attitude);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/faction/list?${sp.toString()}`);
+  },
+  registerReward: (params: { reward_id: string; faction_id: string; name: string; description?: string; required_tier?: string; reward_type?: string; one_time?: boolean }) => {
+    const sp = new URLSearchParams();
+    sp.set('reward_id', params.reward_id);
+    sp.set('faction_id', params.faction_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.required_tier) sp.set('required_tier', params.required_tier);
+    if (params.reward_type) sp.set('reward_type', params.reward_type);
+    if (params.one_time !== undefined) sp.set('one_time', String(params.one_time));
+    return api.post(`/faction/reward/register?${sp.toString()}`);
+  },
+  removeReward: (rewardId: string) => api.delete(`/faction/reward/${rewardId}`),
+  getReward: (rewardId: string) => api.get(`/faction/reward/${rewardId}`),
+  listRewards: (params?: { faction_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.faction_id) sp.set('faction_id', params.faction_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/faction/reward/list?${sp.toString()}`);
+  },
+  gainReputation: (params: { faction_id: string; player_id: string; amount: number; reason?: string; source?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('faction_id', params.faction_id);
+    sp.set('player_id', params.player_id);
+    sp.set('amount', String(params.amount));
+    if (params.reason) sp.set('reason', params.reason);
+    if (params.source) sp.set('source', params.source);
+    return api.post(`/faction/reputation/gain?${sp.toString()}`);
+  },
+  loseReputation: (params: { faction_id: string; player_id: string; amount: number; reason?: string; source?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('faction_id', params.faction_id);
+    sp.set('player_id', params.player_id);
+    sp.set('amount', String(params.amount));
+    if (params.reason) sp.set('reason', params.reason);
+    if (params.source) sp.set('source', params.source);
+    return api.post(`/faction/reputation/lose?${sp.toString()}`);
+  },
+  setReputation: (params: { faction_id: string; player_id: string; value: number; reason?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('faction_id', params.faction_id);
+    sp.set('player_id', params.player_id);
+    sp.set('value', String(params.value));
+    if (params.reason) sp.set('reason', params.reason);
+    return api.post(`/faction/reputation/set?${sp.toString()}`);
+  },
+  getReputation: (factionId: string, playerId: string) => api.get(`/faction/reputation/${factionId}/${playerId}`),
+  listPlayerReputations: (playerId: string, params?: { tier?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.tier) sp.set('tier', params.tier);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/faction/reputation/player/${playerId}?${sp.toString()}`);
+  },
+  getReputationTier: (factionId: string, playerId: string) => api.get(`/faction/reputation/tier/${factionId}/${playerId}`),
+  registerRelation: (params: { relation_id: string; faction_a: string; faction_b: string; relation?: string; strength?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('relation_id', params.relation_id);
+    sp.set('faction_a', params.faction_a);
+    sp.set('faction_b', params.faction_b);
+    if (params.relation) sp.set('relation', params.relation);
+    if (params.strength !== undefined) sp.set('strength', String(params.strength));
+    return api.post(`/faction/relation/register?${sp.toString()}`);
+  },
+  getRelation: (factionA: string, factionB: string) => api.get(`/faction/relation/${factionA}/${factionB}`),
+  listRelations: (params?: { faction_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.faction_id) sp.set('faction_id', params.faction_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/faction/relation/list?${sp.toString()}`);
+  },
+  createDiplomaticAction: (params: { action_id: string; action_type?: string; proposer_faction?: string; target_faction?: string; player_id?: string; description?: string; expires_at?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('action_id', params.action_id);
+    if (params.action_type) sp.set('action_type', params.action_type);
+    if (params.proposer_faction) sp.set('proposer_faction', params.proposer_faction);
+    if (params.target_faction) sp.set('target_faction', params.target_faction);
+    if (params.player_id) sp.set('player_id', params.player_id);
+    if (params.description) sp.set('description', params.description);
+    if (params.expires_at !== undefined) sp.set('expires_at', String(params.expires_at));
+    return api.post(`/faction/diplomacy/create?${sp.toString()}`);
+  },
+  acceptDiplomaticAction: (actionId: string) => api.post(`/faction/diplomacy/${actionId}/accept`),
+  rejectDiplomaticAction: (actionId: string) => api.post(`/faction/diplomacy/${actionId}/reject`),
+  getDiplomaticAction: (actionId: string) => api.get(`/faction/diplomacy/${actionId}`),
+  listDiplomaticActions: (params?: { status?: string; faction_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.faction_id) sp.set('faction_id', params.faction_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/faction/diplomacy/list?${sp.toString()}`);
+  },
+  declareWar: (params: { war_id: string; faction_a: string; faction_b: string; declarer_player?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('war_id', params.war_id);
+    sp.set('faction_a', params.faction_a);
+    sp.set('faction_b', params.faction_b);
+    if (params.declarer_player) sp.set('declarer_player', params.declarer_player);
+    return api.post(`/faction/war/declare?${sp.toString()}`);
+  },
+  startWar: (warId: string) => api.post(`/faction/war/${warId}/start`),
+  endWar: (warId: string, outcome?: string) => {
+    const sp = new URLSearchParams();
+    if (outcome) sp.set('outcome', outcome);
+    return api.post(`/faction/war/${warId}/end?${sp.toString()}`);
+  },
+  cancelWar: (warId: string) => api.post(`/faction/war/${warId}/cancel`),
+  getWar: (warId: string) => api.get(`/faction/war/${warId}`),
+  listWars: (params?: { status?: string; faction_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.faction_id) sp.set('faction_id', params.faction_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/faction/war/list?${sp.toString()}`);
+  },
+  checkHostility: (factionId: string, playerId: string) => api.get(`/faction/hostility/${factionId}/${playerId}`),
+  getAvailableRewards: (factionId: string, playerId: string) => api.get(`/faction/rewards/available/${factionId}/${playerId}`),
+  claimReward: (params: { faction_id: string; player_id: string; reward_id: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('faction_id', params.faction_id);
+    sp.set('player_id', params.player_id);
+    sp.set('reward_id', params.reward_id);
+    return api.post(`/faction/reward/claim?${sp.toString()}`);
+  },
+};
+
+// Round 31 - Loot Drop System API Client
+export const lootApi = {
+  getStatus: () => api.get('/loot/status'),
+  getSnapshot: () => api.get('/loot/snapshot'),
+  getStats: () => api.get('/loot/stats'),
+  getConfig: () => api.get('/loot/config'),
+  setConfig: (config: Record<string, unknown>) => api.post('/loot/config', config),
+  tick: () => api.post('/loot/tick'),
+  reset: () => api.post('/loot/reset'),
+  listEvents: (params?: { table_id?: string; player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.table_id) sp.set('table_id', params.table_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    return api.get(`/loot/events?${sp.toString()}`);
+  },
+  registerTable: (params: { table_id: string; name: string; description?: string; source_type?: string; source_id?: string; min_drops?: number; max_drops?: number; bonus_drop_chance?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('table_id', params.table_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.source_type) sp.set('source_type', params.source_type);
+    if (params.source_id) sp.set('source_id', params.source_id);
+    if (params.min_drops !== undefined) sp.set('min_drops', String(params.min_drops));
+    if (params.max_drops !== undefined) sp.set('max_drops', String(params.max_drops));
+    if (params.bonus_drop_chance !== undefined) sp.set('bonus_drop_chance', String(params.bonus_drop_chance));
+    return api.post(`/loot/table/register?${sp.toString()}`);
+  },
+  removeTable: (tableId: string) => api.delete(`/loot/table/${tableId}`),
+  getTable: (tableId: string) => api.get(`/loot/table/${tableId}`),
+  listTables: (params?: { source_type?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.source_type) sp.set('source_type', params.source_type);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/loot/table/list?${sp.toString()}`);
+  },
+  addEntry: (params: { entry_id: string; table_id: string; item_id: string; name: string; rarity?: string; drop_chance?: number; weight?: number; min_amount?: number; max_amount?: number; condition?: string; condition_value?: string; is_guaranteed?: boolean; is_bonus?: boolean; luck_modified?: boolean; icon?: string; description?: string; stackable?: boolean }) => {
+    const sp = new URLSearchParams();
+    sp.set('entry_id', params.entry_id);
+    sp.set('table_id', params.table_id);
+    sp.set('item_id', params.item_id);
+    sp.set('name', params.name);
+    if (params.rarity) sp.set('rarity', params.rarity);
+    if (params.drop_chance !== undefined) sp.set('drop_chance', String(params.drop_chance));
+    if (params.weight !== undefined) sp.set('weight', String(params.weight));
+    if (params.min_amount !== undefined) sp.set('min_amount', String(params.min_amount));
+    if (params.max_amount !== undefined) sp.set('max_amount', String(params.max_amount));
+    if (params.condition) sp.set('condition', params.condition);
+    if (params.condition_value) sp.set('condition_value', params.condition_value);
+    if (params.is_guaranteed !== undefined) sp.set('is_guaranteed', String(params.is_guaranteed));
+    if (params.is_bonus !== undefined) sp.set('is_bonus', String(params.is_bonus));
+    if (params.luck_modified !== undefined) sp.set('luck_modified', String(params.luck_modified));
+    if (params.icon) sp.set('icon', params.icon);
+    if (params.description) sp.set('description', params.description);
+    if (params.stackable !== undefined) sp.set('stackable', String(params.stackable));
+    return api.post(`/loot/entry/add?${sp.toString()}`);
+  },
+  removeEntry: (entryId: string) => api.delete(`/loot/entry/${entryId}`),
+  getEntry: (entryId: string) => api.get(`/loot/entry/${entryId}`),
+  listEntries: (params?: { table_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.table_id) sp.set('table_id', params.table_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/loot/entry/list?${sp.toString()}`);
+  },
+  rollLoot: (params: { table_id: string; player_id: string; source_id?: string; party_size?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('table_id', params.table_id);
+    sp.set('player_id', params.player_id);
+    if (params.source_id) sp.set('source_id', params.source_id);
+    if (params.party_size !== undefined) sp.set('party_size', String(params.party_size));
+    return api.post(`/loot/roll?${sp.toString()}`);
+  },
+  multiRoll: (params: { table_id: string; player_id: string; count?: number; source_id?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('table_id', params.table_id);
+    sp.set('player_id', params.player_id);
+    if (params.count !== undefined) sp.set('count', String(params.count));
+    if (params.source_id) sp.set('source_id', params.source_id);
+    return api.post(`/loot/multi_roll?${sp.toString()}`);
+  },
+  registerPlayerLuck: (params: { player_id: string; base_luck?: number; bonus_luck?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', params.player_id);
+    if (params.base_luck !== undefined) sp.set('base_luck', String(params.base_luck));
+    if (params.bonus_luck !== undefined) sp.set('bonus_luck', String(params.bonus_luck));
+    return api.post(`/loot/luck/register?${sp.toString()}`);
+  },
+  updatePlayerLuck: (params: { player_id: string; base_luck?: number | null; bonus_luck?: number | null }) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', params.player_id);
+    if (params.base_luck !== undefined && params.base_luck !== null) sp.set('base_luck', String(params.base_luck));
+    if (params.bonus_luck !== undefined && params.bonus_luck !== null) sp.set('bonus_luck', String(params.bonus_luck));
+    return api.post(`/loot/luck/update?${sp.toString()}`);
+  },
+  getPlayerLuck: (playerId: string) => api.get(`/loot/luck/${playerId}`),
+  createDistribution: (params: { table_id: string; source_id?: string; party_members: string[]; share_mode?: string; master_looter?: string }) =>
+    api.post('/loot/distribution/create', params),
+  resolveDistribution: (distributionId: string, assignments: Record<string, string>) =>
+    api.post(`/loot/distribution/${distributionId}/resolve`, { assignments }),
+  getDistribution: (distributionId: string) => api.get(`/loot/distribution/${distributionId}`),
+  listDistributions: (params?: { status?: string; table_id?: string; limit?: number; offset?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.table_id) sp.set('table_id', params.table_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    return api.get(`/loot/distribution/list?${sp.toString()}`);
+  },
+  getPlayerHistory: (playerId: string, limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit) sp.set('limit', String(limit));
+    return api.get(`/loot/history/player/${playerId}?${sp.toString()}`);
+  },
+  getDropHistory: (params?: { table_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.table_id) sp.set('table_id', params.table_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    return api.get(`/loot/history/drops?${sp.toString()}`);
+  },
+};
+
+// Round 31 - Profession & Class System API Client
+export const professionApi = {
+  getStatus: () => api.get('/profession/status'),
+  getSnapshot: () => api.get('/profession/snapshot'),
+  getStats: () => api.get('/profession/stats'),
+  getConfig: () => api.get('/profession/config'),
+  setConfig: (config: Record<string, unknown>) => api.post('/profession/config', config),
+  tick: () => api.post('/profession/tick'),
+  reset: () => api.post('/profession/reset'),
+  listEvents: (params?: { limit?: number; kind?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.kind) sp.set('kind', params.kind);
+    return api.get(`/profession/events?${sp.toString()}`);
+  },
+  registerClass: (params: { class_id: string; name: string; description?: string; archetype?: string; resource_type?: string; max_resource?: number; resource_regen?: number; icon?: string; color?: string; difficulty?: string; unlocked?: boolean }) => {
+    const sp = new URLSearchParams();
+    sp.set('class_id', params.class_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.archetype) sp.set('archetype', params.archetype);
+    if (params.resource_type) sp.set('resource_type', params.resource_type);
+    if (params.max_resource !== undefined) sp.set('max_resource', String(params.max_resource));
+    if (params.resource_regen !== undefined) sp.set('resource_regen', String(params.resource_regen));
+    if (params.icon) sp.set('icon', params.icon);
+    if (params.color) sp.set('color', params.color);
+    if (params.difficulty) sp.set('difficulty', params.difficulty);
+    if (params.unlocked !== undefined) sp.set('unlocked', String(params.unlocked));
+    return api.post(`/profession/class/register?${sp.toString()}`);
+  },
+  removeClass: (classId: string) => api.delete(`/profession/class/${classId}`),
+  getClass: (classId: string) => api.get(`/profession/class/${classId}`),
+  listClasses: (params?: { limit?: number; offset?: number; archetype?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    if (params?.archetype) sp.set('archetype', params.archetype);
+    return api.get(`/profession/class/list?${sp.toString()}`);
+  },
+  unlockClass: (classId: string) => api.post(`/profession/class/${classId}/unlock`),
+  registerAbility: (params: { ability_id: string; name: string; description?: string; ability_type?: string; school?: string; category?: string; class_id?: string; required_level?: number; cooldown_seconds?: number; resource_cost?: number; resource_type?: string; cast_time?: number; range_value?: number; damage_base?: number; damage_scaling?: number; healing_base?: number; healing_scaling?: number; duration_seconds?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('ability_id', params.ability_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.ability_type) sp.set('ability_type', params.ability_type);
+    if (params.school) sp.set('school', params.school);
+    if (params.category) sp.set('category', params.category);
+    if (params.class_id) sp.set('class_id', params.class_id);
+    if (params.required_level !== undefined) sp.set('required_level', String(params.required_level));
+    if (params.cooldown_seconds !== undefined) sp.set('cooldown_seconds', String(params.cooldown_seconds));
+    if (params.resource_cost !== undefined) sp.set('resource_cost', String(params.resource_cost));
+    if (params.resource_type) sp.set('resource_type', params.resource_type);
+    if (params.cast_time !== undefined) sp.set('cast_time', String(params.cast_time));
+    if (params.range_value !== undefined) sp.set('range_value', String(params.range_value));
+    if (params.damage_base !== undefined) sp.set('damage_base', String(params.damage_base));
+    if (params.damage_scaling !== undefined) sp.set('damage_scaling', String(params.damage_scaling));
+    if (params.healing_base !== undefined) sp.set('healing_base', String(params.healing_base));
+    if (params.healing_scaling !== undefined) sp.set('healing_scaling', String(params.healing_scaling));
+    if (params.duration_seconds !== undefined) sp.set('duration_seconds', String(params.duration_seconds));
+    return api.post(`/profession/ability/register?${sp.toString()}`);
+  },
+  getAbility: (abilityId: string) => api.get(`/profession/ability/${abilityId}`),
+  listAbilities: (params?: { limit?: number; offset?: number; class_id?: string; category?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    if (params?.class_id) sp.set('class_id', params.class_id);
+    if (params?.category) sp.set('category', params.category);
+    return api.get(`/profession/ability/list?${sp.toString()}`);
+  },
+  registerTalentTree: (params: { tree_id: string; name: string; description?: string; class_id?: string; max_points?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('tree_id', params.tree_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.class_id) sp.set('class_id', params.class_id);
+    if (params.max_points !== undefined) sp.set('max_points', String(params.max_points));
+    return api.post(`/profession/talent_tree/register?${sp.toString()}`);
+  },
+  getTalentTree: (treeId: string) => api.get(`/profession/talent_tree/${treeId}`),
+  listTalentTrees: (params?: { limit?: number; offset?: number; class_id?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    if (params?.class_id) sp.set('class_id', params.class_id);
+    return api.get(`/profession/talent_tree/list?${sp.toString()}`);
+  },
+  addTalentNode: (treeId: string, params: { node_id: string; name: string; description?: string; node_type?: string; max_rank?: number; required_points?: number; granted_ability_id?: string; position_x?: number; position_y?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('node_id', params.node_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.node_type) sp.set('node_type', params.node_type);
+    if (params.max_rank !== undefined) sp.set('max_rank', String(params.max_rank));
+    if (params.required_points !== undefined) sp.set('required_points', String(params.required_points));
+    if (params.granted_ability_id) sp.set('granted_ability_id', params.granted_ability_id);
+    if (params.position_x !== undefined) sp.set('position_x', String(params.position_x));
+    if (params.position_y !== undefined) sp.set('position_y', String(params.position_y));
+    return api.post(`/profession/talent_tree/${treeId}/node/add?${sp.toString()}`);
+  },
+  setPlayerClass: (params: { player_id: string; class_id: string; level?: number; experience?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', params.player_id);
+    sp.set('class_id', params.class_id);
+    if (params.level !== undefined) sp.set('level', String(params.level));
+    if (params.experience !== undefined) sp.set('experience', String(params.experience));
+    return api.post(`/profession/player/class/set?${sp.toString()}`);
+  },
+  switchPlayerClass: (playerId: string, classId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    sp.set('class_id', classId);
+    return api.post(`/profession/player/class/switch?${sp.toString()}`);
+  },
+  addPlayerExperience: (stateId: string, xp: number) => {
+    const sp = new URLSearchParams();
+    sp.set('state_id', stateId);
+    sp.set('xp', String(xp));
+    return api.post(`/profession/player/class/experience?${sp.toString()}`);
+  },
+  getPlayerActiveClass: (playerId: string) => api.get(`/profession/player/class/active/${playerId}`),
+  listPlayerClasses: (playerId: string) => api.get(`/profession/player/class/list/${playerId}`),
+  getPlayerClassState: (stateId: string) => api.get(`/profession/player/class/state/${stateId}`),
+  learnAbility: (stateId: string, abilityId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('state_id', stateId);
+    sp.set('ability_id', abilityId);
+    return api.post(`/profession/player/ability/learn?${sp.toString()}`);
+  },
+  forgetAbility: (stateId: string, abilityId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('state_id', stateId);
+    sp.set('ability_id', abilityId);
+    return api.post(`/profession/player/ability/forget?${sp.toString()}`);
+  },
+  equipAbility: (stateId: string, abilityId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('state_id', stateId);
+    sp.set('ability_id', abilityId);
+    return api.post(`/profession/player/ability/equip?${sp.toString()}`);
+  },
+  unequipAbility: (stateId: string, abilityId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('state_id', stateId);
+    sp.set('ability_id', abilityId);
+    return api.post(`/profession/player/ability/unequip?${sp.toString()}`);
+  },
+  useAbility: (stateId: string, abilityId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('state_id', stateId);
+    sp.set('ability_id', abilityId);
+    return api.post(`/profession/player/ability/use?${sp.toString()}`);
+  },
+  learnTalent: (stateId: string, nodeId: string, points?: number) => {
+    const sp = new URLSearchParams();
+    sp.set('state_id', stateId);
+    sp.set('node_id', nodeId);
+    if (points !== undefined) sp.set('points', String(points));
+    return api.post(`/profession/player/talent/learn?${sp.toString()}`);
+  },
+  resetTalentNode: (stateId: string, nodeId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('state_id', stateId);
+    sp.set('node_id', nodeId);
+    return api.post(`/profession/player/talent/reset_node?${sp.toString()}`);
+  },
+  resetTalentTree: (stateId: string, treeId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('state_id', stateId);
+    sp.set('tree_id', treeId);
+    return api.post(`/profession/player/talent/reset_tree?${sp.toString()}`);
+  },
+  registerProfession: (params: { profession_id: string; name: string; description?: string; profession_type?: string; category?: string; max_level?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('profession_id', params.profession_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.profession_type) sp.set('profession_type', params.profession_type);
+    if (params.category) sp.set('category', params.category);
+    if (params.max_level !== undefined) sp.set('max_level', String(params.max_level));
+    return api.post(`/profession/profession/register?${sp.toString()}`);
+  },
+  getProfession: (professionId: string) => api.get(`/profession/profession/${professionId}`),
+  listProfessions: (params?: { limit?: number; offset?: number; profession_type?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    if (params?.profession_type) sp.set('profession_type', params.profession_type);
+    return api.get(`/profession/profession/list?${sp.toString()}`);
+  },
+  registerRecipe: (params: { recipe_id: string; name: string; description?: string; profession_id?: string; category?: string; required_level?: number; rarity?: string; craft_time_seconds?: number; success_chance?: number; critical_chance?: number; discovery_chance?: number; skill_xp?: number; station_required?: string; ingredients?: Array<Record<string, unknown>>; outputs?: Array<Record<string, unknown>> }) =>
+    api.post('/profession/recipe/register', params),
+  getRecipe: (recipeId: string) => api.get(`/profession/recipe/${recipeId}`),
+  listRecipes: (params?: { limit?: number; offset?: number; profession_id?: string; rarity?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.offset) sp.set('offset', String(params.offset));
+    if (params?.profession_id) sp.set('profession_id', params.profession_id);
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    return api.get(`/profession/recipe/list?${sp.toString()}`);
+  },
+  learnProfession: (playerId: string, professionId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    sp.set('profession_id', professionId);
+    return api.post(`/profession/player/profession/learn?${sp.toString()}`);
+  },
+  getPlayerProfession: (ppId: string) => api.get(`/profession/player/profession/${ppId}`),
+  listPlayerProfessions: (playerId: string) => api.get(`/profession/player/profession/list/${playerId}`),
+  learnRecipe: (ppId: string, recipeId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('pp_id', ppId);
+    sp.set('recipe_id', recipeId);
+    return api.post(`/profession/player/recipe/learn?${sp.toString()}`);
+  },
+  performCraft: (ppId: string, recipeId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('pp_id', ppId);
+    sp.set('recipe_id', recipeId);
+    return api.post(`/profession/player/craft?${sp.toString()}`);
+  },
+  getCraftHistory: (params?: { player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit) sp.set('limit', String(params.limit));
+    return api.get(`/profession/craft/history?${sp.toString()}`);
+  },
+};
