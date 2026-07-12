@@ -6988,64 +6988,131 @@ export const replayApi = {
   },
 };
 
-// Round 26 - Housing System API
+// Round 33 - Player Housing System API
 export const housingApi = {
-  status: () => api.get('/housing/status'),
-  snapshot: () => api.get('/housing/snapshot'),
-  stats: () => api.get('/housing/stats'),
+  getStatus: () => api.get('/housing/status'),
+  getSnapshot: () => api.get('/housing/snapshot'),
+  getStats: () => api.get('/housing/stats'),
   reset: () => api.post('/housing/reset'),
-  listPlots: (params?: { owner_id?: string; plot_type?: string; limit?: number }) => {
+  listPlotTemplates: (size?: string) => {
     const sp = new URLSearchParams();
-    if (params?.owner_id) sp.set('owner_id', params.owner_id);
-    if (params?.plot_type) sp.set('plot_type', params.plot_type);
-    if (params?.limit) sp.set('limit', String(params.limit));
+    if (size) sp.set('size', size);
     const qs = sp.toString();
-    return api.get(`/housing/plots${qs ? `?${qs}` : ''}`);
+    return api.get(`/housing/plot-templates${qs ? `?${qs}` : ''}`);
   },
-  registerPlot: (data: Record<string, unknown>) => api.post('/housing/plots', data),
-  getPlot: (plotId: string) => api.get(`/housing/plots/${plotId}`),
-  removePlot: (plotId: string) => api.delete(`/housing/plots/${plotId}`),
-  listFurniture: (params?: { category?: string; limit?: number }) => {
+  registerPlotTemplate: (data: { plot_id: string; name: string; size: string; location: string; width?: number; depth?: number }) =>
+    api.post('/housing/plot-templates/register', data),
+  getPlotTemplate: (plotId: string) => api.get(`/housing/plot-templates/${plotId}`),
+  removePlotTemplate: (plotId: string) => api.delete(`/housing/plot-templates/${plotId}`),
+  listHouseTemplates: (params?: { style?: string; plot_size_required?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.style) sp.set('style', params.style);
+    if (params?.plot_size_required) sp.set('plot_size_required', params.plot_size_required);
+    const qs = sp.toString();
+    return api.get(`/housing/house-templates${qs ? `?${qs}` : ''}`);
+  },
+  registerHouseTemplate: (data: { template_id: string; name: string; style: string; plot_size_required: string; room_count?: number; floor_count?: number; base_cost?: number; upgrade_cost?: number; max_upgrades?: number; prestige?: number; description?: string }) =>
+    api.post('/housing/house-templates/register', data),
+  getHouseTemplate: (templateId: string) => api.get(`/housing/house-templates/${templateId}`),
+  removeHouseTemplate: (templateId: string) => api.delete(`/housing/house-templates/${templateId}`),
+  listFurniture: (params?: { category?: string; rarity?: string; placement?: string }) => {
     const sp = new URLSearchParams();
     if (params?.category) sp.set('category', params.category);
-    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    if (params?.placement) sp.set('placement', params.placement);
     const qs = sp.toString();
     return api.get(`/housing/furniture${qs ? `?${qs}` : ''}`);
   },
-  registerFurniture: (data: Record<string, unknown>) => api.post('/housing/furniture', data),
+  registerFurniture: (data: { furniture_id: string; name: string; category?: string; placement?: string; rarity?: string; width?: number; height?: number; depth?: number; color?: string; description?: string; craft_cost?: number; unlock_level?: number }) =>
+    api.post('/housing/furniture/register', data),
   getFurniture: (furnitureId: string) => api.get(`/housing/furniture/${furnitureId}`),
   removeFurniture: (furnitureId: string) => api.delete(`/housing/furniture/${furnitureId}`),
-  placeFurniture: (plotId: string, data: Record<string, unknown>) => api.post(`/housing/plots/${plotId}/place`, data),
-  removePlacement: (plotId: string, data: { placement_id: string }) => api.post(`/housing/plots/${plotId}/remove-placement`, data),
-  movePlacement: (plotId: string, data: Record<string, unknown>) => api.post(`/housing/plots/${plotId}/move`, data),
-  rotatePlacement: (plotId: string, data: { placement_id: string; rotation_y: number }) => api.post(`/housing/plots/${plotId}/rotate`, data),
-  setPermission: (plotId: string, data: { permission: string }) => api.post(`/housing/plots/${plotId}/permission`, data),
-  getPermission: (plotId: string) => api.get(`/housing/plots/${plotId}/permission`),
-  inviteVisitor: (plotId: string, data: Record<string, unknown>) => api.post(`/housing/plots/${plotId}/invite`, data),
-  revokeVisitor: (plotId: string, data: { visitor_id: string }) => api.post(`/housing/plots/${plotId}/revoke`, data),
-  listVisitors: (plotId: string, limit?: number) => {
+  listPlots: (params?: { owner_id?: string; size?: string; location?: string; available_only?: boolean }) => {
     const sp = new URLSearchParams();
-    if (limit) sp.set('limit', String(limit));
+    if (params?.owner_id) sp.set('owner_id', params.owner_id);
+    if (params?.size) sp.set('size', params.size);
+    if (params?.location) sp.set('location', params.location);
+    if (params?.available_only !== undefined) sp.set('available_only', String(params.available_only));
     const qs = sp.toString();
-    return api.get(`/housing/plots/${plotId}/visitors${qs ? `?${qs}` : ''}`);
+    return api.get(`/housing/plots${qs ? `?${qs}` : ''}`);
   },
-  saveTemplate: (data: Record<string, unknown>) => api.post('/housing/templates', data),
-  loadTemplate: (data: { template_id: string; plot_id: string }) => api.post('/housing/templates/load', data),
-  listTemplates: (params?: { plot_type?: string; limit?: number }) => {
+  acquirePlot: (data: { player_id: string; template_id: string; plot_name?: string }) =>
+    api.post('/housing/plots/acquire', data),
+  getPlot: (plotId: string) => api.get(`/housing/plots/${plotId}`),
+  releasePlot: (plotId: string) => api.delete(`/housing/plots/${plotId}`),
+  listHousings: (params?: { owner_id?: string; is_public?: boolean }) => {
     const sp = new URLSearchParams();
-    if (params?.plot_type) sp.set('plot_type', params.plot_type);
-    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.owner_id) sp.set('owner_id', params.owner_id);
+    if (params?.is_public !== undefined) sp.set('is_public', String(params.is_public));
     const qs = sp.toString();
-    return api.get(`/housing/templates${qs ? `?${qs}` : ''}`);
+    return api.get(`/housing/housings${qs ? `?${qs}` : ''}`);
   },
-  removeTemplate: (templateId: string) => api.delete(`/housing/templates/${templateId}`),
-  tick: (data: Record<string, unknown>) => api.post('/housing/tick', data),
+  getHousing: (housingId: string) => api.get(`/housing/housings/${housingId}`),
+  buildHouse: (data: { plot_id: string; house_template_id: string; house_name?: string }) =>
+    api.post('/housing/housings/build', data),
+  demolishHouse: (housingId: string) => api.delete(`/housing/housings/${housingId}`),
+  upgradeHouse: (housingId: string) => api.post(`/housing/housings/${housingId}/upgrade`),
+  placeFurniture: (housingId: string, data: { furniture_id: string; room_index?: number; floor_index?: number; position_x?: number; position_y?: number; position_z?: number; rotation_y?: number; scale?: number }) =>
+    api.post(`/housing/housings/${housingId}/furniture/place`, data),
+  moveFurniture: (housingId: string, placementId: string, data: { position_x?: number; position_y?: number; position_z?: number; rotation_y?: number; scale?: number; room_index?: number }) =>
+    api.post(`/housing/housings/${housingId}/furniture/${placementId}/move`, data),
+  removePlacedFurniture: (housingId: string, placementId: string) =>
+    api.delete(`/housing/housings/${housingId}/furniture/${placementId}`),
+  listPlacedFurniture: (housingId: string, roomIndex?: number) => {
+    const sp = new URLSearchParams();
+    if (roomIndex !== undefined) sp.set('room_index', String(roomIndex));
+    const qs = sp.toString();
+    return api.get(`/housing/housings/${housingId}/furniture${qs ? `?${qs}` : ''}`);
+  },
+  customizeRoom: (housingId: string, roomIndex: number, data: { wallpaper_id?: string; wallpaper_color?: string; floor_id?: string; floor_color?: string; ceiling_id?: string; ceiling_color?: string; lighting_id?: string; lighting_intensity?: number; ambient_color?: string }) =>
+    api.post(`/housing/housings/${housingId}/rooms/${roomIndex}/customize`, data),
+  getRoom: (housingId: string, roomIndex: number) => api.get(`/housing/housings/${housingId}/rooms/${roomIndex}`),
+  inviteVisitor: (housingId: string, data: { player_id: string; permission?: string }) =>
+    api.post(`/housing/housings/${housingId}/visitors/invite`, data),
+  visitorEnter: (housingId: string, playerId: string) =>
+    api.post(`/housing/housings/${housingId}/visitors/${playerId}/enter`),
+  visitorLeave: (housingId: string, playerId: string) =>
+    api.post(`/housing/housings/${housingId}/visitors/${playerId}/leave`),
+  removeVisitor: (housingId: string, playerId: string) =>
+    api.delete(`/housing/housings/${housingId}/visitors/${playerId}`),
+  listVisitors: (housingId: string, status?: string) => {
+    const sp = new URLSearchParams();
+    if (status) sp.set('status', status);
+    const qs = sp.toString();
+    return api.get(`/housing/housings/${housingId}/visitors${qs ? `?${qs}` : ''}`);
+  },
+  setPermission: (housingId: string, playerId: string, data: { permission: string }) =>
+    api.post(`/housing/housings/${housingId}/permissions/${playerId}`, data),
+  getPermissions: (housingId: string) => api.get(`/housing/housings/${housingId}/permissions`),
+  listNeighborhoods: (isOpen?: boolean) => {
+    const sp = new URLSearchParams();
+    if (isOpen !== undefined) sp.set('is_open', String(isOpen));
+    const qs = sp.toString();
+    return api.get(`/housing/neighborhoods${qs ? `?${qs}` : ''}`);
+  },
+  registerNeighborhood: (data: { neighborhood_id: string; name: string; founder_id: string; description?: string; is_open?: boolean; min_prestige?: number }) =>
+    api.post('/housing/neighborhoods/register', data),
+  getNeighborhood: (neighborhoodId: string) => api.get(`/housing/neighborhoods/${neighborhoodId}`),
+  joinNeighborhood: (neighborhoodId: string, data: { player_id: string; plot_id?: string }) =>
+    api.post(`/housing/neighborhoods/${neighborhoodId}/join`, data),
+  leaveNeighborhood: (neighborhoodId: string, playerId: string) =>
+    api.post(`/housing/neighborhoods/${neighborhoodId}/leave/${playerId}`),
+  rateHousing: (housingId: string, data: { rater_id: string; rating: number; comment?: string }) =>
+    api.post(`/housing/housings/${housingId}/rate`, data),
+  getRating: (housingId: string) => api.get(`/housing/housings/${housingId}/rating`),
+  listTopRated: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit !== undefined) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/housing/top-rated${qs ? `?${qs}` : ''}`);
+  },
+  tick: () => api.post('/housing/tick'),
   getConfig: () => api.get('/housing/config'),
   setConfig: (data: Record<string, unknown>) => api.post('/housing/config', data),
-  listEvents: (params?: { plot_id?: string; limit?: number }) => {
+  listEvents: (params?: { kind?: string; limit?: number }) => {
     const sp = new URLSearchParams();
-    if (params?.plot_id) sp.set('plot_id', params.plot_id);
-    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
     const qs = sp.toString();
     return api.get(`/housing/events${qs ? `?${qs}` : ''}`);
   },
@@ -7176,66 +7243,78 @@ export const wardrobeApi = {
   },
 };
 
-// Round 27 - Pet Companion System API
+// Round 33 - Pet Companion System API
 export const petApi = {
-  status: () => api.get('/pet/status'),
-  snapshot: () => api.get('/pet/snapshot'),
-  stats: () => api.get('/pet/stats'),
+  getStatus: () => api.get('/pet/status'),
+  getSnapshot: () => api.get('/pet/snapshot'),
+  getStats: () => api.get('/pet/stats'),
   reset: () => api.post('/pet/reset'),
-  listSpecies: (params?: { role?: string; rarity?: string; limit?: number }) => {
+  listSpecies: (params?: { family?: string; role?: string; rarity?: string }) => {
     const sp = new URLSearchParams();
+    if (params?.family) sp.set('family', params.family);
     if (params?.role) sp.set('role', params.role);
     if (params?.rarity) sp.set('rarity', params.rarity);
-    if (params?.limit) sp.set('limit', String(params.limit));
     const qs = sp.toString();
-    return api.get(`/pet/species${qs ? `?${qs}` : ''}`);
+    return api.get(`/pet/species/list${qs ? `?${qs}` : ''}`);
   },
-  registerSpecies: (data: Record<string, unknown>) => api.post('/pet/species', data),
+  registerSpecies: (data: { species_id: string; name: string; description?: string; family?: string; role?: string; rarity?: string; base_attack?: number; base_defense?: number; base_speed?: number; base_health?: number; acquire_method?: string }) =>
+    api.post('/pet/species/register', data),
   getSpecies: (speciesId: string) => api.get(`/pet/species/${speciesId}`),
   removeSpecies: (speciesId: string) => api.delete(`/pet/species/${speciesId}`),
-  listPets: (params?: { owner_id?: string; summoned?: boolean; species_id?: string; limit?: number }) => {
+  listAbilities: (speciesRestriction?: string) => {
     const sp = new URLSearchParams();
-    if (params?.owner_id) sp.set('owner_id', params.owner_id);
-    if (params?.summoned !== undefined) sp.set('summoned', String(params.summoned));
-    if (params?.species_id) sp.set('species_id', params.species_id);
-    if (params?.limit) sp.set('limit', String(params.limit));
+    if (speciesRestriction) sp.set('species_restriction', speciesRestriction);
     const qs = sp.toString();
-    return api.get(`/pet/pets${qs ? `?${qs}` : ''}`);
+    return api.get(`/pet/abilities/list${qs ? `?${qs}` : ''}`);
   },
-  registerPet: (data: Record<string, unknown>) => api.post('/pet/pets', data),
-  getPet: (petId: string) => api.get(`/pet/pets/${petId}`),
-  removePet: (petId: string) => api.delete(`/pet/pets/${petId}`),
-  summon: (petId: string) => api.post(`/pet/pets/${petId}/summon`),
-  dismiss: (petId: string) => api.post(`/pet/pets/${petId}/dismiss`),
-  gainExperience: (petId: string, data: { amount: number }) => api.post(`/pet/pets/${petId}/gain-experience`, data),
-  levelUp: (petId: string) => api.post(`/pet/pets/${petId}/level-up`),
-  evolve: (petId: string) => api.post(`/pet/pets/${petId}/evolve`),
-  increaseAffinity: (petId: string, data: { amount: number }) => api.post(`/pet/pets/${petId}/increase-affinity`, data),
-  getAffinity: (petId: string) => api.get(`/pet/pets/${petId}/affinity`),
-  learnSkill: (petId: string, data: { skill_id: string }) => api.post(`/pet/pets/${petId}/learn-skill`, data),
-  equipSkill: (petId: string, data: { skill_id: string }) => api.post(`/pet/pets/${petId}/equip-skill`, data),
-  unequipSkill: (petId: string, data: { skill_id: string }) => api.post(`/pet/pets/${petId}/unequip-skill`, data),
-  listAccessories: (params?: { slot?: string; limit?: number }) => {
+  registerAbility: (data: { ability_id: string; name: string; description?: string; ability_type?: string; cooldown?: number; power?: number; required_level?: number }) =>
+    api.post('/pet/abilities/register', data),
+  getAbility: (abilityId: string) => api.get(`/pet/abilities/${abilityId}`),
+  acquirePet: (data: { player_id: string; species_id: string; pet_name?: string; acquire_method?: string }) =>
+    api.post('/pet/acquire', data),
+  listPlayerPets: (playerId: string, status?: string) => {
     const sp = new URLSearchParams();
-    if (params?.slot) sp.set('slot', params.slot);
-    if (params?.limit) sp.set('limit', String(params.limit));
+    if (status) sp.set('status', status);
     const qs = sp.toString();
-    return api.get(`/pet/accessories${qs ? `?${qs}` : ''}`);
+    return api.get(`/pet/player/${playerId}/list${qs ? `?${qs}` : ''}`);
   },
-  registerAccessory: (data: Record<string, unknown>) => api.post('/pet/accessories', data),
-  getAccessory: (accessoryId: string) => api.get(`/pet/accessories/${accessoryId}`),
-  equipAccessory: (petId: string, data: { accessory_id: string }) => api.post(`/pet/pets/${petId}/equip-accessory`, data),
-  unequipAccessory: (petId: string, data: { accessory_id: string }) => api.post(`/pet/pets/${petId}/unequip-accessory`, data),
-  setMount: (petId: string, data: { enabled: boolean }) => api.post(`/pet/pets/${petId}/mount`, data),
-  getMount: (petId: string) => api.get(`/pet/pets/${petId}/mount`),
-  tick: (data: Record<string, unknown>) => api.post('/pet/tick', data),
+  getActiveCompanion: (playerId: string) => api.get(`/pet/player/${playerId}/active`),
+  getPet: (petId: string) => api.get(`/pet/${petId}`),
+  releasePet: (petId: string) => api.delete(`/pet/${petId}`),
+  summonCompanion: (playerId: string, petId: string) =>
+    api.post(`/pet/${playerId}/summon/${petId}`),
+  dismissCompanion: (playerId: string) => api.post(`/pet/${playerId}/dismiss`),
+  feedPet: (petId: string, data: { food_quality?: number }) =>
+    api.post(`/pet/${petId}/feed`, data),
+  getMood: (petId: string) => api.get(`/pet/${petId}/mood`),
+  trainPet: (petId: string, data: { training_type?: string; duration?: number }) =>
+    api.post(`/pet/${petId}/train`, data),
+  getTrainingHistory: (petId: string) => api.get(`/pet/${petId}/training-history`),
+  teachAbility: (petId: string, data: { ability_id: string }) =>
+    api.post(`/pet/${petId}/teach-ability`, data),
+  forgetAbility: (petId: string, data: { ability_id: string }) =>
+    api.post(`/pet/${petId}/forget-ability`, data),
+  getPetAbilities: (petId: string) => api.get(`/pet/${petId}/abilities`),
+  equipPetItem: (petId: string, data: { slot: string; item_id: string; item_name?: string }) =>
+    api.post(`/pet/${petId}/equip`, data),
+  unequipPetItem: (petId: string, slot: string) =>
+    api.post(`/pet/${petId}/unequip/${slot}`),
+  gainPetXp: (petId: string, data: { amount: number }) =>
+    api.post(`/pet/${petId}/gain-xp`, data),
+  levelUpPet: (petId: string) => api.post(`/pet/${petId}/level-up`),
+  evolvePet: (petId: string) => api.post(`/pet/${petId}/evolve`),
+  getCombatPower: (petId: string) => api.get(`/pet/${petId}/combat-power`),
+  getBondLevel: (petId: string) => api.get(`/pet/${petId}/bond-level`),
+  recordBondInteraction: (petId: string, data: { interaction_type?: string }) =>
+    api.post(`/pet/${petId}/bond`, data),
+  getBondHistory: (petId: string) => api.get(`/pet/${petId}/bond-history`),
+  tick: () => api.post('/pet/tick'),
   getConfig: () => api.get('/pet/config'),
   setConfig: (data: Record<string, unknown>) => api.post('/pet/config', data),
-  listEvents: (params?: { species_id?: string; pet_id?: string; limit?: number }) => {
+  listEvents: (params?: { kind?: string; limit?: number }) => {
     const sp = new URLSearchParams();
-    if (params?.species_id) sp.set('species_id', params.species_id);
-    if (params?.pet_id) sp.set('pet_id', params.pet_id);
-    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
     const qs = sp.toString();
     return api.get(`/pet/events${qs ? `?${qs}` : ''}`);
   },
@@ -8928,3 +9007,4219 @@ export const professionApi = {
     return api.get(`/profession/craft/history?${sp.toString()}`);
   },
 };
+
+// Round 32 - Season Pass System API Client
+export const seasonApi = {
+  getStatus: () => api.get('/season/status'),
+  getSnapshot: () => api.get('/season/snapshot'),
+  getStats: () => api.get('/season/stats'),
+  getConfig: () => api.get('/season/config'),
+  setConfig: (config: Record<string, unknown>) => api.put('/season/config', config),
+  tick: () => api.post('/season/tick'),
+  reset: () => api.post('/season/reset'),
+  listEvents: (params?: { limit?: number; kind?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.kind) sp.set('kind', params.kind);
+    return api.get(`/season/events?${sp.toString()}`);
+  },
+  getActiveSeason: () => api.get('/season/active'),
+  listSeasons: (status?: string) => {
+    const sp = new URLSearchParams();
+    if (status) sp.set('status', status);
+    return api.get(`/season/list?${sp.toString()}`);
+  },
+  registerSeason: (params: { season_id: string; name: string; description?: string; season_number?: number; max_tiers?: number; xp_per_tier?: number; premium_cost?: number; premium_currency?: string; theme?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('season_id', params.season_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.season_number !== undefined) sp.set('season_number', String(params.season_number));
+    if (params.max_tiers !== undefined) sp.set('max_tiers', String(params.max_tiers));
+    if (params.xp_per_tier !== undefined) sp.set('xp_per_tier', String(params.xp_per_tier));
+    if (params.premium_cost !== undefined) sp.set('premium_cost', String(params.premium_cost));
+    if (params.premium_currency) sp.set('premium_currency', params.premium_currency);
+    if (params.theme) sp.set('theme', params.theme);
+    return api.post(`/season/register?${sp.toString()}`);
+  },
+  getSeason: (seasonId: string) => api.get(`/season/${seasonId}`),
+  removeSeason: (seasonId: string) => api.delete(`/season/${seasonId}`),
+  startSeason: (seasonId: string) => api.post(`/season/${seasonId}/start`),
+  endSeason: (seasonId: string) => api.post(`/season/${seasonId}/end`),
+  listTiers: (seasonId: string) => api.get(`/season/${seasonId}/tiers`),
+  getTier: (seasonId: string, tierNumber: number) => api.get(`/season/${seasonId}/tier/${tierNumber}`),
+  registerTier: (seasonId: string, params: { tier_number: number; xp_required?: number; name?: string; description?: string; is_milestone?: boolean }) => {
+    const sp = new URLSearchParams();
+    sp.set('tier_number', String(params.tier_number));
+    if (params.xp_required !== undefined) sp.set('xp_required', String(params.xp_required));
+    if (params.name) sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.is_milestone !== undefined) sp.set('is_milestone', String(params.is_milestone));
+    return api.post(`/season/${seasonId}/tier/register?${sp.toString()}`);
+  },
+  listRewards: (seasonId: string, params?: { tier_number?: number; track?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.tier_number !== undefined) sp.set('tier_number', String(params.tier_number));
+    if (params?.track) sp.set('track', params.track);
+    return api.get(`/season/${seasonId}/rewards?${sp.toString()}`);
+  },
+  listChallenges: (seasonId: string, challengeType?: string) => {
+    const sp = new URLSearchParams();
+    if (challengeType) sp.set('challenge_type', challengeType);
+    return api.get(`/season/${seasonId}/challenges?${sp.toString()}`);
+  },
+  registerPlayer: (seasonId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/season/${seasonId}/register_player?${sp.toString()}`);
+  },
+  getPlayerProgress: (seasonId: string, playerId: string) => api.get(`/season/${seasonId}/player/${playerId}`),
+  addSeasonXp: (seasonId: string, playerId: string, amount: number) => {
+    const sp = new URLSearchParams();
+    sp.set('amount', String(amount));
+    return api.post(`/season/${seasonId}/player/${playerId}/add_xp?${sp.toString()}`);
+  },
+  claimTierReward: (seasonId: string, playerId: string, params: { tier_number: number; track?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('tier_number', String(params.tier_number));
+    if (params.track) sp.set('track', params.track);
+    return api.post(`/season/${seasonId}/player/${playerId}/claim_tier?${sp.toString()}`);
+  },
+  purchasePremium: (seasonId: string, playerId: string) => api.post(`/season/${seasonId}/player/${playerId}/purchase_premium`),
+  getPremiumStatus: (seasonId: string, playerId: string) => api.get(`/season/${seasonId}/player/${playerId}/premium_status`),
+  completeChallenge: (challengeId: string, playerId: string, value?: number) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    if (value !== undefined) sp.set('value', String(value));
+    return api.post(`/season/challenge/${challengeId}/complete?${sp.toString()}`);
+  },
+  claimChallengeReward: (challengeId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/season/challenge/${challengeId}/claim?${sp.toString()}`);
+  },
+  resetChallengeProgress: (challengeId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/season/challenge/${challengeId}/reset?${sp.toString()}`);
+  },
+  getChallengeCompletion: (challengeId: string, playerId: string) => api.get(`/season/challenge/${challengeId}/completion/${playerId}`),
+  listCompletions: (params?: { player_id?: string; season_id?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.season_id) sp.set('season_id', params.season_id);
+    return api.get(`/season/completions/list?${sp.toString()}`);
+  },
+  listProgress: (params?: { season_id?: string; player_id?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.season_id) sp.set('season_id', params.season_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    return api.get(`/season/progress/list?${sp.toString()}`);
+  },
+};
+
+// Round 32 - Mount & Riding System API Client
+export const mountApi = {
+  getStatus: () => api.get('/mount/status'),
+  getSnapshot: () => api.get('/mount/snapshot'),
+  getStats: () => api.get('/mount/stats'),
+  getConfig: () => api.get('/mount/config'),
+  setConfig: (config: Record<string, unknown>) => api.put('/mount/config', config),
+  tick: () => api.post('/mount/tick'),
+  reset: () => api.post('/mount/reset'),
+  listEvents: (params?: { limit?: number; kind?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit) sp.set('limit', String(params.limit));
+    if (params?.kind) sp.set('kind', params.kind);
+    return api.get(`/mount/events?${sp.toString()}`);
+  },
+  listMounts: (params?: { mount_type?: string; rarity?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.mount_type) sp.set('mount_type', params.mount_type);
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    return api.get(`/mount/list?${sp.toString()}`);
+  },
+  registerMount: (params: { mount_id: string; name: string; description?: string; mount_type?: string; rarity?: string; base_speed?: number; max_speed?: number; base_stamina?: number; max_stamina?: number; stamina_regen?: number; combat_capable?: boolean; combat_power?: number; passenger_capacity?: number; required_level?: number; acquisition_cost?: number; acquisition_currency?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('mount_id', params.mount_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.mount_type) sp.set('mount_type', params.mount_type);
+    if (params.rarity) sp.set('rarity', params.rarity);
+    if (params.base_speed !== undefined) sp.set('base_speed', String(params.base_speed));
+    if (params.max_speed !== undefined) sp.set('max_speed', String(params.max_speed));
+    if (params.base_stamina !== undefined) sp.set('base_stamina', String(params.base_stamina));
+    if (params.max_stamina !== undefined) sp.set('max_stamina', String(params.max_stamina));
+    if (params.stamina_regen !== undefined) sp.set('stamina_regen', String(params.stamina_regen));
+    if (params.combat_capable !== undefined) sp.set('combat_capable', String(params.combat_capable));
+    if (params.combat_power !== undefined) sp.set('combat_power', String(params.combat_power));
+    if (params.passenger_capacity !== undefined) sp.set('passenger_capacity', String(params.passenger_capacity));
+    if (params.required_level !== undefined) sp.set('required_level', String(params.required_level));
+    if (params.acquisition_cost !== undefined) sp.set('acquisition_cost', String(params.acquisition_cost));
+    if (params.acquisition_currency) sp.set('acquisition_currency', params.acquisition_currency);
+    return api.post(`/mount/register?${sp.toString()}`);
+  },
+  getMount: (mountId: string) => api.get(`/mount/${mountId}`),
+  removeMount: (mountId: string) => api.delete(`/mount/${mountId}`),
+  getMountSkins: (mountId: string) => api.get(`/mount/${mountId}/skins`),
+  listSkins: (mountId?: string) => {
+    const sp = new URLSearchParams();
+    if (mountId) sp.set('mount_id', mountId);
+    return api.get(`/skin/list?${sp.toString()}`);
+  },
+  registerSkin: (params: { skin_id: string; name: string; description?: string; mount_id?: string; rarity?: string; acquisition_cost?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('skin_id', params.skin_id);
+    sp.set('name', params.name);
+    if (params.description) sp.set('description', params.description);
+    if (params.mount_id) sp.set('mount_id', params.mount_id);
+    if (params.rarity) sp.set('rarity', params.rarity);
+    if (params.acquisition_cost !== undefined) sp.set('acquisition_cost', String(params.acquisition_cost));
+    return api.post(`/skin/register?${sp.toString()}`);
+  },
+  getSkin: (skinId: string) => api.get(`/skin/${skinId}`),
+  acquireMount: (playerId: string, mountId: string, customName?: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    sp.set('mount_id', mountId);
+    if (customName) sp.set('custom_name', customName);
+    return api.post(`/player/mount/acquire?${sp.toString()}`);
+  },
+  listPlayerMounts: (playerId: string) => api.get(`/player/${playerId}/mounts`),
+  getActiveMount: (playerId: string) => api.get(`/player/${playerId}/active_mount`),
+  getPlayerMount: (pmId: string) => api.get(`/player_mount/${pmId}`),
+  summonMount: (pmId: string) => api.post(`/player_mount/${pmId}/summon`),
+  dismissMount: (pmId: string) => api.post(`/player_mount/${pmId}/dismiss`),
+  trainMount: (pmId: string, params?: { training_type?: string; cost?: number; currency?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.training_type) sp.set('training_type', params.training_type);
+    if (params?.cost !== undefined) sp.set('cost', String(params.cost));
+    if (params?.currency) sp.set('currency', params.currency);
+    return api.post(`/player_mount/${pmId}/train?${sp.toString()}`);
+  },
+  getMountSpeed: (pmId: string, terrain?: string) => {
+    const sp = new URLSearchParams();
+    if (terrain) sp.set('terrain', terrain);
+    return api.get(`/player_mount/${pmId}/speed?${sp.toString()}`);
+  },
+  equipMountItem: (pmId: string, params: { slot: string; item_id: string; item_name?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('slot', params.slot);
+    sp.set('item_id', params.item_id);
+    if (params.item_name) sp.set('item_name', params.item_name);
+    return api.post(`/player_mount/${pmId}/equip?${sp.toString()}`);
+  },
+  unequipMountItem: (pmId: string, slot: string) => {
+    const sp = new URLSearchParams();
+    sp.set('slot', slot);
+    return api.post(`/player_mount/${pmId}/unequip?${sp.toString()}`);
+  },
+  applySkin: (pmId: string, skinId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('skin_id', skinId);
+    return api.post(`/player_mount/${pmId}/apply_skin?${sp.toString()}`);
+  },
+  listTrainingRecords: (params?: { pm_id?: string; player_id?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.pm_id) sp.set('pm_id', params.pm_id);
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    return api.get(`/training/records?${sp.toString()}`);
+  },
+  getTrainingRecord: (recordId: string) => api.get(`/training/${recordId}`),
+};
+
+// Round 32 - Gem Socketing System API Client
+export const gemApi = {
+  getStatus: () => api.get('/gem/status'),
+  getSnapshot: () => api.get('/gem/snapshot'),
+  getStats: () => api.get('/gem/stats'),
+  getConfig: () => api.get('/gem/config'),
+  setConfig: (config: Record<string, unknown>) => api.put('/gem/config', config),
+  tick: () => api.post('/gem/tick'),
+  reset: () => api.post('/gem/reset'),
+  listEvents: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit !== undefined) sp.set('limit', String(limit));
+    return api.get(`/gem/events?${sp.toString()}`);
+  },
+  listGems: (params?: { gem_type?: string; rarity?: string; color?: string; set_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.gem_type) sp.set('gem_type', params.gem_type);
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    if (params?.color) sp.set('color', params.color);
+    if (params?.set_id) sp.set('set_id', params.set_id);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    return api.get(`/gem/list?${sp.toString()}`);
+  },
+  registerGem: (params: { gem_id: string; name: string; description: string; gem_type?: string; rarity?: string; color?: string; level_requirement?: number; set_id?: string; vendor_value?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('gem_id', params.gem_id);
+    sp.set('name', params.name);
+    sp.set('description', params.description);
+    if (params.gem_type) sp.set('gem_type', params.gem_type);
+    if (params.rarity) sp.set('rarity', params.rarity);
+    if (params.color) sp.set('color', params.color);
+    if (params.level_requirement !== undefined) sp.set('level_requirement', String(params.level_requirement));
+    if (params.set_id) sp.set('set_id', params.set_id);
+    if (params.vendor_value !== undefined) sp.set('vendor_value', String(params.vendor_value));
+    return api.post(`/gem/register?${sp.toString()}`);
+  },
+  getGem: (gemId: string) => api.get(`/gem/${gemId}`),
+  removeGem: (gemId: string) => api.delete(`/gem/${gemId}`),
+  listGemSets: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit !== undefined) sp.set('limit', String(limit));
+    return api.get(`/gem_set/list?${sp.toString()}`);
+  },
+  registerGemSet: (params: { set_id: string; name: string; description: string; required_count?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('set_id', params.set_id);
+    sp.set('name', params.name);
+    sp.set('description', params.description);
+    if (params.required_count !== undefined) sp.set('required_count', String(params.required_count));
+    return api.post(`/gem_set/register?${sp.toString()}`);
+  },
+  getGemSet: (setId: string) => api.get(`/gem_set/${setId}`),
+  listSocketItems: (params?: { player_id?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    return api.get(`/socket_item/list?${sp.toString()}`);
+  },
+  registerSocketItem: (params: { player_id: string; item_id: string; item_name: string; item_slot?: string }) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', params.player_id);
+    sp.set('item_id', params.item_id);
+    sp.set('item_name', params.item_name);
+    if (params.item_slot) sp.set('item_slot', params.item_slot);
+    return api.post(`/socket_item/register?${sp.toString()}`);
+  },
+  getSocketItem: (playerId: string, itemId: string) => api.get(`/socket_item/${playerId}/${itemId}`),
+  addSocket: (playerId: string, itemId: string, params?: { color?: string; unlock_cost?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.color) sp.set('color', params.color);
+    if (params?.unlock_cost !== undefined) sp.set('unlock_cost', String(params.unlock_cost));
+    return api.post(`/socket_item/${playerId}/${itemId}/add_socket?${sp.toString()}`);
+  },
+  unlockSocket: (playerId: string, itemId: string, socketId: string) => api.post(`/socket_item/${playerId}/${itemId}/socket/${socketId}/unlock`),
+  getSocket: (playerId: string, itemId: string, socketId: string) => api.get(`/socket_item/${playerId}/${itemId}/socket/${socketId}`),
+  insertGem: (playerId: string, itemId: string, socketId: string, gemId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('gem_id', gemId);
+    return api.post(`/socket_item/${playerId}/${itemId}/socket/${socketId}/insert_gem?${sp.toString()}`);
+  },
+  removeSocketedGem: (playerId: string, itemId: string, socketId: string, destroyGem?: boolean) => {
+    const sp = new URLSearchParams();
+    if (destroyGem !== undefined) sp.set('destroy_gem', String(destroyGem));
+    return api.post(`/socket_item/${playerId}/${itemId}/socket/${socketId}/remove_gem?${sp.toString()}`);
+  },
+  getSocketedGems: (playerId: string, itemId: string) => api.get(`/socket_item/${playerId}/${itemId}/gems`),
+  getSocketItemBonuses: (playerId: string, itemId: string) => api.get(`/socket_item/${playerId}/${itemId}/bonuses`),
+  getPlayerGemBonuses: (playerId: string) => api.get(`/player/${playerId}/gem_bonuses`),
+  getPlayerSetBonuses: (playerId: string) => api.get(`/player/${playerId}/set_bonuses`),
+  listRecipes: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit !== undefined) sp.set('limit', String(limit));
+    return api.get(`/recipe/list?${sp.toString()}`);
+  },
+  registerRecipe: (params: { recipe_id: string; name: string; description: string; result_gem_id: string; required_skill?: number; success_chance?: number; result_quantity?: number }) => {
+    const sp = new URLSearchParams();
+    sp.set('recipe_id', params.recipe_id);
+    sp.set('name', params.name);
+    sp.set('description', params.description);
+    sp.set('result_gem_id', params.result_gem_id);
+    if (params.required_skill !== undefined) sp.set('required_skill', String(params.required_skill));
+    if (params.success_chance !== undefined) sp.set('success_chance', String(params.success_chance));
+    if (params.result_quantity !== undefined) sp.set('result_quantity', String(params.result_quantity));
+    return api.post(`/recipe/register?${sp.toString()}`);
+  },
+  getRecipe: (recipeId: string) => api.get(`/recipe/${recipeId}`),
+  craftGem: (recipeId: string, params: { crafter_id: string; crafter_skill?: number; deterministic?: boolean }) => {
+    const sp = new URLSearchParams();
+    sp.set('crafter_id', params.crafter_id);
+    if (params.crafter_skill !== undefined) sp.set('crafter_skill', String(params.crafter_skill));
+    if (params.deterministic !== undefined) sp.set('deterministic', String(params.deterministic));
+    return api.post(`/recipe/${recipeId}/craft?${sp.toString()}`);
+  },
+};
+
+// Round 33 - Dungeon Instance System API
+export const dungeonApi = {
+  getStatus: () => api.get('/dungeon/status'),
+  getSnapshot: () => api.get('/dungeon/snapshot'),
+  getStats: () => api.get('/dungeon/stats'),
+  reset: () => api.post('/dungeon/reset'),
+  listDungeons: () => api.get('/dungeon/dungeons'),
+  registerDungeon: (data: { dungeon_id: string; name: string; description?: string; min_level?: number; recommended_level?: number; max_party_size?: number; supported_difficulties?: string[]; lockout_duration_hours?: number }) =>
+    api.post('/dungeon/dungeons/register', data),
+  getDungeon: (dungeonId: string) => api.get(`/dungeon/dungeons/${dungeonId}`),
+  removeDungeon: (dungeonId: string) => api.delete(`/dungeon/dungeons/${dungeonId}`),
+  listInstances: (params?: { dungeon_id?: string; status?: string; difficulty?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.dungeon_id) sp.set('dungeon_id', params.dungeon_id);
+    if (params?.status) sp.set('status', params.status);
+    if (params?.difficulty) sp.set('difficulty', params.difficulty);
+    const qs = sp.toString();
+    return api.get(`/dungeon/instances${qs ? `?${qs}` : ''}`);
+  },
+  createInstance: (data: { dungeon_id: string; difficulty?: string }) =>
+    api.post('/dungeon/instances/create', data),
+  getInstance: (instanceId: string) => api.get(`/dungeon/instances/${instanceId}`),
+  destroyInstance: (instanceId: string) => api.delete(`/dungeon/instances/${instanceId}`),
+  addPartyMember: (instanceId: string, data: { player_id: string; role?: string; level?: number; item_level?: number }) =>
+    api.post(`/dungeon/instances/${instanceId}/party/add`, data),
+  removePartyMember: (instanceId: string, playerId: string) =>
+    api.post(`/dungeon/instances/${instanceId}/party/${playerId}/remove`),
+  getParty: (instanceId: string) => api.get(`/dungeon/instances/${instanceId}/party`),
+  startInstance: (instanceId: string) => api.post(`/dungeon/instances/${instanceId}/start`),
+  completeInstance: (instanceId: string) => api.post(`/dungeon/instances/${instanceId}/complete`),
+  failInstance: (instanceId: string, data?: { reason?: string }) =>
+    api.post(`/dungeon/instances/${instanceId}/fail`, data),
+  startEncounter: (instanceId: string, encounterId: string) =>
+    api.post(`/dungeon/instances/${instanceId}/encounters/${encounterId}/start`),
+  completeEncounter: (instanceId: string, encounterId: string) =>
+    api.post(`/dungeon/instances/${instanceId}/encounters/${encounterId}/complete`),
+  failEncounter: (instanceId: string, encounterId: string) =>
+    api.post(`/dungeon/instances/${instanceId}/encounters/${encounterId}/fail`),
+  getProgress: (instanceId: string) => api.get(`/dungeon/instances/${instanceId}/progress`),
+  checkLockout: (playerId: string, dungeonId: string, difficulty: string) =>
+    api.get(`/dungeon/lockout/${playerId}/${dungeonId}/${difficulty}`),
+  clearLockout: (playerId: string, dungeonId: string, difficulty: string) =>
+    api.delete(`/dungeon/lockout/${playerId}/${dungeonId}/${difficulty}`),
+  listCompletions: (params?: { player_id?: string; dungeon_id?: string; difficulty?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.player_id) sp.set('player_id', params.player_id);
+    if (params?.dungeon_id) sp.set('dungeon_id', params.dungeon_id);
+    if (params?.difficulty) sp.set('difficulty', params.difficulty);
+    const qs = sp.toString();
+    return api.get(`/dungeon/completions${qs ? `?${qs}` : ''}`);
+  },
+  calculateDifficulty: (dungeonId: string, difficulty: string) =>
+    api.get(`/dungeon/difficulty/${dungeonId}/${difficulty}`),
+  tick: () => api.post('/dungeon/tick'),
+  getConfig: () => api.get('/dungeon/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/dungeon/config', data),
+  listEvents: (params?: { kind?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/dungeon/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+
+// Round 34 - Atmospheric Cycle System API
+export const atmosphericApi = {
+  getStatus: () => api.get('/atmospheric/status'),
+  getSnapshot: () => api.get('/atmospheric/snapshot'),
+  getStats: () => api.get('/atmospheric/stats'),
+  reset: () => api.post('/atmospheric/reset'),
+  getTime: () => api.get('/atmospheric/time'),
+  setTime: (hour: number, day?: number) => {
+    const sp = new URLSearchParams();
+    sp.set('hour', String(hour));
+    if (day !== undefined) sp.set('day', String(day));
+    return api.post(`/atmospheric/time/set?${sp.toString()}`);
+  },
+  advanceTime: (hours: number) => {
+    const sp = new URLSearchParams();
+    sp.set('hours', String(hours));
+    return api.post(`/atmospheric/time/advance?${sp.toString()}`);
+  },
+  listPhases: () => api.get('/atmospheric/phases'),
+  getCurrentPhase: () => api.get('/atmospheric/phases/current'),
+  registerPhase: (data: Record<string, unknown>) => api.post('/atmospheric/phases/register', data),
+  getPhase: (phaseId: string) => api.get(`/atmospheric/phases/${phaseId}`),
+  removePhase: (phaseId: string) => api.delete(`/atmospheric/phases/${phaseId}`),
+  getCurrentLighting: () => api.get('/atmospheric/lighting/current'),
+  listLightingProfiles: () => api.get('/atmospheric/lighting/profiles'),
+  registerLightingProfile: (data: Record<string, unknown>) => api.post('/atmospheric/lighting/profiles/register', data),
+  getLightingProfile: (profileId: string) => api.get(`/atmospheric/lighting/profiles/${profileId}`),
+  getCelestialPosition: (body: string) => api.get(`/atmospheric/celestial/${body}`),
+  getSunPosition: () => api.get('/atmospheric/sun'),
+  getMoonPosition: () => api.get('/atmospheric/moon'),
+  listTriggers: (enabledOnly?: boolean) => {
+    const sp = new URLSearchParams();
+    if (enabledOnly) sp.set('enabled_only', 'true');
+    const qs = sp.toString();
+    return api.get(`/atmospheric/triggers${qs ? `?${qs}` : ''}`);
+  },
+  registerTrigger: (data: Record<string, unknown>) => api.post('/atmospheric/triggers/register', data),
+  removeTrigger: (triggerId: string) => api.delete(`/atmospheric/triggers/${triggerId}`),
+  listScheduledEvents: (includeFired?: boolean) => {
+    const sp = new URLSearchParams();
+    if (includeFired) sp.set('include_fired', 'true');
+    const qs = sp.toString();
+    return api.get(`/atmospheric/scheduled-events${qs ? `?${qs}` : ''}`);
+  },
+  scheduleEvent: (data: Record<string, unknown>) => api.post('/atmospheric/scheduled-events/schedule', data),
+  cancelEvent: (eventId: string) => api.delete(`/atmospheric/scheduled-events/${eventId}`),
+  getActiveWeather: () => api.get('/atmospheric/weather/active'),
+  registerWeatherModifier: (data: Record<string, unknown>) => api.post('/atmospheric/weather/modifiers/register', data),
+  removeWeatherModifier: (modifierId: string) => api.delete(`/atmospheric/weather/modifiers/${modifierId}`),
+  listAuroras: () => api.get('/atmospheric/auroras'),
+  spawnAurora: (data: Record<string, unknown>) => api.post('/atmospheric/auroras/spawn', data),
+  dismissAurora: (auroraId: string) => api.delete(`/atmospheric/auroras/${auroraId}`),
+  tick: (dt?: number) => {
+    const sp = new URLSearchParams();
+    if (dt !== undefined) sp.set('dt', String(dt));
+    return api.post(`/atmospheric/tick?${sp.toString()}`);
+  },
+  getConfig: () => api.get('/atmospheric/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/atmospheric/config', data),
+  listEvents: (params?: { kind?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/atmospheric/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 34 - Photography Mode System API
+export const photographyApi = {
+  getStatus: () => api.get('/photography/status'),
+  getSnapshot: () => api.get('/photography/snapshot'),
+  getStats: () => api.get('/photography/stats'),
+  reset: () => api.post('/photography/reset'),
+  listPresets: () => api.get('/photography/presets'),
+  registerPreset: (data: Record<string, unknown>) => api.post('/photography/presets/register', data),
+  removePreset: (presetId: string) => api.delete(`/photography/presets/${presetId}`),
+  listFilters: () => api.get('/photography/filters'),
+  registerFilter: (data: Record<string, unknown>) => api.post('/photography/filters/register', data),
+  removeFilter: (filterId: string) => api.delete(`/photography/filters/${filterId}`),
+  listCompositionGuides: () => api.get('/photography/composition-guides'),
+  registerCompositionGuide: (data: Record<string, unknown>) => api.post('/photography/composition-guides/register', data),
+  capturePhoto: (data: Record<string, unknown>) => api.post('/photography/photos/capture', data),
+  listPhotos: (playerId?: string) => {
+    const sp = new URLSearchParams();
+    if (playerId) sp.set('player_id', playerId);
+    const qs = sp.toString();
+    return api.get(`/photography/photos${qs ? `?${qs}` : ''}`);
+  },
+  getPhoto: (photoId: string) => api.get(`/photography/photos/${photoId}`),
+  deletePhoto: (photoId: string) => api.delete(`/photography/photos/${photoId}`),
+  ratePhoto: (photoId: string, rating: number) => {
+    const sp = new URLSearchParams();
+    sp.set('rating', String(rating));
+    return api.post(`/photography/photos/${photoId}/rate?${sp.toString()}`);
+  },
+  getPhotoScore: (photoId: string) => api.get(`/photography/photos/${photoId}/score`),
+  getLeaderboard: (limit?: number) => {
+    const sp = new URLSearchParams();
+    if (limit !== undefined) sp.set('limit', String(limit));
+    return api.get(`/photography/leaderboard?${sp.toString()}`);
+  },
+  listAlbums: (playerId?: string) => {
+    const sp = new URLSearchParams();
+    if (playerId) sp.set('player_id', playerId);
+    const qs = sp.toString();
+    return api.get(`/photography/albums${qs ? `?${qs}` : ''}`);
+  },
+  createAlbum: (data: Record<string, unknown>) => api.post('/photography/albums/create', data),
+  deleteAlbum: (albumId: string) => api.delete(`/photography/albums/${albumId}`),
+  listChallenges: (activeOnly?: boolean) => {
+    const sp = new URLSearchParams();
+    if (activeOnly) sp.set('active_only', 'true');
+    const qs = sp.toString();
+    return api.get(`/photography/challenges${qs ? `?${qs}` : ''}`);
+  },
+  registerChallenge: (data: Record<string, unknown>) => api.post('/photography/challenges/register', data),
+  startChallenge: (challengeId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/photography/challenges/${challengeId}/start?${sp.toString()}`);
+  },
+  submitPhoto: (challengeId: string, data: Record<string, unknown>) => api.post(`/photography/challenges/${challengeId}/submit`, data),
+  completeChallenge: (submissionId: string) => api.post(`/photography/challenges/submissions/${submissionId}/complete`),
+  detectScene: (data: Record<string, unknown>) => api.post('/photography/scene/detect', data),
+  applyFilter: (photoId: string, filterId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('filter_id', filterId);
+    return api.post(`/photography/photos/${photoId}/apply-filter?${sp.toString()}`);
+  },
+  tick: () => api.post('/photography/tick'),
+  getConfig: () => api.get('/photography/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/photography/config', data),
+  listEvents: (params?: { kind?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/photography/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 34 - Cooking & Alchemy System API
+export const cookingApi = {
+  getStatus: () => api.get('/cooking/status'),
+  getSnapshot: () => api.get('/cooking/snapshot'),
+  getStats: () => api.get('/cooking/stats'),
+  reset: () => api.post('/cooking/reset'),
+  listIngredients: (category?: string) => {
+    const sp = new URLSearchParams();
+    if (category) sp.set('category', category);
+    const qs = sp.toString();
+    return api.get(`/cooking/ingredients${qs ? `?${qs}` : ''}`);
+  },
+  registerIngredient: (data: Record<string, unknown>) => api.post('/cooking/ingredients/register', data),
+  getIngredient: (ingredientId: string) => api.get(`/cooking/ingredients/${ingredientId}`),
+  removeIngredient: (ingredientId: string) => api.delete(`/cooking/ingredients/${ingredientId}`),
+  listRecipes: (recipeType?: string) => {
+    const sp = new URLSearchParams();
+    if (recipeType) sp.set('recipe_type', recipeType);
+    const qs = sp.toString();
+    return api.get(`/cooking/recipes${qs ? `?${qs}` : ''}`);
+  },
+  registerRecipe: (data: Record<string, unknown>) => api.post('/cooking/recipes/register', data),
+  getRecipe: (recipeId: string) => api.get(`/cooking/recipes/${recipeId}`),
+  removeRecipe: (recipeId: string) => api.delete(`/cooking/recipes/${recipeId}`),
+  listStations: (stationType?: string) => {
+    const sp = new URLSearchParams();
+    if (stationType) sp.set('station_type', stationType);
+    const qs = sp.toString();
+    return api.get(`/cooking/stations${qs ? `?${qs}` : ''}`);
+  },
+  registerStation: (data: Record<string, unknown>) => api.post('/cooking/stations/register', data),
+  removeStation: (stationId: string) => api.delete(`/cooking/stations/${stationId}`),
+  craft: (data: Record<string, unknown>) => api.post('/cooking/craft', data),
+  listCraftedItems: (playerId?: string) => {
+    const sp = new URLSearchParams();
+    if (playerId) sp.set('player_id', playerId);
+    const qs = sp.toString();
+    return api.get(`/cooking/crafted-items${qs ? `?${qs}` : ''}`);
+  },
+  getCraftedItem: (itemId: string) => api.get(`/cooking/crafted-items/${itemId}`),
+  consumeItem: (itemId: string, playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.post(`/cooking/crafted-items/${itemId}/consume?${sp.toString()}`);
+  },
+  getActiveEffects: (playerId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    return api.get(`/cooking/effects/active?${sp.toString()}`);
+  },
+  dispelEffect: (playerId: string, effectKind?: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    if (effectKind) sp.set('effect_kind', effectKind);
+    return api.post(`/cooking/effects/dispel?${sp.toString()}`);
+  },
+  getSkill: (playerId: string) => api.get(`/cooking/skills/${playerId}`),
+  levelUpSkill: (playerId: string, recipeType: string) => {
+    const sp = new URLSearchParams();
+    sp.set('recipe_type', recipeType);
+    return api.post(`/cooking/skills/${playerId}/level-up?${sp.toString()}`);
+  },
+  getSkillRank: (playerId: string, recipeType: string) => {
+    const sp = new URLSearchParams();
+    sp.set('recipe_type', recipeType);
+    return api.get(`/cooking/skills/${playerId}/rank?${sp.toString()}`);
+  },
+  discoverRecipe: (data: Record<string, unknown>) => api.post('/cooking/discoveries/discover', data),
+  listDiscoveries: (playerId?: string) => {
+    const sp = new URLSearchParams();
+    if (playerId) sp.set('player_id', playerId);
+    const qs = sp.toString();
+    return api.get(`/cooking/discoveries${qs ? `?${qs}` : ''}`);
+  },
+  getRecipeSuggestions: (data: Record<string, unknown>) => api.post('/cooking/recipe-suggestions', data),
+  getIngredientSubstitutes: (ingredientId: string) => api.get(`/cooking/ingredients/${ingredientId}/substitutes`),
+  tick: () => api.post('/cooking/tick'),
+  getConfig: () => api.get('/cooking/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/cooking/config', data),
+  listEvents: (params?: { kind?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/cooking/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 34 - World Conductor API
+export const conductorApi = {
+  getStatus: () => api.get('/conductor/status'),
+  getSnapshot: () => api.get('/conductor/snapshot'),
+  getStats: () => api.get('/conductor/stats'),
+  reset: () => api.post('/conductor/reset'),
+  listSystems: (systemType?: string) => {
+    const sp = new URLSearchParams();
+    if (systemType) sp.set('system_type', systemType);
+    const qs = sp.toString();
+    return api.get(`/conductor/systems${qs ? `?${qs}` : ''}`);
+  },
+  registerSystem: (data: Record<string, unknown>) => api.post('/conductor/systems/register', data),
+  getSystem: (systemId: string) => api.get(`/conductor/systems/${systemId}`),
+  unregisterSystem: (systemId: string) => api.delete(`/conductor/systems/${systemId}`),
+  setPriority: (systemId: string, priority: string) => {
+    const sp = new URLSearchParams();
+    sp.set('priority', priority);
+    return api.post(`/conductor/systems/${systemId}/priority?${sp.toString()}`);
+  },
+  tickAll: () => api.post('/conductor/tick-all'),
+  tickSystem: (systemId: string) => api.post(`/conductor/systems/${systemId}/tick`),
+  getDashboard: () => api.get('/conductor/dashboard'),
+  getUnifiedStatus: () => api.get('/conductor/unified-status'),
+  getHealth: (systemId?: string) => {
+    const sp = new URLSearchParams();
+    if (systemId) sp.set('system_id', systemId);
+    return api.get(`/conductor/health?${sp.toString()}`);
+  },
+  getTickSchedule: () => api.get('/conductor/tick-schedule'),
+  emitCrossSystemEvent: (data: Record<string, unknown>) => api.post('/conductor/cross-system-events/emit', data),
+  listCrossSystemEvents: (params?: { kind?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/conductor/cross-system-events${qs ? `?${qs}` : ''}`);
+  },
+  subscribeToEvent: (data: Record<string, unknown>) => api.post('/conductor/cross-system-events/subscribe', data),
+  detectOpportunities: () => api.post('/conductor/opportunities/detect'),
+  listOpportunities: (activeOnly?: boolean) => {
+    const sp = new URLSearchParams();
+    if (!activeOnly) sp.set('active_only', 'false');
+    return api.get(`/conductor/opportunities?${sp.toString()}`);
+  },
+  dismissOpportunity: (opportunityId: string) => api.post(`/conductor/opportunities/${opportunityId}/dismiss`),
+  tick: () => api.post('/conductor/tick'),
+  getConfig: () => api.get('/conductor/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/conductor/config', data),
+  listEvents: (params?: { kind?: string; limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.kind) sp.set('kind', params.kind);
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/conductor/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// ===========================================================================
+// Round 35: Narrative Engine API
+// ===========================================================================
+
+export const narrativeEngineApi = {
+  getStatus: () => api.get('/narrative/status'),
+  getSnapshot: () => api.get('/narrative/snapshot'),
+  getStats: () => api.get('/narrative/stats'),
+  reset: () => api.post('/narrative/reset'),
+  listArcs: (params?: { status?: string; genre?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.status) sp.set('status', params.status);
+    if (params?.genre) sp.set('genre', params.genre);
+    const qs = sp.toString();
+    return api.get(`/narrative/arcs${qs ? `?${qs}` : ''}`);
+  },
+  getArc: (arcId: string) => api.get(`/narrative/arcs/${arcId}`),
+  createArc: (data: Record<string, unknown>) => api.post('/narrative/arcs/create', data),
+  advanceArc: (arcId: string) => api.post(`/narrative/arcs/${arcId}/advance`),
+  completeArc: (arcId: string, data?: Record<string, unknown>) => api.post(`/narrative/arcs/${arcId}/complete`, data),
+  removeArc: (arcId: string) => api.delete(`/narrative/arcs/${arcId}`),
+  getArcSummary: (arcId: string) => api.get(`/narrative/arcs/${arcId}/summary`),
+  getArcState: (arcId: string) => api.get(`/narrative/arcs/${arcId}/state`),
+  listCharacters: (params?: { role?: string; arcId?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.role) sp.set('role', params.role);
+    if (params?.arcId) sp.set('arc_id', params.arcId);
+    const qs = sp.toString();
+    return api.get(`/narrative/characters${qs ? `?${qs}` : ''}`);
+  },
+  getCharacter: (characterId: string) => api.get(`/narrative/characters/${characterId}`),
+  registerCharacter: (data: Record<string, unknown>) => api.post('/narrative/characters/register', data),
+  advanceCharacterArc: (characterId: string, data: Record<string, unknown>) => api.post(`/narrative/characters/${characterId}/advance-arc`, data),
+  updateCharacterRelationship: (characterId: string, data: Record<string, unknown>) => api.post(`/narrative/characters/${characterId}/relationship`, data),
+  removeCharacter: (characterId: string) => api.delete(`/narrative/characters/${characterId}`),
+  listThreads: (params?: { arcId?: string; status?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.arcId) sp.set('arc_id', params.arcId);
+    if (params?.status) sp.set('status', params.status);
+    const qs = sp.toString();
+    return api.get(`/narrative/threads${qs ? `?${qs}` : ''}`);
+  },
+  getThread: (threadId: string) => api.get(`/narrative/threads/${threadId}`),
+  createThread: (data: Record<string, unknown>) => api.post('/narrative/threads/create', data),
+  resolveThread: (threadId: string, data?: Record<string, unknown>) => api.post(`/narrative/threads/${threadId}/resolve`, data),
+  listBeats: (params?: { arcId?: string; beatType?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.arcId) sp.set('arc_id', params.arcId);
+    if (params?.beatType) sp.set('beat_type', params.beatType);
+    const qs = sp.toString();
+    return api.get(`/narrative/beats${qs ? `?${qs}` : ''}`);
+  },
+  getBeat: (beatId: string) => api.get(`/narrative/beats/${beatId}`),
+  addBeat: (data: Record<string, unknown>) => api.post('/narrative/beats/add', data),
+  listChoices: (params?: { arcId?: string; resolved?: boolean }) => {
+    const sp = new URLSearchParams();
+    if (params?.arcId) sp.set('arc_id', params.arcId);
+    if (params?.resolved !== undefined) sp.set('resolved', String(params.resolved));
+    const qs = sp.toString();
+    return api.get(`/narrative/choices${qs ? `?${qs}` : ''}`);
+  },
+  createChoice: (data: Record<string, unknown>) => api.post('/narrative/choices/create', data),
+  resolveChoice: (choiceId: string, data: Record<string, unknown>) => api.post(`/narrative/choices/${choiceId}/resolve`, data),
+  listLore: (params?: { category?: string; isCanon?: boolean }) => {
+    const sp = new URLSearchParams();
+    if (params?.category) sp.set('category', params.category);
+    if (params?.isCanon !== undefined) sp.set('is_canon', String(params.isCanon));
+    const qs = sp.toString();
+    return api.get(`/narrative/lore${qs ? `?${qs}` : ''}`);
+  },
+  getLore: (loreId: string) => api.get(`/narrative/lore/${loreId}`),
+  generateLore: (data: Record<string, unknown>) => api.post('/narrative/lore/generate', data),
+  searchLore: (query: string) => {
+    const sp = new URLSearchParams();
+    sp.set('query', query);
+    return api.get(`/narrative/lore/search?${sp.toString()}`);
+  },
+  listQuestNarratives: (arcId?: string) => {
+    const sp = new URLSearchParams();
+    if (arcId) sp.set('arc_id', arcId);
+    const qs = sp.toString();
+    return api.get(`/narrative/quest-narratives${qs ? `?${qs}` : ''}`);
+  },
+  getQuestNarrative: (questNarrativeId: string) => api.get(`/narrative/quest-narratives/${questNarrativeId}`),
+  weaveQuestNarrative: (data: Record<string, unknown>) => api.post('/narrative/quest-narratives/weave', data),
+  tick: () => api.post('/narrative/tick'),
+  getConfig: () => api.get('/narrative/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/narrative/config', data),
+  listEvents: (params?: { limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/narrative/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// ===========================================================================
+// Round 35: Summoning & Conjuration System API
+// ===========================================================================
+
+export const summoningApi = {
+  getStatus: () => api.get('/summoning/status'),
+  getSnapshot: () => api.get('/summoning/snapshot'),
+  getStats: () => api.get('/summoning/stats'),
+  reset: () => api.post('/summoning/reset'),
+  listTemplates: (params?: { summonType?: string; rarity?: string; element?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.summonType) sp.set('summon_type', params.summonType);
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    if (params?.element) sp.set('element', params.element);
+    const qs = sp.toString();
+    return api.get(`/summoning/templates${qs ? `?${qs}` : ''}`);
+  },
+  getTemplate: (templateId: string) => api.get(`/summoning/templates/${templateId}`),
+  registerTemplate: (data: Record<string, unknown>) => api.post('/summoning/templates/register', data),
+  removeTemplate: (templateId: string) => api.delete(`/summoning/templates/${templateId}`),
+  listRituals: (summonTypeRestriction?: string) => {
+    const sp = new URLSearchParams();
+    if (summonTypeRestriction) sp.set('summon_type_restriction', summonTypeRestriction);
+    const qs = sp.toString();
+    return api.get(`/summoning/rituals${qs ? `?${qs}` : ''}`);
+  },
+  getRitual: (ritualId: string) => api.get(`/summoning/rituals/${ritualId}`),
+  registerRitual: (data: Record<string, unknown>) => api.post('/summoning/rituals/register', data),
+  removeRitual: (ritualId: string) => api.delete(`/summoning/rituals/${ritualId}`),
+  listFocuses: (params?: { summonTypeBonus?: string; minTier?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.summonTypeBonus) sp.set('summon_type_bonus', params.summonTypeBonus);
+    if (params?.minTier !== undefined) sp.set('min_tier', String(params.minTier));
+    const qs = sp.toString();
+    return api.get(`/summoning/focuses${qs ? `?${qs}` : ''}`);
+  },
+  getFocus: (focusId: string) => api.get(`/summoning/focuses/${focusId}`),
+  registerFocus: (data: Record<string, unknown>) => api.post('/summoning/focuses/register', data),
+  removeFocus: (focusId: string) => api.delete(`/summoning/focuses/${focusId}`),
+  listContracts: (params?: { summonerId?: string; status?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.summonerId) sp.set('summoner_id', params.summonerId);
+    if (params?.status) sp.set('status', params.status);
+    const qs = sp.toString();
+    return api.get(`/summoning/contracts${qs ? `?${qs}` : ''}`);
+  },
+  getContract: (contractId: string) => api.get(`/summoning/contracts/${contractId}`),
+  createContract: (data: Record<string, unknown>) => api.post('/summoning/contracts/create', data),
+  breakContract: (contractId: string) => api.post(`/summoning/contracts/${contractId}/break`),
+  performSummoning: (data: Record<string, unknown>) => api.post('/summoning/perform', data),
+  banishSummon: (summonId: string) => api.post(`/summoning/summons/${summonId}/banish`),
+  getSummon: (summonId: string) => api.get(`/summoning/summons/${summonId}`),
+  listSummons: (params?: { summonerId?: string; state?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.summonerId) sp.set('summoner_id', params.summonerId);
+    if (params?.state) sp.set('state', params.state);
+    const qs = sp.toString();
+    return api.get(`/summoning/summons${qs ? `?${qs}` : ''}`);
+  },
+  getSummonPower: (summonId: string) => api.get(`/summoning/summons/${summonId}/power`),
+  getSummonAbilities: (summonId: string) => api.get(`/summoning/summons/${summonId}/abilities`),
+  tick: (dt?: number) => api.post('/summoning/tick', dt !== undefined ? { dt } : undefined),
+  getConfig: () => api.get('/summoning/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/summoning/config', data),
+  listEvents: (params?: { limit?: number; kind?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    if (params?.kind) sp.set('kind', params.kind);
+    const qs = sp.toString();
+    return api.get(`/summoning/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// ===========================================================================
+// Round 35: Talent Constellation System API
+// ===========================================================================
+
+export const talentApi = {
+  getStatus: () => api.get('/talent/status'),
+  getSnapshot: () => api.get('/talent/snapshot'),
+  getStats: () => api.get('/talent/stats'),
+  reset: () => api.post('/talent/reset'),
+  listConstellations: (category?: string) => {
+    const sp = new URLSearchParams();
+    if (category) sp.set('category', category);
+    const qs = sp.toString();
+    return api.get(`/talent/constellations${qs ? `?${qs}` : ''}`);
+  },
+  getConstellation: (constellationId: string) => api.get(`/talent/constellations/${constellationId}`),
+  registerConstellation: (data: Record<string, unknown>) => api.post('/talent/constellations/register', data),
+  removeConstellation: (constellationId: string) => api.delete(`/talent/constellations/${constellationId}`),
+  listNodes: (constellationId?: string) => {
+    const sp = new URLSearchParams();
+    if (constellationId) sp.set('constellation_id', constellationId);
+    const qs = sp.toString();
+    return api.get(`/talent/nodes${qs ? `?${qs}` : ''}`);
+  },
+  getNode: (nodeId: string) => api.get(`/talent/nodes/${nodeId}`),
+  registerNode: (data: Record<string, unknown>) => api.post('/talent/nodes/register', data),
+  removeNode: (nodeId: string) => api.delete(`/talent/nodes/${nodeId}`),
+  listPaths: (constellationId?: string) => {
+    const sp = new URLSearchParams();
+    if (constellationId) sp.set('constellation_id', constellationId);
+    const qs = sp.toString();
+    return api.get(`/talent/paths${qs ? `?${qs}` : ''}`);
+  },
+  getPath: (pathId: string) => api.get(`/talent/paths/${pathId}`),
+  registerPath: (data: Record<string, unknown>) => api.post('/talent/paths/register', data),
+  removePath: (pathId: string) => api.delete(`/talent/paths/${pathId}`),
+  listResonanceBonuses: (resonanceType?: string) => {
+    const sp = new URLSearchParams();
+    if (resonanceType) sp.set('resonance_type', resonanceType);
+    const qs = sp.toString();
+    return api.get(`/talent/resonance-bonuses${qs ? `?${qs}` : ''}`);
+  },
+  getResonanceBonus: (bonusId: string) => api.get(`/talent/resonance-bonuses/${bonusId}`),
+  registerResonanceBonus: (data: Record<string, unknown>) => api.post('/talent/resonance-bonuses/register', data),
+  allocatePoint: (data: Record<string, unknown>) => api.post('/talent/allocate', data),
+  removePoint: (data: Record<string, unknown>) => api.post('/talent/remove-point', data),
+  respec: (playerId: string) => api.post(`/talent/respec/${playerId}`),
+  getProgress: (playerId: string, constellationId?: string) => {
+    const sp = new URLSearchParams();
+    if (constellationId) sp.set('constellation_id', constellationId);
+    const qs = sp.toString();
+    return api.get(`/talent/progress/${playerId}${qs ? `?${qs}` : ''}`);
+  },
+  listProgress: (playerId?: string) => {
+    const sp = new URLSearchParams();
+    if (playerId) sp.set('player_id', playerId);
+    const qs = sp.toString();
+    return api.get(`/talent/progress${qs ? `?${qs}` : ''}`);
+  },
+  checkRequirements: (playerId: string, constellationId: string, nodeId: string) => {
+    const sp = new URLSearchParams();
+    sp.set('player_id', playerId);
+    sp.set('constellation_id', constellationId);
+    sp.set('node_id', nodeId);
+    return api.get(`/talent/check-requirements?${sp.toString()}`);
+  },
+  calculateResonance: (playerId: string) => api.get(`/talent/resonance/${playerId}`),
+  getActiveBonuses: (playerId: string) => api.get(`/talent/active-bonuses/${playerId}`),
+  tick: () => api.post('/talent/tick'),
+  getConfig: () => api.get('/talent/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/talent/config', data),
+  listEvents: (params?: { limit?: number }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    const qs = sp.toString();
+    return api.get(`/talent/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// ===========================================================================
+// Round 36: Crowd Simulation System API
+// ===========================================================================
+
+export const crowdApi = {
+  getStatus: () => api.get('/crowd/status'),
+  getSnapshot: () => api.get('/crowd/snapshot'),
+  getStats: () => api.get('/crowd/stats'),
+  reset: () => api.post('/crowd/reset'),
+  listGroups: (params?: { groupType?: string; activeOnly?: boolean }) => {
+    const sp = new URLSearchParams();
+    if (params?.groupType) sp.set('group_type', params.groupType);
+    if (params?.activeOnly !== undefined) sp.set('active_only', String(params.activeOnly));
+    const qs = sp.toString();
+    return api.get(`/crowd/groups${qs ? `?${qs}` : ''}`);
+  },
+  getGroup: (groupId: string) => api.get(`/crowd/groups/${groupId}`),
+  registerGroup: (data: Record<string, unknown>) => api.post('/crowd/groups/register', data),
+  removeGroup: (groupId: string) => api.delete(`/crowd/groups/${groupId}`),
+  getAgent: (agentId: string) => api.get(`/crowd/agents/${agentId}`),
+  listAgents: (params?: { groupId?: string; state?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.groupId) sp.set('group_id', params.groupId);
+    if (params?.state) sp.set('state', params.state);
+    const qs = sp.toString();
+    return api.get(`/crowd/agents${qs ? `?${qs}` : ''}`);
+  },
+  setAgentTarget: (agentId: string, data: Record<string, unknown>) => api.post(`/crowd/agents/${agentId}/set-target`, data),
+  changeAgentState: (agentId: string, data: Record<string, unknown>) => api.post(`/crowd/agents/${agentId}/change-state`, data),
+  registerDensityZone: (data: Record<string, unknown>) => api.post('/crowd/density-zones/register', data),
+  getDensityZone: (zoneId: string) => api.get(`/crowd/density-zones/${zoneId}`),
+  listDensityZones: (activeOnly?: boolean) => {
+    const sp = new URLSearchParams();
+    if (activeOnly !== undefined) sp.set('active_only', String(activeOnly));
+    const qs = sp.toString();
+    return api.get(`/crowd/density-zones${qs ? `?${qs}` : ''}`);
+  },
+  removeDensityZone: (zoneId: string) => api.delete(`/crowd/density-zones/${zoneId}`),
+  triggerPanic: (data: Record<string, unknown>) => api.post('/crowd/trigger-panic', data),
+  calmPanic: (data: Record<string, unknown>) => api.post('/crowd/calm-panic', data),
+  setFlockingWeights: (data: Record<string, unknown>) => api.post('/crowd/set-flocking-weights', data),
+  calculateDensity: (zoneId: string) => api.get(`/crowd/density/${zoneId}`),
+  getCrowdFlow: (zoneX: number, zoneY: number, radius?: number) => {
+    const sp = new URLSearchParams();
+    sp.set('zone_x', String(zoneX));
+    sp.set('zone_y', String(zoneY));
+    if (radius !== undefined) sp.set('radius', String(radius));
+    return api.get(`/crowd/flow?${sp.toString()}`);
+  },
+  spawnAgents: (data: Record<string, unknown>) => api.post('/crowd/spawn-agents', data),
+  despawnAgents: (data: Record<string, unknown>) => api.post('/crowd/despawn-agents', data),
+  tick: (dt?: number) => api.post('/crowd/tick', dt !== undefined ? { dt } : undefined),
+  getConfig: () => api.get('/crowd/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/crowd/config', data),
+  listEvents: (params?: { limit?: number; eventType?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    if (params?.eventType) sp.set('event_type', params.eventType);
+    const qs = sp.toString();
+    return api.get(`/crowd/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// ===========================================================================
+// Round 36: AI Encounter Director API
+// ===========================================================================
+
+export const encounterApi = {
+  getStatus: () => api.get('/encounter/status'),
+  getSnapshot: () => api.get('/encounter/snapshot'),
+  getStats: () => api.get('/encounter/stats'),
+  reset: () => api.post('/encounter/reset'),
+  registerMechanic: (data: Record<string, unknown>) => api.post('/encounter/mechanics/register', data),
+  getMechanic: (mechanicId: string) => api.get(`/encounter/mechanics/${mechanicId}`),
+  listMechanics: (mechanicType?: string) => {
+    const sp = new URLSearchParams();
+    if (mechanicType) sp.set('mechanic_type', mechanicType);
+    const qs = sp.toString();
+    return api.get(`/encounter/mechanics${qs ? `?${qs}` : ''}`);
+  },
+  removeMechanic: (mechanicId: string) => api.delete(`/encounter/mechanics/${mechanicId}`),
+  registerPhase: (data: Record<string, unknown>) => api.post('/encounter/phases/register', data),
+  getPhase: (phaseId: string) => api.get(`/encounter/phases/${phaseId}`),
+  listPhases: (encounterId?: string) => {
+    const sp = new URLSearchParams();
+    if (encounterId) sp.set('encounter_id', encounterId);
+    const qs = sp.toString();
+    return api.get(`/encounter/phases${qs ? `?${qs}` : ''}`);
+  },
+  removePhase: (phaseId: string) => api.delete(`/encounter/phases/${phaseId}`),
+  registerTemplate: (data: Record<string, unknown>) => api.post('/encounter/templates/register', data),
+  getTemplate: (templateId: string) => api.get(`/encounter/templates/${templateId}`),
+  listTemplates: (params?: { encounterType?: string; difficultyTier?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.encounterType) sp.set('encounter_type', params.encounterType);
+    if (params?.difficultyTier) sp.set('difficulty_tier', params.difficultyTier);
+    const qs = sp.toString();
+    return api.get(`/encounter/templates${qs ? `?${qs}` : ''}`);
+  },
+  removeTemplate: (templateId: string) => api.delete(`/encounter/templates/${templateId}`),
+  createEncounter: (data: Record<string, unknown>) => api.post('/encounter/create', data),
+  getEncounter: (instanceId: string) => api.get(`/encounter/instances/${instanceId}`),
+  listEncounters: (status?: string) => {
+    const sp = new URLSearchParams();
+    if (status) sp.set('status', status);
+    const qs = sp.toString();
+    return api.get(`/encounter/instances${qs ? `?${qs}` : ''}`);
+  },
+  advancePhase: (instanceId: string) => api.post(`/encounter/instances/${instanceId}/advance-phase`),
+  triggerMechanic: (instanceId: string, data: Record<string, unknown>) => api.post(`/encounter/instances/${instanceId}/trigger-mechanic`, data),
+  dealBossDamage: (instanceId: string, data: Record<string, unknown>) => api.post(`/encounter/instances/${instanceId}/deal-boss-damage`, data),
+  playerDowned: (instanceId: string, playerId: string) => api.post(`/encounter/instances/${instanceId}/player-downed`, { player_id: playerId }),
+  playerRevived: (instanceId: string, playerId: string) => api.post(`/encounter/instances/${instanceId}/player-revived`, { player_id: playerId }),
+  completeEncounter: (instanceId: string) => api.post(`/encounter/instances/${instanceId}/complete`),
+  wipeEncounter: (instanceId: string, data?: Record<string, unknown>) => api.post(`/encounter/instances/${instanceId}/wipe`, data),
+  calculateAdaptiveScaling: (instanceId: string, data: Record<string, unknown>) => api.post(`/encounter/instances/${instanceId}/adaptive-scaling`, data),
+  registerRewardTable: (data: Record<string, unknown>) => api.post('/encounter/reward-tables/register', data),
+  getRewardTable: (tableId: string) => api.get(`/encounter/reward-tables/${tableId}`),
+  listRewardTables: (params?: { encounterType?: string; difficultyTier?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.encounterType) sp.set('encounter_type', params.encounterType);
+    if (params?.difficultyTier) sp.set('difficulty_tier', params.difficultyTier);
+    const qs = sp.toString();
+    return api.get(`/encounter/reward-tables${qs ? `?${qs}` : ''}`);
+  },
+  rollRewards: (tableId: string, luckModifier?: number) => api.post(`/encounter/reward-tables/${tableId}/roll`, { luck_modifier: luckModifier }),
+  removeRewardTable: (tableId: string) => api.delete(`/encounter/reward-tables/${tableId}`),
+  tick: (dt?: number) => api.post('/encounter/tick', dt !== undefined ? { dt } : undefined),
+  getConfig: () => api.get('/encounter/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/encounter/config', data),
+  listEvents: (params?: { limit?: number; eventType?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    if (params?.eventType) sp.set('event_type', params.eventType);
+    const qs = sp.toString();
+    return api.get(`/encounter/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// ===========================================================================
+// Round 36: Voxel World System API
+// ===========================================================================
+
+export const voxelApi = {
+  getStatus: () => api.get('/voxel/status'),
+  getSnapshot: () => api.get('/voxel/snapshot'),
+  getStats: () => api.get('/voxel/stats'),
+  reset: () => api.post('/voxel/reset'),
+  registerMaterial: (data: Record<string, unknown>) => api.post('/voxel/materials/register', data),
+  getMaterial: (materialId: string) => api.get(`/voxel/materials/${materialId}`),
+  listMaterials: (materialType?: string) => {
+    const sp = new URLSearchParams();
+    if (materialType) sp.set('material_type', materialType);
+    const qs = sp.toString();
+    return api.get(`/voxel/materials${qs ? `?${qs}` : ''}`);
+  },
+  removeMaterial: (materialId: string) => api.delete(`/voxel/materials/${materialId}`),
+  registerBiome: (data: Record<string, unknown>) => api.post('/voxel/biomes/register', data),
+  getBiome: (biomeId: string) => api.get(`/voxel/biomes/${biomeId}`),
+  listBiomes: (biomeType?: string) => {
+    const sp = new URLSearchParams();
+    if (biomeType) sp.set('biome_type', biomeType);
+    const qs = sp.toString();
+    return api.get(`/voxel/biomes${qs ? `?${qs}` : ''}`);
+  },
+  removeBiome: (biomeId: string) => api.delete(`/voxel/biomes/${biomeId}`),
+  getChunk: (chunkX: number, chunkY: number, chunkZ: number) => {
+    const sp = new URLSearchParams();
+    sp.set('chunk_x', String(chunkX));
+    sp.set('chunk_y', String(chunkY));
+    sp.set('chunk_z', String(chunkZ));
+    return api.get(`/voxel/chunks?${sp.toString()}`);
+  },
+  listChunks: (state?: string) => {
+    const sp = new URLSearchParams();
+    if (state) sp.set('state', state);
+    const qs = sp.toString();
+    return api.get(`/voxel/chunks/list${qs ? `?${qs}` : ''}`);
+  },
+  generateChunk: (data: Record<string, unknown>) => api.post('/voxel/chunks/generate', data),
+  unloadChunk: (data: Record<string, unknown>) => api.post('/voxel/chunks/unload', data),
+  getBlock: (x: number, y: number, z: number) => {
+    const sp = new URLSearchParams();
+    sp.set('x', String(x));
+    sp.set('y', String(y));
+    sp.set('z', String(z));
+    return api.get(`/voxel/blocks?${sp.toString()}`);
+  },
+  setBlock: (data: Record<string, unknown>) => api.post('/voxel/blocks/set', data),
+  removeBlock: (data: Record<string, unknown>) => api.post('/voxel/blocks/remove', data),
+  fillArea: (data: Record<string, unknown>) => api.post('/voxel/blocks/fill', data),
+  clearArea: (data: Record<string, unknown>) => api.post('/voxel/blocks/clear', data),
+  registerStructure: (data: Record<string, unknown>) => api.post('/voxel/structures/register', data),
+  getStructure: (structureId: string) => api.get(`/voxel/structures/${structureId}`),
+  listStructures: (structureType?: string) => {
+    const sp = new URLSearchParams();
+    if (structureType) sp.set('structure_type', structureType);
+    const qs = sp.toString();
+    return api.get(`/voxel/structures${qs ? `?${qs}` : ''}`);
+  },
+  placeStructure: (data: Record<string, unknown>) => api.post('/voxel/structures/place', data),
+  removeStructure: (structureId: string) => api.delete(`/voxel/structures/${structureId}`),
+  getModifications: (params?: { limit?: number; playerId?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    if (params?.playerId) sp.set('player_id', params.playerId);
+    const qs = sp.toString();
+    return api.get(`/voxel/modifications${qs ? `?${qs}` : ''}`);
+  },
+  undoModification: (modificationId: string) => api.post(`/voxel/modifications/${modificationId}/undo`),
+  getBlocksInRange: (data: Record<string, unknown>) => api.post('/voxel/blocks/range', data),
+  countBlocksByMaterial: (materialType?: string) => {
+    const sp = new URLSearchParams();
+    if (materialType) sp.set('material_type', materialType);
+    const qs = sp.toString();
+    return api.get(`/voxel/blocks/count${qs ? `?${qs}` : ''}`);
+  },
+  tick: (dt?: number) => api.post('/voxel/tick', dt !== undefined ? { dt } : undefined),
+  getConfig: () => api.get('/voxel/config'),
+  setConfig: (data: Record<string, unknown>) => api.post('/voxel/config', data),
+  listEvents: (params?: { limit?: number; eventType?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    if (params?.eventType) sp.set('event_type', params.eventType);
+    const qs = sp.toString();
+    return api.get(`/voxel/events${qs ? `?${qs}` : ''}`);
+  },
+};
+
+// Round 37: Card & Deck System API
+export const cardDeckApi = {
+  getStatus: () => api.get('/carddeck/status'),
+  getConfig: () => api.get('/carddeck/config'),
+  getStats: () => api.get('/carddeck/stats'),
+  getSnapshot: () => api.get('/carddeck/snapshot'),
+  listEvents: (params?: { limit?: number; matchId?: string; eventType?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    if (params?.matchId) sp.set('match_id', params.matchId);
+    if (params?.eventType) sp.set('event_type', params.eventType);
+    const qs = sp.toString();
+    return api.get(`/carddeck/events${qs ? `?${qs}` : ''}`);
+  },
+  listCards: (params?: { cardType?: string; rarity?: string; element?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.cardType) sp.set('card_type', params.cardType);
+    if (params?.rarity) sp.set('rarity', params.rarity);
+    if (params?.element) sp.set('element', params.element);
+    const qs = sp.toString();
+    return api.get(`/carddeck/cards${qs ? `?${qs}` : ''}`);
+  },
+  getCard: (cardId: string) => api.get(`/carddeck/cards/${cardId}`),
+  registerCard: (data: Record<string, unknown>) => api.post('/carddeck/cards/register', data),
+  removeCard: (cardId: string) => api.post('/carddeck/cards/remove', { card_id: cardId }),
+  listDecks: (params?: { ownerId?: string; archetype?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.ownerId) sp.set('owner_id', params.ownerId);
+    if (params?.archetype) sp.set('archetype', params.archetype);
+    const qs = sp.toString();
+    return api.get(`/carddeck/decks${qs ? `?${qs}` : ''}`);
+  },
+  getDeck: (deckId: string) => api.get(`/carddeck/decks/${deckId}`),
+  registerDeck: (data: Record<string, unknown>) => api.post('/carddeck/decks/register', data),
+  removeDeck: (deckId: string) => api.post('/carddeck/decks/remove', { deck_id: deckId }),
+  shuffleDeck: (deckId: string) => api.post('/carddeck/decks/shuffle', { deck_id: deckId }),
+  drawCard: (deckId: string, count?: number) => api.post('/carddeck/decks/draw', { deck_id: deckId, count: count ?? 1 }),
+  validateDeck: (deckId: string) => api.post('/carddeck/decks/validate', { deck_id: deckId }),
+  calculateDeckStats: (deckId: string) => api.get(`/carddeck/decks/${deckId}/stats`),
+  listMatches: (status?: string) => {
+    const sp = new URLSearchParams();
+    if (status) sp.set('status', status);
+    const qs = sp.toString();
+    return api.get(`/carddeck/matches${qs ? `?${qs}` : ''}`);
+  },
+  getMatch: (matchId: string) => api.get(`/carddeck/matches/${matchId}`),
+  createMatch: (playerIds: string[], format?: string) => api.post('/carddeck/matches/create', { player_ids: playerIds, format: format ?? 'standard' }),
+  playCard: (matchId: string, playerId: string, cardId: string, targetId?: string) => api.post('/carddeck/matches/play', { match_id: matchId, player_id: playerId, card_id: cardId, target_id: targetId ?? '' }),
+  endTurn: (matchId: string, playerId: string) => api.post('/carddeck/matches/end-turn', { match_id: matchId, player_id: playerId }),
+  dealDamage: (matchId: string, targetId: string, amount: number, sourceId?: string) => api.post('/carddeck/matches/deal-damage', { match_id: matchId, target_id: targetId, amount, source_id: sourceId ?? '' }),
+  healTarget: (matchId: string, targetId: string, amount: number) => api.post('/carddeck/matches/heal', { match_id: matchId, target_id: targetId, amount }),
+  getPlayerState: (matchId: string, playerId: string) => api.get(`/carddeck/matches/${matchId}/players/${playerId}`),
+  getBoardState: (matchId: string) => api.get(`/carddeck/matches/${matchId}/board`),
+  tick: (dt?: number) => api.post('/carddeck/tick', dt !== undefined ? { dt } : undefined),
+  reset: () => api.post('/carddeck/reset'),
+  setConfig: (data: Record<string, unknown>) => api.post('/carddeck/config', data),
+};
+
+// Round 37: Tactical Grid System API
+export const tacticalApi = {
+  getStatus: () => api.get('/tactical/status'),
+  getConfig: () => api.get('/tactical/config'),
+  getStats: () => api.get('/tactical/stats'),
+  getSnapshot: () => api.get('/tactical/snapshot'),
+  listEvents: (params?: { limit?: number; battleId?: string; eventType?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    if (params?.battleId) sp.set('battle_id', params.battleId);
+    if (params?.eventType) sp.set('event_type', params.eventType);
+    const qs = sp.toString();
+    return api.get(`/tactical/events${qs ? `?${qs}` : ''}`);
+  },
+  listGrids: (gridType?: string) => {
+    const sp = new URLSearchParams();
+    if (gridType) sp.set('grid_type', gridType);
+    const qs = sp.toString();
+    return api.get(`/tactical/grids${qs ? `?${qs}` : ''}`);
+  },
+  getGrid: (gridId: string) => api.get(`/tactical/grids/${gridId}`),
+  registerGrid: (data: Record<string, unknown>) => api.post('/tactical/grids/register', data),
+  removeGrid: (gridId: string) => api.post('/tactical/grids/remove', { grid_id: gridId }),
+  setTerrain: (gridId: string, x: number, y: number, terrainType: string, elevation?: number, movementCost?: number) => api.post('/tactical/grids/terrain', { grid_id: gridId, x, y, terrain_type: terrainType, elevation: elevation ?? 0, movement_cost: movementCost ?? 1 }),
+  getCell: (gridId: string, x: number, y: number) => api.get(`/tactical/grids/${gridId}/cells/${x}/${y}`),
+  getCellsInRange: (gridId: string, x: number, y: number, radius: number) => api.post('/tactical/grids/cells-in-range', { grid_id: gridId, x, y, radius }),
+  listUnits: (params?: { battleId?: string; factionId?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.battleId) sp.set('battle_id', params.battleId);
+    if (params?.factionId) sp.set('faction_id', params.factionId);
+    const qs = sp.toString();
+    return api.get(`/tactical/units${qs ? `?${qs}` : ''}`);
+  },
+  getUnit: (unitId: string) => api.get(`/tactical/units/${unitId}`),
+  registerUnit: (data: Record<string, unknown>) => api.post('/tactical/units/register', data),
+  removeUnit: (unitId: string) => api.post('/tactical/units/remove', { unit_id: unitId }),
+  listFactions: (battleId?: string) => {
+    const sp = new URLSearchParams();
+    if (battleId) sp.set('battle_id', battleId);
+    const qs = sp.toString();
+    return api.get(`/tactical/factions${qs ? `?${qs}` : ''}`);
+  },
+  getFaction: (factionId: string) => api.get(`/tactical/factions/${factionId}`),
+  registerFaction: (data: Record<string, unknown>) => api.post('/tactical/factions/register', data),
+  listBattles: (status?: string) => {
+    const sp = new URLSearchParams();
+    if (status) sp.set('status', status);
+    const qs = sp.toString();
+    return api.get(`/tactical/battles${qs ? `?${qs}` : ''}`);
+  },
+  getBattle: (battleId: string) => api.get(`/tactical/battles/${battleId}`),
+  createBattle: (gridId: string, factionIds: string[]) => api.post('/tactical/battles/create', { grid_id: gridId, faction_ids: factionIds }),
+  deployUnit: (battleId: string, unitId: string, x: number, y: number, factionId: string) => api.post('/tactical/battles/deploy', { battle_id: battleId, unit_id: unitId, x, y, faction_id: factionId }),
+  moveUnit: (battleId: string, unitId: string, x: number, y: number) => api.post('/tactical/battles/move', { battle_id: battleId, unit_id: unitId, x, y }),
+  attackUnit: (battleId: string, attackerId: string, targetId: string) => api.post('/tactical/battles/attack', { battle_id: battleId, attacker_id: attackerId, target_id: targetId }),
+  calculateDamage: (battleId: string, attackerId: string, targetId: string) => api.post('/tactical/battles/calculate-damage', { battle_id: battleId, attacker_id: attackerId, target_id: targetId }),
+  calculateMoveRange: (battleId: string, unitId: string) => api.post('/tactical/battles/move-range', { battle_id: battleId, unit_id: unitId }),
+  calculateAttackRange: (battleId: string, unitId: string) => api.post('/tactical/battles/attack-range', { battle_id: battleId, unit_id: unitId }),
+  endTurn: (battleId: string, factionId: string) => api.post('/tactical/battles/end-turn', { battle_id: battleId, faction_id: factionId }),
+  setFogOfWar: (battleId: string, enabled: boolean) => api.post('/tactical/battles/fog-of-war', { battle_id: battleId, enabled }),
+  revealArea: (battleId: string, x: number, y: number, radius: number) => api.post('/tactical/battles/reveal-area', { battle_id: battleId, x, y, radius }),
+  tick: (dt?: number) => api.post('/tactical/tick', dt !== undefined ? { dt } : undefined),
+  reset: () => api.post('/tactical/reset'),
+  setConfig: (data: Record<string, unknown>) => api.post('/tactical/config', data),
+};
+
+// Round 37: AI Dungeon Master API
+export const dungeonMasterApi = {
+  getStatus: () => api.get('/dungeonmaster/status'),
+  getConfig: () => api.get('/dungeonmaster/config'),
+  getStats: () => api.get('/dungeonmaster/stats'),
+  getSnapshot: () => api.get('/dungeonmaster/snapshot'),
+  listEvents: (params?: { limit?: number; campaignId?: string; eventType?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.limit !== undefined) sp.set('limit', String(params.limit));
+    if (params?.campaignId) sp.set('campaign_id', params.campaignId);
+    if (params?.eventType) sp.set('event_type', params.eventType);
+    const qs = sp.toString();
+    return api.get(`/dungeonmaster/events${qs ? `?${qs}` : ''}`);
+  },
+  listCampaigns: (status?: string) => {
+    const sp = new URLSearchParams();
+    if (status) sp.set('status', status);
+    const qs = sp.toString();
+    return api.get(`/dungeonmaster/campaigns${qs ? `?${qs}` : ''}`);
+  },
+  getCampaign: (campaignId: string) => api.get(`/dungeonmaster/campaigns/${campaignId}`),
+  registerCampaign: (data: Record<string, unknown>) => api.post('/dungeonmaster/campaigns/register', data),
+  removeCampaign: (campaignId: string) => api.post('/dungeonmaster/campaigns/remove', { campaign_id: campaignId }),
+  listStoryArcs: (campaignId?: string) => {
+    const sp = new URLSearchParams();
+    if (campaignId) sp.set('campaign_id', campaignId);
+    const qs = sp.toString();
+    return api.get(`/dungeonmaster/story-arcs${qs ? `?${qs}` : ''}`);
+  },
+  getStoryArc: (arcId: string) => api.get(`/dungeonmaster/story-arcs/${arcId}`),
+  registerStoryArc: (data: Record<string, unknown>) => api.post('/dungeonmaster/story-arcs/register', data),
+  removeStoryArc: (arcId: string) => api.post('/dungeonmaster/story-arcs/remove', { arc_id: arcId }),
+  advanceStoryArc: (arcId: string) => api.post('/dungeonmaster/story-arcs/advance', { arc_id: arcId }),
+  listNpcs: (params?: { campaignId?: string; role?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.campaignId) sp.set('campaign_id', params.campaignId);
+    if (params?.role) sp.set('role', params.role);
+    const qs = sp.toString();
+    return api.get(`/dungeonmaster/npcs${qs ? `?${qs}` : ''}`);
+  },
+  getNpc: (npcId: string) => api.get(`/dungeonmaster/npcs/${npcId}`),
+  registerNpc: (data: Record<string, unknown>) => api.post('/dungeonmaster/npcs/register', data),
+  removeNpc: (npcId: string) => api.post('/dungeonmaster/npcs/remove', { npc_id: npcId }),
+  setNpcRelationship: (npcId: string, level: number) => api.post('/dungeonmaster/npcs/relationship', { npc_id: npcId, level }),
+  listMoralChoices: (arcId?: string) => {
+    const sp = new URLSearchParams();
+    if (arcId) sp.set('arc_id', arcId);
+    const qs = sp.toString();
+    return api.get(`/dungeonmaster/moral-choices${qs ? `?${qs}` : ''}`);
+  },
+  getMoralChoice: (choiceId: string) => api.get(`/dungeonmaster/moral-choices/${choiceId}`),
+  registerMoralChoice: (data: Record<string, unknown>) => api.post('/dungeonmaster/moral-choices/register', data),
+  resolveMoralChoice: (choiceId: string, playerChoice: string) => api.post('/dungeonmaster/moral-choices/resolve', { choice_id: choiceId, player_choice: playerChoice }),
+  applyConsequence: (consequenceId: string) => api.post('/dungeonmaster/consequences/apply', { consequence_id: consequenceId }),
+  listEncounters: (params?: { campaignId?: string; difficulty?: string }) => {
+    const sp = new URLSearchParams();
+    if (params?.campaignId) sp.set('campaign_id', params.campaignId);
+    if (params?.difficulty) sp.set('difficulty', params.difficulty);
+    const qs = sp.toString();
+    return api.get(`/dungeonmaster/encounters${qs ? `?${qs}` : ''}`);
+  },
+  getEncounter: (encounterId: string) => api.get(`/dungeonmaster/encounters/${encounterId}`),
+  registerEncounter: (data: Record<string, unknown>) => api.post('/dungeonmaster/encounters/register', data),
+  completeEncounter: (encounterId: string) => api.post('/dungeonmaster/encounters/complete', { encounter_id: encounterId }),
+  scaleEncounter: (encounterId: string, partyLevel: number, partySize: number) => api.post('/dungeonmaster/encounters/scale', { encounter_id: encounterId, party_level: partyLevel, party_size: partySize }),
+  calculateEncounterDifficulty: (partyLevel: number, partySize: number, enemyCr: number) => api.post('/dungeonmaster/encounters/difficulty', { party_level: partyLevel, party_size: partySize, enemy_cr: enemyCr }),
+  listPartyMembers: (campaignId?: string) => {
+    const sp = new URLSearchParams();
+    if (campaignId) sp.set('campaign_id', campaignId);
+    const qs = sp.toString();
+    return api.get(`/dungeonmaster/party-members${qs ? `?${qs}` : ''}`);
+  },
+  getPartyMember: (memberId: string) => api.get(`/dungeonmaster/party-members/${memberId}`),
+  registerPartyMember: (data: Record<string, unknown>) => api.post('/dungeonmaster/party-members/register', data),
+  removePartyMember: (memberId: string) => api.post('/dungeonmaster/party-members/remove', { member_id: memberId }),
+  getWorldState: (campaignId: string) => api.get(`/dungeonmaster/campaigns/${campaignId}/world-state`),
+  updateWorldState: (campaignId: string, updates: Record<string, unknown>) => api.post('/dungeonmaster/world-state/update', { campaign_id: campaignId, updates }),
+  generateNarrative: (campaignId: string, context?: string) => api.post('/dungeonmaster/narrative/generate', { campaign_id: campaignId, context: context ?? '' }),
+  adjudicateRule: (campaignId: string, action: string, ruleset?: string) => api.post('/dungeonmaster/rules/adjudicate', { campaign_id: campaignId, action, ruleset: ruleset ?? '' }),
+  tick: (dt?: number) => api.post('/dungeonmaster/tick', dt !== undefined ? { dt } : undefined),
+  reset: () => api.post('/dungeonmaster/reset'),
+  setConfig: (data: Record<string, unknown>) => api.post('/dungeonmaster/config', data),
+};
+
+// Round 38 - Tournament & Esports System
+export const tournamentApi = {
+  getStatus: () => api.get('/tournament/get_status'),
+  getStats: () => api.get('/tournament/get_stats'),
+  getSnapshot: () => api.get('/tournament/get_snapshot'),
+  getConfig: () => api.get('/tournament/get_config'),
+  listEvents: (tournamentId?: string, matchId?: string, limit?: number) => {
+    const sp = new URLSearchParams();
+    if (tournamentId) sp.set('tournament_id', tournamentId);
+    if (matchId) sp.set('match_id', matchId);
+    if (limit !== undefined) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/tournament/list_events${qs ? `?${qs}` : ''}`);
+  },
+  listTournaments: (statusFilter?: string) => {
+    const sp = new URLSearchParams();
+    if (statusFilter) sp.set('status_filter', statusFilter);
+    const qs = sp.toString();
+    return api.get(`/tournament/list_tournaments${qs ? `?${qs}` : ''}`);
+  },
+  getTournament: (tournamentId: string) => api.get(`/tournament/get_tournament?tournament_id=${tournamentId}`),
+  registerTournament: (data: Record<string, unknown>) => api.post('/tournament/register_tournament', data),
+  removeTournament: (tournamentId: string) => api.post('/tournament/remove_tournament', { tournament_id: tournamentId }),
+  listParticipants: (tournamentId: string) => api.get(`/tournament/list_participants?tournament_id=${tournamentId}`),
+  getParticipant: (participantId: string) => api.get(`/tournament/get_participant?participant_id=${participantId}`),
+  registerParticipant: (data: Record<string, unknown>) => api.post('/tournament/register_participant', data),
+  removeParticipant: (participantId: string) => api.post('/tournament/remove_participant', { participant_id: participantId }),
+  checkInParticipant: (participantId: string) => api.post('/tournament/check_in_participant', { participant_id: participantId }),
+  listBrackets: (tournamentId: string) => api.get(`/tournament/list_brackets?tournament_id=${tournamentId}`),
+  getBracket: (bracketId: string) => api.get(`/tournament/get_bracket?bracket_id=${bracketId}`),
+  generateBracket: (tournamentId: string) => api.post('/tournament/generate_bracket', { tournament_id: tournamentId }),
+  listMatches: (tournamentId: string, roundFilter?: number, bracketFilter?: string) => {
+    const sp = new URLSearchParams();
+    sp.set('tournament_id', tournamentId);
+    if (roundFilter !== undefined) sp.set('round_filter', String(roundFilter));
+    if (bracketFilter) sp.set('bracket_filter', bracketFilter);
+    const qs = sp.toString();
+    return api.get(`/tournament/list_matches${qs ? `?${qs}` : ''}`);
+  },
+  getMatch: (matchId: string) => api.get(`/tournament/get_match?match_id=${matchId}`),
+  createMatch: (data: Record<string, unknown>) => api.post('/tournament/create_match', data),
+  startMatch: (matchId: string) => api.post('/tournament/start_match', { match_id: matchId }),
+  completeMatch: (matchId: string, winnerId: string, scoreP1?: number, scoreP2?: number) => api.post('/tournament/complete_match', { match_id: matchId, winner_id: winnerId, score_p1: scoreP1 ?? 0, score_p2: scoreP2 ?? 0 }),
+  forfeitMatch: (matchId: string, forfeiterId: string) => api.post('/tournament/forfeit_match', { match_id: matchId, forfeiter_id: forfeiterId }),
+  advanceWinner: (matchId: string) => api.post('/tournament/advance_winner', { match_id: matchId }),
+  listPrizes: (tournamentId: string) => api.get(`/tournament/list_prizes?tournament_id=${tournamentId}`),
+  getPrize: (prizeId: string) => api.get(`/tournament/get_prize?prize_id=${prizeId}`),
+  registerPrize: (data: Record<string, unknown>) => api.post('/tournament/register_prize', data),
+  distributePrizes: (tournamentId: string) => api.post('/tournament/distribute_prizes', { tournament_id: tournamentId }),
+  getStandings: (tournamentId: string) => api.get(`/tournament/get_standings?tournament_id=${tournamentId}`),
+  calculateRoundsNeeded: (participantCount: number, format: string) => api.post('/tournament/calculate_rounds_needed', { participant_count: participantCount, format }),
+  seedParticipants: (tournamentId: string, method?: string) => api.post('/tournament/seed_participants', { tournament_id: tournamentId, method: method ?? 'seeded' }),
+  tick: () => api.post('/tournament/tick'),
+  reset: () => api.post('/tournament/reset'),
+  setConfig: (data: Record<string, unknown>) => api.post('/tournament/set-config', data),
+};
+
+// Round 38 - Spectator Director System
+export const spectatorApi = {
+  getStatus: () => api.get('/spectator/get_status'),
+  getStats: () => api.get('/spectator/get_stats'),
+  getSnapshot: () => api.get('/spectator/get_snapshot'),
+  getConfig: () => api.get('/spectator/get_config'),
+  listEvents: (sessionId?: string, matchId?: string, limit?: number) => {
+    const sp = new URLSearchParams();
+    if (sessionId) sp.set('session_id', sessionId);
+    if (matchId) sp.set('match_id', matchId);
+    if (limit !== undefined) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/spectator/list_events${qs ? `?${qs}` : ''}`);
+  },
+  registerMatch: (matchId: string, name?: string, metadata?: Record<string, unknown>) => api.post('/spectator/register_match', { match_id: matchId, name: name ?? '', metadata }),
+  removeMatch: (matchId: string) => api.post('/spectator/remove_match', { match_id: matchId }),
+  listCameras: (matchId: string) => api.get(`/spectator/list_cameras?match_id=${matchId}`),
+  getCamera: (cameraId: string) => api.get(`/spectator/get_camera?camera_id=${cameraId}`),
+  registerCamera: (data: Record<string, unknown>) => api.post('/spectator/register_camera', data),
+  removeCamera: (cameraId: string) => api.post('/spectator/remove_camera', { camera_id: cameraId }),
+  updateCamera: (cameraId: string, data: Record<string, unknown>) => api.post('/spectator/update_camera', { camera_id: cameraId, ...data }),
+  setCameraMode: (cameraId: string, mode: string) => api.post('/spectator/set_camera_mode', { camera_id: cameraId, mode }),
+  followEntity: (cameraId: string, entityId: string) => api.post('/spectator/follow_entity', { camera_id: cameraId, entity_id: entityId }),
+  listSessions: (matchId?: string) => {
+    const sp = new URLSearchParams();
+    if (matchId) sp.set('match_id', matchId);
+    const qs = sp.toString();
+    return api.get(`/spectator/list_sessions${qs ? `?${qs}` : ''}`);
+  },
+  getSession: (sessionId: string) => api.get(`/spectator/get_session?session_id=${sessionId}`),
+  registerSession: (data: Record<string, unknown>) => api.post('/spectator/register_session', data),
+  removeSession: (sessionId: string) => api.post('/spectator/remove_session', { session_id: sessionId }),
+  switchCamera: (sessionId: string, cameraId: string) => api.post('/spectator/switch_camera', { session_id: sessionId, camera_id: cameraId }),
+  setViewportLayout: (sessionId: string, layout: string) => api.post('/spectator/set_viewport_layout', { session_id: sessionId, layout }),
+  listViewports: (sessionId: string) => api.get(`/spectator/list_viewports?session_id=${sessionId}`),
+  getViewport: (viewportId: string) => api.get(`/spectator/get_viewport?viewport_id=${viewportId}`),
+  createViewport: (data: Record<string, unknown>) => api.post('/spectator/create_viewport', data),
+  removeViewport: (viewportId: string) => api.post('/spectator/remove_viewport', { viewport_id: viewportId }),
+  listPresets: () => api.get('/spectator/list_presets'),
+  getPreset: (presetId: string) => api.get(`/spectator/get_preset?preset_id=${presetId}`),
+  registerPreset: (data: Record<string, unknown>) => api.post('/spectator/register_preset', data),
+  removePreset: (presetId: string) => api.post('/spectator/remove_preset', { preset_id: presetId }),
+  applyPreset: (cameraId: string, presetId: string) => api.post('/spectator/apply_preset', { camera_id: cameraId, preset_id: presetId }),
+  listHighlights: (matchId?: string, highlightType?: string) => {
+    const sp = new URLSearchParams();
+    if (matchId) sp.set('match_id', matchId);
+    if (highlightType) sp.set('highlight_type', highlightType);
+    const qs = sp.toString();
+    return api.get(`/spectator/list_highlights${qs ? `?${qs}` : ''}`);
+  },
+  getHighlight: (highlightId: string) => api.get(`/spectator/get_highlight?highlight_id=${highlightId}`),
+  recordHighlight: (data: Record<string, unknown>) => api.post('/spectator/record_highlight', data),
+  removeHighlight: (highlightId: string) => api.post('/spectator/remove_highlight', { highlight_id: highlightId }),
+  startRewind: (sessionId: string, secondsBack: number) => api.post('/spectator/start_rewind', { session_id: sessionId, seconds_back: secondsBack }),
+  stopRewind: (sessionId: string) => api.post('/spectator/stop_rewind', { session_id: sessionId }),
+  autoDirectorTick: (matchId: string) => api.post('/spectator/auto_director_tick', { match_id: matchId }),
+  listDirectorDecisions: (matchId?: string, limit?: number) => {
+    const sp = new URLSearchParams();
+    if (matchId) sp.set('match_id', matchId);
+    if (limit !== undefined) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/spectator/list_director_decisions${qs ? `?${qs}` : ''}`);
+  },
+  setDirectorMode: (matchId: string, mode: string) => api.post('/spectator/set_director_mode', { match_id: matchId, mode }),
+  tick: () => api.post('/spectator/tick'),
+  reset: () => api.post('/spectator/reset'),
+  setConfig: (data: Record<string, unknown>) => api.post('/spectator/set-config', data),
+};
+
+// Round 38 - AI Bug Hunter
+export const bugHunterApi = {
+  getStatus: () => api.get('/bughunter/get_status'),
+  getStats: () => api.get('/bughunter/get_stats'),
+  getSnapshot: () => api.get('/bughunter/get_snapshot'),
+  getConfig: () => api.get('/bughunter/get_config'),
+  listEvents: (bugId?: string, limit?: number) => {
+    const sp = new URLSearchParams();
+    if (bugId) sp.set('bug_id', bugId);
+    if (limit !== undefined) sp.set('limit', String(limit));
+    const qs = sp.toString();
+    return api.get(`/bughunter/list_events${qs ? `?${qs}` : ''}`);
+  },
+  listBugs: (severityFilter?: string, statusFilter?: string, categoryFilter?: string) => {
+    const sp = new URLSearchParams();
+    if (severityFilter) sp.set('severity_filter', severityFilter);
+    if (statusFilter) sp.set('status_filter', statusFilter);
+    if (categoryFilter) sp.set('category_filter', categoryFilter);
+    const qs = sp.toString();
+    return api.get(`/bughunter/list_bugs${qs ? `?${qs}` : ''}`);
+  },
+  getBug: (bugId: string) => api.get(`/bughunter/get_bug?bug_id=${bugId}`),
+  registerBug: (data: Record<string, unknown>) => api.post('/bughunter/register_bug', data),
+  removeBug: (bugId: string) => api.post('/bughunter/remove_bug', { bug_id: bugId }),
+  updateBugStatus: (bugId: string, status: string) => api.post('/bughunter/update_bug_status', { bug_id: bugId, status }),
+  updateBugSeverity: (bugId: string, severity: string) => api.post('/bughunter/update_bug_severity', { bug_id: bugId, severity }),
+  assignBug: (bugId: string, assigneeId: string) => api.post('/bughunter/assign_bug', { bug_id: bugId, assignee_id: assigneeId }),
+  listReproductionScripts: (bugId: string) => api.get(`/bughunter/list_reproduction_scripts?bug_id=${bugId}`),
+  getReproductionScript: (scriptId: string) => api.get(`/bughunter/get_reproduction_script?script_id=${scriptId}`),
+  registerReproductionScript: (data: Record<string, unknown>) => api.post('/bughunter/register_reproduction_script', data),
+  removeReproductionScript: (scriptId: string) => api.post('/bughunter/remove_reproduction_script', { script_id: scriptId }),
+  runReproduction: (scriptId: string) => api.post('/bughunter/run_reproduction', { script_id: scriptId }),
+  listTelemetryPatterns: () => api.get('/bughunter/list_telemetry_patterns'),
+  getTelemetryPattern: (patternId: string) => api.get(`/bughunter/get_telemetry_pattern?pattern_id=${patternId}`),
+  registerTelemetryPattern: (data: Record<string, unknown>) => api.post('/bughunter/register_telemetry_pattern', data),
+  removeTelemetryPattern: (patternId: string) => api.post('/bughunter/remove_telemetry_pattern', { pattern_id: patternId }),
+  scanTelemetry: (metricsData: Record<string, unknown>) => api.post('/bughunter/scan_telemetry', { metrics_data: metricsData }),
+  listPlayerReports: (bugId?: string) => {
+    const sp = new URLSearchParams();
+    if (bugId) sp.set('bug_id', bugId);
+    const qs = sp.toString();
+    return api.get(`/bughunter/list_player_reports${qs ? `?${qs}` : ''}`);
+  },
+  getPlayerReport: (reportId: string) => api.get(`/bughunter/get_player_report?report_id=${reportId}`),
+  registerPlayerReport: (data: Record<string, unknown>) => api.post('/bughunter/register_player_report', data),
+  removePlayerReport: (reportId: string) => api.post('/bughunter/remove_player_report', { report_id: reportId }),
+  linkPlayerReportToBug: (reportId: string, bugId: string) => api.post('/bughunter/link_player_report_to_bug', { report_id: reportId, bug_id: bugId }),
+  listCodeAnalyses: (bugId: string) => api.get(`/bughunter/list_code_analyses?bug_id=${bugId}`),
+  getCodeAnalysis: (analysisId: string) => api.get(`/bughunter/get_code_analysis?analysis_id=${analysisId}`),
+  registerCodeAnalysis: (data: Record<string, unknown>) => api.post('/bughunter/register_code_analysis', data),
+  removeCodeAnalysis: (analysisId: string) => api.post('/bughunter/remove_code_analysis', { analysis_id: analysisId }),
+  autoClassifyBug: (bugId: string) => api.post('/bughunter/auto_classify_bug', { bug_id: bugId }),
+  suggestFix: (bugId: string) => api.post('/bughunter/suggest_fix', { bug_id: bugId }),
+  findDuplicates: (bugId: string) => api.get(`/bughunter/find_duplicates?bug_id=${bugId}`),
+  getBugSummary: (bugId: string) => api.get(`/bughunter/get_bug_summary?bug_id=${bugId}`),
+  tick: () => api.post('/bughunter/tick'),
+  reset: () => api.post('/bughunter/reset'),
+  setConfig: (data: Record<string, unknown>) => api.post('/bughunter/set-config', data),
+};
+
+export const musicComposerApi = {
+  addTrackLayer: (data: Record<string, unknown>) => api.post('/music/add_track_layer', data),
+  composeTrack: (data: Record<string, unknown>) => api.post('/music/compose_track', data),
+  createSession: (data: Record<string, unknown>) => api.post('/music/create_session', data),
+  generateVariation: (data: Record<string, unknown>) => api.post('/music/generate_variation', data),
+  getActiveTrack: (session_id: string) => api.get(`/music/get_active_track?session_id=${session_id}`),
+  getConfig: () => api.get('/music/get_config'),
+  getInstrument: (voice_id: string) => api.get(`/music/get_instrument?voice_id=${voice_id}`),
+  getMoodMapping: (mapping_id: string) => api.get(`/music/get_mood_mapping?mapping_id=${mapping_id}`),
+  getPhrase: (phrase_id: string) => api.get(`/music/get_phrase?phrase_id=${phrase_id}`),
+  getSession: (session_id: string) => api.get(`/music/get_session?session_id=${session_id}`),
+  getSnapshot: () => api.get('/music/get_snapshot'),
+  getStats: () => api.get('/music/get_stats'),
+  getStatus: () => api.get('/music/get_status'),
+  getTheme: (theme_id: string) => api.get(`/music/get_theme?theme_id=${theme_id}`),
+  getTrack: (track_id: string) => api.get(`/music/get_track?track_id=${track_id}`),
+  getTrackLayer: (layer_id: string) => api.get(`/music/get_track_layer?layer_id=${layer_id}`),
+  listEvents: (track_id: string, session_id: string, limit: string) => { const sp = new URLSearchParams();     if (track_id) sp.set('track_id', track_id);     if (session_id) sp.set('session_id', session_id);     if (limit) sp.set('limit', limit); const qs = sp.toString(); return api.get(`/music/list_events${qs ? `?${qs}` : ''}`); },
+  listInstruments: (family_filter: string) => api.get(`/music/list_instruments?family_filter=${family_filter}`),
+  listMoodMappings: (game_context: string) => api.get(`/music/list_mood_mappings?game_context=${game_context}`),
+  listPhrases: (mood_filter: string) => api.get(`/music/list_phrases?mood_filter=${mood_filter}`),
+  listSessions: (game_context: string) => api.get(`/music/list_sessions?game_context=${game_context}`),
+  listThemes: (mood_filter: string, genre_filter: string) => { const sp = new URLSearchParams();     if (mood_filter) sp.set('mood_filter', mood_filter);     if (genre_filter) sp.set('genre_filter', genre_filter); const qs = sp.toString(); return api.get(`/music/list_themes${qs ? `?${qs}` : ''}`); },
+  listTrackLayers: (track_id: string) => api.get(`/music/list_track_layers?track_id=${track_id}`),
+  listTracks: (status_filter: string) => api.get(`/music/list_tracks?status_filter=${status_filter}`),
+  registerInstrument: (data: Record<string, unknown>) => api.post('/music/register_instrument', data),
+  registerMoodMapping: (data: Record<string, unknown>) => api.post('/music/register_mood_mapping', data),
+  registerPhrase: (data: Record<string, unknown>) => api.post('/music/register_phrase', data),
+  registerTheme: (data: Record<string, unknown>) => api.post('/music/register_theme', data),
+  removeInstrument: (voice_id: string) => api.post('/music/remove_instrument', { voice_id }),
+  removeMoodMapping: (mapping_id: string) => api.post('/music/remove_mood_mapping', { mapping_id }),
+  removePhrase: (phrase_id: string) => api.post('/music/remove_phrase', { phrase_id }),
+  removeSession: (session_id: string) => api.post('/music/remove_session', { session_id }),
+  removeTheme: (theme_id: string) => api.post('/music/remove_theme', { theme_id }),
+  removeTrack: (track_id: string) => api.post('/music/remove_track', { track_id }),
+  removeTrackLayer: (layer_id: string) => api.post('/music/remove_track_layer', { layer_id }),
+  reset: () => api.post('/music/reset'),
+  setConfig: (data: Record<string, unknown>) => api.post('/music/set_config', data),
+  setTrackIntensity: (data: Record<string, unknown>) => api.post('/music/set_track_intensity', data),
+  startTrack: (track_id: string) => api.post('/music/start_track', { track_id }),
+  stopTrack: (track_id: string) => api.post('/music/stop_track', { track_id }),
+  tick: (dt: number = 1.0) => api.post('/music/tick', { dt }),
+  transitionToMood: (data: Record<string, unknown>) => api.post('/music/transition_to_mood', data),
+  updateSessionMood: (data: Record<string, unknown>) => api.post('/music/update_session_mood', data),
+};
+
+
+export const playerSentimentApi = {
+  batchAnalyze: (player_ids: string) => api.post('/sentiment/batch_analyze', { player_ids }),
+  detectChurnRisk: (player_id: string) => api.get(`/sentiment/detect_churn_risk?player_id=${player_id}`),
+  generateTimeline: (data: Record<string, unknown>) => api.post('/sentiment/generate_timeline', data),
+  getConfig: () => api.get('/sentiment/get_config'),
+  getEngagementMetric: (metric_id: string) => api.get(`/sentiment/get_engagement_metric?metric_id=${metric_id}`),
+  getFrustrationEvent: (event_id: string) => api.get(`/sentiment/get_frustration_event?event_id=${event_id}`),
+  getIntervention: (suggestion_id: string) => api.get(`/sentiment/get_intervention?suggestion_id=${suggestion_id}`),
+  getOrCreateProfile: (player_id: string) => api.get(`/sentiment/get_or_create_profile?player_id=${player_id}`),
+  getProfile: (player_id: string) => api.get(`/sentiment/get_profile?player_id=${player_id}`),
+  getSample: (sample_id: string) => api.get(`/sentiment/get_sample?sample_id=${sample_id}`),
+  getSentimentSummary: (player_id: string) => api.get(`/sentiment/get_sentiment_summary?player_id=${player_id}`),
+  getSnapshot: () => api.get('/sentiment/get_snapshot'),
+  getStats: () => api.get('/sentiment/get_stats'),
+  getStatus: () => api.get('/sentiment/get_status'),
+  listEngagementMetrics: (player_id: string, limit: string) => { const sp = new URLSearchParams();     if (player_id) sp.set('player_id', player_id);     if (limit) sp.set('limit', limit); const qs = sp.toString(); return api.get(`/sentiment/list_engagement_metrics${qs ? `?${qs}` : ''}`); },
+  listEvents: (player_id: string, limit: string) => { const sp = new URLSearchParams();     if (player_id) sp.set('player_id', player_id);     if (limit) sp.set('limit', limit); const qs = sp.toString(); return api.get(`/sentiment/list_events${qs ? `?${qs}` : ''}`); },
+  listFrustrationEvents: (player_id: string, resolved_filter: string) => { const sp = new URLSearchParams();     if (player_id) sp.set('player_id', player_id);     if (resolved_filter) sp.set('resolved_filter', resolved_filter); const qs = sp.toString(); return api.get(`/sentiment/list_frustration_events${qs ? `?${qs}` : ''}`); },
+  listInterventions: (player_id: string, type_filter: string) => { const sp = new URLSearchParams();     if (player_id) sp.set('player_id', player_id);     if (type_filter) sp.set('type_filter', type_filter); const qs = sp.toString(); return api.get(`/sentiment/list_interventions${qs ? `?${qs}` : ''}`); },
+  listProfiles: (engagement_filter: string) => api.get(`/sentiment/list_profiles?engagement_filter=${engagement_filter}`),
+  listSamples: (player_id: string, limit: string, source_filter: string) => { const sp = new URLSearchParams();     if (player_id) sp.set('player_id', player_id);     if (limit) sp.set('limit', limit);     if (source_filter) sp.set('source_filter', source_filter); const qs = sp.toString(); return api.get(`/sentiment/list_samples${qs ? `?${qs}` : ''}`); },
+  recordEngagement: (data: Record<string, unknown>) => api.post('/sentiment/record_engagement', data),
+  recordFrustration: (data: Record<string, unknown>) => api.post('/sentiment/record_frustration', data),
+  registerIntervention: (data: Record<string, unknown>) => api.post('/sentiment/register_intervention', data),
+  registerSample: (data: Record<string, unknown>) => api.post('/sentiment/register_sample', data),
+  removeIntervention: (suggestion_id: string) => api.post('/sentiment/remove_intervention', { suggestion_id }),
+  removeProfile: (player_id: string) => api.post('/sentiment/remove_profile', { player_id }),
+  removeSample: (sample_id: string) => api.post('/sentiment/remove_sample', { sample_id }),
+  reset: () => api.post('/sentiment/reset'),
+  resolveFrustration: (event_id: string) => api.post('/sentiment/resolve_frustration', { event_id }),
+  setConfig: (data: Record<string, unknown>) => api.post('/sentiment/set_config', data),
+  suggestIntervention: (player_id: string) => api.post('/sentiment/suggest_intervention', { player_id }),
+  tick: () => api.post('/sentiment/tick'),
+  updateProfile: (player_id: string) => api.post('/sentiment/update_profile', { player_id }),
+};
+
+
+export const cloudSaveApi = {
+  calculateDataHash: (data: string) => api.get(`/cloudsave/calculate_data_hash?data=${data}`),
+  compressData: (data: Record<string, unknown>) => api.post('/cloudsave/compress_data', data),
+  createSnapshotBackup: (slot_id: string) => api.post('/cloudsave/create_snapshot_backup', { slot_id }),
+  decompressData: (data: Record<string, unknown>) => api.post('/cloudsave/decompress_data', data),
+  decryptData: (data: Record<string, unknown>) => api.post('/cloudsave/decrypt_data', data),
+  deleteSaveData: (data: Record<string, unknown>) => api.post('/cloudsave/delete_save_data', data),
+  detectConflict: (slot_id: string) => api.get(`/cloudsave/detect_conflict?slot_id=${slot_id}`),
+  downloadFromCloud: (slot_id: string) => api.post('/cloudsave/download_from_cloud', { slot_id }),
+  encryptData: (data: Record<string, unknown>) => api.post('/cloudsave/encrypt_data', data),
+  getConfig: () => api.get('/cloudsave/get_config'),
+  getQuota: (player_id: string) => api.get(`/cloudsave/get_quota?player_id=${player_id}`),
+  getSaveData: (slot_id: string, data_type: string) => { const sp = new URLSearchParams();     if (slot_id) sp.set('slot_id', slot_id);     if (data_type) sp.set('data_type', data_type); const qs = sp.toString(); return api.get(`/cloudsave/get_save_data${qs ? `?${qs}` : ''}`); },
+  getSaveSlot: (slot_id: string) => api.get(`/cloudsave/get_save_slot?slot_id=${slot_id}`),
+  getSnapshot: () => api.get('/cloudsave/get_snapshot'),
+  getStats: () => api.get('/cloudsave/get_stats'),
+  getStatus: () => api.get('/cloudsave/get_status'),
+  getSyncOperation: (operation_id: string) => api.get(`/cloudsave/get_sync_operation?operation_id=${operation_id}`),
+  listBackups: (slot_id: string) => api.get(`/cloudsave/list_backups?slot_id=${slot_id}`),
+  listConflicts: (player_id: string, resolved_filter: string) => { const sp = new URLSearchParams();     if (player_id) sp.set('player_id', player_id);     if (resolved_filter) sp.set('resolved_filter', resolved_filter); const qs = sp.toString(); return api.get(`/cloudsave/list_conflicts${qs ? `?${qs}` : ''}`); },
+  listEvents: (slot_id: string, player_id: string, limit: string) => { const sp = new URLSearchParams();     if (slot_id) sp.set('slot_id', slot_id);     if (player_id) sp.set('player_id', player_id);     if (limit) sp.set('limit', limit); const qs = sp.toString(); return api.get(`/cloudsave/list_events${qs ? `?${qs}` : ''}`); },
+  listSaveSlots: (player_id: string, type_filter: string) => { const sp = new URLSearchParams();     if (player_id) sp.set('player_id', player_id);     if (type_filter) sp.set('type_filter', type_filter); const qs = sp.toString(); return api.get(`/cloudsave/list_save_slots${qs ? `?${qs}` : ''}`); },
+  listSyncOperations: (data: Record<string, unknown>) => api.post('/cloudsave/list_sync_operations', data),
+  loadSaveData: (slot_id: string) => api.post('/cloudsave/load_save_data', { slot_id }),
+  registerSaveSlot: (data: Record<string, unknown>) => api.post('/cloudsave/register_save_slot', data),
+  removeSaveSlot: (slot_id: string) => api.post('/cloudsave/remove_save_slot', { slot_id }),
+  reset: () => api.post('/cloudsave/reset'),
+  resolveConflict: (data: Record<string, unknown>) => api.post('/cloudsave/resolve_conflict', data),
+  restoreBackup: (data: Record<string, unknown>) => api.post('/cloudsave/restore_backup', data),
+  saveData: (data: Record<string, unknown>) => api.post('/cloudsave/save_data', data),
+  setConfig: (data: Record<string, unknown>) => api.post('/cloudsave/set_config', data),
+  syncPlayer: (player_id: string) => api.post('/cloudsave/sync_player', { player_id }),
+  syncSlot: (data: Record<string, unknown>) => api.post('/cloudsave/sync_slot', data),
+  tick: () => api.post('/cloudsave/tick'),
+  updateQuota: (data: Record<string, unknown>) => api.post('/cloudsave/update_quota', data),
+  updateSaveSlot: (data: Record<string, unknown>) => api.post('/cloudsave/update_save_slot', data),
+  uploadToCloud: (slot_id: string) => api.post('/cloudsave/upload_to_cloud', { slot_id }),
+};
+
+// ===========================================================================
+// Round 40 API Clients - Trailer Director, UGC Workshop, Player Avatar
+// ===========================================================================
+
+export const trailerDirectorApi = {
+  addClipToProject: (data: Record<string, unknown>) => api.post('/trailer/add_clip_to_project', data),
+  addTransition: (data: Record<string, unknown>) => api.post('/trailer/add_transition', data),
+  autoPace: (data: Record<string, unknown>) => api.post('/trailer/auto_pace', data),
+  cancelRender: (data: Record<string, unknown>) => api.post('/trailer/cancel_render', data),
+  createNarrativeArc: (data: Record<string, unknown>) => api.post('/trailer/create_narrative_arc', data),
+  createProject: (data: Record<string, unknown>) => api.post('/trailer/create_project', data),
+  getClip: (clip_id: string) => { const params = new URLSearchParams(); params.append("clip_id", String(clip_id)); return api.get('/trailer/get_clip?' + params.toString()); },
+  getConfig: () => api.post('/trailer/get_config'),
+  getMusic: (music_id: string) => { const params = new URLSearchParams(); params.append("music_id", String(music_id)); return api.get('/trailer/get_music?' + params.toString()); },
+  getNarrativeArc: (arc_id: string) => { const params = new URLSearchParams(); params.append("arc_id", String(arc_id)); return api.get('/trailer/get_narrative_arc?' + params.toString()); },
+  getProject: (project_id: string) => { const params = new URLSearchParams(); params.append("project_id", String(project_id)); return api.get('/trailer/get_project?' + params.toString()); },
+  getRenderJob: (job_id: string) => { const params = new URLSearchParams(); params.append("job_id", String(job_id)); return api.get('/trailer/get_render_job?' + params.toString()); },
+  getSnapshot: () => api.post('/trailer/get_snapshot'),
+  getStats: () => api.post('/trailer/get_stats'),
+  getStatus: () => api.post('/trailer/get_status'),
+  getTransition: (transition_id: string) => { const params = new URLSearchParams(); params.append("transition_id", String(transition_id)); return api.get('/trailer/get_transition?' + params.toString()); },
+  listClips: (category_filter: string, limit: string) => { const params = new URLSearchParams(); params.append("category_filter", String(category_filter)); params.append("limit", String(limit)); return api.get('/trailer/list_clips?' + params.toString()); },
+  listEvents: (project_id: string, limit: string) => { const params = new URLSearchParams(); params.append("project_id", String(project_id)); params.append("limit", String(limit)); return api.get('/trailer/list_events?' + params.toString()); },
+  listMusic: (mood_filter: string, limit: string) => { const params = new URLSearchParams(); params.append("mood_filter", String(mood_filter)); params.append("limit", String(limit)); return api.get('/trailer/list_music?' + params.toString()); },
+  listNarrativeArcs: (limit: string) => { const params = new URLSearchParams(); params.append("limit", String(limit)); return api.get('/trailer/list_narrative_arcs?' + params.toString()); },
+  listProjects: (genre_filter: string, status_filter: string, limit: string) => { const params = new URLSearchParams(); params.append("genre_filter", String(genre_filter)); params.append("status_filter", String(status_filter)); params.append("limit", String(limit)); return api.get('/trailer/list_projects?' + params.toString()); },
+  listRenderJobs: (project_id: string, status_filter: string, limit: string) => { const params = new URLSearchParams(); params.append("project_id", String(project_id)); params.append("status_filter", String(status_filter)); params.append("limit", String(limit)); return api.get('/trailer/list_render_jobs?' + params.toString()); },
+  listTransitions: (project_id: string, type_filter: string, limit: string) => { const params = new URLSearchParams(); params.append("project_id", String(project_id)); params.append("type_filter", String(type_filter)); params.append("limit", String(limit)); return api.get('/trailer/list_transitions?' + params.toString()); },
+  publishTrailer: (data: Record<string, unknown>) => api.post('/trailer/publish_trailer', data),
+  registerClip: (data: Record<string, unknown>) => api.post('/trailer/register_clip', data),
+  removeClip: (data: Record<string, unknown>) => api.post('/trailer/remove_clip', data),
+  removeClipFromProject: (data: Record<string, unknown>) => api.post('/trailer/remove_clip_from_project', data),
+  removeMusic: (data: Record<string, unknown>) => api.post('/trailer/remove_music', data),
+  removeNarrativeArc: (data: Record<string, unknown>) => api.post('/trailer/remove_narrative_arc', data),
+  removeProject: (data: Record<string, unknown>) => api.post('/trailer/remove_project', data),
+  removeTransition: (data: Record<string, unknown>) => api.post('/trailer/remove_transition', data),
+  reorderClips: (data: Record<string, unknown>) => api.post('/trailer/reorder_clips', data),
+  reset: () => api.post('/trailer/reset'),
+  selectHighlights: (data: Record<string, unknown>) => api.post('/trailer/select_highlights', data),
+  setConfig: (data: Record<string, unknown>) => api.post('/trailer/set_config', data),
+  setMusic: (data: Record<string, unknown>) => api.post('/trailer/set_music', data),
+  setPacing: (data: Record<string, unknown>) => api.post('/trailer/set_pacing', data),
+  startRender: (data: Record<string, unknown>) => api.post('/trailer/start_render', data),
+  syncMusic: (data: Record<string, unknown>) => api.post('/trailer/sync_music', data),
+  tick: (data: Record<string, unknown>) => api.post('/trailer/tick', data),
+  updateProject: (data: Record<string, unknown>) => api.post('/trailer/update_project', data)
+};
+
+export const ugcWorkshopApi = {
+  addToCollection: (data: Record<string, unknown>) => api.post('/ugc/add_to_collection', data),
+  approveItem: (data: Record<string, unknown>) => api.post('/ugc/approve_item', data),
+  completeReview: (data: Record<string, unknown>) => api.post('/ugc/complete_review', data),
+  createCollection: (data: Record<string, unknown>) => api.post('/ugc/create_collection', data),
+  discoverItems: (query: string, item_type: string, sort: string, limit: string) => { const params = new URLSearchParams(); params.append("query", String(query)); params.append("item_type", String(item_type)); params.append("sort", String(sort)); params.append("limit", String(limit)); return api.get('/ugc/discover_items?' + params.toString()); },
+  featureItem: (data: Record<string, unknown>) => api.post('/ugc/feature_item', data),
+  getCollection: (collection_id: string) => { const params = new URLSearchParams(); params.append("collection_id", String(collection_id)); return api.get('/ugc/get_collection?' + params.toString()); },
+  getConfig: () => api.post('/ugc/get_config'),
+  getFeatured: () => api.post('/ugc/get_featured'),
+  getItem: (item_id: string) => { const params = new URLSearchParams(); params.append("item_id", String(item_id)); return api.get('/ugc/get_item?' + params.toString()); },
+  getMonetization: (item_id: string) => { const params = new URLSearchParams(); params.append("item_id", String(item_id)); return api.get('/ugc/get_monetization?' + params.toString()); },
+  getRating: (rating_id: string) => { const params = new URLSearchParams(); params.append("rating_id", String(rating_id)); return api.get('/ugc/get_rating?' + params.toString()); },
+  getReport: (report_id: string) => { const params = new URLSearchParams(); params.append("report_id", String(report_id)); return api.get('/ugc/get_report?' + params.toString()); },
+  getReview: (review_id: string) => { const params = new URLSearchParams(); params.append("review_id", String(review_id)); return api.get('/ugc/get_review?' + params.toString()); },
+  getSnapshot: () => api.post('/ugc/get_snapshot'),
+  getStats: () => api.post('/ugc/get_stats'),
+  getStatus: () => api.post('/ugc/get_status'),
+  getSubscription: (subscription_id: string) => { const params = new URLSearchParams(); params.append("subscription_id", String(subscription_id)); return api.get('/ugc/get_subscription?' + params.toString()); },
+  listCollections: (featured_only: string) => { const params = new URLSearchParams(); params.append("featured_only", String(featured_only)); return api.get('/ugc/list_collections?' + params.toString()); },
+  listEvents: (limit: string) => { const params = new URLSearchParams(); params.append("limit", String(limit)); return api.get('/ugc/list_events?' + params.toString()); },
+  listItems: (item_type: string, status: string, author_id: string, sort: string, limit: string) => { const params = new URLSearchParams(); params.append("item_type", String(item_type)); params.append("status", String(status)); params.append("author_id", String(author_id)); params.append("sort", String(sort)); params.append("limit", String(limit)); return api.get('/ugc/list_items?' + params.toString()); },
+  listRatings: (item_id: string) => { const params = new URLSearchParams(); params.append("item_id", String(item_id)); return api.get('/ugc/list_ratings?' + params.toString()); },
+  listReports: (item_id: string, status: string) => { const params = new URLSearchParams(); params.append("item_id", String(item_id)); params.append("status", String(status)); return api.get('/ugc/list_reports?' + params.toString()); },
+  listReviews: (item_id: string) => { const params = new URLSearchParams(); params.append("item_id", String(item_id)); return api.get('/ugc/list_reviews?' + params.toString()); },
+  listSubscriptions: (user_id: string, item_id: string) => { const params = new URLSearchParams(); params.append("user_id", String(user_id)); params.append("item_id", String(item_id)); return api.get('/ugc/list_subscriptions?' + params.toString()); },
+  processRevenue: (data: Record<string, unknown>) => api.post('/ugc/process_revenue', data),
+  rateItem: (data: Record<string, unknown>) => api.post('/ugc/rate_item', data),
+  registerItem: (data: Record<string, unknown>) => api.post('/ugc/register_item', data),
+  rejectItem: (data: Record<string, unknown>) => api.post('/ugc/reject_item', data),
+  removeCollection: (data: Record<string, unknown>) => api.post('/ugc/remove_collection', data),
+  removeFromCollection: (data: Record<string, unknown>) => api.post('/ugc/remove_from_collection', data),
+  removeItem: (data: Record<string, unknown>) => api.post('/ugc/remove_item', data),
+  removeRating: (data: Record<string, unknown>) => api.post('/ugc/remove_rating', data),
+  reportItem: (data: Record<string, unknown>) => api.post('/ugc/report_item', data),
+  requestRevision: (data: Record<string, unknown>) => api.post('/ugc/request_revision', data),
+  reset: () => api.post('/ugc/reset'),
+  resolveReport: (data: Record<string, unknown>) => api.post('/ugc/resolve_report', data),
+  setConfig: (data: Record<string, unknown>) => api.post('/ugc/set_config', data),
+  setMonetization: (data: Record<string, unknown>) => api.post('/ugc/set_monetization', data),
+  startReview: (data: Record<string, unknown>) => api.post('/ugc/start_review', data),
+  submitForReview: (data: Record<string, unknown>) => api.post('/ugc/submit_for_review', data),
+  subscribe: (data: Record<string, unknown>) => api.post('/ugc/subscribe', data),
+  tick: (data: Record<string, unknown>) => api.post('/ugc/tick', data),
+  unfeatureItem: (data: Record<string, unknown>) => api.post('/ugc/unfeature_item', data),
+  unsubscribe: (data: Record<string, unknown>) => api.post('/ugc/unsubscribe', data),
+  updateItem: (data: Record<string, unknown>) => api.post('/ugc/update_item', data)
+};
+
+export const playerAvatarApi = {
+  applyPreset: (data: Record<string, unknown>) => api.post('/avatar/apply_preset', data),
+  createAvatar: (data: Record<string, unknown>) => api.post('/avatar/create_avatar', data),
+  createOutfit: (data: Record<string, unknown>) => api.post('/avatar/create_outfit', data),
+  createPreset: (data: Record<string, unknown>) => api.post('/avatar/create_preset', data),
+  featureAvatar: (data: Record<string, unknown>) => api.post('/avatar/feature_avatar', data),
+  generateThumbnail: (data: Record<string, unknown>) => api.post('/avatar/generate_thumbnail', data),
+  getAnimation: (animation_id: string) => { const params = new URLSearchParams(); params.append("animation_id", String(animation_id)); return api.get('/avatar/get_animation?' + params.toString()); },
+  getAvatar: (avatar_id: string) => { const params = new URLSearchParams(); params.append("avatar_id", String(avatar_id)); return api.get('/avatar/get_avatar?' + params.toString()); },
+  getConfig: () => api.post('/avatar/get_config'),
+  getOutfit: (outfit_id: string) => { const params = new URLSearchParams(); params.append("outfit_id", String(outfit_id)); return api.get('/avatar/get_outfit?' + params.toString()); },
+  getPart: (part_id: string) => { const params = new URLSearchParams(); params.append("part_id", String(part_id)); return api.get('/avatar/get_part?' + params.toString()); },
+  getPose: (pose_id: string) => { const params = new URLSearchParams(); params.append("pose_id", String(pose_id)); return api.get('/avatar/get_pose?' + params.toString()); },
+  getPreset: (preset_id: string) => { const params = new URLSearchParams(); params.append("preset_id", String(preset_id)); return api.get('/avatar/get_preset?' + params.toString()); },
+  getShareLink: (share_id: string) => { const params = new URLSearchParams(); params.append("share_id", String(share_id)); return api.get('/avatar/get_share_link?' + params.toString()); },
+  getSnapshot: () => api.post('/avatar/get_snapshot'),
+  getStats: () => api.post('/avatar/get_stats'),
+  getStatus: () => api.post('/avatar/get_status'),
+  listAnimations: (animation_type: string, limit: string) => { const params = new URLSearchParams(); params.append("animation_type", String(animation_type)); params.append("limit", String(limit)); return api.get('/avatar/list_animations?' + params.toString()); },
+  listAvatars: (player_id: string, limit: string) => { const params = new URLSearchParams(); params.append("player_id", String(player_id)); params.append("limit", String(limit)); return api.get('/avatar/list_avatars?' + params.toString()); },
+  listEvents: (avatar_id: string, limit: string) => { const params = new URLSearchParams(); params.append("avatar_id", String(avatar_id)); params.append("limit", String(limit)); return api.get('/avatar/list_events?' + params.toString()); },
+  listOutfits: (category: string, limit: string) => { const params = new URLSearchParams(); params.append("category", String(category)); params.append("limit", String(limit)); return api.get('/avatar/list_outfits?' + params.toString()); },
+  listParts: (part_type: string, limit: string) => { const params = new URLSearchParams(); params.append("part_type", String(part_type)); params.append("limit", String(limit)); return api.get('/avatar/list_parts?' + params.toString()); },
+  listPoses: (pose_type: string, limit: string) => { const params = new URLSearchParams(); params.append("pose_type", String(pose_type)); params.append("limit", String(limit)); return api.get('/avatar/list_poses?' + params.toString()); },
+  listPresets: (category: string, limit: string) => { const params = new URLSearchParams(); params.append("category", String(category)); params.append("limit", String(limit)); return api.get('/avatar/list_presets?' + params.toString()); },
+  listShareLinks: (avatar_id: string, platform: string, limit: string) => { const params = new URLSearchParams(); params.append("avatar_id", String(avatar_id)); params.append("platform", String(platform)); params.append("limit", String(limit)); return api.get('/avatar/list_share_links?' + params.toString()); },
+  registerAnimation: (data: Record<string, unknown>) => api.post('/avatar/register_animation', data),
+  registerPart: (data: Record<string, unknown>) => api.post('/avatar/register_part', data),
+  registerPose: (data: Record<string, unknown>) => api.post('/avatar/register_pose', data),
+  removeAnimation: (data: Record<string, unknown>) => api.post('/avatar/remove_animation', data),
+  removeAvatar: (data: Record<string, unknown>) => api.post('/avatar/remove_avatar', data),
+  removeAvatarPart: (data: Record<string, unknown>) => api.post('/avatar/remove_avatar_part', data),
+  removeOutfit: (data: Record<string, unknown>) => api.post('/avatar/remove_outfit', data),
+  removePart: (data: Record<string, unknown>) => api.post('/avatar/remove_part', data),
+  removePose: (data: Record<string, unknown>) => api.post('/avatar/remove_pose', data),
+  removePreset: (data: Record<string, unknown>) => api.post('/avatar/remove_preset', data),
+  reset: () => api.post('/avatar/reset'),
+  revokeShare: (data: Record<string, unknown>) => api.post('/avatar/revoke_share', data),
+  setAvatarAnimation: (data: Record<string, unknown>) => api.post('/avatar/set_avatar_animation', data),
+  setAvatarPart: (data: Record<string, unknown>) => api.post('/avatar/set_avatar_part', data),
+  setAvatarPose: (data: Record<string, unknown>) => api.post('/avatar/set_avatar_pose', data),
+  setConfig: (data: Record<string, unknown>) => api.post('/avatar/set_config', data),
+  shareAvatar: (data: Record<string, unknown>) => api.post('/avatar/share_avatar', data),
+  tick: (data: Record<string, unknown>) => api.post('/avatar/tick', data),
+  unfeatureAvatar: (data: Record<string, unknown>) => api.post('/avatar/unfeature_avatar', data),
+  updateAvatar: (data: Record<string, unknown>) => api.post('/avatar/update_avatar', data),
+  updateOutfit: (data: Record<string, unknown>) => api.post('/avatar/update_outfit', data),
+  updatePart: (data: Record<string, unknown>) => api.post('/avatar/update_part', data)
+};
+
+// Round 41 - Shader Material Graph System API
+export const shaderApi = {
+  addTextureLayer: (data: Record<string, unknown>) => api.post('/shader/add_texture_layer', data),
+  autoGenerateShader: (data: Record<string, unknown>) => api.post('/shader/auto_generate_shader', data),
+  compileGraph: (data: Record<string, unknown>) => api.post('/shader/compile_graph', data),
+  createConnection: (data: Record<string, unknown>) => api.post('/shader/create_connection', data),
+  createGraph: (data: Record<string, unknown>) => api.post('/shader/create_graph', data),
+  createMaterial: (data: Record<string, unknown>) => api.post('/shader/create_material', data),
+  createMaterialInstance: (data: Record<string, unknown>) => api.post('/shader/create_material_instance', data),
+  getCompilationResult: (data: Record<string, unknown>) => api.post('/shader/get_compilation_result', data),
+  getConfig: () => api.post('/shader/get_config'),
+  getGraph: (data: Record<string, unknown>) => api.post('/shader/get_graph', data),
+  getMaterial: (data: Record<string, unknown>) => api.post('/shader/get_material', data),
+  getMaterialInstance: (data: Record<string, unknown>) => api.post('/shader/get_material_instance', data),
+  getMaterialProperty: (data: Record<string, unknown>) => api.post('/shader/get_material_property', data),
+  getNode: (data: Record<string, unknown>) => api.post('/shader/get_node', data),
+  getShaderProgram: (data: Record<string, unknown>) => api.post('/shader/get_shader_program', data),
+  getSnapshot: () => api.post('/shader/get_snapshot'),
+  getStats: () => api.post('/shader/get_stats'),
+  getStatus: () => api.post('/shader/get_status'),
+  listEvents: (data: Record<string, unknown>) => api.post('/shader/list_events', data),
+  listGraphs: (data: Record<string, unknown>) => api.post('/shader/list_graphs', data),
+  listMaterials: (data: Record<string, unknown>) => api.post('/shader/list_materials', data),
+  listMaterialInstances: (data: Record<string, unknown>) => api.post('/shader/list_material_instances', data),
+  listNodes: (data: Record<string, unknown>) => api.post('/shader/list_nodes', data),
+  listShaderPrograms: (data: Record<string, unknown>) => api.post('/shader/list_shader_programs', data),
+  optimizeGraph: (data: Record<string, unknown>) => api.post('/shader/optimize_graph', data),
+  optimizeShader: (data: Record<string, unknown>) => api.post('/shader/optimize_shader', data),
+  registerNode: (data: Record<string, unknown>) => api.post('/shader/register_node', data),
+  removeConnection: (data: Record<string, unknown>) => api.post('/shader/remove_connection', data),
+  removeGraph: (data: Record<string, unknown>) => api.post('/shader/remove_graph', data),
+  removeMaterial: (data: Record<string, unknown>) => api.post('/shader/remove_material', data),
+  removeMaterialInstance: (data: Record<string, unknown>) => api.post('/shader/remove_material_instance', data),
+  removeNode: (data: Record<string, unknown>) => api.post('/shader/remove_node', data),
+  removeTextureLayer: (data: Record<string, unknown>) => api.post('/shader/remove_texture_layer', data),
+  reset: () => api.post('/shader/reset'),
+  setConfig: (data: Record<string, unknown>) => api.post('/shader/set_config', data),
+  setMaterialProperty: (data: Record<string, unknown>) => api.post('/shader/set_material_property', data),
+  suggestNodes: (data: Record<string, unknown>) => api.post('/shader/suggest_nodes', data),
+  tick: (data: Record<string, unknown>) => api.post('/shader/tick', data),
+  validateGraph: (data: Record<string, unknown>) => api.post('/shader/validate_graph', data)
+};
+
+// Round 41 - Terrain Sculpting System API
+export const terrainApi = {
+  addFoliage: (data: Record<string, unknown>) => api.post('/terrain/add_foliage', data),
+  autoGenerateTerrain: (data: Record<string, unknown>) => api.post('/terrain/auto_generate_terrain', data),
+  bakeTerrain: (data: Record<string, unknown>) => api.post('/terrain/bake_terrain', data),
+  createChunk: (data: Record<string, unknown>) => api.post('/terrain/create_chunk', data),
+  createTerrain: (data: Record<string, unknown>) => api.post('/terrain/create_terrain', data),
+  createTextureLayer: (data: Record<string, unknown>) => api.post('/terrain/create_texture_layer', data),
+  exportHeightmap: (data: Record<string, unknown>) => api.post('/terrain/export_heightmap', data),
+  exportTerrain: (data: Record<string, unknown>) => api.post('/terrain/export_terrain', data),
+  getBrush: (data: Record<string, unknown>) => api.post('/terrain/get_brush', data),
+  getChunk: (data: Record<string, unknown>) => api.post('/terrain/get_chunk', data),
+  getConfig: () => api.post('/terrain/get_config'),
+  getFoliage: (data: Record<string, unknown>) => api.post('/terrain/get_foliage', data),
+  getHeight: (data: Record<string, unknown>) => api.post('/terrain/get_height', data),
+  getSnapshot: () => api.post('/terrain/get_snapshot'),
+  getStats: () => api.post('/terrain/get_stats'),
+  getStatus: () => api.post('/terrain/get_status'),
+  getTerrain: (data: Record<string, unknown>) => api.post('/terrain/get_terrain', data),
+  getTerrainInfo: (data: Record<string, unknown>) => api.post('/terrain/get_terrain_info', data),
+  importHeightmap: (data: Record<string, unknown>) => api.post('/terrain/import_heightmap', data),
+  listBrushes: (data: Record<string, unknown>) => api.post('/terrain/list_brushes', data),
+  listChunks: (data: Record<string, unknown>) => api.post('/terrain/list_chunks', data),
+  listEvents: (data: Record<string, unknown>) => api.post('/terrain/list_events', data),
+  listFoliage: (data: Record<string, unknown>) => api.post('/terrain/list_foliage', data),
+  listTextureLayers: (data: Record<string, unknown>) => api.post('/terrain/list_texture_layers', data),
+  listTerrains: (data: Record<string, unknown>) => api.post('/terrain/list_terrains', data),
+  optimizeTerrain: (data: Record<string, unknown>) => api.post('/terrain/optimize_terrain', data),
+  paintTexture: (data: Record<string, unknown>) => api.post('/terrain/paint_texture', data),
+  registerBrush: (data: Record<string, unknown>) => api.post('/terrain/register_brush', data),
+  removeBrush: (data: Record<string, unknown>) => api.post('/terrain/remove_brush', data),
+  removeFoliage: (data: Record<string, unknown>) => api.post('/terrain/remove_foliage', data),
+  removeTerrain: (data: Record<string, unknown>) => api.post('/terrain/remove_terrain', data),
+  removeTextureLayer: (data: Record<string, unknown>) => api.post('/terrain/remove_texture_layer', data),
+  reset: () => api.post('/terrain/reset'),
+  sculptTerrain: (data: Record<string, unknown>) => api.post('/terrain/sculpt_terrain', data),
+  setConfig: (data: Record<string, unknown>) => api.post('/terrain/set_config', data),
+  setHeight: (data: Record<string, unknown>) => api.post('/terrain/set_height', data),
+  suggestFoliage: (data: Record<string, unknown>) => api.post('/terrain/suggest_foliage', data),
+  tick: (data: Record<string, unknown>) => api.post('/terrain/tick', data)
+};
+
+// Round 41 - AI Performance Profiler API
+export const profilerApi = {
+  applyOptimization: (data: Record<string, unknown>) => api.post('/profiler/apply_optimization', data),
+  autoDiagnose: (data: Record<string, unknown>) => api.post('/profiler/auto_diagnose', data),
+  autoOptimize: (data: Record<string, unknown>) => api.post('/profiler/auto_optimize', data),
+  compareBaselines: (data: Record<string, unknown>) => api.post('/profiler/compare_baselines', data),
+  createBaseline: (data: Record<string, unknown>) => api.post('/profiler/create_baseline', data),
+  getBaseline: (data: Record<string, unknown>) => api.post('/profiler/get_baseline', data),
+  getBottleneck: (data: Record<string, unknown>) => api.post('/profiler/get_bottleneck', data),
+  getConfig: () => api.post('/profiler/get_config'),
+  getFrameMetrics: (data: Record<string, unknown>) => api.post('/profiler/get_frame_metrics', data),
+  getHotspot: (data: Record<string, unknown>) => api.post('/profiler/get_hotspot', data),
+  getOptimization: (data: Record<string, unknown>) => api.post('/profiler/get_optimization', data),
+  getSample: (data: Record<string, unknown>) => api.post('/profiler/get_sample', data),
+  getSession: (data: Record<string, unknown>) => api.post('/profiler/get_session', data),
+  getSnapshot: () => api.post('/profiler/get_snapshot'),
+  getStats: () => api.post('/profiler/get_stats'),
+  getStatus: () => api.post('/profiler/get_status'),
+  identifyBottleneck: (data: Record<string, unknown>) => api.post('/profiler/identify_bottleneck', data),
+  listBaselines: (data: Record<string, unknown>) => api.post('/profiler/list_baselines', data),
+  listBottlenecks: (data: Record<string, unknown>) => api.post('/profiler/list_bottlenecks', data),
+  listEvents: (data: Record<string, unknown>) => api.post('/profiler/list_events', data),
+  listFrameMetrics: (data: Record<string, unknown>) => api.post('/profiler/get_frame_metrics', data),
+  listHotspots: (data: Record<string, unknown>) => api.post('/profiler/list_hotspots', data),
+  listOptimizations: (data: Record<string, unknown>) => api.post('/profiler/list_optimizations', data),
+  listSamples: (data: Record<string, unknown>) => api.post('/profiler/list_samples', data),
+  listSessions: (data: Record<string, unknown>) => api.post('/profiler/list_sessions', data),
+  predictPerformance: (data: Record<string, unknown>) => api.post('/profiler/predict_performance', data),
+  recordFrameMetrics: (data: Record<string, unknown>) => api.post('/profiler/record_frame_metrics', data),
+  recordSample: (data: Record<string, unknown>) => api.post('/profiler/record_sample', data),
+  registerHotspot: (data: Record<string, unknown>) => api.post('/profiler/register_hotspot', data),
+  removeBottleneck: (data: Record<string, unknown>) => api.post('/profiler/remove_bottleneck', data),
+  removeHotspot: (data: Record<string, unknown>) => api.post('/profiler/remove_hotspot', data),
+  removeOptimization: (data: Record<string, unknown>) => api.post('/profiler/remove_optimization', data),
+  removeSample: (data: Record<string, unknown>) => api.post('/profiler/remove_sample', data),
+  removeSession: (data: Record<string, unknown>) => api.post('/profiler/remove_session', data),
+  reset: () => api.post('/profiler/reset'),
+  revertOptimization: (data: Record<string, unknown>) => api.post('/profiler/revert_optimization', data),
+  setConfig: (data: Record<string, unknown>) => api.post('/profiler/set_config', data),
+  startSession: (data: Record<string, unknown>) => api.post('/profiler/start_session', data),
+  stopSession: (data: Record<string, unknown>) => api.post('/profiler/stop_session', data),
+  suggestOptimization: (data: Record<string, unknown>) => api.post('/profiler/suggest_optimization', data),
+  tick: (data: Record<string, unknown>) => api.post('/profiler/tick', data)
+};
+
+export const visualFilterApi = {
+  activate_stack: (data: Record<string, unknown>) => api.post('/visual_filter/activate_stack', data),
+  add_preset_to_stack: (data: Record<string, unknown>) => api.post('/visual_filter/add_preset_to_stack', data),
+  apply_filter: (data: Record<string, unknown>) => api.post('/visual_filter/apply_filter', data),
+  auto_generate_filter: (data: Record<string, unknown>) => api.post('/visual_filter/auto_generate_filter', data),
+  capture_filtered: (data: Record<string, unknown>) => api.post('/visual_filter/capture_filtered', data),
+  compare_presets: (data: Record<string, unknown>) => api.post('/visual_filter/compare_presets', data),
+  create_stack: (data: Record<string, unknown>) => api.post('/visual_filter/create_stack', data),
+  create_transition: (data: Record<string, unknown>) => api.post('/visual_filter/create_transition', data),
+  deactivate_stack: (data: Record<string, unknown>) => api.post('/visual_filter/deactivate_stack', data),
+  export_preset: (data: Record<string, unknown>) => api.post('/visual_filter/export_preset', data),
+  get_config: (data: Record<string, unknown>) => api.post('/visual_filter/get_config', data),
+  get_lut: (data: Record<string, unknown>) => api.post('/visual_filter/get_lut', data),
+  get_parameter: (data: Record<string, unknown>) => api.post('/visual_filter/get_parameter', data),
+  get_preset: (data: Record<string, unknown>) => api.post('/visual_filter/get_preset', data),
+  get_snapshot: (data: Record<string, unknown>) => api.post('/visual_filter/get_snapshot', data),
+  get_stack: (data: Record<string, unknown>) => api.post('/visual_filter/get_stack', data),
+  get_stats: (data: Record<string, unknown>) => api.post('/visual_filter/get_stats', data),
+  get_status: (data: Record<string, unknown>) => api.post('/visual_filter/get_status', data),
+  get_transition: (data: Record<string, unknown>) => api.post('/visual_filter/get_transition', data),
+  import_preset: (data: Record<string, unknown>) => api.post('/visual_filter/import_preset', data),
+  list_events: (data: Record<string, unknown>) => api.post('/visual_filter/list_events', data),
+  list_luts: (data: Record<string, unknown>) => api.post('/visual_filter/list_luts', data),
+  list_presets: (data: Record<string, unknown>) => api.post('/visual_filter/list_presets', data),
+  list_stacks: (data: Record<string, unknown>) => api.post('/visual_filter/list_stacks', data),
+  list_transitions: (data: Record<string, unknown>) => api.post('/visual_filter/list_transitions', data),
+  optimize_filter: (data: Record<string, unknown>) => api.post('/visual_filter/optimize_filter', data),
+  register_lut: (data: Record<string, unknown>) => api.post('/visual_filter/register_lut', data),
+  register_preset: (data: Record<string, unknown>) => api.post('/visual_filter/register_preset', data),
+  remove_lut: (data: Record<string, unknown>) => api.post('/visual_filter/remove_lut', data),
+  remove_preset: (data: Record<string, unknown>) => api.post('/visual_filter/remove_preset', data),
+  remove_preset_from_stack: (data: Record<string, unknown>) => api.post('/visual_filter/remove_preset_from_stack', data),
+  remove_stack: (data: Record<string, unknown>) => api.post('/visual_filter/remove_stack', data),
+  remove_transition: (data: Record<string, unknown>) => api.post('/visual_filter/remove_transition', data),
+  reset: (data: Record<string, unknown>) => api.post('/visual_filter/reset', data),
+  reset_parameter: (data: Record<string, unknown>) => api.post('/visual_filter/reset_parameter', data),
+  revert_filter: (data: Record<string, unknown>) => api.post('/visual_filter/revert_filter', data),
+  set_config: (data: Record<string, unknown>) => api.post('/visual_filter/set_config', data),
+  set_parameter: (data: Record<string, unknown>) => api.post('/visual_filter/set_parameter', data),
+  suggest_parameters: (data: Record<string, unknown>) => api.post('/visual_filter/suggest_parameters', data),
+  tick: (data: Record<string, unknown>) => api.post('/visual_filter/tick', data),
+  update_preset: (data: Record<string, unknown>) => api.post('/visual_filter/update_preset', data),
+  update_transition: (data: Record<string, unknown>) => api.post('/visual_filter/update_transition', data)
+};
+
+export const voiceSynthApi = {
+  add_line_to_batch: (data: Record<string, unknown>) => api.post('/voice_synth/add_line_to_batch', data),
+  apply_emotion: (data: Record<string, unknown>) => api.post('/voice_synth/apply_emotion', data),
+  auto_direct: (data: Record<string, unknown>) => api.post('/voice_synth/auto_direct', data),
+  auto_generate_lines: (data: Record<string, unknown>) => api.post('/voice_synth/auto_generate_lines', data),
+  batch_synthesize: (data: Record<string, unknown>) => api.post('/voice_synth/batch_synthesize', data),
+  clone_voice: (data: Record<string, unknown>) => api.post('/voice_synth/clone_voice', data),
+  create_batch: (data: Record<string, unknown>) => api.post('/voice_synth/create_batch', data),
+  create_direction: (data: Record<string, unknown>) => api.post('/voice_synth/create_direction', data),
+  create_emotion_preset: (data: Record<string, unknown>) => api.post('/voice_synth/create_emotion_preset', data),
+  get_batch: (data: Record<string, unknown>) => api.post('/voice_synth/get_batch', data),
+  get_clone: (data: Record<string, unknown>) => api.post('/voice_synth/get_clone', data),
+  get_config: (data: Record<string, unknown>) => api.post('/voice_synth/get_config', data),
+  get_direction: (data: Record<string, unknown>) => api.post('/voice_synth/get_direction', data),
+  get_emotion_preset: (data: Record<string, unknown>) => api.post('/voice_synth/get_emotion_preset', data),
+  get_line: (data: Record<string, unknown>) => api.post('/voice_synth/get_line', data),
+  get_phoneme_map: (data: Record<string, unknown>) => api.post('/voice_synth/get_phoneme_map', data),
+  get_profile: (data: Record<string, unknown>) => api.post('/voice_synth/get_profile', data),
+  get_prosody_rule: (data: Record<string, unknown>) => api.post('/voice_synth/get_prosody_rule', data),
+  get_snapshot: (data: Record<string, unknown>) => api.post('/voice_synth/get_snapshot', data),
+  get_stats: (data: Record<string, unknown>) => api.post('/voice_synth/get_stats', data),
+  get_status: (data: Record<string, unknown>) => api.post('/voice_synth/get_status', data),
+  list_batches: (data: Record<string, unknown>) => api.post('/voice_synth/list_batches', data),
+  list_clones: (data: Record<string, unknown>) => api.post('/voice_synth/list_clones', data),
+  list_directions: (data: Record<string, unknown>) => api.post('/voice_synth/list_directions', data),
+  list_emotion_presets: (data: Record<string, unknown>) => api.post('/voice_synth/list_emotion_presets', data),
+  list_events: (data: Record<string, unknown>) => api.post('/voice_synth/list_events', data),
+  list_lines: (data: Record<string, unknown>) => api.post('/voice_synth/list_lines', data),
+  list_phoneme_maps: (data: Record<string, unknown>) => api.post('/voice_synth/list_phoneme_maps', data),
+  list_profiles: (data: Record<string, unknown>) => api.post('/voice_synth/list_profiles', data),
+  list_prosody_rules: (data: Record<string, unknown>) => api.post('/voice_synth/list_prosody_rules', data),
+  process_batch: (data: Record<string, unknown>) => api.post('/voice_synth/process_batch', data),
+  register_phoneme_map: (data: Record<string, unknown>) => api.post('/voice_synth/register_phoneme_map', data),
+  register_profile: (data: Record<string, unknown>) => api.post('/voice_synth/register_profile', data),
+  register_prosody_rule: (data: Record<string, unknown>) => api.post('/voice_synth/register_prosody_rule', data),
+  remove_batch: (data: Record<string, unknown>) => api.post('/voice_synth/remove_batch', data),
+  remove_clone: (data: Record<string, unknown>) => api.post('/voice_synth/remove_clone', data),
+  remove_direction: (data: Record<string, unknown>) => api.post('/voice_synth/remove_direction', data),
+  remove_emotion_preset: (data: Record<string, unknown>) => api.post('/voice_synth/remove_emotion_preset', data),
+  remove_line: (data: Record<string, unknown>) => api.post('/voice_synth/remove_line', data),
+  remove_line_from_batch: (data: Record<string, unknown>) => api.post('/voice_synth/remove_line_from_batch', data),
+  remove_profile: (data: Record<string, unknown>) => api.post('/voice_synth/remove_profile', data),
+  remove_prosody_rule: (data: Record<string, unknown>) => api.post('/voice_synth/remove_prosody_rule', data),
+  reset: (data: Record<string, unknown>) => api.post('/voice_synth/reset', data),
+  set_config: (data: Record<string, unknown>) => api.post('/voice_synth/set_config', data),
+  synthesize_line: (data: Record<string, unknown>) => api.post('/voice_synth/synthesize_line', data),
+  tick: (data: Record<string, unknown>) => api.post('/voice_synth/tick', data),
+  update_profile: (data: Record<string, unknown>) => api.post('/voice_synth/update_profile', data)
+};
+
+export const formationApi = {
+  activate_formation: (data: Record<string, unknown>) => api.post('/formation/activate_formation', data),
+  analyze_terrain: (data: Record<string, unknown>) => api.post('/formation/analyze_terrain', data),
+  assign_unit: (data: Record<string, unknown>) => api.post('/formation/assign_unit', data),
+  auto_assign_slots: (data: Record<string, unknown>) => api.post('/formation/auto_assign_slots', data),
+  complete_transition: (data: Record<string, unknown>) => api.post('/formation/complete_transition', data),
+  create_formation: (data: Record<string, unknown>) => api.post('/formation/create_formation', data),
+  create_transition: (data: Record<string, unknown>) => api.post('/formation/create_transition', data),
+  disband_formation: (data: Record<string, unknown>) => api.post('/formation/disband_formation', data),
+  execute_order: (data: Record<string, unknown>) => api.post('/formation/execute_order', data),
+  get_assignment: (data: Record<string, unknown>) => api.post('/formation/get_assignment', data),
+  get_config: (data: Record<string, unknown>) => api.post('/formation/get_config', data),
+  get_formation: (data: Record<string, unknown>) => api.post('/formation/get_formation', data),
+  get_formation_info: (data: Record<string, unknown>) => api.post('/formation/get_formation_info', data),
+  get_order: (data: Record<string, unknown>) => api.post('/formation/get_order', data),
+  get_snapshot: (data: Record<string, unknown>) => api.post('/formation/get_snapshot', data),
+  get_stats: (data: Record<string, unknown>) => api.post('/formation/get_stats', data),
+  get_status: (data: Record<string, unknown>) => api.post('/formation/get_status', data),
+  get_template: (data: Record<string, unknown>) => api.post('/formation/get_template', data),
+  get_terrain_analysis: (data: Record<string, unknown>) => api.post('/formation/get_terrain_analysis', data),
+  get_transition: (data: Record<string, unknown>) => api.post('/formation/get_transition', data),
+  issue_order: (data: Record<string, unknown>) => api.post('/formation/issue_order', data),
+  list_assignments: (data: Record<string, unknown>) => api.post('/formation/list_assignments', data),
+  list_events: (data: Record<string, unknown>) => api.post('/formation/list_events', data),
+  list_formations: (data: Record<string, unknown>) => api.post('/formation/list_formations', data),
+  list_orders: (data: Record<string, unknown>) => api.post('/formation/list_orders', data),
+  list_templates: (data: Record<string, unknown>) => api.post('/formation/list_templates', data),
+  move_formation: (data: Record<string, unknown>) => api.post('/formation/move_formation', data),
+  optimize_spacing: (data: Record<string, unknown>) => api.post('/formation/optimize_spacing', data),
+  register_template: (data: Record<string, unknown>) => api.post('/formation/register_template', data),
+  remove_formation: (data: Record<string, unknown>) => api.post('/formation/remove_formation', data),
+  remove_template: (data: Record<string, unknown>) => api.post('/formation/remove_template', data),
+  remove_transition: (data: Record<string, unknown>) => api.post('/formation/remove_transition', data),
+  reset: (data: Record<string, unknown>) => api.post('/formation/reset', data),
+  set_config: (data: Record<string, unknown>) => api.post('/formation/set_config', data),
+  set_formation_facing: (data: Record<string, unknown>) => api.post('/formation/set_formation_facing', data),
+  set_formation_spacing: (data: Record<string, unknown>) => api.post('/formation/set_formation_spacing', data),
+  stop_formation: (data: Record<string, unknown>) => api.post('/formation/stop_formation', data),
+  suggest_formation: (data: Record<string, unknown>) => api.post('/formation/suggest_formation', data),
+  tick: (data: Record<string, unknown>) => api.post('/formation/tick', data),
+  unassign_unit: (data: Record<string, unknown>) => api.post('/formation/unassign_unit', data),
+  update_transition: (data: Record<string, unknown>) => api.post('/formation/update_transition', data)
+};
+
+export const ParticleVfxApi = {
+  add_emitter_to_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/add_emitter_to_effect', data),
+  auto_generate_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/auto_generate_effect', data),
+  burst: (data: Record<string, unknown>) => api.post('/particle_vfx/burst', data),
+  create_curve: (data: Record<string, unknown>) => api.post('/particle_vfx/create_curve', data),
+  create_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/create_effect', data),
+  create_gradient: (data: Record<string, unknown>) => api.post('/particle_vfx/create_gradient', data),
+  export_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/export_effect', data),
+  get_batch: (data: Record<string, unknown>) => api.post('/particle_vfx/get_batch', data),
+  get_config: (data: Record<string, unknown>) => api.post('/particle_vfx/get_config', data),
+  get_curve: (data: Record<string, unknown>) => api.post('/particle_vfx/get_curve', data),
+  get_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/get_effect', data),
+  get_emitter: (data: Record<string, unknown>) => api.post('/particle_vfx/get_emitter', data),
+  get_gradient: (data: Record<string, unknown>) => api.post('/particle_vfx/get_gradient', data),
+  get_snapshot: (data: Record<string, unknown>) => api.post('/particle_vfx/get_snapshot', data),
+  get_stats: (data: Record<string, unknown>) => api.post('/particle_vfx/get_stats', data),
+  get_status: (data: Record<string, unknown>) => api.post('/particle_vfx/get_status', data),
+  import_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/import_effect', data),
+  list_batches: (data: Record<string, unknown>) => api.post('/particle_vfx/list_batches', data),
+  list_curves: (data: Record<string, unknown>) => api.post('/particle_vfx/list_curves', data),
+  list_effects: (data: Record<string, unknown>) => api.post('/particle_vfx/list_effects', data),
+  list_emitters: (data: Record<string, unknown>) => api.post('/particle_vfx/list_emitters', data),
+  list_events: (data: Record<string, unknown>) => api.post('/particle_vfx/list_events', data),
+  list_gradients: (data: Record<string, unknown>) => api.post('/particle_vfx/list_gradients', data),
+  optimize_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/optimize_effect', data),
+  pause_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/pause_effect', data),
+  play_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/play_effect', data),
+  register_emitter: (data: Record<string, unknown>) => api.post('/particle_vfx/register_emitter', data),
+  remove_batch: (data: Record<string, unknown>) => api.post('/particle_vfx/remove_batch', data),
+  remove_curve: (data: Record<string, unknown>) => api.post('/particle_vfx/remove_curve', data),
+  remove_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/remove_effect', data),
+  remove_emitter: (data: Record<string, unknown>) => api.post('/particle_vfx/remove_emitter', data),
+  remove_emitter_from_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/remove_emitter_from_effect', data),
+  remove_gradient: (data: Record<string, unknown>) => api.post('/particle_vfx/remove_gradient', data),
+  reset: (data: Record<string, unknown>) => api.post('/particle_vfx/reset', data),
+  resume_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/resume_effect', data),
+  sample_curve: (data: Record<string, unknown>) => api.post('/particle_vfx/sample_curve', data),
+  sample_gradient: (data: Record<string, unknown>) => api.post('/particle_vfx/sample_gradient', data),
+  set_config: (data: Record<string, unknown>) => api.post('/particle_vfx/set_config', data),
+  stop_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/stop_effect', data),
+  suggest_parameters: (data: Record<string, unknown>) => api.post('/particle_vfx/suggest_parameters', data),
+  tick: (data: Record<string, unknown>) => api.post('/particle_vfx/tick', data),
+  update_effect: (data: Record<string, unknown>) => api.post('/particle_vfx/update_effect', data),
+  update_emitter: (data: Record<string, unknown>) => api.post('/particle_vfx/update_emitter', data),
+};
+
+export const DynamicWeatherApi = {
+  apply_pattern: (data: Record<string, unknown>) => api.post('/dynamic_weather/apply_pattern', data),
+  auto_generate_weather: (data: Record<string, unknown>) => api.post('/dynamic_weather/auto_generate_weather', data),
+  clear_weather: (data: Record<string, unknown>) => api.post('/dynamic_weather/clear_weather', data),
+  create_forecast: (data: Record<string, unknown>) => api.post('/dynamic_weather/create_forecast', data),
+  get_atmosphere: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_atmosphere', data),
+  get_cloud_layer: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_cloud_layer', data),
+  get_config: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_config', data),
+  get_forecast: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_forecast', data),
+  get_pattern: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_pattern', data),
+  get_snapshot: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_snapshot', data),
+  get_stats: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_stats', data),
+  get_status: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_status', data),
+  get_transition: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_transition', data),
+  get_weather: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_weather', data),
+  get_wind: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_wind', data),
+  get_zone: (data: Record<string, unknown>) => api.post('/dynamic_weather/get_zone', data),
+  list_events: (data: Record<string, unknown>) => api.post('/dynamic_weather/list_events', data),
+  list_forecasts: (data: Record<string, unknown>) => api.post('/dynamic_weather/list_forecasts', data),
+  list_patterns: (data: Record<string, unknown>) => api.post('/dynamic_weather/list_patterns', data),
+  list_transitions: (data: Record<string, unknown>) => api.post('/dynamic_weather/list_transitions', data),
+  list_weather_states: (data: Record<string, unknown>) => api.post('/dynamic_weather/list_weather_states', data),
+  list_zones: (data: Record<string, unknown>) => api.post('/dynamic_weather/list_zones', data),
+  optimize_transitions: (data: Record<string, unknown>) => api.post('/dynamic_weather/optimize_transitions', data),
+  register_pattern: (data: Record<string, unknown>) => api.post('/dynamic_weather/register_pattern', data),
+  register_zone: (data: Record<string, unknown>) => api.post('/dynamic_weather/register_zone', data),
+  remove_forecast: (data: Record<string, unknown>) => api.post('/dynamic_weather/remove_forecast', data),
+  remove_pattern: (data: Record<string, unknown>) => api.post('/dynamic_weather/remove_pattern', data),
+  remove_transition: (data: Record<string, unknown>) => api.post('/dynamic_weather/remove_transition', data),
+  remove_zone: (data: Record<string, unknown>) => api.post('/dynamic_weather/remove_zone', data),
+  reset: (data: Record<string, unknown>) => api.post('/dynamic_weather/reset', data),
+  set_cloud_layer: (data: Record<string, unknown>) => api.post('/dynamic_weather/set_cloud_layer', data),
+  set_config: (data: Record<string, unknown>) => api.post('/dynamic_weather/set_config', data),
+  set_weather: (data: Record<string, unknown>) => api.post('/dynamic_weather/set_weather', data),
+  set_wind: (data: Record<string, unknown>) => api.post('/dynamic_weather/set_wind', data),
+  suggest_pattern: (data: Record<string, unknown>) => api.post('/dynamic_weather/suggest_pattern', data),
+  tick: (data: Record<string, unknown>) => api.post('/dynamic_weather/tick', data),
+  transition_to: (data: Record<string, unknown>) => api.post('/dynamic_weather/transition_to', data),
+  update_pattern: (data: Record<string, unknown>) => api.post('/dynamic_weather/update_pattern', data),
+  update_transition: (data: Record<string, unknown>) => api.post('/dynamic_weather/update_transition', data),
+  update_zone: (data: Record<string, unknown>) => api.post('/dynamic_weather/update_zone', data),
+};
+
+export const QuestGeneratorApi = {
+  abandon_quest: (data: Record<string, unknown>) => api.post('/quest_generator/abandon_quest', data),
+  accept_quest: (data: Record<string, unknown>) => api.post('/quest_generator/accept_quest', data),
+  advance_chain: (data: Record<string, unknown>) => api.post('/quest_generator/advance_chain', data),
+  auto_generate_chain: (data: Record<string, unknown>) => api.post('/quest_generator/auto_generate_chain', data),
+  auto_generate_quest: (data: Record<string, unknown>) => api.post('/quest_generator/auto_generate_quest', data),
+  choose_branch: (data: Record<string, unknown>) => api.post('/quest_generator/choose_branch', data),
+  complete_quest: (data: Record<string, unknown>) => api.post('/quest_generator/complete_quest', data),
+  create_branch: (data: Record<string, unknown>) => api.post('/quest_generator/create_branch', data),
+  expire_quest: (data: Record<string, unknown>) => api.post('/quest_generator/expire_quest', data),
+  fail_quest: (data: Record<string, unknown>) => api.post('/quest_generator/fail_quest', data),
+  generate_chain: (data: Record<string, unknown>) => api.post('/quest_generator/generate_chain', data),
+  generate_from_template: (data: Record<string, unknown>) => api.post('/quest_generator/generate_from_template', data),
+  generate_quest: (data: Record<string, unknown>) => api.post('/quest_generator/generate_quest', data),
+  get_branch: (data: Record<string, unknown>) => api.post('/quest_generator/get_branch', data),
+  get_chain: (data: Record<string, unknown>) => api.post('/quest_generator/get_chain', data),
+  get_config: (data: Record<string, unknown>) => api.post('/quest_generator/get_config', data),
+  get_objective: (data: Record<string, unknown>) => api.post('/quest_generator/get_objective', data),
+  get_player_profile: (data: Record<string, unknown>) => api.post('/quest_generator/get_player_profile', data),
+  get_quest: (data: Record<string, unknown>) => api.post('/quest_generator/get_quest', data),
+  get_snapshot: (data: Record<string, unknown>) => api.post('/quest_generator/get_snapshot', data),
+  get_stats: (data: Record<string, unknown>) => api.post('/quest_generator/get_stats', data),
+  get_status: (data: Record<string, unknown>) => api.post('/quest_generator/get_status', data),
+  get_template: (data: Record<string, unknown>) => api.post('/quest_generator/get_template', data),
+  list_branches: (data: Record<string, unknown>) => api.post('/quest_generator/list_branches', data),
+  list_chains: (data: Record<string, unknown>) => api.post('/quest_generator/list_chains', data),
+  list_events: (data: Record<string, unknown>) => api.post('/quest_generator/list_events', data),
+  list_objectives: (data: Record<string, unknown>) => api.post('/quest_generator/list_objectives', data),
+  list_player_profiles: (data: Record<string, unknown>) => api.post('/quest_generator/list_player_profiles', data),
+  list_quests: (data: Record<string, unknown>) => api.post('/quest_generator/list_quests', data),
+  list_templates: (data: Record<string, unknown>) => api.post('/quest_generator/list_templates', data),
+  optimize_quest_flow: (data: Record<string, unknown>) => api.post('/quest_generator/optimize_quest_flow', data),
+  register_player_profile: (data: Record<string, unknown>) => api.post('/quest_generator/register_player_profile', data),
+  register_template: (data: Record<string, unknown>) => api.post('/quest_generator/register_template', data),
+  remove_branch: (data: Record<string, unknown>) => api.post('/quest_generator/remove_branch', data),
+  remove_chain: (data: Record<string, unknown>) => api.post('/quest_generator/remove_chain', data),
+  remove_player_profile: (data: Record<string, unknown>) => api.post('/quest_generator/remove_player_profile', data),
+  remove_quest: (data: Record<string, unknown>) => api.post('/quest_generator/remove_quest', data),
+  remove_template: (data: Record<string, unknown>) => api.post('/quest_generator/remove_template', data),
+  reset: (data: Record<string, unknown>) => api.post('/quest_generator/reset', data),
+  set_config: (data: Record<string, unknown>) => api.post('/quest_generator/set_config', data),
+  suggest_difficulty: (data: Record<string, unknown>) => api.post('/quest_generator/suggest_difficulty', data),
+  tick: (data: Record<string, unknown>) => api.post('/quest_generator/tick', data),
+  update_objective: (data: Record<string, unknown>) => api.post('/quest_generator/update_objective', data),
+  update_player_profile: (data: Record<string, unknown>) => api.post('/quest_generator/update_player_profile', data),
+  update_template: (data: Record<string, unknown>) => api.post('/quest_generator/update_template', data),
+};
+// ===========================================================================
+// Round 44 - Audio SFX, Animation, Dialog API Clients
+// ===========================================================================
+
+// Round 44 TypeScript API clients (auto-generated)
+
+export const AudioSfxApi = {
+  add_effect_to_bus: (data: Record<string, unknown>) => api.post('/audio_sfx/add_effect_to_bus', data),
+  add_music_layer: (data: Record<string, unknown>) => api.post('/audio_sfx/add_music_layer', data),
+  analyze_audio_spectrum: (data: Record<string, unknown>) => api.post('/audio_sfx/analyze_audio_spectrum', data),
+  auto_generate_sfx: (data: Record<string, unknown>) => api.post('/audio_sfx/auto_generate_sfx', data),
+  calculate_doppler_shift: (data: Record<string, unknown>) => api.post('/audio_sfx/calculate_doppler_shift', data),
+  calculate_spatial_attenuation: (data: Record<string, unknown>) => api.post('/audio_sfx/calculate_spatial_attenuation', data),
+  count_buses_by_channel: (data: Record<string, unknown>) => api.post('/audio_sfx/count_buses_by_channel', data),
+  count_sources_by_status: (data: Record<string, unknown>) => api.post('/audio_sfx/count_sources_by_status', data),
+  create_music_track: (data: Record<string, unknown>) => api.post('/audio_sfx/create_music_track', data),
+  create_source: (data: Record<string, unknown>) => api.post('/audio_sfx/create_source', data),
+  export_clip: (data: Record<string, unknown>) => api.post('/audio_sfx/export_clip', data),
+  fade_source: (data: Record<string, unknown>) => api.post('/audio_sfx/fade_source', data),
+  generate_procedural_clip: (data: Record<string, unknown>) => api.post('/audio_sfx/generate_procedural_clip', data),
+  get_active_clips: (data: Record<string, unknown>) => api.post('/audio_sfx/get_active_clips', data),
+  get_active_reverb_zone: (data: Record<string, unknown>) => api.post('/audio_sfx/get_active_reverb_zone', data),
+  get_bus: (data: Record<string, unknown>) => api.post('/audio_sfx/get_bus', data),
+  get_bus_effect_chain: (data: Record<string, unknown>) => api.post('/audio_sfx/get_bus_effect_chain', data),
+  get_bus_levels: (data: Record<string, unknown>) => api.post('/audio_sfx/get_bus_levels', data),
+  get_clip: (data: Record<string, unknown>) => api.post('/audio_sfx/get_clip', data),
+  get_config: (data: Record<string, unknown>) => api.post('/audio_sfx/get_config', data),
+  get_effect: (data: Record<string, unknown>) => api.post('/audio_sfx/get_effect', data),
+  get_emitter: (data: Record<string, unknown>) => api.post('/audio_sfx/get_emitter', data),
+  get_emitter_sources: (data: Record<string, unknown>) => api.post('/audio_sfx/get_emitter_sources', data),
+  get_listener: (data: Record<string, unknown>) => api.post('/audio_sfx/get_listener', data),
+  get_listener_reverb_mix: (data: Record<string, unknown>) => api.post('/audio_sfx/get_listener_reverb_mix', data),
+  get_music_track: (data: Record<string, unknown>) => api.post('/audio_sfx/get_music_track', data),
+  get_music_track_layers: (data: Record<string, unknown>) => api.post('/audio_sfx/get_music_track_layers', data),
+  get_reverb_zone: (data: Record<string, unknown>) => api.post('/audio_sfx/get_reverb_zone', data),
+  get_snapshot: (data: Record<string, unknown>) => api.post('/audio_sfx/get_snapshot', data),
+  get_source: (data: Record<string, unknown>) => api.post('/audio_sfx/get_source', data),
+  get_source_spatial_info: (data: Record<string, unknown>) => api.post('/audio_sfx/get_source_spatial_info', data),
+  get_sources_on_bus: (data: Record<string, unknown>) => api.post('/audio_sfx/get_sources_on_bus', data),
+  get_stats: (data: Record<string, unknown>) => api.post('/audio_sfx/get_stats', data),
+  get_status: (data: Record<string, unknown>) => api.post('/audio_sfx/get_status', data),
+  import_clip: (data: Record<string, unknown>) => api.post('/audio_sfx/import_clip', data),
+  list_buses: (data: Record<string, unknown>) => api.post('/audio_sfx/list_buses', data),
+  list_clips: (data: Record<string, unknown>) => api.post('/audio_sfx/list_clips', data),
+  list_effects: (data: Record<string, unknown>) => api.post('/audio_sfx/list_effects', data),
+  list_emitters: (data: Record<string, unknown>) => api.post('/audio_sfx/list_emitters', data),
+  list_events: (data: Record<string, unknown>) => api.post('/audio_sfx/list_events', data),
+  list_listeners: (data: Record<string, unknown>) => api.post('/audio_sfx/list_listeners', data),
+  list_music_tracks: (data: Record<string, unknown>) => api.post('/audio_sfx/list_music_tracks', data),
+  list_reverb_zones: (data: Record<string, unknown>) => api.post('/audio_sfx/list_reverb_zones', data),
+  list_sources: (data: Record<string, unknown>) => api.post('/audio_sfx/list_sources', data),
+  mute_bus: (data: Record<string, unknown>) => api.post('/audio_sfx/mute_bus', data),
+  optimize_mix: (data: Record<string, unknown>) => api.post('/audio_sfx/optimize_mix', data),
+  pause_all_sources: (data: Record<string, unknown>) => api.post('/audio_sfx/pause_all_sources', data),
+  pause_source: (data: Record<string, unknown>) => api.post('/audio_sfx/pause_source', data),
+  play_music_track: (data: Record<string, unknown>) => api.post('/audio_sfx/play_music_track', data),
+  play_source: (data: Record<string, unknown>) => api.post('/audio_sfx/play_source', data),
+  register_bus: (data: Record<string, unknown>) => api.post('/audio_sfx/register_bus', data),
+  register_clip: (data: Record<string, unknown>) => api.post('/audio_sfx/register_clip', data),
+  register_effect: (data: Record<string, unknown>) => api.post('/audio_sfx/register_effect', data),
+  register_emitter: (data: Record<string, unknown>) => api.post('/audio_sfx/register_emitter', data),
+  register_listener: (data: Record<string, unknown>) => api.post('/audio_sfx/register_listener', data),
+  register_reverb_zone: (data: Record<string, unknown>) => api.post('/audio_sfx/register_reverb_zone', data),
+  remove_bus: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_bus', data),
+  remove_clip: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_clip', data),
+  remove_effect: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_effect', data),
+  remove_effect_from_bus: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_effect_from_bus', data),
+  remove_emitter: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_emitter', data),
+  remove_listener: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_listener', data),
+  remove_music_layer: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_music_layer', data),
+  remove_music_track: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_music_track', data),
+  remove_reverb_zone: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_reverb_zone', data),
+  remove_source: (data: Record<string, unknown>) => api.post('/audio_sfx/remove_source', data),
+  reset: (data: Record<string, unknown>) => api.post('/audio_sfx/reset', data),
+  resume_all_sources: (data: Record<string, unknown>) => api.post('/audio_sfx/resume_all_sources', data),
+  set_bus_volume: (data: Record<string, unknown>) => api.post('/audio_sfx/set_bus_volume', data),
+  set_config: (data: Record<string, unknown>) => api.post('/audio_sfx/set_config', data),
+  set_emitter_position: (data: Record<string, unknown>) => api.post('/audio_sfx/set_emitter_position', data),
+  set_emitter_priority: (data: Record<string, unknown>) => api.post('/audio_sfx/set_emitter_priority', data),
+  set_master_volume: (data: Record<string, unknown>) => api.post('/audio_sfx/set_master_volume', data),
+  set_music_layer_volume: (data: Record<string, unknown>) => api.post('/audio_sfx/set_music_layer_volume', data),
+  set_source_loop_mode: (data: Record<string, unknown>) => api.post('/audio_sfx/set_source_loop_mode', data),
+  set_source_pan: (data: Record<string, unknown>) => api.post('/audio_sfx/set_source_pan', data),
+  set_source_pitch: (data: Record<string, unknown>) => api.post('/audio_sfx/set_source_pitch', data),
+  set_source_volume: (data: Record<string, unknown>) => api.post('/audio_sfx/set_source_volume', data),
+  solo_bus: (data: Record<string, unknown>) => api.post('/audio_sfx/solo_bus', data),
+  stop_all_sources: (data: Record<string, unknown>) => api.post('/audio_sfx/stop_all_sources', data),
+  stop_music_track: (data: Record<string, unknown>) => api.post('/audio_sfx/stop_music_track', data),
+  stop_source: (data: Record<string, unknown>) => api.post('/audio_sfx/stop_source', data),
+  suggest_music_layer: (data: Record<string, unknown>) => api.post('/audio_sfx/suggest_music_layer', data),
+  tick: (data: Record<string, unknown>) => api.post('/audio_sfx/tick', data),
+  transition_music_layer: (data: Record<string, unknown>) => api.post('/audio_sfx/transition_music_layer', data),
+  update_listener_position: (data: Record<string, unknown>) => api.post('/audio_sfx/update_listener_position', data),
+};
+
+export const AnimationApi = {
+  add_ik_chain: (data: Record<string, unknown>) => api.post('/animation/add_ik_chain', data),
+  add_layer: (data: Record<string, unknown>) => api.post('/animation/add_layer', data),
+  add_state: (data: Record<string, unknown>) => api.post('/animation/add_state', data),
+  add_transition: (data: Record<string, unknown>) => api.post('/animation/add_transition', data),
+  auto_generate_transition: (data: Record<string, unknown>) => api.post('/animation/auto_generate_transition', data),
+  create_blend_space: (data: Record<string, unknown>) => api.post('/animation/create_blend_space', data),
+  create_blueprint: (data: Record<string, unknown>) => api.post('/animation/create_blueprint', data),
+  get_blend_space: (data: Record<string, unknown>) => api.post('/animation/get_blend_space', data),
+  get_blueprint: (data: Record<string, unknown>) => api.post('/animation/get_blueprint', data),
+  get_clip: (data: Record<string, unknown>) => api.post('/animation/get_clip', data),
+  get_config: (data: Record<string, unknown>) => api.post('/animation/get_config', data),
+  get_current_state: (data: Record<string, unknown>) => api.post('/animation/get_current_state', data),
+  get_parameter: (data: Record<string, unknown>) => api.post('/animation/get_parameter', data),
+  get_snapshot: (data: Record<string, unknown>) => api.post('/animation/get_snapshot', data),
+  get_state: (data: Record<string, unknown>) => api.post('/animation/get_state', data),
+  get_stats: (data: Record<string, unknown>) => api.post('/animation/get_stats', data),
+  get_status: (data: Record<string, unknown>) => api.post('/animation/get_status', data),
+  list_blend_spaces: (data: Record<string, unknown>) => api.post('/animation/list_blend_spaces', data),
+  list_blueprints: (data: Record<string, unknown>) => api.post('/animation/list_blueprints', data),
+  list_clips: (data: Record<string, unknown>) => api.post('/animation/list_clips', data),
+  list_events: (data: Record<string, unknown>) => api.post('/animation/list_events', data),
+  list_ik_chains: (data: Record<string, unknown>) => api.post('/animation/list_ik_chains', data),
+  list_layers: (data: Record<string, unknown>) => api.post('/animation/list_layers', data),
+  list_parameters: (data: Record<string, unknown>) => api.post('/animation/list_parameters', data),
+  list_states: (data: Record<string, unknown>) => api.post('/animation/list_states', data),
+  list_transitions: (data: Record<string, unknown>) => api.post('/animation/list_transitions', data),
+  optimize_blend_tree: (data: Record<string, unknown>) => api.post('/animation/optimize_blend_tree', data),
+  pause_blueprint: (data: Record<string, unknown>) => api.post('/animation/pause_blueprint', data),
+  play_blueprint: (data: Record<string, unknown>) => api.post('/animation/play_blueprint', data),
+  register_clip: (data: Record<string, unknown>) => api.post('/animation/register_clip', data),
+  remove_blend_space: (data: Record<string, unknown>) => api.post('/animation/remove_blend_space', data),
+  remove_blueprint: (data: Record<string, unknown>) => api.post('/animation/remove_blueprint', data),
+  remove_clip: (data: Record<string, unknown>) => api.post('/animation/remove_clip', data),
+  remove_ik_chain: (data: Record<string, unknown>) => api.post('/animation/remove_ik_chain', data),
+  remove_layer: (data: Record<string, unknown>) => api.post('/animation/remove_layer', data),
+  remove_state: (data: Record<string, unknown>) => api.post('/animation/remove_state', data),
+  remove_transition: (data: Record<string, unknown>) => api.post('/animation/remove_transition', data),
+  reset: (data: Record<string, unknown>) => api.post('/animation/reset', data),
+  sample_blend_space: (data: Record<string, unknown>) => api.post('/animation/sample_blend_space', data),
+  set_config: (data: Record<string, unknown>) => api.post('/animation/set_config', data),
+  set_default_state: (data: Record<string, unknown>) => api.post('/animation/set_default_state', data),
+  set_ik_target: (data: Record<string, unknown>) => api.post('/animation/set_ik_target', data),
+  set_ik_weight: (data: Record<string, unknown>) => api.post('/animation/set_ik_weight', data),
+  set_layer_weight: (data: Record<string, unknown>) => api.post('/animation/set_layer_weight', data),
+  set_parameter: (data: Record<string, unknown>) => api.post('/animation/set_parameter', data),
+  set_playback_speed: (data: Record<string, unknown>) => api.post('/animation/set_playback_speed', data),
+  solve_ik: (data: Record<string, unknown>) => api.post('/animation/solve_ik', data),
+  stop_blueprint: (data: Record<string, unknown>) => api.post('/animation/stop_blueprint', data),
+  suggest_state: (data: Record<string, unknown>) => api.post('/animation/suggest_state', data),
+  tick: (data: Record<string, unknown>) => api.post('/animation/tick', data),
+  trigger_transition: (data: Record<string, unknown>) => api.post('/animation/trigger_transition', data),
+};
+
+export const DialogApi = {
+  add_choice: (data: Record<string, unknown>) => api.post('/dialog/add_choice', data),
+  add_node: (data: Record<string, unknown>) => api.post('/dialog/add_node', data),
+  analyze_sentiment: (data: Record<string, unknown>) => api.post('/dialog/analyze_sentiment', data),
+  auto_generate_dialog_tree: (data: Record<string, unknown>) => api.post('/dialog/auto_generate_dialog_tree', data),
+  auto_generate_response: (data: Record<string, unknown>) => api.post('/dialog/auto_generate_response', data),
+  create_dialog_tree: (data: Record<string, unknown>) => api.post('/dialog/create_dialog_tree', data),
+  end_session: (data: Record<string, unknown>) => api.post('/dialog/end_session', data),
+  get_available_choices: (data: Record<string, unknown>) => api.post('/dialog/get_available_choices', data),
+  get_config: (data: Record<string, unknown>) => api.post('/dialog/get_config', data),
+  get_current_node: (data: Record<string, unknown>) => api.post('/dialog/get_current_node', data),
+  get_dialog_context: (data: Record<string, unknown>) => api.post('/dialog/get_dialog_context', data),
+  get_dialog_tree: (data: Record<string, unknown>) => api.post('/dialog/get_dialog_tree', data),
+  get_node: (data: Record<string, unknown>) => api.post('/dialog/get_node', data),
+  get_npc_profile: (data: Record<string, unknown>) => api.post('/dialog/get_npc_profile', data),
+  get_session: (data: Record<string, unknown>) => api.post('/dialog/get_session', data),
+  get_session_mood: (data: Record<string, unknown>) => api.post('/dialog/get_session_mood', data),
+  get_session_relationship: (data: Record<string, unknown>) => api.post('/dialog/get_session_relationship', data),
+  get_snapshot: (data: Record<string, unknown>) => api.post('/dialog/get_snapshot', data),
+  get_stats: (data: Record<string, unknown>) => api.post('/dialog/get_stats', data),
+  get_status: (data: Record<string, unknown>) => api.post('/dialog/get_status', data),
+  list_choices: (data: Record<string, unknown>) => api.post('/dialog/list_choices', data),
+  list_dialog_trees: (data: Record<string, unknown>) => api.post('/dialog/list_dialog_trees', data),
+  list_events: (data: Record<string, unknown>) => api.post('/dialog/list_events', data),
+  list_nodes: (data: Record<string, unknown>) => api.post('/dialog/list_nodes', data),
+  list_npc_profiles: (data: Record<string, unknown>) => api.post('/dialog/list_npc_profiles', data),
+  list_sessions: (data: Record<string, unknown>) => api.post('/dialog/list_sessions', data),
+  optimize_dialog_flow: (data: Record<string, unknown>) => api.post('/dialog/optimize_dialog_flow', data),
+  pause_session: (data: Record<string, unknown>) => api.post('/dialog/pause_session', data),
+  register_npc_profile: (data: Record<string, unknown>) => api.post('/dialog/register_npc_profile', data),
+  remove_choice: (data: Record<string, unknown>) => api.post('/dialog/remove_choice', data),
+  remove_dialog_tree: (data: Record<string, unknown>) => api.post('/dialog/remove_dialog_tree', data),
+  remove_node: (data: Record<string, unknown>) => api.post('/dialog/remove_node', data),
+  remove_npc_profile: (data: Record<string, unknown>) => api.post('/dialog/remove_npc_profile', data),
+  reset: (data: Record<string, unknown>) => api.post('/dialog/reset', data),
+  resume_session: (data: Record<string, unknown>) => api.post('/dialog/resume_session', data),
+  say_line: (data: Record<string, unknown>) => api.post('/dialog/say_line', data),
+  select_choice: (data: Record<string, unknown>) => api.post('/dialog/select_choice', data),
+  set_config: (data: Record<string, unknown>) => api.post('/dialog/set_config', data),
+  set_dialog_context: (data: Record<string, unknown>) => api.post('/dialog/set_dialog_context', data),
+  set_root_node: (data: Record<string, unknown>) => api.post('/dialog/set_root_node', data),
+  start_session: (data: Record<string, unknown>) => api.post('/dialog/start_session', data),
+  suggest_choice: (data: Record<string, unknown>) => api.post('/dialog/suggest_choice', data),
+  suggest_topic: (data: Record<string, unknown>) => api.post('/dialog/suggest_topic', data),
+  tick: (data: Record<string, unknown>) => api.post('/dialog/tick', data),
+  update_npc_mood: (data: Record<string, unknown>) => api.post('/dialog/update_npc_mood', data),
+  update_npc_relationship: (data: Record<string, unknown>) => api.post('/dialog/update_npc_relationship', data),
+  update_session_sentiment: (data: Record<string, unknown>) => api.post('/dialog/update_session_sentiment', data),
+};export const HtnPlannerApi = {
+  add_method: (data: Record<string, unknown> = {}) => api.post('/htn_planner/add_method', data),
+  advance_plan: (data: Record<string, unknown> = {}) => api.post('/htn_planner/advance_plan', data),
+  apply_operator: (data: Record<string, unknown> = {}) => api.post('/htn_planner/apply_operator', data),
+  build_plan: (data: Record<string, unknown> = {}) => api.post('/htn_planner/build_plan', data),
+  cancel_plan: (data: Record<string, unknown> = {}) => api.post('/htn_planner/cancel_plan', data),
+  check_condition: (data: Record<string, unknown> = {}) => api.post('/htn_planner/check_condition', data),
+  decompose_task: (data: Record<string, unknown> = {}) => api.post('/htn_planner/decompose_task', data),
+  execute_step: (data: Record<string, unknown> = {}) => api.post('/htn_planner/execute_step', data),
+  find_satisfied_method: (data: Record<string, unknown> = {}) => api.post('/htn_planner/find_satisfied_method', data),
+  get_config: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_config', data),
+  get_domain: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_domain', data),
+  get_plan: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_plan', data),
+  get_plan_status: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_plan_status', data),
+  get_plan_steps: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_plan_steps', data),
+  get_snapshot: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_snapshot', data),
+  get_stats: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_stats', data),
+  get_status: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_status', data),
+  get_task: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_task', data),
+  get_world_state: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_world_state', data),
+  get_world_state_variable: (data: Record<string, unknown> = {}) => api.post('/htn_planner/get_world_state_variable', data),
+  init_world_state: (data: Record<string, unknown> = {}) => api.post('/htn_planner/init_world_state', data),
+  list_domains: (data: Record<string, unknown> = {}) => api.post('/htn_planner/list_domains', data),
+  list_events: (data: Record<string, unknown> = {}) => api.post('/htn_planner/list_events', data),
+  list_methods: (data: Record<string, unknown> = {}) => api.post('/htn_planner/list_methods', data),
+  list_plans: (data: Record<string, unknown> = {}) => api.post('/htn_planner/list_plans', data),
+  list_tasks: (data: Record<string, unknown> = {}) => api.post('/htn_planner/list_tasks', data),
+  pause_plan: (data: Record<string, unknown> = {}) => api.post('/htn_planner/pause_plan', data),
+  register_compound_task: (data: Record<string, unknown> = {}) => api.post('/htn_planner/register_compound_task', data),
+  register_domain: (data: Record<string, unknown> = {}) => api.post('/htn_planner/register_domain', data),
+  register_primitive_task: (data: Record<string, unknown> = {}) => api.post('/htn_planner/register_primitive_task', data),
+  remove_domain: (data: Record<string, unknown> = {}) => api.post('/htn_planner/remove_domain', data),
+  remove_method: (data: Record<string, unknown> = {}) => api.post('/htn_planner/remove_method', data),
+  remove_task: (data: Record<string, unknown> = {}) => api.post('/htn_planner/remove_task', data),
+  replan: (data: Record<string, unknown> = {}) => api.post('/htn_planner/replan', data),
+  resume_plan: (data: Record<string, unknown> = {}) => api.post('/htn_planner/resume_plan', data),
+  set_config: (data: Record<string, unknown> = {}) => api.post('/htn_planner/set_config', data),
+  set_world_state_variable: (data: Record<string, unknown> = {}) => api.post('/htn_planner/set_world_state_variable', data),
+  start_plan: (data: Record<string, unknown> = {}) => api.post('/htn_planner/start_plan', data),
+  tick: (data: Record<string, unknown> = {}) => api.post('/htn_planner/tick', data),
+};
+
+export const ClimateBiomeApi = {
+  adjust_humidity: (data: Record<string, unknown> = {}) => api.post('/climate_biome/adjust_humidity', data),
+  adjust_temperature: (data: Record<string, unknown> = {}) => api.post('/climate_biome/adjust_temperature', data),
+  advance_season: (data: Record<string, unknown> = {}) => api.post('/climate_biome/advance_season', data),
+  advance_transition: (data: Record<string, unknown> = {}) => api.post('/climate_biome/advance_transition', data),
+  apply_magical_density: (data: Record<string, unknown> = {}) => api.post('/climate_biome/apply_magical_density', data),
+  auto_generate_region: (data: Record<string, unknown> = {}) => api.post('/climate_biome/auto_generate_region', data),
+  calculate_ecosystem_health: (data: Record<string, unknown> = {}) => api.post('/climate_biome/calculate_ecosystem_health', data),
+  cancel_transition: (data: Record<string, unknown> = {}) => api.post('/climate_biome/cancel_transition', data),
+  complete_transition: (data: Record<string, unknown> = {}) => api.post('/climate_biome/complete_transition', data),
+  degrade_ecosystem: (data: Record<string, unknown> = {}) => api.post('/climate_biome/degrade_ecosystem', data),
+  detect_ecosystem_collapse: (data: Record<string, unknown> = {}) => api.post('/climate_biome/detect_ecosystem_collapse', data),
+  find_region_at_coord: (data: Record<string, unknown> = {}) => api.post('/climate_biome/find_region_at_coord', data),
+  get_biome_distribution: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_biome_distribution', data),
+  get_climate: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_climate', data),
+  get_climate_summary: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_climate_summary', data),
+  get_config: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_config', data),
+  get_region: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_region', data),
+  get_season: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_season', data),
+  get_seasonal_pattern: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_seasonal_pattern', data),
+  get_snapshot: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_snapshot', data),
+  get_stats: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_stats', data),
+  get_status: (data: Record<string, unknown> = {}) => api.post('/climate_biome/get_status', data),
+  list_events: (data: Record<string, unknown> = {}) => api.post('/climate_biome/list_events', data),
+  list_fauna: (data: Record<string, unknown> = {}) => api.post('/climate_biome/list_fauna', data),
+  list_flora: (data: Record<string, unknown> = {}) => api.post('/climate_biome/list_flora', data),
+  list_regions: (data: Record<string, unknown> = {}) => api.post('/climate_biome/list_regions', data),
+  list_transitions: (data: Record<string, unknown> = {}) => api.post('/climate_biome/list_transitions', data),
+  migrate_fauna: (data: Record<string, unknown> = {}) => api.post('/climate_biome/migrate_fauna', data),
+  optimize_biome_layout: (data: Record<string, unknown> = {}) => api.post('/climate_biome/optimize_biome_layout', data),
+  register_fauna_species: (data: Record<string, unknown> = {}) => api.post('/climate_biome/register_fauna_species', data),
+  register_flora_species: (data: Record<string, unknown> = {}) => api.post('/climate_biome/register_flora_species', data),
+  register_region: (data: Record<string, unknown> = {}) => api.post('/climate_biome/register_region', data),
+  register_seasonal_pattern: (data: Record<string, unknown> = {}) => api.post('/climate_biome/register_seasonal_pattern', data),
+  remove_fauna_species: (data: Record<string, unknown> = {}) => api.post('/climate_biome/remove_fauna_species', data),
+  remove_flora_species: (data: Record<string, unknown> = {}) => api.post('/climate_biome/remove_flora_species', data),
+  remove_region: (data: Record<string, unknown> = {}) => api.post('/climate_biome/remove_region', data),
+  restore_ecosystem: (data: Record<string, unknown> = {}) => api.post('/climate_biome/restore_ecosystem', data),
+  set_climate: (data: Record<string, unknown> = {}) => api.post('/climate_biome/set_climate', data),
+  set_config: (data: Record<string, unknown> = {}) => api.post('/climate_biome/set_config', data),
+  set_season: (data: Record<string, unknown> = {}) => api.post('/climate_biome/set_season', data),
+  spawn_flora_in_region: (data: Record<string, unknown> = {}) => api.post('/climate_biome/spawn_flora_in_region', data),
+  start_transition: (data: Record<string, unknown> = {}) => api.post('/climate_biome/start_transition', data),
+  suggest_biome_for_coords: (data: Record<string, unknown> = {}) => api.post('/climate_biome/suggest_biome_for_coords', data),
+  tick: (data: Record<string, unknown> = {}) => api.post('/climate_biome/tick', data),
+};
+
+export const InputReplayApi = {
+  advance_frame: (data: Record<string, unknown> = {}) => api.post('/input_replay/advance_frame', data),
+  analyze_input_pattern: (data: Record<string, unknown> = {}) => api.post('/input_replay/analyze_input_pattern', data),
+  clear_desync_reports: (data: Record<string, unknown> = {}) => api.post('/input_replay/clear_desync_reports', data),
+  compare_sequences: (data: Record<string, unknown> = {}) => api.post('/input_replay/compare_sequences', data),
+  compute_checksum: (data: Record<string, unknown> = {}) => api.post('/input_replay/compute_checksum', data),
+  correct_desync: (data: Record<string, unknown> = {}) => api.post('/input_replay/correct_desync', data),
+  delete_sequence: (data: Record<string, unknown> = {}) => api.post('/input_replay/delete_sequence', data),
+  detect_desync: (data: Record<string, unknown> = {}) => api.post('/input_replay/detect_desync', data),
+  export_sequence: (data: Record<string, unknown> = {}) => api.post('/input_replay/export_sequence', data),
+  get_config: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_config', data),
+  get_desync_reports: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_desync_reports', data),
+  get_frame: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_frame', data),
+  get_frame_count: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_frame_count', data),
+  get_frame_range: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_frame_range', data),
+  get_frame_snapshot: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_frame_snapshot', data),
+  get_input_statistics: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_input_statistics', data),
+  get_playback_state: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_playback_state', data),
+  get_recording_status: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_recording_status', data),
+  get_sequence: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_sequence', data),
+  get_snapshot: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_snapshot', data),
+  get_stats: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_stats', data),
+  get_status: (data: Record<string, unknown> = {}) => api.post('/input_replay/get_status', data),
+  import_sequence: (data: Record<string, unknown> = {}) => api.post('/input_replay/import_sequence', data),
+  list_events: (data: Record<string, unknown> = {}) => api.post('/input_replay/list_events', data),
+  list_sequences: (data: Record<string, unknown> = {}) => api.post('/input_replay/list_sequences', data),
+  load_sequence: (data: Record<string, unknown> = {}) => api.post('/input_replay/load_sequence', data),
+  pause_playback: (data: Record<string, unknown> = {}) => api.post('/input_replay/pause_playback', data),
+  pause_recording: (data: Record<string, unknown> = {}) => api.post('/input_replay/pause_recording', data),
+  record_input: (data: Record<string, unknown> = {}) => api.post('/input_replay/record_input', data),
+  resume_playback: (data: Record<string, unknown> = {}) => api.post('/input_replay/resume_playback', data),
+  resume_recording: (data: Record<string, unknown> = {}) => api.post('/input_replay/resume_recording', data),
+  save_sequence: (data: Record<string, unknown> = {}) => api.post('/input_replay/save_sequence', data),
+  seek_to_frame: (data: Record<string, unknown> = {}) => api.post('/input_replay/seek_to_frame', data),
+  set_config: (data: Record<string, unknown> = {}) => api.post('/input_replay/set_config', data),
+  set_playback_speed: (data: Record<string, unknown> = {}) => api.post('/input_replay/set_playback_speed', data),
+  start_playback: (data: Record<string, unknown> = {}) => api.post('/input_replay/start_playback', data),
+  start_recording: (data: Record<string, unknown> = {}) => api.post('/input_replay/start_recording', data),
+  stop_playback: (data: Record<string, unknown> = {}) => api.post('/input_replay/stop_playback', data),
+  stop_recording: (data: Record<string, unknown> = {}) => api.post('/input_replay/stop_recording', data),
+  suggest_optimal_inputs: (data: Record<string, unknown> = {}) => api.post('/input_replay/suggest_optimal_inputs', data),
+  tick: (data: Record<string, unknown> = {}) => api.post('/input_replay/tick', data),
+  verify_checksum: (data: Record<string, unknown> = {}) => api.post('/input_replay/verify_checksum', data),
+};
+
+
+// ===========================================================================
+// Round 46: NPC Dream Simulation, Physics Joint Constraint, Meta-Game Director
+// ===========================================================================
+
+export class DreamSimulationApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async add_experience(npc_id: any, memory_type: any, description: any, emotion: any, intensity: any): Promise<any> {
+    return this.client.post("/dream_sim/add_experience", {"npc_id": npc_id, "memory_type": memory_type, "description": description, "emotion": emotion, "intensity": intensity});
+  }
+
+  async advance_sleep_state(npc_id: any, dt: any): Promise<any> {
+    return this.client.post("/dream_sim/advance_sleep_state", {"npc_id": npc_id, "dt": dt});
+  }
+
+  async apply_dream_outcome(npc_id: any, sequence_id: any): Promise<any> {
+    return this.client.post("/dream_sim/apply_dream_outcome", {"npc_id": npc_id, "sequence_id": sequence_id});
+  }
+
+  async clear_journal(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/clear_journal", {"npc_id": npc_id});
+  }
+
+  async consolidate_memories(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/consolidate_memories", {"npc_id": npc_id});
+  }
+
+  async end_dream(npc_id: any, sequence_id: any): Promise<any> {
+    return this.client.post("/dream_sim/end_dream", {"npc_id": npc_id, "sequence_id": sequence_id});
+  }
+
+  async generate_dream_sequence(npc_id: any, force_type: any): Promise<any> {
+    return this.client.post("/dream_sim/generate_dream_sequence", {"npc_id": npc_id, "force_type": force_type});
+  }
+
+  async get_active_dreams(): Promise<any> {
+    return this.client.get("/dream_sim/get_active_dreams");
+  }
+
+  async get_archetype(archetype_id: any): Promise<any> {
+    return this.client.post("/dream_sim/get_archetype", {"archetype_id": archetype_id});
+  }
+
+  async get_config(): Promise<any> {
+    return this.client.get("/dream_sim/get_config");
+  }
+
+  async get_dream_interpretation(sequence_id: any): Promise<any> {
+    return this.client.post("/dream_sim/get_dream_interpretation", {"sequence_id": sequence_id});
+  }
+
+  async get_dream_journal(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/get_dream_journal", {"npc_id": npc_id});
+  }
+
+  async get_npc(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/get_npc", {"npc_id": npc_id});
+  }
+
+  async get_npc_behavior_modifiers(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/get_npc_behavior_modifiers", {"npc_id": npc_id});
+  }
+
+  async get_shared_dreams(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/get_shared_dreams", {"npc_id": npc_id});
+  }
+
+  async get_sleep_schedule(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/get_sleep_schedule", {"npc_id": npc_id});
+  }
+
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/dream_sim/get_snapshot");
+  }
+
+  async get_stats(): Promise<any> {
+    return this.client.get("/dream_sim/get_stats");
+  }
+
+  async get_status(): Promise<any> {
+    return this.client.get("/dream_sim/get_status");
+  }
+
+  async get_symbol(symbol_id: any): Promise<any> {
+    return this.client.post("/dream_sim/get_symbol", {"symbol_id": symbol_id});
+  }
+
+  async interpret_dream(sequence_id: any): Promise<any> {
+    return this.client.post("/dream_sim/interpret_dream", {"sequence_id": sequence_id});
+  }
+
+  async list_archetypes(): Promise<any> {
+    return this.client.get("/dream_sim/list_archetypes");
+  }
+
+  async list_dream_sequences(): Promise<any> {
+    return this.client.get("/dream_sim/list_dream_sequences");
+  }
+
+  async list_events(): Promise<any> {
+    return this.client.get("/dream_sim/list_events");
+  }
+
+  async list_npcs(): Promise<any> {
+    return this.client.get("/dream_sim/list_npcs");
+  }
+
+  async list_symbols(): Promise<any> {
+    return this.client.get("/dream_sim/list_symbols");
+  }
+
+  async process_experiences(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/process_experiences", {"npc_id": npc_id});
+  }
+
+  async register_archetype(archetype_id: any, name: any, description: any, theme: any, associated_symbol_ids: any, mood_modifier: any, behavior_modifiers: any): Promise<any> {
+    return this.client.post("/dream_sim/register_archetype", {"archetype_id": archetype_id, "name": name, "description": description, "theme": theme, "associated_symbol_ids": associated_symbol_ids, "mood_modifier": mood_modifier, "behavior_modifiers": behavior_modifiers});
+  }
+
+  async register_npc(npc_id: any, name: any, personality_traits: any, mood: any, lucidity: any, dream_affinity: any, prophetic_chance: any, nightmare_threshold: any, sleep_start_hour: any, wake_hour: any): Promise<any> {
+    return this.client.post("/dream_sim/register_npc", {"npc_id": npc_id, "name": name, "personality_traits": personality_traits, "mood": mood, "lucidity": lucidity, "dream_affinity": dream_affinity, "prophetic_chance": prophetic_chance, "nightmare_threshold": nightmare_threshold, "sleep_start_hour": sleep_start_hour, "wake_hour": wake_hour});
+  }
+
+  async register_symbol(symbol_id: any, name: any, description: any, associated_emotions: any, associated_memory_types: any, meaning: any, rarity: any): Promise<any> {
+    return this.client.post("/dream_sim/register_symbol", {"symbol_id": symbol_id, "name": name, "description": description, "associated_emotions": associated_emotions, "associated_memory_types": associated_memory_types, "meaning": meaning, "rarity": rarity});
+  }
+
+  async remove_npc(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/remove_npc", {"npc_id": npc_id});
+  }
+
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/dream_sim/set_config", {"kwargs": kwargs});
+  }
+
+  async set_sleep_schedule(npc_id: any, sleep_start_hour: any, wake_hour: any, sleep_duration_hours: any, day_length_hours: any): Promise<any> {
+    return this.client.post("/dream_sim/set_sleep_schedule", {"npc_id": npc_id, "sleep_start_hour": sleep_start_hour, "wake_hour": wake_hour, "sleep_duration_hours": sleep_duration_hours, "day_length_hours": day_length_hours});
+  }
+
+  async share_dream(npc_id: any, sequence_id: any, target_npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/share_dream", {"npc_id": npc_id, "sequence_id": sequence_id, "target_npc_id": target_npc_id});
+  }
+
+  async start_dream(npc_id: any): Promise<any> {
+    return this.client.post("/dream_sim/start_dream", {"npc_id": npc_id});
+  }
+
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/dream_sim/tick", {"dt": dt});
+  }
+
+}
+
+export class PhysicsJointApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async add_to_chain(chain_id: any, joint_id: any, at_end: any): Promise<any> {
+    return this.client.post("/physics_joint/add_to_chain", {"chain_id": chain_id, "joint_id": joint_id, "at_end": at_end});
+  }
+
+  async ai_tune_parameters(joint_id: any, aggression: any): Promise<any> {
+    return this.client.post("/physics_joint/ai_tune_parameters", {"joint_id": joint_id, "aggression": aggression});
+  }
+
+  async auto_balance_joint(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/auto_balance_joint", {"joint_id": joint_id});
+  }
+
+  async break_joint(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/break_joint", {"joint_id": joint_id});
+  }
+
+  async check_break_condition(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/check_break_condition", {"joint_id": joint_id});
+  }
+
+  async compute_stress(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/compute_stress", {"joint_id": joint_id});
+  }
+
+  async create_joint_chain(name: any, joint_ids: any, closed: any, description: any): Promise<any> {
+    return this.client.post("/physics_joint/create_joint_chain", {"name": name, "joint_ids": joint_ids, "closed": closed, "description": description});
+  }
+
+  async disable_motor(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/disable_motor", {"joint_id": joint_id});
+  }
+
+  async enable_motor(joint_id: any, mode: any, target_velocity: any): Promise<any> {
+    return this.client.post("/physics_joint/enable_motor", {"joint_id": joint_id, "mode": mode, "target_velocity": target_velocity});
+  }
+
+  async get_config(): Promise<any> {
+    return this.client.get("/physics_joint/get_config");
+  }
+
+  async get_joint(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/get_joint", {"joint_id": joint_id});
+  }
+
+  async get_joint_chain(chain_id: any): Promise<any> {
+    return this.client.post("/physics_joint/get_joint_chain", {"chain_id": chain_id});
+  }
+
+  async get_joint_limit(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/get_joint_limit", {"joint_id": joint_id});
+  }
+
+  async get_joint_type(type_id: any): Promise<any> {
+    return this.client.post("/physics_joint/get_joint_type", {"type_id": type_id});
+  }
+
+  async get_motor_config(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/get_motor_config", {"joint_id": joint_id});
+  }
+
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/physics_joint/get_snapshot");
+  }
+
+  async get_solver_config(): Promise<any> {
+    return this.client.get("/physics_joint/get_solver_config");
+  }
+
+  async get_spring_config(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/get_spring_config", {"joint_id": joint_id});
+  }
+
+  async get_stats(): Promise<any> {
+    return this.client.get("/physics_joint/get_stats");
+  }
+
+  async get_status(): Promise<any> {
+    return this.client.get("/physics_joint/get_status");
+  }
+
+  async get_stress_report(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/get_stress_report", {"joint_id": joint_id});
+  }
+
+  async get_visualization_data(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/get_visualization_data", {"joint_id": joint_id});
+  }
+
+  async list_events(kind: any, limit: any): Promise<any> {
+    return this.client.post("/physics_joint/list_events", {"kind": kind, "limit": limit});
+  }
+
+  async list_joint_chains(): Promise<any> {
+    return this.client.get("/physics_joint/list_joint_chains");
+  }
+
+  async list_joint_types(): Promise<any> {
+    return this.client.get("/physics_joint/list_joint_types");
+  }
+
+  async list_joints(joint_type: any, status: any): Promise<any> {
+    return this.client.post("/physics_joint/list_joints", {"joint_type": joint_type, "status": status});
+  }
+
+  async lock_joint(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/lock_joint", {"joint_id": joint_id});
+  }
+
+  async optimize_chain(chain_id: any, aggression: any): Promise<any> {
+    return this.client.post("/physics_joint/optimize_chain", {"chain_id": chain_id, "aggression": aggression});
+  }
+
+  async register_joint(name: any, joint_type: any, body_a_id: any, body_b_id: any, anchor_a: any, anchor_b: any, axis: any, mass_a: any, mass_b: any, type_id: any): Promise<any> {
+    return this.client.post("/physics_joint/register_joint", {"name": name, "joint_type": joint_type, "body_a_id": body_a_id, "body_b_id": body_b_id, "anchor_a": anchor_a, "anchor_b": anchor_b, "axis": axis, "mass_a": mass_a, "mass_b": mass_b, "type_id": type_id});
+  }
+
+  async register_joint_type(type_id: any, joint_type: any, display_name: any, description: any, degrees_of_freedom: any, supports_motor: any, supports_spring: any, supports_limits: any, supports_breakable: any): Promise<any> {
+    return this.client.post("/physics_joint/register_joint_type", {"type_id": type_id, "joint_type": joint_type, "display_name": display_name, "description": description, "degrees_of_freedom": degrees_of_freedom, "supports_motor": supports_motor, "supports_spring": supports_spring, "supports_limits": supports_limits, "supports_breakable": supports_breakable});
+  }
+
+  async remove_from_chain(chain_id: any, joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/remove_from_chain", {"chain_id": chain_id, "joint_id": joint_id});
+  }
+
+  async remove_joint(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/remove_joint", {"joint_id": joint_id});
+  }
+
+  async repair_joint(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/repair_joint", {"joint_id": joint_id});
+  }
+
+  async set_break_threshold(joint_id: any, kwargs: any): Promise<any> {
+    return this.client.post("/physics_joint/set_break_threshold", {"joint_id": joint_id, "kwargs": kwargs});
+  }
+
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/physics_joint/set_config", {"kwargs": kwargs});
+  }
+
+  async set_joint_limit(joint_id: any, kwargs: any): Promise<any> {
+    return this.client.post("/physics_joint/set_joint_limit", {"joint_id": joint_id, "kwargs": kwargs});
+  }
+
+  async set_motor_config(joint_id: any, kwargs: any): Promise<any> {
+    return this.client.post("/physics_joint/set_motor_config", {"joint_id": joint_id, "kwargs": kwargs});
+  }
+
+  async set_solver_config(solver_type: any, iterations: any, accuracy: any, warm_starting: any, split_impulse: any, bias_factor: any): Promise<any> {
+    return this.client.post("/physics_joint/set_solver_config", {"solver_type": solver_type, "iterations": iterations, "accuracy": accuracy, "warm_starting": warm_starting, "split_impulse": split_impulse, "bias_factor": bias_factor});
+  }
+
+  async set_spring_config(joint_id: any, kwargs: any): Promise<any> {
+    return this.client.post("/physics_joint/set_spring_config", {"joint_id": joint_id, "kwargs": kwargs});
+  }
+
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/physics_joint/tick", {"dt": dt});
+  }
+
+  async unlock_joint(joint_id: any): Promise<any> {
+    return this.client.post("/physics_joint/unlock_joint", {"joint_id": joint_id});
+  }
+
+}
+
+export class MetaGameDirectorApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async advance_meta_arc(arc_id: any, phase: any): Promise<any> {
+    return this.client.post("/meta_director/advance_meta_arc", {"arc_id": arc_id, "phase": phase});
+  }
+
+  async analyze_session(session_id: any): Promise<any> {
+    return this.client.post("/meta_director/analyze_session", {"session_id": session_id});
+  }
+
+  async apply_meta_decision(decision_id: any): Promise<any> {
+    return this.client.post("/meta_director/apply_meta_decision", {"decision_id": decision_id});
+  }
+
+  async capture_world_snapshot(label: any, notable_changes: any, player_driven_changes: any, metadata: any): Promise<any> {
+    return this.client.post("/meta_director/capture_world_snapshot", {"label": label, "notable_changes": notable_changes, "player_driven_changes": player_driven_changes, "metadata": metadata});
+  }
+
+  async check_milestone(milestone_id: any): Promise<any> {
+    return this.client.post("/meta_director/check_milestone", {"milestone_id": milestone_id});
+  }
+
+  async complete_meta_arc(arc_id: any, resolution: any): Promise<any> {
+    return this.client.post("/meta_director/complete_meta_arc", {"arc_id": arc_id, "resolution": resolution});
+  }
+
+  async create_meta_decision(decision_id: any, title: any, description: any, rationale: any, decision_type: any, scope: any, affected_arc_ids: any, affected_thread_ids: any, affected_player_ids: any, world_impact: any, priority: any, confidence: any, expected_outcome: any, metadata: any): Promise<any> {
+    return this.client.post("/meta_director/create_meta_decision", {"decision_id": decision_id, "title": title, "description": description, "rationale": rationale, "decision_type": decision_type, "scope": scope, "affected_arc_ids": affected_arc_ids, "affected_thread_ids": affected_thread_ids, "affected_player_ids": affected_player_ids, "world_impact": world_impact, "priority": priority, "confidence": confidence, "expected_outcome": expected_outcome, "metadata": metadata});
+  }
+
+  async detect_player_archetype(player_id: any): Promise<any> {
+    return this.client.post("/meta_director/detect_player_archetype", {"player_id": player_id});
+  }
+
+  async find_cross_session_links(player_id: any): Promise<any> {
+    return this.client.post("/meta_director/find_cross_session_links", {"player_id": player_id});
+  }
+
+  async generate_meta_event(kind: any, title: any, description: any, related_arc_id: any, related_thread_id: any, related_player_id: any, related_session_id: any, related_milestone_id: any, related_decision_id: any, severity: any, scope: any, metadata: any): Promise<any> {
+    return this.client.post("/meta_director/generate_meta_event", {"kind": kind, "title": title, "description": description, "related_arc_id": related_arc_id, "related_thread_id": related_thread_id, "related_player_id": related_player_id, "related_session_id": related_session_id, "related_milestone_id": related_milestone_id, "related_decision_id": related_decision_id, "severity": severity, "scope": scope, "metadata": metadata});
+  }
+
+  async get_config(): Promise<any> {
+    return this.client.get("/meta_director/get_config");
+  }
+
+  async get_cross_session_links(player_id: any, limit: any): Promise<any> {
+    return this.client.post("/meta_director/get_cross_session_links", {"player_id": player_id, "limit": limit});
+  }
+
+  async get_meta_arc(arc_id: any): Promise<any> {
+    return this.client.post("/meta_director/get_meta_arc", {"arc_id": arc_id});
+  }
+
+  async get_meta_thread(thread_id: any): Promise<any> {
+    return this.client.post("/meta_director/get_meta_thread", {"thread_id": thread_id});
+  }
+
+  async get_player(player_id: any): Promise<any> {
+    return this.client.post("/meta_director/get_player", {"player_id": player_id});
+  }
+
+  async get_player_archetype(player_id: any): Promise<any> {
+    return this.client.post("/meta_director/get_player_archetype", {"player_id": player_id});
+  }
+
+  async get_session_history(player_id: any, limit: any): Promise<any> {
+    return this.client.post("/meta_director/get_session_history", {"player_id": player_id, "limit": limit});
+  }
+
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/meta_director/get_snapshot");
+  }
+
+  async get_stats(): Promise<any> {
+    return this.client.get("/meta_director/get_stats");
+  }
+
+  async get_status(): Promise<any> {
+    return this.client.get("/meta_director/get_status");
+  }
+
+  async get_world_snapshot(snapshot_id: any): Promise<any> {
+    return this.client.post("/meta_director/get_world_snapshot", {"snapshot_id": snapshot_id});
+  }
+
+  async list_archetypes(limit: any): Promise<any> {
+    return this.client.post("/meta_director/list_archetypes", {"limit": limit});
+  }
+
+  async list_events(limit: any): Promise<any> {
+    return this.client.post("/meta_director/list_events", {"limit": limit});
+  }
+
+  async list_meta_arcs(limit: any): Promise<any> {
+    return this.client.post("/meta_director/list_meta_arcs", {"limit": limit});
+  }
+
+  async list_meta_decisions(limit: any): Promise<any> {
+    return this.client.post("/meta_director/list_meta_decisions", {"limit": limit});
+  }
+
+  async list_meta_events(limit: any): Promise<any> {
+    return this.client.post("/meta_director/list_meta_events", {"limit": limit});
+  }
+
+  async list_meta_threads(limit: any): Promise<any> {
+    return this.client.post("/meta_director/list_meta_threads", {"limit": limit});
+  }
+
+  async list_milestones(player_id: any, limit: any): Promise<any> {
+    return this.client.post("/meta_director/list_milestones", {"player_id": player_id, "limit": limit});
+  }
+
+  async list_players(limit: any): Promise<any> {
+    return this.client.post("/meta_director/list_players", {"limit": limit});
+  }
+
+  async list_world_snapshots(limit: any): Promise<any> {
+    return this.client.post("/meta_director/list_world_snapshots", {"limit": limit});
+  }
+
+  async record_session(player_id: any, session_type: any, duration: any, arc_ids: any, thread_ids: any, milestones: any, decisions: any, summary: any, metadata: any): Promise<any> {
+    return this.client.post("/meta_director/record_session", {"player_id": player_id, "session_type": session_type, "duration": duration, "arc_ids": arc_ids, "thread_ids": thread_ids, "milestones": milestones, "decisions": decisions, "summary": summary, "metadata": metadata});
+  }
+
+  async register_meta_arc(arc_id: any, title: any, description: any, arc_type: any, theme: any, central_question: any, total_chapters: any, involved_player_ids: any, thread_ids: any, tags: any, metadata: any): Promise<any> {
+    return this.client.post("/meta_director/register_meta_arc", {"arc_id": arc_id, "title": title, "description": description, "arc_type": arc_type, "theme": theme, "central_question": central_question, "total_chapters": total_chapters, "involved_player_ids": involved_player_ids, "thread_ids": thread_ids, "tags": tags, "metadata": metadata});
+  }
+
+  async register_meta_thread(thread_id: any, title: any, description: any, origin_arc_id: any, thread_type: any, involved_player_ids: any, priority: any, tension_contribution: any, metadata: any): Promise<any> {
+    return this.client.post("/meta_director/register_meta_thread", {"thread_id": thread_id, "title": title, "description": description, "origin_arc_id": origin_arc_id, "thread_type": thread_type, "involved_player_ids": involved_player_ids, "priority": priority, "tension_contribution": tension_contribution, "metadata": metadata});
+  }
+
+  async register_milestone(milestone_id: any, player_id: any, title: any, description: any, milestone_type: any, arc_id: any, significance: any, rewards: any, related_milestone_ids: any, metadata: any): Promise<any> {
+    return this.client.post("/meta_director/register_milestone", {"milestone_id": milestone_id, "player_id": player_id, "title": title, "description": description, "milestone_type": milestone_type, "arc_id": arc_id, "significance": significance, "rewards": rewards, "related_milestone_ids": related_milestone_ids, "metadata": metadata});
+  }
+
+  async register_player(player_id: any, name: any, archetype: any, metadata: any): Promise<any> {
+    return this.client.post("/meta_director/register_player", {"player_id": player_id, "name": name, "archetype": archetype, "metadata": metadata});
+  }
+
+  async remove_player(player_id: any): Promise<any> {
+    return this.client.post("/meta_director/remove_player", {"player_id": player_id});
+  }
+
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/meta_director/set_config", {"kwargs": kwargs});
+  }
+
+  async start_meta_arc(arc_id: any): Promise<any> {
+    return this.client.post("/meta_director/start_meta_arc", {"arc_id": arc_id});
+  }
+
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/meta_director/tick", {"dt": dt});
+  }
+
+  async weave_thread(thread_id: any, target_arc_id: any, description: any): Promise<any> {
+    return this.client.post("/meta_director/weave_thread", {"thread_id": thread_id, "target_arc_id": target_arc_id, "description": description});
+  }
+
+}
+// Round 46 exports
+export const dream_simApi = new DreamSimulationApi(api);
+export const physics_jointApi = new PhysicsJointApi(api);
+export const meta_directorApi = new MetaGameDirectorApi(api);
+
+// ===========================================================================
+// Round 47: Coalition Negotiator, Soft Body Deformation, Analytics Synthesizer
+// ===========================================================================
+
+export class CoalitionNegotiatorApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async add_member(coalition_id: any, agent_id: any, role: any): Promise<any> {
+    return this.client.post("/coalition/add_member", { "coalition_id": coalition_id, "agent_id": agent_id, "role": role });
+  }
+
+  async assess_coalition_strength(coalition_id: any): Promise<any> {
+    return this.client.post("/coalition/assess_coalition_strength", { "coalition_id": coalition_id });
+  }
+
+  async assign_role(coalition_id: any, agent_id: any, role: any): Promise<any> {
+    return this.client.post("/coalition/assign_role", { "coalition_id": coalition_id, "agent_id": agent_id, "role": role });
+  }
+
+  async check_coalition_health(coalition_id: any): Promise<any> {
+    return this.client.post("/coalition/check_coalition_health", { "coalition_id": coalition_id });
+  }
+
+  async compute_shapley_value(coalition_id: any): Promise<any> {
+    return this.client.post("/coalition/compute_shapley_value", { "coalition_id": coalition_id });
+  }
+
+  async dissolve_coalition(coalition_id: any, reason: any): Promise<any> {
+    return this.client.post("/coalition/dissolve_coalition", { "coalition_id": coalition_id, "reason": reason });
+  }
+
+  async distribute_rewards(coalition_id: any, total_reward: any, method: any): Promise<any> {
+    return this.client.post("/coalition/distribute_rewards", { "coalition_id": coalition_id, "total_reward": total_reward, "method": method });
+  }
+
+  async evaluate_fairness(coalition_id: any): Promise<any> {
+    return this.client.post("/coalition/evaluate_fairness", { "coalition_id": coalition_id });
+  }
+
+  async find_best_coalition(task_description: any, required_skills: any, max_size: any): Promise<any> {
+    return this.client.post("/coalition/find_best_coalition", { "task_description": task_description, "required_skills": required_skills, "max_size": max_size });
+  }
+
+  async form_coalition(proposal_id: any): Promise<any> {
+    return this.client.post("/coalition/form_coalition", { "proposal_id": proposal_id });
+  }
+
+  async get_agent(agent_id: any): Promise<any> {
+    return this.client.post("/coalition/get_agent", { "agent_id": agent_id });
+  }
+
+  async get_agent_coalition(agent_id: any): Promise<any> {
+    return this.client.post("/coalition/get_agent_coalition", { "agent_id": agent_id });
+  }
+
+  async get_agent_contributions(coalition_id: any, agent_id: any): Promise<any> {
+    return this.client.post("/coalition/get_agent_contributions", { "coalition_id": coalition_id, "agent_id": agent_id });
+  }
+
+  async get_coalition(coalition_id: any): Promise<any> {
+    return this.client.post("/coalition/get_coalition", { "coalition_id": coalition_id });
+  }
+
+  async get_coalition_history(agent_id: any): Promise<any> {
+    return this.client.post("/coalition/get_coalition_history", { "agent_id": agent_id });
+  }
+
+  async get_config(): Promise<any> {
+    return this.client.get("/coalition/get_config");
+  }
+
+  async get_contributions(coalition_id: any): Promise<any> {
+    return this.client.post("/coalition/get_contributions", { "coalition_id": coalition_id });
+  }
+
+  async get_negotiation(round_id: any): Promise<any> {
+    return this.client.post("/coalition/get_negotiation", { "round_id": round_id });
+  }
+
+  async get_proposal(proposal_id: any): Promise<any> {
+    return this.client.post("/coalition/get_proposal", { "proposal_id": proposal_id });
+  }
+
+  async get_reward_distribution(distribution_id: any): Promise<any> {
+    return this.client.post("/coalition/get_reward_distribution", { "distribution_id": distribution_id });
+  }
+
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/coalition/get_snapshot");
+  }
+
+  async get_stats(): Promise<any> {
+    return this.client.get("/coalition/get_stats");
+  }
+
+  async get_status(): Promise<any> {
+    return this.client.get("/coalition/get_status");
+  }
+
+  async list_agents(): Promise<any> {
+    return this.client.get("/coalition/list_agents");
+  }
+
+  async list_agents_by_role(role: any): Promise<any> {
+    return this.client.post("/coalition/list_agents_by_role", { "role": role });
+  }
+
+  async list_coalitions(status: any): Promise<any> {
+    return this.client.post("/coalition/list_coalitions", { "status": status });
+  }
+
+  async list_events(kind: any, limit: any): Promise<any> {
+    return this.client.post("/coalition/list_events", { "kind": kind, "limit": limit });
+  }
+
+  async list_negotiations(coalition_id: any): Promise<any> {
+    return this.client.post("/coalition/list_negotiations", { "coalition_id": coalition_id });
+  }
+
+  async list_proposals(status: any): Promise<any> {
+    return this.client.post("/coalition/list_proposals", { "status": status });
+  }
+
+  async list_reward_distributions(coalition_id: any): Promise<any> {
+    return this.client.post("/coalition/list_reward_distributions", { "coalition_id": coalition_id });
+  }
+
+  async pool_resource(coalition_id: any, agent_id: any, resource_type: any, amount: any): Promise<any> {
+    return this.client.post("/coalition/pool_resource", { "coalition_id": coalition_id, "agent_id": agent_id, "resource_type": resource_type, "amount": amount });
+  }
+
+  async propose_coalition(proposer_id: any, target_ids: any, task_description: any, resource_needs: any, strategy: any): Promise<any> {
+    return this.client.post("/coalition/propose_coalition", { "proposer_id": proposer_id, "target_ids": target_ids, "task_description": task_description, "resource_needs": resource_needs, "strategy": strategy });
+  }
+
+  async recommend_coalition(task_description: any, required_skills: any): Promise<any> {
+    return this.client.post("/coalition/recommend_coalition", { "task_description": task_description, "required_skills": required_skills });
+  }
+
+  async reconfigure_coalition(coalition_id: any): Promise<any> {
+    return this.client.post("/coalition/reconfigure_coalition", { "coalition_id": coalition_id });
+  }
+
+  async record_contribution(agent_id: any, coalition_id: any, metric: any, value: any): Promise<any> {
+    return this.client.post("/coalition/record_contribution", { "agent_id": agent_id, "coalition_id": coalition_id, "metric": metric, "value": value });
+  }
+
+  async register_agent(agent_id: any, name: any, role: any, skills: any, reliability_score: any): Promise<any> {
+    return this.client.post("/coalition/register_agent", { "agent_id": agent_id, "name": name, "role": role, "skills": skills, "reliability_score": reliability_score });
+  }
+
+  async remove_agent(agent_id: any): Promise<any> {
+    return this.client.post("/coalition/remove_agent", { "agent_id": agent_id });
+  }
+
+  async remove_member(coalition_id: any, agent_id: any, reason: any): Promise<any> {
+    return this.client.post("/coalition/remove_member", { "coalition_id": coalition_id, "agent_id": agent_id, "reason": reason });
+  }
+
+  async resolve_negotiation(round_id: any): Promise<any> {
+    return this.client.post("/coalition/resolve_negotiation", { "round_id": round_id });
+  }
+
+  async respond_to_proposal(agent_id: any, proposal_id: any, response: any, counter_offer: any): Promise<any> {
+    return this.client.post("/coalition/respond_to_proposal", { "agent_id": agent_id, "proposal_id": proposal_id, "response": response, "counter_offer": counter_offer });
+  }
+
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/coalition/set_config", { "kwargs": kwargs });
+  }
+
+  async start_negotiation(coalition_id: any, proposer_id: any, proposal: any): Promise<any> {
+    return this.client.post("/coalition/start_negotiation", { "coalition_id": coalition_id, "proposer_id": proposer_id, "proposal": proposal });
+  }
+
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/coalition/tick", { "dt": dt });
+  }
+
+  async withdraw_resource(coalition_id: any, agent_id: any, resource_type: any, amount: any): Promise<any> {
+    return this.client.post("/coalition/withdraw_resource", { "coalition_id": coalition_id, "agent_id": agent_id, "resource_type": resource_type, "amount": amount });
+  }
+
+}
+
+export class SoftBodyApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async ai_assess_body(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/ai_assess_body", { "body_id": body_id });
+  }
+
+  async ai_tune_global(aggression: any): Promise<any> {
+    return this.client.post("/soft_body/ai_tune_global", { "aggression": aggression });
+  }
+
+  async ai_tune_material(body_id: any, target_stiffness: any): Promise<any> {
+    return this.client.post("/soft_body/ai_tune_material", { "body_id": body_id, "target_stiffness": target_stiffness });
+  }
+
+  async apply_bend(body_id: any, axis: any, angle: any): Promise<any> {
+    return this.client.post("/soft_body/apply_bend", { "body_id": body_id, "axis": axis, "angle": angle });
+  }
+
+  async apply_force(body_id: any, vertex_id: any, force: any): Promise<any> {
+    return this.client.post("/soft_body/apply_force", { "body_id": body_id, "vertex_id": vertex_id, "force": force });
+  }
+
+  async apply_impact(body_id: any, contact_point: any, impulse: any, radius: any): Promise<any> {
+    return this.client.post("/soft_body/apply_impact", { "body_id": body_id, "contact_point": contact_point, "impulse": impulse, "radius": radius });
+  }
+
+  async apply_plastic_flow(body_id: any, dt: any): Promise<any> {
+    return this.client.post("/soft_body/apply_plastic_flow", { "body_id": body_id, "dt": dt });
+  }
+
+  async apply_pressure(body_id: any, pressure: any): Promise<any> {
+    return this.client.post("/soft_body/apply_pressure", { "body_id": body_id, "pressure": pressure });
+  }
+
+  async apply_twist(body_id: any, axis: any, torque: any): Promise<any> {
+    return this.client.post("/soft_body/apply_twist", { "body_id": body_id, "axis": axis, "torque": torque });
+  }
+
+  async check_fracture(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/check_fracture", { "body_id": body_id });
+  }
+
+  async check_tear(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/check_tear", { "body_id": body_id });
+  }
+
+  async check_yield(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/check_yield", { "body_id": body_id });
+  }
+
+  async compute_strain(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/compute_strain", { "body_id": body_id });
+  }
+
+  async compute_stress(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/compute_stress", { "body_id": body_id });
+  }
+
+  async compute_volume(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/compute_volume", { "body_id": body_id });
+  }
+
+  async fracture_body(body_id: any, pattern: any): Promise<any> {
+    return this.client.post("/soft_body/fracture_body", { "body_id": body_id, "pattern": pattern });
+  }
+
+  async get_body(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/get_body", { "body_id": body_id });
+  }
+
+  async get_config(): Promise<any> {
+    return this.client.get("/soft_body/get_config");
+  }
+
+  async get_deformation_summary(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/get_deformation_summary", { "body_id": body_id });
+  }
+
+  async get_fracture(fracture_id: any): Promise<any> {
+    return this.client.post("/soft_body/get_fracture", { "fracture_id": fracture_id });
+  }
+
+  async get_material(material_id: any): Promise<any> {
+    return this.client.post("/soft_body/get_material", { "material_id": material_id });
+  }
+
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/soft_body/get_snapshot");
+  }
+
+  async get_stats(): Promise<any> {
+    return this.client.get("/soft_body/get_stats");
+  }
+
+  async get_status(): Promise<any> {
+    return this.client.get("/soft_body/get_status");
+  }
+
+  async get_stress_report(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/get_stress_report", { "body_id": body_id });
+  }
+
+  async get_tear(tear_id: any): Promise<any> {
+    return this.client.post("/soft_body/get_tear", { "tear_id": tear_id });
+  }
+
+  async get_vertex(body_id: any, vertex_id: any): Promise<any> {
+    return this.client.post("/soft_body/get_vertex", { "body_id": body_id, "vertex_id": vertex_id });
+  }
+
+  async get_visualization_data(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/get_visualization_data", { "body_id": body_id });
+  }
+
+  async list_bodies(status: any): Promise<any> {
+    return this.client.post("/soft_body/list_bodies", { "status": status });
+  }
+
+  async list_events(kind: any, limit: any): Promise<any> {
+    return this.client.post("/soft_body/list_events", { "kind": kind, "limit": limit });
+  }
+
+  async list_fractures(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/list_fractures", { "body_id": body_id });
+  }
+
+  async list_materials(): Promise<any> {
+    return this.client.get("/soft_body/list_materials");
+  }
+
+  async list_tears(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/list_tears", { "body_id": body_id });
+  }
+
+  async list_vertices(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/list_vertices", { "body_id": body_id });
+  }
+
+  async pin_vertex(body_id: any, vertex_id: any): Promise<any> {
+    return this.client.post("/soft_body/pin_vertex", { "body_id": body_id, "vertex_id": vertex_id });
+  }
+
+  async preserve_volume(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/preserve_volume", { "body_id": body_id });
+  }
+
+  async propagate_tear(body_id: any, tear_id: any): Promise<any> {
+    return this.client.post("/soft_body/propagate_tear", { "body_id": body_id, "tear_id": tear_id });
+  }
+
+  async register_body(body_id: any, name: any, material_id: any, vertices: any, tetrahedra: any, springs: any): Promise<any> {
+    return this.client.post("/soft_body/register_body", { "body_id": body_id, "name": name, "material_id": material_id, "vertices": vertices, "tetrahedra": tetrahedra, "springs": springs });
+  }
+
+  async register_material(material_id: any, name: any, behavior: any, youngs_modulus: any, poissons_ratio: any, yield_strength: any, ultimate_strength: any, density: any, damping_coefficient: any, tear_threshold: any, fracture_toughness: any): Promise<any> {
+    return this.client.post("/soft_body/register_material", { "material_id": material_id, "name": name, "behavior": behavior, "youngs_modulus": youngs_modulus, "poissons_ratio": poissons_ratio, "yield_strength": yield_strength, "ultimate_strength": ultimate_strength, "density": density, "damping_coefficient": damping_coefficient, "tear_threshold": tear_threshold, "fracture_toughness": fracture_toughness });
+  }
+
+  async remove_body(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/remove_body", { "body_id": body_id });
+  }
+
+  async remove_material(material_id: any): Promise<any> {
+    return this.client.post("/soft_body/remove_material", { "material_id": material_id });
+  }
+
+  async reset_deformation(body_id: any): Promise<any> {
+    return this.client.post("/soft_body/reset_deformation", { "body_id": body_id });
+  }
+
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/soft_body/set_config", { "kwargs": kwargs });
+  }
+
+  async set_vertex_position(body_id: any, vertex_id: any, position: any): Promise<any> {
+    return this.client.post("/soft_body/set_vertex_position", { "body_id": body_id, "vertex_id": vertex_id, "position": position });
+  }
+
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/soft_body/tick", { "dt": dt });
+  }
+
+  async unpin_vertex(body_id: any, vertex_id: any): Promise<any> {
+    return this.client.post("/soft_body/unpin_vertex", { "body_id": body_id, "vertex_id": vertex_id });
+  }
+
+}
+
+export class AnalyticsSynthesizerApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async analyze_trend(metric_id: any, time_window: any): Promise<any> {
+    return this.client.post("/analytics_syn/analyze_trend", { "metric_id": metric_id, "time_window": time_window });
+  }
+
+  async apply_recommendation(recommendation_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/apply_recommendation", { "recommendation_id": recommendation_id });
+  }
+
+  async assess_churn_risk(player_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/assess_churn_risk", { "player_id": player_id });
+  }
+
+  async auto_generate_recommendations(): Promise<any> {
+    return this.client.get("/analytics_syn/auto_generate_recommendations");
+  }
+
+  async compile_report(title: any, time_window: any): Promise<any> {
+    return this.client.post("/analytics_syn/compile_report", { "title": title, "time_window": time_window });
+  }
+
+  async compute_all_metrics(time_window: any): Promise<any> {
+    return this.client.post("/analytics_syn/compute_all_metrics", { "time_window": time_window });
+  }
+
+  async compute_engagement(player_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/compute_engagement", { "player_id": player_id });
+  }
+
+  async compute_metric(metric_id: any, player_id: any, time_window: any): Promise<any> {
+    return this.client.post("/analytics_syn/compute_metric", { "metric_id": metric_id, "player_id": player_id, "time_window": time_window });
+  }
+
+  async confirm_insight(insight_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/confirm_insight", { "insight_id": insight_id });
+  }
+
+  async detect_anomaly(metric_id: any, player_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/detect_anomaly", { "metric_id": metric_id, "player_id": player_id });
+  }
+
+  async detect_insight(category: any, type: any): Promise<any> {
+    return this.client.post("/analytics_syn/detect_insight", { "category": category, "type": type });
+  }
+
+  async discover_patterns(): Promise<any> {
+    return this.client.get("/analytics_syn/discover_patterns");
+  }
+
+  async dismiss_insight(insight_id: any, reason: any): Promise<any> {
+    return this.client.post("/analytics_syn/dismiss_insight", { "insight_id": insight_id, "reason": reason });
+  }
+
+  async dismiss_recommendation(recommendation_id: any, reason: any): Promise<any> {
+    return this.client.post("/analytics_syn/dismiss_recommendation", { "recommendation_id": recommendation_id, "reason": reason });
+  }
+
+  async find_pattern(category: any, min_occurrences: any): Promise<any> {
+    return this.client.post("/analytics_syn/find_pattern", { "category": category, "min_occurrences": min_occurrences });
+  }
+
+  async generate_recommendation(insight_id: any, title: any, description: any, priority: any, action_type: any, expected_impact: any, target_segment: any, steps: any): Promise<any> {
+    return this.client.post("/analytics_syn/generate_recommendation", { "insight_id": insight_id, "title": title, "description": description, "priority": priority, "action_type": action_type, "expected_impact": expected_impact, "target_segment": target_segment, "steps": steps });
+  }
+
+  async get_anomaly(alert_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_anomaly", { "alert_id": alert_id });
+  }
+
+  async get_config(): Promise<any> {
+    return this.client.get("/analytics_syn/get_config");
+  }
+
+  async get_event(event_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_event", { "event_id": event_id });
+  }
+
+  async get_insight(insight_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_insight", { "insight_id": insight_id });
+  }
+
+  async get_journey(player_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_journey", { "player_id": player_id });
+  }
+
+  async get_metric(metric_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_metric", { "metric_id": metric_id });
+  }
+
+  async get_pattern(pattern_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_pattern", { "pattern_id": pattern_id });
+  }
+
+  async get_player_summary(player_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_player_summary", { "player_id": player_id });
+  }
+
+  async get_recommendation(recommendation_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_recommendation", { "recommendation_id": recommendation_id });
+  }
+
+  async get_report(report_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_report", { "report_id": report_id });
+  }
+
+  async get_segment_summary(segment_criteria: any): Promise<any> {
+    return this.client.post("/analytics_syn/get_segment_summary", { "segment_criteria": segment_criteria });
+  }
+
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/analytics_syn/get_snapshot");
+  }
+
+  async get_stats(): Promise<any> {
+    return this.client.get("/analytics_syn/get_stats");
+  }
+
+  async get_status(): Promise<any> {
+    return this.client.get("/analytics_syn/get_status");
+  }
+
+  async ingest_batch(events: any): Promise<any> {
+    return this.client.post("/analytics_syn/ingest_batch", { "events": events });
+  }
+
+  async ingest_event(player_id: any, session_id: any, category: any, event_name: any, value: any, properties: any): Promise<any> {
+    return this.client.post("/analytics_syn/ingest_event", { "player_id": player_id, "session_id": session_id, "category": category, "event_name": event_name, "value": value, "properties": properties });
+  }
+
+  async list_anomalies(severity: any, status: any): Promise<any> {
+    return this.client.post("/analytics_syn/list_anomalies", { "severity": severity, "status": status });
+  }
+
+  async list_events(category: any, player_id: any, limit: any): Promise<any> {
+    return this.client.post("/analytics_syn/list_events", { "category": category, "player_id": player_id, "limit": limit });
+  }
+
+  async list_events_log(kind: any, limit: any): Promise<any> {
+    return this.client.post("/analytics_syn/list_events_log", { "kind": kind, "limit": limit });
+  }
+
+  async list_insights(type: any, severity: any, status: any): Promise<any> {
+    return this.client.post("/analytics_syn/list_insights", { "type": type, "severity": severity, "status": status });
+  }
+
+  async list_journeys(stage: any): Promise<any> {
+    return this.client.post("/analytics_syn/list_journeys", { "stage": stage });
+  }
+
+  async list_metrics(category: any): Promise<any> {
+    return this.client.post("/analytics_syn/list_metrics", { "category": category });
+  }
+
+  async list_patterns(category: any): Promise<any> {
+    return this.client.post("/analytics_syn/list_patterns", { "category": category });
+  }
+
+  async list_recommendations(priority: any): Promise<any> {
+    return this.client.post("/analytics_syn/list_recommendations", { "priority": priority });
+  }
+
+  async list_reports(): Promise<any> {
+    return this.client.get("/analytics_syn/list_reports");
+  }
+
+  async register_metric(metric_id: any, name: any, category: any, aggregation: any, description: any, threshold_warning: any, threshold_critical: any): Promise<any> {
+    return this.client.post("/analytics_syn/register_metric", { "metric_id": metric_id, "name": name, "category": category, "aggregation": aggregation, "description": description, "threshold_warning": threshold_warning, "threshold_critical": threshold_critical });
+  }
+
+  async remove_metric(metric_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/remove_metric", { "metric_id": metric_id });
+  }
+
+  async resolve_anomaly(alert_id: any, resolution: any): Promise<any> {
+    return this.client.post("/analytics_syn/resolve_anomaly", { "alert_id": alert_id, "resolution": resolution });
+  }
+
+  async scan_anomalies(): Promise<any> {
+    return this.client.get("/analytics_syn/scan_anomalies");
+  }
+
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/analytics_syn/set_config", { "kwargs": kwargs });
+  }
+
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/analytics_syn/tick", { "dt": dt });
+  }
+
+  async track_player_journey(player_id: any): Promise<any> {
+    return this.client.post("/analytics_syn/track_player_journey", { "player_id": player_id });
+  }
+
+  async update_journey_stage(player_id: any, new_stage: any, trigger: any): Promise<any> {
+    return this.client.post("/analytics_syn/update_journey_stage", { "player_id": player_id, "new_stage": new_stage, "trigger": trigger });
+  }
+
+}
+// Round 47 exports
+export const coalitionApi = new CoalitionNegotiatorApi(api);
+export const soft_bodyApi = new SoftBodyApi(api);
+export const analytics_synApi = new AnalyticsSynthesizerApi(api);
+
+// ===========================================================================
+// Round 48: Destructible Structure, Causality Graph, Thermal Dynamics
+// ===========================================================================
+
+export class DestructibleStructureApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async ai_assess_vulnerability(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/ai_assess_vulnerability", { "structure_id": structure_id });
+  }
+
+  async ai_generate_destruction_plan(structure_id: any, target_state: any): Promise<any> {
+    return this.client.post("/destructible/ai_generate_destruction_plan", { "structure_id": structure_id, "target_state": target_state });
+  }
+
+  async ai_optimize_fracture(structure_id: any, target_pattern: any): Promise<any> {
+    return this.client.post("/destructible/ai_optimize_fracture", { "structure_id": structure_id, "target_pattern": target_pattern });
+  }
+
+  async ai_predict_collapse(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/ai_predict_collapse", { "structure_id": structure_id });
+  }
+
+  async apply_damage(structure_id: any, impact_point: any, force: any, radius: any): Promise<any> {
+    return this.client.post("/destructible/apply_damage", { "structure_id": structure_id, "impact_point": impact_point, "force": force, "radius": radius });
+  }
+
+  async apply_explosive(structure_id: any, center: any, blast_force: any, radius: any): Promise<any> {
+    return this.client.post("/destructible/apply_explosive", { "structure_id": structure_id, "center": center, "blast_force": blast_force, "radius": radius });
+  }
+
+  async assess_damage(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/assess_damage", { "structure_id": structure_id });
+  }
+
+  async check_structural_integrity(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/check_structural_integrity", { "structure_id": structure_id });
+  }
+
+  async compute_debris_pile(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/compute_debris_pile", { "structure_id": structure_id });
+  }
+
+  async compute_load_distribution(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/compute_load_distribution", { "structure_id": structure_id });
+  }
+
+  async create_fracture(structure_id: any, edge_id: any, pattern: any, severity: any): Promise<any> {
+    return this.client.post("/destructible/create_fracture", { "structure_id": structure_id, "edge_id": edge_id, "pattern": pattern, "severity": severity });
+  }
+
+  async get_collapse_event(event_id: any): Promise<any> {
+    return this.client.post("/destructible/get_collapse_event", { "event_id": event_id });
+  }
+
+  async get_config(): Promise<any> {
+    return this.client.get("/destructible/get_config");
+  }
+
+  async get_debris(debris_id: any): Promise<any> {
+    return this.client.post("/destructible/get_debris", { "debris_id": debris_id });
+  }
+
+  async get_deformation_summary(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/get_deformation_summary", { "structure_id": structure_id });
+  }
+
+  async get_edge(structure_id: any, edge_id: any): Promise<any> {
+    return this.client.post("/destructible/get_edge", { "structure_id": structure_id, "edge_id": edge_id });
+  }
+
+  async get_fracture(fracture_id: any): Promise<any> {
+    return this.client.post("/destructible/get_fracture", { "fracture_id": fracture_id });
+  }
+
+  async get_material_type(type_id: any): Promise<any> {
+    return this.client.post("/destructible/get_material_type", { "type_id": type_id });
+  }
+
+  async get_node(structure_id: any, node_id: any): Promise<any> {
+    return this.client.post("/destructible/get_node", { "structure_id": structure_id, "node_id": node_id });
+  }
+
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/destructible/get_snapshot");
+  }
+
+  async get_stats(): Promise<any> {
+    return this.client.get("/destructible/get_stats");
+  }
+
+  async get_status(): Promise<any> {
+    return this.client.get("/destructible/get_status");
+  }
+
+  async get_stress_map(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/get_stress_map", { "structure_id": structure_id });
+  }
+
+  async get_structure(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/get_structure", { "structure_id": structure_id });
+  }
+
+  async get_visualization_data(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/get_visualization_data", { "structure_id": structure_id });
+  }
+
+  async list_collapse_events(structure_id: any, active_only: any, limit: any): Promise<any> {
+    return this.client.post("/destructible/list_collapse_events", { "structure_id": structure_id, "active_only": active_only, "limit": limit });
+  }
+
+  async list_debris(structure_id: any, status: any, limit: any): Promise<any> {
+    return this.client.post("/destructible/list_debris", { "structure_id": structure_id, "status": status, "limit": limit });
+  }
+
+  async list_edges(structure_id: any, include_broken: any, limit: any): Promise<any> {
+    return this.client.post("/destructible/list_edges", { "structure_id": structure_id, "include_broken": include_broken, "limit": limit });
+  }
+
+  async list_events(kind: any, limit: any): Promise<any> {
+    return this.client.post("/destructible/list_events", { "kind": kind, "limit": limit });
+  }
+
+  async list_fractures(structure_id: any, pattern: any, limit: any): Promise<any> {
+    return this.client.post("/destructible/list_fractures", { "structure_id": structure_id, "pattern": pattern, "limit": limit });
+  }
+
+  async list_material_types(base_material: any, limit: any): Promise<any> {
+    return this.client.post("/destructible/list_material_types", { "base_material": base_material, "limit": limit });
+  }
+
+  async list_nodes(structure_id: any, include_broken: any, limit: any): Promise<any> {
+    return this.client.post("/destructible/list_nodes", { "structure_id": structure_id, "include_broken": include_broken, "limit": limit });
+  }
+
+  async list_structures(status: any, material_type: any, limit: any): Promise<any> {
+    return this.client.post("/destructible/list_structures", { "status": status, "material_type": material_type, "limit": limit });
+  }
+
+  async propagate_fracture(structure_id: any, fracture_id: any): Promise<any> {
+    return this.client.post("/destructible/propagate_fracture", { "structure_id": structure_id, "fracture_id": fracture_id });
+  }
+
+  async register_debris(debris_id: any, structure_id: any, mass: any, position: any, velocity: any, size: any, material: any, metadata: any): Promise<any> {
+    return this.client.post("/destructible/register_debris", { "debris_id": debris_id, "structure_id": structure_id, "mass": mass, "position": position, "velocity": velocity, "size": size, "material": material, "metadata": metadata });
+  }
+
+  async register_material_type(type_id: any, name: any, base_material: any, yield_stress: any, density: any, fracture_toughness: any, elastic_modulus: any, brittleness: any, metadata: any): Promise<any> {
+    return this.client.post("/destructible/register_material_type", { "type_id": type_id, "name": name, "base_material": base_material, "yield_stress": yield_stress, "density": density, "fracture_toughness": fracture_toughness, "elastic_modulus": elastic_modulus, "brittleness": brittleness, "metadata": metadata });
+  }
+
+  async register_structure(structure_id: any, name: any, material_type: any, nodes: any, edges: any, position: any, metadata: any): Promise<any> {
+    return this.client.post("/destructible/register_structure", { "structure_id": structure_id, "name": name, "material_type": material_type, "nodes": nodes, "edges": edges, "position": position, "metadata": metadata });
+  }
+
+  async remove_debris(debris_id: any): Promise<any> {
+    return this.client.post("/destructible/remove_debris", { "debris_id": debris_id });
+  }
+
+  async remove_material_type(type_id: any): Promise<any> {
+    return this.client.post("/destructible/remove_material_type", { "type_id": type_id });
+  }
+
+  async remove_structure(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/remove_structure", { "structure_id": structure_id });
+  }
+
+  async repair_structure(structure_id: any, amount: any): Promise<any> {
+    return this.client.post("/destructible/repair_structure", { "structure_id": structure_id, "amount": amount });
+  }
+
+  async reset_structure(structure_id: any): Promise<any> {
+    return this.client.post("/destructible/reset_structure", { "structure_id": structure_id });
+  }
+
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/destructible/set_config", { "kwargs": kwargs });
+  }
+
+  async settle_debris(debris_id: any): Promise<any> {
+    return this.client.post("/destructible/settle_debris", { "debris_id": debris_id });
+  }
+
+  async simulate_collapse(structure_id: any, dt: any): Promise<any> {
+    return this.client.post("/destructible/simulate_collapse", { "structure_id": structure_id, "dt": dt });
+  }
+
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/destructible/tick", { "dt": dt });
+  }
+
+  async trigger_collapse(structure_id: any, triggered_by: any): Promise<any> {
+    return this.client.post("/destructible/trigger_collapse", { "structure_id": structure_id, "triggered_by": triggered_by });
+  }
+
+}
+
+export class CausalityGraphApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async ai_check_consistency(chain_id: any): Promise<any> {
+    return this.client.post("/causality/ai_check_consistency", { "chain_id": chain_id });
+  }
+
+  async ai_generate_butterfly(root_event_id: any): Promise<any> {
+    return this.client.post("/causality/ai_generate_butterfly", { "root_event_id": root_event_id });
+  }
+
+  async ai_predict_consequences(event_id: any, depth: any): Promise<any> {
+    return this.client.post("/causality/ai_predict_consequences", { "event_id": event_id, "depth": depth });
+  }
+
+  async ai_suggest_intervention(event_id: any): Promise<any> {
+    return this.client.post("/causality/ai_suggest_intervention", { "event_id": event_id });
+  }
+
+  async compute_centrality(event_id: any): Promise<any> {
+    return this.client.post("/causality/compute_centrality", { "event_id": event_id });
+  }
+
+  async detect_butterfly_effects(): Promise<any> {
+    return this.client.get("/causality/detect_butterfly_effects");
+  }
+
+  async extend_chain(chain_id: any, event_id: any): Promise<any> {
+    return this.client.post("/causality/extend_chain", { "chain_id": chain_id, "event_id": event_id });
+  }
+
+  async find_path(from_event_id: any, to_event_id: any): Promise<any> {
+    return this.client.post("/causality/find_path", { "from_event_id": from_event_id, "to_event_id": to_event_id });
+  }
+
+  async get_butterfly_effect(butterfly_id: any): Promise<any> {
+    return this.client.post("/causality/get_butterfly_effect", { "butterfly_id": butterfly_id });
+  }
+
+  async get_causal_neighborhood(event_id: any, radius: any): Promise<any> {
+    return this.client.post("/causality/get_causal_neighborhood", { "event_id": event_id, "radius": radius });
+  }
+
+  async get_chain(chain_id: any): Promise<any> {
+    return this.client.post("/causality/get_chain", { "chain_id": chain_id });
+  }
+
+  async get_chain_events(chain_id: any): Promise<any> {
+    return this.client.post("/causality/get_chain_events", { "chain_id": chain_id });
+  }
+
+  async get_chain_summary(chain_id: any): Promise<any> {
+    return this.client.post("/causality/get_chain_summary", { "chain_id": chain_id });
+  }
+
+  async get_config(): Promise<any> {
+    return this.client.get("/causality/get_config");
+  }
+
+  async get_consequence_prediction(prediction_id: any): Promise<any> {
+    return this.client.post("/causality/get_consequence_prediction", { "prediction_id": prediction_id });
+  }
+
+  async get_consistency_report(report_id: any): Promise<any> {
+    return this.client.post("/causality/get_consistency_report", { "report_id": report_id });
+  }
+
+  async get_event(event_id: any): Promise<any> {
+    return this.client.post("/causality/get_event", { "event_id": event_id });
+  }
+
+  async get_link(link_id: any): Promise<any> {
+    return this.client.post("/causality/get_link", { "link_id": link_id });
+  }
+
+  async get_root_causes(event_id: any): Promise<any> {
+    return this.client.post("/causality/get_root_causes", { "event_id": event_id });
+  }
+
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/causality/get_snapshot");
+  }
+
+  async get_stats(): Promise<any> {
+    return this.client.get("/causality/get_stats");
+  }
+
+  async get_status(): Promise<any> {
+    return this.client.get("/causality/get_status");
+  }
+
+  async get_terminal_effects(event_id: any): Promise<any> {
+    return this.client.post("/causality/get_terminal_effects", { "event_id": event_id });
+  }
+
+  async list_butterfly_effects(impact_level: any): Promise<any> {
+    return this.client.post("/causality/list_butterfly_effects", { "impact_level": impact_level });
+  }
+
+  async list_chains(status: any): Promise<any> {
+    return this.client.post("/causality/list_chains", { "status": status });
+  }
+
+  async list_consequence_predictions(event_id: any): Promise<any> {
+    return this.client.post("/causality/list_consequence_predictions", { "event_id": event_id });
+  }
+
+  async list_consistency_reports(chain_id: any): Promise<any> {
+    return this.client.post("/causality/list_consistency_reports", { "chain_id": chain_id });
+  }
+
+  async list_events(category: any, limit: any): Promise<any> {
+    return this.client.post("/causality/list_events", { "category": category, "limit": limit });
+  }
+
+  async list_events_log(kind: any, limit: any): Promise<any> {
+    return this.client.post("/causality/list_events_log", { "kind": kind, "limit": limit });
+  }
+
+  async list_links(strength: any): Promise<any> {
+    return this.client.post("/causality/list_links", { "strength": strength });
+  }
+
+  async register_butterfly_effect(butterfly_id: any, root_event_id: any, impact_level: any, description: any): Promise<any> {
+    return this.client.post("/causality/register_butterfly_effect", { "butterfly_id": butterfly_id, "root_event_id": root_event_id, "impact_level": impact_level, "description": description });
+  }
+
+  async register_chain(chain_id: any, title: any, description: any, event_ids: any): Promise<any> {
+    return this.client.post("/causality/register_chain", { "chain_id": chain_id, "title": title, "description": description, "event_ids": event_ids });
+  }
+
+  async register_event(event_id: any, category: any, description: any, participants: any, properties: any): Promise<any> {
+    return this.client.post("/causality/register_event", { "event_id": event_id, "category": category, "description": description, "participants": participants, "properties": properties });
+  }
+
+  async register_link(link_id: any, cause_event_id: any, effect_event_id: any, strength: any, confidence: any, description: any): Promise<any> {
+    return this.client.post("/causality/register_link", { "link_id": link_id, "cause_event_id": cause_event_id, "effect_event_id": effect_event_id, "strength": strength, "confidence": confidence, "description": description });
+  }
+
+  async remove_butterfly_effect(butterfly_id: any): Promise<any> {
+    return this.client.post("/causality/remove_butterfly_effect", { "butterfly_id": butterfly_id });
+  }
+
+  async remove_chain(chain_id: any): Promise<any> {
+    return this.client.post("/causality/remove_chain", { "chain_id": chain_id });
+  }
+
+  async remove_event(event_id: any): Promise<any> {
+    return this.client.post("/causality/remove_event", { "event_id": event_id });
+  }
+
+  async remove_link(link_id: any): Promise<any> {
+    return this.client.post("/causality/remove_link", { "link_id": link_id });
+  }
+
+  async resolve_chain(chain_id: any): Promise<any> {
+    return this.client.post("/causality/resolve_chain", { "chain_id": chain_id });
+  }
+
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/causality/set_config", { "kwargs": kwargs });
+  }
+
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/causality/tick", { "dt": dt });
+  }
+
+  async trace_causes(event_id: any, depth: any): Promise<any> {
+    return this.client.post("/causality/trace_causes", { "event_id": event_id, "depth": depth });
+  }
+
+  async trace_effects(event_id: any, depth: any): Promise<any> {
+    return this.client.post("/causality/trace_effects", { "event_id": event_id, "depth": depth });
+  }
+
+  async update_event(event_id: any, description: any, properties: any): Promise<any> {
+    return this.client.post("/causality/update_event", { "event_id": event_id, "description": description, "properties": properties });
+  }
+
+  async verify_link(link_id: any): Promise<any> {
+    return this.client.post("/causality/verify_link", { "link_id": link_id });
+  }
+
+}
+
+export class ThermalDynamicsApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async adjust_heat_source(source_id: any, power: any): Promise<any> {
+    return this.client.post("/thermal/adjust_heat_source", { "source_id": source_id, "power": power });
+  }
+
+  async ai_assess_thermal_risk(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/ai_assess_thermal_risk", { "zone_id": zone_id });
+  }
+
+  async ai_optimize_cooling(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/ai_optimize_cooling", { "zone_id": zone_id });
+  }
+
+  async ai_predict_fire_spread(fire_id: any, ticks: any): Promise<any> {
+    return this.client.post("/thermal/ai_predict_fire_spread", { "fire_id": fire_id, "ticks": ticks });
+  }
+
+  async apply_cooling(zone_id: any, amount: any): Promise<any> {
+    return this.client.post("/thermal/apply_cooling", { "zone_id": zone_id, "amount": amount });
+  }
+
+  async apply_heating(zone_id: any, amount: any): Promise<any> {
+    return this.client.post("/thermal/apply_heating", { "zone_id": zone_id, "amount": amount });
+  }
+
+  async check_fire_spread(fire_id: any): Promise<any> {
+    return this.client.post("/thermal/check_fire_spread", { "fire_id": fire_id });
+  }
+
+  async check_phase_transition(zone_id: any, material_id: any): Promise<any> {
+    return this.client.post("/thermal/check_phase_transition", { "zone_id": zone_id, "material_id": material_id });
+  }
+
+  async compute_heat_flow(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/compute_heat_flow", { "zone_id": zone_id });
+  }
+
+  async extinguish_fire(fire_id: any): Promise<any> {
+    return this.client.post("/thermal/extinguish_fire", { "fire_id": fire_id });
+  }
+
+  async get_config(): Promise<any> {
+    return this.client.get("/thermal/get_config");
+  }
+
+  async get_fire(fire_id: any): Promise<any> {
+    return this.client.post("/thermal/get_fire", { "fire_id": fire_id });
+  }
+
+  async get_fire_front(fire_id: any): Promise<any> {
+    return this.client.post("/thermal/get_fire_front", { "fire_id": fire_id });
+  }
+
+  async get_fire_intensity(fire_id: any): Promise<any> {
+    return this.client.post("/thermal/get_fire_intensity", { "fire_id": fire_id });
+  }
+
+  async get_heat_map(zone_id: any, resolution: any): Promise<any> {
+    return this.client.post("/thermal/get_heat_map", { "zone_id": zone_id, "resolution": resolution });
+  }
+
+  async get_heat_source(source_id: any): Promise<any> {
+    return this.client.post("/thermal/get_heat_source", { "source_id": source_id });
+  }
+
+  async get_material(material_id: any): Promise<any> {
+    return this.client.post("/thermal/get_material", { "material_id": material_id });
+  }
+
+  async get_phase_transition(transition_id: any): Promise<any> {
+    return this.client.post("/thermal/get_phase_transition", { "transition_id": transition_id });
+  }
+
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/thermal/get_snapshot");
+  }
+
+  async get_stats(): Promise<any> {
+    return this.client.get("/thermal/get_stats");
+  }
+
+  async get_status(): Promise<any> {
+    return this.client.get("/thermal/get_status");
+  }
+
+  async get_temperature_grid(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/get_temperature_grid", { "zone_id": zone_id });
+  }
+
+  async get_temperature_readings(zone_id: any, limit: any): Promise<any> {
+    return this.client.post("/thermal/get_temperature_readings", { "zone_id": zone_id, "limit": limit });
+  }
+
+  async get_visualization_data(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/get_visualization_data", { "zone_id": zone_id });
+  }
+
+  async get_zone(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/get_zone", { "zone_id": zone_id });
+  }
+
+  async get_zone_status(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/get_zone_status", { "zone_id": zone_id });
+  }
+
+  async get_zone_temperature(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/get_zone_temperature", { "zone_id": zone_id });
+  }
+
+  async ignite_fire(fire_id: any, zone_id: any, position: any, intensity: any, direction: any, max_distance: any, fuel: any, metadata: any): Promise<any> {
+    return this.client.post("/thermal/ignite_fire", { "fire_id": fire_id, "zone_id": zone_id, "position": position, "intensity": intensity, "direction": direction, "max_distance": max_distance, "fuel": fuel, "metadata": metadata });
+  }
+
+  async list_events(limit: any, event_type: any): Promise<any> {
+    return this.client.post("/thermal/list_events", { "limit": limit, "event_type": event_type });
+  }
+
+  async list_fires(status: any, limit: any): Promise<any> {
+    return this.client.post("/thermal/list_fires", { "status": status, "limit": limit });
+  }
+
+  async list_heat_sources(zone_id: any, limit: any): Promise<any> {
+    return this.client.post("/thermal/list_heat_sources", { "zone_id": zone_id, "limit": limit });
+  }
+
+  async list_materials(limit: any): Promise<any> {
+    return this.client.post("/thermal/list_materials", { "limit": limit });
+  }
+
+  async list_phase_transitions(zone_id: any, limit: any): Promise<any> {
+    return this.client.post("/thermal/list_phase_transitions", { "zone_id": zone_id, "limit": limit });
+  }
+
+  async list_zones(status: any, limit: any): Promise<any> {
+    return this.client.post("/thermal/list_zones", { "status": status, "limit": limit });
+  }
+
+  async measure_temperature(zone_id: any, position: any): Promise<any> {
+    return this.client.post("/thermal/measure_temperature", { "zone_id": zone_id, "position": position });
+  }
+
+  async register_heat_source(source_id: any, name: any, zone_id: any, power: any, mode: any, position: any, radius: any, active: any, metadata: any): Promise<any> {
+    return this.client.post("/thermal/register_heat_source", { "source_id": source_id, "name": name, "zone_id": zone_id, "power": power, "mode": mode, "position": position, "radius": radius, "active": active, "metadata": metadata });
+  }
+
+  async register_material(material_id: any, name: any, conductivity: any, specific_heat: any, density: any, melting_point: any, boiling_point: any, ignition_point: any, flammability: any, phase: any, metadata: any): Promise<any> {
+    return this.client.post("/thermal/register_material", { "material_id": material_id, "name": name, "conductivity": conductivity, "specific_heat": specific_heat, "density": density, "melting_point": melting_point, "boiling_point": boiling_point, "ignition_point": ignition_point, "flammability": flammability, "phase": phase, "metadata": metadata });
+  }
+
+  async register_zone(zone_id: any, name: any, bounds: any, initial_temp: any, ambient_temp: any, material_ids: any, heat_capacity: any, grid_size: any, metadata: any): Promise<any> {
+    return this.client.post("/thermal/register_zone", { "zone_id": zone_id, "name": name, "bounds": bounds, "initial_temp": initial_temp, "ambient_temp": ambient_temp, "material_ids": material_ids, "heat_capacity": heat_capacity, "grid_size": grid_size, "metadata": metadata });
+  }
+
+  async remove_heat_source(source_id: any): Promise<any> {
+    return this.client.post("/thermal/remove_heat_source", { "source_id": source_id });
+  }
+
+  async remove_material(material_id: any): Promise<any> {
+    return this.client.post("/thermal/remove_material", { "material_id": material_id });
+  }
+
+  async remove_zone(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/remove_zone", { "zone_id": zone_id });
+  }
+
+  async reset_zone(zone_id: any): Promise<any> {
+    return this.client.post("/thermal/reset_zone", { "zone_id": zone_id });
+  }
+
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/thermal/set_config", { "kwargs": kwargs });
+  }
+
+  async set_zone_temperature(zone_id: any, temperature: any): Promise<any> {
+    return this.client.post("/thermal/set_zone_temperature", { "zone_id": zone_id, "temperature": temperature });
+  }
+
+  async spread_fire(fire_id: any, direction: any, distance: any): Promise<any> {
+    return this.client.post("/thermal/spread_fire", { "fire_id": fire_id, "direction": direction, "distance": distance });
+  }
+
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/thermal/tick", { "dt": dt });
+  }
+
+  async toggle_heat_source(source_id: any, active: any): Promise<any> {
+    return this.client.post("/thermal/toggle_heat_source", { "source_id": source_id, "active": active });
+  }
+
+}
+// Round 48 exports
+export const destructibleApi = new DestructibleStructureApi(api);
+export const causalityApi = new CausalityGraphApi(api);
+export const thermalApi = new ThermalDynamicsApi(api);
