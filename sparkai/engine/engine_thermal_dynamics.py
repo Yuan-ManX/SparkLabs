@@ -1619,3 +1619,766 @@ class _ThermalDynamicsSystem:
             mid = str(material_id).strip()
             material = self._materials.pop(mid, None)
             if material is None:
+                return False, "not_found", None
+            self._refresh_stats()
+            self._emit(
+                ThermalEventKind.MATERIAL_REMOVED.value,
+                description=f"Material '{material.name}' removed.",
+                data={"material_id": mid},
+            )
+            return True, "removed", material
+
+    # ------------------------------------------------------------------
+    # Temperature Measurement and Grid Inspection
+    # ------------------------------------------------------------------
+
+    def measure_temperature(
+        self,
+        zone_id: str,
+        position: Tuple[float, float],
+    ) -> Tuple[bool, str, Optional[TemperatureReading]]:
+        """Sample the temperature at a world-space position inside a zone."""
+        with self._lock:
+            zone = self._zones.get(str(zone_id).strip())
+            if zone is None:
+                return False, "not_found", None
+            try:
+                pos = (
+                    _safe_float(position[0], 0.0),
+                    _safe_float(position[1], 0.0),
+                )
+            except (TypeError, IndexError):
+                pos = (0.0, 0.0)
+            col, row = _world_to_cell(pos, zone.bounds, zone.grid_size)
+            if 0 <= row < zone.grid_size and 0 <= col < zone.grid_size:
+                temp = zone.cells[row][col]
+            else:
+                temp = zone.ambient_temp
+            self._reading_counter += 1
+            reading = TemperatureReading(
+                reading_id=f"tr_{self._reading_counter:08d}",
+                zone_id=zone.zone_id,
+                position=pos,
+                temperature=temp,
+            )
+            self._temperature_readings[reading.reading_id] = reading
+            _evict_fifo_dict(self._temperature_readings, _MAX_TEMPERATURE_READINGS)
+            self._refresh_stats()
+            return True, "measured", reading
+
+    def get_temperature_grid(
+        self,
+        zone_id: str,
+    ) -> Tuple[bool, str, List[List[float]]]:
+        """Return the full temperature grid of a zone."""
+        zone = self._zones.get(str(zone_id).strip())
+        if zone is None:
+            return False, "not_found", []
+        return True, "ok", [list(row) for row in zone.cells]
+
+    def compute_heat_flow(
+        self,
+        zone_id: str,
+    ) -> Tuple[bool, str, Dict[str, Any]]:
+        """Estimate aggregate heat flow metrics for a zone grid."""
+        zone = self._zones.get(str(zone_id).strip())
+        if zone is None:
+            return False, "not_found", {}
+        n = max(1, zone.grid_size)
+        if n < 2:
+            return True, "ok", {
+                "zone_id": zone.zone_id,
+                "average_temperature": _grid_average(zone.cells),
+                "max_temperature": _grid_max(zone.cells),
+                "min_temperature": _grid_min(zone.cells),
+                "total_flow": 0.0,
+                "flow_cells": 0,
+            }
+        total_flow = 0.0
+        flow_cells = 0
+        max_gradient = 0.0
+        for r in range(n):
+            for c in range(n):
+                current = zone.cells[r][c]
+                neighbors = []
+                if r > 0:
+                    neighbors.append(zone.cells[r - 1][c])
+                if r < n - 1:
+                    neighbors.append(zone.cells[r + 1][c])
+                if c > 0:
+                    neighbors.append(zone.cells[r][c - 1])
+                if c < n - 1:
+                    neighbors.append(zone.cells[r][c + 1])
+                if not neighbors:
+                    continue
+                neighbor_avg = sum(neighbors) / len(neighbors)
+                gradient = abs(current - neighbor_avg)
+                total_flow += gradient
+                if gradient > _TEMP_EPSILON:
+                    flow_cells += 1
+                if gradient > max_gradient:
+                    max_gradient = gradient
+        info = {
+            "zone_id": zone.zone_id,
+            "average_temperature": _grid_average(zone.cells),
+            "max_temperature": _grid_max(zone.cells),
+            "min_temperature": _grid_min(zone.cells),
+            "total_flow": total_flow,
+            "flow_cells": flow_cells,
+            "max_gradient": max_gradient,
+            "flow_intensity": _clamp(total_flow / max(_EPSILON, float(n * n)), 0.0, 1.0),
+        }
+        return True, "ok", info
+
+    def get_temperature_readings(
+        self,
+        zone_id: Optional[str] = None,
+        limit: int = 100,
+    ) -> List[TemperatureReading]:
+        """List temperature readings, optionally filtered by zone."""
+        cap = max(1, _safe_int(limit, 100))
+        target_zone = str(zone_id).strip() if zone_id is not None else None
+        result: List[TemperatureReading] = []
+        for reading in self._temperature_readings.values():
+            if target_zone is not None and reading.zone_id != target_zone:
+                continue
+            result.append(reading)
+            if len(result) >= cap:
+                break
+        return result
+
+    # ------------------------------------------------------------------
+    # Phase Transition Management
+    # ------------------------------------------------------------------
+
+    def check_phase_transition(
+        self,
+        zone_id: str,
+        material_id: str,
+    ) -> Tuple[bool, str, Optional[PhaseTransition]]:
+        """Check whether a material in a zone should undergo a phase change."""
+        with self._lock:
+            zone = self._zones.get(str(zone_id).strip())
+            if zone is None:
+                return False, "zone_not_found", None
+            material = self._materials.get(str(material_id).strip())
+            if material is None:
+                return False, "material_not_found", None
+            if not self._config.enable_phase_transitions:
+                return False, "phase_transitions_disabled", None
+            avg_temp = _grid_average(zone.cells)
+            current_phase = _phase_for_temperature(avg_temp, material)
+            if current_phase == material.phase:
+                return False, "no_transition", None
+            from_phase = material.phase
+            material.phase = current_phase
+            ttype = _transition_type(from_phase, current_phase)
+            threshold = (
+                material.melting_point if ttype == "melting"
+                else material.boiling_point if ttype == "boiling"
+                else material.melting_point if ttype == "freezing"
+                else material.boiling_point if ttype == "condensing"
+                else avg_temp
+            )
+            self._transition_counter += 1
+            transition = PhaseTransition(
+                transition_id=f"pt_{self._transition_counter:08d}",
+                zone_id=zone.zone_id,
+                material_id=material.material_id,
+                from_phase=from_phase,
+                to_phase=current_phase,
+                temperature=avg_temp,
+                threshold=threshold,
+                transition_type=ttype,
+            )
+            self._phase_transitions[transition.transition_id] = transition
+            _evict_fifo_dict(self._phase_transitions, _MAX_PHASE_TRANSITIONS)
+            self._refresh_stats()
+            self._emit(
+                ThermalEventKind.PHASE_TRANSITION.value,
+                zone_id=zone.zone_id,
+                description=f"Material '{material.name}' {from_phase} -> {current_phase}.",
+                data={
+                    "material_id": material.material_id,
+                    "from_phase": from_phase,
+                    "to_phase": current_phase,
+                    "transition_type": ttype,
+                    "temperature": avg_temp,
+                },
+            )
+            return True, ttype, transition
+
+    def get_phase_transition(
+        self,
+        transition_id: str,
+    ) -> Optional[PhaseTransition]:
+        """Return a phase transition record by id."""
+        return self._phase_transitions.get(str(transition_id).strip())
+
+    def list_phase_transitions(
+        self,
+        zone_id: Optional[str] = None,
+        limit: int = 100,
+    ) -> List[PhaseTransition]:
+        """List phase transitions, optionally filtered by zone."""
+        cap = max(1, _safe_int(limit, 100))
+        target_zone = str(zone_id).strip() if zone_id is not None else None
+        result: List[PhaseTransition] = []
+        for transition in self._phase_transitions.values():
+            if target_zone is not None and transition.zone_id != target_zone:
+                continue
+            result.append(transition)
+            if len(result) >= cap:
+                break
+        return result
+
+    # ------------------------------------------------------------------
+    # Heating and Cooling Operations
+    # ------------------------------------------------------------------
+
+    def apply_cooling(
+        self,
+        zone_id: str,
+        amount: float,
+    ) -> Tuple[bool, str, Optional[ThermalZone]]:
+        """Reduce the temperature of every cell in a zone by a fixed amount."""
+        with self._lock:
+            zone = self._zones.get(str(zone_id).strip())
+            if zone is None:
+                return False, "not_found", None
+            delta = _safe_float(amount, 0.0)
+            for r in range(zone.grid_size):
+                for c in range(zone.grid_size):
+                    zone.cells[r][c] = max(
+                        _ABSOLUTE_ZERO_C,
+                        zone.cells[r][c] - delta,
+                    )
+            self._update_zone_status(zone)
+            self._refresh_stats()
+            self._emit(
+                ThermalEventKind.COOLING_APPLIED.value,
+                zone_id=zone.zone_id,
+                description=f"Zone cooled by {delta:.2f} C.",
+                data={"amount": delta},
+            )
+            return True, "cooled", zone
+
+    def apply_heating(
+        self,
+        zone_id: str,
+        amount: float,
+    ) -> Tuple[bool, str, Optional[ThermalZone]]:
+        """Increase the temperature of every cell in a zone by a fixed amount."""
+        with self._lock:
+            zone = self._zones.get(str(zone_id).strip())
+            if zone is None:
+                return False, "not_found", None
+            delta = _safe_float(amount, 0.0)
+            for r in range(zone.grid_size):
+                for c in range(zone.grid_size):
+                    zone.cells[r][c] = zone.cells[r][c] + delta
+            self._update_zone_status(zone)
+            self._refresh_stats()
+            self._emit(
+                ThermalEventKind.HEATING_APPLIED.value,
+                zone_id=zone.zone_id,
+                description=f"Zone heated by {delta:.2f} C.",
+                data={"amount": delta},
+            )
+            return True, "heated", zone
+
+    # ------------------------------------------------------------------
+    # AI-Driven Analysis
+    # ------------------------------------------------------------------
+
+    def ai_predict_fire_spread(
+        self,
+        fire_id: str,
+        ticks: int = 10,
+    ) -> Tuple[bool, str, Dict[str, Any]]:
+        """Predict the future spread path and impact of a fire front."""
+        fire = self._fires.get(str(fire_id).strip())
+        if fire is None:
+            return False, "not_found", {}
+        if fire.status == FireStatus.EXTINGUISHED.value:
+            return True, "extinguished", {
+                "fire_id": fire.fire_id,
+                "predicted_path": [],
+                "estimated_final_status": "extinguished",
+                "risk_level": "negligible",
+                "affected_zones": [],
+            }
+        horizon = max(1, _safe_int(ticks, 10))
+        decay = max(_EPSILON, self._config.fire_decay_rate)
+        predicted_path: List[Dict[str, Any]] = []
+        x, y = fire.position
+        rad = math.radians(fire.direction)
+        step_distance = fire.spread_rate * self._config.fire_spread_rate * 10.0
+        remaining_fuel = fire.fuel_remaining
+        current_intensity = fire.intensity
+        for i in range(1, horizon + 1):
+            x += math.cos(rad) * step_distance
+            y += math.sin(rad) * step_distance
+            remaining_fuel = max(0.0, remaining_fuel - decay * 10.0)
+            if remaining_fuel <= 0.0:
+                break
+            predicted_path.append({
+                "tick": i,
+                "position": [x, y],
+                "fuel_remaining": remaining_fuel,
+                "intensity": current_intensity,
+            })
+        final_status = "extinguished" if remaining_fuel <= 0.0 else "spreading"
+        if remaining_fuel < 0.3:
+            final_status = "dying"
+        risk_score = _clamp(
+            (remaining_fuel * 0.5)
+            + (_intensity_to_spread(current_intensity) * 0.3)
+            + (len(predicted_path) / max(1, horizon) * 0.2),
+            0.0, 1.0,
+        )
+        affected_zones: List[str] = []
+        for zone in self._zones.values():
+            min_x, min_y, max_x, max_y = zone.bounds
+            for point in predicted_path:
+                px, py = point["position"]
+                if min_x <= px <= max_x and min_y <= py <= max_y:
+                    if zone.zone_id not in affected_zones:
+                        affected_zones.append(zone.zone_id)
+                    break
+        result = {
+            "fire_id": fire.fire_id,
+            "predicted_path": predicted_path,
+            "estimated_final_status": final_status,
+            "risk_level": _risk_label(risk_score),
+            "risk_score": risk_score,
+            "affected_zones": affected_zones,
+            "horizon_ticks": horizon,
+        }
+        self._emit(
+            ThermalEventKind.AI_ASSESSMENT.value,
+            zone_id=fire.zone_id,
+            description=f"AI fire spread prediction for '{fire.fire_id}'.",
+            data={"fire_id": fire.fire_id, "risk_level": result["risk_level"]},
+        )
+        return True, "predicted", result
+
+    def ai_optimize_cooling(
+        self,
+        zone_id: str,
+    ) -> Tuple[bool, str, Dict[str, Any]]:
+        """Suggest a cooling strategy to bring a zone back to stable status."""
+        zone = self._zones.get(str(zone_id).strip())
+        if zone is None:
+            return False, "not_found", {}
+        avg_temp = _grid_average(zone.cells)
+        ambient = zone.ambient_temp
+        excess = avg_temp - ambient
+        if excess <= _TEMP_EPSILON:
+            return True, "stable", {
+                "zone_id": zone.zone_id,
+                "current_avg": avg_temp,
+                "ambient": ambient,
+                "excess": 0.0,
+                "recommended_cooling": 0.0,
+                "strategy": "none",
+                "estimated_ticks_to_stable": 0,
+            }
+        cooling_rate = max(_EPSILON, self._config.cooling_loss_rate * 10.0)
+        recommended = excess
+        ticks_to_stable = max(1, int(math.ceil(excess / cooling_rate)))
+        strategy = "passive"
+        if excess > 100.0:
+            strategy = "aggressive_active"
+        elif excess > 20.0:
+            strategy = "active"
+        # Identify the hottest cells for targeted cooling.
+        hotspots: List[Dict[str, Any]] = []
+        n = max(1, zone.grid_size)
+        for r in range(n):
+            for c in range(n):
+                temp = zone.cells[r][c]
+                if temp > avg_temp + excess * 0.3:
+                    wx, wy = _cell_to_world(c, r, zone.bounds, n)
+                    hotspots.append({
+                        "position": [wx, wy],
+                        "temperature": temp,
+                        "excess": temp - ambient,
+                    })
+        hotspots.sort(key=lambda h: h["temperature"], reverse=True)
+        result = {
+            "zone_id": zone.zone_id,
+            "current_avg": avg_temp,
+            "ambient": ambient,
+            "excess": excess,
+            "recommended_cooling": recommended,
+            "strategy": strategy,
+            "estimated_ticks_to_stable": ticks_to_stable,
+            "hotspots": hotspots[:5],
+            "hotspot_count": len(hotspots),
+        }
+        self._emit(
+            ThermalEventKind.AI_ASSESSMENT.value,
+            zone_id=zone.zone_id,
+            description=f"AI cooling optimization for zone '{zone.name}'.",
+            data={"strategy": strategy, "excess": excess},
+        )
+        return True, "optimized", result
+
+    def ai_assess_thermal_risk(
+        self,
+        zone_id: str,
+    ) -> Tuple[bool, str, Dict[str, Any]]:
+        """Assess the overall thermal risk of a zone."""
+        zone = self._zones.get(str(zone_id).strip())
+        if zone is None:
+            return False, "not_found", {}
+        avg_temp = _grid_average(zone.cells)
+        max_temp = _grid_max(zone.cells)
+        min_temp = _grid_min(zone.cells)
+        active_fires = sum(
+            1 for f in self._fires.values()
+            if f.zone_id == zone.zone_id
+            and f.status != FireStatus.EXTINGUISHED.value
+        )
+        active_sources = sum(
+            1 for s in self._heat_sources.values()
+            if s.zone_id == zone.zone_id and s.active
+        )
+        combustible_materials = 0
+        for mid in zone.material_ids:
+            material = self._materials.get(mid)
+            if material is not None and material.flammability > 0.0:
+                if max_temp >= material.ignition_point * 0.7:
+                    combustible_materials += 1
+        temp_risk = _clamp(
+            max_temp / max(_EPSILON, self._config.critical_temp_threshold),
+            0.0, 1.0,
+        )
+        fire_risk = _clamp(active_fires * 0.3, 0.0, 1.0)
+        fuel_risk = _clamp(combustible_materials * 0.2, 0.0, 1.0)
+        source_risk = _clamp(active_sources * 0.1, 0.0, 1.0)
+        overall = _clamp(
+            temp_risk * 0.4 + fire_risk * 0.3 + fuel_risk * 0.2 + source_risk * 0.1,
+            0.0, 1.0,
+        )
+        result = {
+            "zone_id": zone.zone_id,
+            "zone_status": zone.status,
+            "avg_temperature": avg_temp,
+            "max_temperature": max_temp,
+            "min_temperature": min_temp,
+            "active_fires": active_fires,
+            "active_heat_sources": active_sources,
+            "combustible_materials_at_risk": combustible_materials,
+            "temp_risk": temp_risk,
+            "fire_risk": fire_risk,
+            "fuel_risk": fuel_risk,
+            "source_risk": source_risk,
+            "overall_risk": overall,
+            "risk_level": _risk_label(overall),
+        }
+        self._emit(
+            ThermalEventKind.AI_ASSESSMENT.value,
+            zone_id=zone.zone_id,
+            description=f"AI thermal risk assessment for zone '{zone.name}'.",
+            data={"risk_level": result["risk_level"], "overall_risk": overall},
+        )
+        return True, "assessed", result
+
+    # ------------------------------------------------------------------
+    # Zone Reset
+    # ------------------------------------------------------------------
+
+    def reset_zone(
+        self,
+        zone_id: str,
+    ) -> Tuple[bool, str, Optional[ThermalZone]]:
+        """Reset a zone grid back to its initial temperature."""
+        with self._lock:
+            zone = self._zones.get(str(zone_id).strip())
+            if zone is None:
+                return False, "not_found", None
+            for r in range(zone.grid_size):
+                for c in range(zone.grid_size):
+                    zone.cells[r][c] = zone.initial_temp
+            # Extinguish fires in this zone.
+            for fire in self._fires.values():
+                if fire.zone_id == zone.zone_id:
+                    fire.status = FireStatus.EXTINGUISHED.value
+            self._update_zone_status(zone)
+            self._refresh_stats()
+            self._emit(
+                ThermalEventKind.ZONE_RESET.value,
+                zone_id=zone.zone_id,
+                description=f"Zone '{zone.name}' reset to {zone.initial_temp:.2f} C.",
+                data={"initial_temp": zone.initial_temp},
+            )
+            return True, "reset", zone
+
+    # ------------------------------------------------------------------
+    # Visualization
+    # ------------------------------------------------------------------
+
+    def get_visualization_data(
+        self,
+        zone_id: str,
+    ) -> Tuple[bool, str, Dict[str, Any]]:
+        """Return a compact visualization payload for a zone."""
+        zone = self._zones.get(str(zone_id).strip())
+        if zone is None:
+            return False, "not_found", {}
+        n = max(1, zone.grid_size)
+        # Downsample to at most 32x32 for visualization.
+        target = min(n, 32)
+        step = max(1, n // target)
+        downsampled: List[List[float]] = []
+        for r in range(0, n, step):
+            row: List[float] = []
+            for c in range(0, n, step):
+                row.append(round(zone.cells[r][c], 2))
+            if row:
+                downsampled.append(row)
+        heat_sources_in_zone = [
+            s.to_dict() for s in self._heat_sources.values()
+            if s.zone_id == zone.zone_id
+        ]
+        fires_in_zone = [
+            f.to_dict() for f in self._fires.values()
+            if f.zone_id == zone.zone_id
+        ]
+        result = {
+            "zone_id": zone.zone_id,
+            "name": zone.name,
+            "bounds": list(zone.bounds),
+            "grid_size": len(downsampled),
+            "ambient_temp": zone.ambient_temp,
+            "status": zone.status,
+            "grid": downsampled,
+            "avg_temperature": round(_grid_average(zone.cells), 2),
+            "max_temperature": round(_grid_max(zone.cells), 2),
+            "min_temperature": round(_grid_min(zone.cells), 2),
+            "heat_sources": heat_sources_in_zone,
+            "fires": fires_in_zone,
+        }
+        return True, "ok", result
+
+    def get_heat_map(
+        self,
+        zone_id: str,
+        resolution: int = 16,
+    ) -> Tuple[bool, str, List[List[float]]]:
+        """Return a downsampled heat map grid for rendering."""
+        zone = self._zones.get(str(zone_id).strip())
+        if zone is None:
+            return False, "not_found", []
+        n = max(1, zone.grid_size)
+        target = max(1, min(64, _safe_int(resolution, 16)))
+        if n <= target:
+            return True, "ok", [list(row) for row in zone.cells]
+        step = max(1, n // target)
+        downsampled: List[List[float]] = []
+        for r in range(0, n, step):
+            row = []
+            for c in range(0, n, step):
+                row.append(round(zone.cells[r][c], 2))
+            if row:
+                downsampled.append(row)
+        return True, "ok", downsampled
+
+    # ------------------------------------------------------------------
+    # Simulation Tick
+    # ------------------------------------------------------------------
+
+    def tick(self, dt: float = 1.0) -> Tuple[bool, str, Dict[str, Any]]:
+        """Advance the thermal simulation by one time step."""
+        with self._lock:
+            step = max(0.001, _safe_float(dt, 1.0))
+            self._tick_count += 1
+            self._global_time += step
+            # 1. Apply heat sources to their zones.
+            for source in self._heat_sources.values():
+                zone = self._zones.get(source.zone_id)
+                if zone is not None:
+                    self._apply_heat_source_to_grid(source, zone, step)
+            # 2. Diffuse (conduction), convect, and radiate each zone.
+            for zone in self._zones.values():
+                self._diffuse_grid(zone, step)
+                self._apply_convection(zone, step)
+                self._apply_radiation(zone, step)
+                self._update_zone_status(zone)
+            # 3. Advance fire fronts.
+            for fire in self._fires.values():
+                self._advance_fire(fire, step)
+            # 4. Check for phase transitions in zones with materials.
+            if self._config.enable_phase_transitions:
+                for zone in list(self._zones.values()):
+                    for mid in zone.material_ids:
+                        material = self._materials.get(mid)
+                        if material is None:
+                            continue
+                        avg_temp = _grid_average(zone.cells)
+                        new_phase = _phase_for_temperature(avg_temp, material)
+                        if new_phase != material.phase:
+                            from_phase = material.phase
+                            material.phase = new_phase
+                            ttype = _transition_type(from_phase, new_phase)
+                            self._transition_counter += 1
+                            transition = PhaseTransition(
+                                transition_id=f"pt_{self._transition_counter:08d}",
+                                zone_id=zone.zone_id,
+                                material_id=mid,
+                                from_phase=from_phase,
+                                to_phase=new_phase,
+                                temperature=avg_temp,
+                                threshold=(
+                                    material.melting_point if ttype == "melting"
+                                    else material.boiling_point if ttype == "boiling"
+                                    else avg_temp
+                                ),
+                                transition_type=ttype,
+                            )
+                            self._phase_transitions[transition.transition_id] = transition
+                            _evict_fifo_dict(self._phase_transitions, _MAX_PHASE_TRANSITIONS)
+                            self._emit(
+                                ThermalEventKind.PHASE_TRANSITION.value,
+                                zone_id=zone.zone_id,
+                                description=f"Material '{material.name}' {from_phase} -> {new_phase}.",
+                                data={
+                                    "material_id": mid,
+                                    "from_phase": from_phase,
+                                    "to_phase": new_phase,
+                                    "transition_type": ttype,
+                                },
+                            )
+            self._refresh_stats()
+            self._emit(
+                ThermalEventKind.TICK.value,
+                description=f"Thermal tick {self._tick_count} (dt={step:.3f}).",
+                data={"tick": self._tick_count, "dt": step, "global_time": self._global_time},
+            )
+            return True, "ticked", {
+                "tick": self._tick_count,
+                "dt": step,
+                "global_time": self._global_time,
+                "zones": len(self._zones),
+                "active_fires": self._stats.active_fires,
+                "active_heat_sources": self._stats.active_heat_sources,
+            }
+
+    # ------------------------------------------------------------------
+    # Events
+    # ------------------------------------------------------------------
+
+    def list_events(
+        self,
+        limit: int = 100,
+        event_type: Optional[str] = None,
+    ) -> List[ThermalEvent]:
+        """List audit events, optionally filtered by event type."""
+        cap = max(1, _safe_int(limit, 100))
+        target = None
+        if event_type is not None:
+            coerced = _coerce_enum(ThermalEventKind, event_type)
+            target = coerced.value if coerced else str(event_type).strip().lower()
+        result: List[ThermalEvent] = []
+        for event in reversed(self._events):
+            if target is not None and event.event_type != target:
+                continue
+            result.append(event)
+            if len(result) >= cap:
+                break
+        return result
+
+    # ------------------------------------------------------------------
+    # Configuration
+    # ------------------------------------------------------------------
+
+    def get_config(self) -> ThermalConfig:
+        """Return the current runtime configuration."""
+        return self._config
+
+    def set_config(self, **kwargs) -> Tuple[bool, str, ThermalConfig]:
+        """Update one or more configuration fields."""
+        with self._lock:
+            changed: List[str] = []
+            for key, value in kwargs.items():
+                if not hasattr(self._config, key):
+                    continue
+                if key == "metadata":
+                    if isinstance(value, dict):
+                        self._config.metadata = dict(value)
+                        changed.append(key)
+                    continue
+                current = getattr(self._config, key)
+                if isinstance(current, bool):
+                    setattr(self._config, key, bool(value))
+                elif isinstance(current, int):
+                    setattr(self._config, key, _safe_int(value, current))
+                elif isinstance(current, float):
+                    setattr(self._config, key, _safe_float(value, current))
+                else:
+                    setattr(self._config, key, value)
+                changed.append(key)
+            self._emit(
+                ThermalEventKind.CONFIG_UPDATED.value,
+                description=f"Config updated: {', '.join(changed) if changed else 'no changes'}.",
+                data={"changed_fields": changed},
+            )
+            return True, "updated", self._config
+
+    # ------------------------------------------------------------------
+    # Observability
+    # ------------------------------------------------------------------
+
+    def get_status(self) -> Dict[str, Any]:
+        """Return a lightweight status summary."""
+        return {
+            "initialized": self._initialized,
+            "seeded": self._seeded,
+            "tick_count": self._tick_count,
+            "global_time": self._global_time,
+            "total_zones": len(self._zones),
+            "total_heat_sources": len(self._heat_sources),
+            "total_fires": len(self._fires),
+            "total_materials": len(self._materials),
+            "active_fires": self._stats.active_fires,
+            "active_heat_sources": self._stats.active_heat_sources,
+            "burning_zones": self._stats.burning_zones,
+            "frozen_zones": self._stats.frozen_zones,
+            "critical_zones": self._stats.critical_zones,
+        }
+
+    def get_stats(self) -> ThermalStats:
+        """Return the cached statistics roll-up."""
+        self._refresh_stats()
+        return self._stats
+
+    def get_snapshot(self) -> ThermalSnapshot:
+        """Return a point-in-time snapshot of the entire system state."""
+        with self._lock:
+            self._refresh_stats()
+            return ThermalSnapshot(
+                timestamp=_now(),
+                zones=[z.to_dict() for z in self._zones.values()],
+                heat_sources=[s.to_dict() for s in self._heat_sources.values()],
+                fires=[f.to_dict() for f in self._fires.values()],
+                materials=[m.to_dict() for m in self._materials.values()],
+                phase_transitions=[
+                    pt.to_dict() for pt in self._phase_transitions.values()
+                ],
+                events=[e.to_dict() for e in self._events[-50:]],
+                stats=self._stats.to_dict(),
+            )
+
+
+# ---------------------------------------------------------------------------
+# Module-Level Factory
+# ---------------------------------------------------------------------------
+
+def get_thermal_dynamics_system() -> _ThermalDynamicsSystem:
+    """Return the shared thermal dynamics system singleton."""
+    inst = _ThermalDynamicsSystem.get_instance()
+    if not inst._initialized:
+        inst.initialize()
+    return inst
