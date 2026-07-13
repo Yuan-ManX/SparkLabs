@@ -3260,6 +3260,74 @@ from sparkai.engine.engine_thermal_dynamics import (
     get_thermal_dynamics_system,
 )
 
+from sparkai.engine.engine_electromagnetic_field import (
+    Charge, ChargeType, Circuit, CircuitStatus, Conductor, ConductorType,
+    EMConfig, EMEvent, EMEventKind, EMSnapshot, EMSource, EMSourceType,
+    EMStats, FieldLine, FieldLineType, FieldType, InductionCoil,
+    MagneticField, get_electromagnetic_field_system,
+)
+
+from sparkai.engine.engine_chemical_reaction import (
+    Catalyst, ChemicalConfig, ChemicalEvent, ChemicalEventKind,
+    ChemicalSnapshot, ChemicalStats, Mixture, Reaction, ReactionResult,
+    ReactionStep, ReactionType, ReactionVessel, Substance, SubstanceState,
+    VesselStatus, get_chemical_reaction_system,
+)
+
+from sparkai.engine.engine_acoustic_wave import (
+    AcousticConfig, AcousticEvent, AcousticEventKind, AcousticListener,
+    AcousticSnapshot, AcousticSource, AcousticStats, BarrierMaterial,
+    DopplerShift, EchoZone, PathType, PropagationPath, SoundBarrier,
+    SourceType, WaveStatus, Wavefront, get_acoustic_wave_system,
+)
+
+from sparkai.engine.engine_optics_system import (
+    Detector, Lens, LensType, LightRay, LightSource, LightSourceType,
+    Medium, MediumType, Mirror, MirrorType, OpticalFiber, OpticsConfig,
+    OpticsEvent, OpticsEventKind, OpticsSnapshot, OpticsStats,
+    PolarizationType, Prism, PrismType, RayStatus, Spectrum,
+    get_optics_system,
+)
+
+from sparkai.engine.engine_radiation_field import (
+    ContaminationLevel, ContaminationZone, DecayMode, DecayProduct,
+    DetectorStatus, Dosimeter, Isotope, RadiationConfig, RadiationDetector,
+    RadiationEvent, RadiationEventKind, RadiationSnapshot, RadiationSource,
+    RadiationStats, RadiationType, ShieldingMaterial, ShieldingType,
+    get_radiation_field_system,
+)
+
+from sparkai.engine.engine_orbital_mechanics import (
+    Asteroid, BodyStatus, BodyType, CelestialBody, Maneuver, ManeuverType,
+    Orbit, OrbitType, OrbitalConfig, OrbitalEvent, OrbitalEventKind,
+    OrbitalSnapshot, OrbitalStats, Satellite, SpaceStation, Thruster,
+    ThrusterType, Trajectory, get_orbital_mechanics_system,
+)
+
+# Round 51: Editor subsystems and granular physics
+from sparkai.engine.engine_editor_subsystems import (
+    AudioBus, AudioBusType, AudioChannel, AudioEffect, AudioEffectType,
+    AudioMixPreset, AudioMixerEditor, BrushType, CopilotConversationalPanel,
+    ConversationMessage, DesignContext, EmitterShape, FoliagePatch,
+    GuidanceKind, GuidanceResult, MaterialBlendMode, MaterialGraph,
+    MaterialInstance, MaterialParameter, MaterialShaderGraphEditor,
+    MaterialShadingModel, MessageType, ParticleBlendMode, ParticleCurve,
+    ParticleEffect, ParticleEffectDesigner, ParticleEmitter, ParticleKeyframe,
+    ParticleModifier, ParticleModifierType, PinType, ScriptConnection,
+    ScriptFunction, ScriptGraph, ScriptNode, ScriptPin, ScriptVariable,
+    ShaderCompilationResult, ShaderConnection, ShaderNode, ShaderNodeType,
+    SoundCue, SuggestionResult, SuggestionType, TerrainBrush, TerrainData,
+    TerrainLayer, TerrainLayerType, TerrainSculptingEditor, TerrainStroke,
+    VisualScriptNodeGraphEditor, get_editor_subsystems,
+)
+
+from sparkai.engine.engine_granular_physics import (
+    ContactType, GranularConfig, GranularEmitter, GranularEvent,
+    GranularEventKind, GranularMaterial, GranularObstacle, GranularParticle,
+    GranularPile, GranularSnapshot, GranularStats, MaterialProperties,
+    ObstacleShape, get_granular_physics,
+)
+
 
 __all__ = [
     # Existing
@@ -6699,4 +6767,60 @@ __all__ = [
     "TemperatureReading", "ThermalConfig", "ThermalEvent",
     "ThermalEventKind", "ThermalSnapshot", "ThermalStats", "ThermalZone",
     "ThermalZoneStatus", "get_thermal_dynamics_system",
+    # Round 49: Electromagnetic Field
+    "Charge", "ChargeType", "Circuit", "CircuitStatus", "Conductor",
+    "ConductorType", "EMConfig", "EMEvent", "EMEventKind", "EMSnapshot",
+    "EMSource", "EMSourceType", "EMStats", "FieldLine", "FieldLineType",
+    "FieldType", "InductionCoil", "MagneticField",
+    "get_electromagnetic_field_system",
+    # Round 49: Chemical Reaction
+    "Catalyst", "ChemicalConfig", "ChemicalEvent", "ChemicalEventKind",
+    "ChemicalSnapshot", "ChemicalStats", "Mixture", "Reaction",
+    "ReactionResult", "ReactionStep", "ReactionType", "ReactionVessel",
+    "Substance", "SubstanceState", "VesselStatus",
+    "get_chemical_reaction_system",
+    # Round 49: Acoustic Wave
+    "AcousticConfig", "AcousticEvent", "AcousticEventKind",
+    "AcousticListener", "AcousticSnapshot", "AcousticSource",
+    "AcousticStats", "BarrierMaterial", "DopplerShift", "EchoZone",
+    "PathType", "PropagationPath", "SoundBarrier", "SourceType",
+    "WaveStatus", "Wavefront", "get_acoustic_wave_system",
+    # Round 50: Optics System
+    "Detector", "Lens", "LensType", "LightRay", "LightSource",
+    "LightSourceType", "Medium", "MediumType", "Mirror", "MirrorType",
+    "OpticalFiber", "OpticsConfig", "OpticsEvent", "OpticsEventKind",
+    "OpticsSnapshot", "OpticsStats", "PolarizationType", "Prism",
+    "PrismType", "RayStatus", "Spectrum", "get_optics_system",
+    # Round 50: Radiation Field
+    "ContaminationLevel", "ContaminationZone", "DecayMode", "DecayProduct",
+    "DetectorStatus", "Dosimeter", "Isotope", "RadiationConfig",
+    "RadiationDetector", "RadiationEvent", "RadiationEventKind",
+    "RadiationSnapshot", "RadiationSource", "RadiationStats", "RadiationType",
+    "ShieldingMaterial", "ShieldingType", "get_radiation_field_system",
+    # Round 50: Orbital Mechanics
+    "Asteroid", "BodyStatus", "BodyType", "CelestialBody", "Maneuver",
+    "ManeuverType", "Orbit", "OrbitType", "OrbitalConfig", "OrbitalEvent",
+    "OrbitalEventKind", "OrbitalSnapshot", "OrbitalStats", "Satellite",
+    "SpaceStation", "Thruster", "ThrusterType", "Trajectory",
+    "get_orbital_mechanics_system",
+    # Round 51: Editor Subsystems
+    "AudioBus", "AudioBusType", "AudioChannel", "AudioEffect", "AudioEffectType",
+    "AudioMixPreset", "AudioMixerEditor", "BrushType", "CopilotConversationalPanel",
+    "ConversationMessage", "DesignContext", "EmitterShape", "FoliagePatch",
+    "GuidanceKind", "GuidanceResult", "MaterialBlendMode", "MaterialGraph",
+    "MaterialInstance", "MaterialParameter", "MaterialShaderGraphEditor",
+    "MaterialShadingModel", "MessageType", "ParticleBlendMode", "ParticleCurve",
+    "ParticleEffect", "ParticleEffectDesigner", "ParticleEmitter",
+    "ParticleKeyframe", "ParticleModifier", "ParticleModifierType", "PinType",
+    "ScriptConnection", "ScriptFunction", "ScriptGraph", "ScriptNode",
+    "ScriptPin", "ScriptVariable", "ShaderCompilationResult", "ShaderConnection",
+    "ShaderNode", "ShaderNodeType", "SoundCue", "SuggestionResult",
+    "SuggestionType", "TerrainBrush", "TerrainData", "TerrainLayer",
+    "TerrainLayerType", "TerrainSculptingEditor", "TerrainStroke",
+    "VisualScriptNodeGraphEditor", "get_editor_subsystems",
+    # Round 51: Granular Physics
+    "ContactType", "GranularConfig", "GranularEmitter", "GranularEvent",
+    "GranularEventKind", "GranularMaterial", "GranularObstacle",
+    "GranularParticle", "GranularPile", "GranularSnapshot", "GranularStats",
+    "MaterialProperties", "ObstacleShape", "get_granular_physics",
 ]
