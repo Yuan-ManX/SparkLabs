@@ -2213,6 +2213,15 @@ from sparkai.agent.agent_causality_graph import (
     EventCategory as CausalityEventCategory,
 )
 
+from sparkai.agent.agent_unified_cognitive_core import (
+    ActionCandidate, ActionType, Belief, BeliefSource, CognitiveEvent,
+    CognitiveEventKind, CognitivePhase, CognitiveSnapshot, CognitiveState,
+    CognitiveStats, Desire, DesireCategory, EmotionType, EmotionalState,
+    Intention, IntentionStatus, MetaCognition, MetaStrategy, Percept, Plan,
+    PlanStatus, PlanStep, SocialRelation, SocialRole,
+    get_unified_cognitive_core,
+)
+
 
 __all__ = [
     "SparkAgent",
@@ -5047,4 +5056,11 @@ __all__ = [
     "CausalityEventCategory", "CausalityEventKind", "CausalitySnapshot",
     "CausalityStats", "ChainStatus", "ConsequencePrediction",
     "ConsistencyReport", "get_causality_graph",
+    # Round 51: Unified Cognitive Core
+    "ActionCandidate", "ActionType", "Belief", "BeliefSource", "CognitiveEvent",
+    "CognitiveEventKind", "CognitivePhase", "CognitiveSnapshot", "CognitiveState",
+    "CognitiveStats", "Desire", "DesireCategory", "EmotionType", "EmotionalState",
+    "Intention", "IntentionStatus", "MetaCognition", "MetaStrategy", "Percept",
+    "Plan", "PlanStatus", "PlanStep", "SocialRelation", "SocialRole",
+    "get_unified_cognitive_core",
 ]
