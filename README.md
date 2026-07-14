@@ -15,7 +15,7 @@ Where AI Agents design worlds, direct narratives, and breathe life into every pi
 
 ![SparkLabs-Video](./assets/SparkLabs-Video.gif)
 
-[Website](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](#what-is-sparklabs) · [Innovation](#innovation) · [Quickstart](#quick-start) · [Architecture](#architecture) · [Contributing](#contributing)
+[Website](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](#what-is-sparklabs) · [Innovation](#innovation) · [Quickstart](#quick-start) · [Architecture](#features) · [Contributing](#contributing)
 
 #### [English](./README.md) | [中文文档](./README_CN.md)
 
@@ -131,7 +131,7 @@ A laboratory for AI-native game intelligence. SparkLabs provides a full-spectrum
 
 ## Contributing
 
-Contributions are welcome! We especially welcome new agent modules, engine systems with agent-callable APIs, editor panels, and C++ core optimizations. Please read our contributing guidelines before submitting pull requests.
+Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
 
 
 ## License
