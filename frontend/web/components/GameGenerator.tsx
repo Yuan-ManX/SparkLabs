@@ -490,7 +490,7 @@ const GameGenerator: React.FC = () => {
 
   return (
     <div className="flex flex-col h-full bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
-      <div className="bg-slate-800/90 border-b border-slate-700 px-6 py-4">
+      <div className="bg-[#0f0f0f]/90 border-b border-[#1e1e1e] px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <div className="p-2 bg-purple-600 rounded-lg">
@@ -498,7 +498,7 @@ const GameGenerator: React.FC = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold text-white">SparkLabs Game Generator</h2>
-              <p className="text-sm text-slate-400">AI-powered game development platform</p>
+              <p className="text-sm text-[#999]">AI-powered game development platform</p>
             </div>
           </div>
           <div className="flex items-center gap-3">
@@ -525,9 +525,9 @@ const GameGenerator: React.FC = () => {
       </div>
 
       <div className="flex flex-1 overflow-hidden">
-        <div className="w-1/3 border-r border-slate-700 bg-slate-800/50 p-6 overflow-y-auto">
+        <div className="w-1/3 border-r border-[#1e1e1e] bg-[#0f0f0f]/50 p-6 overflow-y-auto">
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-[#ccc] uppercase tracking-wider mb-3 flex items-center gap-2">
               <Gamepad2 className="w-4 h-4 text-purple-400" />
               Game Templates
             </h3>
@@ -542,16 +542,16 @@ const GameGenerator: React.FC = () => {
                     className={`w-full p-4 rounded-xl border-2 transition-all text-left ${
                       isSelected 
                         ? 'border-purple-500 bg-purple-900/30' 
-                        : 'border-slate-600 hover:border-slate-400'
+                        : 'border-[#2a2a2a] hover:border-[#333]'
                     }`}
                   >
                     <div className="flex items-start gap-3">
-                      <div className={`p-2 rounded-lg ${isSelected ? 'bg-purple-500' : 'bg-slate-700'}`}>
+                      <div className={`p-2 rounded-lg ${isSelected ? 'bg-purple-500' : 'bg-[#1a1a1a]'}`}>
                         <Icon className="w-5 h-5 text-white" />
                       </div>
                       <div>
                         <h4 className="font-semibold text-white">{template.name}</h4>
-                        <p className="text-sm text-slate-400">{template.description}</p>
+                        <p className="text-sm text-[#999]">{template.description}</p>
                       </div>
                     </div>
                   </button>
@@ -561,18 +561,18 @@ const GameGenerator: React.FC = () => {
           </div>
 
           <div className="mb-6">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-[#ccc] uppercase tracking-wider mb-3 flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-400" />
               Game Configuration
             </h3>
             <div className="space-y-4">
               <div>
-                <label className="text-sm text-slate-400 mb-1 block">Game Name</label>
+                <label className="text-sm text-[#999] mb-1 block">Game Name</label>
                 <input
                   type="text"
                   value={gameName}
                   onChange={(e) => setGameName(e.target.value)}
-                  className="w-full px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-purple-500"
+                  className="w-full px-4 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-white focus:outline-none focus:border-purple-500"
                 />
               </div>
             </div>
@@ -593,13 +593,13 @@ const GameGenerator: React.FC = () => {
 
           {debugLog.length > 0 && (
             <div className="mt-6">
-              <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-[#ccc] uppercase tracking-wider mb-3 flex items-center gap-2">
                 <Code className="w-4 h-4 text-purple-400" />
                 Debug Log
               </h3>
-              <div className="bg-slate-900 rounded-lg p-3 max-h-48 overflow-y-auto font-mono text-xs">
+              <div className="bg-[#0a0a0a] rounded-lg p-3 max-h-48 overflow-y-auto font-mono text-xs">
                 {debugLog.map((log, i) => (
-                  <div key={i} className="mb-1 text-slate-300">{log}</div>
+                  <div key={i} className="mb-1 text-[#ccc]">{log}</div>
                 ))}
               </div>
             </div>
@@ -607,11 +607,11 @@ const GameGenerator: React.FC = () => {
         </div>
 
         <div className="flex-1 flex flex-col">
-          <div className="bg-slate-800/50 border-b border-slate-700 px-6 py-3 flex gap-4">
+          <div className="bg-[#0f0f0f]/50 border-b border-[#1e1e1e] px-6 py-3 flex gap-4">
             <button
               onClick={() => setActiveTab(generatedFiles ? 'preview' : 'select')}
               className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                activeTab === 'preview' || activeTab === 'select' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'
+                activeTab === 'preview' || activeTab === 'select' ? 'bg-purple-600 text-white' : 'text-[#999] hover:text-white'
               }`}
             >
               {generatedFiles ? 'Preview & Code' : 'Select Template'}
@@ -620,7 +620,7 @@ const GameGenerator: React.FC = () => {
               <button
                 onClick={() => setActiveTab('quality')}
                 className={`px-4 py-2 rounded-lg font-medium transition-all ${
-                  activeTab === 'quality' ? 'bg-purple-600 text-white' : 'text-slate-400 hover:text-white'
+                  activeTab === 'quality' ? 'bg-purple-600 text-white' : 'text-[#999] hover:text-white'
                 }`}
               >
                 Quality Report
@@ -632,21 +632,21 @@ const GameGenerator: React.FC = () => {
             {!generatedFiles ? (
               <div className="h-full flex items-center justify-center">
                 <div className="text-center">
-                  <div className="p-6 bg-slate-800 rounded-xl mb-4 inline-block">
+                  <div className="p-6 bg-[#0f0f0f] rounded-xl mb-4 inline-block">
                     <Rocket className="w-12 h-12 text-purple-400" />
                   </div>
                   <h3 className="text-xl font-semibold text-white mb-2">Select a template to get started</h3>
-                  <p className="text-slate-400">Choose a game type from the sidebar and customize it</p>
+                  <p className="text-[#999]">Choose a game type from the sidebar and customize it</p>
                 </div>
               </div>
             ) : (
               <>
                 {activeTab === 'preview' && (
                   <div className="h-full">
-                    <div className="bg-slate-800 rounded-xl p-6 mb-4">
+                    <div className="bg-[#0f0f0f] rounded-xl p-6 mb-4">
                       <div className="text-center mb-4">
                         <h3 className="text-2xl font-bold text-white mb-2">{gameName}</h3>
-                        <p className="text-slate-400">Ready to play! Click Preview to test it.</p>
+                        <p className="text-[#999]">Ready to play! Click Preview to test it.</p>
                       </div>
 
                       <div className="grid grid-cols-2 gap-4 mt-6">
@@ -667,14 +667,14 @@ const GameGenerator: React.FC = () => {
                       </div>
                     </div>
 
-                    <div className="bg-slate-800 rounded-xl p-4">
+                    <div className="bg-[#0f0f0f] rounded-xl p-4">
                       <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
                         <Code className="w-5 h-5 text-purple-400" />
                         Generated Files
                       </h4>
                       <div className="space-y-2">
                         {Object.keys(generatedFiles).map(filename => (
-                          <div key={filename} className="p-3 bg-slate-700 rounded-lg text-sm text-slate-300 flex items-center justify-between">
+                          <div key={filename} className="p-3 bg-[#1a1a1a] rounded-lg text-sm text-[#ccc] flex items-center justify-between">
                             <span>{filename}</span>
                             <CheckCircle2 className="w-4 h-4 text-green-400" />
                           </div>
@@ -687,30 +687,30 @@ const GameGenerator: React.FC = () => {
                 {activeTab === 'quality' && (
                   <div className="h-full overflow-y-auto">
                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                      <div className="bg-[#0f0f0f] rounded-xl p-4 text-center">
                         <div className="text-2xl font-bold text-green-400">98%</div>
-                        <div className="text-sm text-slate-400">Build Health</div>
+                        <div className="text-sm text-[#999]">Build Health</div>
                       </div>
-                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                      <div className="bg-[#0f0f0f] rounded-xl p-4 text-center">
                         <div className="text-2xl font-bold text-blue-400">85%</div>
-                        <div className="text-sm text-slate-400">Visual Usability</div>
+                        <div className="text-sm text-[#999]">Visual Usability</div>
                       </div>
-                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                      <div className="bg-[#0f0f0f] rounded-xl p-4 text-center">
                         <div className="text-2xl font-bold text-purple-400">92%</div>
-                        <div className="text-sm text-slate-400">Code Quality</div>
+                        <div className="text-sm text-[#999]">Code Quality</div>
                       </div>
-                      <div className="bg-slate-800 rounded-xl p-4 text-center">
+                      <div className="bg-[#0f0f0f] rounded-xl p-4 text-center">
                         <div className="text-2xl font-bold text-pink-400">A-</div>
-                        <div className="text-sm text-slate-400">Grade</div>
+                        <div className="text-sm text-[#999]">Grade</div>
                       </div>
                     </div>
 
-                    <div className="bg-slate-800 rounded-xl p-4">
+                    <div className="bg-[#0f0f0f] rounded-xl p-4">
                       <h4 className="font-semibold text-white mb-3 flex items-center gap-2">
                         <CheckCircle2 className="w-5 h-5 text-green-400" />
                         Quality Report
                       </h4>
-                      <ul className="space-y-2 text-sm text-slate-300">
+                      <ul className="space-y-2 text-sm text-[#ccc]">
                         <li>✅ Clean architecture and code organization</li>
                         <li>✅ Good visual design and UX</li>
                         <li>✅ Responsive controls</li>
