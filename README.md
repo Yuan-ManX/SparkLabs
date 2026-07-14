@@ -2,308 +2,141 @@
 
 <img src="./assets/SparkLabs-Logo.png" alt="SparkLabs Logo">
 
+**The First AI-Native Game Engine.** 💥
+**Ignite Your Infinite Play!** 🎮
 
-# Spark Labs
+Where AI Agents design worlds, direct narratives, and breathe life into every pixel — not as plugins, but as the foundation itself.
 
-### The First AI-Native Game Engine. 💥 
-### Ignite Your Infinite Play! 🎮
-
-![Version](https://img.shields.io/badge/version-2.0.0-blue)
+![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![License](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
+![Modules](https://img.shields.io/badge/modules-900+-purple)
 
 ![SparkLabs-Video](./assets/SparkLabs-Video.gif)
 
-[Website](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](https://yuan-manx.github.io/SparkLabs/editor.html) · [Quickstart](#quick-start) · [Key Features](#key-features) · [Docs](#documentation) · [Contributing](#contributing)
+[Website](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](#what-is-sparklabs) · [Innovation](#innovation) · [Quickstart](#quick-start) · [Architecture](#architecture) · [Contributing](#contributing)
 
 #### [English](./README.md) | [中文文档](./README_CN.md)
 
 </div>
 
 
-## Overview
+## What is SparkLabs?
 
-**SparkLabs** is a next-generation AI-native game engine that deeply integrates artificial intelligence capabilities into the core architecture of game development. Unlike traditional game engines that rely on manually coded game logic and predefined pipelines, SparkLabs revolutionizes game development by enabling procedural content generation, intelligent NPC behavior systems, adaptive rendering, and dynamic difficulty adjustment through AI.
+SparkLabs is an **AI-native game engine** where intelligence is not a feature bolted on top — it is the substrate everything is built from. Every subsystem, from physics to NPC cognition to narrative pacing, is designed around intelligent agents that perceive, reason, and act.
 
-The engine features an AI Agent foundation that provides a comprehensive multi-agent orchestration system, hierarchical memory, tool registry, and LLM provider integration — all designed from the ground up for AI-native game development. The web editor provides an intuitive interface for scene design, workflow composition, NPC creation, and narrative editing.
+The world has seen game engines with AI assistants. AI that generates assets. AI that writes dialogue. But no one has built an engine where the AI *is* the engine — where game logic emerges from agent deliberation rather than hand-coded state machines, where NPCs possess genuine cognitive architecture with memory and beliefs, where the engine itself thinks alongside you as you build.
 
-## Key Features
-
-### AI-Native Agent Foundation
-- SparkAgent with observe-think-act loop
-- Multi-provider LLM integration (OpenAI, Anthropic, DeepSeek, Ollama, local models)
-- Hierarchical memory system (short-term, long-term, episodic, semantic, working)
-- Tool registry with built-in engine tools for game development
-- Multi-agent orchestration with automatic capability matching
-
-### AI-Native Architecture
-- Deep integration of AI inference capabilities into core engine architecture
-- AI-driven object system and event handling mechanisms
-- Support for neural network models
-
-### Neural Rendering Pipeline
-- Real-time AI super-resolution (Neural Upscaling)
-- AI-based ambient occlusion (N/AO)
-- Intelligent anti-aliasing (Neural AA)
-- Adaptive rendering based on scene understanding
-
-### Intelligent NPC System
-- Neural network-driven NPC decision making with dual-network architecture
-- 10-dimensional personality trait system
-- Emotional state machine with 7 emotion types
-- Memory system with short-term, long-term, episodic, and semantic memory
-- Attention mechanism for focus management
-- Behavior tree system with selector, sequence, decorator, and parallel nodes
-- Context-aware dialogue generation
-
-### Adaptive Gameplay
-- Player skill tracking and modeling
-- Real-time dynamic difficulty adjustment
-- Engagement metrics monitoring
-- Personalized player experience optimization
-
-### AI Narrative Engine
-- Branching story graph with variable tracking and conditional logic
-- Procedural quest generation with 6+ template types
-- Dynamic quest customization with context-aware text
-- Story node types: Beginning, Plot Point, Choice, Climax, Resolution, Branch
-
-### Smart Asset Management
-- AI-powered texture synthesis
-- Procedural geometry generation
-- Prompt-to-asset conversion system
-- Intelligent asset caching
-
-### AI Workflow Canvas
-- Node-graph visual programming for AI pipelines
-- 20+ built-in node types across 11 categories
-- Typed pin connections with type safety
-- Topological execution engine
-- Categories: Prompt, Image, Text, Video, Audio, Input, Output, Sampling, Latent, ControlNet, Logic, Game
-
-### Intelligent Team Collaboration System
-- Three-tiered agent architecture matching real studio hierarchy
-  - Tier 1: Directors (Creative Director, Technical Director, Producer)
-  - Tier 2: Department Leads (Game Designer, Lead Programmer, Art Director, etc.)
-  - Tier 3: Specialists (19 specialist roles)
-- Design review and approval workflows
-- Code review and quality validation processes
-- Quality gate system with 4 standards and 5 metrics
-
-### Web Visual Editor (SparkLabs Editor)
-- React + TypeScript + Vite + Tailwind CSS
-- 11 editor panels: Dashboard, Game Studio, Templates, Story, Assets, Voice, Storyboard, Video, Workflow, NPC Designer, Agent Panel
-- Real-time WebSocket connection to engine backend
-- AI Agent chat interface for content generation
-- Visual workflow canvas with drag-and-drop nodes
-- NPC personality designer with trait visualization
-- Story editor with branching narrative support
+SparkLabs is that engine. It is the AI-native counterpart to the traditional game engines that define the industry — not a rendering pipeline with an AI chatbot grafted on, but a platform architected from first principles around one conviction: **AI is not a tool you call. It is the foundation you build on.**
 
 
-## Installation
+## Why "SparkLabs"?
 
-### Building C++ Engine from Source
+The name SparkLabs carries a deliberate duality.
 
-```bash
-# Clone the repository
-git clone https://github.com/Yuan-ManX/SparkLabs.git
-cd SparkLabs
+A spark is the moment of creation — the flash of an idea, the ignition of imagination, the instant something new comes into being. In game development, every world begins with a spark: a what-if, a vision, a dream of something that does not yet exist. SparkLabs is built to catch that spark and fan it into a living, playable reality.
 
-# Create build directory
-mkdir build && cd build
+At a deeper level, SparkLabs is a laboratory — a space where AI agents and human creators experiment together, iterate rapidly, and discover gameplay possibilities that neither could reach alone. The "labs" is intentional: it is not a factory producing predetermined output, but a workshop where emergence is welcomed and the unexpected is celebrated.
 
-# Configure with CMake
-cmake ..
-
-# Build
-cmake --build . --config Release
-```
+Most engines treat AI as a productivity tool. SparkLabs treats it as a **creative collaborator** — agents that do not wait to be prompted, but participate in the act of creation itself.
 
 
-### Setting Up the AI-Native Game Engine Editor
+## Innovation
 
-```bash
-# Navigate to web editor directory
-cd frontend/web
+### The Engine Thinks
 
-# Install dependencies
-npm install
+In SparkLabs, the engine is not a passive runtime waiting for instructions. It is an active participant in the development process. When you place an entity in a scene, agents analyze the context and suggest behaviors. When you design a combat encounter, agents simulate balance outcomes before you hit play. When you write a quest, agents trace the narrative graph for contradictions and dead ends.
 
-# Start development server
-npm run dev
+This is not an AI assistant watching you work. It is a creative partner thinking alongside you — one that understands the full state of your game and contributes to its evolution.
 
-# Build for production
-npm run build
-```
+### Agents Are the Architecture
 
-### Setting Up the AI Backend
+Traditional engines expose APIs that humans call. SparkLabs exposes APIs that *agents* call — and agents are first-class citizens of the engine itself. 457 agent modules span game design, world building, NPC cognition, narrative direction, combat balancing, live-ops, testing, and production. They do not live outside the engine. They are the engine.
 
-```bash
-# Install Python dependencies
-pip install -r backend/requirements.txt
+An NPC in SparkLabs does not follow a scripted state machine. It possesses a cognitive architecture — beliefs, desires, intentions, memory, emotion, personality traits, attention mechanisms, and the capacity to dream. It forms relationships that deepen over time. It makes decisions that emerge from its internal model of the world, not from a switch statement.
 
-# Start the backend server
-python -m uvicorn backend.app:app --host 0.0.0.0 --port 8091 --reload
-```
+### A Spectrum of Cognition
+
+SparkLabs does not believe in one-size-fits-all intelligence. Different game-development challenges require different reasoning paradigms — and the engine's Unified Cognitive Core can switch between them fluidly: BDI for goal-directed behavior, HTN for hierarchical planning, behavior trees for reactive control, causal graphs for understanding consequence, counterfactual simulation for evaluating alternatives, and chain-of-thought for deliberate reasoning.
+
+An agent designing a boss encounter uses HTN to decompose the problem. An NPC deciding whether to flee uses BDI to weigh its beliefs against its desires. A narrative agent checking story consistency uses causal reasoning to trace ripple effects across the plot graph. The paradigm serves the task — not the other way around.
+
+### Worlds That Emerge
+
+Most game worlds are assembled by hand — every encounter placed, every line of dialogue written, every balance number tuned through playtesting. SparkLabs shifts this from assembly to cultivation. Agents design worlds, compose assets, direct narratives, balance economies, and adapt the live experience to each player — not through rigid procedural generation, but through genuine creative deliberation.
+
+The result is not random content. It is content that emerges from coherent creative intent, shaped by agents that understand the design goals and the player's journey.
+
+### The Engine Tests Itself
+
+When you change a system in SparkLabs, agents do not wait for a human QA pass. They simulate. They spawn playthroughs, probe edge cases, hunt for exploits, and trace crash signatures back to their root cause. The engine's 457 agent modules include a full testing spectrum — autonomous testers, bug hunters, performance profilers, and bug forensics agents that reproduce issues from telemetry alone.
+
+This is not test automation. It is test *intelligence* — agents that understand what the game is supposed to do and verify that it still does.
 
 
 ## Quick Start
 
-### AI Game Engine
+> SparkLabs is under active development. The full runtime requires LLM API configuration.
 
-```cpp
-#include <SparkLabs.h>
+```bash
+git clone https://github.com/Yuan-ManX/SparkLabs.git
+cd SparkLabs
 
-using namespace SparkLabs;
+# Start the backend
+pip install -r backend/requirements.txt
+python -m uvicorn backend.app:app
 
-int main() {
-    auto scene = new Scene();
-    scene->SetName("MyGame");
-
-    auto player = scene->CreateEntity("Player");
-    player->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
-    player->SetTag("Player");
-
-    auto npc = scene->CreateEntity("NPC");
-    npc->SetPosition(Vector3(5.0f, 1.0f, 0.0f));
-
-    auto npcBrain = npc->AddComponent<NPCBrainComponent>();
-    npcBrain->LoadModel("models/npc_decision.onnx");
-
-    Engine::GetInstance()->SetScene(scene);
-    Engine::GetInstance()->Run();
-
-    return 0;
-}
-```
-
-### AI Agent System
-
-```python
-import asyncio
-from sparkai import SparkAgent, LLMProvider, LLMConfig, AgentCapability, create_engine_tools
-
-async def main():
-    # Create an AI agent
-    agent = SparkAgent(
-        name="GameDesigner",
-        role="game_designer",
-        capabilities=[
-            AgentCapability.REASONING,
-            AgentCapability.GAMEPLAY_DESIGN,
-            AgentCapability.WORLD_BUILDING,
-        ],
-    )
-
-    # Configure LLM provider
-    llm = LLMProvider(LLMConfig(
-        provider="openai",
-        model="gpt-5.5",
-        api_key="your-api-key",
-    ))
-    await llm.initialize()
-    agent.set_llm_provider(llm)
-
-    # Register engine tools
-    for tool in create_engine_tools():
-        agent.register_tool(tool)
-
-    # Use the agent
-    response = await agent.think("Design a boss encounter for a fantasy RPG")
-    print(response)
-
-    # Execute an action
-    result = await agent.act("create_scene", {"name": "Boss Arena"})
-    print(result)
-
-asyncio.run(main())
-```
-
-### AI Workflow System
-
-```python
-from sparkai import WorkflowGraph, WorkflowNode, WorkflowExecutor, NodeRegistry
-
-# Create workflow graph
-graph = WorkflowGraph(name="Image Generation Pipeline")
-
-# Use the node registry to create typed nodes
-registry = NodeRegistry.get_instance()
-
-prompt = registry.create_node("text_prompt", name="Landscape Prompt")
-prompt.set_property("prompt", "A beautiful landscape at sunset")
-prompt.position = [100.0, 100.0]
-
-image_gen = registry.create_node("image_generation", name="Generate Image")
-image_gen.set_property("width", 1024)
-image_gen.set_property("height", 1024)
-image_gen.position = [400.0, 100.0]
-
-save = registry.create_node("save_image", name="Save Result")
-save.set_property("output_path", "output/landscape.png")
-save.position = [700.0, 100.0]
-
-# Add nodes and connect
-graph.add_node(prompt)
-graph.add_node(image_gen)
-graph.add_node(save)
-graph.connect(prompt.id, 0, image_gen.id, 0)
-graph.connect(image_gen.id, 0, save.id, 0)
-
-# Execute
-executor = WorkflowExecutor()
-result = await executor.execute(graph)
-```
-
-### AI NPC System
-
-```python
-from sparkai import NPCBrain, NPCPersonality, PersonalityTraits, BehaviorTree, BehaviorNode
-
-# Create NPC with personality
-personality = NPCPersonality(
-    name="Elder Sage",
-    traits=PersonalityTraits(
-        courage=0.3, curiosity=0.8, aggression=0.1,
-        friendliness=0.9, honesty=0.9, intelligence=0.95,
-    ),
-    background="An ancient keeper of knowledge",
-    speech_style="wise",
-)
-
-brain = NPCBrain(personality=personality)
-
-# Add goals
-brain.add_goal("Share wisdom", priority=0.8)
-brain.add_goal("Protect library", priority=0.9)
-
-# Create behavior tree
-tree = BehaviorTree()
-root = BehaviorNode(name="Root", node_type="selector")
-tree.set_root(root)
-brain.set_behavior_tree(tree)
-
-# Make decisions
-decision = await brain.decide({"player_action": "asks about ancient artifact"})
-dialogue = await brain.generate_dialogue("Tell me about the ancient artifact")
+# Start the frontend editor
+cd frontend/web
+npm install
+npm run dev
 ```
 
 
-## Documentation
+## Features
 
-For full documentation, see the [docs](./docs/) directory:
-- [API Reference](./docs/API_REFERENCE.md)
-- [Architecture](./docs/ARCHITECTURE.md)
-- [AI System](./docs/AI_SYSTEM.md)
-- [Building Instructions](./docs/BUILD_INSTRUCTIONS.md)
+| Dimension | Capabilities |
+|---|---|
+| **AI-Native Agent Architecture** | 457 agent modules across game design, world building, NPC cognition, narrative, combat, testing, and production. Unified Cognitive Core switches between BDI, HTN, behavior trees, causal reasoning, and chain-of-thought. |
+| **Intelligent NPCs** | Cognitive architecture with 10-dimensional personality, 7-emotion state machine, four-layer memory, attention mechanism, dream simulation, and LLM-driven context-aware dialogue. NPCs are agents, not actors. |
+| **AI Narrative Engine** | Branching story graphs, procedural quest generation, emergent storytelling from NPC interactions, causal graph engine, counterfactual simulation for "what-if" reasoning. |
+| **Full-Spectrum Physics** | AABB tree broadphase, SAT/GJK narrowphase, continuous collision detection, soft body deformation, fluid dynamics, electromagnetic fields, chemical reactions, thermal dynamics, orbital mechanics. |
+| **Neural Rendering** | AI super-resolution, neural ambient occlusion, neural anti-aliasing, shader material graph system, visual filters, optics simulation, adaptive rendering. |
+| **Multi-Agent Orchestration** | Teams with role assignment, task delegation, dependency-aware scheduling, voting and consensus, conflict resolution, resource allocation, and coalition negotiation. |
+| **AI Workflow Canvas** | Node-graph visual programming with 20+ typed node types across 11 categories, topological execution engine, and real-time preview at every node. |
+| **Autonomous Testing** | Agents that simulate playthroughs, probe edge cases, hunt exploits, trace crash signatures, and reproduce bugs from telemetry — the engine tests itself. |
+| **AI Live-Ops** | Predictive content direction, player sentiment analysis, adaptive difficulty, A/B testing, anti-cheat direction, and real-time balance optimization. |
+| **Web Visual Editor** | 40+ editor panels, real-time WebSocket, AI agent chat, visual workflow canvas, NPC personality designer, story editor — high-contrast black-and-white design. |
+
+
+## Use Cases
+
+#### For Solo Developers
+
+One person with a vision and a team of agents. You describe the game you want to make; agents help design the systems, generate the assets, write the dialogue, balance the combat, and test the build. The engine does not replace your creativity — it amplifies it, handling the parts that used to require a studio so you can focus on the spark.
+
+#### For Studios
+
+A studio where every developer is paired with a team of agents. Your designers iterate on gameplay with agents that simulate balance outcomes in real time. Your artists collaborate with agents that harmonize asset styles and optimize performance. Your QA team works alongside agents that never sleep, running simulations across every corner of the game. Not "AI-assisted development" — just **development**, with more capable teammates.
+
+#### For Live Games
+
+A game that adapts. Agents monitor player sentiment, predict churn, detect balance issues before they become meta problems, generate seasonal content tuned to the community, and direct live events that respond to the room. The game does not wait for a patch cycle to improve. It evolves continuously, guided by agents that understand the player base as deeply as the design.
+
+#### for Researchers
+
+A laboratory for AI-native game intelligence. SparkLabs provides a full-spectrum testbed for multi-agent collaboration, cognitive NPC architecture, emergent narrative, procedural content generation, and autonomous game testing — with 6800+ API routes and 883,000+ lines of agent code ready to be extended, modified, and studied.
+
 
 ## Contributing
 
-Contributions are welcome! Please read our contributing guidelines before submitting pull requests.
+Contributions are welcome! We especially welcome new agent modules, engine systems with agent-callable APIs, editor panels, and C++ core optimizations. Please read our contributing guidelines before submitting pull requests.
+
 
 ## License
 
-SparkLabs Engine is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
+SparkLabs is licensed under the MIT License. See [LICENSE](./LICENSE) for details.
+
 
 ## ⭐ Star History
 
