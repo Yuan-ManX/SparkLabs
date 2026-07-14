@@ -3,6 +3,7 @@
 <img src="./assets/SparkLabs-Logo.png" alt="SparkLabs Logo">
 
 **The First AI-Native Game Engine.** 💥
+
 **Ignite Your Infinite Play!** 🎮
 
 Where AI Agents design worlds, direct narratives, and breathe life into every pixel — not as plugins, but as the foundation itself.
