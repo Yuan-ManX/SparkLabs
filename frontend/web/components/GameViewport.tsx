@@ -2,6 +2,7 @@ import React, { useState, useCallback, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { sceneBridge } from '../services/sceneBridge';
 import { useEditorStore } from '../store/editorStore';
+import GameRunner from './GameRunner';
 
 interface GameViewportProps {
   isPlaying: boolean;
@@ -251,6 +252,11 @@ const GameViewport: React.FC<GameViewportProps> = ({
         </div>
       </div>
       <div className="flex-1 relative">
+        {/* Game execution mode — runs generated game content in iframe */}
+        {viewMode === 'game' ? (
+          <GameRunner sceneNodes={sceneNodes.map(n => ({ id: n.id, name: n.name, type: n.type }))} />
+        ) : (
+        <>
         <div ref={containerRef} className="w-full h-full" />
         {isGenerating && (
           <div className="absolute inset-0 bg-black/60 flex items-center justify-center z-10">
@@ -290,6 +296,8 @@ const GameViewport: React.FC<GameViewportProps> = ({
             {entityMeshesRef.current.length} entities
           </div>
         </div>
+        </>
+        )}
       </div>
     </div>
   );
