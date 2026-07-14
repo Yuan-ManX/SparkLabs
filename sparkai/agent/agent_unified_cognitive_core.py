@@ -233,6 +233,24 @@ def _clamp(value: float, low: float = 0.0, high: float = 1.0) -> float:
     return value
 
 
+def _coerce_enum(enum_cls, value, default=None):
+    """Coerce a string to an enum member, trying value-based then name-based lookup."""
+    if isinstance(value, enum_cls):
+        return value
+    if isinstance(value, str):
+        try:
+            return enum_cls(value)
+        except ValueError:
+            try:
+                return enum_cls[value.upper()]
+            except KeyError:
+                try:
+                    return enum_cls[value]
+                except KeyError:
+                    return default
+    return default if default is not None else value
+
+
 def _round(value: float, digits: int = 4) -> float:
     """Round and avoid floating point noise for storage."""
     return round(float(value), digits)
@@ -1030,6 +1048,7 @@ class _UnifiedCognitiveCore:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> Belief:
         """Add a new belief to an agent's belief base."""
+        source = _coerce_enum(BeliefSource, source, BeliefSource.PERCEPTION)
         with self._lock:
             state = self._require_state(agent_id)
             if decay_rate is None:
@@ -1204,6 +1223,7 @@ class _UnifiedCognitiveCore:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> Desire:
         """Add a new desire to an agent's desire set."""
+        category = _coerce_enum(DesireCategory, category, DesireCategory.COGNITIVE)
         with self._lock:
             state = self._require_state(agent_id)
             desire = Desire(
@@ -1474,6 +1494,8 @@ class _UnifiedCognitiveCore:
         expected_outcome: Optional[Dict[str, Any]] = None,
     ) -> Plan:
         """Create a new plan for a goal from a list of step dicts."""
+        if not isinstance(expected_outcome, dict):
+            expected_outcome = {}
         with self._lock:
             state = self._require_state(agent_id)
             plan = Plan(
@@ -1529,6 +1551,8 @@ class _UnifiedCognitiveCore:
         current_step: Optional[int] = None,
     ) -> Optional[Plan]:
         """Update fields of an existing plan."""
+        if status is not None:
+            status = _coerce_enum(PlanStatus, status, None)
         with self._lock:
             state = self._require_state(agent_id)
             plan = state.plans.get(plan_id)
@@ -1922,6 +1946,7 @@ class _UnifiedCognitiveCore:
         strategy: MetaStrategy,
     ) -> MetaCognition:
         """Switch the meta-reasoning strategy for an agent."""
+        strategy = _coerce_enum(MetaStrategy, strategy, MetaStrategy.DELIBERATIVE)
         with self._lock:
             state = self._require_state(agent_id)
             state.meta_state.strategy = strategy
@@ -2065,6 +2090,8 @@ class _UnifiedCognitiveCore:
         intensity: Optional[float] = None,
     ) -> EmotionalState:
         """Set the emotional state of an agent directly."""
+        if primary_emotion is not None:
+            primary_emotion = _coerce_enum(EmotionType, primary_emotion, None)
         with self._lock:
             state = self._require_state(agent_id)
             valence = _clamp(valence, -1.0, 1.0)
@@ -2189,6 +2216,7 @@ class _UnifiedCognitiveCore:
         metadata: Optional[Dict[str, Any]] = None,
     ) -> SocialRelation:
         """Register or replace a social relation toward a target agent."""
+        power_relation = _coerce_enum(SocialRole, power_relation, SocialRole.STRANGER)
         with self._lock:
             state = self._require_state(agent_id)
             relation = SocialRelation(
@@ -2237,6 +2265,8 @@ class _UnifiedCognitiveCore:
         interaction_note: Optional[str] = None,
     ) -> Optional[SocialRelation]:
         """Adjust a social relation by deltas and optionally record an interaction."""
+        if power_relation is not None:
+            power_relation = _coerce_enum(SocialRole, power_relation, None)
         with self._lock:
             state = self._require_state(agent_id)
             relation = state.relations.get(target_id)
@@ -2510,6 +2540,16 @@ class _UnifiedCognitiveCore:
         Adjusts the candidate's expected utility using emotional influence
         and the agent's confidence level.
         """
+        if isinstance(candidate, dict):
+            candidate = ActionCandidate(
+                action_id=candidate.get("action_id", _uid("action")),
+                action_type=_coerce_enum(ActionType, candidate.get("action_type", "wait"), ActionType.WAIT),
+                description=candidate.get("description", ""),
+                expected_utility=float(candidate.get("expected_utility", 0.5)),
+                cost=float(candidate.get("cost", 0.3)),
+                risk=float(candidate.get("risk", 0.2)),
+                parameters=candidate.get("parameters") or {},
+            )
         with self._lock:
             state = self._require_state(agent_id)
             influence = self.get_emotional_influence(agent_id)
@@ -2564,6 +2604,16 @@ class _UnifiedCognitiveCore:
         Execution is simulated: the outcome is sampled from the action's
         net utility with noise from the emotional influence.
         """
+        if isinstance(candidate, dict):
+            candidate = ActionCandidate(
+                action_id=candidate.get("action_id", _uid("action")),
+                action_type=_coerce_enum(ActionType, candidate.get("action_type", "wait"), ActionType.WAIT),
+                description=candidate.get("description", ""),
+                expected_utility=float(candidate.get("expected_utility", 0.5)),
+                cost=float(candidate.get("cost", 0.3)),
+                risk=float(candidate.get("risk", 0.2)),
+                parameters=candidate.get("parameters") or {},
+            )
         with self._lock:
             state = self._require_state(agent_id)
             influence = self.get_emotional_influence(agent_id)
