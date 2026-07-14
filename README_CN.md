@@ -8,7 +8,7 @@
 
 AI 智能体设计世界、导演叙事、为每一个像素注入生命——不是作为插件，而是作为地基本身。
 
-![版本](https://img.shields.io/badge/version-2.0.0-blue)
+![版本](https://img.shields.io/badge/version-1.0.0-blue)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
 ![模块](https://img.shields.io/badge/modules-900+-purple)
