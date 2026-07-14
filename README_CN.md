@@ -1,308 +1,146 @@
 <div align="center">
 
-<img src="./assets/SparkLabs-Logo.png" alt="SparkLabs Logo"/>
+<img src="./assets/SparkLabs-Logo.png" alt="SparkLabs Logo">
 
-# Spark Labs
+**首个 AI 原生游戏引擎。** 💥
+**点燃你的无限游戏想象！** 🎮
 
-### AI 原生游戏引擎 💥
-### 点燃你的无限游戏想象！ 🎮
+AI 智能体设计世界、导演叙事、为每一个像素注入生命——不是作为插件，而是作为地基本身。
 
 ![版本](https://img.shields.io/badge/version-2.0.0-blue)
 ![许可证](https://img.shields.io/badge/license-MIT-green)
 ![Stars](https://img.shields.io/github/stars/Yuan-ManX/SparkLabs?style=social)
+![模块](https://img.shields.io/badge/modules-900+-purple)
 
 ![SparkLabs-Video](./assets/SparkLabs-Video.gif)
 
-[官方网站](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](https://yuan-manx.github.io/SparkLabs/editor.html) · [快速开始](#快速开始) · [核心特性](#核心特性) · [文档](#文档) · [贡献](#贡献)
+[官方网站](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](#什么是-sparklabs) · [创新](#创新) · [快速开始](#快速开始) · [架构](#架构) · [贡献](#贡献)
 
 #### [English](./README.md) | [中文文档](./README_CN.md)
 
 </div>
 
 
-## 概述
+## 什么是 SparkLabs？
 
-**SparkLabs** 是一款新一代的AI原生游戏引擎，将人工智能能力深度融入游戏开发的核心架构中。传统游戏引擎依赖手工编码的游戏逻辑和预定义的资源管道，而 SparkLabs 通过AI驱动的程序化内容生成、智能NPC行为系统、自适应渲染和动态难度调整，彻底革新游戏开发范式。
+SparkLabs 是一个 **AI 原生游戏引擎**，智能不是叠加在表面的功能——而是构建一切的基底。每一个子系统，从物理到 NPC 认知到叙事节奏，都围绕能够感知、推理、行动的智能体而设计。
 
-引擎采用三层架构设计：C++高性能游戏引擎核心、AI Agent基础层（sparkai）、Web可视化编辑器——从引擎到编辑器打造无缝的AI原生开发体验。
+世界已经见过带 AI 助手的游戏引擎。能生成资产的 AI。能写对话的 AI。但没有人构建过一个 AI *就是*引擎本身的引擎——游戏逻辑从智能体审慎推理中涌现而非手工编码的状态机，NPC 拥有带记忆和信念的真正认知架构，引擎在你构建的同时与你一同思考。
 
-AI Agent基础层（sparkai）提供了完整的多Agent编排系统、分层记忆、工具注册表和LLM提供商集成——所有功能均从零开始为AI原生游戏开发而设计。Web可视化编辑器提供了直观的场景设计、工作流编排、NPC创建和叙事编辑界面。
-
-## 核心特性
-
-### AI原生Agent基础层
-- SparkAgent，支持观察-思考-行动循环
-- 多提供商LLM集成（OpenAI、Anthropic、DeepSeek、Ollama、本地模型）
-- 分层记忆系统（短期、长期、情景、语义、工作记忆）
-- 工具注册表，内置游戏开发引擎工具
-- 多Agent编排，自动能力匹配
-
-### AI原生架构
-- AI推理能力深度集成到核心引擎架构
-- AI驱动的对象系统和事件处理机制
-- 支持神经网络模型（ONNX Runtime集成）
-
-### 神经渲染管线
-- 实时AI超分辨率（神经上采样）
-- AI环境光遮蔽（N/AO）
-- 智能抗锯齿（Neural AA）
-- 基于场景理解的自适应渲染
-
-### 智能NPC系统
-- 神经网络驱动的NPC决策，双网络架构
-- 10维人格特质系统
-- 7种情感类型的情绪状态机
-- 短期、长期、情景、语义四层记忆系统
-- 注意力机制，焦点管理
-- 行为树系统，支持选择器、序列、装饰器、并行节点
-- 上下文感知的对话生成
-
-### 自适应游戏玩法
-- 玩家技能追踪和建模
-- 实时动态难度调整
-- 参与度指标监控
-- 个性化玩家体验优化
-
-### AI叙事引擎
-- 分支故事图，支持变量追踪和条件逻辑
-- 程序化任务生成，6+模板类型
-- 动态任务定制，上下文感知文本
-- 故事节点类型：开端、情节点、选择、高潮、结局、分支
-
-### 智能资产管理
-- AI驱动的纹理合成
-- 程序化几何体生成
-- 提示词到资产的转换系统
-- 智能资产缓存
-
-### AI工作流画布
-- 节点图可视化编程，构建AI管线
-- 20+内置节点类型，覆盖11个类别
-- 类型化引脚连接，类型安全
-- 拓扑执行引擎
-- 类别：提示词、AI/图像、AI/文本、AI/视频、AI/音频、输入、输出、采样、潜空间、ControlNet、逻辑、游戏
-
-### 智能团队协作系统
-- 三层Agent架构，匹配真实工作室层级
-  - 第一层：总监（创意总监、技术总监、制作人）
-  - 第二层：部门主管（游戏设计师、主程序员、美术总监等）
-  - 第三层：专家（19个专家角色）
-- 设计评审和审批工作流
-- 代码审查和质量验证流程
-- 质量门系统，4个标准5个指标
-
-### Web可视化编辑器（SparkLabs Editor）
-- React + TypeScript + Vite + Tailwind CSS
-- 11个编辑器面板：仪表盘、游戏工作室、模板、故事、资产、语音、分镜、视频、工作流、NPC设计器、Agent面板
-- 实时WebSocket连接引擎后端
-- AI Agent聊天界面，内容生成
-- 可视化工作流画布，拖拽节点
-- NPC人格设计器，特质可视化
-- 故事编辑器，分支叙事支持
+SparkLabs 就是那个引擎。它是定义行业的传统游戏引擎的 AI 原生对应物——不是一个外挂 AI 聊天机器人的渲染管线，而是一个围绕一个信念从第一性原理构建的平台：**AI 不是你调用的工具。它是你构建的地基。**
 
 
-## 安装
+## 为何叫"SparkLabs"？
 
-### 从源码构建C++引擎
+SparkLabs 这个名字承载着刻意的双重含义。
 
-```bash
-# 克隆仓库
-git clone https://github.com/Yuan-ManX/SparkLabs.git
-cd SparkLabs
+Spark（火花）是创造的瞬间——想法的闪现，想象的点燃，新事物诞生的那一刻。在游戏开发中，每一个世界都始于一个火花：一个假设，一个愿景，一个尚未存在之物的梦想。SparkLabs 为捕捉那个火花并将其吹拂成鲜活的、可玩的真实而构建。
 
-# 创建构建目录
-mkdir build && cd build
+在更深的层面，SparkLabs 是一个实验室（Labs）——一个 AI 智能体与人类创作者共同实验、快速迭代、发现任何一方都无法独自触及的游戏可能性的空间。"Labs"是刻意的：它不是生产预定输出的工厂，而是一个欢迎涌现、庆祝意外的工作室。
 
-# 使用CMake配置
-cmake ..
+大多数引擎将 AI 视为生产力工具。SparkLabs 将其视为**创意合作者**——不等待被召唤，而是参与创造行为本身的智能体。
 
-# 构建
-cmake --build . --config Release
-```
 
-### 设置AI后端
+## 创新
 
-```bash
-# 安装Python依赖
-pip install -r backend/requirements.txt
+### 引擎会思考
 
-# 启动后端服务器
-python -m uvicorn backend.app:app --host 0.0.0.0 --port 8090 --reload
-```
+在 SparkLabs 中，引擎不是等待指令的被动运行时。它是开发过程的主动参与者。当你在场景中放置一个实体，智能体分析上下文并建议行为。当你设计一场战斗遭遇，智能体在你按下播放键之前就仿真平衡结果。当你编写一个任务，智能体追踪叙事图寻找矛盾和死路。
 
-### 设置Web编辑器
+这不是一个看着你工作的 AI 助手。这是一个与你一同思考的创意伙伴——它理解你游戏的完整状态，并为其演化贡献力量。
 
-```bash
-# 进入前端目录
-cd frontend
+### 智能体即架构
 
-# 安装依赖
-npm install
+传统引擎暴露供人类调用的 API。SparkLabs 暴露供*智能体*调用的 API——而智能体是引擎本身的一等公民。457 个智能体模块覆盖游戏设计、世界构建、NPC 认知、叙事导演、战斗平衡、实时运营、测试和制作。它们不生活在引擎之外。它们就是引擎。
 
-# 启动开发服务器
-npm run dev
-```
+SparkLabs 中的 NPC 不遵循脚本化的状态机。它拥有认知架构——信念、愿望、意图、记忆、情感、人格特质、注意力机制，以及做梦的能力。它形成随时间加深的关系。它做出的决策从其内部世界模型中涌现，而非来自一个 switch 语句。
+
+### 认知谱系
+
+SparkLabs 不相信一刀切的智能。不同的游戏开发挑战需要不同的推理范式——而引擎的统一认知核心可以在它们之间流畅切换：BDI 用于目标导向行为，HTN 用于分层规划，行为树用于反应式控制，因果图用于理解后果，反事实仿真用于评估替代方案，思维链用于审慎推理。
+
+设计 Boss 遭遇的智能体使用 HTN 分解问题。决定是否逃跑的 NPC 使用 BDI 权衡信念与愿望。检查故事一致性的叙事智能体使用因果推理追踪情节图中的连锁反应。范式服务于任务——而非相反。
+
+### 世界涌现
+
+大多数游戏世界由手工组装——每一次遭遇放置，每一行对话编写，每一个平衡数字通过试玩调优。SparkLabs 将这从组装转变为培育。智能体设计世界、组合资产、导演叙事、平衡经济，并为每位玩家适配实时体验——不是通过僵化的程序化生成，而是通过真正的创意审慎推理。
+
+结果不是随机内容。而是从连贯的创意意图中涌现的内容，由理解设计目标和玩家旅程的智能体塑造。
+
+### 引擎自我测试
+
+当你在 SparkLabs 中修改一个系统，智能体不等待人工 QA 流程。它们仿真。它们生成通关过程，探测边缘情况，搜寻漏洞利用，并将崩溃签名追溯至根因。引擎的 457 个智能体模块包含完整的测试谱系——自主测试器、缺陷猎手、性能分析器，以及仅凭遥测就能复现问题的缺陷取证智能体。
+
+这不是测试自动化。这是测试*智能*——理解游戏应该做什么并验证它仍然如此的智能体。
+
 
 ## 快速开始
 
-### C++引擎
+> SparkLabs 正在积极开发中。完整运行时需要配置 LLM API。
 
-```cpp
-#include <SparkLabs.h>
+```bash
+git clone https://github.com/Yuan-ManX/SparkLabs.git
+cd SparkLabs
 
-using namespace SparkLabs;
+# 启动后端
+pip install -r backend/requirements.txt
+python -m uvicorn backend.app:app
 
-int main() {
-    auto scene = new Scene();
-    scene->SetName("MyGame");
-
-    auto player = scene->CreateEntity("Player");
-    player->SetPosition(Vector3(0.0f, 1.0f, 0.0f));
-    player->SetTag("Player");
-
-    auto npc = scene->CreateEntity("NPC");
-    npc->SetPosition(Vector3(5.0f, 1.0f, 0.0f));
-
-    auto npcBrain = npc->AddComponent<NPCBrainComponent>();
-    npcBrain->LoadModel("models/npc_decision.onnx");
-
-    Engine::GetInstance()->SetScene(scene);
-    Engine::GetInstance()->Run();
-
-    return 0;
-}
+# 启动前端编辑器
+cd frontend/web
+npm install
+npm run dev
 ```
 
-### Python AI Agent
 
-```python
-import asyncio
-from sparkai import SparkAgent, LLMProvider, LLMConfig, AgentCapability, create_engine_tools
+## 特性
 
-async def main():
-    # 创建AI Agent
-    agent = SparkAgent(
-        name="GameDesigner",
-        role="game_designer",
-        capabilities=[
-            AgentCapability.REASONING,
-            AgentCapability.GAMEPLAY_DESIGN,
-            AgentCapability.WORLD_BUILDING,
-        ],
-    )
+| 维度 | 能力 |
+|---|---|
+| **AI 原生 Agent 架构** | 457 个智能体模块，覆盖游戏设计、世界构建、NPC 认知、叙事、战斗、测试和制作。统一认知核心在 BDI、HTN、行为树、因果推理和思维链之间切换。 |
+| **智能 NPC** | 认知架构，10 维人格、7 种情感状态机、四层记忆、注意力机制、梦境仿真、LLM 驱动的上下文感知对话。NPC 是智能体，不是演员。 |
+| **AI 叙事引擎** | 分支故事图、程序化任务生成、从 NPC 交互中涌现的叙事、因果图引擎、用于"如果……会怎样"推理的反事实仿真。 |
+| **全谱物理** | AABB 树宽相位、SAT/GJK 窄相位、连续碰撞检测、软体形变、流体动力学、电磁场、化学反应、热力学、轨道力学。 |
+| **神经渲染** | AI 超分辨率、神经环境光遮蔽、神经抗锯齿、着色器材质图系统、视觉滤镜、光学仿真、自适应渲染。 |
+| **多智能体编排** | 团队角色分配、任务委派、依赖感知调度、投票共识、冲突解决、资源分配、联盟谈判。 |
+| **AI 工作流画布** | 节点图可视化编程，20+ 类型化节点类型覆盖 11 个类别，拓扑执行引擎，每个节点实时预览。 |
+| **自主测试** | 仿真通关、探测边缘情况、搜寻漏洞利用、追踪崩溃签名、从遥测复现缺陷——引擎自我测试。 |
+| **AI 实时运营** | 预测性内容指挥、玩家情感分析、自适应难度、A/B 测试、反作弊导演、实时平衡优化。 |
+| **Web 可视化编辑器** | 40+ 编辑器面板、实时 WebSocket、AI 智能体聊天、可视化工作流画布、NPC 人格设计器、故事编辑器——高对比黑白设计。 |
 
-    # 配置LLM提供商
-    llm = LLMProvider(LLMConfig(
-        provider="openai",
-        model="gpt-5.5",
-        api_key="your-api-key",
-    ))
-    await llm.initialize()
-    agent.set_llm_provider(llm)
 
-    # 注册引擎工具
-    for tool in create_engine_tools():
-        agent.register_tool(tool)
+## 使用场景
 
-    # 使用Agent
-    response = await agent.think("为奇幻RPG设计一个Boss战斗")
-    print(response)
+#### 独立开发者
 
-    # 执行动作
-    result = await agent.act("create_scene", {"name": "Boss竞技场"})
-    print(result)
+一个人，一个愿景，一队智能体。你描述想做的游戏；智能体帮助设计系统、生成资产、编写对话、平衡战斗、测试构建版本。引擎不取代你的创造力——它放大创造力，处理过去需要一整个工作室的部分，让你专注于那个火花。
 
-asyncio.run(main())
-```
+#### 游戏工作室
 
-### Python工作流系统
+一个每位开发者都配有一队智能体的工作室。你的设计师与实时仿真平衡结果的智能体迭代玩法。你的艺术家与协调资产风格和优化性能的智能体协作。你的 QA 团队与永不休眠、在游戏每个角落运行仿真的智能体并肩工作。不是"AI 辅助开发"——只是**开发**，有更强大的队友。
 
-```python
-from sparkai import WorkflowGraph, WorkflowNode, WorkflowExecutor, NodeRegistry
+#### 持续运营游戏
 
-# 创建工作流图
-graph = WorkflowGraph(name="图像生成管线")
+一款会适应的游戏。智能体监控玩家情感，预测流失，在平衡问题成为环境 meta 之前检测到它们，生成针对社区调优的赛季内容，指挥响应房间氛围的实时活动。游戏不等待补丁周期来改进。它在智能体的引导下持续进化——这些智能体对玩家群体的理解和对设计一样深刻。
 
-# 使用节点注册表创建类型化节点
-registry = NodeRegistry.get_instance()
+#### 研究者
 
-prompt = registry.create_node("text_prompt", name="风景提示词")
-prompt.set_property("prompt", "日落时分的美丽风景")
-prompt.position = [100.0, 100.0]
+一个 AI 原生游戏智能的实验室。SparkLabs 为多智能体协作、认知 NPC 架构、涌现叙事、程序化内容生成和自主游戏测试提供全谱实验台——6800+ API 路由和 883,000+ 行智能体代码，随时可扩展、修改和研究。
 
-image_gen = registry.create_node("image_generation", name="生成图像")
-image_gen.set_property("width", 1024)
-image_gen.set_property("height", 1024)
-image_gen.position = [400.0, 100.0]
-
-save = registry.create_node("save_image", name="保存结果")
-save.set_property("output_path", "output/landscape.png")
-save.position = [700.0, 100.0]
-
-# 添加节点并连接
-graph.add_node(prompt)
-graph.add_node(image_gen)
-graph.add_node(save)
-graph.connect(prompt.id, 0, image_gen.id, 0)
-graph.connect(image_gen.id, 0, save.id, 0)
-
-# 执行
-executor = WorkflowExecutor()
-result = await executor.execute(graph)
-```
-
-### Python NPC系统
-
-```python
-from sparkai import NPCBrain, NPCPersonality, PersonalityTraits, BehaviorTree, BehaviorNode
-
-# 创建带人格的NPC
-personality = NPCPersonality(
-    name="贤者长老",
-    traits=PersonalityTraits(
-        courage=0.3, curiosity=0.8, aggression=0.1,
-        friendliness=0.9, honesty=0.9, intelligence=0.95,
-    ),
-    background="一位古老的知识守护者",
-    speech_style="wise",
-)
-
-brain = NPCBrain(personality=personality)
-
-# 添加目标
-brain.add_goal("分享智慧", priority=0.8)
-brain.add_goal("保护图书馆", priority=0.9)
-
-# 创建行为树
-tree = BehaviorTree()
-root = BehaviorNode(name="Root", node_type="selector")
-tree.set_root(root)
-brain.set_behavior_tree(tree)
-
-# 做出决策
-decision = await brain.decide({"player_action": "询问古代神器"})
-dialogue = await brain.generate_dialogue("告诉我关于古代神器的事")
-```
-
-## 文档
-
-完整文档请参阅 [docs](./docs/) 目录：
-- [API参考](./docs/API_REFERENCE.md)
-- [架构](./docs/ARCHITECTURE.md)
-- [AI系统](./docs/AI_SYSTEM.md)
-- [构建说明](./docs/BUILD_INSTRUCTIONS.md)
 
 ## 贡献
 
-欢迎贡献！请在提交Pull Request之前阅读贡献指南。
+欢迎贡献！我们特别欢迎全新的智能体模块、暴露智能体可调用 API 的引擎系统、编辑器面板和 C++ 核心优化。请在提交 Pull Request 之前阅读贡献指南。
+
 
 ## 许可证
 
-SparkLabs引擎采用MIT许可证。详见 [LICENSE](./LICENSE)。
+SparkLabs 采用 MIT 许可证。详见 [LICENSE](./LICENSE)。
 
-## ⭐ Star历史
 
-如果你喜欢这个项目，请⭐给仓库加星。你的支持帮助我们成长！
+## ⭐ Star 历史
+
+如果你喜欢这个项目，请 ⭐ 给仓库加星。你的支持帮助我们成长！
 
 <p align="center">
   <a href="https://star-history.com/#Yuan-ManX/SparkLabs&Date">
