@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect, useMemo } from 'react';
+import { useEditorStore } from '../store/editorStore';
 
 type TransformTool = 'move' | 'rotate' | 'scale';
 
@@ -13,498 +14,161 @@ interface EditorToolbarProps {
   onGoHome?: () => void;
 }
 
-const modeGroups = [
+interface ModeItem {
+  id: string;
+  label: string;
+  icon: string;
+  cat?: 'agent' | 'engine' | 'creative' | 'system' | 'core';
+}
+
+interface ModeGroup {
+  label: string;
+  cat: 'agent' | 'engine' | 'creative' | 'system' | 'core';
+  items: ModeItem[];
+}
+
+export const modeGroups: ModeGroup[] = [
   {
     label: 'Core',
+    cat: 'core',
     items: [
-      { id: 'dashboard', label: 'Editor', icon: 'fa-gamepad' },
-      { id: 'game-preview', label: 'Preview', icon: 'fa-eye' },
-      { id: 'game-studio', label: 'Studio', icon: 'fa-code' },
+      { id: 'dashboard', label: 'Editor', icon: 'fa-grip' },
+      { id: 'ai-native-engine', label: 'AI Native Engine', icon: 'fa-microchip' },
+      { id: 'agent-engine-unified', label: 'Unified Core', icon: 'fa-atom' },
     ],
   },
   {
-    label: 'Design',
+    label: 'AI Agent Studio',
+    cat: 'agent',
     items: [
-      { id: 'blueprint', label: 'Blueprint', icon: 'fa-drafting-compass' },
-      { id: 'story', label: 'Story', icon: 'fa-book' },
-      { id: 'storyboard', label: 'Storyboard', icon: 'fa-film' },
-      { id: 'npc', label: 'NPC', icon: 'fa-robot' },
-      { id: 'dialogue', label: 'Dialogue', icon: 'fa-comments' },
+      { id: 'agent-studio', label: 'Agent Studio', icon: 'fa-brain' },
+      { id: 'agent-cognition', label: 'Cognition', icon: 'fa-lightbulb' },
+      { id: 'agent-memory', label: 'Memory', icon: 'fa-database' },
+      { id: 'agent-reasoning', label: 'Reasoning', icon: 'fa-diagram-project' },
+      { id: 'agent-emotion', label: 'Emotion', icon: 'fa-heart' },
+      { id: 'agent-dialogue', label: 'Dialogue', icon: 'fa-comments' },
+      { id: 'agent-swarm', label: 'Swarm', icon: 'fa-sitemap' },
+      { id: 'agent-testing', label: 'Auto Tester', icon: 'fa-bug-slash' },
     ],
   },
   {
-    label: 'Create',
+    label: 'World & Environment',
+    cat: 'engine',
     items: [
-      { id: 'templates', label: 'Templates', icon: 'fa-puzzle-piece' },
-      { id: 'asset', label: 'Asset Gen', icon: 'fa-image' },
-      { id: 'voice', label: 'Voice', icon: 'fa-microphone' },
-      { id: 'video', label: 'Video', icon: 'fa-video' },
+      { id: 'world-builder', label: 'World Builder', icon: 'fa-globe' },
+      { id: 'terrain-gen', label: 'Terrain', icon: 'fa-mountain' },
+      { id: 'biome-gen', label: 'Biomes', icon: 'fa-tree' },
+      { id: 'weather-sim', label: 'Weather', icon: 'fa-cloud' },
+      { id: 'water-sim', label: 'Water', icon: 'fa-water' },
+      { id: 'ecosystem', label: 'Ecosystem', icon: 'fa-seedling' },
     ],
   },
   {
-    label: 'Visual',
+    label: 'Character & NPC',
+    cat: 'creative',
     items: [
-      { id: 'node-canvas', label: 'Nodes', icon: 'fa-diagram-project' },
-      { id: 'workflow', label: 'Workflow', icon: 'fa-share-nodes' },
-      { id: 'timeline', label: 'Timeline', icon: 'fa-clock' },
+      { id: 'char-forge', label: 'Character Forge', icon: 'fa-person' },
+      { id: 'npc-designer', label: 'NPC Designer', icon: 'fa-robot' },
+      { id: 'personality', label: 'Personality', icon: 'fa-masks-theater' },
+      { id: 'animation', label: 'Animation', icon: 'fa-person-running' },
+      { id: 'voice-actor', label: 'Voice Actor', icon: 'fa-microphone' },
     ],
   },
   {
-    label: 'AI',
+    label: 'Narrative & Story',
+    cat: 'creative',
     items: [
-      { id: 'agent', label: 'Agent', icon: 'fa-brain' },
-      { id: 'intelligence-core', label: 'Intel Core', icon: 'fa-microchip' },
-      { id: 'orchestrator', label: 'Orchestrate', icon: 'fa-sitemap' },
-      { id: 'skill-evolution', label: 'Skills', icon: 'fa-chart-line' },
-      { id: 'studio', label: 'Studio AI', icon: 'fa-users-gear' },
-      { id: 'function-dispatcher', label: 'Dispatcher', icon: 'fa-arrow-right-arrow-left' },
-      { id: 'world-interaction', label: 'World AI', icon: 'fa-globe' },
-      { id: 'creative-director', label: 'Creative', icon: 'fa-lightbulb' },
-      { id: 'live-debugger', label: 'Debugger', icon: 'fa-bug' },
-      { id: 'game-code-generator', label: 'Code Gen', icon: 'fa-code' },
-      { id: 'balance-optimizer', label: 'Balance', icon: 'fa-scale-balanced' },
-      { id: 'agent-engine-orchestrator', label: 'Pipeline', icon: 'fa-diagram-project' },
-      { id: 'llm-pipeline', label: 'LLM Pipeline', icon: 'fa-brain' },
-      { id: 'game-creator', label: 'Game Creator', icon: 'fa-wand-magic-sparkles' },
-      { id: 'swarm-intelligence', label: 'Swarm Intel', icon: 'fa-network-wired' },
+      { id: 'narrative-engine', label: 'Narrative Engine', icon: 'fa-book-open' },
+      { id: 'story-editor', label: 'Story Editor', icon: 'fa-pen-fancy' },
+      { id: 'dialogue-tree', label: 'Dialogue Tree', icon: 'fa-comments' },
+      { id: 'quest-designer', label: 'Quest Designer', icon: 'fa-flag' },
     ],
   },
   {
-    label: 'Engine',
+    label: 'Combat & Balance',
+    cat: 'engine',
     items: [
-      { id: 'sprite-batcher', label: 'Batcher', icon: 'fa-layer-group' },
-      { id: 'visual-event-sheet', label: 'Events', icon: 'fa-list-check' },
-      { id: 'node-composer', label: 'Nodes', icon: 'fa-cubes' },
-      { id: 'particle-system', label: 'Particles', icon: 'fa-wind' },
-      { id: 'tilemap-system', label: 'Tilemap', icon: 'fa-grid-2' },
-      { id: 'input-mapping', label: 'Input', icon: 'fa-keyboard' },
-      { id: 'camera-system', label: 'Camera', icon: 'fa-camera' },
-      { id: 'animation-controller', label: 'Animation', icon: 'fa-film' },
-      { id: 'scene-transition', label: 'Scenes', icon: 'fa-right-left' },
-      { id: 'network-replication', label: 'Network', icon: 'fa-network-wired' },
-      { id: 'terrain-system', label: 'Terrain', icon: 'fa-mountain' },
+      { id: 'combat-system', label: 'Combat System', icon: 'fa-bolt' },
+      { id: 'difficulty-ai', label: 'Difficulty AI', icon: 'fa-gauge-high' },
+      { id: 'economy-sim', label: 'Economy', icon: 'fa-coins' },
+      { id: 'balance-opt', label: 'Balance Optimizer', icon: 'fa-scale-balanced' },
     ],
   },
   {
-    label: 'Pipeline',
+    label: 'Visual & Render',
+    cat: 'engine',
     items: [
-      { id: 'pipeline', label: 'Pipeline', icon: 'fa-arrows-spin' },
-      { id: 'assets', label: 'Assets', icon: 'fa-folder-open' },
-      { id: 'asset-browser', label: 'Library', icon: 'fa-box-open' },
-      { id: 'playtest', label: 'Playtest', icon: 'fa-gamepad' },
+      { id: 'render-pipeline', label: 'Render Pipeline', icon: 'fa-microchip' },
+      { id: 'lighting', label: 'Lighting', icon: 'fa-lightbulb' },
+      { id: 'materials', label: 'Materials', icon: 'fa-palette' },
+      { id: 'particles', label: 'Particles', icon: 'fa-fire' },
+      { id: 'post-fx', label: 'Post FX', icon: 'fa-wand-sparkles' },
+      { id: 'camera-ctrl', label: 'Camera', icon: 'fa-video' },
     ],
   },
   {
-    label: 'Quality',
+    label: 'Physics & Simulation',
+    cat: 'engine',
     items: [
-      { id: 'validator', label: 'Validator', icon: 'fa-check-double' },
-      { id: 'evaluator', label: 'Evaluator', icon: 'fa-star' },
-      { id: 'performance', label: 'Perf', icon: 'fa-gauge-high' },
+      { id: 'physics-engine', label: 'Physics Engine', icon: 'fa-atom' },
+      { id: 'collision-det', label: 'Collision', icon: 'fa-bomb' },
+      { id: 'fluid-sim', label: 'Fluid', icon: 'fa-droplet' },
+      { id: 'cloth-sim', label: 'Cloth', icon: 'fa-shirt' },
+      { id: 'ik-system', label: 'Inverse Kinematics', icon: 'fa-bone' },
     ],
   },
   {
-    label: 'System',
+    label: 'Audio & Music',
+    cat: 'engine',
     items: [
-      { id: 'engine-unification', label: 'Engine Core', icon: 'fa-cogs' },
-      { id: 'composition-graph', label: 'Graph', icon: 'fa-project-diagram' },
-      { id: 'knowledge', label: 'Knowledge', icon: 'fa-lightbulb' },
-      { id: 'lifecycle', label: 'Lifecycle', icon: 'fa-rotate' },
-      { id: 'slash-commands', label: 'Commands', icon: 'fa-terminal' },
-      { id: 'validation-hooks', label: 'Hooks', icon: 'fa-shield-halved' },
-      { id: 'task-executor', label: 'Executor', icon: 'fa-bolt' },
-      { id: 'script-editor', label: 'Script Editor', icon: 'fa-code' },
-      { id: 'settings', label: 'Settings', icon: 'fa-gear' },
+      { id: 'audio-engine', label: 'Audio Engine', icon: 'fa-volume-high' },
+      { id: 'music-gen', label: 'Music Gen', icon: 'fa-music' },
+      { id: 'sfx-gen', label: 'SFX Gen', icon: 'fa-bell' },
+      { id: 'voice-synth', label: 'Voice Synth', icon: 'fa-microphone-lines' },
     ],
   },
   {
-    label: 'Agent Core',
+    label: 'Asset & Pipeline',
+    cat: 'system',
     items: [
-      { id: 'agent-dashboard', label: 'A-Dash', icon: 'fa-chart-pie' },
-      { id: 'agentic-coding', label: 'A-Code', icon: 'fa-laptop-code' },
-      { id: 'conversation-memory', label: 'ConvMem', icon: 'fa-message' },
-      { id: 'context-weaver', label: 'Context', icon: 'fa-wand-magic-sparkles' },
-      { id: 'knowledge-synthesis', label: 'KnowSynth', icon: 'fa-brain' },
-      { id: 'learning-loop-panel', label: 'Learning', icon: 'fa-arrows-rotate' },
-      { id: 'reflection-loop', label: 'Reflect', icon: 'fa-mirror' },
+      { id: 'asset-gen', label: 'Asset Generator', icon: 'fa-folder-open' },
+      { id: 'asset-sync', label: 'Asset Synthesizer', icon: 'fa-wand-magic-sparkles' },
+      { id: 'import-export', label: 'Import / Export', icon: 'fa-file-import' },
+      { id: 'build-pipeline', label: 'Build Pipeline', icon: 'fa-arrows-spin' },
     ],
   },
   {
-    label: 'Memory',
+    label: 'Testing & QA',
+    cat: 'system',
     items: [
-      { id: 'memory-graph', label: 'MemGraph', icon: 'fa-project-diagram' },
-      { id: 'memory-hierarchy', label: 'Hierarchy', icon: 'fa-layer-group' },
-      { id: 'memory-consolidator', label: 'Consolidate', icon: 'fa-compress' },
-      { id: 'memory-orchestrator', label: 'MemOrch', icon: 'fa-sitemap' },
+      { id: 'qa-dashboard', label: 'QA Dashboard', icon: 'fa-clipboard-check' },
+      { id: 'playtest-sim', label: 'Playtest Sim', icon: 'fa-gamepad' },
+      { id: 'bug-hunter', label: 'Bug Hunter', icon: 'fa-bug' },
+      { id: 'perf-monitor', label: 'Performance', icon: 'fa-gauge' },
+      { id: 'security-scan', label: 'Security', icon: 'fa-shield' },
     ],
   },
   {
-    label: 'Reasoning',
+    label: 'System & Tools',
+    cat: 'system',
     items: [
-      { id: 'reasoning-chain', label: 'Reasoning', icon: 'fa-link' },
-      { id: 'chain-of-thought', label: 'CoT', icon: 'fa-thought-bubble' },
-      { id: 'intent-cascade', label: 'Intent', icon: 'fa-arrow-trend-down' },
-      { id: 'intent-router', label: 'Router', icon: 'fa-route' },
-      { id: 'behavior-designer', label: 'Behaviors', icon: 'fa-gears' },
-      { id: 'behavior-library', label: 'BehavLib', icon: 'fa-book' },
-    ],
-  },
-  {
-    label: 'Swarm',
-    items: [
-      { id: 'swarm-planner', label: 'Swarm', icon: 'fa-bugs' },
-      { id: 'multi-agent-coordinator', label: 'MultiAgt', icon: 'fa-users' },
-      { id: 'collaboration-protocol', label: 'Collab', icon: 'fa-handshake' },
-      { id: 'delegation-framework', label: 'Delegate', icon: 'fa-share' },
-      { id: 'delegation-broker', label: 'Broker', icon: 'fa-right-left' },
-    ],
-  },
-  {
-    label: 'Agent Tools',
-    items: [
-      { id: 'agent-gateway', label: 'Gateway', icon: 'fa-door-open' },
-      { id: 'god-mode', label: 'GodMode', icon: 'fa-crown' },
-      { id: 'tool-forge', label: 'ToolForge', icon: 'fa-hammer' },
-      { id: 'skill-forge', label: 'SkillForge', icon: 'fa-fire' },
-      { id: 'skills-hub', label: 'SkillHub', icon: 'fa-layer-group' },
-      { id: 'capability-registry', label: 'Caps', icon: 'fa-list-check' },
-      { id: 'self-optimization', label: 'SelfOpt', icon: 'fa-arrow-up' },
-      { id: 'concurrency-manager', label: 'Concur', icon: 'fa-spinner' },
-      { id: 'cognitive-synthesis', label: 'CogSynth', icon: 'fa-brain' },
-      { id: 'game-intelligence', label: 'GameIntel', icon: 'fa-chess' },
-      { id: 'autonomous-creator', label: 'AutoCreate', icon: 'fa-wand-magic-sparkles' },
-      { id: 'interaction-loop', label: 'IntLoop', icon: 'fa-rotate' },
-    ],
-  },
-  {
-    label: 'Game AI',
-    items: [
-      { id: 'game-design-intelligence', label: 'DesignAI', icon: 'fa-palette' },
-      { id: 'game-forecaster', label: 'Forecast', icon: 'fa-chart-line' },
-      { id: 'game-reasoner', label: 'GameRsn', icon: 'fa-chess' },
-      { id: 'creative-director', label: 'Creative', icon: 'fa-lightbulb' },
-      { id: 'story-forge', label: 'Story', icon: 'fa-feather' },
-      { id: 'quest-generator', label: 'Quests', icon: 'fa-scroll' },
-      { id: 'world-architect', label: 'WorldArc', icon: 'fa-tree' },
-      { id: 'emergent-narrative', label: 'Emergent', icon: 'fa-burst' },
-      { id: 'emotion-synthesis', label: 'Emotion', icon: 'fa-face-smile' },
-      { id: 'dialogue-engine', label: 'Dialogue', icon: 'fa-comment-dots' },
-      { id: 'environment-manager', label: 'EnvMgr', icon: 'fa-cloud-sun' },
-    ],
-  },
-  {
-    label: 'Economy',
-    items: [
-      { id: 'economy-simulator', label: 'Economy', icon: 'fa-coins' },
-      { id: 'monetization-designer', label: 'Monetize', icon: 'fa-dollar-sign' },
-      { id: 'social-simulation', label: 'Social', icon: 'fa-people-arrows' },
-      { id: 'simulation-controller', label: 'SimCtrl', icon: 'fa-sliders' },
-      { id: 'gameplay-ecosystem', label: 'EcoSys', icon: 'fa-leaf' },
-    ],
-  },
-  {
-    label: 'Testing',
-    items: [
-      { id: 'playtest-orchestrator', label: 'Playtest', icon: 'fa-gamepad' },
-      { id: 'playtest-simulator', label: 'PlaySim', icon: 'fa-play' },
-      { id: 'bug-forensics', label: 'BugFix', icon: 'fa-bug-slash' },
-      { id: 'heatmap-analyzer', label: 'Heatmap', icon: 'fa-map' },
-      { id: 'testing-dashboard', label: 'Tests', icon: 'fa-flask' },
-      { id: 'ab-test-runner', label: 'AB Test', icon: 'fa-code-branch' },
-      { id: 'experiment-framework', label: 'Experiments', icon: 'fa-vial' },
-      { id: 'federated-learner', label: 'FedLearn', icon: 'fa-network-wired' },
-      { id: 'audit-trail', label: 'Audit', icon: 'fa-clipboard-list' },
-      { id: 'verification-pipeline', label: 'Verify', icon: 'fa-check-to-slot' },
-      { id: 'security-scanner', label: 'Security', icon: 'fa-shield' },
-    ],
-  },
-  {
-    label: 'ECS',
-    items: [
-      { id: 'ecs-system', label: 'ECS', icon: 'fa-cubes' },
-      { id: 'component-assembler', label: 'Component', icon: 'fa-puzzle-piece' },
-      { id: 'entity-blueprint', label: 'Blueprint', icon: 'fa-clone' },
-      { id: 'prefab-composer', label: 'Prefab', icon: 'fa-boxes-stacked' },
-      { id: 'custom-object-types', label: 'CustomObj', icon: 'fa-shapes' },
-      { id: 'signal-bus', label: 'Signal', icon: 'fa-tower-broadcast' },
-      { id: 'state-synchronizer', label: 'Sync', icon: 'fa-rotate' },
-      { id: 'state-machine-engine', label: 'StateMach', icon: 'fa-diagram-project' },
-    ],
-  },
-  {
-    label: 'Rendering',
-    items: [
-      { id: 'render-pipeline', label: 'RendPipe', icon: 'fa-film' },
-      { id: 'render-layer', label: 'RLayer', icon: 'fa-layer-group' },
-      { id: 'render-pass', label: 'RPass', icon: 'fa-paint-brush' },
-      { id: 'gpu-batch-rendering', label: 'GPU Bat', icon: 'fa-microchip' },
-      { id: 'post-processing', label: 'PostFX', icon: 'fa-wand-magic-sparkles' },
-      { id: 'occlusion-culling', label: 'Occlusion', icon: 'fa-eye-slash' },
-      { id: 'lod-system', label: 'LOD', icon: 'fa-cubes' },
-      { id: 'lod-gate', label: 'LODGate', icon: 'fa-door-open' },
-      { id: 'light-culling', label: 'LightCul', icon: 'fa-lightbulb' },
-      { id: 'lighting-2d', label: 'Light2D', icon: 'fa-sun' },
-      { id: 'shadow-casting', label: 'Shadow', icon: 'fa-moon' },
-      { id: 'skybox-renderer', label: 'Skybox', icon: 'fa-cloud' },
-      { id: 'trail-renderer', label: 'Trails', icon: 'fa-wind' },
-      { id: 'decal-system', label: 'Decals', icon: 'fa-note-sticky' },
-      { id: 'material-graph', label: 'Material', icon: 'fa-circle-nodes' },
-      { id: 'frame-composer', label: 'Frame', icon: 'fa-images' },
-      { id: 'frame-timer', label: 'FPS', icon: 'fa-stopwatch' },
-    ],
-  },
-  {
-    label: 'Audio',
-    items: [
-      { id: 'audio-synthesis', label: 'AudioSyn', icon: 'fa-waveform-lines' },
-      { id: 'audio-layering', label: 'AudioLyr', icon: 'fa-layer-group' },
-      { id: 'interactive-audio', label: 'IAudio', icon: 'fa-headphones' },
-      { id: 'procedural-audio', label: 'ProcAud', icon: 'fa-sliders' },
-    ],
-  },
-  {
-    label: 'Physics',
-    items: [
-      { id: 'physics-world-2d', label: 'Phys2D', icon: 'fa-weight-hanging' },
-      { id: 'physics-material', label: 'PhysMat', icon: 'fa-circle' },
-    ],
-  },
-  {
-    label: 'World',
-    items: [
-      { id: 'world-builder-panel', label: 'World', icon: 'fa-globe' },
-      { id: 'world-composer', label: 'WCompose', icon: 'fa-music' },
-      { id: 'world-simulation', label: 'WSim', icon: 'fa-play' },
-      { id: 'water-simulation', label: 'Water', icon: 'fa-water' },
-      { id: 'weather-system', label: 'Weather', icon: 'fa-cloud-rain' },
-      { id: 'biome-generation', label: 'Biomes', icon: 'fa-tree' },
-      { id: 'procedural-world', label: 'ProcWorld', icon: 'fa-earth-americas' },
-      { id: 'procedural-dungeon', label: 'Dungeon', icon: 'fa-dungeon' },
-      { id: 'procedural-synthesis', label: 'ProcSynth', icon: 'fa-gear' },
-    ],
-  },
-  {
-    label: 'Sprites',
-    items: [
-      { id: 'texture-atlas', label: 'Atlas', icon: 'fa-grid-2' },
-      { id: 'sprite-animator', label: 'SpriteAnm', icon: 'fa-film' },
-      { id: 'skeleton-deformer', label: 'Skeleton', icon: 'fa-bone' },
-    ],
-  },
-  {
-    label: 'AI Nav',
-    items: [
-      { id: 'navmesh-forge', label: 'NavMesh', icon: 'fa-route' },
-      { id: 'pathfinding', label: 'Path', icon: 'fa-location-dot' },
-      { id: 'spatial-cluster', label: 'Spatial', icon: 'fa-cube' },
-    ],
-  },
-  {
-    label: 'Input',
-    items: [
-      { id: 'gesture-recognizer', label: 'Gesture', icon: 'fa-hand-pointer' },
-      { id: 'input-abstraction', label: 'InpAbs', icon: 'fa-i-cursor' },
-      { id: 'input-map', label: 'InpMap', icon: 'fa-keyboard' },
-    ],
-  },
-  {
-    label: 'Camera',
-    items: [
-      { id: 'camera-controller', label: 'Camera', icon: 'fa-camera' },
-      { id: 'parallax-background', label: 'Parallax', icon: 'fa-mountain' },
-    ],
-  },
-  {
-    label: 'Particles',
-    items: [
-      { id: 'particle-emitter', label: 'PrtEmit', icon: 'fa-star' },
-    ],
-  },
-  {
-    label: 'Scene',
-    items: [
-      { id: 'scene-stack', label: 'ScnStack', icon: 'fa-layer-group' },
-      { id: 'game-runtime-orchestrator', label: 'Runtime', icon: 'fa-clock' },
-      { id: 'game-state-analyzer', label: 'State', icon: 'fa-magnifying-glass-chart' },
-    ],
-  },
-  {
-    label: 'Tilemap',
-    items: [
-      { id: 'tile-brush', label: 'Brush', icon: 'fa-paint-brush' },
-      { id: 'tile-map-optimizer', label: 'TMOpt', icon: 'fa-gauge-high' },
-      { id: 'tile-map-runtime', label: 'TMRun', icon: 'fa-play' },
-    ],
-  },
-  {
-    label: 'Pipeline',
-    items: [
-      { id: 'import-pipeline', label: 'Import', icon: 'fa-file-import' },
-      { id: 'build-exporter', label: 'Build', icon: 'fa-hammer' },
-      { id: 'project-exporter', label: 'Export', icon: 'fa-file-export' },
-      { id: 'platform-layer', label: 'Platform', icon: 'fa-desktop' },
-      { id: 'resource-serializer', label: 'ResSer', icon: 'fa-floppy-disk' },
-      { id: 'asset-streamer', label: 'Stream', icon: 'fa-truck-fast' },
-      { id: 'asset-bundler', label: 'Bundle', icon: 'fa-box' },
-      { id: 'asset-harmonizer', label: 'Harmony', icon: 'fa-wand-magic-sparkles' },
-      { id: 'asset-synthesizer', label: 'Synth', icon: 'fa-microchip' },
-      { id: 'profile-loader', label: 'Profile', icon: 'fa-address-card' },
-      { id: 'progressive-loading', label: 'ProgLoad', icon: 'fa-spinner' },
-    ],
-  },
-  {
-    label: 'UX',
-    items: [
-      { id: 'visual-scripting-panel', label: 'VisScript', icon: 'fa-code' },
-      { id: 'visual-script-runtime', label: 'VSRun', icon: 'fa-terminal' },
-      { id: 'event-scripting', label: 'Event', icon: 'fa-bolt' },
-      { id: 'engine-environment-manager', label: 'Env', icon: 'fa-gear' },
-      { id: 'persona-vault', label: 'Persona', icon: 'fa-user-secret' },
-      { id: 'personality-system', label: 'Personality', icon: 'fa-face-smile' },
-      { id: 'agent-cron-scheduler', label: 'Cron', icon: 'fa-calendar' },
-      { id: 'document-synthesizer', label: 'Docs', icon: 'fa-file-lines' },
-      { id: 'developer-oracle', label: 'Oracle', icon: 'fa-gem' },
-      { id: 'prompt-optimizer', label: 'Prompt', icon: 'fa-wand-magic-sparkles' },
-      { id: 'provider-switch', label: 'Provider', icon: 'fa-exchange-alt' },
-      { id: 'streaming-scrubber', label: 'Stream', icon: 'fa-broom' },
-      { id: 'session-nexus', label: 'Session', icon: 'fa-right-to-bracket' },
-      { id: 'session-snapshot', label: 'Snapshot', icon: 'fa-camera' },
-      { id: 'tool-registry', label: 'Tools', icon: 'fa-toolbox' },
-      { id: 'telemetry-pipeline', label: 'Telemetry', icon: 'fa-chart-simple' },
-      { id: 'journal-system', label: 'Journal', icon: 'fa-book' },
-      { id: 'kanban-coordinator', label: 'Kanban', icon: 'fa-columns' },
-      { id: 'localization-hub', label: 'Locales', icon: 'fa-language' },
-      { id: 'extension-sdk', label: 'SDK', icon: 'fa-puzzle-piece' },
-      { id: 'insights-generator', label: 'Insights', icon: 'fa-lightbulb' },
-      { id: 'ecosystem-hub', label: 'EcoHub', icon: 'fa-hubspot' },
-      { id: 'interaction-synthesis', label: 'Interact', icon: 'fa-hand-sparkles' },
-      { id: 'interaction-designer', label: 'IntDes', icon: 'fa-compass-drafting' },
-      { id: 'narrative-branch', label: 'Narrative', icon: 'fa-code-branch' },
-    ],
-  },
-  {
-    label: 'Agent Intel',
-    items: [
-      { id: 'theory-of-mind', label: 'TheoryMind', icon: 'fa-brain' },
-      { id: 'counterfactual-simulator', label: 'CounterFact', icon: 'fa-code-branch' },
-      { id: 'skill-lifecycle', label: 'SkillLife', icon: 'fa-arrows-spin' },
-      { id: 'timeline-brancher', label: 'Timeline', icon: 'fa-clock-rotate-left' },
-      { id: 'llm-orchestrator', label: 'LLM Orche', icon: 'fa-robot' },
-      { id: 'experience-memory', label: 'ExpMem', icon: 'fa-database' },
-    ],
-  },
-  {
-    label: 'Simulation',
-    items: [
-      { id: 'ecosystem-dynamics', label: 'EcoDyn', icon: 'fa-leaf' },
-      { id: 'civilization-evolution', label: 'CivEvo', icon: 'fa-landmark' },
-      { id: 'procedural-city', label: 'CityGen', icon: 'fa-city' },
-      { id: 'flow-state-monitor', label: 'FlowMon', icon: 'fa-wave-square' },
-      { id: 'physics-engine', label: 'Physics', icon: 'fa-weight-hanging' },
-      { id: 'behavior-engine', label: 'Behavior', icon: 'fa-gears' },
-      { id: 'input-management', label: 'InpMgr', icon: 'fa-keyboard' },
-      { id: 'scene-lifecycle', label: 'ScnLife', icon: 'fa-film' },
-      { id: 'agent-blackboard', label: 'Blkbrd', icon: 'fa-chalkboard' },
-      { id: 'agent-htn-planner', label: 'HTN', icon: 'fa-diagram-project' },
-      { id: 'agent-belief-reputation', label: 'Belief', icon: 'fa-scale-balanced' },
-      { id: 'engine-job-system', label: 'JobSys', icon: 'fa-server' },
-      { id: 'engine-cloth-physics', label: 'Cloth', icon: 'fa-shirt' },
-      { id: 'engine-lightmapping', label: 'LightMap', icon: 'fa-lightbulb' },
-    ],
-  },
-  {
-    label: 'Visual FX',
-    items: [
-      { id: 'volumetric-rendering', label: 'Volumetric', icon: 'fa-cube' },
-      { id: 'fluid-dynamics', label: 'Fluid', icon: 'fa-droplet' },
-      { id: 'procedural-animation', label: 'ProcAnim', icon: 'fa-film' },
-      { id: 'object-pool', label: 'ObjPool', icon: 'fa-layer-group' },
-    ],
-  },
-  {
-    label: 'World AI',
-    items: [
-      { id: 'crowd-dynamics', label: 'Crowd', icon: 'fa-people-group' },
-      { id: 'world-perception', label: 'WrldPerc', icon: 'fa-eye' },
-      { id: 'dynamic-narrative', label: 'DynNarr', icon: 'fa-book-open' },
-      { id: 'world-simulator', label: 'WrldSim', icon: 'fa-globe' },
-      { id: 'scene-director', label: 'ScnDir', icon: 'fa-clapperboard' },
-      { id: 'world-streamer', label: 'WrldStrm', icon: 'fa-stream' },
-    ],
-  },
-  {
-    label: 'Cognition',
-    items: [
-      { id: 'metacognition', label: 'MetaCog', icon: 'fa-brain' },
-      { id: 'predictive-intelligence', label: 'PredIntel', icon: 'fa-chart-line' },
-      { id: 'causal-reasoning', label: 'Causal', icon: 'fa-link' },
-      { id: 'multi-objective', label: 'MultiObj', icon: 'fa-bullseye' },
-      { id: 'self-evolution', label: 'SelfEvo', icon: 'fa-dna' },
-      { id: 'layered-memory', label: 'LayerMem', icon: 'fa-memory' },
-    ],
-  },
-  {
-    label: 'Agent Systems',
-    items: [
-      { id: 'skill-accumulator', label: 'SkillAcc', icon: 'fa-plus' },
-      { id: 'emergent-storyteller', label: 'EmrgStory', icon: 'fa-feather' },
-      { id: 'runtime-scripting', label: 'RunScript', icon: 'fa-code' },
-    ],
-  },
-  {
-    label: 'Editor Tools',
-    items: [
-      { id: 'node-editor-panel', label: 'NodeEdit', icon: 'fa-project-diagram' },
-      { id: 'scene-serializer', label: 'SceneSer', icon: 'fa-save' },
-      { id: 'engine-signal-bus', label: 'SigBus', icon: 'fa-bolt' },
-    ],
-  },
-  {
-    label: 'Story AI',
-    items: [
-      { id: 'agent-procedural-story', label: 'StoryAI', icon: 'fa-feather' },
-      { id: 'agent-game-designer', label: 'DesignAI', icon: 'fa-palette' },
-      { id: 'agent-emotion-affect', label: 'Emotion', icon: 'fa-face-smile' },
-      { id: 'agent-player-modeler', label: 'PlayerAI', icon: 'fa-user-gear' },
-      { id: 'agent-autonomous-tester', label: 'TestAI', icon: 'fa-flask' },
-    ],
-  },
-  {
-    label: 'Agent Net',
-    items: [
-      { id: 'agent-game-engine-bridge', label: 'Bridge', icon: 'fa-bridge-water' },
-      { id: 'agent-performance-optimizer', label: 'PerfOpt', icon: 'fa-gauge-high' },
-      { id: 'agent-multi-agent-protocol', label: 'MultiAg', icon: 'fa-network-wired' },
-    ],
-  },
-  {
-    label: 'Engine Ext',
-    items: [
-      { id: 'engine-spatial-partition', label: 'Spatial', icon: 'fa-cube' },
-      { id: 'engine-inverse-kinematics', label: 'IK', icon: 'fa-bone' },
-      { id: 'engine-save-system', label: 'SaveSys', icon: 'fa-floppy-disk' },
-      { id: 'engine-event-system', label: 'EventSys', icon: 'fa-bolt' },
-      { id: 'engine-fluid-simulation', label: 'FluidSim', icon: 'fa-droplet' },
-      { id: 'render-pipeline', label: 'Render Pipeline', icon: 'fa-palette' },
-      { id: 'scene-graph', label: 'Scene Graph', icon: 'fa-code-branch' },
-      { id: 'ai-system', label: 'AI System', icon: 'fa-microchip' },
-    ],
-  },
-  {
-    label: 'Engine New',
-    items: [
-      { id: 'engine-post-processing', label: 'PostFX', icon: 'fa-wand-magic-sparkles' },
-      { id: 'engine-ui-system', label: 'UI', icon: 'fa-window-maximize' },
-      { id: 'engine-network-sync', label: 'NetSync', icon: 'fa-wifi' },
-      { id: 'engine-performance-monitor', label: 'PerfMon', icon: 'fa-chart-line' },
-    ],
-  },
-  {
-    label: 'Block System',
-    items: [
-      { id: 'block-programmer', label: 'BlockProg', icon: 'fa-cubes' },
+      { id: 'node-editor', label: 'Node Editor', icon: 'fa-diagram-project' },
+      { id: 'signal-bus', label: 'Signal Bus', icon: 'fa-tower-broadcast' },
+      { id: 'state-machine', label: 'State Machine', icon: 'fa-sitemap' },
+      { id: 'visual-script', label: 'Visual Script', icon: 'fa-code' },
+      { id: 'event-system', label: 'Event System', icon: 'fa-bolt' },
+      { id: 'llm-router', label: 'LLM Router', icon: 'fa-route' },
     ],
   },
 ];
+
+const categoryConfig: Record<string, { label: string; color: string; icon: string }> = {
+  core: { label: 'Core', color: 'text-[#e2e8f0]', icon: 'fa-cube' },
+  agent: { label: 'AI Agents', color: 'text-orange-500', icon: 'fa-brain' },
+  engine: { label: 'Game Engine', color: 'text-sky-400', icon: 'fa-microchip' },
+  creative: { label: 'Creative Tools', color: 'text-purple-400', icon: 'fa-wand-magic-sparkles' },
+  system: { label: 'System & Testing', color: 'text-green-400', icon: 'fa-gear' },
+};
 
 const EditorToolbar: React.FC<EditorToolbarProps> = ({
   currentTool,
@@ -519,14 +183,57 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const [showModeMenu, setShowModeMenu] = useState(false);
   const [showFileMenu, setShowFileMenu] = useState(false);
   const [showViewMenu, setShowViewMenu] = useState(false);
+  const [modeSearch, setModeSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState<string>('all');
+  const modeMenuRef = useRef<HTMLDivElement>(null);
+  const searchRef = useRef<HTMLInputElement>(null);
+
+  // Right sidebar collapse state from editor store
+  const rightPanelCollapsed = useEditorStore((s) => s.rightPanelCollapsed);
+  const setRightPanelCollapsed = useEditorStore((s) => s.setRightPanelCollapsed);
+
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (modeMenuRef.current && !modeMenuRef.current.contains(e.target as Node)) {
+        setShowModeMenu(false);
+        setShowFileMenu(false);
+        setShowViewMenu(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  useEffect(() => {
+    if (showModeMenu && searchRef.current) {
+      searchRef.current.focus();
+    }
+  }, [showModeMenu]);
 
   const closeAllMenus = () => {
     setShowModeMenu(false);
     setShowFileMenu(false);
     setShowViewMenu(false);
+    setModeSearch('');
+    setActiveCategory('all');
   };
 
   const activeModeItem = modeGroups.flatMap((g) => g.items).find((i) => i.id === activeMode);
+
+  const filteredGroups = useMemo(() => {
+    const search = modeSearch.toLowerCase().trim();
+    return modeGroups
+      .filter((g) => activeCategory === 'all' || g.cat === activeCategory)
+      .map((g) => ({
+        ...g,
+        items: g.items.filter((i) =>
+          !search || i.label.toLowerCase().includes(search) || i.id.toLowerCase().includes(search)
+        ),
+      }))
+      .filter((g) => g.items.length > 0);
+  }, [modeSearch, activeCategory]);
+
+  const totalModes = modeGroups.reduce((sum, g) => sum + g.items.length, 0);
 
   return (
     <div className="h-10 bg-[#0d0d0d] border-b border-[#1e1e1e] flex items-center px-2 gap-1 shrink-0">
@@ -619,7 +326,8 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
 
       <div className="w-px h-5 bg-[#1e1e1e]" />
 
-      <div className="relative">
+      {/* Mode selector with search */}
+      <div className="relative" ref={modeMenuRef}>
         <button
           onClick={() => { closeAllMenus(); setShowModeMenu(!showModeMenu); }}
           className="flex items-center gap-1.5 px-2 py-1 text-[11px] text-[#999] hover:text-[#ddd] hover:bg-[#1a1a1a] rounded transition-colors"
@@ -632,31 +340,88 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
           ) : (
             <>
               <i className="fa-solid fa-layer-group text-[9px]" />
-              <span>Mode</span>
+              <span>Modules</span>
             </>
           )}
           <i className="fa-solid fa-chevron-down text-[7px] text-[#555]" />
         </button>
         {showModeMenu && (
-          <div className="absolute top-full left-0 mt-1 bg-[#161616] border border-[#2a2a2a] rounded-lg py-1 z-50 min-w-[180px] shadow-xl max-h-[70vh] overflow-y-auto">
-            {modeGroups.map((group) => (
-              <div key={group.label}>
-                <div className="px-3 py-1 text-[9px] font-bold text-[#444] uppercase tracking-wider">{group.label}</div>
-                {group.items.map((item) => (
+          <div className="absolute top-full left-0 mt-1 bg-[#0d0d0d] border border-[#222] rounded-lg z-50 w-[420px] shadow-2xl">
+            {/* Search bar */}
+            <div className="p-2.5 border-b border-[#1a1a1a]">
+              <div className="relative">
+                <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-[#444]" />
+                <input
+                  ref={searchRef}
+                  type="text"
+                  value={modeSearch}
+                  onChange={(e) => setModeSearch(e.target.value)}
+                  placeholder={`Search ${totalModes} modules...`}
+                  className="w-full bg-[#0a0a0a] border border-[#1e1e1e] rounded-lg pl-8 pr-3 py-1.5 text-[11px] text-[#ccc] placeholder-[#444] outline-none focus:border-orange-900/40"
+                />
+              </div>
+              {/* Category tabs */}
+              <div className="flex items-center gap-1 mt-2">
+                <button
+                  onClick={() => setActiveCategory('all')}
+                  className={`px-2 py-0.5 rounded text-[9px] font-medium transition-colors ${
+                    activeCategory === 'all' ? 'bg-[#222] text-[#ddd]' : 'text-[#555] hover:text-[#777]'
+                  }`}
+                >
+                  All
+                </button>
+                {Object.entries(categoryConfig).map(([key, cfg]) => (
                   <button
-                    key={item.id}
-                    onClick={() => { onModeSwitch(item.id); closeAllMenus(); }}
-                    className={`w-full text-left px-3 py-1.5 text-[11px] hover:bg-[#222] transition-colors flex items-center gap-2 ${
-                      activeMode === item.id ? 'text-orange-500 bg-orange-500/5' : 'text-[#888]'
+                    key={key}
+                    onClick={() => setActiveCategory(key)}
+                    className={`px-2 py-0.5 rounded text-[9px] font-medium transition-colors flex items-center gap-1 ${
+                      activeCategory === key ? 'bg-[#222] text-[#ddd]' : 'text-[#555] hover:text-[#777]'
                     }`}
                   >
-                    <i className={`fa-solid ${item.icon} text-[9px] w-4 text-center ${activeMode === item.id ? 'text-orange-500' : 'text-[#555]'}`} />
-                    {item.label}
+                    <i className={`fa-solid ${cfg.icon} text-[7px]`} />
+                    {cfg.label}
                   </button>
                 ))}
-                <div className="border-t border-[#1e1e1e] my-0.5" />
               </div>
-            ))}
+            </div>
+            {/* Results */}
+            <div className="max-h-[60vh] overflow-y-auto p-1.5">
+              {filteredGroups.length === 0 ? (
+                <div className="py-8 text-center text-[11px] text-[#444]">
+                  <i className="fa-solid fa-magnifying-glass-minus text-lg mb-2 opacity-30" />
+                  <div>No modules found for "{modeSearch}"</div>
+                </div>
+              ) : (
+                filteredGroups.map((group) => {
+                  const cfg = categoryConfig[group.cat] || categoryConfig.system;
+                  return (
+                    <div key={group.label} className="mb-1">
+                      <div className="flex items-center gap-1.5 px-2 py-1">
+                        <i className={`fa-solid ${cfg.icon} text-[8px] ${cfg.color}`} />
+                        <span className="text-[9px] font-bold text-[#555] uppercase tracking-wider">{group.label}</span>
+                        <span className="text-[8px] text-[#333]">({group.items.length})</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-0.5">
+                        {group.items.map((item) => (
+                          <button
+                            key={item.id}
+                            onClick={() => { onModeSwitch(item.id); closeAllMenus(); }}
+                            className={`flex items-center gap-2 px-2 py-1.5 rounded text-[10px] transition-colors text-left ${
+                              activeMode === item.id
+                                ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
+                                : 'text-[#888] hover:bg-[#141414] border border-transparent'
+                            }`}
+                          >
+                            <i className={`fa-solid ${item.icon} text-[9px] ${activeMode === item.id ? 'text-orange-500' : 'text-[#555]'} flex-shrink-0 w-3 text-center`} />
+                            <span className="truncate">{item.label}</span>
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })
+              )}
+            </div>
           </div>
         )}
       </div>
@@ -685,9 +450,14 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
 
       <div className="w-px h-5 bg-[#1e1e1e]" />
 
-      <div className="w-7 h-7 bg-gradient-to-br from-orange-500 to-red-600 rounded-md flex items-center justify-center text-[10px] font-bold text-white cursor-pointer">
-        S
-      </div>
+      {/* Right sidebar toggle — collapses/expands the inspector panel */}
+      <button
+        onClick={() => setRightPanelCollapsed(!rightPanelCollapsed)}
+        className="w-7 h-7 rounded-md bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center text-[#888] hover:text-orange-500 cursor-pointer transition-colors"
+        title={rightPanelCollapsed ? 'Show Inspector Panel' : 'Hide Inspector Panel'}
+      >
+        <i className={`fa-solid ${rightPanelCollapsed ? 'fa-chevron-left' : 'fa-chevron-right'} text-[9px]`} />
+      </button>
     </div>
   );
 };
