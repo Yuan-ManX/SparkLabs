@@ -289,6 +289,21 @@ def _safe_float(value: float) -> Optional[float]:
     return f
 
 
+def _coerce_material(value) -> GranularMaterial:
+    """Coerce a string or GranularMaterial to a GranularMaterial enum member."""
+    if isinstance(value, GranularMaterial):
+        return value
+    if isinstance(value, str):
+        try:
+            return GranularMaterial(value.lower())
+        except ValueError:
+            try:
+                return GranularMaterial[value.upper()]
+            except KeyError:
+                return GranularMaterial.SAND
+    return GranularMaterial.SAND
+
+
 def _clamp(value: float, low: float, high: float) -> float:
     """Clamp ``value`` to the closed interval ``[low, high]``."""
     if value < low:
@@ -1103,6 +1118,7 @@ class _GranularPhysicsSystem:
         Falls back to a default properties instance if the material has no
         preset entry.
         """
+        material = _coerce_material(material)
         props = self._materials.get(material)
         if props is None:
             props = MaterialProperties(material=material)
@@ -1114,6 +1130,7 @@ class _GranularPhysicsSystem:
         Accepts keyword arguments matching MaterialProperties fields:
         density, friction_angle, cohesion, percolation_rate, color.
         """
+        material = _coerce_material(material)
         with self._lock:
             current = self._materials.get(material, MaterialProperties(material=material))
             if "density" in kwargs:
@@ -1274,6 +1291,8 @@ class _GranularPhysicsSystem:
         self, material: Optional[GranularMaterial] = None
     ) -> List[GranularParticle]:
         """Return a list of particles, optionally filtered by material."""
+        if material is not None:
+            material = _coerce_material(material)
         with self._lock:
             if material is None:
                 return list(self._particles.values())
@@ -1289,6 +1308,7 @@ class _GranularPhysicsSystem:
         self, material: GranularMaterial
     ) -> int:
         """Return the number of active particles of the given material."""
+        material = _coerce_material(material)
         with self._lock:
             ids = self._particles_by_material.get(material, [])
             return sum(1 for pid in ids if pid in self._particles)
@@ -1404,6 +1424,7 @@ class _GranularPhysicsSystem:
         height. The pile's angle of repose is derived from the material
         friction angle.
         """
+        material = _coerce_material(material)
         with self._lock:
             pile = GranularPile(
                 name=name,
@@ -1581,10 +1602,12 @@ class _GranularPhysicsSystem:
     # Simulation lifecycle
     # ------------------------------------------------------------------
 
-    def initialize(self, config: Optional[GranularConfig] = None) -> None:
+    def initialize(self, config=None) -> None:
         """Initialize or re-initialize the simulation with optional config."""
         with self._lock:
             if config is not None:
+                if isinstance(config, dict):
+                    config = GranularConfig.from_dict(config)
                 self._config = config
             self._domain = self._config.domain
             self._sim_time = 0.0
@@ -2327,6 +2350,7 @@ class _GranularPhysicsSystem:
         where c is cohesion, rho is bulk density, g is gravity, and d is a
         representative particle diameter.
         """
+        material = _coerce_material(material)
         props = self._materials.get(material)
         if props is None:
             return 30.0
@@ -2782,6 +2806,7 @@ class _GranularPhysicsSystem:
         Returns a dict with the bottom pressure, hydrostatic reference, and
         saturation pressure.
         """
+        material = _coerce_material(material)
         props = self._materials.get(material)
         rho = props.density if props else 1600.0
         if wall_friction is None:
@@ -3243,6 +3268,8 @@ class _GranularPhysicsSystem:
         self, material: Optional[GranularMaterial] = None
     ) -> float:
         """Return the total mass of particles, optionally filtered by material."""
+        if material is not None:
+            material = _coerce_material(material)
         with self._lock:
             if material is None:
                 return sum(p.mass for p in self._particles.values())
@@ -3257,6 +3284,8 @@ class _GranularPhysicsSystem:
         self, material: Optional[GranularMaterial] = None
     ) -> float:
         """Return the total particle volume, optionally filtered by material."""
+        if material is not None:
+            material = _coerce_material(material)
         with self._lock:
             if material is None:
                 return sum(p.volume() for p in self._particles.values())
@@ -3271,6 +3300,8 @@ class _GranularPhysicsSystem:
         self, material: Optional[GranularMaterial] = None
     ) -> float:
         """Return the total translational kinetic energy in Joules."""
+        if material is not None:
+            material = _coerce_material(material)
         with self._lock:
             if material is None:
                 return sum(
@@ -3290,6 +3321,8 @@ class _GranularPhysicsSystem:
 
         PE = m * g * y, summed over all non-static particles.
         """
+        if material is not None:
+            material = _coerce_material(material)
         g = self._config.gravity
         with self._lock:
             if material is None:
@@ -3309,6 +3342,8 @@ class _GranularPhysicsSystem:
         self, material: Optional[GranularMaterial] = None
     ) -> float:
         """Return the sum of kinetic and potential energy in Joules."""
+        if material is not None:
+            material = _coerce_material(material)
         return self.compute_kinetic_energy(material) + self.compute_potential_energy(
             material
         )
@@ -3317,6 +3352,8 @@ class _GranularPhysicsSystem:
         self, material: Optional[GranularMaterial] = None
     ) -> Tuple[float, float, float]:
         """Return the total linear momentum vector (kg*m/s)."""
+        if material is not None:
+            material = _coerce_material(material)
         with self._lock:
             px = 0.0
             py = 0.0
@@ -3345,6 +3382,8 @@ class _GranularPhysicsSystem:
 
         Returns (0, 0, 0) if there are no particles.
         """
+        if material is not None:
+            material = _coerce_material(material)
         with self._lock:
             total_mass = 0.0
             mx = 0.0
@@ -3412,6 +3451,8 @@ class _GranularPhysicsSystem:
         self, material: Optional[GranularMaterial] = None
     ) -> float:
         """Return the mean speed of non-static particles in m/s."""
+        if material is not None:
+            material = _coerce_material(material)
         with self._lock:
             if material is None:
                 iterator: Iterable[GranularParticle] = self._particles.values()
@@ -3435,6 +3476,8 @@ class _GranularPhysicsSystem:
         self, material: Optional[GranularMaterial] = None
     ) -> float:
         """Return the maximum speed of any non-static particle in m/s."""
+        if material is not None:
+            material = _coerce_material(material)
         with self._lock:
             if material is None:
                 iterator: Iterable[GranularParticle] = self._particles.values()
@@ -3474,6 +3517,8 @@ class _GranularPhysicsSystem:
         Returns a dict with bin edges, counts, and summary statistics
         (min, max, mean, median radius).
         """
+        if material is not None:
+            material = _coerce_material(material)
         with self._lock:
             if material is None:
                 radii = [p.radius for p in self._particles.values()]
@@ -3735,6 +3780,7 @@ class _GranularPhysicsSystem:
 
         Returns the new particle id, or an empty string if the cap is reached.
         """
+        material = _coerce_material(material)
         template = self._make_template_particle(material)
         particle = GranularParticle(
             position=(float(position[0]), float(position[1]), float(position[2])),
@@ -3762,6 +3808,7 @@ class _GranularPhysicsSystem:
         Particles are given random outward velocities with magnitude up to
         ``speed``. Returns the number actually spawned.
         """
+        material = _coerce_material(material)
         import random
 
         spawned = 0
