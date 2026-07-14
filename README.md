@@ -15,7 +15,7 @@ Where AI Agents design worlds, direct narratives, and breathe life into every pi
 
 ![SparkLabs-Video](./assets/SparkLabs-Video.gif)
 
-[Website](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](#what-is-sparklabs) · [Innovation](#innovation) · [Quickstart](#quick-start) · [Architecture](#features) · [Contributing](#contributing)
+[Website](https://yuan-manx.github.io/SparkLabs/) · [SparkLabs](#what-is-sparklabs) · [Innovation](#innovation) · [Quickstart](#quick-start) · [Features](#features) · [Contributing](#contributing)
 
 #### [English](./README.md) | [中文文档](./README_CN.md)
 
