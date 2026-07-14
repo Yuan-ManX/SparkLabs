@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { knowledgeApi } from '../utils/api';
+import { knowledgeGraphApi } from '../utils/api';
 
 type TabType = 'nodes' | 'patterns' | 'search';
 
@@ -42,7 +42,7 @@ const KnowledgeExplorer: React.FC = () => {
   const loadNodes = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await knowledgeApi.listNodes(filterDomain || undefined);
+      const res = await knowledgeGraphApi.listNodes(filterDomain || undefined);
       setNodes((res as any)?.nodes || (res as any) || []);
     } catch (e) { /* ignore */ }
     setLoading(false);
@@ -51,7 +51,7 @@ const KnowledgeExplorer: React.FC = () => {
   const loadPatterns = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await knowledgeApi.listPatterns();
+      const res = await knowledgeGraphApi.listPatterns();
       setPatterns((res as any)?.patterns || (res as any) || []);
     } catch (e) { /* ignore */ }
     setLoading(false);
@@ -59,7 +59,7 @@ const KnowledgeExplorer: React.FC = () => {
 
   const loadStats = useCallback(async () => {
     try {
-      const res = await knowledgeApi.stats();
+      const res = await knowledgeGraphApi.stats();
       setStats(res);
     } catch (e) { /* ignore */ }
   }, []);
@@ -74,7 +74,7 @@ const KnowledgeExplorer: React.FC = () => {
     if (!searchQuery.trim()) return;
     setLoading(true);
     try {
-      const res = await knowledgeApi.search(searchQuery, filterDomain || undefined);
+      const res = await knowledgeGraphApi.search(searchQuery, filterDomain || undefined);
       setSearchResults((res as any)?.results || (res as any) || []);
     } catch (e) { /* ignore */ }
     setLoading(false);
@@ -82,18 +82,18 @@ const KnowledgeExplorer: React.FC = () => {
 
   const handleSelectNode = async (nodeId: string) => {
     try {
-      const node = await knowledgeApi.getNode(nodeId);
+      const node = await knowledgeGraphApi.getNode(nodeId);
       setSelectedNode(node);
-      const related = await knowledgeApi.getRelated(nodeId);
+      const related = await knowledgeGraphApi.getRelated(nodeId);
       setRelatedNodes((related as any) || []);
-      const rels = await knowledgeApi.listRelations(nodeId);
+      const rels = await knowledgeGraphApi.listRelations(nodeId);
       setRelations((rels as any)?.relations || (rels as any) || []);
     } catch (e) { /* ignore */ }
   };
 
   const handleCreateNode = async () => {
     try {
-      await knowledgeApi.addNode('New Knowledge Node', filterDomain || 'game_design');
+      await knowledgeGraphApi.addNode('New Knowledge Node', filterDomain || 'game_design');
       loadNodes();
     } catch (e) { /* ignore */ }
   };
