@@ -767,7 +767,7 @@ const GameEditor: React.FC = () => {
             <Download className="w-5 h-5" />
             Export
           </button>
-          <button className="p-3 bg-slate-700 hover:bg-slate-600 rounded-xl transition-colors">
+          <button className="p-3 bg-[#1a1a1a] hover:bg-[#222] rounded-xl transition-colors">
             <Save className="w-5 h-5" />
           </button>
         </div>
@@ -785,7 +785,7 @@ const GameEditor: React.FC = () => {
                 key={s.id}
                 onClick={() => setCurrentScene(s.id)}
                 className={`w-full text-left px-5 py-3 rounded-xl transition-all mb-2 text-sm flex items-center gap-3 ${
-                  currentScene === s.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-slate-700 text-slate-300'
+                  currentScene === s.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-slate-300'
                 }`}
               >
                 <Box className="w-4 h-4" />
@@ -805,7 +805,7 @@ const GameEditor: React.FC = () => {
                   key={tileDef.type}
                   onClick={() => setSelectedTileType(tileDef.type)}
                   className={`aspect-square rounded-xl border-3 transition-all duration-200 flex items-center justify-center ${
-                    selectedTileType === tileDef.type ? 'border-purple-400 scale-110 shadow-xl' : 'border-slate-600 hover:border-slate-400'
+                    selectedTileType === tileDef.type ? 'border-purple-400 scale-110 shadow-xl' : 'border-slate-600 hover:border-[#333]'
                   }`}
                   style={{ 
                     backgroundColor: tileDef.type === 0 ? '#0f172a' : tileDef.color,
@@ -822,7 +822,7 @@ const GameEditor: React.FC = () => {
             </div>
             <button
               onClick={clearTilemap}
-              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-slate-700 hover:bg-slate-600 rounded-xl text-sm transition-all"
+              className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-[#1a1a1a] hover:bg-[#222] rounded-xl text-sm transition-all"
             >
               <RotateCcw className="w-4 h-4" />
               Clear Tilemap
@@ -840,7 +840,7 @@ const GameEditor: React.FC = () => {
                   key={obj.id}
                   onClick={() => setSelectedObject(obj.id)}
                   className={`w-full text-left px-4 py-3 rounded-xl transition-all text-sm flex items-center gap-3 ${
-                    selectedObject === obj.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-slate-700 text-slate-300'
+                    selectedObject === obj.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-slate-300'
                   }`}
                 >
                   <div
@@ -939,7 +939,7 @@ const GameEditor: React.FC = () => {
                       type="text"
                       value={selectedObj.name}
                       onChange={(e) => updateObjectProperty('name', e.target.value)}
-                      className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500 transition-all"
+                      className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500 transition-all"
                     />
                   </div>
                   
@@ -950,7 +950,7 @@ const GameEditor: React.FC = () => {
                         type="number"
                         value={selectedObj.x}
                         onChange={(e) => updateObjectProperty('x', Number(e.target.value))}
-                        className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
                       />
                     </div>
                     <div>
@@ -959,7 +959,7 @@ const GameEditor: React.FC = () => {
                         type="number"
                         value={selectedObj.y}
                         onChange={(e) => updateObjectProperty('y', Number(e.target.value))}
-                        className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
                       />
                     </div>
                   </div>
@@ -971,7 +971,7 @@ const GameEditor: React.FC = () => {
                         type="number"
                         value={selectedObj.width}
                         onChange={(e) => updateObjectProperty('width', Number(e.target.value))}
-                        className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
                       />
                     </div>
                     <div>
@@ -980,7 +980,7 @@ const GameEditor: React.FC = () => {
                         type="number"
                         value={selectedObj.height}
                         onChange={(e) => updateObjectProperty('height', Number(e.target.value))}
-                        className="w-full px-4 py-2.5 bg-slate-700 border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
                       />
                     </div>
                   </div>
@@ -992,7 +992,7 @@ const GameEditor: React.FC = () => {
                         type="color"
                         value={selectedObj.color}
                         onChange={(e) => updateObjectProperty('color', e.target.value)}
-                        className="w-16 h-12 bg-slate-700 border border-slate-600 rounded-xl"
+                        className="w-16 h-12 bg-[#1a1a1a] border border-slate-600 rounded-xl"
                       />
                       <span className="text-xs font-mono text-slate-400">{selectedObj.color}</span>
                     </div>
@@ -1011,7 +1011,7 @@ const GameEditor: React.FC = () => {
                         const compInfo = COMPONENT_TYPES.find(c => c.type === comp.type);
                         const Icon = compInfo?.icon || Square;
                         return (
-                          <div key={i} className="p-3 bg-slate-700 rounded-xl text-xs border border-slate-600 flex items-center justify-between">
+                          <div key={i} className="p-3 bg-[#1a1a1a] rounded-xl text-xs border border-slate-600 flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <Icon className={`w-4 h-4 ${compInfo?.color}`} />
                               <span className="font-semibold">{comp.type}</span>
@@ -1040,7 +1040,7 @@ const GameEditor: React.FC = () => {
                             className={`p-2 rounded-xl border-2 flex flex-col items-center gap-1 transition-all text-xs ${
                               hasComponent
                                 ? 'border-slate-700 bg-slate-800 text-slate-500 cursor-not-allowed'
-                                : 'border-slate-600 hover:border-purple-400 bg-slate-700 text-slate-200 hover:scale-105'
+                                : 'border-slate-600 hover:border-purple-400 bg-[#1a1a1a] text-[#ddd] hover:scale-105'
                             }`}
                           >
                             <Icon className={`w-4 h-4 ${compType.color}`} />
