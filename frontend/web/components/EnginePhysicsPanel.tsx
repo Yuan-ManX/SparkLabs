@@ -503,7 +503,7 @@ export default function EnginePhysicsPanel() {
 
   const cardStyle: React.CSSProperties = {
     padding: 14, backgroundColor: '#16213e', borderRadius: 6,
-    border: '1px solid #2a2a3e',
+    border: '1px solid #1e1e1e',
   };
 
   const labelStyle: React.CSSProperties = {
@@ -523,7 +523,7 @@ export default function EnginePhysicsPanel() {
 
   const disabledBtnStyle = (color: string): React.CSSProperties => ({
     ...primaryBtnStyle(color),
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#0a0a0a',
     color: '#555',
     cursor: 'not-allowed',
   });
@@ -531,12 +531,12 @@ export default function EnginePhysicsPanel() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#0a0a0a', color: '#e0e0e0',
       fontFamily: 'monospace', fontSize: 13, padding: '20px',
     }}>
       {/* Header */}
       <div style={{
-        padding: '12px 16px', borderBottom: '1px solid #2a2a3e',
+        padding: '12px 16px', borderBottom: '1px solid #1e1e1e',
         display: 'flex', alignItems: 'center', justifyContent: 'space-between',
         marginBottom: 0,
       }}>
@@ -566,7 +566,7 @@ export default function EnginePhysicsPanel() {
       )}
 
       {/* Tab Navigation */}
-      <div style={{ display: 'flex', borderBottom: '1px solid #2a2a3e', flexWrap: 'wrap' }}>
+      <div style={{ display: 'flex', borderBottom: '1px solid #1e1e1e', flexWrap: 'wrap' }}>
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -597,42 +597,42 @@ export default function EnginePhysicsPanel() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#0a0a0a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Total Bodies</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#00d4ff' }}>{stats?.total_bodies ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#0a0a0a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Active Bodies</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#6bcb77' }}>{stats?.active_bodies ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#0a0a0a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Sleeping Bodies</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#fdcb6e' }}>{stats?.sleeping_bodies ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#0a0a0a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Constraints</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#a29bfe' }}>{stats?.total_constraints ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#0a0a0a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Collisions</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#ff6b6b' }}>{stats?.total_collisions ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#0a0a0a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Gravity</span>
@@ -935,8 +935,8 @@ export default function EnginePhysicsPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6 }}>
                   {collisions.map((c, i) => (
                     <div key={i} style={{
-                      padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4,
-                      border: '1px solid #2a2a3e', borderLeft: '3px solid #ff6b6b',
+                      padding: 8, backgroundColor: '#0a0a0a', borderRadius: 4,
+                      border: '1px solid #1e1e1e', borderLeft: '3px solid #ff6b6b',
                       display: 'flex', gap: 12, fontSize: 10, color: '#ccc',
                     }}>
                       <span>{c.body_a_id} {'\u2194'} {c.body_b_id}</span>
@@ -1175,7 +1175,7 @@ export default function EnginePhysicsPanel() {
 
       {/* Footer */}
       <div style={{
-        padding: '6px 12px', borderTop: '1px solid #2a2a3e',
+        padding: '6px 12px', borderTop: '1px solid #1e1e1e',
         backgroundColor: '#141428', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
