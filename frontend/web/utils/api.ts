@@ -2,8 +2,8 @@
  * SparkLabs Editor - API Client
  */
 
-const API_BASE = 'http://localhost:8000/api';
-const WS_BASE = 'ws://localhost:8000/ws';
+export const API_BASE = 'http://localhost:8000/api';
+export const WS_BASE = 'ws://localhost:8000/ws';
 
 class ApiClient {
   private baseUrl: string;
@@ -419,14 +419,18 @@ export const eventsApi = {
 };
 
 export const llmRouterApi = {
-  providers: () => api.get('/agent/llm-router/providers'),
+  status: () => api.get('/llm-router/status'),
+  providers: () => api.get('/llm-router/providers'),
+  models: () => api.get('/llm-router/models'),
+  modelsByType: (modelType: string) => api.get(`/llm-router/models/${modelType}`),
   register: (data: { name: string; provider?: string; model?: string; api_key?: string; base_url?: string; capabilities?: string[]; cost_per_1k?: number; avg_latency_ms?: number; quality_score?: number }) =>
-    api.post('/agent/llm-router/register', data),
+    api.post('/llm-router/register', data),
   route: (prompt: string, taskType?: string, preferProvider?: string) =>
-    api.post('/agent/llm-router/route', { prompt, task_type: taskType, prefer_provider: preferProvider }),
-  stats: () => api.get('/agent/llm-router/stats'),
+    api.post('/llm-router/route', { prompt, task_type: taskType, prefer_provider: preferProvider }),
+  strategies: () => api.get('/llm-router/strategies'),
+  stats: () => api.get('/llm-router/stats'),
   classify: (prompt: string) =>
-    api.post('/agent/llm-router/classify', { prompt }),
+    api.post('/llm-router/classify', { prompt }),
 };
 
 export const executorApi = {
@@ -858,7 +862,7 @@ export const composerApi = {
   execute: (compositionId: string) => api.post(`/agent/compositions/${compositionId}/execute`),
 };
 
-export const knowledgeApi = {
+export const knowledgeGraphApi = {
   listNodes: (domain?: string) => {
     const query = domain ? `?domain=${domain}` : '';
     return api.get(`/agent/knowledge/nodes${query}`);
@@ -13223,3 +13227,3015 @@ export class ThermalDynamicsApi {
 export const destructibleApi = new DestructibleStructureApi(api);
 export const causalityApi = new CausalityGraphApi(api);
 export const thermalApi = new ThermalDynamicsApi(api);
+
+export class ElectromagneticFieldApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async ai_assess_field_strength(position: any): Promise<any> {
+    return this.client.post("/em_field/ai_assess_field_strength", { "position": position });
+  }
+  async ai_optimize_circuit(circuit_id: any): Promise<any> {
+    return this.client.post("/em_field/ai_optimize_circuit", { "circuit_id": circuit_id });
+  }
+  async ai_predict_interference(source_id: any, radius: any): Promise<any> {
+    return this.client.post("/em_field/ai_predict_interference", { "source_id": source_id, "radius": radius });
+  }
+  async apply_current(circuit_id: any, current: any): Promise<any> {
+    return this.client.post("/em_field/apply_current", { "circuit_id": circuit_id, "current": current });
+  }
+  async apply_voltage(circuit_id: any, voltage: any): Promise<any> {
+    return this.client.post("/em_field/apply_voltage", { "circuit_id": circuit_id, "voltage": voltage });
+  }
+  async check_induction(coil_id: any): Promise<any> {
+    return this.client.post("/em_field/check_induction", { "coil_id": coil_id });
+  }
+  async check_short_circuit(circuit_id: any): Promise<any> {
+    return this.client.post("/em_field/check_short_circuit", { "circuit_id": circuit_id });
+  }
+  async compute_electric_field(position: any): Promise<any> {
+    return this.client.post("/em_field/compute_electric_field", { "position": position });
+  }
+  async compute_emf(coil_id: any): Promise<any> {
+    return this.client.post("/em_field/compute_emf", { "coil_id": coil_id });
+  }
+  async compute_force(charge_id: any): Promise<any> {
+    return this.client.post("/em_field/compute_force", { "charge_id": charge_id });
+  }
+  async compute_magnetic_field(position: any): Promise<any> {
+    return this.client.post("/em_field/compute_magnetic_field", { "position": position });
+  }
+  async connect_circuit_element(circuit_id: any, element_type: any, element_id: any): Promise<any> {
+    return this.client.post("/em_field/connect_circuit_element", { "circuit_id": circuit_id, "element_type": element_type, "element_id": element_id });
+  }
+  async disconnect_circuit_element(circuit_id: any, element_id: any): Promise<any> {
+    return this.client.post("/em_field/disconnect_circuit_element", { "circuit_id": circuit_id, "element_id": element_id });
+  }
+  async get_charge(charge_id: any): Promise<any> {
+    return this.client.post("/em_field/get_charge", { "charge_id": charge_id });
+  }
+  async get_circuit(circuit_id: any): Promise<any> {
+    return this.client.post("/em_field/get_circuit", { "circuit_id": circuit_id });
+  }
+  async get_conductor(conductor_id: any): Promise<any> {
+    return this.client.post("/em_field/get_conductor", { "conductor_id": conductor_id });
+  }
+  async get_config(): Promise<any> {
+    return this.client.get("/em_field/get_config");
+  }
+  async get_em_source(source_id: any): Promise<any> {
+    return this.client.post("/em_field/get_em_source", { "source_id": source_id });
+  }
+  async get_field_lines(position: any, field_type: any, count: any): Promise<any> {
+    return this.client.post("/em_field/get_field_lines", { "position": position, "field_type": field_type, "count": count });
+  }
+  async get_field_map(resolution: any): Promise<any> {
+    return this.client.post("/em_field/get_field_map", { "resolution": resolution });
+  }
+  async get_induction_coil(coil_id: any): Promise<any> {
+    return this.client.post("/em_field/get_induction_coil", { "coil_id": coil_id });
+  }
+  async get_magnetic_field(field_id: any): Promise<any> {
+    return this.client.post("/em_field/get_magnetic_field", { "field_id": field_id });
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/em_field/get_snapshot");
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get("/em_field/get_stats");
+  }
+  async get_status(): Promise<any> {
+    return this.client.get("/em_field/get_status");
+  }
+  async get_visualization_data(zone_id: any): Promise<any> {
+    return this.client.post("/em_field/get_visualization_data", { "zone_id": zone_id });
+  }
+  async list_charges(charge_type: any, limit: any): Promise<any> {
+    return this.client.post("/em_field/list_charges", { "charge_type": charge_type, "limit": limit });
+  }
+  async list_circuits(status: any, limit: any): Promise<any> {
+    return this.client.post("/em_field/list_circuits", { "status": status, "limit": limit });
+  }
+  async list_conductors(material: any, circuit_id: any, limit: any): Promise<any> {
+    return this.client.post("/em_field/list_conductors", { "material": material, "circuit_id": circuit_id, "limit": limit });
+  }
+  async list_em_sources(source_type: any, active: any, limit: any): Promise<any> {
+    return this.client.post("/em_field/list_em_sources", { "source_type": source_type, "active": active, "limit": limit });
+  }
+  async list_events(kind: any, limit: any): Promise<any> {
+    return this.client.post("/em_field/list_events", { "kind": kind, "limit": limit });
+  }
+  async list_induction_coils(limit: any): Promise<any> {
+    return this.client.post("/em_field/list_induction_coils", { "limit": limit });
+  }
+  async list_magnetic_fields(field_type: any, active: any, limit: any): Promise<any> {
+    return this.client.post("/em_field/list_magnetic_fields", { "field_type": field_type, "active": active, "limit": limit });
+  }
+  async register_charge(charge_id: any, position: any, charge_value: any, charge_type: any, pinned: any, mass: any): Promise<any> {
+    return this.client.post("/em_field/register_charge", { "charge_id": charge_id, "position": position, "charge_value": charge_value, "charge_type": charge_type, "pinned": pinned, "mass": mass });
+  }
+  async register_circuit(circuit_id: any, name: any, voltage: any, resistance: any): Promise<any> {
+    return this.client.post("/em_field/register_circuit", { "circuit_id": circuit_id, "name": name, "voltage": voltage, "resistance": resistance });
+  }
+  async register_conductor(conductor_id: any, material: any, position: any, length: any, circuit_id: any, resistance_per_meter: any, name: any): Promise<any> {
+    return this.client.post("/em_field/register_conductor", { "conductor_id": conductor_id, "material": material, "position": position, "length": length, "circuit_id": circuit_id, "resistance_per_meter": resistance_per_meter, "name": name });
+  }
+  async register_em_source(source_id: any, position: any, frequency: any, power: any, source_type: any, name: any, active: any, radius: any): Promise<any> {
+    return this.client.post("/em_field/register_em_source", { "source_id": source_id, "position": position, "frequency": frequency, "power": power, "source_type": source_type, "name": name, "active": active, "radius": radius });
+  }
+  async register_induction_coil(coil_id: any, position: any, turns: any, area: any, orientation: any, name: any): Promise<any> {
+    return this.client.post("/em_field/register_induction_coil", { "coil_id": coil_id, "position": position, "turns": turns, "area": area, "orientation": orientation, "name": name });
+  }
+  async register_magnetic_field(field_id: any, position: any, field_vector: any, radius: any, field_type: any, name: any, active: any): Promise<any> {
+    return this.client.post("/em_field/register_magnetic_field", { "field_id": field_id, "position": position, "field_vector": field_vector, "radius": radius, "field_type": field_type, "name": name, "active": active });
+  }
+  async remove_charge(charge_id: any): Promise<any> {
+    return this.client.post("/em_field/remove_charge", { "charge_id": charge_id });
+  }
+  async remove_circuit(circuit_id: any): Promise<any> {
+    return this.client.post("/em_field/remove_circuit", { "circuit_id": circuit_id });
+  }
+  async remove_conductor(conductor_id: any): Promise<any> {
+    return this.client.post("/em_field/remove_conductor", { "conductor_id": conductor_id });
+  }
+  async remove_em_source(source_id: any): Promise<any> {
+    return this.client.post("/em_field/remove_em_source", { "source_id": source_id });
+  }
+  async remove_induction_coil(coil_id: any): Promise<any> {
+    return this.client.post("/em_field/remove_induction_coil", { "coil_id": coil_id });
+  }
+  async remove_magnetic_field(field_id: any): Promise<any> {
+    return this.client.post("/em_field/remove_magnetic_field", { "field_id": field_id });
+  }
+  async reset_field(zone_id: any): Promise<any> {
+    return this.client.post("/em_field/reset_field", { "zone_id": zone_id });
+  }
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/em_field/set_config", { "kwargs": kwargs });
+  }
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/em_field/tick", { "dt": dt });
+  }
+}
+
+export class ChemicalReactionApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async add_reaction_step(reaction_id: any, step_number: any, description: any, duration: any, energy_change: any): Promise<any> {
+    return this.client.post("/chemical/add_reaction_step", { "reaction_id": reaction_id, "step_number": step_number, "description": description, "duration": duration, "energy_change": energy_change });
+  }
+  async ai_assess_stability(vessel_id: any): Promise<any> {
+    return this.client.post("/chemical/ai_assess_stability", { "vessel_id": vessel_id });
+  }
+  async ai_optimize_conditions(reaction_id: any, target: any): Promise<any> {
+    return this.client.post("/chemical/ai_optimize_conditions", { "reaction_id": reaction_id, "target": target });
+  }
+  async ai_predict_products(reactant_ids: any, conditions: any): Promise<any> {
+    return this.client.post("/chemical/ai_predict_products", { "reactant_ids": reactant_ids, "conditions": conditions });
+  }
+  async apply_catalyst(vessel_id: any, catalyst_id: any): Promise<any> {
+    return this.client.post("/chemical/apply_catalyst", { "vessel_id": vessel_id, "catalyst_id": catalyst_id });
+  }
+  async check_equilibrium(vessel_id: any): Promise<any> {
+    return this.client.post("/chemical/check_equilibrium", { "vessel_id": vessel_id });
+  }
+  async check_explosion_risk(vessel_id: any): Promise<any> {
+    return this.client.post("/chemical/check_explosion_risk", { "vessel_id": vessel_id });
+  }
+  async check_reaction(vessel_id: any, reaction_id: any): Promise<any> {
+    return this.client.post("/chemical/check_reaction", { "vessel_id": vessel_id, "reaction_id": reaction_id });
+  }
+  async compute_activation_energy(reaction_id: any): Promise<any> {
+    return this.client.post("/chemical/compute_activation_energy", { "reaction_id": reaction_id });
+  }
+  async compute_reaction_rate(reaction_id: any, temperature: any): Promise<any> {
+    return this.client.post("/chemical/compute_reaction_rate", { "reaction_id": reaction_id, "temperature": temperature });
+  }
+  async create_mixture(mixture_id: any, vessel_id: any, substance_ids: any, proportions: any, temperature: any, pressure: any): Promise<any> {
+    return this.client.post("/chemical/create_mixture", { "mixture_id": mixture_id, "vessel_id": vessel_id, "substance_ids": substance_ids, "proportions": proportions, "temperature": temperature, "pressure": pressure });
+  }
+  async get_catalyst(catalyst_id: any): Promise<any> {
+    return this.client.post("/chemical/get_catalyst", { "catalyst_id": catalyst_id });
+  }
+  async get_config(): Promise<any> {
+    return this.client.get("/chemical/get_config");
+  }
+  async get_mixture(mixture_id: any): Promise<any> {
+    return this.client.post("/chemical/get_mixture", { "mixture_id": mixture_id });
+  }
+  async get_reaction(reaction_id: any): Promise<any> {
+    return this.client.post("/chemical/get_reaction", { "reaction_id": reaction_id });
+  }
+  async get_reaction_graph(): Promise<any> {
+    return this.client.get("/chemical/get_reaction_graph");
+  }
+  async get_reaction_result(result_id: any): Promise<any> {
+    return this.client.post("/chemical/get_reaction_result", { "result_id": result_id });
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/chemical/get_snapshot");
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get("/chemical/get_stats");
+  }
+  async get_status(): Promise<any> {
+    return this.client.get("/chemical/get_status");
+  }
+  async get_substance(substance_id: any): Promise<any> {
+    return this.client.post("/chemical/get_substance", { "substance_id": substance_id });
+  }
+  async get_vessel(vessel_id: any): Promise<any> {
+    return this.client.post("/chemical/get_vessel", { "vessel_id": vessel_id });
+  }
+  async get_visualization_data(vessel_id: any): Promise<any> {
+    return this.client.post("/chemical/get_visualization_data", { "vessel_id": vessel_id });
+  }
+  async list_catalysts(active: any, limit: any): Promise<any> {
+    return this.client.post("/chemical/list_catalysts", { "active": active, "limit": limit });
+  }
+  async list_events(kind: any, limit: any): Promise<any> {
+    return this.client.post("/chemical/list_events", { "kind": kind, "limit": limit });
+  }
+  async list_mixtures(vessel_id: any, limit: any): Promise<any> {
+    return this.client.post("/chemical/list_mixtures", { "vessel_id": vessel_id, "limit": limit });
+  }
+  async list_reaction_results(vessel_id: any, limit: any): Promise<any> {
+    return this.client.post("/chemical/list_reaction_results", { "vessel_id": vessel_id, "limit": limit });
+  }
+  async list_reaction_steps(reaction_id: any): Promise<any> {
+    return this.client.post("/chemical/list_reaction_steps", { "reaction_id": reaction_id });
+  }
+  async list_reactions(reaction_type: any, limit: any): Promise<any> {
+    return this.client.post("/chemical/list_reactions", { "reaction_type": reaction_type, "limit": limit });
+  }
+  async list_reactions_for_substance(substance_id: any): Promise<any> {
+    return this.client.post("/chemical/list_reactions_for_substance", { "substance_id": substance_id });
+  }
+  async list_substances(state: any, limit: any): Promise<any> {
+    return this.client.post("/chemical/list_substances", { "state": state, "limit": limit });
+  }
+  async list_vessels(status: any, limit: any): Promise<any> {
+    return this.client.post("/chemical/list_vessels", { "status": status, "limit": limit });
+  }
+  async register_catalyst(catalyst_id: any, name: any, target_reaction_id: any, efficiency: any, depletion_rate: any): Promise<any> {
+    return this.client.post("/chemical/register_catalyst", { "catalyst_id": catalyst_id, "name": name, "target_reaction_id": target_reaction_id, "efficiency": efficiency, "depletion_rate": depletion_rate });
+  }
+  async register_reaction(reaction_id: any, name: any, reactant_ids: any, product_ids: any, enthalpy: any, activation_energy: any, reaction_type: any, reversible: any, equilibrium_constant: any): Promise<any> {
+    return this.client.post("/chemical/register_reaction", { "reaction_id": reaction_id, "name": name, "reactant_ids": reactant_ids, "product_ids": product_ids, "enthalpy": enthalpy, "activation_energy": activation_energy, "reaction_type": reaction_type, "reversible": reversible, "equilibrium_constant": equilibrium_constant });
+  }
+  async register_substance(substance_id: any, name: any, formula: any, state: any, molecular_weight: any, density: any, toxicity: any, flammability: any, color: any, properties: any): Promise<any> {
+    return this.client.post("/chemical/register_substance", { "substance_id": substance_id, "name": name, "formula": formula, "state": state, "molecular_weight": molecular_weight, "density": density, "toxicity": toxicity, "flammability": flammability, "color": color, "properties": properties });
+  }
+  async register_vessel(vessel_id: any, name: any, capacity: any, material: any): Promise<any> {
+    return this.client.post("/chemical/register_vessel", { "vessel_id": vessel_id, "name": name, "capacity": capacity, "material": material });
+  }
+  async remove_catalyst(catalyst_id: any): Promise<any> {
+    return this.client.post("/chemical/remove_catalyst", { "catalyst_id": catalyst_id });
+  }
+  async remove_catalyst_from_vessel(vessel_id: any, catalyst_id: any): Promise<any> {
+    return this.client.post("/chemical/remove_catalyst_from_vessel", { "vessel_id": vessel_id, "catalyst_id": catalyst_id });
+  }
+  async remove_mixture(mixture_id: any): Promise<any> {
+    return this.client.post("/chemical/remove_mixture", { "mixture_id": mixture_id });
+  }
+  async remove_reaction(reaction_id: any): Promise<any> {
+    return this.client.post("/chemical/remove_reaction", { "reaction_id": reaction_id });
+  }
+  async remove_substance(substance_id: any): Promise<any> {
+    return this.client.post("/chemical/remove_substance", { "substance_id": substance_id });
+  }
+  async remove_vessel(vessel_id: any): Promise<any> {
+    return this.client.post("/chemical/remove_vessel", { "vessel_id": vessel_id });
+  }
+  async reset_vessel(vessel_id: any): Promise<any> {
+    return this.client.post("/chemical/reset_vessel", { "vessel_id": vessel_id });
+  }
+  async seal_vessel(vessel_id: any): Promise<any> {
+    return this.client.post("/chemical/seal_vessel", { "vessel_id": vessel_id });
+  }
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/chemical/set_config", { "kwargs": kwargs });
+  }
+  async set_pressure(vessel_id: any, pressure: any): Promise<any> {
+    return this.client.post("/chemical/set_pressure", { "vessel_id": vessel_id, "pressure": pressure });
+  }
+  async set_temperature(vessel_id: any, temperature: any): Promise<any> {
+    return this.client.post("/chemical/set_temperature", { "vessel_id": vessel_id, "temperature": temperature });
+  }
+  async stir_vessel(vessel_id: any, intensity: any): Promise<any> {
+    return this.client.post("/chemical/stir_vessel", { "vessel_id": vessel_id, "intensity": intensity });
+  }
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/chemical/tick", { "dt": dt });
+  }
+  async trigger_reaction(vessel_id: any, reaction_id: any, catalyst_id: any): Promise<any> {
+    return this.client.post("/chemical/trigger_reaction", { "vessel_id": vessel_id, "reaction_id": reaction_id, "catalyst_id": catalyst_id });
+  }
+  async unseal_vessel(vessel_id: any): Promise<any> {
+    return this.client.post("/chemical/unseal_vessel", { "vessel_id": vessel_id });
+  }
+}
+
+export class AcousticWaveApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async ai_assess_stealth(listener_id: any, source_ids: any): Promise<any> {
+    return this.client.post("/acoustic/ai_assess_stealth", { "listener_id": listener_id, "source_ids": source_ids });
+  }
+  async ai_optimize_barrier_placement(listener_id: any, threat_source_ids: any): Promise<any> {
+    return this.client.post("/acoustic/ai_optimize_barrier_placement", { "listener_id": listener_id, "threat_source_ids": threat_source_ids });
+  }
+  async ai_predict_detection(source_id: any, listener_id: any, time_horizon: any): Promise<any> {
+    return this.client.post("/acoustic/ai_predict_detection", { "source_id": source_id, "listener_id": listener_id, "time_horizon": time_horizon });
+  }
+  async check_hearing(listener_id: any, source_id: any): Promise<any> {
+    return this.client.post("/acoustic/check_hearing", { "listener_id": listener_id, "source_id": source_id });
+  }
+  async check_occlusion(source_id: any, listener_id: any): Promise<any> {
+    return this.client.post("/acoustic/check_occlusion", { "source_id": source_id, "listener_id": listener_id });
+  }
+  async clear_wavefronts(): Promise<any> {
+    return this.client.get("/acoustic/clear_wavefronts");
+  }
+  async compute_attenuation(distance_m: any, frequency_hz: any, medium: any): Promise<any> {
+    return this.client.post("/acoustic/compute_attenuation", { "distance_m": distance_m, "frequency_hz": frequency_hz, "medium": medium });
+  }
+  async compute_doppler(source_id: any, listener_id: any): Promise<any> {
+    return this.client.post("/acoustic/compute_doppler", { "source_id": source_id, "listener_id": listener_id });
+  }
+  async compute_propagation(source_id: any, listener_id: any): Promise<any> {
+    return this.client.post("/acoustic/compute_propagation", { "source_id": source_id, "listener_id": listener_id });
+  }
+  async compute_sound_level(position: any): Promise<any> {
+    return this.client.post("/acoustic/compute_sound_level", { "position": position });
+  }
+  async emit_wave(source_id: any, intensity_db: any, frequency_hz: any): Promise<any> {
+    return this.client.post("/acoustic/emit_wave", { "source_id": source_id, "intensity_db": intensity_db, "frequency_hz": frequency_hz });
+  }
+  async find_reflection_path(source_id: any, listener_id: any): Promise<any> {
+    return this.client.post("/acoustic/find_reflection_path", { "source_id": source_id, "listener_id": listener_id });
+  }
+  async get_audible_sources(listener_id: any): Promise<any> {
+    return this.client.post("/acoustic/get_audible_sources", { "listener_id": listener_id });
+  }
+  async get_barrier(barrier_id: any): Promise<any> {
+    return this.client.post("/acoustic/get_barrier", { "barrier_id": barrier_id });
+  }
+  async get_config(): Promise<any> {
+    return this.client.get("/acoustic/get_config");
+  }
+  async get_echo_zone(zone_id: any): Promise<any> {
+    return this.client.post("/acoustic/get_echo_zone", { "zone_id": zone_id });
+  }
+  async get_listener(listener_id: any): Promise<any> {
+    return this.client.post("/acoustic/get_listener", { "listener_id": listener_id });
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/acoustic/get_snapshot");
+  }
+  async get_sound_map(resolution: any): Promise<any> {
+    return this.client.post("/acoustic/get_sound_map", { "resolution": resolution });
+  }
+  async get_source(source_id: any): Promise<any> {
+    return this.client.post("/acoustic/get_source", { "source_id": source_id });
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get("/acoustic/get_stats");
+  }
+  async get_status(): Promise<any> {
+    return this.client.get("/acoustic/get_status");
+  }
+  async get_visualization_data(zone_id: any): Promise<any> {
+    return this.client.post("/acoustic/get_visualization_data", { "zone_id": zone_id });
+  }
+  async get_wavefront(wavefront_id: any): Promise<any> {
+    return this.client.post("/acoustic/get_wavefront", { "wavefront_id": wavefront_id });
+  }
+  async list_barriers(material: any, active_only: any, limit: any): Promise<any> {
+    return this.client.post("/acoustic/list_barriers", { "material": material, "active_only": active_only, "limit": limit });
+  }
+  async list_echo_zones(active_only: any, limit: any): Promise<any> {
+    return this.client.post("/acoustic/list_echo_zones", { "active_only": active_only, "limit": limit });
+  }
+  async list_events(kind: any, limit: any): Promise<any> {
+    return this.client.post("/acoustic/list_events", { "kind": kind, "limit": limit });
+  }
+  async list_listeners(active_only: any, limit: any): Promise<any> {
+    return this.client.post("/acoustic/list_listeners", { "active_only": active_only, "limit": limit });
+  }
+  async list_propagation_paths(source_id: any, listener_id: any, path_type: any, limit: any): Promise<any> {
+    return this.client.post("/acoustic/list_propagation_paths", { "source_id": source_id, "listener_id": listener_id, "path_type": path_type, "limit": limit });
+  }
+  async list_sources(source_type: any, active_only: any, limit: any): Promise<any> {
+    return this.client.post("/acoustic/list_sources", { "source_type": source_type, "active_only": active_only, "limit": limit });
+  }
+  async list_wavefronts(status: any, limit: any): Promise<any> {
+    return this.client.post("/acoustic/list_wavefronts", { "status": status, "limit": limit });
+  }
+  async register_barrier(barrier_id: any, name: any, position: any, dimensions: any, material: any, absorption_coefficient: any, transmission_loss_db: any, metadata: any): Promise<any> {
+    return this.client.post("/acoustic/register_barrier", { "barrier_id": barrier_id, "name": name, "position": position, "dimensions": dimensions, "material": material, "absorption_coefficient": absorption_coefficient, "transmission_loss_db": transmission_loss_db, "metadata": metadata });
+  }
+  async register_echo_zone(zone_id: any, name: any, bounds: any, reflection_coefficient: any, reverb_time_s: any, metadata: any): Promise<any> {
+    return this.client.post("/acoustic/register_echo_zone", { "zone_id": zone_id, "name": name, "bounds": bounds, "reflection_coefficient": reflection_coefficient, "reverb_time_s": reverb_time_s, "metadata": metadata });
+  }
+  async register_listener(listener_id: any, name: any, position: any, hearing_threshold_db: any, hearing_range_m: any, velocity: any, frequency_sensitivity: any, metadata: any): Promise<any> {
+    return this.client.post("/acoustic/register_listener", { "listener_id": listener_id, "name": name, "position": position, "hearing_threshold_db": hearing_threshold_db, "hearing_range_m": hearing_range_m, "velocity": velocity, "frequency_sensitivity": frequency_sensitivity, "metadata": metadata });
+  }
+  async register_source(source_id: any, name: any, position: any, intensity_db: any, source_type: any, frequency_hz: any, velocity: any, directional: any, direction: any, spread_angle: any, metadata: any): Promise<any> {
+    return this.client.post("/acoustic/register_source", { "source_id": source_id, "name": name, "position": position, "intensity_db": intensity_db, "source_type": source_type, "frequency_hz": frequency_hz, "velocity": velocity, "directional": directional, "direction": direction, "spread_angle": spread_angle, "metadata": metadata });
+  }
+  async remove_barrier(barrier_id: any): Promise<any> {
+    return this.client.post("/acoustic/remove_barrier", { "barrier_id": barrier_id });
+  }
+  async remove_echo_zone(zone_id: any): Promise<any> {
+    return this.client.post("/acoustic/remove_echo_zone", { "zone_id": zone_id });
+  }
+  async remove_listener(listener_id: any): Promise<any> {
+    return this.client.post("/acoustic/remove_listener", { "listener_id": listener_id });
+  }
+  async remove_source(source_id: any): Promise<any> {
+    return this.client.post("/acoustic/remove_source", { "source_id": source_id });
+  }
+  async reset_sources(): Promise<any> {
+    return this.client.get("/acoustic/reset_sources");
+  }
+  async set_config(kwargs: any): Promise<any> {
+    return this.client.post("/acoustic/set_config", { "kwargs": kwargs });
+  }
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/acoustic/tick", { "dt": dt });
+  }
+  async update_barrier(barrier_id: any, updates: any): Promise<any> {
+    return this.client.post("/acoustic/update_barrier", { "barrier_id": barrier_id, "updates": updates });
+  }
+  async update_echo_zone(zone_id: any, updates: any): Promise<any> {
+    return this.client.post("/acoustic/update_echo_zone", { "zone_id": zone_id, "updates": updates });
+  }
+  async update_listener(listener_id: any, updates: any): Promise<any> {
+    return this.client.post("/acoustic/update_listener", { "listener_id": listener_id, "updates": updates });
+  }
+  async update_source(source_id: any, updates: any): Promise<any> {
+    return this.client.post("/acoustic/update_source", { "source_id": source_id, "updates": updates });
+  }
+}
+
+export const emFieldApi = new ElectromagneticFieldApi(api);
+export const chemicalApi = new ChemicalReactionApi(api);
+export const acousticApi = new AcousticWaveApi(api);
+
+
+// --- Round 50 API clients (auto-generated) ---
+
+export class OpticsApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async ai_assess_visibility(observer_position: any, target_position: any, observer_direction: any, wavelength_nm: any): Promise<any> {
+    return this.client.post("/optics/ai_assess_visibility", { "observer_position": observer_position, "target_position": target_position, "observer_direction": observer_direction, "wavelength_nm": wavelength_nm });
+  }
+  async ai_optimize_lens_configuration(target_wavelength_nm: any, desired_focal_length: any, element_count: any): Promise<any> {
+    return this.client.post("/optics/ai_optimize_lens_configuration", { "target_wavelength_nm": target_wavelength_nm, "desired_focal_length": desired_focal_length, "element_count": element_count });
+  }
+  async ai_predict_light_path(origin: any, direction: any, wavelength_nm: any, max_bounces: any, medium_id: any): Promise<any> {
+    return this.client.post("/optics/ai_predict_light_path", { "origin": origin, "direction": direction, "wavelength_nm": wavelength_nm, "max_bounces": max_bounces, "medium_id": medium_id });
+  }
+  async clear_rays(): Promise<any> {
+    return this.client.get("/optics/clear_rays");
+  }
+  async compute_acceptance_angle(n_core: any, n_clad: any, n_external: any): Promise<any> {
+    return this.client.post("/optics/compute_acceptance_angle", { "n_core": n_core, "n_clad": n_clad, "n_external": n_external });
+  }
+  async compute_beam_divergence(wavelength_nm: any, beam_waist_um: any): Promise<any> {
+    return this.client.post("/optics/compute_beam_divergence", { "wavelength_nm": wavelength_nm, "beam_waist_um": beam_waist_um });
+  }
+  async compute_critical_angle(n1: any, n2: any): Promise<any> {
+    return this.client.post("/optics/compute_critical_angle", { "n1": n1, "n2": n2 });
+  }
+  async compute_dispersion(prism_id: any, wavelength_min_nm: any, wavelength_max_nm: any, num_samples: any, cauchy_a: any, cauchy_b: any): Promise<any> {
+    return this.client.post("/optics/compute_dispersion", { "prism_id": prism_id, "wavelength_min_nm": wavelength_min_nm, "wavelength_max_nm": wavelength_max_nm, "num_samples": num_samples, "cauchy_a": cauchy_a, "cauchy_b": cauchy_b });
+  }
+  async compute_focal_point(lens_id: any, mirror_id: any): Promise<any> {
+    return this.client.post("/optics/compute_focal_point", { "lens_id": lens_id, "mirror_id": mirror_id });
+  }
+  async compute_fresnel_coefficients(cos_theta: any, n1: any, n2: any): Promise<any> {
+    return this.client.post("/optics/compute_fresnel_coefficients", { "cos_theta": cos_theta, "n1": n1, "n2": n2 });
+  }
+  async compute_lens_image(lens_id: any, object_distance: any, object_height: any): Promise<any> {
+    return this.client.post("/optics/compute_lens_image", { "lens_id": lens_id, "object_distance": object_distance, "object_height": object_height });
+  }
+  async compute_numerical_aperture(n_core: any, n_clad: any): Promise<any> {
+    return this.client.post("/optics/compute_numerical_aperture", { "n_core": n_core, "n_clad": n_clad });
+  }
+  async compute_reflection(incident: any, normal: any, reflectivity: any): Promise<any> {
+    return this.client.post("/optics/compute_reflection", { "incident": incident, "normal": normal, "reflectivity": reflectivity });
+  }
+  async compute_refraction(incident: any, normal: any, n1: any, n2: any): Promise<any> {
+    return this.client.post("/optics/compute_refraction", { "incident": incident, "normal": normal, "n1": n1, "n2": n2 });
+  }
+  async emit_ray(source_id: any, origin: any, direction: any, wavelength_nm: any, intensity: any, polarization: any, medium_id: any, parent_ray_id: any, metadata: any): Promise<any> {
+    return this.client.post("/optics/emit_ray", { "source_id": source_id, "origin": origin, "direction": direction, "wavelength_nm": wavelength_nm, "intensity": intensity, "polarization": polarization, "medium_id": medium_id, "parent_ray_id": parent_ray_id, "metadata": metadata });
+  }
+  async get_config(): Promise<any> {
+    return this.client.get("/optics/get_config");
+  }
+  async get_detector(detector_id: any): Promise<any> {
+    return this.client.post("/optics/get_detector", { "detector_id": detector_id });
+  }
+  async get_instance(): Promise<any> {
+    return this.client.get("/optics/get_instance");
+  }
+  async get_lens(lens_id: any): Promise<any> {
+    return this.client.post("/optics/get_lens", { "lens_id": lens_id });
+  }
+  async get_light_map(bounds: any, resolution: any, height: any): Promise<any> {
+    return this.client.post("/optics/get_light_map", { "bounds": bounds, "resolution": resolution, "height": height });
+  }
+  async get_light_source(source_id: any): Promise<any> {
+    return this.client.post("/optics/get_light_source", { "source_id": source_id });
+  }
+  async get_medium(medium_id: any): Promise<any> {
+    return this.client.post("/optics/get_medium", { "medium_id": medium_id });
+  }
+  async get_mirror(mirror_id: any): Promise<any> {
+    return this.client.post("/optics/get_mirror", { "mirror_id": mirror_id });
+  }
+  async get_optical_fiber(fiber_id: any): Promise<any> {
+    return this.client.post("/optics/get_optical_fiber", { "fiber_id": fiber_id });
+  }
+  async get_prism(prism_id: any): Promise<any> {
+    return this.client.post("/optics/get_prism", { "prism_id": prism_id });
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/optics/get_snapshot");
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get("/optics/get_stats");
+  }
+  async get_status(): Promise<any> {
+    return this.client.get("/optics/get_status");
+  }
+  async get_visualization_data(include_rays: any, include_light_map: any, bounds: any, height: any): Promise<any> {
+    return this.client.post("/optics/get_visualization_data", { "include_rays": include_rays, "include_light_map": include_light_map, "bounds": bounds, "height": height });
+  }
+  async initialize(): Promise<any> {
+    return this.client.get("/optics/initialize");
+  }
+  async list_detectors(active_only: any, limit: any): Promise<any> {
+    return this.client.post("/optics/list_detectors", { "active_only": active_only, "limit": limit });
+  }
+  async list_events(event_type: any, limit: any, offset: any): Promise<any> {
+    return this.client.post("/optics/list_events", { "event_type": event_type, "limit": limit, "offset": offset });
+  }
+  async list_lenses(lens_type: any, active_only: any, limit: any): Promise<any> {
+    return this.client.post("/optics/list_lenses", { "lens_type": lens_type, "active_only": active_only, "limit": limit });
+  }
+  async list_light_sources(source_type: any, active_only: any, limit: any): Promise<any> {
+    return this.client.post("/optics/list_light_sources", { "source_type": source_type, "active_only": active_only, "limit": limit });
+  }
+  async list_mediums(medium_type: any, active_only: any, limit: any): Promise<any> {
+    return this.client.post("/optics/list_mediums", { "medium_type": medium_type, "active_only": active_only, "limit": limit });
+  }
+  async list_mirrors(mirror_type: any, active_only: any, limit: any): Promise<any> {
+    return this.client.post("/optics/list_mirrors", { "mirror_type": mirror_type, "active_only": active_only, "limit": limit });
+  }
+  async list_optical_fibers(active_only: any, limit: any): Promise<any> {
+    return this.client.post("/optics/list_optical_fibers", { "active_only": active_only, "limit": limit });
+  }
+  async list_prisms(prism_type: any, active_only: any, limit: any): Promise<any> {
+    return this.client.post("/optics/list_prisms", { "prism_type": prism_type, "active_only": active_only, "limit": limit });
+  }
+  async list_rays(status: any, source_id: any, active_only: any, limit: any): Promise<any> {
+    return this.client.post("/optics/list_rays", { "status": status, "source_id": source_id, "active_only": active_only, "limit": limit });
+  }
+  async measure_intensity(detector_id: any, source_id: any): Promise<any> {
+    return this.client.post("/optics/measure_intensity", { "detector_id": detector_id, "source_id": source_id });
+  }
+  async measure_spectrum(detector_id: any, num_samples: any): Promise<any> {
+    return this.client.post("/optics/measure_spectrum", { "detector_id": detector_id, "num_samples": num_samples });
+  }
+  async measure_wavelength(detector_id: any): Promise<any> {
+    return this.client.post("/optics/measure_wavelength", { "detector_id": detector_id });
+  }
+  async register_detector(detector_id: any, name: any, position: any, direction: any, sensitivity: any, wavelength_min_nm: any, wavelength_max_nm: any, threshold: any, active: any, metadata: any): Promise<any> {
+    return this.client.post("/optics/register_detector", { "detector_id": detector_id, "name": name, "position": position, "direction": direction, "sensitivity": sensitivity, "wavelength_min_nm": wavelength_min_nm, "wavelength_max_nm": wavelength_max_nm, "threshold": threshold, "active": active, "metadata": metadata });
+  }
+  async register_lens(lens_id: any, name: any, lens_type: any, position: any, normal: any, focal_length: any, radius_left: any, radius_right: any, thickness: any, refractive_index: any, diameter: any, active: any, metadata: any): Promise<any> {
+    return this.client.post("/optics/register_lens", { "lens_id": lens_id, "name": name, "lens_type": lens_type, "position": position, "normal": normal, "focal_length": focal_length, "radius_left": radius_left, "radius_right": radius_right, "thickness": thickness, "refractive_index": refractive_index, "diameter": diameter, "active": active, "metadata": metadata });
+  }
+  async register_light_source(source_id: any, name: any, source_type: any, position: any, direction: any, wavelength_nm: any, intensity: any, power_w: any, divergence_rad: any, polarization: any, coherent: any, active: any, metadata: any): Promise<any> {
+    return this.client.post("/optics/register_light_source", { "source_id": source_id, "name": name, "source_type": source_type, "position": position, "direction": direction, "wavelength_nm": wavelength_nm, "intensity": intensity, "power_w": power_w, "divergence_rad": divergence_rad, "polarization": polarization, "coherent": coherent, "active": active, "metadata": metadata });
+  }
+  async register_medium(medium_id: any, name: any, medium_type: any, refractive_index: any, absorption_coeff: any, scattering_coeff: any, temperature_k: any, density_kg_m3: any, active: any, metadata: any): Promise<any> {
+    return this.client.post("/optics/register_medium", { "medium_id": medium_id, "name": name, "medium_type": medium_type, "refractive_index": refractive_index, "absorption_coeff": absorption_coeff, "scattering_coeff": scattering_coeff, "temperature_k": temperature_k, "density_kg_m3": density_kg_m3, "active": active, "metadata": metadata });
+  }
+  async register_mirror(mirror_id: any, name: any, mirror_type: any, position: any, normal: any, curvature_radius: any, reflectivity: any, rotation: any, size: any, active: any, metadata: any): Promise<any> {
+    return this.client.post("/optics/register_mirror", { "mirror_id": mirror_id, "name": name, "mirror_type": mirror_type, "position": position, "normal": normal, "curvature_radius": curvature_radius, "reflectivity": reflectivity, "rotation": rotation, "size": size, "active": active, "metadata": metadata });
+  }
+  async register_optical_fiber(fiber_id: any, name: any, position: any, direction: any, length: any, core_index: any, cladding_index: any, core_radius: any, attenuation_per_m: any, active: any, metadata: any): Promise<any> {
+    return this.client.post("/optics/register_optical_fiber", { "fiber_id": fiber_id, "name": name, "position": position, "direction": direction, "length": length, "core_index": core_index, "cladding_index": cladding_index, "core_radius": core_radius, "attenuation_per_m": attenuation_per_m, "active": active, "metadata": metadata });
+  }
+  async register_prism(prism_id: any, name: any, prism_type: any, position: any, apex_angle_rad: any, refractive_index: any, cauchy_a: any, cauchy_b: any, base_length: any, height: any, rotation: any, active: any, metadata: any): Promise<any> {
+    return this.client.post("/optics/register_prism", { "prism_id": prism_id, "name": name, "prism_type": prism_type, "position": position, "apex_angle_rad": apex_angle_rad, "refractive_index": refractive_index, "cauchy_a": cauchy_a, "cauchy_b": cauchy_b, "base_length": base_length, "height": height, "rotation": rotation, "active": active, "metadata": metadata });
+  }
+  async remove_detector(detector_id: any): Promise<any> {
+    return this.client.post("/optics/remove_detector", { "detector_id": detector_id });
+  }
+  async remove_lens(lens_id: any): Promise<any> {
+    return this.client.post("/optics/remove_lens", { "lens_id": lens_id });
+  }
+  async remove_light_source(source_id: any): Promise<any> {
+    return this.client.post("/optics/remove_light_source", { "source_id": source_id });
+  }
+  async remove_medium(medium_id: any): Promise<any> {
+    return this.client.post("/optics/remove_medium", { "medium_id": medium_id });
+  }
+  async remove_mirror(mirror_id: any): Promise<any> {
+    return this.client.post("/optics/remove_mirror", { "mirror_id": mirror_id });
+  }
+  async remove_optical_fiber(fiber_id: any): Promise<any> {
+    return this.client.post("/optics/remove_optical_fiber", { "fiber_id": fiber_id });
+  }
+  async remove_prism(prism_id: any): Promise<any> {
+    return this.client.post("/optics/remove_prism", { "prism_id": prism_id });
+  }
+  async reset(): Promise<any> {
+    return this.client.get("/optics/reset");
+  }
+  async set_config(data: Record<string, unknown> = {}): Promise<any> {
+    return this.client.post("/optics/set_config", data);
+  }
+  async tick(delta_time: any): Promise<any> {
+    return this.client.post("/optics/tick", { "delta_time": delta_time });
+  }
+  async trace_ray(origin: any, direction: any, wavelength_nm: any, intensity: any, max_bounces: any, source_id: any, medium_id: any): Promise<any> {
+    return this.client.post("/optics/trace_ray", { "origin": origin, "direction": direction, "wavelength_nm": wavelength_nm, "intensity": intensity, "max_bounces": max_bounces, "source_id": source_id, "medium_id": medium_id });
+  }
+  async trace_ray_path(ray_id: any, max_bounces: any): Promise<any> {
+    return this.client.post("/optics/trace_ray_path", { "ray_id": ray_id, "max_bounces": max_bounces });
+  }
+  async update_detector(detector_id: any, updates: any): Promise<any> {
+    return this.client.post("/optics/update_detector", { "detector_id": detector_id, "updates": updates });
+  }
+  async update_lens(lens_id: any, updates: any): Promise<any> {
+    return this.client.post("/optics/update_lens", { "lens_id": lens_id, "updates": updates });
+  }
+  async update_light_source(source_id: any, updates: any): Promise<any> {
+    return this.client.post("/optics/update_light_source", { "source_id": source_id, "updates": updates });
+  }
+  async update_medium(medium_id: any, updates: any): Promise<any> {
+    return this.client.post("/optics/update_medium", { "medium_id": medium_id, "updates": updates });
+  }
+  async update_mirror(mirror_id: any, updates: any): Promise<any> {
+    return this.client.post("/optics/update_mirror", { "mirror_id": mirror_id, "updates": updates });
+  }
+  async update_optical_fiber(fiber_id: any, updates: any): Promise<any> {
+    return this.client.post("/optics/update_optical_fiber", { "fiber_id": fiber_id, "updates": updates });
+  }
+  async update_prism(prism_id: any, updates: any): Promise<any> {
+    return this.client.post("/optics/update_prism", { "prism_id": prism_id, "updates": updates });
+  }
+  async wavelength_to_color(wavelength_nm: any): Promise<any> {
+    return this.client.post("/optics/wavelength_to_color", { "wavelength_nm": wavelength_nm });
+  }
+}
+export const opticsApi = new OpticsApi(api);
+
+export class RadiationApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async acknowledge_dosimeter_alarm(dosimeter_id: any): Promise<any> {
+    return this.client.post("/radiation/acknowledge_dosimeter_alarm", { "dosimeter_id": dosimeter_id });
+  }
+  async ai_assess_radiation_risk(point: any, exposure_s: any): Promise<any> {
+    return this.client.post("/radiation/ai_assess_radiation_risk", { "point": point, "exposure_s": exposure_s });
+  }
+  async ai_optimize_shielding(source_id: any, target_point: any, target_sv_per_h: any, candidate_material_ids: any): Promise<any> {
+    return this.client.post("/radiation/ai_optimize_shielding", { "source_id": source_id, "target_point": target_point, "target_sv_per_h": target_sv_per_h, "candidate_material_ids": candidate_material_ids });
+  }
+  async ai_predict_contamination_spread(zone_id: any, horizon_s: any, wind_vector: any): Promise<any> {
+    return this.client.post("/radiation/ai_predict_contamination_spread", { "zone_id": zone_id, "horizon_s": horizon_s, "wind_vector": wind_vector });
+  }
+  async calibrate_detector(detector_id: any, calibration_sv_per_h: any): Promise<any> {
+    return this.client.post("/radiation/calibrate_detector", { "detector_id": detector_id, "calibration_sv_per_h": calibration_sv_per_h });
+  }
+  async check_contamination_spread(zone_id: any, time_horizon_s: any): Promise<any> {
+    return this.client.post("/radiation/check_contamination_spread", { "zone_id": zone_id, "time_horizon_s": time_horizon_s });
+  }
+  async compute_attenuation(intensity_sv_per_h: any, material_id: any): Promise<any> {
+    return this.client.post("/radiation/compute_attenuation", { "intensity_sv_per_h": intensity_sv_per_h, "material_id": material_id });
+  }
+  async compute_decay(isotope_id: any, initial_activity_bq: any, elapsed_s: any): Promise<any> {
+    return this.client.post("/radiation/compute_decay", { "isotope_id": isotope_id, "initial_activity_bq": initial_activity_bq, "elapsed_s": elapsed_s });
+  }
+  async compute_distance_attenuation(source_position: any, target_position: any, source_radius: any): Promise<any> {
+    return this.client.post("/radiation/compute_distance_attenuation", { "source_position": source_position, "target_position": target_position, "source_radius": source_radius });
+  }
+  async compute_dose(intensity_sv_per_h: any, exposure_s: any): Promise<any> {
+    return this.client.post("/radiation/compute_dose", { "intensity_sv_per_h": intensity_sv_per_h, "exposure_s": exposure_s });
+  }
+  async compute_dose_rate(dose_sv: any, exposure_s: any): Promise<any> {
+    return this.client.post("/radiation/compute_dose_rate", { "dose_sv": dose_sv, "exposure_s": exposure_s });
+  }
+  async compute_half_life(isotope_id: any): Promise<any> {
+    return this.client.post("/radiation/compute_half_life", { "isotope_id": isotope_id });
+  }
+  async compute_hvl(material_id: any): Promise<any> {
+    return this.client.post("/radiation/compute_hvl", { "material_id": material_id });
+  }
+  async compute_intensity(source_id: any, point: any): Promise<any> {
+    return this.client.post("/radiation/compute_intensity", { "source_id": source_id, "point": point });
+  }
+  async compute_quality_factor(radiation_type: any, energy_mev: any): Promise<any> {
+    return this.client.post("/radiation/compute_quality_factor", { "radiation_type": radiation_type, "energy_mev": energy_mev });
+  }
+  async compute_shielding_required(intensity_sv_per_h: any, target_sv_per_h: any, material_id: any): Promise<any> {
+    return this.client.post("/radiation/compute_shielding_required", { "intensity_sv_per_h": intensity_sv_per_h, "target_sv_per_h": target_sv_per_h, "material_id": material_id });
+  }
+  async get_background_radiation(): Promise<any> {
+    return this.client.get("/radiation/get_background_radiation");
+  }
+  async get_config(): Promise<any> {
+    return this.client.get("/radiation/get_config");
+  }
+  async get_contamination_zone(zone_id: any): Promise<any> {
+    return this.client.post("/radiation/get_contamination_zone", { "zone_id": zone_id });
+  }
+  async get_detector(detector_id: any): Promise<any> {
+    return this.client.post("/radiation/get_detector", { "detector_id": detector_id });
+  }
+  async get_dose_map(exposure_s: any, bounds: any, resolution: any): Promise<any> {
+    return this.client.post("/radiation/get_dose_map", { "exposure_s": exposure_s, "bounds": bounds, "resolution": resolution });
+  }
+  async get_dosimeter(dosimeter_id: any): Promise<any> {
+    return this.client.post("/radiation/get_dosimeter", { "dosimeter_id": dosimeter_id });
+  }
+  async get_instance(): Promise<any> {
+    return this.client.get("/radiation/get_instance");
+  }
+  async get_isotope(isotope_id: any): Promise<any> {
+    return this.client.post("/radiation/get_isotope", { "isotope_id": isotope_id });
+  }
+  async get_radiation_map(bounds: any, resolution: any): Promise<any> {
+    return this.client.post("/radiation/get_radiation_map", { "bounds": bounds, "resolution": resolution });
+  }
+  async get_shielding(material_id: any): Promise<any> {
+    return this.client.post("/radiation/get_shielding", { "material_id": material_id });
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/radiation/get_snapshot");
+  }
+  async get_source(source_id: any): Promise<any> {
+    return this.client.post("/radiation/get_source", { "source_id": source_id });
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get("/radiation/get_stats");
+  }
+  async get_status(): Promise<any> {
+    return this.client.get("/radiation/get_status");
+  }
+  async get_visualization_data(): Promise<any> {
+    return this.client.get("/radiation/get_visualization_data");
+  }
+  async list_contamination_zones(level: any, isotope_id: any, contains_point: any, limit: any): Promise<any> {
+    return this.client.post("/radiation/list_contamination_zones", { "level": level, "isotope_id": isotope_id, "contains_point": contains_point, "limit": limit });
+  }
+  async list_detectors(type: any, status: any, within_bounds: any, limit: any): Promise<any> {
+    return this.client.post("/radiation/list_detectors", { "type": type, "status": status, "within_bounds": within_bounds, "limit": limit });
+  }
+  async list_dosimeters(active: any, alarming: any, within_bounds: any, limit: any): Promise<any> {
+    return this.client.post("/radiation/list_dosimeters", { "active": active, "alarming": alarming, "within_bounds": within_bounds, "limit": limit });
+  }
+  async list_events(kind: any, since_ts: any, limit: any): Promise<any> {
+    return this.client.post("/radiation/list_events", { "kind": kind, "since_ts": since_ts, "limit": limit });
+  }
+  async list_isotopes(radiation_type: any, stable: any, limit: any): Promise<any> {
+    return this.client.post("/radiation/list_isotopes", { "radiation_type": radiation_type, "stable": stable, "limit": limit });
+  }
+  async list_shieldings(type: any, radiation_type: any, limit: any): Promise<any> {
+    return this.client.post("/radiation/list_shieldings", { "type": type, "radiation_type": radiation_type, "limit": limit });
+  }
+  async list_sources(isotope_id: any, active: any, within_bounds: any, limit: any): Promise<any> {
+    return this.client.post("/radiation/list_sources", { "isotope_id": isotope_id, "active": active, "within_bounds": within_bounds, "limit": limit });
+  }
+  async measure_contamination(point: any): Promise<any> {
+    return this.client.post("/radiation/measure_contamination", { "point": point });
+  }
+  async measure_dose(point: any, exposure_s: any): Promise<any> {
+    return this.client.post("/radiation/measure_dose", { "point": point, "exposure_s": exposure_s });
+  }
+  async measure_radiation(point: any, radiation_type: any): Promise<any> {
+    return this.client.post("/radiation/measure_radiation", { "point": point, "radiation_type": radiation_type });
+  }
+  async register_contamination_zone(zone_id: any, name: any, bounds: any, level: any, isotope_id: any, activity_bq_m2: any, volume_bq_m3: any, spread_rate: any): Promise<any> {
+    return this.client.post("/radiation/register_contamination_zone", { "zone_id": zone_id, "name": name, "bounds": bounds, "level": level, "isotope_id": isotope_id, "activity_bq_m2": activity_bq_m2, "volume_bq_m3": volume_bq_m3, "spread_rate": spread_rate });
+  }
+  async register_detector(detector_id: any, position: any, type: any, range_sv_per_h: any, sensitivity: any, status: any, name: any): Promise<any> {
+    return this.client.post("/radiation/register_detector", { "detector_id": detector_id, "position": position, "type": type, "range_sv_per_h": range_sv_per_h, "sensitivity": sensitivity, "status": status, "name": name });
+  }
+  async register_dosimeter(dosimeter_id: any, position: any, alarm_threshold_sv: any, name: any, active: any): Promise<any> {
+    return this.client.post("/radiation/register_dosimeter", { "dosimeter_id": dosimeter_id, "position": position, "alarm_threshold_sv": alarm_threshold_sv, "name": name, "active": active });
+  }
+  async register_isotope(isotope_id: any, name: any, half_life_s: any, decay_mode: any, daughter_isotope: any, radiation_type: any, energy_mev: any, atomic_mass: any, branching_ratio: any): Promise<any> {
+    return this.client.post("/radiation/register_isotope", { "isotope_id": isotope_id, "name": name, "half_life_s": half_life_s, "decay_mode": decay_mode, "daughter_isotope": daughter_isotope, "radiation_type": radiation_type, "energy_mev": energy_mev, "atomic_mass": atomic_mass, "branching_ratio": branching_ratio });
+  }
+  async register_shielding(material_id: any, type: any, thickness_m: any, radiation_type: any, position: any, attenuation_coeff: any, name: any): Promise<any> {
+    return this.client.post("/radiation/register_shielding", { "material_id": material_id, "type": type, "thickness_m": thickness_m, "radiation_type": radiation_type, "position": position, "attenuation_coeff": attenuation_coeff, "name": name });
+  }
+  async register_source(source_id: any, isotope_id: any, activity_bq: any, position: any, radius: any, name: any, active: any): Promise<any> {
+    return this.client.post("/radiation/register_source", { "source_id": source_id, "isotope_id": isotope_id, "activity_bq": activity_bq, "position": position, "radius": radius, "name": name, "active": active });
+  }
+  async remove_contamination_zone(zone_id: any): Promise<any> {
+    return this.client.post("/radiation/remove_contamination_zone", { "zone_id": zone_id });
+  }
+  async remove_detector(detector_id: any): Promise<any> {
+    return this.client.post("/radiation/remove_detector", { "detector_id": detector_id });
+  }
+  async remove_dosimeter(dosimeter_id: any): Promise<any> {
+    return this.client.post("/radiation/remove_dosimeter", { "dosimeter_id": dosimeter_id });
+  }
+  async remove_isotope(isotope_id: any): Promise<any> {
+    return this.client.post("/radiation/remove_isotope", { "isotope_id": isotope_id });
+  }
+  async remove_shielding(material_id: any): Promise<any> {
+    return this.client.post("/radiation/remove_shielding", { "material_id": material_id });
+  }
+  async remove_source(source_id: any): Promise<any> {
+    return this.client.post("/radiation/remove_source", { "source_id": source_id });
+  }
+  async reset(): Promise<any> {
+    return this.client.get("/radiation/reset");
+  }
+  async set_config(data: Record<string, unknown> = {}): Promise<any> {
+    return this.client.post("/radiation/set_config", data);
+  }
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/radiation/tick", { "dt": dt });
+  }
+  async update_contamination_zone(zone_id: any): Promise<any> {
+    return this.client.post("/radiation/update_contamination_zone", { "zone_id": zone_id });
+  }
+  async update_detector(detector_id: any): Promise<any> {
+    return this.client.post("/radiation/update_detector", { "detector_id": detector_id });
+  }
+  async update_dosimeter(dosimeter_id: any): Promise<any> {
+    return this.client.post("/radiation/update_dosimeter", { "dosimeter_id": dosimeter_id });
+  }
+  async update_shielding(material_id: any): Promise<any> {
+    return this.client.post("/radiation/update_shielding", { "material_id": material_id });
+  }
+  async update_source(source_id: any): Promise<any> {
+    return this.client.post("/radiation/update_source", { "source_id": source_id });
+  }
+}
+export const radiationApi = new RadiationApi(api);
+
+export class OrbitalApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+  async ai_assess_collision_risk(body_id: any, time_horizon_s: any, threat_bodies: any): Promise<any> {
+    return this.client.post("/orbital/ai_assess_collision_risk", { "body_id": body_id, "time_horizon_s": time_horizon_s, "threat_bodies": threat_bodies });
+  }
+  async ai_optimize_orbit(satellite_id: any, target_altitude_m: any, strategy: any): Promise<any> {
+    return this.client.post("/orbital/ai_optimize_orbit", { "satellite_id": satellite_id, "target_altitude_m": target_altitude_m, "strategy": strategy });
+  }
+  async ai_predict_trajectory(body_id: any, time_horizon_s: any, confidence: any): Promise<any> {
+    return this.client.post("/orbital/ai_predict_trajectory", { "body_id": body_id, "time_horizon_s": time_horizon_s, "confidence": confidence });
+  }
+  async cancel_maneuver(maneuver_id: any): Promise<any> {
+    return this.client.post("/orbital/cancel_maneuver", { "maneuver_id": maneuver_id });
+  }
+  async compute_apoapsis(semi_major_axis_m: any, eccentricity: any): Promise<any> {
+    return this.client.post("/orbital/compute_apoapsis", { "semi_major_axis_m": semi_major_axis_m, "eccentricity": eccentricity });
+  }
+  async compute_delta_v(isp_s: any, mass_initial_kg: any, mass_final_kg: any): Promise<any> {
+    return this.client.post("/orbital/compute_delta_v", { "isp_s": isp_s, "mass_initial_kg": mass_initial_kg, "mass_final_kg": mass_final_kg });
+  }
+  async compute_eccentricity(periapsis_m: any, apoapsis_m: any): Promise<any> {
+    return this.client.post("/orbital/compute_eccentricity", { "periapsis_m": periapsis_m, "apoapsis_m": apoapsis_m });
+  }
+  async compute_escape_velocity(parent_mass_kg: any, distance_m: any): Promise<any> {
+    return this.client.post("/orbital/compute_escape_velocity", { "parent_mass_kg": parent_mass_kg, "distance_m": distance_m });
+  }
+  async compute_geostationary_orbit(parent_mass_kg: any, parent_rotation_period_s: any): Promise<any> {
+    return this.client.post("/orbital/compute_geostationary_orbit", { "parent_mass_kg": parent_mass_kg, "parent_rotation_period_s": parent_rotation_period_s });
+  }
+  async compute_gravity(mass1_kg: any, mass2_kg: any, distance_m: any): Promise<any> {
+    return this.client.post("/orbital/compute_gravity", { "mass1_kg": mass1_kg, "mass2_kg": mass2_kg, "distance_m": distance_m });
+  }
+  async compute_hohmann_transfer(r1_m: any, r2_m: any, parent_mass_kg: any): Promise<any> {
+    return this.client.post("/orbital/compute_hohmann_transfer", { "r1_m": r1_m, "r2_m": r2_m, "parent_mass_kg": parent_mass_kg });
+  }
+  async compute_inclination(position: any, velocity: any, parent_position: any, parent_velocity: any): Promise<any> {
+    return this.client.post("/orbital/compute_inclination", { "position": position, "velocity": velocity, "parent_position": parent_position, "parent_velocity": parent_velocity });
+  }
+  async compute_orbit(body_id: any, parent_id: any): Promise<any> {
+    return this.client.post("/orbital/compute_orbit", { "body_id": body_id, "parent_id": parent_id });
+  }
+  async compute_orbital_elements(position: any, velocity: any, parent_mass_kg: any, parent_position: any, parent_velocity: any): Promise<any> {
+    return this.client.post("/orbital/compute_orbital_elements", { "position": position, "velocity": velocity, "parent_mass_kg": parent_mass_kg, "parent_position": parent_position, "parent_velocity": parent_velocity });
+  }
+  async compute_orbital_velocity(parent_mass_kg: any, distance_m: any): Promise<any> {
+    return this.client.post("/orbital/compute_orbital_velocity", { "parent_mass_kg": parent_mass_kg, "distance_m": distance_m });
+  }
+  async compute_periapsis(semi_major_axis_m: any, eccentricity: any): Promise<any> {
+    return this.client.post("/orbital/compute_periapsis", { "semi_major_axis_m": semi_major_axis_m, "eccentricity": eccentricity });
+  }
+  async compute_period(semi_major_axis_m: any, parent_mass_kg: any): Promise<any> {
+    return this.client.post("/orbital/compute_period", { "semi_major_axis_m": semi_major_axis_m, "parent_mass_kg": parent_mass_kg });
+  }
+  async compute_semi_major_axis(period_s: any, parent_mass_kg: any): Promise<any> {
+    return this.client.post("/orbital/compute_semi_major_axis", { "period_s": period_s, "parent_mass_kg": parent_mass_kg });
+  }
+  async compute_specific_orbital_energy(semi_major_axis_m: any, parent_mass_kg: any): Promise<any> {
+    return this.client.post("/orbital/compute_specific_orbital_energy", { "semi_major_axis_m": semi_major_axis_m, "parent_mass_kg": parent_mass_kg });
+  }
+  async compute_sphere_of_influence(body_mass_kg: any, parent_mass_kg: any, semi_major_axis_m: any): Promise<any> {
+    return this.client.post("/orbital/compute_sphere_of_influence", { "body_mass_kg": body_mass_kg, "parent_mass_kg": parent_mass_kg, "semi_major_axis_m": semi_major_axis_m });
+  }
+  async compute_tidal_force(body_mass_kg: any, body_radius_m: any, parent_mass_kg: any, distance_m: any): Promise<any> {
+    return this.client.post("/orbital/compute_tidal_force", { "body_mass_kg": body_mass_kg, "body_radius_m": body_radius_m, "parent_mass_kg": parent_mass_kg, "distance_m": distance_m });
+  }
+  async compute_trajectory(body_id: any, steps: any, step_s: any, description: any): Promise<any> {
+    return this.client.post("/orbital/compute_trajectory", { "body_id": body_id, "steps": steps, "step_s": step_s, "description": description });
+  }
+  async compute_velocity(semi_major_axis_m: any, distance_m: any, parent_mass_kg: any): Promise<any> {
+    return this.client.post("/orbital/compute_velocity", { "semi_major_axis_m": semi_major_axis_m, "distance_m": distance_m, "parent_mass_kg": parent_mass_kg });
+  }
+  async execute_maneuver(maneuver_id: any): Promise<any> {
+    return this.client.post("/orbital/execute_maneuver", { "maneuver_id": maneuver_id });
+  }
+  async get_asteroid(asteroid_id: any): Promise<any> {
+    return this.client.post("/orbital/get_asteroid", { "asteroid_id": asteroid_id });
+  }
+  async get_body(body_id: any): Promise<any> {
+    return this.client.post("/orbital/get_body", { "body_id": body_id });
+  }
+  async get_config(): Promise<any> {
+    return this.client.get("/orbital/get_config");
+  }
+  async get_instance(): Promise<any> {
+    return this.client.get("/orbital/get_instance");
+  }
+  async get_maneuver(maneuver_id: any): Promise<any> {
+    return this.client.post("/orbital/get_maneuver", { "maneuver_id": maneuver_id });
+  }
+  async get_orbit(orbit_id: any): Promise<any> {
+    return this.client.post("/orbital/get_orbit", { "orbit_id": orbit_id });
+  }
+  async get_orbital_map(parent_id: any): Promise<any> {
+    return this.client.post("/orbital/get_orbital_map", { "parent_id": parent_id });
+  }
+  async get_satellite(satellite_id: any): Promise<any> {
+    return this.client.post("/orbital/get_satellite", { "satellite_id": satellite_id });
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get("/orbital/get_snapshot");
+  }
+  async get_space_station(station_id: any): Promise<any> {
+    return this.client.post("/orbital/get_space_station", { "station_id": station_id });
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get("/orbital/get_stats");
+  }
+  async get_status(): Promise<any> {
+    return this.client.get("/orbital/get_status");
+  }
+  async get_thruster(thruster_id: any): Promise<any> {
+    return this.client.post("/orbital/get_thruster", { "thruster_id": thruster_id });
+  }
+  async get_trajectory_data(trajectory_id: any): Promise<any> {
+    return this.client.post("/orbital/get_trajectory_data", { "trajectory_id": trajectory_id });
+  }
+  async get_visualization_data(include_trajectories: any, include_orbits: any): Promise<any> {
+    return this.client.post("/orbital/get_visualization_data", { "include_trajectories": include_trajectories, "include_orbits": include_orbits });
+  }
+  async list_asteroids(parent_id: any, hazard_level: any, status: any, limit: any, offset: any): Promise<any> {
+    return this.client.post("/orbital/list_asteroids", { "parent_id": parent_id, "hazard_level": hazard_level, "status": status, "limit": limit, "offset": offset });
+  }
+  async list_bodies(body_type: any, parent_id: any, status: any, limit: any, offset: any): Promise<any> {
+    return this.client.post("/orbital/list_bodies", { "body_type": body_type, "parent_id": parent_id, "status": status, "limit": limit, "offset": offset });
+  }
+  async list_events(kind: any, body_id: any, satellite_id: any, limit: any, offset: any, sort_desc: any): Promise<any> {
+    return this.client.post("/orbital/list_events", { "kind": kind, "body_id": body_id, "satellite_id": satellite_id, "limit": limit, "offset": offset, "sort_desc": sort_desc });
+  }
+  async list_maneuvers(satellite_id: any, maneuver_type: any, status: any, limit: any, offset: any): Promise<any> {
+    return this.client.post("/orbital/list_maneuvers", { "satellite_id": satellite_id, "maneuver_type": maneuver_type, "status": status, "limit": limit, "offset": offset });
+  }
+  async list_orbits(body_id: any, parent_id: any, orbit_type: any, limit: any, offset: any): Promise<any> {
+    return this.client.post("/orbital/list_orbits", { "body_id": body_id, "parent_id": parent_id, "orbit_type": orbit_type, "limit": limit, "offset": offset });
+  }
+  async list_satellites(parent_id: any, status: any, limit: any, offset: any): Promise<any> {
+    return this.client.post("/orbital/list_satellites", { "parent_id": parent_id, "status": status, "limit": limit, "offset": offset });
+  }
+  async list_space_stations(parent_id: any, status: any, limit: any, offset: any): Promise<any> {
+    return this.client.post("/orbital/list_space_stations", { "parent_id": parent_id, "status": status, "limit": limit, "offset": offset });
+  }
+  async list_thrusters(thruster_type: any, status: any, limit: any, offset: any): Promise<any> {
+    return this.client.post("/orbital/list_thrusters", { "thruster_type": thruster_type, "status": status, "limit": limit, "offset": offset });
+  }
+  async measure_distance(body_id_a: any, body_id_b: any): Promise<any> {
+    return this.client.post("/orbital/measure_distance", { "body_id_a": body_id_a, "body_id_b": body_id_b });
+  }
+  async measure_velocity(body_id: any): Promise<any> {
+    return this.client.post("/orbital/measure_velocity", { "body_id": body_id });
+  }
+  async plan_maneuver(satellite_id: any, maneuver_type: any, delta_v_m_s: any, execution_time: any, duration_s: any, thruster_id: any, target_orbit_id: any, description: any): Promise<any> {
+    return this.client.post("/orbital/plan_maneuver", { "satellite_id": satellite_id, "maneuver_type": maneuver_type, "delta_v_m_s": delta_v_m_s, "execution_time": execution_time, "duration_s": duration_s, "thruster_id": thruster_id, "target_orbit_id": target_orbit_id, "description": description });
+  }
+  async predict_collision(body_id_a: any, body_id_b: any, time_horizon_s: any, steps: any): Promise<any> {
+    return this.client.post("/orbital/predict_collision", { "body_id_a": body_id_a, "body_id_b": body_id_b, "time_horizon_s": time_horizon_s, "steps": steps });
+  }
+  async predict_position(body_id: any, time_s: any): Promise<any> {
+    return this.client.post("/orbital/predict_position", { "body_id": body_id, "time_s": time_s });
+  }
+  async propagate_orbit(orbit_id: any, time_s: any): Promise<any> {
+    return this.client.post("/orbital/propagate_orbit", { "orbit_id": orbit_id, "time_s": time_s });
+  }
+  async register_asteroid(asteroid_id: any, name: any, mass_kg: any, radius_m: any, position: any, velocity: any, parent_id: any, spectral_class: any, composition: any, hazard_level: any): Promise<any> {
+    return this.client.post("/orbital/register_asteroid", { "asteroid_id": asteroid_id, "name": name, "mass_kg": mass_kg, "radius_m": radius_m, "position": position, "velocity": velocity, "parent_id": parent_id, "spectral_class": spectral_class, "composition": composition, "hazard_level": hazard_level });
+  }
+  async register_body(body_id: any, name: any, body_type: any, mass_kg: any, radius_m: any, position: any, velocity: any, parent_id: any, color: any, description: any): Promise<any> {
+    return this.client.post("/orbital/register_body", { "body_id": body_id, "name": name, "body_type": body_type, "mass_kg": mass_kg, "radius_m": radius_m, "position": position, "velocity": velocity, "parent_id": parent_id, "color": color, "description": description });
+  }
+  async register_satellite(satellite_id: any, name: any, parent_id: any, mass_kg: any, fuel_kg: any, position: any, velocity: any, thrust_n: any, isp_s: any, mission: any, operator: any): Promise<any> {
+    return this.client.post("/orbital/register_satellite", { "satellite_id": satellite_id, "name": name, "parent_id": parent_id, "mass_kg": mass_kg, "fuel_kg": fuel_kg, "position": position, "velocity": velocity, "thrust_n": thrust_n, "isp_s": isp_s, "mission": mission, "operator": operator });
+  }
+  async register_space_station(station_id: any, name: any, parent_id: any, mass_kg: any, position: any, velocity: any, crew_capacity: any, crew_count: any, fuel_kg: any, orbit_altitude_m: any, modules: any, description: any): Promise<any> {
+    return this.client.post("/orbital/register_space_station", { "station_id": station_id, "name": name, "parent_id": parent_id, "mass_kg": mass_kg, "position": position, "velocity": velocity, "crew_capacity": crew_capacity, "crew_count": crew_count, "fuel_kg": fuel_kg, "orbit_altitude_m": orbit_altitude_m, "modules": modules, "description": description });
+  }
+  async register_thruster(thruster_id: any, name: any, thruster_type: any, thrust_n: any, isp_s: any, fuel_consumption_kg_s: any, max_burn_time_s: any, mass_kg: any, description: any): Promise<any> {
+    return this.client.post("/orbital/register_thruster", { "thruster_id": thruster_id, "name": name, "thruster_type": thruster_type, "thrust_n": thrust_n, "isp_s": isp_s, "fuel_consumption_kg_s": fuel_consumption_kg_s, "max_burn_time_s": max_burn_time_s, "mass_kg": mass_kg, "description": description });
+  }
+  async remove_asteroid(asteroid_id: any): Promise<any> {
+    return this.client.post("/orbital/remove_asteroid", { "asteroid_id": asteroid_id });
+  }
+  async remove_body(body_id: any): Promise<any> {
+    return this.client.post("/orbital/remove_body", { "body_id": body_id });
+  }
+  async remove_satellite(satellite_id: any): Promise<any> {
+    return this.client.post("/orbital/remove_satellite", { "satellite_id": satellite_id });
+  }
+  async remove_space_station(station_id: any): Promise<any> {
+    return this.client.post("/orbital/remove_space_station", { "station_id": station_id });
+  }
+  async remove_thruster(thruster_id: any): Promise<any> {
+    return this.client.post("/orbital/remove_thruster", { "thruster_id": thruster_id });
+  }
+  async reset(): Promise<any> {
+    return this.client.get("/orbital/reset");
+  }
+  async set_config(data: Record<string, unknown> = {}): Promise<any> {
+    return this.client.post("/orbital/set_config", data);
+  }
+  async tick(dt: any): Promise<any> {
+    return this.client.post("/orbital/tick", { "dt": dt });
+  }
+  async update_asteroid(asteroid_id: any): Promise<any> {
+    return this.client.post("/orbital/update_asteroid", { "asteroid_id": asteroid_id });
+  }
+  async update_body(body_id: any): Promise<any> {
+    return this.client.post("/orbital/update_body", { "body_id": body_id });
+  }
+  async update_satellite(satellite_id: any): Promise<any> {
+    return this.client.post("/orbital/update_satellite", { "satellite_id": satellite_id });
+  }
+  async update_space_station(station_id: any): Promise<any> {
+    return this.client.post("/orbital/update_space_station", { "station_id": station_id });
+  }
+}
+export const orbitalApi = new OrbitalApi(api);
+
+
+// ===========================================================================
+// Round 51 Clients: Editor Subsystems, Granular Physics, Cognitive Core
+// Each subsystem gets its own class to avoid method name collisions.
+// ===========================================================================
+
+export class EditorSystemApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  // --- editor routes (17 methods) ---
+async get_audio_mixer(): Promise<any> {
+    return this.client.get('/editor/get_audio_mixer');
+  }
+  async get_config(): Promise<any> {
+    return this.client.get('/editor/get_config');
+  }
+  async get_copilot_panel(): Promise<any> {
+    return this.client.get('/editor/get_copilot_panel');
+  }
+  async get_instance(): Promise<any> {
+    return this.client.get('/editor/get_instance');
+  }
+  async get_material_editor(): Promise<any> {
+    return this.client.get('/editor/get_material_editor');
+  }
+  async get_particle_editor(): Promise<any> {
+    return this.client.get('/editor/get_particle_editor');
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get('/editor/get_snapshot');
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get('/editor/get_stats');
+  }
+  async get_status(): Promise<any> {
+    return this.client.get('/editor/get_status');
+  }
+  async get_terrain_editor(): Promise<any> {
+    return this.client.get('/editor/get_terrain_editor');
+  }
+  async get_visual_script_editor(): Promise<any> {
+    return this.client.get('/editor/get_visual_script_editor');
+  }
+  async get_visualization_data(): Promise<any> {
+    return this.client.get('/editor/get_visualization_data');
+  }
+  async initialize(): Promise<any> {
+    return this.client.get('/editor/initialize');
+  }
+  async list_events(body: any = {}): Promise<any> {
+    return this.client.post('/editor/list_events', body);
+  }
+  async reset(): Promise<any> {
+    return this.client.get('/editor/reset');
+  }
+  async set_config(body: any = {}): Promise<any> {
+    return this.client.post('/editor/set_config', body);
+  }
+  async tick(body: any = {}): Promise<any> {
+    return this.client.post('/editor/tick', body);
+  }
+}
+export const editorSystemApi = new EditorSystemApi(api);
+
+export class EditorMaterialApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  // --- editor_material routes (21 methods) ---
+async add_node(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/add_node', body);
+  }
+  async ai_generate_material(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/ai_generate_material', body);
+  }
+  async ai_optimize_shader(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/ai_optimize_shader', body);
+  }
+  async ai_suggest_nodes(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/ai_suggest_nodes', body);
+  }
+  async compile_shader(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/compile_shader', body);
+  }
+  async connect_nodes(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/connect_nodes', body);
+  }
+  async create_material(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/create_material', body);
+  }
+  async disconnect_nodes(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/disconnect_nodes', body);
+  }
+  async get_material(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/get_material', body);
+  }
+  async get_parameter(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/get_parameter', body);
+  }
+  async get_shader_code(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/get_shader_code', body);
+  }
+  async list_connections(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/list_connections', body);
+  }
+  async list_materials(): Promise<any> {
+    return this.client.get('/editor_material/list_materials');
+  }
+  async list_nodes(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/list_nodes', body);
+  }
+  async optimize_material(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/optimize_material', body);
+  }
+  async preview_material(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/preview_material', body);
+  }
+  async remove_material(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/remove_material', body);
+  }
+  async remove_node(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/remove_node', body);
+  }
+  async set_parameter(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/set_parameter', body);
+  }
+  async update_material(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/update_material', body);
+  }
+  async validate_graph(body: any = {}): Promise<any> {
+    return this.client.post('/editor_material/validate_graph', body);
+  }
+}
+export const editorMaterialApi = new EditorMaterialApi(api);
+
+export class EditorTerrainApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  // --- editor_terrain routes (21 methods) ---
+async add_layer(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/add_layer', body);
+  }
+  async ai_generate_terrain(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/ai_generate_terrain', body);
+  }
+  async ai_optimize_terrain(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/ai_optimize_terrain', body);
+  }
+  async ai_suggest_features(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/ai_suggest_features', body);
+  }
+  async apply_erosion(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/apply_erosion', body);
+  }
+  async create_terrain(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/create_terrain', body);
+  }
+  async export_heightmap(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/export_heightmap', body);
+  }
+  async generate_heightmap(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/generate_heightmap', body);
+  }
+  async get_brush_settings(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/get_brush_settings', body);
+  }
+  async get_height_at(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/get_height_at', body);
+  }
+  async get_normal_at(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/get_normal_at', body);
+  }
+  async get_terrain(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/get_terrain', body);
+  }
+  async import_heightmap(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/import_heightmap', body);
+  }
+  async list_terrains(): Promise<any> {
+    return this.client.get('/editor_terrain/list_terrains');
+  }
+  async paint_foliage(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/paint_foliage', body);
+  }
+  async paint_texture(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/paint_texture', body);
+  }
+  async remove_layer(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/remove_layer', body);
+  }
+  async remove_terrain(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/remove_terrain', body);
+  }
+  async sculpt(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/sculpt', body);
+  }
+  async set_brush(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/set_brush', body);
+  }
+  async update_terrain(body: any = {}): Promise<any> {
+    return this.client.post('/editor_terrain/update_terrain', body);
+  }
+}
+export const editorTerrainApi = new EditorTerrainApi(api);
+
+export class EditorParticleApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  // --- editor_particle routes (19 methods) ---
+async add_emitter(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/add_emitter', body);
+  }
+  async add_modifier(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/add_modifier', body);
+  }
+  async ai_generate_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/ai_generate_effect', body);
+  }
+  async ai_optimize_particles(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/ai_optimize_particles', body);
+  }
+  async ai_suggest_modifiers(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/ai_suggest_modifiers', body);
+  }
+  async bake_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/bake_effect', body);
+  }
+  async create_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/create_effect', body);
+  }
+  async get_curve(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/get_curve', body);
+  }
+  async get_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/get_effect', body);
+  }
+  async get_particle_count(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/get_particle_count', body);
+  }
+  async list_effects(): Promise<any> {
+    return this.client.get('/editor_particle/list_effects');
+  }
+  async load_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/load_effect', body);
+  }
+  async remove_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/remove_effect', body);
+  }
+  async remove_emitter(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/remove_emitter', body);
+  }
+  async remove_modifier(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/remove_modifier', body);
+  }
+  async save_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/save_effect', body);
+  }
+  async set_curve(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/set_curve', body);
+  }
+  async simulate_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/simulate_effect', body);
+  }
+  async update_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_particle/update_effect', body);
+  }
+}
+export const editorParticleApi = new EditorParticleApi(api);
+
+export class EditorVisualScriptApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  // --- editor_visual_script routes (20 methods) ---
+async add_function(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/add_function', body);
+  }
+  async add_node(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/add_node', body);
+  }
+  async add_variable(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/add_variable', body);
+  }
+  async ai_generate_logic(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/ai_generate_logic', body);
+  }
+  async ai_optimize_graph(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/ai_optimize_graph', body);
+  }
+  async ai_suggest_nodes(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/ai_suggest_nodes', body);
+  }
+  async compile_to_code(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/compile_to_code', body);
+  }
+  async connect_pins(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/connect_pins', body);
+  }
+  async create_graph(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/create_graph', body);
+  }
+  async disconnect_pins(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/disconnect_pins', body);
+  }
+  async get_graph(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/get_graph', body);
+  }
+  async get_graph_data(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/get_graph_data', body);
+  }
+  async list_graphs(): Promise<any> {
+    return this.client.get('/editor_visual_script/list_graphs');
+  }
+  async remove_function(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/remove_function', body);
+  }
+  async remove_graph(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/remove_graph', body);
+  }
+  async remove_node(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/remove_node', body);
+  }
+  async remove_variable(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/remove_variable', body);
+  }
+  async set_node_property(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/set_node_property', body);
+  }
+  async update_graph(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/update_graph', body);
+  }
+  async validate_graph(body: any = {}): Promise<any> {
+    return this.client.post('/editor_visual_script/validate_graph', body);
+  }
+}
+export const editorVisualScriptApi = new EditorVisualScriptApi(api);
+
+export class EditorAudioApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  // --- editor_audio routes (29 methods) ---
+async add_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/add_effect', body);
+  }
+  async ai_generate_mix(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/ai_generate_mix', body);
+  }
+  async ai_optimize_levels(): Promise<any> {
+    return this.client.get('/editor_audio/ai_optimize_levels');
+  }
+  async ai_suggest_effects(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/ai_suggest_effects', body);
+  }
+  async apply_mix_preset(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/apply_mix_preset', body);
+  }
+  async create_bus(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/create_bus', body);
+  }
+  async create_channel(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/create_channel', body);
+  }
+  async create_cue(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/create_cue', body);
+  }
+  async get_bus(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/get_bus', body);
+  }
+  async get_cue(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/get_cue', body);
+  }
+  async get_levels(): Promise<any> {
+    return this.client.get('/editor_audio/get_levels');
+  }
+  async list_buses(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/list_buses', body);
+  }
+  async list_cues(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/list_cues', body);
+  }
+  async list_events(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/list_events', body);
+  }
+  async list_presets(): Promise<any> {
+    return this.client.get('/editor_audio/list_presets');
+  }
+  async play_cue(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/play_cue', body);
+  }
+  async remove_bus(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/remove_bus', body);
+  }
+  async remove_channel(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/remove_channel', body);
+  }
+  async remove_cue(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/remove_cue', body);
+  }
+  async remove_effect(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/remove_effect', body);
+  }
+  async remove_preset(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/remove_preset', body);
+  }
+  async save_mix_preset(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/save_mix_preset', body);
+  }
+  async set_effect_parameter(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/set_effect_parameter', body);
+  }
+  async set_mute(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/set_mute', body);
+  }
+  async set_solo(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/set_solo', body);
+  }
+  async set_volume(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/set_volume', body);
+  }
+  async stop_cue(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/stop_cue', body);
+  }
+  async update_bus(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/update_bus', body);
+  }
+  async update_cue(body: any = {}): Promise<any> {
+    return this.client.post('/editor_audio/update_cue', body);
+  }
+}
+export const editorAudioApi = new EditorAudioApi(api);
+
+export class EditorCopilotApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  // --- editor_copilot routes (21 methods) ---
+async ai_respond(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/ai_respond', body);
+  }
+  async ai_review_gameplay(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/ai_review_gameplay', body);
+  }
+  async ai_suggest_design(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/ai_suggest_design', body);
+  }
+  async analyze_design(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/analyze_design', body);
+  }
+  async clear_history(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/clear_history', body);
+  }
+  async end_session(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/end_session', body);
+  }
+  async explain_concept(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/explain_concept', body);
+  }
+  async generate_ideas(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/generate_ideas', body);
+  }
+  async get_context(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/get_context', body);
+  }
+  async get_guidance(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/get_guidance', body);
+  }
+  async get_history(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/get_history', body);
+  }
+  async get_session(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/get_session', body);
+  }
+  async get_suggestions(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/get_suggestions', body);
+  }
+  async list_events(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/list_events', body);
+  }
+  async list_sessions(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/list_sessions', body);
+  }
+  async remove_session(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/remove_session', body);
+  }
+  async review_balance(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/review_balance', body);
+  }
+  async search_knowledge(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/search_knowledge', body);
+  }
+  async send_message(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/send_message', body);
+  }
+  async set_context(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/set_context', body);
+  }
+  async start_session(body: any = {}): Promise<any> {
+    return this.client.post('/editor_copilot/start_session', body);
+  }
+}
+export const editorCopilotApi = new EditorCopilotApi(api);
+
+export class GranularPhysicsApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  // --- granular routes (104 methods) ---
+async add_particle(body: any = {}): Promise<any> {
+    return this.client.post('/granular/add_particle', body);
+  }
+  async add_particle_at(body: any = {}): Promise<any> {
+    return this.client.post('/granular/add_particle_at', body);
+  }
+  async ai_assess_stability(body: any = {}): Promise<any> {
+    return this.client.post('/granular/ai_assess_stability', body);
+  }
+  async ai_optimize_simulation(body: any = {}): Promise<any> {
+    return this.client.post('/granular/ai_optimize_simulation', body);
+  }
+  async ai_predict_flow(body: any = {}): Promise<any> {
+    return this.client.post('/granular/ai_predict_flow', body);
+  }
+  async apply_friction(body: any = {}): Promise<any> {
+    return this.client.post('/granular/apply_friction', body);
+  }
+  async apply_gravity(body: any = {}): Promise<any> {
+    return this.client.post('/granular/apply_gravity', body);
+  }
+  async apply_impulse(body: any = {}): Promise<any> {
+    return this.client.post('/granular/apply_impulse', body);
+  }
+  async apply_radial_force(body: any = {}): Promise<any> {
+    return this.client.post('/granular/apply_radial_force', body);
+  }
+  async apply_vibration(body: any = {}): Promise<any> {
+    return this.client.post('/granular/apply_vibration', body);
+  }
+  async check_slope_stability(body: any = {}): Promise<any> {
+    return this.client.post('/granular/check_slope_stability', body);
+  }
+  async check_stability(body: any = {}): Promise<any> {
+    return this.client.post('/granular/check_stability', body);
+  }
+  async clear_events(): Promise<any> {
+    return this.client.get('/granular/clear_events');
+  }
+  async clear_particles(): Promise<any> {
+    return this.client.get('/granular/clear_particles');
+  }
+  async clear_vibration(): Promise<any> {
+    return this.client.get('/granular/clear_vibration');
+  }
+  async compute_angle_of_repose(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_angle_of_repose', body);
+  }
+  async compute_average_speed(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_average_speed', body);
+  }
+  async compute_bounding_box(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_bounding_box', body);
+  }
+  async compute_center_of_mass(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_center_of_mass', body);
+  }
+  async compute_forces(): Promise<any> {
+    return this.client.get('/granular/compute_forces');
+  }
+  async compute_kinetic_energy(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_kinetic_energy', body);
+  }
+  async compute_mass_flow_rate(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_mass_flow_rate', body);
+  }
+  async compute_material_distribution(): Promise<any> {
+    return this.client.get('/granular/compute_material_distribution');
+  }
+  async compute_max_speed(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_max_speed', body);
+  }
+  async compute_packing_density(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_packing_density', body);
+  }
+  async compute_percolation_rate(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_percolation_rate', body);
+  }
+  async compute_potential_energy(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_potential_energy', body);
+  }
+  async compute_pressure(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_pressure', body);
+  }
+  async compute_size_distribution(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_size_distribution', body);
+  }
+  async compute_stress(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_stress', body);
+  }
+  async compute_terminal_velocity(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_terminal_velocity', body);
+  }
+  async compute_total_energy(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_total_energy', body);
+  }
+  async compute_total_mass(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_total_mass', body);
+  }
+  async compute_total_momentum(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_total_momentum', body);
+  }
+  async compute_total_volume(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_total_volume', body);
+  }
+  async compute_yield_criterion(body: any = {}): Promise<any> {
+    return this.client.post('/granular/compute_yield_criterion', body);
+  }
+  async count_emitters(): Promise<any> {
+    return this.client.get('/granular/count_emitters');
+  }
+  async count_obstacles(): Promise<any> {
+    return this.client.get('/granular/count_obstacles');
+  }
+  async count_particles(): Promise<any> {
+    return this.client.get('/granular/count_particles');
+  }
+  async count_particles_by_material(body: any = {}): Promise<any> {
+    return this.client.post('/granular/count_particles_by_material', body);
+  }
+  async count_piles(): Promise<any> {
+    return this.client.get('/granular/count_piles');
+  }
+  async create_pile(body: any = {}): Promise<any> {
+    return this.client.post('/granular/create_pile', body);
+  }
+  async emit_particles(body: any = {}): Promise<any> {
+    return this.client.post('/granular/emit_particles', body);
+  }
+  async export_json(): Promise<any> {
+    return this.client.get('/granular/export_json');
+  }
+  async find_pile_at(body: any = {}): Promise<any> {
+    return this.client.post('/granular/find_pile_at', body);
+  }
+  async get_config(): Promise<any> {
+    return this.client.get('/granular/get_config');
+  }
+  async get_domain(): Promise<any> {
+    return this.client.get('/granular/get_domain');
+  }
+  async get_emitter(body: any = {}): Promise<any> {
+    return this.client.post('/granular/get_emitter', body);
+  }
+  async get_instance(): Promise<any> {
+    return this.client.get('/granular/get_instance');
+  }
+  async get_last_contact_count(): Promise<any> {
+    return this.client.get('/granular/get_last_contact_count');
+  }
+  async get_material_properties(body: any = {}): Promise<any> {
+    return this.client.post('/granular/get_material_properties', body);
+  }
+  async get_obstacle(body: any = {}): Promise<any> {
+    return this.client.post('/granular/get_obstacle', body);
+  }
+  async get_particle(body: any = {}): Promise<any> {
+    return this.client.post('/granular/get_particle', body);
+  }
+  async get_particle_summary(): Promise<any> {
+    return this.client.get('/granular/get_particle_summary');
+  }
+  async get_pile(body: any = {}): Promise<any> {
+    return this.client.post('/granular/get_pile', body);
+  }
+  async get_sim_time(): Promise<any> {
+    return this.client.get('/granular/get_sim_time');
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get('/granular/get_snapshot');
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get('/granular/get_stats');
+  }
+  async get_status(): Promise<any> {
+    return this.client.get('/granular/get_status');
+  }
+  async get_tick_count(): Promise<any> {
+    return this.client.get('/granular/get_tick_count');
+  }
+  async get_visualization_data(): Promise<any> {
+    return this.client.get('/granular/get_visualization_data');
+  }
+  async handle_contacts(): Promise<any> {
+    return this.client.get('/granular/handle_contacts');
+  }
+  async import_json(body: any = {}): Promise<any> {
+    return this.client.post('/granular/import_json', body);
+  }
+  async initialize(body: any = {}): Promise<any> {
+    return this.client.post('/granular/initialize', body);
+  }
+  async is_paused(): Promise<any> {
+    return this.client.get('/granular/is_paused');
+  }
+  async list_emitters(): Promise<any> {
+    return this.client.get('/granular/list_emitters');
+  }
+  async list_events(body: any = {}): Promise<any> {
+    return this.client.post('/granular/list_events', body);
+  }
+  async list_materials(): Promise<any> {
+    return this.client.get('/granular/list_materials');
+  }
+  async list_obstacles(): Promise<any> {
+    return this.client.get('/granular/list_obstacles');
+  }
+  async list_particles(body: any = {}): Promise<any> {
+    return this.client.post('/granular/list_particles', body);
+  }
+  async list_piles(): Promise<any> {
+    return this.client.get('/granular/list_piles');
+  }
+  async merge_snapshot(body: any = {}): Promise<any> {
+    return this.client.post('/granular/merge_snapshot', body);
+  }
+  async nearest_particles(body: any = {}): Promise<any> {
+    return this.client.post('/granular/nearest_particles', body);
+  }
+  async particles_in_box(body: any = {}): Promise<any> {
+    return this.client.post('/granular/particles_in_box', body);
+  }
+  async particles_in_sphere(body: any = {}): Promise<any> {
+    return this.client.post('/granular/particles_in_sphere', body);
+  }
+  async pause(): Promise<any> {
+    return this.client.get('/granular/pause');
+  }
+  async refresh_all_piles(): Promise<any> {
+    return this.client.get('/granular/refresh_all_piles');
+  }
+  async register_emitter(body: any = {}): Promise<any> {
+    return this.client.post('/granular/register_emitter', body);
+  }
+  async register_obstacle(body: any = {}): Promise<any> {
+    return this.client.post('/granular/register_obstacle', body);
+  }
+  async remove_emitter(body: any = {}): Promise<any> {
+    return this.client.post('/granular/remove_emitter', body);
+  }
+  async remove_obstacle(body: any = {}): Promise<any> {
+    return this.client.post('/granular/remove_obstacle', body);
+  }
+  async remove_particle(body: any = {}): Promise<any> {
+    return this.client.post('/granular/remove_particle', body);
+  }
+  async remove_pile(body: any = {}): Promise<any> {
+    return this.client.post('/granular/remove_pile', body);
+  }
+  async reset(body: any = {}): Promise<any> {
+    return this.client.post('/granular/reset', body);
+  }
+  async resolve_collisions(): Promise<any> {
+    return this.client.get('/granular/resolve_collisions');
+  }
+  async resume(): Promise<any> {
+    return this.client.get('/granular/resume');
+  }
+  async set_config(body: any = {}): Promise<any> {
+    return this.client.post('/granular/set_config', body);
+  }
+  async set_domain(body: any = {}): Promise<any> {
+    return this.client.post('/granular/set_domain', body);
+  }
+  async set_gravity(body: any = {}): Promise<any> {
+    return this.client.post('/granular/set_gravity', body);
+  }
+  async set_material_properties(body: any = {}): Promise<any> {
+    return this.client.post('/granular/set_material_properties', body);
+  }
+  async set_particle_position(body: any = {}): Promise<any> {
+    return this.client.post('/granular/set_particle_position', body);
+  }
+  async set_particle_velocity(body: any = {}): Promise<any> {
+    return this.client.post('/granular/set_particle_velocity', body);
+  }
+  async set_time_step(body: any = {}): Promise<any> {
+    return this.client.post('/granular/set_time_step', body);
+  }
+  async set_vibration(body: any = {}): Promise<any> {
+    return this.client.post('/granular/set_vibration', body);
+  }
+  async simulate_avalanche(body: any = {}): Promise<any> {
+    return this.client.post('/granular/simulate_avalanche', body);
+  }
+  async spawn_burst(body: any = {}): Promise<any> {
+    return this.client.post('/granular/spawn_burst', body);
+  }
+  async step(body: any = {}): Promise<any> {
+    return this.client.post('/granular/step', body);
+  }
+  async step_particles(body: any = {}): Promise<any> {
+    return this.client.post('/granular/step_particles', body);
+  }
+  async tick(body: any = {}): Promise<any> {
+    return this.client.post('/granular/tick', body);
+  }
+  async total_avalanches_triggered(): Promise<any> {
+    return this.client.get('/granular/total_avalanches_triggered');
+  }
+  async total_contacts_resolved(): Promise<any> {
+    return this.client.get('/granular/total_contacts_resolved');
+  }
+  async total_particles_spawned(): Promise<any> {
+    return this.client.get('/granular/total_particles_spawned');
+  }
+  async update_pile_geometry(body: any = {}): Promise<any> {
+    return this.client.post('/granular/update_pile_geometry', body);
+  }
+  async validate_state(): Promise<any> {
+    return this.client.get('/granular/validate_state');
+  }
+}
+export const granularPhysicsApi = new GranularPhysicsApi(api);
+
+export class CognitiveCoreApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  // --- cognitive routes (86 methods) ---
+async abandon_intention(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/abandon_intention', body);
+  }
+  async activate_desires(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/activate_desires', body);
+  }
+  async add_belief(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/add_belief', body);
+  }
+  async add_desire(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/add_desire', body);
+  }
+  async ai_assess_personality(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/ai_assess_personality', body);
+  }
+  async ai_optimize_cognition(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/ai_optimize_cognition', body);
+  }
+  async ai_predict_behavior(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/ai_predict_behavior', body);
+  }
+  async allocate_resources(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/allocate_resources', body);
+  }
+  async appraise_event(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/appraise_event', body);
+  }
+  async assess_confidence(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/assess_confidence', body);
+  }
+  async assess_trust(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/assess_trust', body);
+  }
+  async check_commitment(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/check_commitment', body);
+  }
+  async commit_intention(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/commit_intention', body);
+  }
+  async create_plan(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/create_plan', body);
+  }
+  async decay_beliefs(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/decay_beliefs', body);
+  }
+  async decide_deliberation_depth(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/decide_deliberation_depth', body);
+  }
+  async decompose_task(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/decompose_task', body);
+  }
+  async estimate_plan_cost(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/estimate_plan_cost', body);
+  }
+  async evaluate_action(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/evaluate_action', body);
+  }
+  async evaluate_performance(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/evaluate_performance', body);
+  }
+  async execute_action(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/execute_action', body);
+  }
+  async execute_plan_step(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/execute_plan_step', body);
+  }
+  async filter_by_salience(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/filter_by_salience', body);
+  }
+  async get_agent(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_agent', body);
+  }
+  async get_belief(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_belief', body);
+  }
+  async get_config(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_config', body);
+  }
+  async get_desire(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_desire', body);
+  }
+  async get_emotional_influence(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_emotional_influence', body);
+  }
+  async get_emotional_state(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_emotional_state', body);
+  }
+  async get_instance(): Promise<any> {
+    return this.client.get('/cognitive/get_instance');
+  }
+  async get_intention(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_intention', body);
+  }
+  async get_outcomes(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_outcomes', body);
+  }
+  async get_percepts(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_percepts', body);
+  }
+  async get_plan(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_plan', body);
+  }
+  async get_reflections(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_reflections', body);
+  }
+  async get_relation(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_relation', body);
+  }
+  async get_self_model(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_self_model', body);
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get('/cognitive/get_snapshot');
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get('/cognitive/get_stats');
+  }
+  async get_status(): Promise<any> {
+    return this.client.get('/cognitive/get_status');
+  }
+  async get_visualization_data(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/get_visualization_data', body);
+  }
+  async initialize(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/initialize', body);
+  }
+  async learn_from_outcome(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/learn_from_outcome', body);
+  }
+  async list_agents(): Promise<any> {
+    return this.client.get('/cognitive/list_agents');
+  }
+  async list_beliefs(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/list_beliefs', body);
+  }
+  async list_desires(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/list_desires', body);
+  }
+  async list_events(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/list_events', body);
+  }
+  async list_intentions(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/list_intentions', body);
+  }
+  async list_plans(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/list_plans', body);
+  }
+  async list_relations(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/list_relations', body);
+  }
+  async prioritize_desires(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/prioritize_desires', body);
+  }
+  async propose_actions(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/propose_actions', body);
+  }
+  async query_beliefs(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/query_beliefs', body);
+  }
+  async reason_about_coalition(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/reason_about_coalition', body);
+  }
+  async reconcile_beliefs(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/reconcile_beliefs', body);
+  }
+  async record_outcome(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/record_outcome', body);
+  }
+  async register_agent(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/register_agent', body);
+  }
+  async register_handler(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/register_handler', body);
+  }
+  async register_percept(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/register_percept', body);
+  }
+  async register_relation(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/register_relation', body);
+  }
+  async remove_agent(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/remove_agent', body);
+  }
+  async remove_belief(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/remove_belief', body);
+  }
+  async remove_desire(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/remove_desire', body);
+  }
+  async remove_plan(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/remove_plan', body);
+  }
+  async remove_relation(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/remove_relation', body);
+  }
+  async repair_plan(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/repair_plan', body);
+  }
+  async reset(): Promise<any> {
+    return this.client.get('/cognitive/reset');
+  }
+  async resolve_conflict(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/resolve_conflict', body);
+  }
+  async resume_intention(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/resume_intention', body);
+  }
+  async select_action(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/select_action', body);
+  }
+  async set_config(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/set_config', body);
+  }
+  async set_emotional_state(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/set_emotional_state', body);
+  }
+  async set_meta_strategy(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/set_meta_strategy', body);
+  }
+  async suspend_intention(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/suspend_intention', body);
+  }
+  async theory_of_mind(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/theory_of_mind', body);
+  }
+  async tick(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/tick', body);
+  }
+  async trigger_reflection(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/trigger_reflection', body);
+  }
+  async unregister_handler(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/unregister_handler', body);
+  }
+  async update_belief(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/update_belief', body);
+  }
+  async update_beliefs_from_percepts(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/update_beliefs_from_percepts', body);
+  }
+  async update_desire(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/update_desire', body);
+  }
+  async update_emotion(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/update_emotion', body);
+  }
+  async update_plan(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/update_plan', body);
+  }
+  async update_relation(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/update_relation', body);
+  }
+  async update_self_model(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/update_self_model', body);
+  }
+  async validate_plan(body: any = {}): Promise<any> {
+    return this.client.post('/cognitive/validate_plan', body);
+  }
+}
+export const cognitiveCoreApi = new CognitiveCoreApi(api);
+
+// Combined accessor for all Round 51 subsystems
+export const round51Api = {
+  editor: editorSystemApi,
+  editor_material: editorMaterialApi,
+  editor_terrain: editorTerrainApi,
+  editor_particle: editorParticleApi,
+  editor_visual_script: editorVisualScriptApi,
+  editor_audio: editorAudioApi,
+  editor_copilot: editorCopilotApi,
+  granular: granularPhysicsApi,
+  cognitive: cognitiveCoreApi,
+};
+
+
+// ===========================================================================
+// Round 52 Clients: Tool Use, Knowledge Retrieval, Team Orchestrator,
+// Scene Graph, Event System, Collision Detection
+// ===========================================================================
+
+export class ToolUseApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  async ai_optimize_tools(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/ai_optimize_tools', body);
+  }
+  async check_permission(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/check_permission', body);
+  }
+  async clear_history(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/clear_history', body);
+  }
+  async create_chain(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/create_chain', body);
+  }
+  async create_pipeline(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/create_pipeline', body);
+  }
+  async execute_async(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/execute_async', body);
+  }
+  async execute_batch(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/execute_batch', body);
+  }
+  async execute_chain(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/execute_chain', body);
+  }
+  async execute_function_call(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/execute_function_call', body);
+  }
+  async execute_function_calls(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/execute_function_calls', body);
+  }
+  async execute_pipeline(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/execute_pipeline', body);
+  }
+  async execute_tool(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/execute_tool', body);
+  }
+  async format_result_for_llm(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/format_result_for_llm', body);
+  }
+  async get_chain(): Promise<any> {
+    return this.client.get('/tool_use/get_chain');
+  }
+  async get_chain_execution(): Promise<any> {
+    return this.client.get('/tool_use/get_chain_execution');
+  }
+  async get_config(): Promise<any> {
+    return this.client.get('/tool_use/get_config');
+  }
+  async get_execution(): Promise<any> {
+    return this.client.get('/tool_use/get_execution');
+  }
+  async get_history(): Promise<any> {
+    return this.client.get('/tool_use/get_history');
+  }
+  async get_pipeline(): Promise<any> {
+    return this.client.get('/tool_use/get_pipeline');
+  }
+  async get_pipeline_execution(): Promise<any> {
+    return this.client.get('/tool_use/get_pipeline_execution');
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get('/tool_use/get_snapshot');
+  }
+  async get_statistics(): Promise<any> {
+    return this.client.get('/tool_use/get_statistics');
+  }
+  async get_status(): Promise<any> {
+    return this.client.get('/tool_use/get_status');
+  }
+  async get_tool(): Promise<any> {
+    return this.client.get('/tool_use/get_tool');
+  }
+  async get_versions(): Promise<any> {
+    return this.client.get('/tool_use/get_versions');
+  }
+  async initialize(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/initialize', body);
+  }
+  async list_by_category(): Promise<any> {
+    return this.client.get('/tool_use/list_by_category');
+  }
+  async list_executions(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/list_executions', body);
+  }
+  async list_tools(): Promise<any> {
+    return this.client.get('/tool_use/list_tools');
+  }
+  async parse_function_call(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/parse_function_call', body);
+  }
+  async register_handler(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/register_handler', body);
+  }
+  async register_tool(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/register_tool', body);
+  }
+  async reset(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/reset', body);
+  }
+  async rollback_version(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/rollback_version', body);
+  }
+  async search_tools(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/search_tools', body);
+  }
+  async set_active_version(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/set_active_version', body);
+  }
+  async set_config(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/set_config', body);
+  }
+  async set_permission(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/set_permission', body);
+  }
+  async suggest_tools(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/suggest_tools', body);
+  }
+  async unregister_tool(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/unregister_tool', body);
+  }
+  async validate_parameters(body: any = {}): Promise<any> {
+    return this.client.post('/tool_use/validate_parameters', body);
+  }
+}
+export const toolUseApi = new ToolUseApi(api);
+
+export class KnowledgeApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  async add_concept(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/add_concept', body);
+  }
+  async add_document(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/add_document', body);
+  }
+  async ai_generate_knowledge(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/ai_generate_knowledge', body);
+  }
+  async ai_validate_knowledge(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/ai_validate_knowledge', body);
+  }
+  async assemble_context(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/assemble_context', body);
+  }
+  async categorize_document(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/categorize_document', body);
+  }
+  async detect_stale(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/detect_stale', body);
+  }
+  async expand_query(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/expand_query', body);
+  }
+  async export_knowledge_base(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/export_knowledge_base', body);
+  }
+  async export_search_report(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/export_search_report', body);
+  }
+  async find_concept_path(): Promise<any> {
+    return this.client.get('/knowledge/find_concept_path');
+  }
+  async get_concept(): Promise<any> {
+    return this.client.get('/knowledge/get_concept');
+  }
+  async get_concept_neighbors(): Promise<any> {
+    return this.client.get('/knowledge/get_concept_neighbors');
+  }
+  async get_config(): Promise<any> {
+    return this.client.get('/knowledge/get_config');
+  }
+  async get_context(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/get_context', body);
+  }
+  async get_document(): Promise<any> {
+    return this.client.get('/knowledge/get_document');
+  }
+  async get_popular_queries(): Promise<any> {
+    return this.client.get('/knowledge/get_popular_queries');
+  }
+  async get_search_history(): Promise<any> {
+    return this.client.get('/knowledge/get_search_history');
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get('/knowledge/get_snapshot');
+  }
+  async get_statistics(): Promise<any> {
+    return this.client.get('/knowledge/get_statistics');
+  }
+  async get_status(): Promise<any> {
+    return this.client.get('/knowledge/get_status');
+  }
+  async initialize(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/initialize', body);
+  }
+  async link_concepts(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/link_concepts', body);
+  }
+  async list_by_category(): Promise<any> {
+    return this.client.get('/knowledge/list_by_category');
+  }
+  async list_documents(): Promise<any> {
+    return this.client.get('/knowledge/list_documents');
+  }
+  async merge_documents(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/merge_documents', body);
+  }
+  async reformulate_query(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/reformulate_query', body);
+  }
+  async remove_document(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/remove_document', body);
+  }
+  async reset(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/reset', body);
+  }
+  async search_documents(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/search_documents', body);
+  }
+  async semantic_search(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/semantic_search', body);
+  }
+  async set_config(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/set_config', body);
+  }
+  async update_document(body: any = {}): Promise<any> {
+    return this.client.post('/knowledge/update_document', body);
+  }
+}
+export const knowledgeApi = new KnowledgeApi(api);
+
+export class TeamApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  async add_member(body: any = {}): Promise<any> {
+    return this.client.post('/team/add_member', body);
+  }
+  async ai_optimize_team(body: any = {}): Promise<any> {
+    return this.client.post('/team/ai_optimize_team', body);
+  }
+  async ai_predict_collaboration(): Promise<any> {
+    return this.client.get('/team/ai_predict_collaboration');
+  }
+  async allocate_resource(body: any = {}): Promise<any> {
+    return this.client.post('/team/allocate_resource', body);
+  }
+  async archive_team(body: any = {}): Promise<any> {
+    return this.client.post('/team/archive_team', body);
+  }
+  async assign_role(body: any = {}): Promise<any> {
+    return this.client.post('/team/assign_role', body);
+  }
+  async assign_task(body: any = {}): Promise<any> {
+    return this.client.post('/team/assign_task', body);
+  }
+  async cast_vote(body: any = {}): Promise<any> {
+    return this.client.post('/team/cast_vote', body);
+  }
+  async create_task(body: any = {}): Promise<any> {
+    return this.client.post('/team/create_task', body);
+  }
+  async create_team(body: any = {}): Promise<any> {
+    return this.client.post('/team/create_team', body);
+  }
+  async create_vote(body: any = {}): Promise<any> {
+    return this.client.post('/team/create_vote', body);
+  }
+  async create_workflow(body: any = {}): Promise<any> {
+    return this.client.post('/team/create_workflow', body);
+  }
+  async decompose_task(body: any = {}): Promise<any> {
+    return this.client.post('/team/decompose_task', body);
+  }
+  async detect_conflict(body: any = {}): Promise<any> {
+    return this.client.post('/team/detect_conflict', body);
+  }
+  async evolve_team(body: any = {}): Promise<any> {
+    return this.client.post('/team/evolve_team', body);
+  }
+  async execute_workflow(body: any = {}): Promise<any> {
+    return this.client.post('/team/execute_workflow', body);
+  }
+  async get_action_items(): Promise<any> {
+    return this.client.get('/team/get_action_items');
+  }
+  async get_conflict_history(): Promise<any> {
+    return this.client.get('/team/get_conflict_history');
+  }
+  async get_conversation(): Promise<any> {
+    return this.client.get('/team/get_conversation');
+  }
+  async get_member(): Promise<any> {
+    return this.client.get('/team/get_member');
+  }
+  async get_messages(body: any = {}): Promise<any> {
+    return this.client.post('/team/get_messages', body);
+  }
+  async get_performance_report(): Promise<any> {
+    return this.client.get('/team/get_performance_report');
+  }
+  async get_resource_utilization(): Promise<any> {
+    return this.client.get('/team/get_resource_utilization');
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get('/team/get_snapshot');
+  }
+  async get_status(): Promise<any> {
+    return this.client.get('/team/get_status');
+  }
+  async get_task(): Promise<any> {
+    return this.client.get('/team/get_task');
+  }
+  async get_task_dependencies(body: any = {}): Promise<any> {
+    return this.client.post('/team/get_task_dependencies', body);
+  }
+  async get_team(): Promise<any> {
+    return this.client.get('/team/get_team');
+  }
+  async get_team_statistics(): Promise<any> {
+    return this.client.get('/team/get_team_statistics');
+  }
+  async get_vote_result(): Promise<any> {
+    return this.client.get('/team/get_vote_result');
+  }
+  async get_workflow(): Promise<any> {
+    return this.client.get('/team/get_workflow');
+  }
+  async get_workflow_execution(): Promise<any> {
+    return this.client.get('/team/get_workflow_execution');
+  }
+  async initialize(body: any = {}): Promise<any> {
+    return this.client.post('/team/initialize', body);
+  }
+  async list_tasks(body: any = {}): Promise<any> {
+    return this.client.post('/team/list_tasks', body);
+  }
+  async list_teams(): Promise<any> {
+    return this.client.get('/team/list_teams');
+  }
+  async record_meeting(body: any = {}): Promise<any> {
+    return this.client.post('/team/record_meeting', body);
+  }
+  async remove_member(body: any = {}): Promise<any> {
+    return this.client.post('/team/remove_member', body);
+  }
+  async remove_team(body: any = {}): Promise<any> {
+    return this.client.post('/team/remove_team', body);
+  }
+  async reset(body: any = {}): Promise<any> {
+    return this.client.post('/team/reset', body);
+  }
+  async resolve_conflict(body: any = {}): Promise<any> {
+    return this.client.post('/team/resolve_conflict', body);
+  }
+  async rotate_roles(body: any = {}): Promise<any> {
+    return this.client.post('/team/rotate_roles', body);
+  }
+  async schedule_meeting(body: any = {}): Promise<any> {
+    return this.client.post('/team/schedule_meeting', body);
+  }
+  async send_message(body: any = {}): Promise<any> {
+    return this.client.post('/team/send_message', body);
+  }
+  async update_member(body: any = {}): Promise<any> {
+    return this.client.post('/team/update_member', body);
+  }
+}
+export const teamApi = new TeamApi(api);
+
+export class SceneGraphApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  async add_component(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/add_component', body);
+  }
+  async ai_generate_scene(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/ai_generate_scene', body);
+  }
+  async ai_optimize_scene(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/ai_optimize_scene', body);
+  }
+  async clear_dirty(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/clear_dirty', body);
+  }
+  async compute_bounds(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/compute_bounds', body);
+  }
+  async connect_signal(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/connect_signal', body);
+  }
+  async create_node(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/create_node', body);
+  }
+  async create_prefab(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/create_prefab', body);
+  }
+  async create_scene(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/create_scene', body);
+  }
+  async disconnect_signal(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/disconnect_signal', body);
+  }
+  async emit_signal(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/emit_signal', body);
+  }
+  async find_by_name(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/find_by_name', body);
+  }
+  async find_by_tag(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/find_by_tag', body);
+  }
+  async find_by_type(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/find_by_type', body);
+  }
+  async find_node(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/find_node', body);
+  }
+  async frustum_cull(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/frustum_cull', body);
+  }
+  async get_active_scene(): Promise<any> {
+    return this.client.get('/scene_graph/get_active_scene');
+  }
+  async get_ancestors(): Promise<any> {
+    return this.client.get('/scene_graph/get_ancestors');
+  }
+  async get_bounds(): Promise<any> {
+    return this.client.get('/scene_graph/get_bounds');
+  }
+  async get_children(): Promise<any> {
+    return this.client.get('/scene_graph/get_children');
+  }
+  async get_component(): Promise<any> {
+    return this.client.get('/scene_graph/get_component');
+  }
+  async get_components_by_type(): Promise<any> {
+    return this.client.get('/scene_graph/get_components_by_type');
+  }
+  async get_depth(): Promise<any> {
+    return this.client.get('/scene_graph/get_depth');
+  }
+  async get_descendants(): Promise<any> {
+    return this.client.get('/scene_graph/get_descendants');
+  }
+  async get_dirty_nodes(): Promise<any> {
+    return this.client.get('/scene_graph/get_dirty_nodes');
+  }
+  async get_layer(): Promise<any> {
+    return this.client.get('/scene_graph/get_layer');
+  }
+  async get_local_transform(): Promise<any> {
+    return this.client.get('/scene_graph/get_local_transform');
+  }
+  async get_node(): Promise<any> {
+    return this.client.get('/scene_graph/get_node');
+  }
+  async get_nodes_in_layer(): Promise<any> {
+    return this.client.get('/scene_graph/get_nodes_in_layer');
+  }
+  async get_nodes_with_component(): Promise<any> {
+    return this.client.get('/scene_graph/get_nodes_with_component');
+  }
+  async get_siblings(): Promise<any> {
+    return this.client.get('/scene_graph/get_siblings');
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get('/scene_graph/get_snapshot');
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get('/scene_graph/get_stats');
+  }
+  async get_status(): Promise<any> {
+    return this.client.get('/scene_graph/get_status');
+  }
+  async get_world_transform(): Promise<any> {
+    return this.client.get('/scene_graph/get_world_transform');
+  }
+  async initialize(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/initialize', body);
+  }
+  async instantiate_prefab(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/instantiate_prefab', body);
+  }
+  async invalidate_transform(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/invalidate_transform', body);
+  }
+  async load_scene(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/load_scene', body);
+  }
+  async remove_component(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/remove_component', body);
+  }
+  async remove_node(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/remove_node', body);
+  }
+  async reparent_node(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/reparent_node', body);
+  }
+  async reset(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/reset', body);
+  }
+  async save_scene(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/save_scene', body);
+  }
+  async set_layer(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/set_layer', body);
+  }
+  async set_local_transform(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/set_local_transform', body);
+  }
+  async tick(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/tick', body);
+  }
+  async traverse(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/traverse', body);
+  }
+  async traverse_bfs(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/traverse_bfs', body);
+  }
+  async traverse_dfs(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/traverse_dfs', body);
+  }
+  async unload_scene(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/unload_scene', body);
+  }
+  async update_transforms(body: any = {}): Promise<any> {
+    return this.client.post('/scene_graph/update_transforms', body);
+  }
+}
+export const sceneGraphApi = new SceneGraphApi(api);
+
+export class EventLogicApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  async ai_debug_rules(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/ai_debug_rules', body);
+  }
+  async ai_generate_rules(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/ai_generate_rules', body);
+  }
+  async bind_input(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/bind_input', body);
+  }
+  async check_trigger(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/check_trigger', body);
+  }
+  async create_action(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/create_action', body);
+  }
+  async create_condition(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/create_condition', body);
+  }
+  async create_condition_group(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/create_condition_group', body);
+  }
+  async create_event(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/create_event', body);
+  }
+  async create_rule(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/create_rule', body);
+  }
+  async create_timer(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/create_timer', body);
+  }
+  async create_trigger_volume(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/create_trigger_volume', body);
+  }
+  async disable_rule(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/disable_rule', body);
+  }
+  async disable_tracing(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/disable_tracing', body);
+  }
+  async enable_rule(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/enable_rule', body);
+  }
+  async enable_tracing(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/enable_tracing', body);
+  }
+  async get_dispatch_history(): Promise<any> {
+    return this.client.get('/event_logic/get_dispatch_history');
+  }
+  async get_event(): Promise<any> {
+    return this.client.get('/event_logic/get_event');
+  }
+  async get_input_bindings(): Promise<any> {
+    return this.client.get('/event_logic/get_input_bindings');
+  }
+  async get_rule(): Promise<any> {
+    return this.client.get('/event_logic/get_rule');
+  }
+  async get_rule_statistics(): Promise<any> {
+    return this.client.get('/event_logic/get_rule_statistics');
+  }
+  async get_scoped_variable(): Promise<any> {
+    return this.client.get('/event_logic/get_scoped_variable');
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get('/event_logic/get_snapshot');
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get('/event_logic/get_stats');
+  }
+  async get_status(): Promise<any> {
+    return this.client.get('/event_logic/get_status');
+  }
+  async get_timer_state(): Promise<any> {
+    return this.client.get('/event_logic/get_timer_state');
+  }
+  async get_trace(): Promise<any> {
+    return this.client.get('/event_logic/get_trace');
+  }
+  async get_trigger_volume(): Promise<any> {
+    return this.client.get('/event_logic/get_trigger_volume');
+  }
+  async get_variable(): Promise<any> {
+    return this.client.get('/event_logic/get_variable');
+  }
+  async initialize(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/initialize', body);
+  }
+  async list_events(): Promise<any> {
+    return this.client.get('/event_logic/list_events');
+  }
+  async list_rules(): Promise<any> {
+    return this.client.get('/event_logic/list_rules');
+  }
+  async list_variables(): Promise<any> {
+    return this.client.get('/event_logic/list_variables');
+  }
+  async modify_variable(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/modify_variable', body);
+  }
+  async pause_timer(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/pause_timer', body);
+  }
+  async publish(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/publish', body);
+  }
+  async remove_event(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/remove_event', body);
+  }
+  async remove_rule(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/remove_rule', body);
+  }
+  async remove_trigger_volume(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/remove_trigger_volume', body);
+  }
+  async reset(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/reset', body);
+  }
+  async reset_timer(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/reset_timer', body);
+  }
+  async resume_timer(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/resume_timer', body);
+  }
+  async set_action_handler(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/set_action_handler', body);
+  }
+  async set_rule_priority(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/set_rule_priority', body);
+  }
+  async set_scoped_variable(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/set_scoped_variable', body);
+  }
+  async set_variable(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/set_variable', body);
+  }
+  async start_timer(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/start_timer', body);
+  }
+  async subscribe(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/subscribe', body);
+  }
+  async tick(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/tick', body);
+  }
+  async unbind_input(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/unbind_input', body);
+  }
+  async unsubscribe(body: any = {}): Promise<any> {
+    return this.client.post('/event_logic/unsubscribe', body);
+  }
+}
+export const eventLogicApi = new EventLogicApi(api);
+
+export class CollisionApi {
+  private client: ApiClient;
+  constructor(client: ApiClient) { this.client = client; }
+
+  async add_to_broadphase(body: any = {}): Promise<any> {
+    return this.client.post('/collision/add_to_broadphase', body);
+  }
+  async ai_optimize_broadphase(body: any = {}): Promise<any> {
+    return this.client.post('/collision/ai_optimize_broadphase', body);
+  }
+  async ai_predict_hotspots(): Promise<any> {
+    return this.client.get('/collision/ai_predict_hotspots');
+  }
+  async check_pair(body: any = {}): Promise<any> {
+    return this.client.post('/collision/check_pair', body);
+  }
+  async get_collider(): Promise<any> {
+    return this.client.get('/collision/get_collider');
+  }
+  async get_colliders_in_layer(body: any = {}): Promise<any> {
+    return this.client.post('/collision/get_colliders_in_layer', body);
+  }
+  async get_collision_events(): Promise<any> {
+    return this.client.get('/collision/get_collision_events');
+  }
+  async get_collision_matrix(): Promise<any> {
+    return this.client.get('/collision/get_collision_matrix');
+  }
+  async get_collision_pairs(): Promise<any> {
+    return this.client.get('/collision/get_collision_pairs');
+  }
+  async get_contact_constraints(body: any = {}): Promise<any> {
+    return this.client.post('/collision/get_contact_constraints', body);
+  }
+  async get_contacts(): Promise<any> {
+    return this.client.get('/collision/get_contacts');
+  }
+  async get_debug_data(): Promise<any> {
+    return this.client.get('/collision/get_debug_data');
+  }
+  async get_persistent_contacts(): Promise<any> {
+    return this.client.get('/collision/get_persistent_contacts');
+  }
+  async get_snapshot(): Promise<any> {
+    return this.client.get('/collision/get_snapshot');
+  }
+  async get_statistics(): Promise<any> {
+    return this.client.get('/collision/get_statistics');
+  }
+  async get_stats(): Promise<any> {
+    return this.client.get('/collision/get_stats');
+  }
+  async get_status(): Promise<any> {
+    return this.client.get('/collision/get_status');
+  }
+  async initialize(body: any = {}): Promise<any> {
+    return this.client.post('/collision/initialize', body);
+  }
+  async list_colliders(): Promise<any> {
+    return this.client.get('/collision/list_colliders');
+  }
+  async move_collider(body: any = {}): Promise<any> {
+    return this.client.post('/collision/move_collider', body);
+  }
+  async query_aabb(body: any = {}): Promise<any> {
+    return this.client.post('/collision/query_aabb', body);
+  }
+  async ray_cast(body: any = {}): Promise<any> {
+    return this.client.post('/collision/ray_cast', body);
+  }
+  async ray_cast_batch(body: any = {}): Promise<any> {
+    return this.client.post('/collision/ray_cast_batch', body);
+  }
+  async rebalance_tree(body: any = {}): Promise<any> {
+    return this.client.post('/collision/rebalance_tree', body);
+  }
+  async register_collider(body: any = {}): Promise<any> {
+    return this.client.post('/collision/register_collider', body);
+  }
+  async remove_collider(body: any = {}): Promise<any> {
+    return this.client.post('/collision/remove_collider', body);
+  }
+  async remove_from_broadphase(body: any = {}): Promise<any> {
+    return this.client.post('/collision/remove_from_broadphase', body);
+  }
+  async reset(body: any = {}): Promise<any> {
+    return this.client.post('/collision/reset', body);
+  }
+  async set_collider_layer(body: any = {}): Promise<any> {
+    return this.client.post('/collision/set_collider_layer', body);
+  }
+  async set_collider_mask(body: any = {}): Promise<any> {
+    return this.client.post('/collision/set_collider_mask', body);
+  }
+  async set_collider_static(body: any = {}): Promise<any> {
+    return this.client.post('/collision/set_collider_static', body);
+  }
+  async set_collider_trigger(body: any = {}): Promise<any> {
+    return this.client.post('/collision/set_collider_trigger', body);
+  }
+  async set_collision_matrix(body: any = {}): Promise<any> {
+    return this.client.post('/collision/set_collision_matrix', body);
+  }
+  async set_custom_filter(body: any = {}): Promise<any> {
+    return this.client.post('/collision/set_custom_filter', body);
+  }
+  async sweep_shape(body: any = {}): Promise<any> {
+    return this.client.post('/collision/sweep_shape', body);
+  }
+  async tick(body: any = {}): Promise<any> {
+    return this.client.post('/collision/tick', body);
+  }
+  async update_collider(body: any = {}): Promise<any> {
+    return this.client.post('/collision/update_collider', body);
+  }
+  async update_in_broadphase(body: any = {}): Promise<any> {
+    return this.client.post('/collision/update_in_broadphase', body);
+  }
+}
+export const collisionApi = new CollisionApi(api);
+
+// Combined accessor for all Round 52 subsystems
+export const round52Api = {
+  tool_use: toolUseApi,
+  knowledge: knowledgeApi,
+  team: teamApi,
+  scene_graph: sceneGraphApi,
+  event_logic: eventLogicApi,
+  collision: collisionApi,
+};

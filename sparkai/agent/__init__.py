@@ -2221,6 +2221,16 @@ from sparkai.agent.agent_unified_cognitive_core import (
     PlanStatus, PlanStep, SocialRelation, SocialRole,
     get_unified_cognitive_core,
 )
+from sparkai.agent.agent_tool_use_framework import (
+    ToolUseFramework, get_tool_use_framework,
+)
+from sparkai.agent.agent_knowledge_retrieval import (
+    KnowledgeRetrievalSystem, get_knowledge_retrieval,
+)
+from sparkai.agent.agent_team_orchestrator import (
+    TeamOrchestrator, get_team_orchestrator,
+)
+from sparkai.agent.agent_llm_router import LLMRouter, get_llm_router
 
 
 __all__ = [
@@ -2325,6 +2335,7 @@ __all__ = [
     "WorldModel",
     "ContextSnapshot",
     "LLMRouter",
+    "get_llm_router",
     "TaskType",
     "ProviderCapability",
     "ProviderProfile",
@@ -4827,7 +4838,6 @@ __all__ = [
     "NarrativeSnapshot",
     "NarrativeEvent",
     "get_narrative_engine",
-    # Round 36: AI Encounter Director
     "AIEncounterDirector",
     "EncounterType",
     "EncounterPhaseType",
@@ -4871,7 +4881,6 @@ __all__ = [
     "DungeonMasterEvent",
     "AIDungeonMaster",
     "get_dungeon_master",
-    # Round 38 - AI Bug Hunter
     "BugSeverity",
     "BugStatus",
     "BugCategory",
@@ -4889,7 +4898,6 @@ __all__ = [
     "BugHunterEvent",
     "AIBugHunter",
     "get_ai_bug_hunter",
-    # Round 39 - AI Music Composer
     "MusicMood",
     "MusicGenre",
     "InstrumentFamily",
@@ -4910,7 +4918,6 @@ __all__ = [
     "MusicComposerEvent",
     "AIMusicComposer",
     "get_ai_music_composer",
-    # Round 39 - Player Sentiment Analyzer
     "SentimentType",
     "EmotionCategory",
     "EngagementLevel",
@@ -4930,7 +4937,6 @@ __all__ = [
     "SentimentEvent",
     "PlayerSentimentAnalyzer",
     "get_player_sentiment_analyzer",
-    # Round 40 - AI Trailer Director
     "TrailerGenre",
     "ClipCategory",
     "TrailerTransitionType",
@@ -4950,7 +4956,6 @@ __all__ = [
     "TrailerDirectorEvent",
     "AITrailerDirector",
     "get_ai_trailer_director",
-    # Round 41 - AI Performance Profiler
     "ProfileCategory",
     "BottleneckSeverity",
     "OptimizationType",
@@ -4973,7 +4978,6 @@ __all__ = [
     "ProfilerEvent",
     "AIPerformanceProfiler",
     "get_ai_performance_profiler",
-    # Round 42 - AI Voice Synthesizer
     "VoiceGender",
     "VoiceEmotion",
     "VoiceLanguage",
@@ -4997,7 +5001,6 @@ __all__ = [
     "ProsodyRule",
     "AIVoiceSynthesizer",
     "get_ai_voice_synthesizer",
-    # Round 43 - AI Quest Generator
     "ObjectiveStatus",
     "ObjectiveType",
     "QuestCategory",
@@ -5021,20 +5024,17 @@ __all__ = [
     "QuestTemplate",
     "AIQuestGenerator",
     "get_ai_quest_generator",
-    # Round 44 - AI Dialog Director
     "DialogEventKind", "DialogMood", "DialogNodeType", "DialogRelationship",
     "DialogSentiment", "DialogStatus", "DialogTone", "DialogTopic", "VoiceStyle",
     "DialogChoice", "DialogCondition", "DialogConfig", "DialogContext", "DialogEvent",
     "DialogNode", "DialogResponse", "DialogSession", "DialogSnapshot", "DialogStats",
     "DialogTree", "NPCDialogProfile", "SentimentAnalysis",
     "AIDialogDirector", "get_ai_dialog_director",
-    # Round 46 - AI Meta-Game Director
     "AIMetaGameDirector", "CrossSessionLink", "MetaArc", "MetaArcType", "MetaConfig",
     "MetaDecision", "MetaEvent", "MetaEventKind", "MetaPhase", "MetaSnapshot", "MetaStats",
     "MetaStatus", "MetaThread", "PlayerArchetype", "PlayerArchetypeProfile",
     "PlayerSession", "ProgressionMilestone", "ProgressionPattern", "SessionType",
     "WorldMetaSnapshot", "WorldMetaState", "get_ai_meta_game_director",
-    # Round 47: Coalition Negotiator
     "AgentCoalitionNegotiator", "AgentProfile", "AgentRole", "Coalition",
     "CoalitionConfig", "CoalitionEvent", "CoalitionEventKind",
     "CoalitionProposal", "CoalitionSnapshot", "CoalitionStats",
@@ -5042,7 +5042,6 @@ __all__ = [
     "FormationPattern", "NegotiationRound", "NegotiationStatus",
     "NegotiationStrategy", "ResourceType", "RewardDistribution",
     "get_coalition_negotiator",
-    # Round 47: Analytics Synthesizer
     "AnalyticsConfig", "AnalyticsEvent", "AnalyticsEventKind",
     "AnalyticsReport", "AnalyticsSnapshot", "AnalyticsStats",
     "AnalyticsSynthesizer", "AnomalyAlert", "EventCategory", "GameEvent",
@@ -5050,17 +5049,18 @@ __all__ = [
     "JourneyStage", "MetricAggregation", "MetricDefinition", "MetricValue",
     "PatternMatch", "PlayerJourney", "Recommendation", "TimeWindow",
     "get_analytics_synthesizer",
-    # Round 48: Causality Graph
     "ButterflyEffect", "ButterflyImpact", "CausalChain", "CausalEvent",
     "CausalLink", "CausalStrength", "CausalityConfig", "CausalityEvent",
     "CausalityEventCategory", "CausalityEventKind", "CausalitySnapshot",
     "CausalityStats", "ChainStatus", "ConsequencePrediction",
     "ConsistencyReport", "get_causality_graph",
-    # Round 51: Unified Cognitive Core
     "ActionCandidate", "ActionType", "Belief", "BeliefSource", "CognitiveEvent",
     "CognitiveEventKind", "CognitivePhase", "CognitiveSnapshot", "CognitiveState",
     "CognitiveStats", "Desire", "DesireCategory", "EmotionType", "EmotionalState",
     "Intention", "IntentionStatus", "MetaCognition", "MetaStrategy", "Percept",
     "Plan", "PlanStatus", "PlanStep", "SocialRelation", "SocialRole",
     "get_unified_cognitive_core",
+    "ToolUseFramework", "get_tool_use_framework",
+    "KnowledgeRetrievalSystem", "get_knowledge_retrieval",
+    "TeamOrchestrator", "get_team_orchestrator",
 ]

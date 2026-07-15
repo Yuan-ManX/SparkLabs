@@ -401,6 +401,32 @@ body {
   background: rgba(249, 115, 22, 0.4) !important;
 }
 
+.sl-chat-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sl-chat-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sl-chat-scroll::-webkit-scrollbar-thumb {
+  background: #1e1e1e;
+  border-radius: 2px;
+}
+
+.sl-chat-scroll::-webkit-scrollbar-thumb:hover {
+  background: #333;
+}
+
+.sl-chat-input:focus {
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.2);
+}
+
+@keyframes pulse-dot {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(0.8); }
+}
+
 .sl-ai-prompt {
   animation: slide-in-right 0.3s ease-out;
 }
@@ -412,4 +438,262 @@ body {
   border-radius: 3px;
   font-size: 10px;
   font-weight: 500;
+}
+
+/* ========================================
+   SparkLabs Unified Module Design System
+   AI-Native Game Engine — Consistent Panel Styles
+   ======================================== */
+
+/* Module panel wrapper — every mode panel uses this */
+.sl-module {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0a0a0a;
+  animation: fade-in 0.2s ease-out;
+}
+
+/* Module header — unified title bar for all panels */
+.sl-module-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  background: #0d0d0d;
+  border-bottom: 1px solid #1e1e1e;
+  flex-shrink: 0;
+}
+
+.sl-module-header-icon {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  flex-shrink: 0;
+}
+
+.sl-module-header-icon.agent {
+  background: rgba(249, 115, 22, 0.15);
+  color: #f97316;
+}
+
+.sl-module-header-icon.engine {
+  background: rgba(56, 189, 248, 0.12);
+  color: #38bdf8;
+}
+
+.sl-module-header-icon.creative {
+  background: rgba(168, 85, 247, 0.12);
+  color: #a855f7;
+}
+
+.sl-module-header-icon.system {
+  background: rgba(34, 197, 94, 0.12);
+  color: #22c55e;
+}
+
+.sl-module-header-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #e2e8f0;
+  letter-spacing: 0.3px;
+}
+
+.sl-module-header-subtitle {
+  font-size: 10px;
+  color: #555;
+  margin-top: 1px;
+}
+
+.sl-module-header-actions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Module content area */
+.sl-module-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px;
+}
+
+/* Module section card */
+.sl-module-card {
+  background: #0f0f0f;
+  border: 1px solid #1a1a1a;
+  border-radius: 8px;
+  padding: 12px;
+  margin-bottom: 10px;
+}
+
+.sl-module-card-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 8px;
+}
+
+/* Module stat grid */
+.sl-module-stat {
+  background: #0f0f0f;
+  border: 1px solid #1a1a1a;
+  border-radius: 6px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.sl-module-stat-value {
+  font-size: 20px;
+  font-weight: 700;
+  color: #e2e8f0;
+  font-variant-numeric: tabular-nums;
+}
+
+.sl-module-stat-label {
+  font-size: 10px;
+  color: #555;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+/* Module buttons */
+.sl-module-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 500;
+  border: 1px solid #2a2a2a;
+  background: #111;
+  color: #aaa;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.sl-module-btn:hover {
+  border-color: #3a3a3a;
+  color: #ddd;
+  background: #161616;
+}
+
+.sl-module-btn-primary {
+  background: linear-gradient(135deg, #f97316, #dc2626);
+  border-color: transparent;
+  color: #fff;
+}
+
+.sl-module-btn-primary:hover {
+  opacity: 0.9;
+  color: #fff;
+}
+
+/* Module input fields */
+.sl-module-input {
+  background: #0a0a0a;
+  border: 1px solid #1e1e1e;
+  border-radius: 6px;
+  padding: 6px 10px;
+  font-size: 11px;
+  color: #ccc;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.sl-module-input:focus {
+  border-color: rgba(249, 115, 22, 0.4);
+  box-shadow: 0 0 0 1px rgba(249, 115, 22, 0.15);
+}
+
+.sl-module-input::placeholder {
+  color: #444;
+}
+
+/* Module badge */
+.sl-module-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.sl-module-badge-agent {
+  background: rgba(249, 115, 22, 0.1);
+  color: #f97316;
+  border: 1px solid rgba(249, 115, 22, 0.2);
+}
+
+.sl-module-badge-engine {
+  background: rgba(56, 189, 248, 0.08);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.15);
+}
+
+.sl-module-badge-active {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+/* Module list item */
+.sl-module-list-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: #0f0f0f;
+  border: 1px solid #1a1a1a;
+  font-size: 11px;
+  color: #aaa;
+  transition: all 0.15s;
+  cursor: pointer;
+}
+
+.sl-module-list-item:hover {
+  border-color: #2a2a2a;
+  background: #141414;
+  color: #ddd;
+}
+
+/* Module empty state */
+.sl-module-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 40px 20px;
+  text-align: center;
+  color: #444;
+}
+
+.sl-module-empty-icon {
+  font-size: 28px;
+  margin-bottom: 10px;
+  opacity: 0.4;
+}
+
+.sl-module-empty-text {
+  font-size: 11px;
+  color: #555;
 }

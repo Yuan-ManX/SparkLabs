@@ -820,6 +820,14 @@ from sparkai.engine.engine_event_system import (
     GameEvent, EventListener, EventRecord,
     get_event_system,
 )
+from sparkai.engine.engine_collision_detection import (
+    CollisionDetectionSystem, ColliderShapeType, CollisionPhase,
+    CollisionEventType, BroadphaseMethod,
+    BoxShape, SphereShape, CapsuleShape, ConvexHullShape, PlaneShape,
+    Collider, ContactPoint, CollisionManifold, RaycastHit, SweepResult,
+    CollisionPair, CollisionEvent,
+    get_collision_detection_system, get_collision_detection,
+)
 from sparkai.engine.engine_fluid_simulation import (
     FluidSimulationEngine, FluidSolverType, BoundaryType, FluidDomain,
     FluidGrid, FluidParticle, FluidSource, FluidObstacle,
@@ -3304,7 +3312,6 @@ from sparkai.engine.engine_orbital_mechanics import (
     ThrusterType, Trajectory, get_orbital_mechanics_system,
 )
 
-# Round 51: Editor subsystems and granular physics
 from sparkai.engine.engine_editor_subsystems import (
     AudioBus, AudioBusType, AudioChannel, AudioEffect, AudioEffectType,
     AudioMixPreset, AudioMixerEditor, BrushType, CopilotConversationalPanel,
@@ -5777,7 +5784,6 @@ __all__ = [
     "CraftSnapshot",
     "CraftEvent",
     "get_crafting_system",
-    # Round 25 - Gacha System
     "GachaSystem",
     "BannerType",
     "RarityTier",
@@ -5792,7 +5798,6 @@ __all__ = [
     "GachaSnapshot",
     "GachaEvent",
     "get_gacha_system",
-    # Round 25 - Gathering System
     "GatheringSystem",
     "ResourceType",
     "NodeState",
@@ -5807,7 +5812,6 @@ __all__ = [
     "GatherSnapshot",
     "GatherEvent",
     "get_gathering_system",
-    # Round 25 - Replay System
     "ReplaySystem",
     "ReplayState",
     "HighlightType",
@@ -5822,7 +5826,6 @@ __all__ = [
     "ReplaySnapshot",
     "ReplayEvent",
     "get_replay_system",
-    # Round 26 - Housing System
     "HousingSystem",
     "FurnitureCategory",
     "PlotPermission",
@@ -5837,7 +5840,6 @@ __all__ = [
     "HousingSnapshot",
     "HousingEvent",
     "get_housing_system",
-    # Round 26 - Enchantment System
     "EnchantmentSystem",
     "GemRarity",
     "EnchantmentTier",
@@ -5853,7 +5855,6 @@ __all__ = [
     "EnchantSnapshot",
     "EnchantEvent",
     "get_enchantment_system",
-    # Round 26 - Wardrobe System
     "WardrobeSystem",
     "CosmeticRarity",
     "EquipmentSlot",
@@ -5868,7 +5869,6 @@ __all__ = [
     "WardrobeEvent",
     "get_wardrobe_system",
 
-    # Round 27 - Pet Companion System
     "PetCompanionSystem",
     "PetSpecies",
     "PetRole",
@@ -5888,7 +5888,6 @@ __all__ = [
     "PetEvent",
     "get_pet_companion_system",
 
-    # Round 27 - Mail System
     "MailSystem",
     "MailFolder",
     "MailPriority",
@@ -5902,7 +5901,6 @@ __all__ = [
     "MailEvent",
     "get_mail_system",
 
-    # Round 27 - Calendar System
     "CalendarSystem",
     "EventType",
     "EventPhase",
@@ -5976,7 +5974,6 @@ __all__ = [
     "BankingEvent",
     "BankingVaultSystem",
     "get_banking_vault_system",
-    # Round 29 - Raid/Bounty/Expedition
     "RaidDifficulty",
     "RaidState",
     "BossState",
@@ -5998,7 +5995,6 @@ __all__ = [
     "RaidEvent",
     "RaidBountySystem",
     "get_raid_bounty_system",
-    # Round 29 - Title/Honor/Prestige
     "TitleCategory",
     "TitleRarity",
     "BadgeType",
@@ -6022,7 +6018,6 @@ __all__ = [
     "TitleHonorEvent",
     "TitleHonorSystem",
     "get_title_honor_system",
-    # Round 29 - Casino/Betting/Wager
     "GameType",
     "GameOutcome",
     "BetStatus",
@@ -6040,7 +6035,6 @@ __all__ = [
     "CasinoEvent",
     "CasinoBettingSystem",
     "get_casino_betting_system",
-    # Round 30 - Guild & Clan System
     "GuildRank",
     "GuildPermission",
     "GuildState",
@@ -6064,7 +6058,6 @@ __all__ = [
     "GuildEvent",
     "GuildClanSystem",
     "get_guild_clan_system",
-    # Round 30 - Trading & Market System
     "ListingType",
     "ListingStatus",
     "OrderType",
@@ -6088,7 +6081,6 @@ __all__ = [
     "TradingEvent",
     "TradingMarketSystem",
     "get_trading_market_system",
-    # Round 30 - Achievement & Quest System
     "AchievementCategory",
     "AchievementTier",
     "AchievementStatus",
@@ -6111,7 +6103,6 @@ __all__ = [
     "AchievementQuestEvent",
     "AchievementQuestSystem",
     "get_achievement_quest_system",
-    # Round 31 - Faction Reputation System
     "FactionTier",
     "FactionAttitude",
     "FactionRelation",
@@ -6133,7 +6124,6 @@ __all__ = [
     "FactionEvent",
     "FactionReputationSystem",
     "get_faction_reputation_system",
-    # Round 31 - Loot Drop System
     "ItemRarity",
     "DropCondition",
     "LootShareMode",
@@ -6150,7 +6140,6 @@ __all__ = [
     "LootEvent",
     "LootDropSystem",
     "get_loot_drop_system",
-    # Round 31 - Profession Class System
     "ClassArchetype",
     "ClassResource",
     "AbilityType",
@@ -6181,7 +6170,6 @@ __all__ = [
     "ProfessionEvent",
     "ProfessionClassSystem",
     "get_profession_class_system",
-    # Round 32 - Season Pass System
     "SeasonTrack",
     "ChallengeType",
     "ChallengeStatus",
@@ -6200,7 +6188,6 @@ __all__ = [
     "SeasonEvent",
     "SeasonPassSystem",
     "get_season_pass_system",
-    # Round 32 - Mount & Riding System
     "MountType",
     "MountTerrain",
     "MountStatus",
@@ -6218,7 +6205,6 @@ __all__ = [
     "MountEvent",
     "MountRidingSystem",
     "get_mount_riding_system",
-    # Round 32 - Gem Socketing System
     "GemType",
     "GemRarity",
     "SocketColor",
@@ -6240,7 +6226,6 @@ __all__ = [
     "GemSocketingSystem",
     "get_gem_socketing_system",
 
-    # Round 33 - Dungeon Instance System
     "DungeonDifficulty",
     "InstanceStatus",
     "EncounterState",
@@ -6260,7 +6245,6 @@ __all__ = [
     "DungeonInstanceSystem",
     "get_dungeon_instance_system",
 
-    # Round 33 - Player Housing System
     "PlotSize",
     "HouseStyle",
     "FurnitureCategory",
@@ -6375,7 +6359,6 @@ __all__ = [
     "TalentConstellationEvent",
     "TalentConstellationSystem",
     "get_talent_constellation_system",
-    # Round 36: Crowd Simulation
     "CrowdAgentState",
     "CrowdGroupType",
     "FlockingMode",
@@ -6392,7 +6375,6 @@ __all__ = [
     "CrowdSnapshot",
     "CrowdSimulationSystem",
     "get_crowd_simulation_system",
-    # Round 36: Voxel World
     "VoxelMaterialType",
     "ChunkState",
     "StructureType",
@@ -6454,7 +6436,6 @@ __all__ = [
     "TacticalGridEvent",
     "TacticalGridSystem",
     "get_tactical_grid_system",
-    # Round 38 - Tournament & Esports System
     "TournamentFormat",
     "TournamentStatus",
     "MatchStatus",
@@ -6473,7 +6454,6 @@ __all__ = [
     "TournamentEvent",
     "TournamentEsportsSystem",
     "get_tournament_esports_system",
-    # Round 38 - Spectator Director System
     "CameraMode",
     "DirectorMode",
     "SpectatorStatus",
@@ -6493,7 +6473,6 @@ __all__ = [
     "SpectatorEvent",
     "SpectatorDirectorSystem",
     "get_spectator_director_system",
-    # Round 39 - Cloud Save System
     "SaveSlotType",
     "SyncStatus",
     "ConflictResolution",
@@ -6512,7 +6491,6 @@ __all__ = [
     "CloudSaveEvent",
     "CloudSaveSystem",
     "get_cloud_save_system",
-    # Round 40 - UGC Workshop System
     "UGCItemType",
     "UGCItemStatus",
     "ReviewVerdict",
@@ -6534,7 +6512,6 @@ __all__ = [
     "UGCWorkshopEvent",
     "UGCWorkshopSystem",
     "get_ugc_workshop_system",
-    # Round 40 - Player Avatar System
     "AvatarPartType",
     "AvatarCategory",
     "AvatarAnimationType",
@@ -6556,7 +6533,6 @@ __all__ = [
     "AvatarSystemEvent",
     "PlayerAvatarSystem",
     "get_player_avatar_system",
-    # Round 41 - Shader Material Graph System
     "ShaderNodeType",
     "ShaderStage",
     "ShaderPrecision",
@@ -6581,7 +6557,6 @@ __all__ = [
     "ShaderMaterialGraphEvent",
     "ShaderMaterialGraphSystem",
     "get_shader_material_graph_system",
-    # Round 41 - Terrain Sculpting System
     "BrushType",
     "BrushShape",
     "BrushFalloff",
@@ -6604,7 +6579,6 @@ __all__ = [
     "TerrainSculptingEvent",
     "TerrainSculptingSystem",
     "get_terrain_sculpting_system",
-    # Round 42 - Visual Filter System
     "FilterPresetType",
     "FilterParameter",
     "FilterCategory",
@@ -6627,7 +6601,6 @@ __all__ = [
     "FilterComparison",
     "VisualFilterSystem",
     "get_visual_filter_system",
-    # Round 42 - Formation System
     "FormationType",
     "FormationRole",
     "FormationStatus",
@@ -6652,7 +6625,6 @@ __all__ = [
     "get_formation_system",
     "compute_formation_slots",
     "recommend_formation_type",
-    # Round 43 - Particle VFX System
     "EmitterShape",
     "ParticleBlendMode",
     "ParticleEmitterType",
@@ -6675,7 +6647,6 @@ __all__ = [
     "ParticleVFXEvent",
     "ParticleVFXSystem",
     "get_particle_vfx_system",
-    # Round 43 - Dynamic Weather System
     "CloudCoverage",
     "FogType",
     "Season",
@@ -6699,54 +6670,46 @@ __all__ = [
     "WindState",
     "DynamicWeatherSystem",
     "get_dynamic_weather_system",
-    # Round 44 - Audio SFX System
     "AudioBusChannel", "AudioDistanceModel", "AudioEventKind", "AudioFormat",
     "AudioLoopMode", "AudioPriority", "AudioStatus", "AudioType", "WaveformType",
     "AudioBus", "AudioClip", "AudioConfig", "AudioEffect", "AudioEmitter", "AudioEvent",
     "AudioListener", "AudioReverbZone", "AudioSnapshot", "AudioSource", "AudioStats",
     "MusicLayer", "MusicTrack",
     "AudioSfxSystem", "get_audio_sfx_system",
-    # Round 44 - Animation State Machine System
     "AnimBlendMode", "AnimEventKind", "AnimLoopMode", "AnimParameterType", "AnimStatus",
     "AnimTransitionCondition", "BlendSpaceType", "BoneRole", "IKChainType",
     "AnimBlueprint", "AnimClip", "AnimConfig", "AnimEvent", "AnimLayer", "AnimParameter",
     "AnimSnapshot", "AnimState", "AnimStats", "AnimTransition", "BlendSpace",
     "BlendSpaceNode", "IKChain", "TransitionCondition",
     "AnimationStateMachineSystem", "get_animation_state_machine_system",
-    # Round 45: HTN Planner System
     "TaskType", "TaskStatus", "MethodStatus", "OperatorType", "ConditionType",
     "PlanStatus", "DomainStatus", "HTNEventKind",
     "WorldStateVariable", "WorldState", "Condition", "Operator", "PrimitiveTask",
     "Method", "CompoundTask", "PlanStep", "Plan", "Domain",
     "HTNConfig", "HTNStats", "HTNSnapshot", "HTNEvent",
     "HTNPlannerSystem", "get_htn_planner_system",
-    # Round 45: Climate Biome System
     "BiomeType", "ClimateZone", "Season", "FloraType", "FaunaType",
     "BiomeEventKind", "TransitionType", "BiomeStatus",
     "TemperatureRange", "HumidityRange", "ClimateData", "FloraSpecies", "FaunaSpecies",
     "BiomeRegion", "BiomeTransition", "SeasonalPattern", "EcosystemHealth",
     "ClimateBiomeConfig", "ClimateBiomeStats", "ClimateBiomeSnapshot", "BiomeEvent",
     "ClimateBiomeSystem", "get_climate_biome_system",
-    # Round 45: Input Replay System
     "InputType", "InputAction", "RecordingStatus", "PlaybackStatus",
     "ReplayMode", "ChecksumType", "ReplayEventKind", "FrameStatus",
     "InputFrame", "InputSequence", "PlaybackState", "Checksum", "DesyncReport",
     "FrameSnapshot", "RecordingSession", "InputReplayConfig", "InputReplayStats",
     "InputReplaySnapshot", "ReplayEvent",
     "InputReplaySystem", "get_input_replay_system",
-    # Round 46: NPC Dream Simulation System
     "DreamArchetype", "DreamConfig", "DreamEvent", "DreamEventKind", "DreamIntensity",
     "DreamInterpretation", "DreamMemory", "DreamOutcome", "DreamPhase", "DreamSequence",
     "DreamSnapshot", "DreamStats", "DreamStatus", "DreamSymbol", "DreamType",
     "EmotionType", "MemoryType", "NPCDreamProfile", "NPCDreamSimulationSystem",
     "NPCSleepSchedule", "NPCSleepState", "get_npc_dream_simulation_system",
-    # Round 46: Physics Joint Constraint System
     "BreakCondition", "BreakThreshold", "ConstraintType", "JointAnchor", "JointAxis",
     "JointBody", "JointChain", "JointConfig", "JointEvent", "JointEventKind", "JointLimit",
     "JointSnapshot", "JointStats", "JointStatus", "JointType", "JointTypeDescriptor",
     "MotorConfig", "MotorMode", "PhysicsJoint", "PhysicsJointConstraintSystem",
     "SolverType", "SpringConfig", "get_physics_joint_constraint_system",
-    # Round 47: Soft Body Deformation
     "AIAssessment", "BodyStatus", "DeformationResult", "DeformationType",
     "FracturePattern", "FractureRecord", "MaterialBehavior",
     "MaterialProperties", "SoftBody", "SoftBodyConfig",
@@ -6754,56 +6717,47 @@ __all__ = [
     "SoftBodySnapshot", "SoftBodyStats", "SoftBodyVertex", "SolverMethod",
     "SpringConstraint", "TearMode", "TearRecord", "Tetrahedron",
     "VolumePreservation", "get_soft_body_deformation_system",
-    # Round 48: Destructible Structure
     "CollapseEvent", "DebrisPiece", "DebrisStatus", "DestructibleConfig",
     "DestructibleEvent", "DestructibleEventKind", "DestructibleSnapshot",
     "DestructibleStats", "DestructibleFractureRecord",
     "DestructibleMaterialProperties", "MaterialType",
     "Structure", "StructureEdge", "StructureNode", "StructureStatus",
     "get_destructible_structure_system",
-    # Round 48: Thermal Dynamics
     "FireFront", "FireIntensity", "FireStatus", "HeatSource",
     "HeatTransferMode", "MaterialThermal", "PhaseState", "PhaseTransition",
     "TemperatureReading", "ThermalConfig", "ThermalEvent",
     "ThermalEventKind", "ThermalSnapshot", "ThermalStats", "ThermalZone",
     "ThermalZoneStatus", "get_thermal_dynamics_system",
-    # Round 49: Electromagnetic Field
     "Charge", "ChargeType", "Circuit", "CircuitStatus", "Conductor",
     "ConductorType", "EMConfig", "EMEvent", "EMEventKind", "EMSnapshot",
     "EMSource", "EMSourceType", "EMStats", "FieldLine", "FieldLineType",
     "FieldType", "InductionCoil", "MagneticField",
     "get_electromagnetic_field_system",
-    # Round 49: Chemical Reaction
     "Catalyst", "ChemicalConfig", "ChemicalEvent", "ChemicalEventKind",
     "ChemicalSnapshot", "ChemicalStats", "Mixture", "Reaction",
     "ReactionResult", "ReactionStep", "ReactionType", "ReactionVessel",
     "Substance", "SubstanceState", "VesselStatus",
     "get_chemical_reaction_system",
-    # Round 49: Acoustic Wave
     "AcousticConfig", "AcousticEvent", "AcousticEventKind",
     "AcousticListener", "AcousticSnapshot", "AcousticSource",
     "AcousticStats", "BarrierMaterial", "DopplerShift", "EchoZone",
     "PathType", "PropagationPath", "SoundBarrier", "SourceType",
     "WaveStatus", "Wavefront", "get_acoustic_wave_system",
-    # Round 50: Optics System
     "Detector", "Lens", "LensType", "LightRay", "LightSource",
     "LightSourceType", "Medium", "MediumType", "Mirror", "MirrorType",
     "OpticalFiber", "OpticsConfig", "OpticsEvent", "OpticsEventKind",
     "OpticsSnapshot", "OpticsStats", "PolarizationType", "Prism",
     "PrismType", "RayStatus", "Spectrum", "get_optics_system",
-    # Round 50: Radiation Field
     "ContaminationLevel", "ContaminationZone", "DecayMode", "DecayProduct",
     "DetectorStatus", "Dosimeter", "Isotope", "RadiationConfig",
     "RadiationDetector", "RadiationEvent", "RadiationEventKind",
     "RadiationSnapshot", "RadiationSource", "RadiationStats", "RadiationType",
     "ShieldingMaterial", "ShieldingType", "get_radiation_field_system",
-    # Round 50: Orbital Mechanics
     "Asteroid", "BodyStatus", "BodyType", "CelestialBody", "Maneuver",
     "ManeuverType", "Orbit", "OrbitType", "OrbitalConfig", "OrbitalEvent",
     "OrbitalEventKind", "OrbitalSnapshot", "OrbitalStats", "Satellite",
     "SpaceStation", "Thruster", "ThrusterType", "Trajectory",
     "get_orbital_mechanics_system",
-    # Round 51: Editor Subsystems
     "AudioBus", "AudioBusType", "AudioChannel", "AudioEffect", "AudioEffectType",
     "AudioMixPreset", "AudioMixerEditor", "BrushType", "CopilotConversationalPanel",
     "ConversationMessage", "DesignContext", "EmitterShape", "FoliagePatch",
@@ -6818,9 +6772,14 @@ __all__ = [
     "SuggestionType", "TerrainBrush", "TerrainData", "TerrainLayer",
     "TerrainLayerType", "TerrainSculptingEditor", "TerrainStroke",
     "VisualScriptNodeGraphEditor", "get_editor_subsystems",
-    # Round 51: Granular Physics
     "ContactType", "GranularConfig", "GranularEmitter", "GranularEvent",
     "GranularEventKind", "GranularMaterial", "GranularObstacle",
     "GranularParticle", "GranularPile", "GranularSnapshot", "GranularStats",
     "MaterialProperties", "ObstacleShape", "get_granular_physics",
+    "CollisionDetectionSystem", "ColliderShapeType", "CollisionPhase",
+    "CollisionEventType", "BroadphaseMethod",
+    "BoxShape", "SphereShape", "CapsuleShape", "ConvexHullShape", "PlaneShape",
+    "Collider", "ContactPoint", "CollisionManifold", "RaycastHit", "SweepResult",
+    "CollisionPair", "CollisionEvent",
+    "get_collision_detection_system", "get_collision_detection",
 ]
