@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'profile' | 'difficulty' | 'content' | 'economy';
 
@@ -121,7 +122,7 @@ const AdaptiveContentPanel: React.FC = () => {
   const [contentLoading, setContentLoading] = useState(false);
   const [economyLoading, setEconomyLoading] = useState(false);
 
-  const apiBase = 'http://localhost:8000/api/agent/adaptive-content';
+  const apiBase = API_ROOT + '/agent/adaptive-content';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });
