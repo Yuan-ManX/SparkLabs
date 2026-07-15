@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'layers' | 'presets' | 'mix';
 
@@ -57,7 +58,7 @@ const AudioLayeringPanel: React.FC = () => {
   const [masterVolume, setMasterVolume] = useState('0.8');
   const [duckTarget, setDuckTarget] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultLayers: AudioLayer[] = [
     { id: uid(), name: 'Music', volume: 0.8, x: 0, y: 0, z: 0 },

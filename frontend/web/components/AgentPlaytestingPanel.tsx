@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentPlaytestingPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -71,7 +72,7 @@ export default function AgentPlaytestingPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -110,7 +111,7 @@ export default function AgentPlaytestingPanel() {
             {Object.keys(stats).length > 0 && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">All Stats</h3>
-                <pre className="text-xs text-gray-300 overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -123,24 +124,24 @@ export default function AgentPlaytestingPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Playtesting Session</h2>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Game ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Game ID</label>
                   <input type="text" value={gameId} onChange={e => setGameId(e.target.value)}
                     placeholder="game_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Test Types</label>
+                  <label className="text-xs text-[#999] mb-1 block">Test Types</label>
                   <div className="flex flex-wrap gap-2">
                     {testTypeOptions.map(t => (
                       <label key={t} className="flex items-center gap-1.5 cursor-pointer">
                         <input type="checkbox" checked={testTypes.includes(t)} onChange={() => toggleTestType(t)}
                           className="accent-[#00d4ff]" />
-                        <span className="text-xs text-gray-300 capitalize">{t}</span>
+                        <span className="text-xs text-[#ccc] capitalize">{t}</span>
                       </label>
                     ))}
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Game Config (JSON)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Game Config (JSON)</label>
                   <textarea value={gameConfig} onChange={e => setGameConfig(e.target.value)}
                     rows={4} placeholder='{"difficulty": "normal", "version": "1.0.0"}'
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
@@ -163,7 +164,7 @@ export default function AgentPlaytestingPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Run Test Suite</h2>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Session ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Session ID</label>
                   <input type="text" value={runSessionId} onChange={e => setRunSessionId(e.target.value)}
                     placeholder="session_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -184,19 +185,19 @@ export default function AgentPlaytestingPanel() {
                 <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Test Results</h2>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3">
                   <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                    <span className="text-xs text-gray-400">Score</span>
+                    <span className="text-xs text-[#999]">Score</span>
                     <p className="text-xl font-bold text-[#00ff88]">{result.score ?? 'N/A'}</p>
                   </div>
                   <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                    <span className="text-xs text-gray-400">Fun Rating</span>
+                    <span className="text-xs text-[#999]">Fun Rating</span>
                     <p className="text-xl font-bold text-[#00d4ff]">{result.fun_rating ?? 'N/A'}</p>
                   </div>
                   <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                    <span className="text-xs text-gray-400">Balance Score</span>
+                    <span className="text-xs text-[#999]">Balance Score</span>
                     <p className="text-xl font-bold text-[#00d4ff]">{result.balance_score ?? 'N/A'}</p>
                   </div>
                   <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                    <span className="text-xs text-gray-400">Recommendations</span>
+                    <span className="text-xs text-[#999]">Recommendations</span>
                     <p className="text-sm text-white mt-1">
                       {Array.isArray(result.recommendations) ? result.recommendations.length : 0}
                     </p>
@@ -205,7 +206,7 @@ export default function AgentPlaytestingPanel() {
                 {result.recommendations && Array.isArray(result.recommendations) && (
                   <div className="space-y-1">
                     {result.recommendations.map((r: string, i: number) => (
-                      <div key={i} className="text-xs text-gray-300 bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">• {r}</div>
+                      <div key={i} className="text-xs text-[#ccc] bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">• {r}</div>
                     ))}
                   </div>
                 )}
@@ -221,12 +222,12 @@ export default function AgentPlaytestingPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Simulate Gameplay</h2>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Session ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Session ID</label>
                   <input type="text" value={simSessionId} onChange={e => setSimSessionId(e.target.value)}
                     placeholder="session_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Duration (seconds)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Duration (seconds)</label>
                   <input type="number" value={durationSeconds} onChange={e => setDurationSeconds(e.target.value)}
                     min="1" placeholder="60" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -247,28 +248,28 @@ export default function AgentPlaytestingPanel() {
                 <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Simulation Metrics</h2>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                    <span className="text-xs text-gray-400">Movement</span>
+                    <span className="text-xs text-[#999]">Movement</span>
                     <p className="text-xl font-bold text-white">{result.movement ?? '0'}%</p>
                     <div className="mt-1 h-1.5 bg-[#2a2a4a] rounded-full">
                       <div className="h-full bg-[#00d4ff] rounded-full" style={{ width: `${Math.min(result.movement || 0, 100)}%` }} />
                     </div>
                   </div>
                   <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                    <span className="text-xs text-gray-400">Combat</span>
+                    <span className="text-xs text-[#999]">Combat</span>
                     <p className="text-xl font-bold text-white">{result.combat ?? '0'}%</p>
                     <div className="mt-1 h-1.5 bg-[#2a2a4a] rounded-full">
                       <div className="h-full bg-[#ff6b6b] rounded-full" style={{ width: `${Math.min(result.combat || 0, 100)}%` }} />
                     </div>
                   </div>
                   <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                    <span className="text-xs text-gray-400">Collectibles</span>
+                    <span className="text-xs text-[#999]">Collectibles</span>
                     <p className="text-xl font-bold text-white">{result.collectibles ?? '0'}%</p>
                     <div className="mt-1 h-1.5 bg-[#2a2a4a] rounded-full">
                       <div className="h-full bg-[#ffd93d] rounded-full" style={{ width: `${Math.min(result.collectibles || 0, 100)}%` }} />
                     </div>
                   </div>
                   <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                    <span className="text-xs text-gray-400">Exploration</span>
+                    <span className="text-xs text-[#999]">Exploration</span>
                     <p className="text-xl font-bold text-white">{result.exploration ?? '0'}%</p>
                     <div className="mt-1 h-1.5 bg-[#2a2a4a] rounded-full">
                       <div className="h-full bg-[#00ff88] rounded-full" style={{ width: `${Math.min(result.exploration || 0, 100)}%` }} />
@@ -276,7 +277,7 @@ export default function AgentPlaytestingPanel() {
                   </div>
                 </div>
                 {result.raw && (
-                  <pre className="mt-4 text-xs text-gray-300 bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+                  <pre className="mt-4 text-xs text-[#ccc] bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
                 )}
               </div>
             )}
@@ -290,22 +291,22 @@ export default function AgentPlaytestingPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Report Bug</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Session ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Session ID</label>
                   <input type="text" value={bugSessionId} onChange={e => setBugSessionId(e.target.value)}
                     placeholder="session_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Title</label>
+                  <label className="text-xs text-[#999] mb-1 block">Title</label>
                   <input type="text" value={bugTitle} onChange={e => setBugTitle(e.target.value)}
                     placeholder="Player falls through floor" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Description</label>
+                  <label className="text-xs text-[#999] mb-1 block">Description</label>
                   <textarea value={bugDescription} onChange={e => setBugDescription(e.target.value)}
                     rows={2} placeholder="Describe the bug..." className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Severity</label>
+                  <label className="text-xs text-[#999] mb-1 block">Severity</label>
                   <select value={bugSeverity} onChange={e => setBugSeverity(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     <option value="low">Low</option>
@@ -315,7 +316,7 @@ export default function AgentPlaytestingPanel() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Category</label>
+                  <label className="text-xs text-[#999] mb-1 block">Category</label>
                   <select value={bugCategory} onChange={e => setBugCategory(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     <option value="gameplay">Gameplay</option>
@@ -329,22 +330,22 @@ export default function AgentPlaytestingPanel() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Location</label>
+                  <label className="text-xs text-[#999] mb-1 block">Location</label>
                   <input type="text" value={bugLocation} onChange={e => setBugLocation(e.target.value)}
                     placeholder="Level 3, near waterfall" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Reproduction Steps</label>
+                  <label className="text-xs text-[#999] mb-1 block">Reproduction Steps</label>
                   <textarea value={bugRepro} onChange={e => setBugRepro(e.target.value)}
                     rows={2} placeholder="1. Step one&#10;2. Step two" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Expected Behavior</label>
+                  <label className="text-xs text-[#999] mb-1 block">Expected Behavior</label>
                   <textarea value={bugExpected} onChange={e => setBugExpected(e.target.value)}
                     rows={2} placeholder="What should happen" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Actual Behavior</label>
+                  <label className="text-xs text-[#999] mb-1 block">Actual Behavior</label>
                   <textarea value={bugActual} onChange={e => setBugActual(e.target.value)}
                     rows={2} placeholder="What actually happens" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -374,15 +375,15 @@ export default function AgentPlaytestingPanel() {
                     <div key={bug.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
                       <div className="flex items-center justify-between mb-1">
                         <span className="text-white text-sm font-medium">{bug.title || 'Untitled Bug'}</span>
-                        <span className={`text-xs px-2 py-0.5 rounded font-mono ${severityColors[bug.severity] || 'bg-gray-700 text-gray-300'}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded font-mono ${severityColors[bug.severity] || 'bg-[#1a1a1a] text-[#ccc]'}`}>
                           {bug.severity || 'unknown'}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-400">
+                      <div className="flex items-center gap-4 text-xs text-[#999]">
                         <span>Category: <span className="text-white">{bug.category || 'N/A'}</span></span>
                         {bug.location && <span>Location: <span className="text-white">{bug.location}</span></span>}
                       </div>
-                      {bug.description && <p className="text-xs text-gray-400 mt-1">{bug.description}</p>}
+                      {bug.description && <p className="text-xs text-[#999] mt-1">{bug.description}</p>}
                     </div>
                   ))}
                 </div>

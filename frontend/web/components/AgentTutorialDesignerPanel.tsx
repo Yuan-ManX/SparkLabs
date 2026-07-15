@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const TUTORIAL_TYPES = ['walkthrough','interactive','tooltip','video','challenge','sandbox','onboarding','advanced','refresher'];
 const LEARNING_STYLES = ['visual','textual','kinesthetic','hybrid','adaptive'];
@@ -76,7 +77,7 @@ export default function AgentTutorialDesignerPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
@@ -100,17 +101,17 @@ export default function AgentTutorialDesignerPanel() {
                 { label: 'Skill Tiers', value: stats.modules_by_skill ? Object.keys(stats.modules_by_skill).length : 0, color: 'text-pink-300', suffix: ' levels' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}{s.suffix||''}</p>
                 </div>
               ))}
             </div>
             {stats.modules_by_topic && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Modules by Topic</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Modules by Topic</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(stats.modules_by_topic).map(([k,v]) => (
-                    <div key={k} className="flex justify-between text-xs"><span className="text-gray-400">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
+                    <div key={k} className="flex justify-between text-xs"><span className="text-[#999]">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
                   ))}
                 </div>
               </div>
@@ -150,23 +151,23 @@ export default function AgentTutorialDesignerPanel() {
               </button>
             </div>
 
-            <h3 className="text-md font-bold text-gray-300">Module Library</h3>
+            <h3 className="text-md font-bold text-[#ccc]">Module Library</h3>
             <div className="grid gap-3">
               {moduleList.map((mod: any) => (
                 <div key={mod.module_id || mod.id} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-semibold text-white">{mod.title}</h4>
-                    <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[mod.skill_level] || 'text-gray-400'}`}>{mod.skill_level}</span>
+                    <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[mod.skill_level] || 'text-[#999]'}`}>{mod.skill_level}</span>
                   </div>
                   <div className="flex gap-2 mb-1">
                     <span className="text-[10px] px-1.5 py-0.5 bg-blue-500/10 text-blue-300 rounded">{mod.tutorial_type}</span>
                     <span className="text-[10px] px-1.5 py-0.5 bg-purple-500/10 text-purple-300 rounded">{mod.learning_style}</span>
                   </div>
-                  <p className="text-xs text-gray-500">{mod.topic}</p>
-                  {mod.description && <p className="text-xs text-gray-600 mt-1">{mod.description}</p>}
+                  <p className="text-xs text-[#666]">{mod.topic}</p>
+                  {mod.description && <p className="text-xs text-[#555] mt-1">{mod.description}</p>}
                 </div>
               ))}
-              {moduleList.length === 0 && <p className="text-sm text-gray-500 text-center py-8">No modules created yet</p>}
+              {moduleList.length === 0 && <p className="text-sm text-[#666] text-center py-8">No modules created yet</p>}
             </div>
           </div>
         )}
@@ -195,18 +196,18 @@ export default function AgentTutorialDesignerPanel() {
               <div className="bg-[#0f0f23] p-4 rounded border border-[#00ff88] space-y-3">
                 <h3 className="text-md font-bold text-[#00ff88]">{result.title||'Adaptive Module'}</h3>
                 <div className="flex gap-2">
-                  <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-300">{result.tutorial_type}</span>
-                  <span className={`text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[result.skill_level] || 'text-gray-400'}`}>{result.skill_level}</span>
+                  <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#ccc]">{result.tutorial_type}</span>
+                  <span className={`text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[result.skill_level] || 'text-[#999]'}`}>{result.skill_level}</span>
                 </div>
                 {result.steps && Array.isArray(result.steps) && (
                   <div>
-                    <h4 className="text-xs font-semibold text-gray-400 mb-2">Steps ({result.steps.length})</h4>
+                    <h4 className="text-xs font-semibold text-[#999] mb-2">Steps ({result.steps.length})</h4>
                     <div className="space-y-2">
                       {result.steps.map((step: any, i: number) => (
                         <div key={i} className="bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">
                           <div className="flex items-center gap-2">
                             <span className="text-[10px] font-bold text-[#00d4ff]">{i+1}</span>
-                            <span className="text-xs text-gray-300">{typeof step === 'string' ? step : step.instruction || step.title || JSON.stringify(step)}</span>
+                            <span className="text-xs text-[#ccc]">{typeof step === 'string' ? step : step.instruction || step.title || JSON.stringify(step)}</span>
                           </div>
                         </div>
                       ))}
@@ -241,25 +242,25 @@ export default function AgentTutorialDesignerPanel() {
               <div className="bg-[#0f0f23] p-4 rounded border border-amber-500 space-y-3">
                 <h3 className="text-md font-bold text-amber-300">Skill Assessment</h3>
                 <div className="flex items-center gap-3">
-                  <span className="text-sm text-gray-300">{result.player_id}</span>
-                  <span className={`text-sm font-bold px-3 py-1 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[result.skill_level] || 'text-gray-400'}`}>
+                  <span className="text-sm text-[#ccc]">{result.player_id}</span>
+                  <span className={`text-sm font-bold px-3 py-1 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[result.skill_level] || 'text-[#999]'}`}>
                     {result.skill_level||'Unknown'}
                   </span>
                 </div>
                 {result.scores && (
                   <div className="grid grid-cols-2 gap-2">
                     {Object.entries(result.scores).map(([k,v]) => (
-                      <div key={k} className="flex justify-between text-xs"><span className="text-gray-400">{k}</span><span className="text-amber-300">{v as any}</span></div>
+                      <div key={k} className="flex justify-between text-xs"><span className="text-[#999]">{k}</span><span className="text-amber-300">{v as any}</span></div>
                     ))}
                   </div>
                 )}
                 {result.recommendations && (
                   <div>
-                    <h4 className="text-xs font-semibold text-gray-400 mb-1">Recommendations</h4>
-                    <p className="text-xs text-gray-500">{typeof result.recommendations === 'string' ? result.recommendations : JSON.stringify(result.recommendations)}</p>
+                    <h4 className="text-xs font-semibold text-[#999] mb-1">Recommendations</h4>
+                    <p className="text-xs text-[#666]">{typeof result.recommendations === 'string' ? result.recommendations : JSON.stringify(result.recommendations)}</p>
                   </div>
                 )}
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -292,18 +293,18 @@ export default function AgentTutorialDesignerPanel() {
                   <div key={i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a] hover:border-pink-500/30 transition-colors">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-semibold text-white">{mod.title}</h4>
-                      <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[mod.skill_level] || 'text-gray-400'}`}>{mod.skill_level}</span>
+                      <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[mod.skill_level] || 'text-[#999]'}`}>{mod.skill_level}</span>
                     </div>
-                    <p className="text-xs text-gray-500 mt-1">{mod.topic}</p>
+                    <p className="text-xs text-[#666] mt-1">{mod.topic}</p>
                     <div className="flex gap-2 mt-1">
                       <span className="text-[9px] text-blue-400">{mod.tutorial_type}</span>
                       <span className="text-[9px] text-purple-400">{mod.learning_style}</span>
                     </div>
                   </div>
                 )) : (
-                  <p className="text-sm text-gray-500 text-center py-4">No recommendations available</p>
+                  <p className="text-sm text-[#666] text-center py-4">No recommendations available</p>
                 )}
-                {result && <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
+                {result && <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
               </div>
             )}
           </div>

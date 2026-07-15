@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'templates' | 'synthesize' | 'documents';
 
@@ -49,7 +50,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
   const [renderDocId, setRenderDocId] = useState('');
   const [renderFormat, setRenderFormat] = useState('pdf');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultTemplates: Template[] = [
     { id: uid(), name: 'Weekly Report', doc_type: 'report', format: 'markdown', created_at: Date.now() - 86400000 },

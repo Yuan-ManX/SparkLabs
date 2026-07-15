@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const QUEST_TYPES = ['main_story','side_quest','fetch','kill','escort','exploration','puzzle','delivery','defense','timed','collection','crafting','boss_fight','stealth','dialogue'];
 const DIFFICULTIES = ['easy','normal','hard','epic','legendary'];
@@ -62,7 +63,7 @@ export default function AgentQuestGeneratorPanel() {
       case 'hard': return 'text-orange-300';
       case 'epic': return 'text-purple-300';
       case 'legendary': return 'text-yellow-300';
-      default: return 'text-gray-400';
+      default: return 'text-[#999]';
     }
   };
 
@@ -71,7 +72,7 @@ export default function AgentQuestGeneratorPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
@@ -95,17 +96,17 @@ export default function AgentQuestGeneratorPanel() {
                 { label: 'By Difficulty', value: stats.quests_by_difficulty ? Object.keys(stats.quests_by_difficulty).length : 0, color: 'text-pink-300', suffix: ' levels' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}{s.suffix||''}</p>
                 </div>
               ))}
             </div>
             {stats.quests_by_type && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Quests by Type</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Quests by Type</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(stats.quests_by_type).map(([k,v]) => (
-                    <div key={k} className="flex justify-between text-xs"><span className="text-gray-400">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
+                    <div key={k} className="flex justify-between text-xs"><span className="text-[#999]">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
                   ))}
                 </div>
               </div>
@@ -144,7 +145,7 @@ export default function AgentQuestGeneratorPanel() {
             {result && activeTab === 'create' && result.quest_id && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#00ff88] space-y-1">
                 <h4 className="text-sm font-bold text-[#00ff88]">Created: {result.title}</h4>
-                <div className="flex gap-2"><span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-300">{result.quest_type}</span><span className={`text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${difficultyColor(result.difficulty)}`}>{result.difficulty}</span></div>
+                <div className="flex gap-2"><span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#ccc]">{result.quest_type}</span><span className={`text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${difficultyColor(result.difficulty)}`}>{result.difficulty}</span></div>
               </div>
             )}
           </div>
@@ -173,14 +174,14 @@ export default function AgentQuestGeneratorPanel() {
               <div className="bg-[#0f0f23] p-4 rounded border border-[#00ff88] space-y-3">
                 <h3 className="text-md font-bold text-white">{result.title||'Random Quest'}</h3>
                 <div className="flex gap-2">
-                  <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-300">{result.quest_type}</span>
+                  <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#ccc]">{result.quest_type}</span>
                   <span className={`text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${difficultyColor(result.difficulty)}`}>{result.difficulty}</span>
                 </div>
-                {result.description && <p className="text-xs text-gray-400">{result.description}</p>}
+                {result.description && <p className="text-xs text-[#999]">{result.description}</p>}
                 {result.objectives && (
                   <div>
-                    <h4 className="text-xs font-semibold text-gray-400 mb-1">Objectives</h4>
-                    <ul className="list-disc list-inside text-xs text-gray-300 space-y-0.5">
+                    <h4 className="text-xs font-semibold text-[#999] mb-1">Objectives</h4>
+                    <ul className="list-disc list-inside text-xs text-[#ccc] space-y-0.5">
                       {(Array.isArray(result.objectives) ? result.objectives : [result.objectives]).map((o: any, i: number) => (
                         <li key={i}>{typeof o === 'string' ? o : o.description || JSON.stringify(o)}</li>
                       ))}
@@ -190,7 +191,7 @@ export default function AgentQuestGeneratorPanel() {
                 {result.rewards && (
                   <div>
                     <h4 className="text-xs font-semibold text-[#00ff88] mb-1">Rewards</h4>
-                    <pre className="text-xs text-gray-300">{typeof result.rewards === 'string' ? result.rewards : JSON.stringify(result.rewards, null, 2)}</pre>
+                    <pre className="text-xs text-[#ccc]">{typeof result.rewards === 'string' ? result.rewards : JSON.stringify(result.rewards, null, 2)}</pre>
                   </div>
                 )}
               </div>
@@ -211,7 +212,7 @@ export default function AgentQuestGeneratorPanel() {
                 <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-400" type="number" min="1" max="20" placeholder="Count" value={cCount} onChange={e => setCCount(e.target.value)} />
               </div>
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-400" placeholder="Story Theme" value={cStoryTheme} onChange={e => setCStoryTheme(e.target.value)} />
-              <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-[#999] cursor-pointer">
                 <input type="checkbox" checked={cDifficultyProgression} onChange={e => setCDifficultyProgression(e.target.checked)} className="accent-amber-400" />
                 Difficulty Progression
               </label>
@@ -235,10 +236,10 @@ export default function AgentQuestGeneratorPanel() {
                       <h4 className="text-sm font-semibold text-white">{i+1}. {quest.title||'Quest'}</h4>
                       <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${difficultyColor(quest.difficulty)}`}>{quest.difficulty}</span>
                     </div>
-                    <p className="text-xs text-gray-400 mt-1">{quest.description||quest.quest_type}</p>
+                    <p className="text-xs text-[#999] mt-1">{quest.description||quest.quest_type}</p>
                   </div>
                 ))}
-                {!result.quests && <p className="text-sm text-gray-500">No quests in chain</p>}
+                {!result.quests && <p className="text-sm text-[#666]">No quests in chain</p>}
               </div>
             )}
           </div>
@@ -282,7 +283,7 @@ export default function AgentQuestGeneratorPanel() {
                     </ul>
                   </div>
                 )}
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>

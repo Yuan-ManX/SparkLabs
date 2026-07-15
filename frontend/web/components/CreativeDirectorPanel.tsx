@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'brief' | 'pillars' | 'art' | 'mood' | 'audio';
 
@@ -82,7 +83,7 @@ const CreativeDirectorPanel: React.FC = () => {
   const [projTone, setProjTone] = useState('hopeful');
   const [selectedBriefId, setSelectedBriefId] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

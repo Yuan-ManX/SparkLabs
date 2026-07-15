@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useEditorStore } from '../store/editorStore';
+import ModelSettingsPanel from './ModelSettingsPanel';
 
 type TransformTool = 'move' | 'rotate' | 'scale';
 
@@ -185,6 +186,7 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
   const [showViewMenu, setShowViewMenu] = useState(false);
   const [modeSearch, setModeSearch] = useState('');
   const [activeCategory, setActiveCategory] = useState<string>('all');
+  const [showSettings, setShowSettings] = useState(false);
   const modeMenuRef = useRef<HTMLDivElement>(null);
   const searchRef = useRef<HTMLInputElement>(null);
 
@@ -429,26 +431,31 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
       <div className="flex-1" />
 
       <button
-        onClick={onAIGenerate}
-        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-md text-[11px] font-semibold hover:opacity-90 hover:-translate-y-px transition-all"
+        onClick={() => { if (!isPlaying) onTogglePlay(); }}
+        className="flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold text-white hover:opacity-90 hover:-translate-y-px transition-all bg-gradient-to-r from-green-500 to-green-600"
       >
-        <i className="fa-solid fa-wand-magic-sparkles text-[9px]" />
-        <span className="hidden md:inline">AI Generate</span>
+        <i className="fa-solid fa-play text-[9px]" />
+        Play Game
       </button>
 
       <button
-        onClick={onTogglePlay}
-        className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-semibold text-white hover:opacity-90 hover:-translate-y-px transition-all ${
-          isPlaying
-            ? 'bg-gradient-to-r from-red-600 to-red-700'
-            : 'bg-gradient-to-r from-green-500 to-green-600'
-        }`}
+        onClick={() => { if (isPlaying) onTogglePlay(); }}
+        className="flex items-center gap-1.5 px-3 py-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-md text-[11px] font-semibold hover:opacity-90 hover:-translate-y-px transition-all"
       >
-        <i className={`fa-solid ${isPlaying ? 'fa-stop' : 'fa-play'} text-[9px]`} />
-        {isPlaying ? 'Stop' : 'Play'}
+        <i className="fa-solid fa-stop text-[9px]" />
+        <span className="hidden md:inline">Stop Game</span>
       </button>
 
       <div className="w-px h-5 bg-[#1e1e1e]" />
+
+      {/* Model API Settings button */}
+      <button
+        onClick={() => setShowSettings(true)}
+        className="w-7 h-7 rounded-md bg-[#1a1a1a] hover:bg-[#222] flex items-center justify-center text-[#888] hover:text-orange-500 cursor-pointer transition-colors"
+        title="Model API Settings"
+      >
+        <i className="fa-solid fa-sliders text-[10px]" />
+      </button>
 
       {/* Right sidebar toggle — collapses/expands the inspector panel */}
       <button
@@ -458,6 +465,8 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
       >
         <i className={`fa-solid ${rightPanelCollapsed ? 'fa-chevron-left' : 'fa-chevron-right'} text-[9px]`} />
       </button>
+
+      {showSettings && <ModelSettingsPanel onClose={() => setShowSettings(false)} />}
     </div>
   );
 };

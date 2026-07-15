@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'projectors' | 'decals' | 'batch';
 
@@ -54,7 +55,7 @@ const DecalSystemPanel: React.FC = () => {
   const [batchCamZ, setBatchCamZ] = useState('-10');
   const [batchMaxDist, setBatchMaxDist] = useState('100');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultProjectors: Projector[] = [
     { id: uid(), name: 'Bullet Hole Projector', width: 5, height: 5, projection: 'orthographic', decal_count: 12, created_at: Date.now() - 86400000 },

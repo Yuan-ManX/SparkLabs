@@ -6,6 +6,7 @@ import {
   ChevronDown, FileText, Star, Clock, Layers, Zap,
   Eye, CheckCircle2, Grid3X3
 } from 'lucide-react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'generate' | 'content' | 'stats';
 
@@ -63,7 +64,7 @@ const AutonomousCreatorPanel: React.FC = () => {
 
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent/creator';
+  const apiBase = API_ROOT + '/agent/creator';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

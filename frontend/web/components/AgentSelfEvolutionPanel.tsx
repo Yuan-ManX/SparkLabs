@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentSelfEvolutionPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -77,7 +78,7 @@ export default function AgentSelfEvolutionPanel() {
       case 'success': return 'text-[#00ff88]';
       case 'failure': return 'text-red-400';
       case 'partial': return 'text-amber-300';
-      default: return 'text-gray-400';
+      default: return 'text-[#999]';
     }
   };
 
@@ -86,7 +87,7 @@ export default function AgentSelfEvolutionPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
           </button>
         ))}
@@ -110,24 +111,24 @@ export default function AgentSelfEvolutionPanel() {
                 { label: 'Success Rate', value: stats.success_rate ? `${(stats.success_rate * 100).toFixed(1)}%` : '0%', color: 'text-pink-300' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}</p>
                 </div>
               ))}
             </div>
             {stats.strategies_by_type && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Strategies by Type</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Strategies by Type</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(stats.strategies_by_type).map(([k, v]) => (
-                    <div key={k} className="flex justify-between text-xs"><span className="text-gray-400">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
+                    <div key={k} className="flex justify-between text-xs"><span className="text-[#999]">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
                   ))}
                 </div>
               </div>
             )}
             {result && activeTab === 'overview' && (
               <div className={cardCls}>
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-96">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-96">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -195,13 +196,13 @@ export default function AgentSelfEvolutionPanel() {
                 {result.analysis && (
                   <div>
                     <h3 className="text-sm font-bold text-[#00d4ff] mb-2">Analysis Results</h3>
-                    <p className="text-xs text-gray-300">{result.analysis}</p>
+                    <p className="text-xs text-[#ccc]">{result.analysis}</p>
                   </div>
                 )}
                 {result.recommendations && Array.isArray(result.recommendations) && (
                   <div>
                     <h3 className="text-sm font-bold text-[#00ff88] mb-2">Recommendations</h3>
-                    <ul className="list-disc list-inside text-xs text-gray-300 space-y-1">
+                    <ul className="list-disc list-inside text-xs text-[#ccc] space-y-1">
                       {result.recommendations.map((r: string, i: number) => <li key={i}>{r}</li>)}
                     </ul>
                   </div>
@@ -212,14 +213,14 @@ export default function AgentSelfEvolutionPanel() {
                     <div className="grid grid-cols-2 gap-2">
                       {Object.entries(result.performance_metrics).map(([k, v]) => (
                         <div key={k} className="flex justify-between text-xs bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">
-                          <span className="text-gray-400">{k}</span>
+                          <span className="text-[#999]">{k}</span>
                           <span className="text-white">{String(v)}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -251,23 +252,23 @@ export default function AgentSelfEvolutionPanel() {
                       {typeof result.evolved_strategy === 'object' ? (
                         Object.entries(result.evolved_strategy).map(([k, v]) => (
                           <div key={k} className="flex justify-between text-xs">
-                            <span className="text-gray-400">{k}</span>
+                            <span className="text-[#999]">{k}</span>
                             <span className="text-white">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span>
                           </div>
                         ))
                       ) : (
-                        <p className="text-xs text-gray-300">{String(result.evolved_strategy)}</p>
+                        <p className="text-xs text-[#ccc]">{String(result.evolved_strategy)}</p>
                       )}
                     </div>
                   </div>
                 )}
                 {result.improvement_estimate !== undefined && (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-400">Estimated Improvement:</span>
+                    <span className="text-xs text-[#999]">Estimated Improvement:</span>
                     <span className="text-sm font-bold text-[#00ff88]">+{(result.improvement_estimate * 100).toFixed(1)}%</span>
                   </div>
                 )}
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -303,7 +304,7 @@ export default function AgentSelfEvolutionPanel() {
                 </div>
                 {result.score !== undefined && (
                   <div className="flex items-center gap-2">
-                    <span className="text-xs text-gray-400">Score:</span>
+                    <span className="text-xs text-[#999]">Score:</span>
                     <span className="text-sm font-bold text-[#00d4ff]">{(result.score * 100).toFixed(1)}%</span>
                   </div>
                 )}
@@ -322,7 +323,7 @@ export default function AgentSelfEvolutionPanel() {
                       {result.test_results.map((t: any, i: number) => (
                         <div key={i} className="bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">
                           <div className="flex justify-between text-xs">
-                            <span className="text-gray-300">{t.condition || t.name || `Test ${i + 1}`}</span>
+                            <span className="text-[#ccc]">{t.condition || t.name || `Test ${i + 1}`}</span>
                             <span className={outcomeColor(t.outcome || t.result)}>{t.outcome || t.result || 'N/A'}</span>
                           </div>
                         </div>
@@ -330,7 +331,7 @@ export default function AgentSelfEvolutionPanel() {
                     </div>
                   </div>
                 )}
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -367,16 +368,16 @@ export default function AgentSelfEvolutionPanel() {
 
             {result && activeTab === 'traces' && Array.isArray(result.traces) && (
               <div className="space-y-2">
-                <h3 className="text-sm font-bold text-gray-300">
+                <h3 className="text-sm font-bold text-[#ccc]">
                   {result.traces.length} Trace{result.traces.length !== 1 ? 's' : ''}
-                  {result.total !== undefined && <span className="text-xs text-gray-500 ml-2">(total: {result.total})</span>}
+                  {result.total !== undefined && <span className="text-xs text-[#666] ml-2">(total: {result.total})</span>}
                 </h3>
                 {result.traces.map((trace: any, i: number) => (
                   <div key={trace.id || i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a]">
                     <div className="flex justify-between items-start mb-2">
                       <div>
                         <span className="text-sm font-medium text-white">{trace.task_description || trace.strategy_type || `Trace ${i + 1}`}</span>
-                        {trace.strategy_version && <span className="text-xs text-gray-500 ml-2">v{trace.strategy_version}</span>}
+                        {trace.strategy_version && <span className="text-xs text-[#666] ml-2">v{trace.strategy_version}</span>}
                       </div>
                       <span className={`text-xs px-2 py-0.5 rounded ${trace.outcome === 'success' ? 'bg-[#00ff88]/20 text-[#00ff88]' : trace.outcome === 'failure' ? 'bg-red-500/20 text-red-300' : 'bg-amber-500/20 text-amber-300'}`}>
                         {trace.outcome || 'unknown'}
@@ -385,27 +386,27 @@ export default function AgentSelfEvolutionPanel() {
                     <div className="grid grid-cols-3 gap-2 text-xs">
                       {trace.agent_id && (
                         <div>
-                          <span className="text-gray-500">Agent: </span>
-                          <span className="text-gray-300">{trace.agent_id}</span>
+                          <span className="text-[#666]">Agent: </span>
+                          <span className="text-[#ccc]">{trace.agent_id}</span>
                         </div>
                       )}
                       {trace.strategy_type && (
                         <div>
-                          <span className="text-gray-500">Strategy: </span>
-                          <span className="text-gray-300">{trace.strategy_type}</span>
+                          <span className="text-[#666]">Strategy: </span>
+                          <span className="text-[#ccc]">{trace.strategy_type}</span>
                         </div>
                       )}
                       {trace.duration_ms !== undefined && (
                         <div>
-                          <span className="text-gray-500">Duration: </span>
-                          <span className="text-gray-300">{trace.duration_ms}ms</span>
+                          <span className="text-[#666]">Duration: </span>
+                          <span className="text-[#ccc]">{trace.duration_ms}ms</span>
                         </div>
                       )}
                     </div>
                     {trace.metrics && (
                       <div className="mt-2">
-                        <span className="text-[10px] text-gray-500">Metrics: </span>
-                        <span className="text-[10px] text-gray-400">
+                        <span className="text-[10px] text-[#666]">Metrics: </span>
+                        <span className="text-[10px] text-[#999]">
                           {typeof trace.metrics === 'string' ? trace.metrics : JSON.stringify(trace.metrics)}
                         </span>
                       </div>
@@ -423,7 +424,7 @@ export default function AgentSelfEvolutionPanel() {
 
             {result && activeTab === 'traces' && !Array.isArray(result.traces) && (
               <div className={cardCls}>
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-96">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-96">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>

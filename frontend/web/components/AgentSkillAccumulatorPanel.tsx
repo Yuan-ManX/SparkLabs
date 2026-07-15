@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentSkillAccumulatorPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -78,7 +79,7 @@ export default function AgentSkillAccumulatorPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -102,32 +103,32 @@ export default function AgentSkillAccumulatorPanel() {
                 { label: 'Success Rate', value: stats.success_rate != null ? `${(stats.success_rate * 100).toFixed(1)}%` : 'N/A', color: 'text-pink-300' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}</p>
                 </div>
               ))}
             </div>
             {stats.skills_by_domain && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Skills by Domain</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Skills by Domain</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(stats.skills_by_domain).map(([k, v]) => (
-                    <div key={k} className="flex justify-between text-xs"><span className="text-gray-400 capitalize">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
+                    <div key={k} className="flex justify-between text-xs"><span className="text-[#999] capitalize">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
                   ))}
                 </div>
               </div>
             )}
             {stats.recent_skills && Array.isArray(stats.recent_skills) && stats.recent_skills.length > 0 && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Recent Skills</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Recent Skills</h3>
                 <div className="space-y-2">
                   {stats.recent_skills.map((skill: any, i: number) => (
                     <div key={i} className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium text-white">{skill.name}</span>
-                        <span className="text-xs text-gray-400">{skill.domain}</span>
+                        <span className="text-xs text-[#999]">{skill.domain}</span>
                       </div>
-                      {skill.id && <span className="text-[10px] text-gray-500">ID: {skill.id}</span>}
+                      {skill.id && <span className="text-[10px] text-[#666]">ID: {skill.id}</span>}
                     </div>
                   ))}
                 </div>
@@ -182,8 +183,8 @@ export default function AgentSkillAccumulatorPanel() {
 
             {result && activeTab === 'accumulate' && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Result</h3>
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Result</h3>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -213,8 +214,8 @@ export default function AgentSkillAccumulatorPanel() {
 
             {result && activeTab === 'execute' && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Execution Result</h3>
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Execution Result</h3>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -256,8 +257,8 @@ export default function AgentSkillAccumulatorPanel() {
 
             {result && activeTab === 'compose' && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Composition Result</h3>
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Composition Result</h3>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -299,15 +300,15 @@ export default function AgentSkillAccumulatorPanel() {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="text-sm font-bold text-white">{skill.name}</h3>
-                          <p className="text-xs text-gray-400 mt-1">{skill.description}</p>
+                          <p className="text-xs text-[#999] mt-1">{skill.description}</p>
                         </div>
-                        <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-400">{skill.domain}</span>
+                        <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#999]">{skill.domain}</span>
                       </div>
                       <div className="flex gap-2 mt-2 flex-wrap">
-                        {skill.id && <span className="text-[10px] text-gray-500">ID: {skill.id}</span>}
-                        {skill.maturity && <span className="text-[10px] text-gray-500 capitalize">Maturity: {skill.maturity}</span>}
+                        {skill.id && <span className="text-[10px] text-[#666]">ID: {skill.id}</span>}
+                        {skill.maturity && <span className="text-[10px] text-[#666] capitalize">Maturity: {skill.maturity}</span>}
                         {skill.tags && Array.isArray(skill.tags) && skill.tags.map((tag: string) => (
-                          <span key={tag} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-500">#{tag}</span>
+                          <span key={tag} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#666]">#{tag}</span>
                         ))}
                       </div>
                     </div>
@@ -318,22 +319,22 @@ export default function AgentSkillAccumulatorPanel() {
                       <div className="flex justify-between items-start">
                         <div>
                           <h3 className="text-sm font-bold text-white">{skill.name}</h3>
-                          <p className="text-xs text-gray-400 mt-1">{skill.description}</p>
+                          <p className="text-xs text-[#999] mt-1">{skill.description}</p>
                         </div>
-                        <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-400">{skill.domain}</span>
+                        <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#999]">{skill.domain}</span>
                       </div>
                       <div className="flex gap-2 mt-2 flex-wrap">
-                        {skill.id && <span className="text-[10px] text-gray-500">ID: {skill.id}</span>}
-                        {skill.maturity && <span className="text-[10px] text-gray-500 capitalize">Maturity: {skill.maturity}</span>}
+                        {skill.id && <span className="text-[10px] text-[#666]">ID: {skill.id}</span>}
+                        {skill.maturity && <span className="text-[10px] text-[#666] capitalize">Maturity: {skill.maturity}</span>}
                         {skill.tags && Array.isArray(skill.tags) && skill.tags.map((tag: string) => (
-                          <span key={tag} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-500">#{tag}</span>
+                          <span key={tag} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#666]">#{tag}</span>
                         ))}
                       </div>
                     </div>
                   ))
                 ) : (
                   <div className={cardCls}>
-                    <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                    <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
                   </div>
                 )}
               </div>

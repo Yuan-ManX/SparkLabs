@@ -1,4 +1,5 @@
 import React, { useState, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type BalanceDomain = 'mechanics' | 'economy' | 'progression' | 'combat' | 'difficulty';
 type SeverityLevel = 'well_balanced' | 'slightly_off' | 'noticeably_unbalanced' | 'severely_broken' | 'game_breaking';
@@ -121,7 +122,7 @@ const BalanceAnalyzerPanel: React.FC = () => {
   const [analyzing, setAnalyzing] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

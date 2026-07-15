@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabKey = 'trend' | 'forecast' | 'counterfactual' | 'record-risk' | 'status';
 type Direction = 'RISING' | 'FALLING' | 'STABLE' | 'VOLATILE';
@@ -129,7 +130,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
   const [status, setStatus] = useState<SystemStatus | null>(null);
   const [statusLoading, setStatusLoading] = useState(false);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

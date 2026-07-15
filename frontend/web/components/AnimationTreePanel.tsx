@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type BlendMode = 'LINEAR' | 'CUBIC' | 'STEP';
 type TabId = 'trees' | 'clips' | 'transitions';
@@ -47,7 +48,7 @@ const AnimationTreePanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabId>('trees');
   const [blendMode, setBlendMode] = useState<BlendMode>('LINEAR');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultTrees: AnimTree[] = [
     { id: uid(), name: 'PlayerLocomotion', node_count: 12, clip_count: 8, skeleton_ref: 'humanoid_rig_v2', created_at: Date.now() - 86400000 },

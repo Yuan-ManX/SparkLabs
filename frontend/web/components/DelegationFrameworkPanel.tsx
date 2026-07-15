@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'children' | 'tasks';
 
@@ -34,7 +35,7 @@ const DelegationFrameworkPanel: React.FC = () => {
   const [taskDescription, setTaskDescription] = useState('');
   const [taskAssignedChild, setTaskAssignedChild] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultChildren: ChildAgent[] = [
     { id: uid(), name: 'code_reviewer', role: 'review', status: 'active', capabilities: ['code_analysis', 'linting', 'security_scan'] },

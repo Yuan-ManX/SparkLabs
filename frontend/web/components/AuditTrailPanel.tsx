@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'events' | 'query' | 'report';
 
@@ -49,7 +50,7 @@ const AuditTrailPanel: React.FC = () => {
 
   const [reportDays, setReportDays] = useState('7');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultEvents: AuditEvent[] = [
     { id: uid(), agent_id: 'agent-001', event_type: 'action', description: 'Agent invoked tool: search_codebase', details: 'Query: "find all React components"', severity: 'info', timestamp: Date.now() - 300000 },
