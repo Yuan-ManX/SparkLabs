@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type Orientation = 'ORTHOGONAL' | 'ISOMETRIC' | 'HEXAGONAL';
 type TabId = 'maps' | 'chunks' | 'autotile';
@@ -54,7 +55,7 @@ const TileMapOptimizerPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabId>('maps');
   const [orientation, setOrientation] = useState<Orientation>('ORTHOGONAL');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultMaps: TileMap[] = [
     { id: uid(), name: 'Overworld', width: 256, height: 192, tile_size: 32, orientation: 'ORTHOGONAL', layer_count: 5 },

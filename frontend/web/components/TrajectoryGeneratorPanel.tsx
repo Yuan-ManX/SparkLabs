@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'sessions' | 'turns';
 
@@ -32,7 +33,7 @@ const TrajectoryGeneratorPanel: React.FC = () => {
   const [turnContent, setTurnContent] = useState('');
   const [selectedSessionId, setSelectedSessionId] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSessions: TrajectorySession[] = [
     { id: uid(), agent_name: 'research_agent', task: 'Analyze market trends for Q3', turns: 12, quality: 'high' },

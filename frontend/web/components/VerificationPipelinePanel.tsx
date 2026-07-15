@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'verification' | 'rules';
 
@@ -52,7 +53,7 @@ const VerificationPipelinePanel: React.FC = () => {
   const [blockingReportId, setBlockingReportId] = useState('');
   const [blockingIssues, setBlockingIssues] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultReports: Report[] = [
     { id: uid(), artifact_id: 'art-1', artifact_type: 'code', status: 'verified', issues_count: 3, created_at: Date.now() - 86400000 },

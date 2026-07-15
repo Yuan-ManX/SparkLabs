@@ -82,11 +82,11 @@ const TestingDashboard: React.FC = () => {
 
       {stats && (
         <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
-          <div style={{ background: '#1a1a2e', padding: '8px 12px', borderRadius: 6, minWidth: 70 }}>
+          <div style={{ background: '#0a0a0a', padding: '8px 12px', borderRadius: 6, minWidth: 70 }}>
             <div style={{ fontSize: 11, color: '#888' }}>Total Runs</div>
             <div style={{ fontSize: 18, fontWeight: 'bold' }}>{stats.total_runs || 0}</div>
           </div>
-          <div style={{ background: '#1a1a2e', padding: '8px 12px', borderRadius: 6, minWidth: 70 }}>
+          <div style={{ background: '#0a0a0a', padding: '8px 12px', borderRadius: 6, minWidth: 70 }}>
             <div style={{ fontSize: 11, color: '#888' }}>Tests Defined</div>
             <div style={{ fontSize: 18, fontWeight: 'bold' }}>{stats.tests_defined || 0}</div>
           </div>
@@ -101,7 +101,7 @@ const TestingDashboard: React.FC = () => {
             style={{
               padding: '4px 10px', borderRadius: 6, fontSize: 11,
               border: selectedTypes.has(t) ? `2px solid ${TYPE_COLORS[t]}` : '1px solid #333',
-              background: selectedTypes.has(t) ? '#1a2a1a' : '#1a1a2e',
+              background: selectedTypes.has(t) ? '#1a2a1a' : '#0a0a0a',
               color: selectedTypes.has(t) ? TYPE_COLORS[t] : '#888',
               cursor: 'pointer',
             }}
@@ -133,7 +133,7 @@ const TestingDashboard: React.FC = () => {
           {results.results?.slice(0, 10).map((r, i) => (
             <div key={i} style={{
               display: 'flex', justifyContent: 'space-between', padding: '4px 8px',
-              background: '#1a1a2e', borderRadius: 4, marginBottom: 3, fontSize: 11,
+              background: '#0a0a0a', borderRadius: 4, marginBottom: 3, fontSize: 11,
             }}>
               <span style={{ color: r.status === 'passed' ? '#10b981' : '#ef4444' }}>{r.status}</span>
               <span style={{ color: '#888' }}>{r.test_id}</span>
@@ -144,7 +144,7 @@ const TestingDashboard: React.FC = () => {
       )}
 
       {coverage && (
-        <div style={{ padding: 10, background: '#1a1a2e', borderRadius: 6 }}>
+        <div style={{ padding: 10, background: '#0a0a0a', borderRadius: 6 }}>
           <div style={{ fontSize: 12, color: '#aaa', marginBottom: 6 }}>Coverage Report</div>
           {Object.entries(coverage).map(([key, val]) => (
             <div key={key} style={{ display: 'flex', justifyContent: 'space-between', fontSize: 11, padding: '2px 0' }}>

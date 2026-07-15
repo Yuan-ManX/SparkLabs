@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type CompressionMode = 'lossless' | 'summary' | 'pruning';
 type CompressionFormat = 'json' | 'binary' | 'gzip';
@@ -65,7 +66,7 @@ const TrajectoryCompressorPanel: React.FC = () => {
   const [compMode, setCompMode] = useState<CompressionMode>('summary');
   const [exportFormat, setExportFormat] = useState('jsonl');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultTurns: TrajectoryTurn[] = [
     { id: uid(), role: 'system', content_preview: 'You are a helpful coding assistant. Follow best practices...', token_count: 120, timestamp: Date.now() - 600000 },

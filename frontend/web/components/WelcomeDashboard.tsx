@@ -7,7 +7,6 @@ interface RecentProject {
   icon: string;
   color: string;
   lastModified: string;
-  thumbnail?: string;
 }
 
 interface QuickTemplate {
@@ -39,11 +38,20 @@ const QUICK_TEMPLATES: QuickTemplate[] = [
   { id: 't8', name: 'Sandbox', description: 'Open-world creative sandbox with building mechanics', icon: 'fa-cubes', color: '#14b8a6', category: 'Sandbox' },
 ];
 
-const LEARNING_PATHS = [
-  { title: 'Getting Started', icon: 'fa-play-circle', desc: 'Create your first game in 5 minutes', color: '#22c55e' },
-  { title: 'AI Workflows', icon: 'fa-diagram-project', desc: 'Build with visual node programming', color: '#8b5cf6' },
-  { title: 'Agent System', icon: 'fa-brain', desc: 'Configure AI agents for your game', color: '#f97316' },
-  { title: 'Publishing', icon: 'fa-cloud-arrow-up', desc: 'Export and share your game', color: '#3b82f6' },
+const AI_CAPABILITIES = [
+  { icon: 'fa-brain', title: 'Cognitive NPCs', desc: 'Agents with beliefs, desires, memory, and emotional states', cat: 'agent' as const },
+  { icon: 'fa-feather', title: 'Emergent Narrative', desc: 'Stories that grow from agent decisions, not scripts', cat: 'agent' as const },
+  { icon: 'fa-microchip', title: 'Engine Thinks', desc: 'Real-time balance simulation before you hit play', cat: 'engine' as const },
+  { icon: 'fa-wand-magic-sparkles', title: 'Asset Synthesis', desc: 'AI-composed art, audio, and animation pipelines', cat: 'engine' as const },
+  { icon: 'fa-bug-slash', title: 'Self-Testing', desc: 'Autonomous QA agents hunt bugs and trace crashes', cat: 'system' as const },
+  { icon: 'fa-users-gear', title: 'Swarm Intelligence', desc: 'Multi-agent teams collaborate on game design tasks', cat: 'agent' as const },
+];
+
+const ENGINE_STATS = [
+  { value: '457', label: 'Agent Modules' },
+  { value: '438', label: 'Engine Modules' },
+  { value: '6800+', label: 'API Routes' },
+  { value: '883K+', label: 'Lines of Code' },
 ];
 
 interface WelcomeDashboardProps {
@@ -60,173 +68,179 @@ const WelcomeDashboard: React.FC<WelcomeDashboardProps> = ({ onModeSwitch, onAIP
   );
 
   return (
-    <div className="h-full overflow-y-auto bg-[#0a0a0a]">
-      <div className="max-w-5xl mx-auto px-6 py-8">
-        {/* Hero Section */}
-        <div className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded-full text-[11px] text-orange-500 mb-4">
-            <div className="w-1.5 h-1.5 bg-orange-500 rounded-full pulse-dot" />
-            AI-Native Game Engine
-          </div>
-          <h1 className="text-3xl font-bold mb-3">
-            <span className="bg-gradient-to-r from-orange-500 via-red-500 to-yellow-400 bg-clip-text text-transparent">Spark</span>
-            <span className="text-white">Labs</span>
-            <span className="text-[#555] text-lg ml-2">Editor</span>
-          </h1>
-          <p className="text-[#666] text-sm max-w-md mx-auto">
-            Describe your game in natural language. AI agents handle the rest — world building, character design, code generation, and quality assurance.
-          </p>
-          <div className="mt-5 max-w-lg mx-auto">
-            <div className="flex items-center bg-[#111] border border-[#2a2a2a] rounded-xl px-4 py-3 gap-3 focus-within:border-orange-500/40 transition-colors">
-              <i className="fa-solid fa-wand-magic-sparkles text-orange-500 text-sm" />
-              <input
-                type="text"
-                placeholder="Describe the game you want to create..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter' && searchQuery.trim() && onAIPrompt) {
-                    onAIPrompt(searchQuery.trim());
-                  }
-                }}
-                className="flex-1 bg-transparent text-sm text-[#ddd] outline-none placeholder-[#444]"
-              />
-              <button
-                onClick={() => searchQuery.trim() && onAIPrompt?.(searchQuery.trim())}
-                className="px-4 py-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg text-[12px] font-semibold hover:opacity-90 transition-all"
-              >
-                Create
-              </button>
+    <div className="sl-module">
+      <div className="sl-module-body overflow-y-auto">
+        <div className="max-w-5xl mx-auto">
+          {/* Hero Section */}
+          <div className="text-center py-8">
+            <div className="inline-flex items-center gap-2 px-3 py-1 bg-orange-500/10 border border-orange-500/20 rounded-full text-[11px] text-orange-500 mb-4">
+              <div className="w-1.5 h-1.5 bg-orange-500 rounded-full pulse-dot" />
+              AI-Native Game Engine
+            </div>
+            <h1 className="text-3xl font-bold mb-3">
+              <span className="bg-gradient-to-r from-orange-500 via-red-500 to-yellow-400 bg-clip-text text-transparent">Spark</span>
+              <span className="text-white">Labs</span>
+              <span className="text-[#555] text-lg ml-2">Editor</span>
+            </h1>
+            <p className="text-[#666] text-sm max-w-md mx-auto">
+              Where AI is the engine itself. Describe your game in natural language — agents design worlds, compose assets, direct narratives, and test the build.
+            </p>
+            <div className="mt-5 max-w-lg mx-auto">
+              <div className="flex items-center bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl px-4 py-3 gap-3 focus-within:border-orange-500/40 transition-colors">
+                <i className="fa-solid fa-wand-magic-sparkles text-orange-500 text-sm" />
+                <input
+                  type="text"
+                  placeholder="Describe the game you want to create..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && searchQuery.trim() && onAIPrompt) {
+                      onAIPrompt(searchQuery.trim());
+                    }
+                  }}
+                  className="flex-1 bg-transparent text-sm text-[#ddd] outline-none placeholder-[#444]"
+                />
+                <button
+                  onClick={() => searchQuery.trim() && onAIPrompt?.(searchQuery.trim())}
+                  className="sl-module-btn sl-module-btn-primary"
+                >
+                  Create
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Quick Templates */}
-        <div className="mb-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-sm font-semibold text-[#aaa] flex items-center gap-2">
-              <i className="fa-solid fa-puzzle-piece text-[10px] text-orange-500" />
-              Quick Start Templates
-            </h2>
-            <button
-              onClick={() => onModeSwitch?.('templates')}
-              className="text-[11px] text-[#555] hover:text-orange-500 transition-colors"
-            >
-              View All <i className="fa-solid fa-arrow-right text-[8px] ml-1" />
-            </button>
+          {/* Engine Stats */}
+          <div className="grid grid-cols-4 gap-3 mb-8">
+            {ENGINE_STATS.map((stat) => (
+              <div key={stat.label} className="sl-module-stat">
+                <div className="sl-module-stat-value">{stat.value}</div>
+                <div className="sl-module-stat-label">{stat.label}</div>
+              </div>
+            ))}
           </div>
-          <div className="grid grid-cols-4 gap-3">
-            {filteredTemplates.map((template) => (
-              <button
-                key={template.id}
-                onClick={() => onAIPrompt?.(`Create a ${template.name}`)}
-                onMouseEnter={() => setHoveredTemplate(template.id)}
-                onMouseLeave={() => setHoveredTemplate(null)}
-                className="text-left p-4 bg-[#111] border border-[#1e1e1e] rounded-xl hover:border-[#2a2a2a] hover:bg-[#141414] transition-all group"
-              >
-                <div
-                  className="w-9 h-9 rounded-lg flex items-center justify-center mb-3 transition-transform group-hover:scale-110"
-                  style={{ background: `${template.color}15` }}
-                >
-                  <i className={`fa-solid ${template.icon} text-sm`} style={{ color: template.color }} />
-                </div>
-                <div className="text-[12px] font-semibold text-[#ccc] mb-1">{template.name}</div>
-                <div className="text-[10px] text-[#555] leading-relaxed">{template.description}</div>
-                {hoveredTemplate === template.id && (
-                  <div className="mt-2 text-[9px] text-orange-500 flex items-center gap-1" style={{ animation: 'fade-in 0.15s ease-out' }}>
-                    <i className="fa-solid fa-wand-magic-sparkles text-[8px]" />
-                    Click to generate with AI
+
+          {/* AI-Native Capabilities */}
+          <div className="mb-8">
+            <div className="sl-module-card-header mb-3">
+              <i className="fa-solid fa-bolt text-[10px] text-orange-500" />
+              AI-Native Capabilities
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {AI_CAPABILITIES.map((cap) => (
+                <div key={cap.title} className="sl-module-card">
+                  <div className={`sl-module-header-icon ${cap.cat} mb-2`}>
+                    <i className={`fa-solid ${cap.icon}`} />
                   </div>
-                )}
-              </button>
-            ))}
+                  <div className="text-[12px] font-semibold text-[#ccc] mb-1">{cap.title}</div>
+                  <div className="text-[10px] text-[#555] leading-relaxed">{cap.desc}</div>
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Recent Projects */}
-        <div className="mb-10">
-          <h2 className="text-sm font-semibold text-[#aaa] flex items-center gap-2 mb-4">
-            <i className="fa-solid fa-clock-rotate-left text-[10px] text-orange-500" />
-            Recent Projects
-          </h2>
-          <div className="grid grid-cols-3 gap-3">
-            {RECENT_PROJECTS.map((project) => (
+          {/* Quick Start Templates */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-3">
+              <div className="sl-module-card-header !mb-0">
+                <i className="fa-solid fa-puzzle-piece text-[10px] text-orange-500" />
+                Quick Start Templates
+              </div>
               <button
-                key={project.id}
-                onClick={() => onModeSwitch?.('dashboard')}
-                className="text-left p-3 bg-[#111] border border-[#1e1e1e] rounded-xl hover:border-[#2a2a2a] hover:bg-[#141414] transition-all flex items-center gap-3 group"
+                onClick={() => onModeSwitch?.('templates')}
+                className="text-[11px] text-[#555] hover:text-orange-500 transition-colors"
               >
-                <div
-                  className="w-10 h-10 rounded-lg flex items-center justify-center flex-shrink-0"
-                  style={{ background: `${project.color}15` }}
+                View All <i className="fa-solid fa-arrow-right text-[8px] ml-1" />
+              </button>
+            </div>
+            <div className="grid grid-cols-4 gap-3">
+              {filteredTemplates.map((template) => (
+                <button
+                  key={template.id}
+                  onClick={() => onAIPrompt?.(`Create a ${template.name}`)}
+                  onMouseEnter={() => setHoveredTemplate(template.id)}
+                  onMouseLeave={() => setHoveredTemplate(null)}
+                  className="text-left p-4 bg-[#0f0f0f] border border-[#1a1a1a] rounded-xl hover:border-[#2a2a2a] hover:bg-[#141414] transition-all group"
                 >
-                  <i className={`fa-solid ${project.icon} text-sm`} style={{ color: project.color }} />
-                </div>
-                <div className="min-w-0">
-                  <div className="text-[12px] font-semibold text-[#ccc] truncate group-hover:text-orange-400 transition-colors">{project.name}</div>
-                  <div className="text-[10px] text-[#555]">{project.type} · {project.lastModified}</div>
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-
-        {/* Learning Paths */}
-        <div className="mb-10">
-          <h2 className="text-sm font-semibold text-[#aaa] flex items-center gap-2 mb-4">
-            <i className="fa-solid fa-graduation-cap text-[10px] text-orange-500" />
-            Learning Paths
-          </h2>
-          <div className="grid grid-cols-4 gap-3">
-            {LEARNING_PATHS.map((path, idx) => (
-              <button
-                key={path.title}
-                className="text-left p-4 bg-[#111] border border-[#1e1e1e] rounded-xl hover:border-[#2a2a2a] hover:bg-[#141414] transition-all"
-              >
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold" style={{ background: `${path.color}15`, color: path.color }}>
-                    {idx + 1}
+                  <div
+                    className="w-9 h-9 rounded-lg flex items-center justify-center mb-3 transition-transform group-hover:scale-110"
+                    style={{ background: `${template.color}15` }}
+                  >
+                    <i className={`fa-solid ${template.icon} text-sm`} style={{ color: template.color }} />
                   </div>
-                  <i className={`fa-solid ${path.icon} text-[10px]`} style={{ color: path.color }} />
-                </div>
-                <div className="text-[11px] font-semibold text-[#bbb] mb-1">{path.title}</div>
-                <div className="text-[10px] text-[#555]">{path.desc}</div>
-              </button>
-            ))}
+                  <div className="text-[12px] font-semibold text-[#ccc] mb-1">{template.name}</div>
+                  <div className="text-[10px] text-[#555] leading-relaxed">{template.description}</div>
+                  {hoveredTemplate === template.id && (
+                    <div className="mt-2 text-[9px] text-orange-500 flex items-center gap-1" style={{ animation: 'fade-in 0.15s ease-out' }}>
+                      <i className="fa-solid fa-wand-magic-sparkles text-[8px]" />
+                      Click to generate with AI
+                    </div>
+                  )}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Quick Actions */}
-        <div className="mb-6">
-          <h2 className="text-sm font-semibold text-[#aaa] flex items-center gap-2 mb-4">
-            <i className="fa-solid fa-bolt text-[10px] text-orange-500" />
-            Quick Actions
-          </h2>
-          <div className="flex gap-2 flex-wrap">
-            {[
-              { label: 'New Project', icon: 'fa-plus', mode: 'dashboard', color: '#22c55e' },
-              { label: 'Open Node Graph', icon: 'fa-diagram-project', mode: 'node-canvas', color: '#8b5cf6' },
-              { label: 'Agent Studio', icon: 'fa-brain', mode: 'agent', color: '#f97316' },
-              { label: 'Game Pipeline', icon: 'fa-arrows-spin', mode: 'pipeline', color: '#3b82f6' },
-              { label: 'Asset Library', icon: 'fa-folder-open', mode: 'asset-browser', color: '#f59e0b' },
-              { label: 'Quality Check', icon: 'fa-check-double', mode: 'validator', color: '#ef4444' },
-              { label: 'Settings', icon: 'fa-gear', mode: 'settings', color: '#666' },
-            ].map((action) => (
-              <button
-                key={action.label}
-                onClick={() => onModeSwitch?.(action.mode)}
-                className="flex items-center gap-2 px-3 py-2 bg-[#111] border border-[#1e1e1e] rounded-lg text-[11px] text-[#888] hover:border-[#2a2a2a] hover:text-[#ccc] hover:bg-[#141414] transition-all"
-              >
-                <i className={`fa-solid ${action.icon} text-[9px]`} style={{ color: action.color }} />
-                {action.label}
-              </button>
-            ))}
+          {/* Recent Projects */}
+          <div className="mb-8">
+            <div className="sl-module-card-header mb-3">
+              <i className="fa-solid fa-clock-rotate-left text-[10px] text-orange-500" />
+              Recent Projects
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {RECENT_PROJECTS.map((project) => (
+                <button
+                  key={project.id}
+                  onClick={() => onModeSwitch?.('dashboard')}
+                  className="sl-module-list-item"
+                >
+                  <div
+                    className="w-9 h-9 rounded-lg flex items-center justify-center flex-shrink-0"
+                    style={{ background: `${project.color}15` }}
+                  >
+                    <i className={`fa-solid ${project.icon} text-sm`} style={{ color: project.color }} />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[12px] font-semibold text-[#ccc] truncate">{project.name}</div>
+                    <div className="text-[10px] text-[#555]">{project.type} · {project.lastModified}</div>
+                  </div>
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
 
-        {/* Footer */}
-        <div className="text-center text-[10px] text-[#333] py-4 border-t border-[#1a1a1a]">
-          SparkLabs Engine v17.0.0 · AI-Native Game Engine · 40 Subsystems Active
+          {/* Quick Actions */}
+          <div className="mb-6">
+            <div className="sl-module-card-header mb-3">
+              <i className="fa-solid fa-bolt text-[10px] text-orange-500" />
+              Quick Actions
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              {[
+                { label: 'New Project', icon: 'fa-plus', mode: 'dashboard', color: '#22c55e' },
+                { label: 'Node Graph', icon: 'fa-diagram-project', mode: 'node-canvas', color: '#8b5cf6' },
+                { label: 'Agent Studio', icon: 'fa-brain', mode: 'agent', color: '#f97316' },
+                { label: 'Game Pipeline', icon: 'fa-arrows-spin', mode: 'pipeline', color: '#3b82f6' },
+                { label: 'Asset Library', icon: 'fa-folder-open', mode: 'asset-browser', color: '#f59e0b' },
+                { label: 'Quality Check', icon: 'fa-check-double', mode: 'validator', color: '#ef4444' },
+                { label: 'Settings', icon: 'fa-gear', mode: 'settings', color: '#666' },
+              ].map((action) => (
+                <button
+                  key={action.label}
+                  onClick={() => onModeSwitch?.(action.mode)}
+                  className="sl-module-btn"
+                >
+                  <i className={`fa-solid ${action.icon} text-[9px]`} style={{ color: action.color }} />
+                  {action.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Footer */}
+          <div className="text-center text-[10px] text-[#333] py-4 border-t border-[#1a1a1a]">
+            SparkLabs Engine v17.0.0 · AI-Native Game Engine · 895 Modules Active
+          </div>
         </div>
       </div>
     </div>

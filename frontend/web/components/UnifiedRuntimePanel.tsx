@@ -50,7 +50,7 @@ const uid = () => Math.random().toString(36).substring(2, 10);
 const stateColors: Record<string, string> = {
   running: 'bg-emerald-500/20 text-emerald-400',
   paused: 'bg-amber-500/20 text-amber-400',
-  stopped: 'bg-gray-500/20 text-gray-400',
+  stopped: 'bg-\[#f5f5f5\]0/20 text-[#999]',
   error: 'bg-red-500/20 text-red-400',
 };
 
@@ -247,12 +247,12 @@ const UnifiedRuntimePanel: React.FC = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a1a] text-gray-200">
+    <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\]">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a2e]">
         <h2 className="text-lg font-semibold text-emerald-400">Unified Game Runtime</h2>
         <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full ${status.state === 'running' ? 'bg-emerald-400 animate-pulse' : status.state === 'paused' ? 'bg-amber-400' : 'bg-gray-500'}`} />
-          <span className={`text-xs px-2 py-0.5 rounded-full ${stateColors[status.state] || 'bg-gray-500/20 text-gray-400'}`}>
+          <span className={`w-2 h-2 rounded-full ${status.state === 'running' ? 'bg-emerald-400 animate-pulse' : status.state === 'paused' ? 'bg-amber-400' : 'bg-\[#f5f5f5\]0'}`} />
+          <span className={`text-xs px-2 py-0.5 rounded-full ${stateColors[status.state] || 'bg-\[#f5f5f5\]0/20 text-[#999]'}`}>
             {status.state}
           </span>
         </div>
@@ -281,10 +281,10 @@ const UnifiedRuntimePanel: React.FC = () => {
           </button>
         )}
         <div className="flex-1" />
-        <div className="flex items-center gap-4 text-xs text-gray-500">
-          <span>FPS: <span className="text-gray-300">{status.fps.toFixed(1)}</span></span>
-          <span>Frame: <span className="text-gray-300">{status.frame_count}</span></span>
-          <span>Time: <span className="text-gray-300">{status.elapsed_time.toFixed(2)}s</span></span>
+        <div className="flex items-center gap-4 text-xs text-[#666]">
+          <span>FPS: <span className="text-[#ccc]">{status.fps.toFixed(1)}</span></span>
+          <span>Frame: <span className="text-[#ccc]">{status.frame_count}</span></span>
+          <span>Time: <span className="text-[#ccc]">{status.elapsed_time.toFixed(2)}s</span></span>
         </div>
       </div>
 
@@ -294,7 +294,7 @@ const UnifiedRuntimePanel: React.FC = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2 text-sm transition-colors ${
-              activeTab === tab.id ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-gray-500 hover:text-gray-300'
+              activeTab === tab.id ? 'text-emerald-400 border-b-2 border-emerald-400' : 'text-[#666] hover:text-[#ccc]'
             }`}
           >
             {tab.label}
@@ -308,33 +308,33 @@ const UnifiedRuntimePanel: React.FC = () => {
           <div className="space-y-3">
             <div className="grid grid-cols-4 gap-2">
               <div className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
-                <div className="text-xs text-gray-500">State</div>
-                <div className={`text-lg font-bold mt-1 ${status.state === 'running' ? 'text-emerald-400' : 'text-gray-400'}`}>
+                <div className="text-xs text-[#666]">State</div>
+                <div className={`text-lg font-bold mt-1 ${status.state === 'running' ? 'text-emerald-400' : 'text-[#999]'}`}>
                   {status.state}
                 </div>
               </div>
               <div className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
-                <div className="text-xs text-gray-500">FPS</div>
-                <div className="text-lg font-bold text-gray-200 mt-1">{status.fps.toFixed(1)}</div>
+                <div className="text-xs text-[#666]">FPS</div>
+                <div className="text-lg font-bold text-\[#ddd\] mt-1">{status.fps.toFixed(1)}</div>
               </div>
               <div className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
-                <div className="text-xs text-gray-500">Entities</div>
+                <div className="text-xs text-[#666]">Entities</div>
                 <div className="text-lg font-bold text-cyan-400 mt-1">{status.entities}</div>
               </div>
               <div className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
-                <div className="text-xs text-gray-500">Scenes</div>
+                <div className="text-xs text-[#666]">Scenes</div>
                 <div className="text-lg font-bold text-purple-400 mt-1">{status.scenes}</div>
               </div>
             </div>
             <div className="bg-[#1a1a2e] rounded-lg p-4 border border-[#2a2a3e]">
-              <div className="text-sm text-gray-400 mb-3">Frame Timeline</div>
+              <div className="text-sm text-[#999] mb-3">Frame Timeline</div>
               <div className="h-2 bg-[#0a0a1a] rounded-full overflow-hidden">
                 <div
                   className="h-full bg-emerald-400 rounded-full transition-all duration-300"
                   style={{ width: `${Math.min(100, (status.fps / 60) * 100)}%` }}
                 />
               </div>
-              <div className="flex justify-between text-xs text-gray-500 mt-1">
+              <div className="flex justify-between text-xs text-[#666] mt-1">
                 <span>0 FPS</span>
                 <span>60 FPS</span>
               </div>
@@ -356,11 +356,11 @@ const UnifiedRuntimePanel: React.FC = () => {
                 <div key={entity.entity_id} className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">{entity.name}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${entity.active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-gray-500/20 text-gray-400'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${entity.active ? 'bg-emerald-500/20 text-emerald-400' : 'bg-\[#f5f5f5\]0/20 text-[#999]'}`}>
                       {entity.active ? 'Active' : 'Inactive'}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-[#666] mt-1">
                     <div>ID: {entity.entity_id}</div>
                     <div>Components: {Object.keys(entity.components).join(', ') || 'none'}</div>
                     <div>Created: {new Date(entity.created_at).toLocaleTimeString()}</div>
@@ -368,7 +368,7 @@ const UnifiedRuntimePanel: React.FC = () => {
                 </div>
               ))}
               {entities.length === 0 && (
-                <div className="text-center text-gray-500 py-8">No entities created yet</div>
+                <div className="text-center text-[#666] py-8">No entities created yet</div>
               )}
             </div>
           </div>
@@ -388,9 +388,9 @@ const UnifiedRuntimePanel: React.FC = () => {
                 <div key={scene.scene_id} className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
                   <div className="flex items-center justify-between">
                     <span className="text-sm font-medium">{scene.name}</span>
-                    <span className="text-xs text-gray-500">{scene.state}</span>
+                    <span className="text-xs text-[#666]">{scene.state}</span>
                   </div>
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-[#666] mt-1">
                     <div>Entities: {scene.entities.length}</div>
                     <div>Settings: {Object.keys(scene.environment_settings).join(', ') || 'none'}</div>
                     <div>Created: {new Date(scene.created_at).toLocaleTimeString()}</div>
@@ -398,7 +398,7 @@ const UnifiedRuntimePanel: React.FC = () => {
                 </div>
               ))}
               {scenes.length === 0 && (
-                <div className="text-center text-gray-500 py-8">No scenes created yet</div>
+                <div className="text-center text-[#666] py-8">No scenes created yet</div>
               )}
             </div>
           </div>
@@ -411,25 +411,25 @@ const UnifiedRuntimePanel: React.FC = () => {
               <>
                 <div className="grid grid-cols-3 gap-2">
                   <div className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
-                    <div className="text-xs text-gray-500">Frame Count</div>
-                    <div className="text-lg font-bold text-gray-200">{profile.frame_timing.frame_count}</div>
+                    <div className="text-xs text-[#666]">Frame Count</div>
+                    <div className="text-lg font-bold text-\[#ddd\]">{profile.frame_timing.frame_count}</div>
                   </div>
                   <div className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
-                    <div className="text-xs text-gray-500">FPS</div>
+                    <div className="text-xs text-[#666]">FPS</div>
                     <div className="text-lg font-bold text-emerald-400">{profile.frame_timing.fps.toFixed(1)}</div>
                   </div>
                   <div className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
-                    <div className="text-xs text-gray-500">Elapsed</div>
-                    <div className="text-lg font-bold text-gray-200">{profile.frame_timing.elapsed_time.toFixed(2)}s</div>
+                    <div className="text-xs text-[#666]">Elapsed</div>
+                    <div className="text-lg font-bold text-\[#ddd\]">{profile.frame_timing.elapsed_time.toFixed(2)}s</div>
                   </div>
                 </div>
                 {profile.bottlenecks.length > 0 && (
                   <div className="bg-[#1a1a2e] rounded-lg p-4 border border-[#2a2a3e]">
-                    <div className="text-sm text-gray-400 mb-2">Bottlenecks</div>
+                    <div className="text-sm text-[#999] mb-2">Bottlenecks</div>
                     <div className="space-y-2">
                       {profile.bottlenecks.map((b, i) => (
                         <div key={i} className="flex items-center justify-between">
-                          <span className="text-sm text-gray-300">{b.type}</span>
+                          <span className="text-sm text-[#ccc]">{b.type}</span>
                           <span className={`text-xs px-2 py-0.5 rounded-full ${
                             b.severity === 'high' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'
                           }`}>
@@ -441,7 +441,7 @@ const UnifiedRuntimePanel: React.FC = () => {
                   </div>
                 )}
                 <div className="bg-[#1a1a2e] rounded-lg p-4 border border-[#2a2a3e]">
-                  <div className="text-sm text-gray-400 mb-2">Recent Frames</div>
+                  <div className="text-sm text-[#999] mb-2">Recent Frames</div>
                   <div className="h-20 flex items-end gap-0.5">
                     {profile.recent_frames.map((frame, i) => (
                       <div
@@ -454,7 +454,7 @@ const UnifiedRuntimePanel: React.FC = () => {
                 </div>
               </>
             ) : (
-              <div className="text-center text-gray-500 py-8">No profile data available</div>
+              <div className="text-center text-[#666] py-8">No profile data available</div>
             )}
           </div>
         )}

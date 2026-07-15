@@ -15,15 +15,15 @@ const VideoRenderer: React.FC = () => {
           <h1 className="text-2xl font-bold">Video Renderer</h1>
         </div>
 
-        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 mb-6">
+        <div className="bg-[#0f0f0f]/50 border border-[#1e1e1e] rounded-xl p-6 mb-6">
           <h3 className="font-bold mb-4">Render Settings</h3>
           <div className="grid grid-cols-3 gap-4 mb-6">
             <div>
-              <label className="text-sm text-slate-400 block mb-2">Resolution</label>
+              <label className="text-sm text-[#999] block mb-2">Resolution</label>
               <select
                 value={resolution}
                 onChange={(e) => setResolution(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-sm"
+                className="w-full px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-sm"
               >
                 <option value="720p">720p</option>
                 <option value="1080p">1080p</option>
@@ -32,11 +32,11 @@ const VideoRenderer: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="text-sm text-slate-400 block mb-2">Frame Rate</label>
+              <label className="text-sm text-[#999] block mb-2">Frame Rate</label>
               <select
                 value={fps}
                 onChange={(e) => setFps(parseInt(e.target.value))}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-sm"
+                className="w-full px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-sm"
               >
                 <option value={24}>24 FPS</option>
                 <option value={30}>30 FPS</option>
@@ -44,11 +44,11 @@ const VideoRenderer: React.FC = () => {
               </select>
             </div>
             <div>
-              <label className="text-sm text-slate-400 block mb-2">Format</label>
+              <label className="text-sm text-[#999] block mb-2">Format</label>
               <select
                 value={format}
                 onChange={(e) => setFormat(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-sm"
+                className="w-full px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-sm"
               >
                 <option value="mp4">MP4</option>
                 <option value="webm">WebM</option>
@@ -77,11 +77,11 @@ const VideoRenderer: React.FC = () => {
           </button>
         </div>
 
-        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6">
+        <div className="bg-[#0f0f0f]/50 border border-[#1e1e1e] rounded-xl p-6">
           <h3 className="font-bold mb-4">Preview</h3>
-          <div className="aspect-video bg-slate-700/50 rounded-lg flex items-center justify-center border border-slate-600 border-dashed">
-            <div className="text-center text-slate-400">
-              <Film className="w-12 h-12 mx-auto mb-2 text-slate-500" />
+          <div className="aspect-video bg-[#1a1a1a]/50 rounded-lg flex items-center justify-center border border-[#2a2a2a] border-dashed">
+            <div className="text-center text-[#999]">
+              <Film className="w-12 h-12 mx-auto mb-2 text-[#666]" />
               <p className="text-sm">Video preview will appear here</p>
             </div>
           </div>

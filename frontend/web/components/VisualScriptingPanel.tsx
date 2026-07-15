@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'graphs' | 'nodes' | 'variables' | 'execute';
 
@@ -103,7 +104,7 @@ const VisualScriptingPanel: React.FC = () => {
   const [execGraphId, setExecGraphId] = useState('');
   const [initialVarsJson, setInitialVarsJson] = useState('{}');
 
-  const apiBase = 'http://localhost:8000/api/agent/visual-scripting';
+  const apiBase = API_ROOT + '/agent/visual-scripting';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info' = 'info') => {
     setMessage({ text, type });

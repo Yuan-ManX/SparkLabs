@@ -24,28 +24,28 @@ const VoiceSynthesizer: React.FC = () => {
           <h1 className="text-2xl font-bold">Voice Synthesizer</h1>
         </div>
 
-        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-6 mb-6">
+        <div className="bg-[#0f0f0f]/50 border border-[#1e1e1e] rounded-xl p-6 mb-6">
           <div className="space-y-4">
             <div>
-              <label className="text-sm text-slate-400 block mb-2">Text to Synthesize</label>
+              <label className="text-sm text-[#999] block mb-2">Text to Synthesize</label>
               <textarea
                 value={text}
                 onChange={(e) => setText(e.target.value)}
                 rows={4}
-                className="w-full px-4 py-3 bg-slate-700 border border-slate-600 rounded-lg text-sm resize-none"
+                className="w-full px-4 py-3 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-sm resize-none"
                 placeholder="Enter dialogue text for voice synthesis..."
               />
             </div>
 
             <div>
-              <label className="text-sm text-slate-400 block mb-2">Voice Character</label>
+              <label className="text-sm text-[#999] block mb-2">Voice Character</label>
               <div className="grid grid-cols-3 gap-2">
                 {voices.map((v) => (
                   <button
                     key={v.id}
                     onClick={() => setVoice(v.id)}
                     className={`px-3 py-2 rounded-lg text-sm font-medium border transition-all ${
-                      voice === v.id ? `${v.color} border-current` : 'bg-slate-700 border-slate-600 text-slate-300'
+                      voice === v.id ? `${v.color} border-current` : 'bg-[#1a1a1a] border-[#2a2a2a] text-[#ccc]'
                     }`}
                   >
                     {v.name}
@@ -56,7 +56,7 @@ const VoiceSynthesizer: React.FC = () => {
 
             <div className="grid grid-cols-2 gap-4">
               <div>
-                <label className="text-sm text-slate-400 block mb-2">Speed: {speed.toFixed(1)}x</label>
+                <label className="text-sm text-[#999] block mb-2">Speed: {speed.toFixed(1)}x</label>
                 <input
                   type="range"
                   min="0.5"
@@ -68,7 +68,7 @@ const VoiceSynthesizer: React.FC = () => {
                 />
               </div>
               <div>
-                <label className="text-sm text-slate-400 block mb-2">Pitch: {pitch.toFixed(1)}</label>
+                <label className="text-sm text-[#999] block mb-2">Pitch: {pitch.toFixed(1)}</label>
                 <input
                   type="range"
                   min="0.5"

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'generate' | 'regions' | 'settlements' | 'landmarks';
 
@@ -89,7 +90,7 @@ const WorldBuilderPanel: React.FC = () => {
   const [settlementDensity, setSettlementDensity] = useState('5');
   const [landmarkCount, setLandmarkCount] = useState('3');
 
-  const apiBase = 'http://localhost:8000/api/agent/world-builder';
+  const apiBase = API_ROOT + '/agent/world-builder';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });
@@ -290,7 +291,7 @@ const WorldBuilderPanel: React.FC = () => {
   };
 
   const styles: Record<string, React.CSSProperties> = {
-    container: { background: '#1a1a2e', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
+    container: { background: '#0a0a0a', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
     header: { fontSize: 18, fontWeight: 'bold', marginBottom: 16, color: '#6acf7c' },
     tabs: { display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' },
     tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a4a', color: '#aab' },

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'graphs' | 'transpile';
 
@@ -34,7 +35,7 @@ const VisualScriptRuntimePanel: React.FC = () => {
   const [nodeX, setNodeX] = useState('100');
   const [nodeY, setNodeY] = useState('100');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultGraphs: ScriptGraph[] = [
     { id: uid(), name: 'data_pipeline', nodes: 5, target_language: 'python' },

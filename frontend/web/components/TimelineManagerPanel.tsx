@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'timelines' | 'events' | 'compare';
 
@@ -152,7 +153,7 @@ const TimelineManagerPanel: React.FC = () => {
   const [compareTimelineIdA, setCompareTimelineIdA] = useState('');
   const [compareTimelineIdB, setCompareTimelineIdB] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent/timeline-manager';
+  const apiBase = API_ROOT + '/agent/timeline-manager';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

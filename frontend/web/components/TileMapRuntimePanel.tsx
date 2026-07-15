@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'tilemaps' | 'layers' | 'tilesets' | 'paint';
 type LayerType = 'tile' | 'object' | 'image' | 'group';
@@ -99,7 +100,7 @@ const TileMapRuntimePanel: React.FC = () => {
   const [fillWidth, setFillWidth] = useState('4');
   const [fillHeight, setFillHeight] = useState('4');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultTilemaps: TilemapData[] = [
     { id: uid(), name: 'Overworld', width: 64, height: 48, tile_width: 32, tile_height: 32, layer_count: 3 },

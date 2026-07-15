@@ -46,11 +46,11 @@ const statusColors: Record<string, string> = {
   warning: 'bg-amber-500/20 text-amber-400',
   degraded: 'bg-orange-500/20 text-orange-400',
   critical: 'bg-red-500/20 text-red-400',
-  offline: 'bg-gray-500/20 text-gray-400',
+  offline: 'bg-\[#f5f5f5\]0/20 text-[#999]',
   completed: 'bg-emerald-500/20 text-emerald-400',
   dispatched: 'bg-blue-500/20 text-blue-400',
   in_progress: 'bg-cyan-500/20 text-cyan-400',
-  pending: 'bg-gray-500/20 text-gray-400',
+  pending: 'bg-\[#f5f5f5\]0/20 text-[#999]',
   failed: 'bg-red-500/20 text-red-400',
 };
 
@@ -211,12 +211,12 @@ const UnifiedOrchestrationPanel: React.FC = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a1a] text-gray-200">
+    <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\]">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a2e]">
         <h2 className="text-lg font-semibold text-cyan-400">Unified Agent Orchestration</h2>
         <div className="flex items-center gap-2">
-          <span className={`w-2 h-2 rounded-full ${isInitialized ? 'bg-emerald-400' : 'bg-gray-500'}`} />
-          <span className="text-xs text-gray-400">{isInitialized ? 'Connected' : 'Offline'}</span>
+          <span className={`w-2 h-2 rounded-full ${isInitialized ? 'bg-emerald-400' : 'bg-\[#f5f5f5\]0'}`} />
+          <span className="text-xs text-[#999]">{isInitialized ? 'Connected' : 'Offline'}</span>
         </div>
       </div>
 
@@ -232,7 +232,7 @@ const UnifiedOrchestrationPanel: React.FC = () => {
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
             className={`px-4 py-2 text-sm transition-colors ${
-              activeTab === tab.id ? 'text-cyan-400 border-b-2 border-cyan-400' : 'text-gray-500 hover:text-gray-300'
+              activeTab === tab.id ? 'text-cyan-400 border-b-2 border-cyan-400' : 'text-[#666] hover:text-[#ccc]'
             }`}
           >
             {tab.label}
@@ -249,21 +249,21 @@ const UnifiedOrchestrationPanel: React.FC = () => {
                 <div key={name} className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-sm font-medium capitalize">{name.replace(/_/g, ' ')}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[health.status] || 'bg-gray-500/20 text-gray-400'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[health.status] || 'bg-\[#f5f5f5\]0/20 text-[#999]'}`}>
                       {health.status}
                     </span>
                   </div>
                   <div className="space-y-1">
                     <div className="flex justify-between text-xs">
-                      <span className="text-gray-500">Success Rate</span>
-                      <span className="text-gray-300">{(health.success_rate * 100).toFixed(1)}%</span>
+                      <span className="text-[#666]">Success Rate</span>
+                      <span className="text-[#ccc]">{(health.success_rate * 100).toFixed(1)}%</span>
                     </div>
                     <div className="w-full bg-[#0a0a1a] rounded-full h-1.5">
                       <div className="bg-emerald-400 h-1.5 rounded-full" style={{ width: `${health.success_rate * 100}%` }} />
                     </div>
                     <div className="flex justify-between text-xs">
-                      <span className="text-gray-500">Active Tasks</span>
-                      <span className="text-gray-300">{health.active_tasks}</span>
+                      <span className="text-[#666]">Active Tasks</span>
+                      <span className="text-[#ccc]">{health.active_tasks}</span>
                     </div>
                   </div>
                 </div>
@@ -286,11 +286,11 @@ const UnifiedOrchestrationPanel: React.FC = () => {
                 <div key={task.task_id} className="bg-[#1a1a2e] rounded-lg p-3 border border-[#2a2a3e]">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-sm font-medium">{task.name}</span>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[task.status] || 'bg-gray-500/20 text-gray-400'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[task.status] || 'bg-\[#f5f5f5\]0/20 text-[#999]'}`}>
                       {task.status}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 space-y-1">
+                  <div className="text-xs text-[#666] space-y-1">
                     <div>Target: {task.target_subsystem}</div>
                     <div>Priority: {task.priority}</div>
                     <div>Created: {new Date(task.created_at).toLocaleTimeString()}</div>
@@ -298,7 +298,7 @@ const UnifiedOrchestrationPanel: React.FC = () => {
                 </div>
               ))}
               {tasks.length === 0 && (
-                <div className="text-center text-gray-500 py-8">No tasks submitted yet</div>
+                <div className="text-center text-[#666] py-8">No tasks submitted yet</div>
               )}
             </div>
           </div>
@@ -324,13 +324,13 @@ const UnifiedOrchestrationPanel: React.FC = () => {
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <span className="text-sm font-medium">{pipeline.name}</span>
-                      <span className="text-xs text-gray-500 ml-2">({pipeline.type})</span>
+                      <span className="text-xs text-[#666] ml-2">({pipeline.type})</span>
                     </div>
-                    <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[pipeline.status] || 'bg-gray-500/20 text-gray-400'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded-full ${statusColors[pipeline.status] || 'bg-\[#f5f5f5\]0/20 text-[#999]'}`}>
                       {pipeline.status}
                     </span>
                   </div>
-                  <div className="text-xs text-gray-500 mb-2">
+                  <div className="text-xs text-[#666] mb-2">
                     Progress: {pipeline.current_stage}/{pipeline.total_stages} stages
                   </div>
                   <div className="flex gap-1 mb-2">
@@ -340,7 +340,7 @@ const UnifiedOrchestrationPanel: React.FC = () => {
                         className={`flex-1 h-1.5 rounded-full ${
                           idx < pipeline.current_stage ? 'bg-emerald-400' :
                           idx === pipeline.current_stage ? 'bg-cyan-400' :
-                          'bg-gray-700'
+                          'bg-[#1a1a1a]'
                         }`}
                         title={stage.name}
                       />
@@ -353,7 +353,7 @@ const UnifiedOrchestrationPanel: React.FC = () => {
                         className={`text-xs px-1.5 py-0.5 rounded ${
                           stage.status === 'completed' ? 'bg-emerald-500/10 text-emerald-400' :
                           stage.status === 'in_progress' ? 'bg-cyan-500/10 text-cyan-400' :
-                          'bg-gray-500/10 text-gray-500'
+                          'bg-\[#f5f5f5\]0/10 text-[#666]'
                         }`}
                       >
                         {stage.name.replace(/_/g, ' ')}
@@ -371,7 +371,7 @@ const UnifiedOrchestrationPanel: React.FC = () => {
                 </div>
               ))}
               {pipelines.length === 0 && (
-                <div className="text-center text-gray-500 py-8">No pipelines created yet</div>
+                <div className="text-center text-[#666] py-8">No pipelines created yet</div>
               )}
             </div>
           </div>
@@ -384,30 +384,30 @@ const UnifiedOrchestrationPanel: React.FC = () => {
               <div className="bg-[#1a1a2e] rounded-lg p-4 border border-[#2a2a3e]">
                 <div className="grid grid-cols-2 gap-4">
                   <div className="bg-[#0a0a1a] rounded p-3">
-                    <div className="text-xs text-gray-500">Total Tasks</div>
-                    <div className="text-2xl font-bold text-gray-200">{report.total_tasks as number}</div>
+                    <div className="text-xs text-[#666]">Total Tasks</div>
+                    <div className="text-2xl font-bold text-\[#ddd\]">{report.total_tasks as number}</div>
                   </div>
                   <div className="bg-[#0a0a1a] rounded p-3">
-                    <div className="text-xs text-gray-500">Completed</div>
+                    <div className="text-xs text-[#666]">Completed</div>
                     <div className="text-2xl font-bold text-emerald-400">{report.completed_tasks as number}</div>
                   </div>
                   <div className="bg-[#0a0a1a] rounded p-3">
-                    <div className="text-xs text-gray-500">Failed</div>
+                    <div className="text-xs text-[#666]">Failed</div>
                     <div className="text-2xl font-bold text-red-400">{report.failed_tasks as number}</div>
                   </div>
                   <div className="bg-[#0a0a1a] rounded p-3">
-                    <div className="text-xs text-gray-500">Active Workflows</div>
+                    <div className="text-xs text-[#666]">Active Workflows</div>
                     <div className="text-2xl font-bold text-cyan-400">{report.active_workflows as number}</div>
                   </div>
                 </div>
                 {report.performance_metrics && (
                   <div className="mt-4">
-                    <div className="text-sm text-gray-400 mb-2">Performance Metrics</div>
+                    <div className="text-sm text-[#999] mb-2">Performance Metrics</div>
                     <div className="space-y-2">
                       {Object.entries(report.performance_metrics as Record<string, number>).map(([key, value]) => (
                         <div key={key} className="flex justify-between text-sm">
-                          <span className="text-gray-500 capitalize">{key.replace(/_/g, ' ')}</span>
-                          <span className="text-gray-300">{typeof value === 'number' ? value.toFixed(4) : String(value)}</span>
+                          <span className="text-[#666] capitalize">{key.replace(/_/g, ' ')}</span>
+                          <span className="text-[#ccc]">{typeof value === 'number' ? value.toFixed(4) : String(value)}</span>
                         </div>
                       ))}
                     </div>
@@ -415,7 +415,7 @@ const UnifiedOrchestrationPanel: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="text-center text-gray-500 py-8">No report data available</div>
+              <div className="text-center text-[#666] py-8">No report data available</div>
             )}
           </div>
         )}
