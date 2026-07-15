@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'chains' | 'nodes' | 'visualize';
 
@@ -65,7 +66,7 @@ const ChainOfThoughtPanel: React.FC = () => {
   const [compareChainA, setCompareChainA] = useState('');
   const [compareChainB, setCompareChainB] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultChains: ReasoningChain[] = [
     { id: uid(), question: 'What is the optimal caching strategy?', context: 'High-traffic web application', agent_id: 'agent-001', status: 'active', node_count: 8, created_at: Date.now() - 600000 },

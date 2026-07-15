@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'biomes' | 'climate' | 'terrain' | 'flora' | 'worlds';
 
@@ -93,7 +94,7 @@ const BiomeGenerationPanel: React.FC = () => {
 
   const [generatedTerrain, setGeneratedTerrain] = useState<TerrainLayer | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

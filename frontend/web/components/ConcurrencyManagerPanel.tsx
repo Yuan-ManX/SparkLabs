@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'queues' | 'tasks';
 
@@ -51,7 +52,7 @@ const ConcurrencyManagerPanel: React.FC = () => {
   const [statsQueueId, setStatsQueueId] = useState('');
   const [queueStats, setQueueStats] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultQueues: Queue[] = [
     { id: uid(), name: 'Code Generation', strategy: 'fifo', max_concurrent: 3, task_count: 12, created_at: Date.now() - 86400000 },

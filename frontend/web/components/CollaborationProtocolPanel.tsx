@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'requests' | 'teams' | 'sessions';
 
@@ -75,7 +76,7 @@ const CollaborationProtocolPanel: React.FC = () => {
   const [broadcastContent, setBroadcastContent] = useState('');
   const [conflictAgentsInput, setConflictAgentsInput] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultRequests: CollaborationRequest[] = [
     { id: uid(), from_agent: 'agent-001', to_agent: 'agent-002', task: 'Code review for PR #42', status: 'pending', created_at: Date.now() - 600000 },

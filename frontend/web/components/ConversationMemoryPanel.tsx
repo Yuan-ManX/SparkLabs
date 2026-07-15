@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'threads' | 'turns' | 'search';
 
@@ -56,7 +57,7 @@ const ConversationMemoryPanel: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [exportThreadId, setExportThreadId] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultThreads: ConversationThread[] = [
     { id: uid(), title: 'Project Architecture Discussion', status: 'active', turn_count: 24, created_at: Date.now() - 600000, summary: 'Discussion about microservices vs monolith architecture' },

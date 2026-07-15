@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'templates' | 'instances';
 
@@ -54,7 +55,7 @@ const BehaviorLibraryPanel: React.FC = () => {
   const [queryEntityId, setQueryEntityId] = useState('');
   const [entityBehaviors, setEntityBehaviors] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultTemplates: BehaviorTemplate[] = [
     { id: uid(), name: 'Patrol', category: 'movement', description: 'Move between waypoints', parameters: 'waypoints, speed, loop', execution_mode: 'update', created_at: Date.now() - 86400000 },

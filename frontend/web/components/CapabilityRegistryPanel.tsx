@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'capabilities' | 'profiles' | 'match';
 
@@ -56,7 +57,7 @@ const CapabilityRegistryPanel: React.FC = () => {
   const [matchTaskInput, setMatchTaskInput] = useState('');
   const [matchDomainInput, setMatchDomainInput] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultCapabilities: Capability[] = [
     { id: uid(), name: 'code_review', domain: 'software-engineering', proficiency: 0.92, registered_at: Date.now() - 600000, agent_id: 'agent-001' },

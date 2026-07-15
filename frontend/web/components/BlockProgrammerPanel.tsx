@@ -258,14 +258,14 @@ const BlockProgrammerPanel: React.FC = () => {
   }, {} as Record<string, BlockType[]>);
 
   return (
-    <div className="p-4 space-y-4 bg-gray-900 text-gray-100 min-h-full">
+    <div className="p-4 space-y-4 bg-[#0a0a0a] text-\[#eee\] min-h-full">
       <div className="flex items-center justify-between">
         <h2 className="text-xl font-bold text-cyan-400">Block Programmer</h2>
         {deploymentStatus && (
           <div className="flex gap-3 text-xs">
-            <span className="px-2 py-1 bg-gray-800 rounded">Composed: {deploymentStatus.pipeline.composed}</span>
-            <span className="px-2 py-1 bg-gray-800 rounded">Published: {deploymentStatus.pipeline.published}</span>
-            <span className="px-2 py-1 bg-gray-800 rounded">Deployed: {deploymentStatus.pipeline.deployed}</span>
+            <span className="px-2 py-1 bg-[#0f0f0f] rounded">Composed: {deploymentStatus.pipeline.composed}</span>
+            <span className="px-2 py-1 bg-[#0f0f0f] rounded">Published: {deploymentStatus.pipeline.published}</span>
+            <span className="px-2 py-1 bg-[#0f0f0f] rounded">Deployed: {deploymentStatus.pipeline.deployed}</span>
             <span className="px-2 py-1 bg-green-900 rounded">Running: {deploymentStatus.pipeline.running}</span>
           </div>
         )}
@@ -280,15 +280,15 @@ const BlockProgrammerPanel: React.FC = () => {
       <div className="grid grid-cols-12 gap-4">
         {/* Left: Programs list */}
         <div className="col-span-3 space-y-3">
-          <div className="bg-gray-800 rounded-lg p-3">
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Programs</h3>
+          <div className="bg-[#0f0f0f] rounded-lg p-3">
+            <h3 className="text-sm font-semibold text-[#ccc] mb-2">Programs</h3>
             <div className="flex gap-2 mb-2">
               <input
                 type="text"
                 value={newProgramName}
                 onChange={(e) => setNewProgramName(e.target.value)}
                 placeholder="New program name"
-                className="flex-1 px-2 py-1 text-xs bg-gray-900 border border-gray-700 rounded text-gray-100"
+                className="flex-1 px-2 py-1 text-xs bg-[#0a0a0a] border border-[#1e1e1e] rounded text-\[#eee\]"
               />
               <button
                 onClick={createProgram}
@@ -306,23 +306,23 @@ const BlockProgrammerPanel: React.FC = () => {
                   className={`w-full text-left px-2 py-1.5 text-xs rounded ${
                     selectedProgram?.program_id === p.program_id
                       ? 'bg-cyan-900 text-cyan-200'
-                      : 'bg-gray-900 hover:bg-gray-700'
+                      : 'bg-[#0a0a0a] hover:bg-[#1a1a1a]'
                   }`}
                 >
                   <div className="font-medium truncate">{p.name}</div>
-                  <div className="flex gap-2 text-gray-500">
+                  <div className="flex gap-2 text-[#666]">
                     <span>{p.blocks.length} blocks</span>
                     <span className={
                       p.status === 'published' ? 'text-green-400' :
                       p.status === 'validated' ? 'text-blue-400' :
                       p.status === 'invalid' ? 'text-red-400' :
-                      'text-gray-500'
+                      'text-[#666]'
                     }>{p.status}</span>
                   </div>
                 </button>
               ))}
               {programs.length === 0 && (
-                <div className="text-xs text-gray-500 py-4 text-center">No programs yet</div>
+                <div className="text-xs text-[#666] py-4 text-center">No programs yet</div>
               )}
             </div>
           </div>
@@ -332,9 +332,9 @@ const BlockProgrammerPanel: React.FC = () => {
         <div className="col-span-6 space-y-3">
           {selectedProgram ? (
             <>
-              <div className="bg-gray-800 rounded-lg p-3">
+              <div className="bg-[#0f0f0f] rounded-lg p-3">
                 <div className="flex items-center justify-between mb-3">
-                  <h3 className="text-sm font-semibold text-gray-300">{selectedProgram.name}</h3>
+                  <h3 className="text-sm font-semibold text-[#ccc]">{selectedProgram.name}</h3>
                   <div className="flex gap-1">
                     <button
                       onClick={validateProgram}
@@ -379,17 +379,17 @@ const BlockProgrammerPanel: React.FC = () => {
                     <div
                       key={block.instance_id}
                       className={`flex items-center gap-2 p-2 rounded ${
-                        block.enabled ? 'bg-gray-900' : 'bg-gray-900 opacity-50'
+                        block.enabled ? 'bg-[#0a0a0a]' : 'bg-[#0a0a0a] opacity-50'
                       }`}
                     >
-                      <span className="text-xs text-gray-500 w-6">{idx}</span>
+                      <span className="text-xs text-[#666] w-6">{idx}</span>
                       <span
                         className="w-2 h-8 rounded"
                         style={{ backgroundColor: CATEGORY_COLORS[block.category] || '#64748b' }}
                       />
                       <div className="flex-1">
-                        <div className="text-xs font-medium text-gray-200">{block.name}</div>
-                        <div className="text-xs text-gray-500">
+                        <div className="text-xs font-medium text-\[#ddd\]">{block.name}</div>
+                        <div className="text-xs text-[#666]">
                           {block.category} · {block.type_id}
                           {Object.keys(block.params).length > 0 && (
                             <span> · {Object.entries(block.params).map(([k, v]) => `${k}=${v}`).join(', ')}</span>
@@ -398,7 +398,7 @@ const BlockProgrammerPanel: React.FC = () => {
                       </div>
                       <button
                         onClick={() => toggleBlock(block.instance_id, block.enabled)}
-                        className="text-xs text-gray-400 hover:text-gray-200"
+                        className="text-xs text-[#999] hover:text-\[#ddd\]"
                       >
                         {block.enabled ? 'ON' : 'OFF'}
                       </button>
@@ -411,7 +411,7 @@ const BlockProgrammerPanel: React.FC = () => {
                     </div>
                   ))}
                   {selectedProgram.blocks.length === 0 && (
-                    <div className="text-xs text-gray-500 py-4 text-center">
+                    <div className="text-xs text-[#666] py-4 text-center">
                       No blocks. Add one from the palette.
                     </div>
                   )}
@@ -420,8 +420,8 @@ const BlockProgrammerPanel: React.FC = () => {
 
               {/* Validation results */}
               {validation && (
-                <div className="bg-gray-800 rounded-lg p-3">
-                  <h4 className="text-xs font-semibold text-gray-300 mb-2">
+                <div className="bg-[#0f0f0f] rounded-lg p-3">
+                  <h4 className="text-xs font-semibold text-[#ccc] mb-2">
                     Validation: {validation.valid ? 'VALID' : 'INVALID'}
                   </h4>
                   <div className="space-y-1 max-h-40 overflow-y-auto">
@@ -429,7 +429,7 @@ const BlockProgrammerPanel: React.FC = () => {
                       <div key={i} className={`text-xs p-1 rounded ${
                         f.severity === 'error' ? 'bg-red-900 text-red-200' :
                         f.severity === 'warning' ? 'bg-yellow-900 text-yellow-200' :
-                        'bg-gray-700 text-gray-300'
+                        'bg-[#1a1a1a] text-[#ccc]'
                       }`}>
                         [{f.severity}] {f.code}: {f.message}
                       </div>
@@ -443,18 +443,18 @@ const BlockProgrammerPanel: React.FC = () => {
 
               {/* Dry run trace */}
               {trace && (
-                <div className="bg-gray-800 rounded-lg p-3">
-                  <h4 className="text-xs font-semibold text-gray-300 mb-2">
+                <div className="bg-[#0f0f0f] rounded-lg p-3">
+                  <h4 className="text-xs font-semibold text-[#ccc] mb-2">
                     Dry Run: {trace.completed ? 'COMPLETED' : 'INCOMPLETE'}
                     {trace.error && <span className="text-red-400"> · {trace.error}</span>}
                   </h4>
                   <div className="space-y-1 max-h-48 overflow-y-auto">
                     {trace.steps.map((step, i) => (
-                      <div key={i} className="text-xs p-1 bg-gray-900 rounded">
-                        <span className="text-gray-500">[{step.step_index}]</span>{' '}
+                      <div key={i} className="text-xs p-1 bg-[#0a0a0a] rounded">
+                        <span className="text-[#666]">[{step.step_index}]</span>{' '}
                         <span className="text-cyan-400">{step.kind}</span>{' '}
-                        <span className="text-gray-300">{step.block_name}</span>{' '}
-                        <span className="text-gray-500">{step.detail}</span>
+                        <span className="text-[#ccc]">{step.block_name}</span>{' '}
+                        <span className="text-[#666]">{step.detail}</span>
                       </div>
                     ))}
                   </div>
@@ -462,7 +462,7 @@ const BlockProgrammerPanel: React.FC = () => {
               )}
             </>
           ) : (
-            <div className="bg-gray-800 rounded-lg p-8 text-center text-gray-500">
+            <div className="bg-[#0f0f0f] rounded-lg p-8 text-center text-[#666]">
               Select a program or create a new one
             </div>
           )}
@@ -470,8 +470,8 @@ const BlockProgrammerPanel: React.FC = () => {
 
         {/* Right: Block type palette */}
         <div className="col-span-3">
-          <div className="bg-gray-800 rounded-lg p-3 sticky top-4">
-            <h3 className="text-sm font-semibold text-gray-300 mb-2">Block Palette</h3>
+          <div className="bg-[#0f0f0f] rounded-lg p-3 sticky top-4">
+            <h3 className="text-sm font-semibold text-[#ccc] mb-2">Block Palette</h3>
             <div className="space-y-3 max-h-[600px] overflow-y-auto">
               {Object.entries(groupedTypes).map(([category, types]) => (
                 <div key={category}>
@@ -484,11 +484,11 @@ const BlockProgrammerPanel: React.FC = () => {
                         key={bt.type_id}
                         onClick={() => addBlock(bt.type_id)}
                         disabled={loading || !selectedProgram}
-                        className="w-full text-left px-2 py-1 text-xs bg-gray-900 hover:bg-gray-700 rounded disabled:opacity-30 disabled:cursor-not-allowed"
+                        className="w-full text-left px-2 py-1 text-xs bg-[#0a0a0a] hover:bg-[#1a1a1a] rounded disabled:opacity-30 disabled:cursor-not-allowed"
                         title={bt.description}
                       >
-                        <div className="font-medium text-gray-200">{bt.name}</div>
-                        <div className="text-gray-500 truncate">{bt.type_id}</div>
+                        <div className="font-medium text-\[#ddd\]">{bt.name}</div>
+                        <div className="text-[#666] truncate">{bt.type_id}</div>
                       </button>
                     ))}
                   </div>

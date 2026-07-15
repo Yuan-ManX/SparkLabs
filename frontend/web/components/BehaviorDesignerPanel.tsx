@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'behavior-trees' | 'state-machines' | 'action-patterns' | 'simulation';
 
@@ -134,7 +135,7 @@ const BehaviorDesignerPanel: React.FC = () => {
   const [simTreeId, setSimTreeId] = useState('');
   const [simScenario, setSimScenario] = useState('patrol');
 
-  const apiBase = 'http://localhost:8000/api/agent/behavior-designer';
+  const apiBase = API_ROOT + '/agent/behavior-designer';
 
   const defaultTrees: BehaviorTree[] = [
     {

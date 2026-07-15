@@ -6,6 +6,7 @@ import {
   Play, Loader2, RefreshCw, ChevronDown, Zap, Target,
   AlertTriangle, CheckCircle2, TrendingUp, Layers
 } from 'lucide-react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'synthesize' | 'history' | 'metrics';
 
@@ -56,7 +57,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
 
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent/cognitive';
+  const apiBase = API_ROOT + '/agent/cognitive';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });
