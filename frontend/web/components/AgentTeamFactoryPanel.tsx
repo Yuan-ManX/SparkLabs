@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 interface TeamType {
   type: string;
@@ -245,18 +246,18 @@ export default function AgentTeamFactoryPanel() {
     }
   };
 
-  const inputCls = 'bg-[#0a0a2e] border border-[#1a1a4e] rounded px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-[#00d4ff] w-full';
-  const selectCls = 'bg-[#0a0a2e] border border-[#1a1a4e] rounded px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-[#00d4ff]';
+  const inputCls = 'bg-[#0a0a2e] border border-[#1a1a4e] rounded px-3 py-2 text-sm text-\[#ddd\] placeholder-gray-600 focus:outline-none focus:border-[#00d4ff] w-full';
+  const selectCls = 'bg-[#0a0a2e] border border-[#1a1a4e] rounded px-3 py-2 text-sm text-\[#ddd\] focus:outline-none focus:border-[#00d4ff]';
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a1a] text-gray-200 overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a] shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-sm font-bold">TF</div>
           <div>
             <h2 className="text-sm font-semibold">Team Factory</h2>
-            <p className="text-[10px] text-gray-500">Multi-agent team orchestration</p>
+            <p className="text-[10px] text-[#666]">Multi-agent team orchestration</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -264,7 +265,7 @@ export default function AgentTeamFactoryPanel() {
             className="px-2 py-1 text-[10px] bg-purple-700/50 text-purple-300 rounded hover:bg-purple-700/70">
             Init
           </button>
-          <span className="text-[10px] text-gray-500">{blueprints.length} teams</span>
+          <span className="text-[10px] text-[#666]">{blueprints.length} teams</span>
         </div>
       </div>
 
@@ -272,7 +273,7 @@ export default function AgentTeamFactoryPanel() {
       <div className="flex border-b border-[#1a1a3e] shrink-0">
         {(['create', 'manage', 'tasks', 'stats'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-[11px] font-medium transition-colors ${activeTab === tab ? 'text-purple-400 border-b border-purple-400 bg-[#1a0a2e]' : 'text-gray-500 hover:text-gray-300'}`}>
+            className={`px-4 py-2 text-[11px] font-medium transition-colors ${activeTab === tab ? 'text-purple-400 border-b border-purple-400 bg-[#1a0a2e]' : 'text-[#666] hover:text-[#ccc]'}`}>
             {tab === 'create' ? 'Create' : tab === 'manage' ? 'Manage' : tab === 'tasks' ? 'Tasks' : 'Stats'}
           </button>
         ))}
@@ -293,7 +294,7 @@ export default function AgentTeamFactoryPanel() {
               <h3 className="text-sm font-semibold text-purple-300 mb-3">Create New Team</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Domain</label>
+                  <label className="block text-xs text-[#999] mb-1">Domain</label>
                   <div className="flex gap-2">
                     <select value={domain} onChange={e => setDomain(e.target.value)} className={selectCls + ' flex-1'}>
                       {DOMAIN_PRESETS.map(d => (
@@ -308,7 +309,7 @@ export default function AgentTeamFactoryPanel() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Team Type</label>
+                  <label className="block text-xs text-[#999] mb-1">Team Type</label>
                   <select value={teamType} onChange={e => setTeamType(e.target.value)} className={selectCls + ' w-full'}>
                     {GAME_TEAM_TYPES.map(t => (
                       <option key={t} value={t} className="bg-[#0a0a2e]">{t.replace(/_/g, ' ')}</option>
@@ -324,13 +325,13 @@ export default function AgentTeamFactoryPanel() {
 
             {/* Team Type Preview */}
             <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-4">
-              <h3 className="text-sm font-semibold text-gray-300 mb-3">Available Team Patterns</h3>
+              <h3 className="text-sm font-semibold text-[#ccc] mb-3">Available Team Patterns</h3>
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(PATTERN_ICONS).map(([pattern, icon]) => (
                   <div key={pattern} className="bg-[#0a0a2e] border border-[#1a1a4e] rounded p-2">
                     <div className="flex items-center gap-2">
                       <i className={`fa-solid ${icon} text-xs text-purple-400`} />
-                      <span className="text-[10px] text-gray-300 capitalize">{pattern.replace(/_/g, ' ')}</span>
+                      <span className="text-[10px] text-[#ccc] capitalize">{pattern.replace(/_/g, ' ')}</span>
                     </div>
                   </div>
                 ))}
@@ -343,21 +344,21 @@ export default function AgentTeamFactoryPanel() {
         {activeTab === 'manage' && (
           <div className="space-y-3">
             {blueprints.length === 0 ? (
-              <div className="text-center text-gray-600 py-8 text-xs">No teams created yet. Go to Create tab.</div>
+              <div className="text-center text-[#555] py-8 text-xs">No teams created yet. Go to Create tab.</div>
             ) : (
               blueprints.map(bp => (
                 <div key={bp.blueprint_id}
                   onClick={() => setSelectedBlueprint(bp)}
                   className={`bg-[#0f0f2a] border rounded-lg p-3 cursor-pointer transition-all ${selectedBlueprint?.blueprint_id === bp.blueprint_id ? 'border-purple-500 bg-[#1a0a2e]' : 'border-[#1a1a4e] hover:border-purple-700'}`}>
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs font-medium text-gray-200">{bp.name}</span>
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded bg-gradient-to-r ${PATTERN_COLORS[bp.pattern] || 'from-gray-500 to-gray-600'} text-white`}>
+                    <span className="text-xs font-medium text-\[#ddd\]">{bp.name}</span>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded bg-gradient-to-r ${PATTERN_COLORS[bp.pattern] || 'from-\[#f5f5f5\]0 to-\[#555\]'} text-white`}>
                       {bp.pattern.replace(/_/g, ' ')}
                     </span>
                   </div>
                   <div className="flex gap-2 flex-wrap">
                     {bp.agents.map(a => (
-                      <span key={a.agent_id} className={`text-[9px] px-1.5 py-0.5 rounded border ${ROLE_COLORS[a.role] || 'bg-gray-900/50 text-gray-400 border-gray-800'}`}>
+                      <span key={a.agent_id} className={`text-[9px] px-1.5 py-0.5 rounded border ${ROLE_COLORS[a.role] || 'bg-[#0a0a0a]/50 text-[#999] border-[#1a1a1a]'}`}>
                         {a.name}
                       </span>
                     ))}
@@ -374,28 +375,28 @@ export default function AgentTeamFactoryPanel() {
                 </h3>
                 <div className="space-y-2 mb-4">
                   <div className="flex items-center gap-2 text-[10px]">
-                    <span className="text-gray-500">Pattern:</span>
+                    <span className="text-[#666]">Pattern:</span>
                     <span className="text-purple-400 capitalize">{selectedBlueprint.pattern.replace(/_/g, ' ')}</span>
                   </div>
                   <div className="flex items-center gap-2 text-[10px]">
-                    <span className="text-gray-500">Domain:</span>
-                    <span className="text-gray-300">{selectedBlueprint.domain}</span>
+                    <span className="text-[#666]">Domain:</span>
+                    <span className="text-[#ccc]">{selectedBlueprint.domain}</span>
                   </div>
                   <div className="flex items-center gap-2 text-[10px]">
-                    <span className="text-gray-500">Max Concurrent:</span>
-                    <span className="text-gray-300">{selectedBlueprint.max_concurrent}</span>
+                    <span className="text-[#666]">Max Concurrent:</span>
+                    <span className="text-[#ccc]">{selectedBlueprint.max_concurrent}</span>
                   </div>
                 </div>
 
-                <h4 className="text-[10px] text-gray-500 mb-2">Agents</h4>
+                <h4 className="text-[10px] text-[#666] mb-2">Agents</h4>
                 <div className="space-y-2 mb-4">
                   {selectedBlueprint.agents.map(a => (
                     <div key={a.agent_id} className="bg-[#0a0a2e] border border-[#1a1a4e] rounded p-2">
                       <div className="flex items-center justify-between mb-1">
-                        <span className="text-[11px] text-gray-200">{a.name}</span>
+                        <span className="text-[11px] text-\[#ddd\]">{a.name}</span>
                         <span className={`text-[9px] px-1.5 py-0.5 rounded border ${ROLE_COLORS[a.role] || ''}`}>{a.role}</span>
                       </div>
-                      <p className="text-[9px] text-gray-500">{a.description}</p>
+                      <p className="text-[9px] text-[#666]">{a.description}</p>
                       {a.capabilities.length > 0 && (
                         <div className="flex gap-1 flex-wrap mt-1">
                           {a.capabilities.slice(0, 4).map(c => (
@@ -408,7 +409,7 @@ export default function AgentTeamFactoryPanel() {
                 </div>
 
                 {/* Task Dispatch */}
-                <h4 className="text-[10px] text-gray-500 mb-2">Dispatch Task</h4>
+                <h4 className="text-[10px] text-[#666] mb-2">Dispatch Task</h4>
                 <div className="space-y-2">
                   <textarea value={taskDescription} onChange={e => setTaskDescription(e.target.value)}
                     placeholder="Describe the task for this team..."
@@ -430,19 +431,19 @@ export default function AgentTeamFactoryPanel() {
         {activeTab === 'tasks' && (
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <h3 className="text-xs text-gray-400">Active Tasks ({tasks.length})</h3>
+              <h3 className="text-xs text-[#999]">Active Tasks ({tasks.length})</h3>
               <button onClick={fetchTasks} className="text-[10px] text-purple-400 hover:text-purple-300">Refresh</button>
             </div>
             {tasks.length === 0 ? (
-              <div className="text-center text-gray-600 py-8 text-xs">No active tasks</div>
+              <div className="text-center text-[#555] py-8 text-xs">No active tasks</div>
             ) : (
               tasks.map(t => (
                 <div key={t.task_id} className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
                   <div className="flex items-center justify-between mb-1">
-                    <span className="text-[11px] text-gray-200 truncate max-w-[200px]">{t.description}</span>
+                    <span className="text-[11px] text-\[#ddd\] truncate max-w-[200px]">{t.description}</span>
                     <span className="text-[9px] px-1.5 py-0.5 rounded bg-yellow-900/50 text-yellow-400">{t.status}</span>
                   </div>
-                  <div className="text-[9px] text-gray-500 mb-2">Agent: {t.assigned_agent || 'unassigned'}</div>
+                  <div className="text-[9px] text-[#666] mb-2">Agent: {t.assigned_agent || 'unassigned'}</div>
                   <div className="flex gap-2">
                     <button onClick={() => completeTask(t.task_id, true)}
                       className="flex-1 py-1 rounded bg-green-700/50 text-green-300 text-[10px] hover:bg-green-700/70">Complete</button>
@@ -455,11 +456,11 @@ export default function AgentTeamFactoryPanel() {
 
             {completedTasks.length > 0 && (
               <>
-                <h3 className="text-xs text-gray-400 mt-4">Completed ({completedTasks.length})</h3>
+                <h3 className="text-xs text-[#999] mt-4">Completed ({completedTasks.length})</h3>
                 {completedTasks.slice(-10).map(t => (
                   <div key={t.task_id} className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] text-gray-300 truncate max-w-[200px]">{t.description}</span>
+                      <span className="text-[10px] text-[#ccc] truncate max-w-[200px]">{t.description}</span>
                       <span className={`text-[9px] px-1.5 py-0.5 rounded ${t.status === 'completed' ? 'bg-green-900/50 text-green-400' : 'bg-red-900/50 text-red-400'}`}>{t.status}</span>
                     </div>
                   </div>
@@ -477,24 +478,24 @@ export default function AgentTeamFactoryPanel() {
                 <div className="grid grid-cols-2 gap-2">
                   <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                     <div className="text-xl font-bold text-purple-400">{stats.blueprints}</div>
-                    <div className="text-[10px] text-gray-500">Blueprints</div>
+                    <div className="text-[10px] text-[#666]">Blueprints</div>
                   </div>
                   <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                     <div className="text-xl font-bold text-blue-400">{stats.team_types}</div>
-                    <div className="text-[10px] text-gray-500">Team Types</div>
+                    <div className="text-[10px] text-[#666]">Team Types</div>
                   </div>
                   <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                     <div className="text-xl font-bold text-yellow-400">{stats.active_tasks}</div>
-                    <div className="text-[10px] text-gray-500">Active Tasks</div>
+                    <div className="text-[10px] text-[#666]">Active Tasks</div>
                   </div>
                   <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                     <div className="text-xl font-bold text-green-400">{stats.completed_tasks}</div>
-                    <div className="text-[10px] text-gray-500">Completed</div>
+                    <div className="text-[10px] text-[#666]">Completed</div>
                   </div>
                 </div>
 
                 <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-4">
-                  <h3 className="text-xs text-gray-400 mb-3">Success Rate</h3>
+                  <h3 className="text-xs text-[#999] mb-3">Success Rate</h3>
                   <div className="flex items-center gap-3">
                     <div className="flex-1 bg-[#0a0a2e] rounded-full h-2">
                       <div className="bg-gradient-to-r from-green-500 to-emerald-500 h-2 rounded-full"
@@ -509,7 +510,7 @@ export default function AgentTeamFactoryPanel() {
                 </div>
               </>
             ) : (
-              <div className="text-center text-gray-600 py-8 text-xs">No statistics available yet</div>
+              <div className="text-center text-[#555] py-8 text-xs">No statistics available yet</div>
             )}
           </div>
         )}

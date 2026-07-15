@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 type TabId = 'overview' | 'register-belief' | 'register-intention' | 'register-desire' | 'build-perspective' | 'infer-belief' | 'predict-action' | 'mental-state' | 'detect-deception';
 

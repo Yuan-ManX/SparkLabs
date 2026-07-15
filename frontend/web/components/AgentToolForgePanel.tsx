@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ToolStatus = 'active' | 'development' | 'deprecated' | 'testing';
 type SchemaFormat = 'openapi' | 'json_schema' | 'custom';
@@ -87,7 +88,7 @@ const AgentToolForgePanel: React.FC = () => {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [selectedTool, setSelectedTool] = useState<string | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultTools: AgentTool[] = [
     { id: uid(), name: 'DamageCalculator', description: 'Calculates combat damage with modifiers and resistances', status: 'active', schema_format: 'json_schema', version: '2.1.0', execution_count: 4523, last_executed: '15s ago', avg_latency_ms: 12 },

@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const CHARACTER_CLASSES = ['warrior', 'mage', 'rogue', 'ranger', 'cleric', 'paladin', 'necromancer', 'bard', 'monk', 'druid'];
 const NODE_CATEGORIES = ['combat', 'defense', 'magic', 'utility', 'movement', 'crafting', 'social', 'stealth', 'survival', 'leadership'];
@@ -85,13 +86,13 @@ export default function AgentSkillTreePanel() {
 
   const tierColor = (t: string) => {
     switch (t) {
-      case 'tier_1': return 'text-gray-400';
+      case 'tier_1': return 'text-[#999]';
       case 'tier_2': return 'text-green-300';
       case 'tier_3': return 'text-blue-300';
       case 'tier_4': return 'text-purple-300';
       case 'tier_5': return 'text-orange-300';
       case 'ultimate': return 'text-yellow-300';
-      default: return 'text-gray-400';
+      default: return 'text-[#999]';
     }
   };
 
@@ -100,7 +101,7 @@ export default function AgentSkillTreePanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -124,17 +125,17 @@ export default function AgentSkillTreePanel() {
                 { label: 'Classes', value: stats.trees_by_class ? Object.keys(stats.trees_by_class).length : 0, color: 'text-pink-300', suffix: ' classes' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}{s.suffix || ''}</p>
                 </div>
               ))}
             </div>
             {stats.trees_by_class && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Trees by Class</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Trees by Class</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(stats.trees_by_class).map(([k, v]) => (
-                    <div key={k} className="flex justify-between text-xs"><span className="text-gray-400 capitalize">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
+                    <div key={k} className="flex justify-between text-xs"><span className="text-[#999] capitalize">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
                   ))}
                 </div>
               </div>
@@ -205,7 +206,7 @@ export default function AgentSkillTreePanel() {
             </div>
 
             <div className={cardCls}>
-              <h3 className="text-sm font-bold text-gray-300 mb-3">List Trees</h3>
+              <h3 className="text-sm font-bold text-[#ccc] mb-3">List Trees</h3>
               <button
                 className="px-4 py-2 bg-amber-500 text-black rounded text-sm font-medium hover:bg-amber-600 transition-colors disabled:opacity-50"
                 disabled={loading}
@@ -218,9 +219,9 @@ export default function AgentSkillTreePanel() {
                     <div key={i} className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
                       <div className="flex justify-between items-center">
                         <span className="text-sm font-medium text-white">{tree.name}</span>
-                        <span className="text-xs text-gray-400 capitalize">{tree.character_class}</span>
+                        <span className="text-xs text-[#999] capitalize">{tree.character_class}</span>
                       </div>
-                      {tree.id && <span className="text-[10px] text-gray-500">ID: {tree.id}</span>}
+                      {tree.id && <span className="text-[10px] text-[#666]">ID: {tree.id}</span>}
                     </div>
                   ))}
                 </div>
@@ -255,12 +256,12 @@ export default function AgentSkillTreePanel() {
                 {result.tree_name && (
                   <div className={cardCls}>
                     <h3 className="text-md font-bold text-[#00ff88]">{result.tree_name}</h3>
-                    <p className="text-xs text-gray-400 capitalize">{result.character_class}</p>
+                    <p className="text-xs text-[#999] capitalize">{result.character_class}</p>
                   </div>
                 )}
                 {result.nodes && (
                   <div className="space-y-3">
-                    <h3 className="text-sm font-bold text-gray-300">Nodes by Tier</h3>
+                    <h3 className="text-sm font-bold text-[#ccc]">Nodes by Tier</h3>
                     {TIERS.map(tier => {
                       const tierNodes = (Array.isArray(result.nodes) ? result.nodes : []).filter((n: any) => n.tier === tier);
                       if (tierNodes.length === 0) return null;
@@ -272,11 +273,11 @@ export default function AgentSkillTreePanel() {
                               <div key={i} className="bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">
                                 <div className="flex justify-between items-center">
                                   <span className="text-sm text-white">{node.name}</span>
-                                  <span className="text-[10px] px-2 py-0.5 bg-[#0f0f23] rounded border border-[#2a2a4a] text-gray-400 capitalize">{node.category}</span>
+                                  <span className="text-[10px] px-2 py-0.5 bg-[#0f0f23] rounded border border-[#2a2a4a] text-[#999] capitalize">{node.category}</span>
                                 </div>
                                 <div className="flex gap-2 mt-1">
-                                  <span className="text-[10px] text-gray-500 capitalize">{node.skill_type}</span>
-                                  <span className="text-[10px] text-gray-500">Lv.{node.max_level}</span>
+                                  <span className="text-[10px] text-[#666] capitalize">{node.skill_type}</span>
+                                  <span className="text-[10px] text-[#666]">Lv.{node.max_level}</span>
                                 </div>
                               </div>
                             ))}
@@ -319,7 +320,7 @@ export default function AgentSkillTreePanel() {
                   <div className={cardCls}>
                     <h3 className="text-md font-bold text-amber-300">{result.build_name}</h3>
                     <div className="flex gap-2 mt-1">
-                      <span className="text-xs text-gray-400 capitalize">Role: {result.target_role}</span>
+                      <span className="text-xs text-[#999] capitalize">Role: {result.target_role}</span>
                       <span className="text-xs text-[#00ff88]">Points: {result.total_points}/{result.max_points}</span>
                       <span className="text-xs text-[#00d4ff]">Score: {result.overall_score}</span>
                     </div>
@@ -327,7 +328,7 @@ export default function AgentSkillTreePanel() {
                 )}
                 {result.selected_nodes && (
                   <div className={cardCls}>
-                    <h3 className="text-sm font-bold text-gray-300 mb-3">Selected Nodes</h3>
+                    <h3 className="text-sm font-bold text-[#ccc] mb-3">Selected Nodes</h3>
                     <div className="space-y-2">
                       {(Array.isArray(result.selected_nodes) ? result.selected_nodes : []).map((node: any, i: number) => (
                         <div key={i} className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
@@ -336,11 +337,11 @@ export default function AgentSkillTreePanel() {
                             <span className="text-xs text-[#00ff88]">Score: {node.score}</span>
                           </div>
                           <div className="flex gap-2 mt-1">
-                            <span className="text-[10px] text-gray-500 capitalize">{node.category}</span>
-                            <span className="text-[10px] text-gray-500">{node.points} pts</span>
+                            <span className="text-[10px] text-[#666] capitalize">{node.category}</span>
+                            <span className="text-[10px] text-[#666]">{node.points} pts</span>
                           </div>
                           {node.stat_bonuses && (
-                            <div className="mt-1 text-[10px] text-gray-400">
+                            <div className="mt-1 text-[10px] text-[#999]">
                               {typeof node.stat_bonuses === 'string' ? node.stat_bonuses : Object.entries(node.stat_bonuses).map(([k, v]) => `${k}: +${v}`).join(', ')}
                             </div>
                           )}
@@ -400,7 +401,7 @@ export default function AgentSkillTreePanel() {
                     </ul>
                   </div>
                 )}
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
