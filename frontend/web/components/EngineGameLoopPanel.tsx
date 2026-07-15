@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 export default function EngineGameLoopPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -29,7 +30,7 @@ export default function EngineGameLoopPanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
       {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">

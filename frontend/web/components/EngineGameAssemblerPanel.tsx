@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 export default function EngineGameAssemblerPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -76,7 +77,7 @@ export default function EngineGameAssemblerPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -98,7 +99,7 @@ export default function EngineGameAssemblerPanel() {
                 </div>
               ))}
               {Object.keys(stats).length === 0 && (
-                <div className="col-span-full text-gray-400 text-sm">No assembler stats available</div>
+                <div className="col-span-full text-[#999] text-sm">No assembler stats available</div>
               )}
             </div>
           </div>
@@ -111,19 +112,19 @@ export default function EngineGameAssemblerPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Register Component</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Component Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Component Name</label>
                   <input type="text" value={compName} onChange={e => setCompName(e.target.value)}
                     placeholder="health_component" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Category</label>
+                  <label className="text-xs text-[#999] mb-1 block">Category</label>
                   <select value={compCategory} onChange={e => setCompCategory(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {categories.map(c => <option key={c} value={c}>{c}</option>)}
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Properties (JSON)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Properties (JSON)</label>
                   <textarea value={compProperties} onChange={e => setCompProperties(e.target.value)}
                     rows={4} placeholder='{"max_health": 100, "regen_rate": 1.0}'
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
@@ -155,13 +156,13 @@ export default function EngineGameAssemblerPanel() {
                         <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded">{c.category || 'unknown'}</span>
                       </div>
                       {c.properties && (
-                        <div className="mt-1 text-xs text-gray-400 font-mono">{JSON.stringify(c.properties)}</div>
+                        <div className="mt-1 text-xs text-[#999] font-mono">{JSON.stringify(c.properties)}</div>
                       )}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No components registered</div>
+                <div className="text-[#999] text-xs">No components registered</div>
               )}
             </div>
           </div>
@@ -174,12 +175,12 @@ export default function EngineGameAssemblerPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Add Scene</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Scene Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Scene Name</label>
                   <input type="text" value={sceneName} onChange={e => setSceneName(e.target.value)}
                     placeholder="main_menu" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Description</label>
+                  <label className="text-xs text-[#999] mb-1 block">Description</label>
                   <input type="text" value={sceneDescription} onChange={e => setSceneDescription(e.target.value)}
                     placeholder="Main menu scene" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -205,14 +206,14 @@ export default function EngineGameAssemblerPanel() {
                     <div key={s.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{s.name}</span>
-                        <span className="text-xs bg-[#0f0f23] text-gray-300 px-2 py-0.5 rounded">{s.id || `#${i + 1}`}</span>
+                        <span className="text-xs bg-[#0f0f23] text-[#ccc] px-2 py-0.5 rounded">{s.id || `#${i + 1}`}</span>
                       </div>
-                      {s.description && <div className="mt-1 text-xs text-gray-400">{s.description}</div>}
+                      {s.description && <div className="mt-1 text-xs text-[#999]">{s.description}</div>}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No scenes added</div>
+                <div className="text-[#999] text-xs">No scenes added</div>
               )}
             </div>
           </div>
@@ -225,19 +226,19 @@ export default function EngineGameAssemblerPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Plan</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Plan Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Plan Name</label>
                   <input type="text" value={planName} onChange={e => setPlanName(e.target.value)}
                     placeholder="build_plan_v1" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Target</label>
+                  <label className="text-xs text-[#999] mb-1 block">Target</label>
                   <select value={planTarget} onChange={e => setPlanTarget(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {targets.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Steps (JSON array)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Steps (JSON array)</label>
                   <textarea value={planSteps} onChange={e => setPlanSteps(e.target.value)}
                     rows={4} placeholder='["step1", "step2", "step3"]'
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
@@ -262,7 +263,7 @@ export default function EngineGameAssemblerPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Execute Plan</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Plan ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Plan ID</label>
                   <input type="text" value={executePlanId} onChange={e => setExecutePlanId(e.target.value)}
                     placeholder="plan_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -279,7 +280,7 @@ export default function EngineGameAssemblerPanel() {
               </button>
               {executeResult && (
                 <div className="mt-3 bg-[#1a1a2e] rounded p-3">
-                  <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap overflow-auto max-h-48">
+                  <pre className="text-xs text-[#ccc] font-mono whitespace-pre-wrap overflow-auto max-h-48">
                     {JSON.stringify(executeResult, null, 2)}
                   </pre>
                 </div>
@@ -299,12 +300,12 @@ export default function EngineGameAssemblerPanel() {
                           <span className={`text-xs px-2 py-0.5 rounded ${
                             p.status === 'completed' ? 'bg-green-900 text-green-300' :
                             p.status === 'running' ? 'bg-blue-900 text-blue-300' :
-                            'bg-gray-700 text-gray-300'
+                            'bg-[#1a1a1a] text-[#ccc]'
                           }`}>{p.status || 'pending'}</span>
                         </div>
                       </div>
                       {p.steps && (
-                        <div className="mt-1 text-xs text-gray-400">
+                        <div className="mt-1 text-xs text-[#999]">
                           Steps: {Array.isArray(p.steps) ? p.steps.length : 'N/A'}
                         </div>
                       )}
@@ -316,7 +317,7 @@ export default function EngineGameAssemblerPanel() {
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No plans created</div>
+                <div className="text-[#999] text-xs">No plans created</div>
               )}
             </div>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ActiveTab = 'simulations' | 'particles' | 'boundaries' | 'status';
 
@@ -70,7 +71,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
   const [stepForm, setStepForm] = useState({ simulationId: '', deltaTime: 0.016 });
   const [stepResult, setStepResult] = useState<{ frame: number; particle_count: number } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/engine';
+  const apiBase = API_ROOT + '/engine';
 
   const defaultStatus: FluidStatus = {
     total_simulation_steps: 12800,

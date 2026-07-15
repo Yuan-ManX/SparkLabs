@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 const DEVICES = ['keyboard','mouse','gamepad','touchscreen','gyroscope','accelerometer','joystick','vr_controller','arcade_stick','racing_wheel'];
 const ACTIONS = ['move_up','move_down','move_left','move_right','jump','crouch','sprint','attack','defend','interact','use_item','pause','menu','confirm','cancel'];
@@ -67,7 +68,7 @@ export default function EngineInputMappingPanel() {
       joystick: 'text-orange-300', vr_controller: 'text-teal-300', arcade_stick: 'text-red-300',
       racing_wheel: 'text-yellow-300',
     };
-    return colors[d] || 'text-gray-400';
+    return colors[d] || 'text-[#999]';
   };
 
   return (
@@ -75,7 +76,7 @@ export default function EngineInputMappingPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
@@ -99,12 +100,12 @@ export default function EngineInputMappingPanel() {
                 { label: 'Default Schemes', value: stats.default_schemes, color: 'text-pink-300' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}</p>
                 </div>
               ))}
             </div>
-            <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+            <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
           </div>
         )}
 
@@ -145,7 +146,7 @@ export default function EngineInputMappingPanel() {
               </div>
             </div>
 
-            <h3 className="text-md font-bold text-gray-300">Input Schemes</h3>
+            <h3 className="text-md font-bold text-[#ccc]">Input Schemes</h3>
             <div className="grid gap-3">
               {schemeList.map((scheme: any) => (
                 <div key={scheme.scheme_id || scheme.id} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
@@ -153,11 +154,11 @@ export default function EngineInputMappingPanel() {
                     <h4 className="text-sm font-semibold text-white">{scheme.name}</h4>
                     <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${deviceColor(scheme.device)}`}>{scheme.device}</span>
                   </div>
-                  <p className="text-xs text-gray-500 mt-1">ID: {scheme.scheme_id || scheme.id}</p>
-                  {scheme.preset_name && <p className="text-xs text-gray-600">Preset: {scheme.preset_name}</p>}
+                  <p className="text-xs text-[#666] mt-1">ID: {scheme.scheme_id || scheme.id}</p>
+                  {scheme.preset_name && <p className="text-xs text-[#555]">Preset: {scheme.preset_name}</p>}
                 </div>
               ))}
-              {schemeList.length === 0 && <p className="text-sm text-gray-500 text-center py-8">No schemes created yet</p>}
+              {schemeList.length === 0 && <p className="text-sm text-[#666] text-center py-8">No schemes created yet</p>}
             </div>
           </div>
         )}
@@ -177,15 +178,15 @@ export default function EngineInputMappingPanel() {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] text-gray-500 block mb-1">Sensitivity</label>
+                  <label className="text-[10px] text-[#666] block mb-1">Sensitivity</label>
                   <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-400" type="number" step="0.1" min="0.1" max="10" value={bSensitivity} onChange={e => setBSensitivity(e.target.value)} />
                 </div>
                 <div>
-                  <label className="text-[10px] text-gray-500 block mb-1">Deadzone</label>
+                  <label className="text-[10px] text-[#666] block mb-1">Deadzone</label>
                   <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-400" type="number" step="0.01" min="0" max="1" value={bDeadzone} onChange={e => setBDeadzone(e.target.value)} />
                 </div>
               </div>
-              <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-[#999] cursor-pointer">
                 <input type="checkbox" checked={bInvert} onChange={e => setBInvert(e.target.checked)} className="accent-amber-400" />
                 Invert Axis
               </label>
@@ -204,10 +205,10 @@ export default function EngineInputMappingPanel() {
               <div className="bg-[#0f0f23] p-4 rounded border border-amber-500 space-y-2">
                 <h3 className="text-sm font-bold text-amber-300">Binding Created</h3>
                 <div className="grid grid-cols-2 gap-2 text-xs">
-                  <div><span className="text-gray-500">Action:</span> <span className="text-gray-300">{result.action}</span></div>
-                  <div><span className="text-gray-500">Primary:</span> <span className="text-gray-300">{result.primary_input}</span></div>
-                  <div><span className="text-gray-500">Sensitivity:</span> <span className="text-gray-300">{result.sensitivity}</span></div>
-                  <div><span className="text-gray-500">Deadzone:</span> <span className="text-gray-300">{result.deadzone}</span></div>
+                  <div><span className="text-[#666]">Action:</span> <span className="text-[#ccc]">{result.action}</span></div>
+                  <div><span className="text-[#666]">Primary:</span> <span className="text-[#ccc]">{result.primary_input}</span></div>
+                  <div><span className="text-[#666]">Sensitivity:</span> <span className="text-[#ccc]">{result.sensitivity}</span></div>
+                  <div><span className="text-[#666]">Deadzone:</span> <span className="text-[#ccc]">{result.deadzone}</span></div>
                 </div>
               </div>
             )}
@@ -220,15 +221,15 @@ export default function EngineInputMappingPanel() {
             <h2 className="text-lg font-bold text-pink-300">Recommend Bindings</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-[10px] text-gray-500 block mb-1">Action Frequency (JSON)</label>
+                <label className="text-[10px] text-[#666] block mb-1">Action Frequency (JSON)</label>
                 <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-500 outline-none focus:border-pink-400 resize-none" rows={3} placeholder='{"move_up": 150, "jump": 80}' value={rbActionFrequency} onChange={e => setRbActionFrequency(e.target.value)} />
               </div>
               <div>
-                <label className="text-[10px] text-gray-500 block mb-1">Co-occurring Pairs (JSON Array)</label>
+                <label className="text-[10px] text-[#666] block mb-1">Co-occurring Pairs (JSON Array)</label>
                 <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-500 outline-none focus:border-pink-400 resize-none" rows={2} placeholder='[["move_up","jump"], ["attack","defend"]]' value={rbCoOccurring} onChange={e => setRbCoOccurring(e.target.value)} />
               </div>
               <div>
-                <label className="text-[10px] text-gray-500 block mb-1">Struggled Actions (JSON Array)</label>
+                <label className="text-[10px] text-[#666] block mb-1">Struggled Actions (JSON Array)</label>
                 <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-500 outline-none focus:border-pink-400 resize-none" rows={2} placeholder='["crouch","use_item"]' value={rbStruggledActions} onChange={e => setRbStruggledActions(e.target.value)} />
               </div>
               <button
@@ -254,20 +255,20 @@ export default function EngineInputMappingPanel() {
                   <div key={i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a] hover:border-pink-500/30 transition-colors">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-semibold text-white">{rec.action}</h4>
-                      <span className="text-[10px] text-gray-500">Priority: {rec.priority || '-'}</span>
+                      <span className="text-[10px] text-[#666]">Priority: {rec.priority || '-'}</span>
                     </div>
                     <div className="flex gap-3 mt-1 text-xs">
-                      <span className="text-gray-400">Primary: <span className="text-[#00d4ff]">{rec.primary_input||'-'}</span></span>
-                      {rec.secondary_input && <span className="text-gray-400">Alt: <span className="text-gray-300">{rec.secondary_input}</span></span>}
+                      <span className="text-[#999]">Primary: <span className="text-[#00d4ff]">{rec.primary_input||'-'}</span></span>
+                      {rec.secondary_input && <span className="text-[#999]">Alt: <span className="text-[#ccc]">{rec.secondary_input}</span></span>}
                     </div>
-                    {rec.reason && <p className="text-xs text-gray-600 mt-1">{rec.reason}</p>}
+                    {rec.reason && <p className="text-xs text-[#555] mt-1">{rec.reason}</p>}
                   </div>
                 )) : result.binding_id ? (
                   <div className="bg-[#0f0f23] p-4 rounded border border-pink-500">
-                    <pre className="text-xs text-gray-300">{JSON.stringify(result, null, 2)}</pre>
+                    <pre className="text-xs text-[#ccc]">{JSON.stringify(result, null, 2)}</pre>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-500 text-center py-4">No recommendations</p>
+                  <p className="text-sm text-[#666] text-center py-4">No recommendations</p>
                 )}
               </div>
             )}

@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 export default function EngineProceduralGameplayPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -62,7 +63,7 @@ export default function EngineProceduralGameplayPanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
       {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
@@ -78,7 +79,7 @@ export default function EngineProceduralGameplayPanel() {
             {Object.keys(stats).length > 0 && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">All Stats</h3>
-                <pre className="text-xs text-gray-300 overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -89,11 +90,11 @@ export default function EngineProceduralGameplayPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Create Session</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Session Name</label>
+                <label className="text-xs text-[#999] mb-1 block">Session Name</label>
                 <input type="text" value={sessName} onChange={e => setSessName(e.target.value)} placeholder="Forest Run #1" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Config (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Config (JSON)</label>
                 <textarea value={sessConfig} onChange={e => setSessConfig(e.target.value)} placeholder='{"seed": 12345, "biome": "forest", "player_level": 5}' rows={3} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button
@@ -119,17 +120,17 @@ export default function EngineProceduralGameplayPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Generate Mechanic</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Session ID</label>
+                <label className="text-xs text-[#999] mb-1 block">Session ID</label>
                 <input type="text" value={mechSessionId} onChange={e => setMechSessionId(e.target.value)} placeholder="sess_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Mechanic Type</label>
+                <label className="text-xs text-[#999] mb-1 block">Mechanic Type</label>
                 <select value={mechType} onChange={e => setMechType(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                   {MECHANIC_TYPES.map(m => <option key={m} value={m}>{m}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Constraints (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Constraints (JSON)</label>
                 <textarea value={mechConstraints} onChange={e => setMechConstraints(e.target.value)} placeholder='{"max_complexity": 3, "player_count": 1}' rows={2} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button
@@ -151,7 +152,7 @@ export default function EngineProceduralGameplayPanel() {
             {mechResult && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Generated Mechanic</h3>
-                <pre className="text-xs text-gray-300 overflow-auto max-h-64">{JSON.stringify(mechResult, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto max-h-64">{JSON.stringify(mechResult, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -162,17 +163,17 @@ export default function EngineProceduralGameplayPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Generate Event</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Session ID</label>
+                <label className="text-xs text-[#999] mb-1 block">Session ID</label>
                 <input type="text" value={eventSessionId} onChange={e => setEventSessionId(e.target.value)} placeholder="sess_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Event Type</label>
+                <label className="text-xs text-[#999] mb-1 block">Event Type</label>
                 <select value={eventType} onChange={e => setEventType(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                   {EVENT_TYPES.map(e => <option key={e} value={e}>{e}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Context (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Context (JSON)</label>
                 <textarea value={eventContext} onChange={e => setEventContext(e.target.value)} placeholder='{"location": "dark_forest", "time": "night"}' rows={2} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button
@@ -194,7 +195,7 @@ export default function EngineProceduralGameplayPanel() {
             {eventResult && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Generated Event</h3>
-                <pre className="text-xs text-gray-300 overflow-auto max-h-64">{JSON.stringify(eventResult, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto max-h-64">{JSON.stringify(eventResult, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -205,17 +206,17 @@ export default function EngineProceduralGameplayPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Generate Encounter</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Session ID</label>
+                <label className="text-xs text-[#999] mb-1 block">Session ID</label>
                 <input type="text" value={encSessionId} onChange={e => setEncSessionId(e.target.value)} placeholder="sess_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Encounter Type</label>
+                <label className="text-xs text-[#999] mb-1 block">Encounter Type</label>
                 <select value={encType} onChange={e => setEncType(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                   {ENCOUNTER_TYPES.map(e => <option key={e} value={e}>{e}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Difficulty</label>
+                <label className="text-xs text-[#999] mb-1 block">Difficulty</label>
                 <select value={encDifficulty} onChange={e => setEncDifficulty(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                   {DIFFICULTY_OPTIONS.map(d => <option key={d} value={d}>{d}</option>)}
                 </select>
@@ -237,7 +238,7 @@ export default function EngineProceduralGameplayPanel() {
             {encResult && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Generated Encounter</h3>
-                <pre className="text-xs text-gray-300 overflow-auto max-h-64">{JSON.stringify(encResult, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto max-h-64">{JSON.stringify(encResult, null, 2)}</pre>
               </div>
             )}
 
@@ -245,16 +246,16 @@ export default function EngineProceduralGameplayPanel() {
               <h3 className="text-sm font-medium text-[#00d4ff]">Adapt Difficulty</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Session ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Session ID</label>
                   <input type="text" value={adaptSessionId} onChange={e => setAdaptSessionId(e.target.value)} placeholder="sess_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Encounter ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Encounter ID</label>
                   <input type="text" value={adaptEncounterId} onChange={e => setAdaptEncounterId(e.target.value)} placeholder="enc_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Target Win Rate</label>
+                <label className="text-xs text-[#999] mb-1 block">Target Win Rate</label>
                 <input type="number" value={adaptTarget} onChange={e => setAdaptTarget(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <button
@@ -274,7 +275,7 @@ export default function EngineProceduralGameplayPanel() {
             {adaptResult && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Adaptation Result</h3>
-                <pre className="text-xs text-gray-300 overflow-auto max-h-64">{JSON.stringify(adaptResult, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto max-h-64">{JSON.stringify(adaptResult, null, 2)}</pre>
               </div>
             )}
           </div>

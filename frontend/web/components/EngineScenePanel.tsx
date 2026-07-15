@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = API_ROOT;
 
 interface SceneStats {
   registered_scenes: number;
@@ -107,7 +108,7 @@ const EngineScenePanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           {Object.entries(data).map(([key, value]) => (
             <div key={key} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-              <span className="text-gray-400 text-xs">{key.replace(/_/g, ' ')}</span>
+              <span className="text-[#999] text-xs">{key.replace(/_/g, ' ')}</span>
               <div className="text-white text-sm font-mono mt-1">
                 {typeof value === 'number' ? value.toLocaleString() : String(value)}
               </div>
@@ -115,7 +116,7 @@ const EngineScenePanel: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="text-gray-400 text-sm">No scene data available</div>
+        <div className="text-[#999] text-sm">No scene data available</div>
       )}
     </div>
   );
@@ -126,11 +127,11 @@ const EngineScenePanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Register Scene</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Scene Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Scene Name</label>
             <input type="text" value={sceneName} onChange={(e) => setSceneName(e.target.value)} placeholder="MainMenu" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Scene Path</label>
+            <label className="text-xs text-[#999] mb-1 block">Scene Path</label>
             <input type="text" value={scenePath} onChange={(e) => setScenePath(e.target.value)} placeholder="scenes/main_menu.scene" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -147,11 +148,11 @@ const EngineScenePanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Load Scene</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Scene ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
             <input type="text" value={loadSceneId} onChange={(e) => setLoadSceneId(e.target.value)} placeholder="MainMenu" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Transition Type</label>
+            <label className="text-xs text-[#999] mb-1 block">Transition Type</label>
             <select value={transitionType} onChange={(e) => setTransitionType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="fade">Fade</option>
               <option value="slide">Slide</option>
@@ -161,7 +162,7 @@ const EngineScenePanel: React.FC = () => {
             </select>
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Duration (s)</label>
+            <label className="text-xs text-[#999] mb-1 block">Duration (s)</label>
             <input type="number" value={transitionDuration} onChange={(e) => setTransitionDuration(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -179,11 +180,11 @@ const EngineScenePanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Transition To Scene</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Scene ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
             <input type="text" value={transitionToSceneId} onChange={(e) => setTransitionToSceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Type</label>
+            <label className="text-xs text-[#999] mb-1 block">Type</label>
             <select value={transitionToType} onChange={(e) => setTransitionToType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="fade">Fade</option>
               <option value="slide">Slide</option>
@@ -192,7 +193,7 @@ const EngineScenePanel: React.FC = () => {
             </select>
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Duration (s)</label>
+            <label className="text-xs text-[#999] mb-1 block">Duration (s)</label>
             <input type="number" value={transitionToDuration} onChange={(e) => setTransitionToDuration(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -206,11 +207,11 @@ const EngineScenePanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Update Transition Progress</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Transition ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Transition ID</label>
             <input type="text" value={updateTransitionId} onChange={(e) => setUpdateTransitionId(e.target.value)} placeholder="trans_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Progress (0-1)</label>
+            <label className="text-xs text-[#999] mb-1 block">Progress (0-1)</label>
             <input type="number" value={updateProgress} onChange={(e) => setUpdateProgress(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -223,7 +224,7 @@ const EngineScenePanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Cancel Transition</div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Transition ID</label>
+          <label className="text-xs text-[#999] mb-1 block">Transition ID</label>
           <input type="text" value={cancelTransitionId} onChange={(e) => setCancelTransitionId(e.target.value)} placeholder="trans_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/cancel-transition', { transition_id: cancelTransitionId })} className="mt-3 px-4 py-2 bg-red-700 text-white rounded text-sm font-medium hover:bg-red-600">
@@ -261,7 +262,7 @@ const EngineScenePanel: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="text-gray-400 text-sm">No active scenes</div>
+          <div className="text-[#999] text-sm">No active scenes</div>
         )}
       </div>
 
@@ -269,7 +270,7 @@ const EngineScenePanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Pause Scene</div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Scene ID</label>
+          <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
           <input type="text" value={pauseSceneId} onChange={(e) => setPauseSceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/pause-scene', { scene_id: pauseSceneId })} className="mt-3 px-4 py-2 bg-yellow-600 text-white rounded text-sm font-medium hover:bg-yellow-500">
@@ -280,7 +281,7 @@ const EngineScenePanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Resume Scene</div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Scene ID</label>
+          <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
           <input type="text" value={resumeSceneId} onChange={(e) => setResumeSceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/resume-scene', { scene_id: resumeSceneId })} className="mt-3 px-4 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-500">
@@ -311,13 +312,13 @@ const EngineScenePanel: React.FC = () => {
               <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3 text-sm text-white">
                 <div className="flex justify-between">
                   <span className="text-[#00d4ff]">{d.name || d.id}</span>
-                  <span className="text-gray-400 text-xs">{d.path}</span>
+                  <span className="text-[#999] text-xs">{d.path}</span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <div className="text-gray-400 text-sm">No scene descriptors</div>
+          <div className="text-[#999] text-sm">No scene descriptors</div>
         )}
       </div>
     </div>
@@ -328,7 +329,7 @@ const EngineScenePanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Query Scene State</div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Scene ID</label>
+          <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
           <input type="text" value={querySceneId} onChange={(e) => setQuerySceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button
@@ -372,13 +373,13 @@ const EngineScenePanel: React.FC = () => {
       <div className="flex gap-1 border-b border-[#2a2a4a] px-4 pt-2">
         {tabs.map((t) => (
           <button key={t.id} onClick={() => setActiveTab(t.id)}
-            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-gray-400 hover:text-white'}`}>
+            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-[#999] hover:text-white'}`}>
             {t.label}
           </button>
         ))}
       </div>
       <div className="flex-1 overflow-auto p-4">
-        {loading && <div className="text-gray-400 text-sm mb-2">Loading...</div>}
+        {loading && <div className="text-[#999] text-sm mb-2">Loading...</div>}
         {renderTab()}
       </div>
     </div>

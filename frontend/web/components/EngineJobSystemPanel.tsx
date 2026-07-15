@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 type TabId = 'jobs' | 'workers' | 'queue' | 'graph' | 'stats';
 

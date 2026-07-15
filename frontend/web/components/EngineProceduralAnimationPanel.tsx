@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ActiveTab = 'skeleton' | 'iksolver' | 'proceduralmotion' | 'blendtree' | 'status';
 
@@ -108,7 +109,7 @@ const EngineProceduralAnimationPanel: React.FC = () => {
   const [blendUpdateForm, setBlendUpdateForm] = useState({ blendId: '', deltaTime: 0.016 });
   const [blendWeights, setBlendWeights] = useState<Record<string, number>>({});
 
-  const apiBase = 'http://localhost:8000/api/engine';
+  const apiBase = API_ROOT + '/engine';
 
   const defaultStatus: ProceduralAnimationStatus = {
     skeletons_count: 2,

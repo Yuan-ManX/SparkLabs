@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 const BODY_TYPES = ['static', 'dynamic', 'kinematic', 'trigger', 'ragdoll'];
 const SHAPES = ['box', 'sphere', 'capsule', 'cylinder', 'cone', 'mesh', 'plane', 'terrain'];
@@ -135,12 +136,12 @@ export default function EnginePhysicsWorldPanel() {
         ].map(s => (
           <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+            <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
         ))}
       </div>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Supported Body Types &amp; Shapes</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Supported Body Types &amp; Shapes</h3>
         <div className="flex flex-wrap gap-2 mb-3">
           {BODY_TYPES.map(t => (
             <span key={t} className="px-2 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#00d4ff] capitalize">{t}</span>
@@ -160,7 +161,7 @@ export default function EnginePhysicsWorldPanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Physics Bodies</h2>
 
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Create Body</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Create Body</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Body Name" value={bodyName} onChange={e => setBodyName(e.target.value)} className={inputCls} />
           <select value={bodyType} onChange={e => setBodyType(e.target.value)} className={selectCls}>
@@ -176,7 +177,7 @@ export default function EnginePhysicsWorldPanel() {
           <input type="number" placeholder="Collision Mask" value={bodyCollisionMask} onChange={e => setBodyCollisionMask(e.target.value)} className={inputCls} />
         </div>
         <div className="mb-3">
-          <span className="text-xs text-gray-500 block mb-1">Position (x, y, z)</span>
+          <span className="text-xs text-[#666] block mb-1">Position (x, y, z)</span>
           <div className="grid grid-cols-3 gap-2">
             <input type="number" placeholder="X" value={bodyPosX} onChange={e => setBodyPosX(e.target.value)} className={inputCls} />
             <input type="number" placeholder="Y" value={bodyPosY} onChange={e => setBodyPosY(e.target.value)} className={inputCls} />
@@ -189,7 +190,7 @@ export default function EnginePhysicsWorldPanel() {
       </div>
 
       <div className="mt-6">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Bodies ({bodies.length})</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Bodies ({bodies.length})</h3>
         {bodies.length > 0 ? (
           <div className="space-y-2">
             {bodies.map((b: any, i: number) => (
@@ -199,20 +200,20 @@ export default function EnginePhysicsWorldPanel() {
                     <span className="text-sm text-white font-medium">{b.name || `Body ${i + 1}`}</span>
                     <span className={`px-2 py-0.5 rounded text-xs ${
                       b.body_type === 'dynamic' ? 'bg-green-900/30 text-[#00ff88] border border-green-800/50' :
-                      b.body_type === 'static' ? 'bg-gray-700/30 text-gray-300 border border-gray-600/50' :
+                      b.body_type === 'static' ? 'bg-[#1a1a1a]/30 text-[#ccc] border border-[#2a2a2a]/50' :
                       'bg-blue-900/30 text-[#00d4ff] border border-blue-800/50'
                     } capitalize`}>{b.body_type}</span>
                   </div>
-                  <span className="text-xs text-gray-500 capitalize">{b.shape}</span>
+                  <span className="text-xs text-[#666] capitalize">{b.shape}</span>
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
-                  <div className="text-gray-500">Mass: <span className="text-[#fdcb6e]">{b.mass}</span></div>
-                  <div className="text-gray-500">Restitution: <span className="text-[#00d4ff]">{b.restitution}</span></div>
-                  <div className="text-gray-500">Friction: <span className="text-[#00ff88]">{b.friction}</span></div>
-                  <div className="text-gray-500">Layer: <span className="text-[#a29bfe]">{b.collision_layer}</span></div>
+                  <div className="text-[#666]">Mass: <span className="text-[#fdcb6e]">{b.mass}</span></div>
+                  <div className="text-[#666]">Restitution: <span className="text-[#00d4ff]">{b.restitution}</span></div>
+                  <div className="text-[#666]">Friction: <span className="text-[#00ff88]">{b.friction}</span></div>
+                  <div className="text-[#666]">Layer: <span className="text-[#a29bfe]">{b.collision_layer}</span></div>
                 </div>
                 {b.position && (
-                  <div className="text-xs text-gray-500 mt-1">
+                  <div className="text-xs text-[#666] mt-1">
                     Position: ({b.position.x}, {b.position.y}, {b.position.z})
                   </div>
                 )}
@@ -220,7 +221,7 @@ export default function EnginePhysicsWorldPanel() {
             ))}
           </div>
         ) : (
-          <p className="text-xs text-gray-500 py-4 text-center">No bodies created yet.</p>
+          <p className="text-xs text-[#666] py-4 text-center">No bodies created yet.</p>
         )}
       </div>
     </div>
@@ -230,7 +231,7 @@ export default function EnginePhysicsWorldPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Apply Force</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Force Application</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Force Application</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <select value={forceBodyId} onChange={e => setForceBodyId(e.target.value)} className={selectCls}>
             <option value="" className="bg-[#1a1a2e]">-- Select body --</option>
@@ -245,7 +246,7 @@ export default function EnginePhysicsWorldPanel() {
           <input type="number" placeholder="Duration (0=instant)" value={forceDuration} onChange={e => setForceDuration(e.target.value)} min="0" step="0.1" className={inputCls} />
         </div>
         <div className="mb-3">
-          <span className="text-xs text-gray-500 block mb-1">Direction (x, y, z)</span>
+          <span className="text-xs text-[#666] block mb-1">Direction (x, y, z)</span>
           <div className="grid grid-cols-3 gap-2">
             <input type="number" placeholder="X" value={forceDirX} onChange={e => setForceDirX(e.target.value)} className={inputCls} />
             <input type="number" placeholder="Y" value={forceDirY} onChange={e => setForceDirY(e.target.value)} className={inputCls} />
@@ -257,7 +258,7 @@ export default function EnginePhysicsWorldPanel() {
         </button>
       </div>
       <div className={`${cardCls} mt-4`}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Available Bodies</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Available Bodies</h3>
         {bodies.length > 0 ? (
           <div className="space-y-1">
             {bodies.map((b: any) => (
@@ -266,14 +267,14 @@ export default function EnginePhysicsWorldPanel() {
                   forceBodyId === b.id ? 'border-[#fdcb6e] bg-[#fdcb6e]/10' : 'border-[#2a2a4a] bg-[#1a1a2e] hover:bg-[#222]'
                 }`}>
                 <div className="flex items-center justify-between">
-                  <span className="text-xs text-gray-300">{b.name || b.id}</span>
-                  <span className="text-xs text-gray-500 capitalize">{b.body_type}</span>
+                  <span className="text-xs text-[#ccc]">{b.name || b.id}</span>
+                  <span className="text-xs text-[#666] capitalize">{b.body_type}</span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-xs text-gray-500 py-2 text-center">No bodies available. Create one in the Bodies tab.</p>
+          <p className="text-xs text-[#666] py-2 text-center">No bodies available. Create one in the Bodies tab.</p>
         )}
       </div>
     </div>
@@ -285,10 +286,10 @@ export default function EnginePhysicsWorldPanel() {
 
       {/* Step Simulation */}
       <div className={`${cardCls} mb-4`}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Step Simulation</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Step Simulation</h3>
         <div className="flex gap-3 items-end">
           <div>
-            <span className="text-xs text-gray-500 block mb-1">Delta Time (s)</span>
+            <span className="text-xs text-[#666] block mb-1">Delta Time (s)</span>
             <input type="number" value={deltaTime} onChange={e => setDeltaTime(e.target.value)} min="0.001" step="0.001" className={inputCls} />
           </div>
           <button onClick={stepSimulation} disabled={loading} className={btnPrimary}>
@@ -299,14 +300,14 @@ export default function EnginePhysicsWorldPanel() {
 
       {/* Simulate Frames */}
       <div className={`${cardCls} mb-4`}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Simulate Frames</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Simulate Frames</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <div>
-            <span className="text-xs text-gray-500 block mb-1">Frame Count</span>
+            <span className="text-xs text-[#666] block mb-1">Frame Count</span>
             <input type="number" value={frameCount} onChange={e => setFrameCount(e.target.value)} min="1" className={inputCls} />
           </div>
           <div>
-            <span className="text-xs text-gray-500 block mb-1">Delta Time (s)</span>
+            <span className="text-xs text-[#666] block mb-1">Delta Time (s)</span>
             <input type="number" value={simDeltaTime} onChange={e => setSimDeltaTime(e.target.value)} min="0.001" step="0.001" className={inputCls} />
           </div>
         </div>
@@ -318,16 +319,16 @@ export default function EnginePhysicsWorldPanel() {
       {/* Simulation Results */}
       {result && (
         <div className={cardCls}>
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Simulation Results</h3>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Simulation Results</h3>
 
           {result.collision_events && Array.isArray(result.collision_events) && result.collision_events.length > 0 && (
             <div className="mb-4">
-              <span className="text-xs text-gray-500 block mb-2">Collision Events ({result.collision_events.length})</span>
+              <span className="text-xs text-[#666] block mb-2">Collision Events ({result.collision_events.length})</span>
               <div className="space-y-2">
                 {result.collision_events.map((col: any, i: number) => (
                   <div key={i} className="bg-[#1a1a2e] border border-red-800/30 rounded p-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-300">
+                      <span className="text-xs text-[#ccc]">
                         <span className="text-[#00d4ff]">{col.body_a || 'Body A'}</span>
                         {' ↔ '}
                         <span className="text-[#fdcb6e]">{col.body_b || 'Body B'}</span>
@@ -337,12 +338,12 @@ export default function EnginePhysicsWorldPanel() {
                       )}
                     </div>
                     {col.point && (
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-[#666] mt-1">
                         Point: ({col.point.x}, {col.point.y}, {col.point.z})
                       </div>
                     )}
                     {col.normal && (
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-[#666]">
                         Normal: ({col.normal.x}, {col.normal.y}, {col.normal.z})
                       </div>
                     )}
@@ -354,30 +355,30 @@ export default function EnginePhysicsWorldPanel() {
 
           {result.simulation && (
             <div className="mb-4">
-              <span className="text-xs text-gray-500 block mb-2">Simulation Data</span>
+              <span className="text-xs text-[#666] block mb-2">Simulation Data</span>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {result.simulation.frame_count !== undefined && (
                   <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2 text-center">
                     <div className="text-xs text-[#00d4ff] font-bold">{result.simulation.frame_count}</div>
-                    <div className="text-[10px] text-gray-500">Frames</div>
+                    <div className="text-[10px] text-[#666]">Frames</div>
                   </div>
                 )}
                 {result.simulation.total_time !== undefined && (
                   <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2 text-center">
                     <div className="text-xs text-[#00ff88] font-bold">{result.simulation.total_time}s</div>
-                    <div className="text-[10px] text-gray-500">Total Time</div>
+                    <div className="text-[10px] text-[#666]">Total Time</div>
                   </div>
                 )}
                 {result.simulation.collisions !== undefined && (
                   <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2 text-center">
                     <div className="text-xs text-red-400 font-bold">{result.simulation.collisions}</div>
-                    <div className="text-[10px] text-gray-500">Collisions</div>
+                    <div className="text-[10px] text-[#666]">Collisions</div>
                   </div>
                 )}
                 {result.simulation.active_bodies !== undefined && (
                   <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2 text-center">
                     <div className="text-xs text-[#fdcb6e] font-bold">{result.simulation.active_bodies}</div>
-                    <div className="text-[10px] text-gray-500">Active Bodies</div>
+                    <div className="text-[10px] text-[#666]">Active Bodies</div>
                   </div>
                 )}
               </div>
@@ -386,21 +387,21 @@ export default function EnginePhysicsWorldPanel() {
 
           {result.body_states && Array.isArray(result.body_states) && result.body_states.length > 0 && (
             <div>
-              <span className="text-xs text-gray-500 block mb-2">Body States ({result.body_states.length})</span>
+              <span className="text-xs text-[#666] block mb-2">Body States ({result.body_states.length})</span>
               <div className="space-y-1 max-h-48 overflow-auto">
                 {result.body_states.map((bs: any, i: number) => (
                   <div key={i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2">
                     <div className="flex items-center justify-between">
-                      <span className="text-xs text-gray-300">{bs.name || bs.id || `Body ${i + 1}`}</span>
-                      <span className="text-xs text-gray-500 capitalize">{bs.body_type || ''}</span>
+                      <span className="text-xs text-[#ccc]">{bs.name || bs.id || `Body ${i + 1}`}</span>
+                      <span className="text-xs text-[#666] capitalize">{bs.body_type || ''}</span>
                     </div>
                     {bs.position && (
-                      <div className="text-xs text-gray-500 mt-1">
+                      <div className="text-xs text-[#666] mt-1">
                         Pos: ({bs.position.x?.toFixed(2)}, {bs.position.y?.toFixed(2)}, {bs.position.z?.toFixed(2)})
                       </div>
                     )}
                     {bs.velocity && (
-                      <div className="text-xs text-gray-500">
+                      <div className="text-xs text-[#666]">
                         Vel: ({bs.velocity.x?.toFixed(2)}, {bs.velocity.y?.toFixed(2)}, {bs.velocity.z?.toFixed(2)})
                       </div>
                     )}
@@ -411,7 +412,7 @@ export default function EnginePhysicsWorldPanel() {
           )}
 
           {!result.collision_events && !result.simulation && !result.body_states && (
-            <pre className="text-xs text-gray-400 p-3 bg-[#1a1a2e] border border-[#2a2a4a] rounded overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+            <pre className="text-xs text-[#999] p-3 bg-[#1a1a2e] border border-[#2a2a4a] rounded overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
           )}
         </div>
       )}
@@ -423,7 +424,7 @@ export default function EnginePhysicsWorldPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
