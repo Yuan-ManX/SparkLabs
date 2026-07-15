@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'entries' | 'search' | 'summaries';
 
@@ -54,7 +55,7 @@ const JournalSystemPanel: React.FC = () => {
   const [summaryAgentId, setSummaryAgentId] = useState('');
   const [summaryDays, setSummaryDays] = useState('7');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultEntries: JournalEntry[] = [
     { id: uid(), agent_id: 'agent-001', title: 'First Successful Code Generation', content: 'Today I successfully generated a complete React dashboard component. The user was pleased with the result and the code compiled on the first try.', entry_type: 'reflection', mood: 'positive', tags: ['coding', 'react', 'milestone'], created_at: Date.now() - 3600000 },

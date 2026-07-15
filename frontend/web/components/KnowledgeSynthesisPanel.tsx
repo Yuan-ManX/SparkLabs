@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'fragments' | 'synthesize' | 'query';
 
@@ -56,7 +57,7 @@ const KnowledgeSynthesisPanel: React.FC = () => {
   const [buildDomainInput, setBuildDomainInput] = useState('');
   const [crossRefFragmentId, setCrossRefFragmentId] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultFragments: KnowledgeFragment[] = [
     { id: uid(), source: 'documentation', content: 'Redis caching best practices for high-availability systems', domain: 'infrastructure', ingested_at: Date.now() - 600000, merge_count: 0 },

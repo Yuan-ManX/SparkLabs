@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'extensions' | 'capabilities';
 
@@ -32,7 +33,7 @@ const ExtensionSdkPanel: React.FC = () => {
   const [extVersion, setExtVersion] = useState('1.0.0');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultExtensions: Extension[] = [
     { id: uid(), name: 'markdown_previewer', type: 'plugin', version: '2.1.0', status: 'active' },

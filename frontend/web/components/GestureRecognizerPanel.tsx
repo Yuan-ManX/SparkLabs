@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'patterns' | 'input' | 'events';
 
@@ -41,7 +42,7 @@ const GestureRecognizerPanel: React.FC = () => {
   const [touchY, setTouchY] = useState('200');
   const [sensitivity, setSensitivity] = useState('0.8');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultPatterns: GesturePattern[] = [
     { id: uid(), name: 'SwipeLeft', type: 'SWIPE', points: 2 },

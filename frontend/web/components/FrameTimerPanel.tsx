@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 interface FrameSnapshot {
   frame_number: number;
@@ -101,7 +102,7 @@ const FrameTimerPanel: React.FC = () => {
           <div className={`p-2 rounded border text-center ${
             state.state === 'running' ? 'bg-green-500/10 border-green-500/30' :
             state.state === 'paused' ? 'bg-yellow-500/10 border-yellow-500/30' :
-            'bg-gray-500/10 border-gray-500/30'
+            'bg-\[#f5f5f5\]0/10 border-\[#f5f5f5\]0/30'
           }`}>
             <span className="text-[11px] font-bold capitalize">{state.state}</span>
             <span className="text-[9px] text-[#666] ml-2">

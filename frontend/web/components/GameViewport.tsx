@@ -1,8 +1,23 @@
 import React, { useState, useCallback, useRef, useEffect } from 'react';
 import * as THREE from 'three';
 import { sceneBridge } from '../services/sceneBridge';
-import { useEditorStore } from '../store/editorStore';
+import { useEditorStore, type SceneNode } from '../store/editorStore';
 import GameRunner from './GameRunner';
+
+// Recursively flatten the scene tree into a flat list so the GameRunner
+// receives every entity (player, enemies, platforms, items) regardless of
+// how deeply they are nested in the hierarchy.
+function flattenSceneNodes(nodes: SceneNode[]): { id: string; name: string; type: string }[] {
+  const result: { id: string; name: string; type: string }[] = [];
+  const walk = (list: SceneNode[]) => {
+    for (const n of list) {
+      result.push({ id: n.id, name: n.name, type: n.type });
+      if (n.children && n.children.length > 0) walk(n.children);
+    }
+  };
+  walk(nodes);
+  return result;
+}
 
 interface GameViewportProps {
   isPlaying: boolean;
@@ -38,6 +53,14 @@ const GameViewport: React.FC<GameViewportProps> = ({
   const sceneNodes = useEditorStore((s) => s.sceneNodes);
   const selectedEntity = useEditorStore((s) => s.selectedEntity);
   const setFps = useEditorStore((s) => s.setFps);
+  const gameHtml = useEditorStore((s) => s.gameHtml);
+
+  // Auto-switch to the game view when a game has been generated and stored.
+  useEffect(() => {
+    if (gameHtml) {
+      setViewMode('game');
+    }
+  }, [gameHtml]);
 
   useEffect(() => {
     if (!containerRef.current) return;
@@ -254,7 +277,7 @@ const GameViewport: React.FC<GameViewportProps> = ({
       <div className="flex-1 relative">
         {/* Game execution mode — runs generated game content in iframe */}
         {viewMode === 'game' ? (
-          <GameRunner sceneNodes={sceneNodes.map(n => ({ id: n.id, name: n.name, type: n.type }))} />
+          <GameRunner gameHtml={gameHtml || undefined} sceneNodes={flattenSceneNodes(sceneNodes)} />
         ) : (
         <>
         <div ref={containerRef} className="w-full h-full" />

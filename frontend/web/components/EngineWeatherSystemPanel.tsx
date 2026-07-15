@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 const WEATHER_TYPES = ['clear', 'cloudy', 'overcast', 'rain', 'heavy_rain', 'thunderstorm', 'snow', 'blizzard', 'fog', 'heavy_fog', 'windy', 'storm', 'sandstorm', 'heatwave', 'meteor_shower'];
 const INTENSITIES = ['light', 'moderate', 'heavy', 'extreme'];
@@ -151,7 +152,7 @@ export default function EngineWeatherSystemPanel() {
         ].map(s => (
           <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold capitalize" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+            <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
         ))}
       </div>
@@ -159,7 +160,7 @@ export default function EngineWeatherSystemPanel() {
       {/* Current Weather Condition Card */}
       {currentWeather && (
         <div className={cardCls}>
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Current Condition</h3>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Current Condition</h3>
           <div className="flex items-center gap-4">
             <span className="text-3xl">{getWeatherIcon(currentWeather.weather_type || 'clear')}</span>
             <div className="flex-1">
@@ -168,23 +169,23 @@ export default function EngineWeatherSystemPanel() {
                   {currentWeather.weather_type?.replace(/_/g, ' ') || 'Clear'}
                 </span>
                 {currentWeather.intensity && (
-                  <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300 capitalize">
+                  <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">
                     {currentWeather.intensity}
                   </span>
                 )}
               </div>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {currentWeather.temperature !== undefined && (
-                  <div className="text-xs text-gray-500">Temp: <span className="text-[#f59e0b]">{currentWeather.temperature}°</span></div>
+                  <div className="text-xs text-[#666]">Temp: <span className="text-[#f59e0b]">{currentWeather.temperature}°</span></div>
                 )}
                 {currentWeather.humidity !== undefined && (
-                  <div className="text-xs text-gray-500">Humidity: <span className="text-[#3b82f6]">{currentWeather.humidity}%</span></div>
+                  <div className="text-xs text-[#666]">Humidity: <span className="text-[#3b82f6]">{currentWeather.humidity}%</span></div>
                 )}
                 {currentWeather.wind_speed !== undefined && (
-                  <div className="text-xs text-gray-500">Wind: <span className="text-[#6ee7b7]">{currentWeather.wind_speed} m/s</span></div>
+                  <div className="text-xs text-[#666]">Wind: <span className="text-[#6ee7b7]">{currentWeather.wind_speed} m/s</span></div>
                 )}
                 {currentWeather.visibility !== undefined && (
-                  <div className="text-xs text-gray-500">Visibility: <span className="text-[#a29bfe]">{currentWeather.visibility}m</span></div>
+                  <div className="text-xs text-[#666]">Visibility: <span className="text-[#a29bfe]">{currentWeather.visibility}m</span></div>
                 )}
               </div>
             </div>
@@ -200,7 +201,7 @@ export default function EngineWeatherSystemPanel() {
 
       {/* Set Weather */}
       <div className={`${cardCls} mb-4`}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Set Weather</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Set Weather</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <select value={weatherType} onChange={e => setWeatherType(e.target.value)} className={selectCls}>
             {WEATHER_TYPES.map(w => <option key={w} value={w} className="bg-[#1a1a2e] capitalize">{w.replace(/_/g, ' ')}</option>)}
@@ -223,7 +224,7 @@ export default function EngineWeatherSystemPanel() {
 
       {/* Weather Types Reference */}
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Weather Types</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Weather Types</h3>
         <div className="flex flex-wrap gap-2">
           {WEATHER_TYPES.map(w => (
             <span key={w} className="px-2 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs capitalize"
@@ -242,10 +243,10 @@ export default function EngineWeatherSystemPanel() {
 
       {/* Advance Time */}
       <div className={`${cardCls} mb-4`}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Advance Time</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Advance Time</h3>
         <div className="flex gap-3 items-end">
           <div>
-            <span className="text-xs text-gray-500 block mb-1">Delta Seconds</span>
+            <span className="text-xs text-[#666] block mb-1">Delta Seconds</span>
             <input type="number" value={deltaSeconds} onChange={e => setDeltaSeconds(e.target.value)} min="1" className={inputCls} />
           </div>
           <button onClick={advanceTime} disabled={loading} className={btnPrimary}>
@@ -257,7 +258,7 @@ export default function EngineWeatherSystemPanel() {
       {/* Time Display */}
       {(result || currentWeather) && (
         <div className={cardCls}>
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Time State</h3>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Time State</h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {[
               { label: 'Time of Day', value: (result?.time_of_day || currentWeather?.time_of_day || '--'), color: '#f59e0b', icon: '🕐' },
@@ -267,13 +268,13 @@ export default function EngineWeatherSystemPanel() {
               <div key={s.label} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
                 <div className="text-lg mb-1">{s.icon}</div>
                 <div className="text-sm font-bold capitalize" style={{ color: s.color }}>{s.value}</div>
-                <div className="text-xs text-gray-500 mt-1">{s.label}</div>
+                <div className="text-xs text-[#666] mt-1">{s.label}</div>
               </div>
             ))}
           </div>
           {result?.day_phase && (
             <div className="mt-3 p-3 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-center">
-              <span className="text-xs text-gray-500">Day Phase: </span>
+              <span className="text-xs text-[#666]">Day Phase: </span>
               <span className="text-xs text-[#00ff88] font-medium capitalize">{result.day_phase}</span>
             </div>
           )}
@@ -297,7 +298,7 @@ export default function EngineWeatherSystemPanel() {
           {/* Movement Speed */}
           {modifiers.movement_speed !== undefined && (
             <div className={cardCls}>
-              <h3 className="text-sm font-medium text-gray-300 mb-2">Movement Speed</h3>
+              <h3 className="text-sm font-medium text-[#ccc] mb-2">Movement Speed</h3>
               <div className="flex items-center gap-3">
                 <div className="flex-1 bg-[#1a1a2e] rounded h-2 overflow-hidden">
                   <div className="h-full bg-[#00ff88] rounded transition-all" style={{ width: `${Math.min(modifiers.movement_speed * 100, 100)}%` }} />
@@ -310,7 +311,7 @@ export default function EngineWeatherSystemPanel() {
           {/* Visibility */}
           {modifiers.visibility !== undefined && (
             <div className={cardCls}>
-              <h3 className="text-sm font-medium text-gray-300 mb-2">Visibility</h3>
+              <h3 className="text-sm font-medium text-[#ccc] mb-2">Visibility</h3>
               <div className="flex items-center gap-3">
                 <div className="flex-1 bg-[#1a1a2e] rounded h-2 overflow-hidden">
                   <div className="h-full bg-[#00d4ff] rounded transition-all" style={{ width: `${Math.min(modifiers.visibility * 100, 100)}%` }} />
@@ -323,7 +324,7 @@ export default function EngineWeatherSystemPanel() {
           {/* Damage */}
           {modifiers.damage !== undefined && (
             <div className={cardCls}>
-              <h3 className="text-sm font-medium text-gray-300 mb-2">Damage Modifier</h3>
+              <h3 className="text-sm font-medium text-[#ccc] mb-2">Damage Modifier</h3>
               <div className="flex items-center gap-3">
                 <div className="flex-1 bg-[#1a1a2e] rounded h-2 overflow-hidden">
                   <div className="h-full bg-red-400 rounded transition-all" style={{ width: `${Math.min(modifiers.damage * 100, 100)}%` }} />
@@ -336,12 +337,12 @@ export default function EngineWeatherSystemPanel() {
           {/* Elemental Bonuses */}
           {modifiers.elemental_bonuses && (
             <div className={cardCls}>
-              <h3 className="text-sm font-medium text-gray-300 mb-2">Elemental Bonuses</h3>
+              <h3 className="text-sm font-medium text-[#ccc] mb-2">Elemental Bonuses</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
                 {Object.entries(modifiers.elemental_bonuses).map(([k, v]: [string, any]) => (
                   <div key={k} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2 text-center">
                     <div className="text-xs text-[#fdcb6e] font-bold">x{v}</div>
-                    <div className="text-[10px] text-gray-500 capitalize">{k}</div>
+                    <div className="text-[10px] text-[#666] capitalize">{k}</div>
                   </div>
                 ))}
               </div>
@@ -351,7 +352,7 @@ export default function EngineWeatherSystemPanel() {
           {/* NPC Behavior */}
           {modifiers.npc_behavior && (
             <div className={cardCls}>
-              <h3 className="text-sm font-medium text-gray-300 mb-2">NPC Behavior</h3>
+              <h3 className="text-sm font-medium text-[#ccc] mb-2">NPC Behavior</h3>
               <div className="flex flex-wrap gap-2">
                 {typeof modifiers.npc_behavior === 'string' ? (
                   <span className="px-2 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#a29bfe] capitalize">
@@ -376,7 +377,7 @@ export default function EngineWeatherSystemPanel() {
         </div>
       )}
       {!modifiers && (
-        <p className="text-xs text-gray-500 py-4 text-center">Click "Refresh Modifiers" to load gameplay modifiers.</p>
+        <p className="text-xs text-[#666] py-4 text-center">Click "Refresh Modifiers" to load gameplay modifiers.</p>
       )}
     </div>
   );
@@ -386,10 +387,10 @@ export default function EngineWeatherSystemPanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Weather Prediction</h2>
 
       <div className={`${cardCls} mb-4`}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Forecast</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Forecast</h3>
         <div className="flex gap-3 items-end">
           <div>
-            <span className="text-xs text-gray-500 block mb-1">Forecast Seconds</span>
+            <span className="text-xs text-[#666] block mb-1">Forecast Seconds</span>
             <input type="number" value={forecastSeconds} onChange={e => setForecastSeconds(e.target.value)} min="60" step="3600" className={inputCls} />
           </div>
           <button onClick={predictWeather} disabled={loading} className={btnSuccess}>
@@ -401,7 +402,7 @@ export default function EngineWeatherSystemPanel() {
       {/* Forecast Timeline */}
       {result && result.forecast && Array.isArray(result.forecast) && result.forecast.length > 0 && (
         <div className={cardCls}>
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Forecast Timeline ({result.forecast.length} entries)</h3>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Forecast Timeline ({result.forecast.length} entries)</h3>
           <div className="space-y-2">
             {result.forecast.map((entry: any, i: number) => (
               <div key={i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-3">
@@ -414,7 +415,7 @@ export default function EngineWeatherSystemPanel() {
                   </div>
                   <div className="flex gap-2">
                     {entry.intensity && (
-                      <span className="px-2 py-0.5 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-gray-300 capitalize">{entry.intensity}</span>
+                      <span className="px-2 py-0.5 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">{entry.intensity}</span>
                     )}
                     {entry.probability !== undefined && (
                       <span className="px-2 py-0.5 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#00d4ff]">{Math.round(entry.probability * 100)}%</span>
@@ -423,16 +424,16 @@ export default function EngineWeatherSystemPanel() {
                 </div>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-2 text-xs">
                   {entry.time !== undefined && (
-                    <div className="text-gray-500">Time: <span className="text-[#f59e0b]">{entry.time}s</span></div>
+                    <div className="text-[#666]">Time: <span className="text-[#f59e0b]">{entry.time}s</span></div>
                   )}
                   {entry.temperature !== undefined && (
-                    <div className="text-gray-500">Temp: <span className="text-[#f59e0b]">{entry.temperature}°</span></div>
+                    <div className="text-[#666]">Temp: <span className="text-[#f59e0b]">{entry.temperature}°</span></div>
                   )}
                   {entry.humidity !== undefined && (
-                    <div className="text-gray-500">Humidity: <span className="text-[#3b82f6]">{entry.humidity}%</span></div>
+                    <div className="text-[#666]">Humidity: <span className="text-[#3b82f6]">{entry.humidity}%</span></div>
                   )}
                   {entry.wind_speed !== undefined && (
-                    <div className="text-gray-500">Wind: <span className="text-[#6ee7b7]">{entry.wind_speed} m/s</span></div>
+                    <div className="text-[#666]">Wind: <span className="text-[#6ee7b7]">{entry.wind_speed} m/s</span></div>
                   )}
                 </div>
               </div>
@@ -441,7 +442,7 @@ export default function EngineWeatherSystemPanel() {
         </div>
       )}
       {result && !result.forecast && (
-        <pre className="text-xs text-gray-400 p-3 bg-[#0f0f23] border border-[#2a2a4a] rounded overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+        <pre className="text-xs text-[#999] p-3 bg-[#0f0f23] border border-[#2a2a4a] rounded overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
       )}
     </div>
   );
@@ -451,7 +452,7 @@ export default function EngineWeatherSystemPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a] flex-wrap">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'analyze' | 'optimize' | 'validate' | 'compare';
 
@@ -63,7 +64,7 @@ const GameStateAnalyzerPanel: React.FC = () => {
   const [compareIds, setCompareIds] = useState('');
   const [compareResult, setCompareResult] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultScenes: SceneInfo[] = [
     { scene_id: uid(), scene_name: 'Level 1 - Forest', entity_count: 150, system_count: 12, bottleneck_count: 2, relationships: 75, snapshots: 3 },

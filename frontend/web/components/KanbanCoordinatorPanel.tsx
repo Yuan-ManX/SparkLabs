@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'board' | 'tasks';
 
@@ -32,7 +33,7 @@ const KanbanCoordinatorPanel: React.FC = () => {
   const [taskAssignedTo, setTaskAssignedTo] = useState('');
   const [taskPriority, setTaskPriority] = useState('medium');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultBoard: KanbanBoard = {
     id: uid(),

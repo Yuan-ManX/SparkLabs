@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'imports' | 'profiles';
 
@@ -31,7 +32,7 @@ const ImportPipelinePanel: React.FC = () => {
   const [profileName, setProfileName] = useState('');
   const [profileCompression, setProfileCompression] = useState('medium');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultImports: ImportTask[] = [
     { id: uid(), source: '/assets/hero_model.fbx', type: 'fbx', status: 'completed', file_size: '4.2 MB' },

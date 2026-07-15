@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'species' | 'resources' | 'simulate' | 'events' | 'analyze';
 
@@ -86,7 +87,7 @@ const GameplayEcosystemPanel: React.FC = () => {
   const [toBiome, setToBiome] = useState('plains');
   const [transitionFactor, setTransitionFactor] = useState('0.5');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

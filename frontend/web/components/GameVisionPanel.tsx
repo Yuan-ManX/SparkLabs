@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 interface VisionProfile {
   vision_id: string;
@@ -194,7 +195,7 @@ const GameVisionPanel: React.FC = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a1a] text-gray-200 overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a]">
         <div className="flex items-center gap-3">
@@ -203,12 +204,12 @@ const GameVisionPanel: React.FC = () => {
           </div>
           <div>
             <h2 className="text-sm font-semibold">Game Vision</h2>
-            <p className="text-[10px] text-gray-500">Design intelligence analysis</p>
+            <p className="text-[10px] text-[#666]">Design intelligence analysis</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className={`w-2 h-2 rounded-full ${isInitialized ? 'bg-green-400' : 'bg-yellow-400'}`} />
-          <span className="text-[10px] text-gray-500">{isInitialized ? 'Active' : 'Initializing...'}</span>
+          <span className="text-[10px] text-[#666]">{isInitialized ? 'Active' : 'Initializing...'}</span>
         </div>
       </div>
 
@@ -230,7 +231,7 @@ const GameVisionPanel: React.FC = () => {
             className={`px-4 py-2 text-xs font-medium transition-colors ${
               activeTab === tab
                 ? 'text-amber-400 border-b-2 border-amber-500 bg-amber-500/5'
-                : 'text-gray-500 hover:text-gray-300'
+                : 'text-[#666] hover:text-[#ccc]'
             }`}
           >
             {tab === 'create' ? 'Create Vision' : tab === 'visions' ? 'Visions' : 'Gameplay'}
@@ -242,21 +243,21 @@ const GameVisionPanel: React.FC = () => {
         {activeTab === 'create' && (
           <div className="space-y-4">
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Game Concept</label>
+              <label className="block text-xs text-[#999] mb-1">Game Concept</label>
               <textarea
                 value={concept}
                 onChange={(e) => setConcept(e.target.value)}
                 placeholder="Describe your game concept..."
-                className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500 resize-none h-24"
+                className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-\[#ddd\] placeholder-gray-600 focus:outline-none focus:border-amber-500 resize-none h-24"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Genre</label>
+                <label className="block text-xs text-[#999] mb-1">Genre</label>
                 <select
                   value={genre}
                   onChange={(e) => setGenre(e.target.value)}
-                  className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-amber-500"
+                  className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-\[#ddd\] focus:outline-none focus:border-amber-500"
                 >
                   {genres.map((g) => (
                     <option key={g} value={g}>{g}</option>
@@ -264,13 +265,13 @@ const GameVisionPanel: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Target Audience (comma-separated)</label>
+                <label className="block text-xs text-[#999] mb-1">Target Audience (comma-separated)</label>
                 <input
                   type="text"
                   value={audience}
                   onChange={(e) => setAudience(e.target.value)}
                   placeholder="e.g. explorer, achiever"
-                  className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-amber-500"
+                  className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-\[#ddd\] placeholder-gray-600 focus:outline-none focus:border-amber-500"
                 />
               </div>
             </div>
@@ -285,7 +286,7 @@ const GameVisionPanel: React.FC = () => {
               <button
                 onClick={handleGameplayAnalysis}
                 disabled={loading}
-                className="flex-1 py-2.5 rounded-lg bg-[#0f0f2a] border border-[#1a1a4e] text-gray-300 text-sm font-medium hover:border-amber-500 transition-all disabled:opacity-50"
+                className="flex-1 py-2.5 rounded-lg bg-[#0f0f2a] border border-[#1a1a4e] text-[#ccc] text-sm font-medium hover:border-amber-500 transition-all disabled:opacity-50"
               >
                 {loading ? 'Analyzing...' : 'Analyze Gameplay'}
               </button>
@@ -296,44 +297,44 @@ const GameVisionPanel: React.FC = () => {
         {activeTab === 'visions' && (
           <div className="space-y-3">
             {visions.length === 0 ? (
-              <div className="text-center text-gray-500 py-8 text-sm">No vision profiles yet</div>
+              <div className="text-center text-[#666] py-8 text-sm">No vision profiles yet</div>
             ) : (
               visions.map((vision) => (
                 <div key={vision.vision_id} className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-amber-400">{vision.game_concept}</span>
-                    <span className="text-[10px] text-gray-500">{vision.genre}</span>
+                    <span className="text-[10px] text-[#666]">{vision.genre}</span>
                   </div>
                   <div className="grid grid-cols-4 gap-2 mb-3">
                     <div className="text-center">
                       <div className="text-lg font-bold text-amber-400">{(vision.coherence_score * 100).toFixed(0)}%</div>
-                      <div className="text-[9px] text-gray-500">Coherence</div>
+                      <div className="text-[9px] text-[#666]">Coherence</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg font-bold text-blue-400">{(vision.feasibility_score * 100).toFixed(0)}%</div>
-                      <div className="text-[9px] text-gray-500">Feasibility</div>
+                      <div className="text-[9px] text-[#666]">Feasibility</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg font-bold text-green-400">{(vision.innovation_score * 100).toFixed(0)}%</div>
-                      <div className="text-[9px] text-gray-500">Innovation</div>
+                      <div className="text-[9px] text-[#666]">Innovation</div>
                     </div>
                     <div className="text-center">
                       <div className="text-lg font-bold text-purple-400">{(vision.overall_score * 100).toFixed(0)}%</div>
-                      <div className="text-[9px] text-gray-500">Overall</div>
+                      <div className="text-[9px] text-[#666]">Overall</div>
                     </div>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] text-gray-500">Design Pillars:</span>
+                    <span className="text-[10px] text-[#666]">Design Pillars:</span>
                     {vision.pillars.slice(0, 4).map((pillar) => (
                       <div key={pillar.pillar} className="flex items-center gap-2">
-                        <span className="text-[10px] text-gray-400 w-28 truncate">{pillar.pillar.replace(/_/g, ' ')}</span>
+                        <span className="text-[10px] text-[#999] w-28 truncate">{pillar.pillar.replace(/_/g, ' ')}</span>
                         <div className="flex-1 h-1 bg-[#1a1a3e] rounded-full">
                           <div
                             className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"
                             style={{ width: `${(pillar.score * 100).toFixed(0)}%` }}
                           />
                         </div>
-                        <span className="text-[10px] text-gray-500">{(pillar.score * 100).toFixed(0)}%</span>
+                        <span className="text-[10px] text-[#666]">{(pillar.score * 100).toFixed(0)}%</span>
                       </div>
                     ))}
                   </div>
@@ -350,42 +351,42 @@ const GameVisionPanel: React.FC = () => {
                 <div className="grid grid-cols-3 gap-2">
                   <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                     <div className="text-xl font-bold text-amber-400">{(gameplayAnalysis.skill_ceiling * 100).toFixed(0)}%</div>
-                    <div className="text-[10px] text-gray-500">Skill Ceiling</div>
+                    <div className="text-[10px] text-[#666]">Skill Ceiling</div>
                   </div>
                   <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                     <div className="text-xl font-bold text-blue-400">{(gameplayAnalysis.accessibility_rating * 100).toFixed(0)}%</div>
-                    <div className="text-[10px] text-gray-500">Accessibility</div>
+                    <div className="text-[10px] text-[#666]">Accessibility</div>
                   </div>
                   <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                     <div className="text-xl font-bold text-green-400">{(gameplayAnalysis.depth_rating * 100).toFixed(0)}%</div>
-                    <div className="text-[10px] text-gray-500">Depth</div>
+                    <div className="text-[10px] text-[#666]">Depth</div>
                   </div>
                 </div>
                 <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                  <h3 className="text-xs font-medium text-gray-300 mb-2">Core Mechanics</h3>
+                  <h3 className="text-xs font-medium text-[#ccc] mb-2">Core Mechanics</h3>
                   {gameplayAnalysis.core_mechanics.map((m, i) => (
                     <div key={i} className="flex items-center gap-2 text-[10px] py-1 border-b border-[#1a1a3e] last:border-0">
-                      <span className="text-gray-300">{m.name as string}</span>
-                      <span className="text-gray-500">complexity: {m.complexity as string}</span>
-                      <span className="text-gray-600 ml-auto">{m.innovation_potential as string} potential</span>
+                      <span className="text-[#ccc]">{m.name as string}</span>
+                      <span className="text-[#666]">complexity: {m.complexity as string}</span>
+                      <span className="text-[#555] ml-auto">{m.innovation_potential as string} potential</span>
                     </div>
                   ))}
                 </div>
                 <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                  <h3 className="text-xs font-medium text-gray-300 mb-2">Balance Considerations</h3>
+                  <h3 className="text-xs font-medium text-[#ccc] mb-2">Balance Considerations</h3>
                   {gameplayAnalysis.balance_considerations.map((b, i) => (
-                    <div key={i} className="text-[10px] text-gray-400 py-0.5">- {b}</div>
+                    <div key={i} className="text-[10px] text-[#999] py-0.5">- {b}</div>
                   ))}
                 </div>
                 <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                  <h3 className="text-xs font-medium text-gray-300 mb-2">Pacing</h3>
-                  <pre className="text-[10px] text-gray-500 whitespace-pre-wrap">
+                  <h3 className="text-xs font-medium text-[#ccc] mb-2">Pacing</h3>
+                  <pre className="text-[10px] text-[#666] whitespace-pre-wrap">
                     {JSON.stringify(gameplayAnalysis.pacing_analysis, null, 2)}
                   </pre>
                 </div>
               </>
             ) : (
-              <div className="text-center text-gray-500 py-8 text-sm">
+              <div className="text-center text-[#666] py-8 text-sm">
                 Create a vision or run gameplay analysis to see results
               </div>
             )}

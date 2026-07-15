@@ -6,6 +6,7 @@ import {
   RefreshCw, CheckCircle2, Circle, Loader2, FileText, Plus,
   Edit3, Eye, FolderOpen, Target, Palette, Box, Code, Music, Layout, XCircle
 } from 'lucide-react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 // Tab identifiers
 type TabId = 'create' | 'projects' | 'templates';
@@ -118,7 +119,7 @@ const GameCreatorPanel: React.FC = () => {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [blueprintExpanded, setBlueprintExpanded] = useState<Record<string, boolean>>({});
 
-  const apiBase = 'http://localhost:8000/api/agent/game-creation';
+  const apiBase = API_ROOT + '/agent/game-creation';
 
   // Default templates
   const defaultTemplates: GameTemplate[] = [

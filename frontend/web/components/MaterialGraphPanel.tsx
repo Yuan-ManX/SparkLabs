@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'graphs' | 'nodes' | 'compile';
 
@@ -72,7 +73,7 @@ const MaterialGraphPanel: React.FC = () => {
   const [compileGraphId, setCompileGraphId] = useState('');
   const [compileTarget, setCompileTarget] = useState('glsl');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultGraphs: MaterialGraph[] = [
     { id: uid(), name: 'PBR Metal', description: 'Physically-based metallic material graph', node_count: 8, connection_count: 12, created_at: Date.now() - 86400000 },

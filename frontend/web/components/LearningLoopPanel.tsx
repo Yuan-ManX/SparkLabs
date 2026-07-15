@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 interface MemoryStats {
   episodic: { count: number; max: number };
@@ -180,19 +181,19 @@ const LearningLoopPanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a1a] text-gray-200 overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a] shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-sm font-bold">LL</div>
           <div>
             <h2 className="text-sm font-semibold">Learning Loop</h2>
-            <p className="text-[10px] text-gray-500">Self-improving agent system</p>
+            <p className="text-[10px] text-[#666]">Self-improving agent system</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className={`w-2 h-2 rounded-full ${isInitialized ? 'bg-green-400' : 'bg-yellow-400'}`} />
-          <span className="text-[10px] text-gray-500">{isInitialized ? 'Active' : 'Init...'}</span>
+          <span className="text-[10px] text-[#666]">{isInitialized ? 'Active' : 'Init...'}</span>
         </div>
       </div>
 
@@ -200,7 +201,7 @@ const LearningLoopPanel: React.FC = () => {
       <div className="flex border-b border-[#1a1a3e] shrink-0">
         {(['session', 'skills', 'memory', 'history'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-[11px] font-medium transition-colors ${activeTab === tab ? 'text-green-400 border-b border-green-400 bg-[#0a2a1a]' : 'text-gray-500 hover:text-gray-300'}`}>
+            className={`px-4 py-2 text-[11px] font-medium transition-colors ${activeTab === tab ? 'text-green-400 border-b border-green-400 bg-[#0a2a1a]' : 'text-[#666] hover:text-[#ccc]'}`}>
             {tab === 'session' ? 'Session' : tab === 'skills' ? 'Skills' : tab === 'memory' ? 'Memory' : 'History'}
           </button>
         ))}
@@ -217,10 +218,10 @@ const LearningLoopPanel: React.FC = () => {
         {activeTab === 'session' && (
           <div className="space-y-4">
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Task Description</label>
+              <label className="block text-xs text-[#999] mb-1">Task Description</label>
               <textarea value={taskDesc} onChange={e => setTaskDesc(e.target.value)}
                 placeholder="Describe the task for the learning loop..."
-                className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-green-500 resize-none h-16" />
+                className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-\[#ddd\] placeholder-gray-600 focus:outline-none focus:border-green-500 resize-none h-16" />
             </div>
             <button onClick={startSession} disabled={loading}
               className="w-full py-2 rounded-lg bg-gradient-to-r from-green-600 to-teal-600 text-white text-sm font-medium hover:from-green-500 hover:to-teal-500 transition-all disabled:opacity-50">
@@ -229,18 +230,18 @@ const LearningLoopPanel: React.FC = () => {
 
             {sessionId && (
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 space-y-3">
-                <div className="text-[10px] text-gray-500">Session: <span className="text-green-400 font-mono">{sessionId}</span></div>
+                <div className="text-[10px] text-[#666]">Session: <span className="text-green-400 font-mono">{sessionId}</span></div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Action</label>
+                  <label className="block text-xs text-[#999] mb-1">Action</label>
                   <input value={actionInput} onChange={e => setActionInput(e.target.value)}
                     placeholder="e.g., analyze_codebase"
-                    className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded px-2 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-green-500" />
+                    className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded px-2 py-1.5 text-xs text-\[#ddd\] focus:outline-none focus:border-green-500" />
                 </div>
                 <div>
-                  <label className="block text-xs text-gray-400 mb-1">Params (JSON)</label>
+                  <label className="block text-xs text-[#999] mb-1">Params (JSON)</label>
                   <input value={actionParams} onChange={e => setActionParams(e.target.value)}
                     placeholder='{"key": "value"}'
-                    className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded px-2 py-1.5 text-xs text-gray-200 focus:outline-none focus:border-green-500" />
+                    className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded px-2 py-1.5 text-xs text-\[#ddd\] focus:outline-none focus:border-green-500" />
                 </div>
                 <div className="flex gap-2">
                   <button onClick={recordAction} className="flex-1 py-1.5 rounded bg-green-700/50 text-green-300 text-xs hover:bg-green-700/70">Record Action</button>
@@ -259,20 +260,20 @@ const LearningLoopPanel: React.FC = () => {
               <div className="grid grid-cols-3 gap-2 mb-3">
                 <div className="bg-[#0f0f2a] rounded p-2 text-center">
                   <div className="text-lg font-bold text-green-400">{skillStats.total}</div>
-                  <div className="text-[10px] text-gray-500">Total</div>
+                  <div className="text-[10px] text-[#666]">Total</div>
                 </div>
                 <div className="bg-[#0f0f2a] rounded p-2 text-center">
                   <div className="text-lg font-bold text-blue-400">{skillStats.active}</div>
-                  <div className="text-[10px] text-gray-500">Active</div>
+                  <div className="text-[10px] text-[#666]">Active</div>
                 </div>
                 <div className="bg-[#0f0f2a] rounded p-2 text-center">
                   <div className="text-lg font-bold text-yellow-400">{(skillStats.average_success_rate * 100).toFixed(0)}%</div>
-                  <div className="text-[10px] text-gray-500">Success</div>
+                  <div className="text-[10px] text-[#666]">Success</div>
                 </div>
               </div>
             )}
             {skills.length === 0 ? (
-              <div className="text-center text-gray-600 py-8 text-xs">No skills generated yet</div>
+              <div className="text-center text-[#555] py-8 text-xs">No skills generated yet</div>
             ) : (
               skills.map(skill => (
                 <div key={skill.skill_id} className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
@@ -280,8 +281,8 @@ const LearningLoopPanel: React.FC = () => {
                     <span className="text-xs font-medium text-green-300">{skill.name}</span>
                     <span className={`text-[10px] px-1.5 py-0.5 rounded ${skill.lifecycle === 'active' ? 'bg-green-900/50 text-green-400' : 'bg-yellow-900/50 text-yellow-400'}`}>{skill.lifecycle}</span>
                   </div>
-                  <p className="text-[10px] text-gray-500 mb-2">{skill.description}</p>
-                  <div className="flex gap-2 text-[10px] text-gray-500">
+                  <p className="text-[10px] text-[#666] mb-2">{skill.description}</p>
+                  <div className="flex gap-2 text-[10px] text-[#666]">
                     <span>v{skill.version}</span>
                     <span>Used: {skill.usage_count}</span>
                     <span>Rate: {(skill.success_rate * 100).toFixed(0)}%</span>
@@ -297,8 +298,8 @@ const LearningLoopPanel: React.FC = () => {
             {Object.entries(memoryStats).map(([key, val]) => (
               <div key={key} className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-medium capitalize text-gray-300">{key}</span>
-                  <span className="text-[10px] text-gray-500">{val.count}/{val.max}</span>
+                  <span className="text-xs font-medium capitalize text-[#ccc]">{key}</span>
+                  <span className="text-[10px] text-[#666]">{val.count}/{val.max}</span>
                 </div>
                 <div className="w-full bg-[#0a0a2e] rounded-full h-1.5">
                   <div className="bg-gradient-to-r from-green-500 to-teal-500 h-1.5 rounded-full"
@@ -312,13 +313,13 @@ const LearningLoopPanel: React.FC = () => {
         {activeTab === 'history' && (
           <div className="space-y-2">
             {sessions.length === 0 ? (
-              <div className="text-center text-gray-600 py-8 text-xs">No sessions yet</div>
+              <div className="text-center text-[#555] py-8 text-xs">No sessions yet</div>
             ) : (
               sessions.map(s => (
                 <div key={s.session_id} className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-[10px] text-gray-300 truncate max-w-[200px]">{s.task_description}</span>
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded ${s.phase === 'improve' ? 'bg-purple-900/50 text-purple-400' : 'bg-gray-900/50 text-gray-400'}`}>{s.phase}</span>
+                    <span className="text-[10px] text-[#ccc] truncate max-w-[200px]">{s.task_description}</span>
+                    <span className={`text-[9px] px-1.5 py-0.5 rounded ${s.phase === 'improve' ? 'bg-purple-900/50 text-purple-400' : 'bg-[#0a0a0a]/50 text-[#999]'}`}>{s.phase}</span>
                   </div>
                 </div>
               ))

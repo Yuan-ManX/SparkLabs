@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 // Types for the Visual Event Sheet API responses and forms
 
@@ -104,7 +105,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
   // Execution Log tab
   const [executionLog, setExecutionLog] = useState<ExecutionLogEntry[]>([]);
 
-  const apiBase = 'http://localhost:8000/api/engine';
+  const apiBase = API_ROOT + '/engine';
 
   const tabs = [
     { id: 'status', label: 'Status' },
@@ -354,25 +355,25 @@ const EngineVisualEventSheetPanel: React.FC = () => {
       {status ? (
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Sheet Count</div>
+            <div className="text-[#999] text-xs">Sheet Count</div>
             <div className="text-white text-sm font-mono">{status.sheet_count}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Event Count</div>
+            <div className="text-[#999] text-xs">Event Count</div>
             <div className="text-white text-sm font-mono">{status.event_count}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center col-span-2">
-            <div className="text-gray-400 text-xs">Total Executions</div>
+            <div className="text-[#999] text-xs">Total Executions</div>
             <div className="text-white text-sm font-mono">{status.execution_count}</div>
           </div>
         </div>
       ) : (
-        <div className="text-gray-400 text-sm">No status data available.</div>
+        <div className="text-[#999] text-sm">No status data available.</div>
       )}
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -385,7 +386,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Name</label>
             <input
               type="text"
               value={sheetForm.name}
@@ -395,7 +396,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Scope</label>
+            <label className="text-xs text-[#999] mb-1 block">Scope</label>
             <select
               value={sheetForm.scope}
               onChange={e => setSheetForm(prev => ({ ...prev, scope: e.target.value }))}
@@ -407,7 +408,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
             </select>
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Description</label>
+            <label className="text-xs text-[#999] mb-1 block">Description</label>
             <textarea
               value={sheetForm.description}
               onChange={e => setSheetForm(prev => ({ ...prev, description: e.target.value }))}
@@ -438,27 +439,27 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               </span>
             </div>
             {sheet.description && (
-              <div className="text-gray-400 text-xs mb-2">{sheet.description}</div>
+              <div className="text-[#999] text-xs mb-2">{sheet.description}</div>
             )}
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="text-gray-400 text-xs">Events</div>
+                <div className="text-[#999] text-xs">Events</div>
                 <div className="text-white text-sm font-mono">{sheet.event_count || 0}</div>
               </div>
               <div>
-                <div className="text-gray-400 text-xs">Sheet ID</div>
+                <div className="text-[#999] text-xs">Sheet ID</div>
                 <div className="text-white text-sm font-mono text-xs truncate">{sheet.id}</div>
               </div>
             </div>
           </div>
         ))
       ) : (
-        <div className="text-gray-400 text-sm">No sheets created yet.</div>
+        <div className="text-[#999] text-sm">No sheets created yet.</div>
       )}
 
       {result && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">
             {JSON.stringify(result, null, 2)}
           </div>
         </div>
@@ -466,7 +467,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -480,7 +481,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           {/* Sheet Selector */}
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Sheet</label>
+            <label className="text-xs text-[#999] mb-1 block">Sheet</label>
             <select
               value={eventForm.sheetId}
               onChange={e => setEventForm(prev => ({ ...prev, sheetId: e.target.value }))}
@@ -494,7 +495,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
           </div>
 
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Event Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Event Name</label>
             <input
               type="text"
               value={eventForm.name}
@@ -505,7 +506,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
           </div>
 
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Trigger</label>
+            <label className="text-xs text-[#999] mb-1 block">Trigger</label>
             <select
               value={eventForm.trigger}
               onChange={e => setEventForm(prev => ({ ...prev, trigger: e.target.value }))}
@@ -520,7 +521,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
           </div>
 
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Priority</label>
+            <label className="text-xs text-[#999] mb-1 block">Priority</label>
             <input
               type="number"
               value={eventForm.priority}
@@ -547,7 +548,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               {eventForm.conditions.map((cond, i) => (
                 <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
                   <div className="flex justify-between items-center mb-2">
-                    <div className="text-xs text-gray-400">Condition #{i + 1}</div>
+                    <div className="text-xs text-[#999]">Condition #{i + 1}</div>
                     <button
                       onClick={() => removeCondition(i)}
                       className="text-xs text-red-400 hover:text-red-300"
@@ -557,7 +558,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-xs text-gray-400 mb-1 block">Operator</label>
+                      <label className="text-xs text-[#999] mb-1 block">Operator</label>
                       <select
                         value={cond.operator}
                         onChange={e => updateCondition(i, 'operator', e.target.value)}
@@ -571,7 +572,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
                       </select>
                     </div>
                     <div className="flex items-end gap-2">
-                      <label className="flex items-center gap-1 text-xs text-gray-400 cursor-pointer">
+                      <label className="flex items-center gap-1 text-xs text-[#999] cursor-pointer">
                         <input
                           type="checkbox"
                           checked={cond.invert}
@@ -582,7 +583,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
                       </label>
                     </div>
                     <div>
-                      <label className="text-xs text-gray-400 mb-1 block">Left Operand</label>
+                      <label className="text-xs text-[#999] mb-1 block">Left Operand</label>
                       <input
                         type="text"
                         value={cond.left_operand}
@@ -592,7 +593,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-400 mb-1 block">Right Operand</label>
+                      <label className="text-xs text-[#999] mb-1 block">Right Operand</label>
                       <input
                         type="text"
                         value={cond.right_operand}
@@ -606,7 +607,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-gray-500 text-xs italic">No conditions defined. The event will always trigger.</div>
+            <div className="text-[#666] text-xs italic">No conditions defined. The event will always trigger.</div>
           )}
         </div>
 
@@ -627,7 +628,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               {eventForm.actions.map((action, i) => (
                 <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
                   <div className="flex justify-between items-center mb-2">
-                    <div className="text-xs text-gray-400">Action #{i + 1}</div>
+                    <div className="text-xs text-[#999]">Action #{i + 1}</div>
                     <button
                       onClick={() => removeAction(i)}
                       className="text-xs text-red-400 hover:text-red-300"
@@ -637,7 +638,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-2">
                     <div>
-                      <label className="text-xs text-gray-400 mb-1 block">Action Type</label>
+                      <label className="text-xs text-[#999] mb-1 block">Action Type</label>
                       <select
                         value={action.action_type}
                         onChange={e => updateAction(i, 'action_type', e.target.value)}
@@ -654,7 +655,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
                       </select>
                     </div>
                     <div>
-                      <label className="text-xs text-gray-400 mb-1 block">Action Name</label>
+                      <label className="text-xs text-[#999] mb-1 block">Action Name</label>
                       <input
                         type="text"
                         value={action.action_name}
@@ -664,7 +665,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-400 mb-1 block">Target Object</label>
+                      <label className="text-xs text-[#999] mb-1 block">Target Object</label>
                       <input
                         type="text"
                         value={action.target_object}
@@ -674,7 +675,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-gray-400 mb-1 block">Parameters (JSON)</label>
+                      <label className="text-xs text-[#999] mb-1 block">Parameters (JSON)</label>
                       <input
                         type="text"
                         value={action.parameters}
@@ -688,7 +689,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               ))}
             </div>
           ) : (
-            <div className="text-gray-500 text-xs italic">No actions defined. Add at least one action.</div>
+            <div className="text-[#666] text-xs italic">No actions defined. Add at least one action.</div>
           )}
         </div>
 
@@ -703,7 +704,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
 
       {result && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">
             {JSON.stringify(result, null, 2)}
           </div>
         </div>
@@ -711,7 +712,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -724,7 +725,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-1 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Sheet</label>
+            <label className="text-xs text-[#999] mb-1 block">Sheet</label>
             <select
               value={evalSheetId}
               onChange={e => setEvalSheetId(e.target.value)}
@@ -737,7 +738,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Custom State (JSON)</label>
+            <label className="text-xs text-[#999] mb-1 block">Custom State (JSON)</label>
             <textarea
               value={evalCustomState}
               onChange={e => setEvalCustomState(e.target.value)}
@@ -761,11 +762,11 @@ const EngineVisualEventSheetPanel: React.FC = () => {
           <div className="text-sm font-medium text-[#00d4ff]">Evaluation Results</div>
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-              <div className="text-gray-400 text-xs">Triggered Events</div>
+              <div className="text-[#999] text-xs">Triggered Events</div>
               <div className="text-white text-sm font-mono">{evaluateResult.triggered_events_count}</div>
             </div>
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-              <div className="text-gray-400 text-xs">Actions Executed</div>
+              <div className="text-[#999] text-xs">Actions Executed</div>
               <div className="text-white text-sm font-mono">{evaluateResult.actions_executed}</div>
             </div>
           </div>
@@ -775,7 +776,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               <div className="text-sm font-medium text-[#00d4ff] mb-2">Details</div>
               {evaluateResult.details.map((detail, i) => (
                 <div key={i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3 mb-2">
-                  <div className="text-xs text-gray-300 font-mono">{detail}</div>
+                  <div className="text-xs text-[#ccc] font-mono">{detail}</div>
                 </div>
               ))}
             </div>
@@ -785,7 +786,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -803,30 +804,30 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               <span className={`px-2 py-1 rounded text-xs font-medium ${
                 entry.status === 'success' ? 'bg-green-900/50 text-green-400 border border-green-800' :
                 entry.status === 'error' ? 'bg-red-900/50 text-red-400 border border-red-800' :
-                'bg-[#0f0f23] text-gray-400 border border-[#2a2a4a]'
+                'bg-[#0f0f23] text-[#999] border border-[#2a2a4a]'
               }`}>
                 {entry.status}
               </span>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="text-gray-400 text-xs">Timestamp</div>
+                <div className="text-[#999] text-xs">Timestamp</div>
                 <div className="text-white text-sm font-mono">{entry.timestamp}</div>
               </div>
               <div>
-                <div className="text-gray-400 text-xs">Actions Executed</div>
+                <div className="text-[#999] text-xs">Actions Executed</div>
                 <div className="text-white text-sm font-mono">{entry.actions_count}</div>
               </div>
             </div>
           </div>
         ))
       ) : (
-        <div className="text-gray-400 text-sm">No execution log entries available.</div>
+        <div className="text-[#999] text-sm">No execution log entries available.</div>
       )}
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -839,14 +840,14 @@ const EngineVisualEventSheetPanel: React.FC = () => {
           <button
             key={t.id}
             onClick={() => { setActiveTab(t.id); setError(null); }}
-            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-gray-400 hover:text-white'}`}
+            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-[#999] hover:text-white'}`}
           >
             {t.label}
           </button>
         ))}
       </div>
       <div className="flex-1 overflow-auto p-4">
-        {loading && <div className="text-gray-400 text-sm">Loading...</div>}
+        {loading && <div className="text-[#999] text-sm">Loading...</div>}
         {renderTab()}
       </div>
     </div>

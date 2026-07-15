@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'systems' | 'scenes' | 'orchestrate' | 'simulate';
 
@@ -46,7 +47,7 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
   const [transitionSceneId, setTransitionSceneId] = useState('');
   const [frameResult, setFrameResult] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSystems: SystemInfo[] = [
     { id: uid(), name: 'physics_system', lifecycle: 'active', priority: 'HIGH', execution_phases: ['physics_update'], frame_budget_ms: 4.0, avg_execution_ms: 2.8, enabled: true },

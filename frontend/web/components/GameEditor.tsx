@@ -737,8 +737,8 @@ const GameEditor: React.FC = () => {
   const selectedObj = selectedObject ? scene?.objects.find(obj => obj.id === selectedObject) : null;
 
   return (
-    <div className="flex flex-col h-full bg-slate-900 text-slate-100">
-      <header className="h-16 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-6 shadow-lg">
+    <div className="flex flex-col h-full bg-[#0a0a0a] text-\[#eee\]">
+      <header className="h-16 bg-[#0f0f0f] border-b border-[#1e1e1e] flex items-center justify-between px-6 shadow-lg">
         <div className="flex items-center gap-4">
           <div className="p-2 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-lg">
             <PlayCircle className="w-7 h-7" />
@@ -747,7 +747,7 @@ const GameEditor: React.FC = () => {
             <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
               SparkLab Game Studio
             </h1>
-            <p className="text-xs text-slate-400">AI-Native Game Development Platform</p>
+            <p className="text-xs text-[#999]">AI-Native Game Development Platform</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -774,9 +774,9 @@ const GameEditor: React.FC = () => {
       </header>
       
       <div className="flex flex-1 overflow-hidden">
-        <aside className="w-80 bg-slate-800 border-r border-slate-700 p-5 overflow-y-auto">
+        <aside className="w-80 bg-[#0f0f0f] border-r border-[#1e1e1e] p-5 overflow-y-auto">
           <div className="mb-7">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-[#ccc] uppercase tracking-wider mb-4 flex items-center gap-2">
               <Layers className="w-4 h-4" />
               Scenes
             </h3>
@@ -785,7 +785,7 @@ const GameEditor: React.FC = () => {
                 key={s.id}
                 onClick={() => setCurrentScene(s.id)}
                 className={`w-full text-left px-5 py-3 rounded-xl transition-all mb-2 text-sm flex items-center gap-3 ${
-                  currentScene === s.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-slate-300'
+                  currentScene === s.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-[#ccc]'
                 }`}
               >
                 <Box className="w-4 h-4" />
@@ -795,7 +795,7 @@ const GameEditor: React.FC = () => {
           </div>
           
           <div className="mb-7">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-[#ccc] uppercase tracking-wider mb-4 flex items-center gap-2">
               <Grid3X3 className="w-4 h-4" />
               Tile Palette
             </h3>
@@ -805,7 +805,7 @@ const GameEditor: React.FC = () => {
                   key={tileDef.type}
                   onClick={() => setSelectedTileType(tileDef.type)}
                   className={`aspect-square rounded-xl border-3 transition-all duration-200 flex items-center justify-center ${
-                    selectedTileType === tileDef.type ? 'border-purple-400 scale-110 shadow-xl' : 'border-slate-600 hover:border-[#333]'
+                    selectedTileType === tileDef.type ? 'border-purple-400 scale-110 shadow-xl' : 'border-[#2a2a2a] hover:border-[#333]'
                   }`}
                   style={{ 
                     backgroundColor: tileDef.type === 0 ? '#0f172a' : tileDef.color,
@@ -813,11 +813,11 @@ const GameEditor: React.FC = () => {
                   }}
                   title={`${tileDef.name}: ${tileDef.description}`}
                 >
-                  {tileDef.type === 0 && <Trash2 className="w-4 h-4 text-slate-400" />}
+                  {tileDef.type === 0 && <Trash2 className="w-4 h-4 text-[#999]" />}
                 </button>
               ))}
             </div>
-            <div className="text-xs text-slate-400 mb-3">
+            <div className="text-xs text-[#999] mb-3">
               Selected: <span className="text-purple-400 font-semibold">{TILE_DEFINITIONS.find(t => t.type === selectedTileType)?.name}</span>
             </div>
             <button
@@ -830,7 +830,7 @@ const GameEditor: React.FC = () => {
           </div>
           
           <div className="mb-7">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+            <h3 className="text-sm font-semibold text-[#ccc] uppercase tracking-wider mb-4 flex items-center gap-2">
               <Box className="w-4 h-4" />
               Game Objects
             </h3>
@@ -840,7 +840,7 @@ const GameEditor: React.FC = () => {
                   key={obj.id}
                   onClick={() => setSelectedObject(obj.id)}
                   className={`w-full text-left px-4 py-3 rounded-xl transition-all text-sm flex items-center gap-3 ${
-                    selectedObject === obj.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-slate-300'
+                    selectedObject === obj.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-[#ccc]'
                   }`}
                 >
                   <div
@@ -868,12 +868,12 @@ const GameEditor: React.FC = () => {
             </button>
           </div>
           
-          <div className="border-t border-slate-700 pt-4">
-            <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-3 flex items-center gap-2">
+          <div className="border-t border-[#1e1e1e] pt-4">
+            <h3 className="text-sm font-semibold text-[#ccc] uppercase tracking-wider mb-3 flex items-center gap-2">
               <Info className="w-4 h-4" />
               Quick Tips
             </h3>
-            <ul className="text-xs text-slate-400 space-y-2">
+            <ul className="text-xs text-[#999] space-y-2">
               <li>• Click canvas to paint tiles</li>
               <li>• Hold and drag to paint quickly</li>
               <li>• Press Play to test your game</li>
@@ -882,9 +882,9 @@ const GameEditor: React.FC = () => {
           </div>
         </aside>
         
-        <main className="flex-1 flex flex-col bg-slate-950">
+        <main className="flex-1 flex flex-col bg-[#080808]">
           <div className="flex-1 flex items-center justify-center p-8 overflow-auto">
-            <div className="bg-slate-800 rounded-xl p-6 shadow-2xl border border-slate-700">
+            <div className="bg-[#0f0f0f] rounded-xl p-6 shadow-2xl border border-[#1e1e1e]">
               <canvas
                 ref={canvasRef}
                 width={800}
@@ -902,20 +902,20 @@ const GameEditor: React.FC = () => {
             </div>
           </div>
           
-          <div className="h-44 bg-slate-800 border-t border-slate-700 p-5">
+          <div className="h-44 bg-[#0f0f0f] border-t border-[#1e1e1e] p-5">
             <div className="flex items-center justify-between mb-3">
               <div className="flex items-center gap-2">
                 <Terminal className="w-5 h-5" />
-                <span className="text-sm font-semibold text-slate-300">Console</span>
+                <span className="text-sm font-semibold text-[#ccc]">Console</span>
               </div>
               <button
                 onClick={() => setLogs([])}
-                className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                className="text-xs text-[#666] hover:text-[#ccc] transition-colors"
               >
                 Clear
               </button>
             </div>
-            <div className="h-24 overflow-y-auto font-mono text-xs text-slate-400 bg-slate-900 rounded-xl p-4">
+            <div className="h-24 overflow-y-auto font-mono text-xs text-[#999] bg-[#0a0a0a] rounded-xl p-4">
               {logs.map((log, i) => (
                 <div key={i} className="py-0.5">{log}</div>
               ))}
@@ -923,85 +923,85 @@ const GameEditor: React.FC = () => {
           </div>
         </main>
         
-        <aside className="w-96 bg-slate-800 border-l border-slate-700 p-6 overflow-y-auto">
+        <aside className="w-96 bg-[#0f0f0f] border-l border-[#1e1e1e] p-6 overflow-y-auto">
           {selectedObj ? (
             <div className="space-y-6">
               <div>
-                <h3 className="text-sm font-semibold text-slate-300 uppercase tracking-wider mb-4 flex items-center gap-2">
+                <h3 className="text-sm font-semibold text-[#ccc] uppercase tracking-wider mb-4 flex items-center gap-2">
                   <Settings2 className="w-4 h-4" />
                   Object Properties
                 </h3>
                 
                 <div className="space-y-4">
                   <div>
-                    <label className="text-xs text-slate-400 mb-1 block">Name</label>
+                    <label className="text-xs text-[#999] mb-1 block">Name</label>
                     <input
                       type="text"
                       value={selectedObj.name}
                       onChange={(e) => updateObjectProperty('name', e.target.value)}
-                      className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500 transition-all"
+                      className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl text-sm focus:outline-none focus:border-purple-500 transition-all"
                     />
                   </div>
                   
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-slate-400 mb-1 block">X Position</label>
+                      <label className="text-xs text-[#999] mb-1 block">X Position</label>
                       <input
                         type="number"
                         value={selectedObj.x}
                         onChange={(e) => updateObjectProperty('x', Number(e.target.value))}
-                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl text-sm focus:outline-none focus:border-purple-500"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-slate-400 mb-1 block">Y Position</label>
+                      <label className="text-xs text-[#999] mb-1 block">Y Position</label>
                       <input
                         type="number"
                         value={selectedObj.y}
                         onChange={(e) => updateObjectProperty('y', Number(e.target.value))}
-                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl text-sm focus:outline-none focus:border-purple-500"
                       />
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <label className="text-xs text-slate-400 mb-1 block">Width</label>
+                      <label className="text-xs text-[#999] mb-1 block">Width</label>
                       <input
                         type="number"
                         value={selectedObj.width}
                         onChange={(e) => updateObjectProperty('width', Number(e.target.value))}
-                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl text-sm focus:outline-none focus:border-purple-500"
                       />
                     </div>
                     <div>
-                      <label className="text-xs text-slate-400 mb-1 block">Height</label>
+                      <label className="text-xs text-[#999] mb-1 block">Height</label>
                       <input
                         type="number"
                         value={selectedObj.height}
                         onChange={(e) => updateObjectProperty('height', Number(e.target.value))}
-                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-slate-600 rounded-xl text-sm focus:outline-none focus:border-purple-500"
+                        className="w-full px-4 py-2.5 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl text-sm focus:outline-none focus:border-purple-500"
                       />
                     </div>
                   </div>
                   
                   <div>
-                    <label className="text-xs text-slate-400 mb-1 block">Color</label>
+                    <label className="text-xs text-[#999] mb-1 block">Color</label>
                     <div className="flex gap-3 items-center">
                       <input
                         type="color"
                         value={selectedObj.color}
                         onChange={(e) => updateObjectProperty('color', e.target.value)}
-                        className="w-16 h-12 bg-[#1a1a1a] border border-slate-600 rounded-xl"
+                        className="w-16 h-12 bg-[#1a1a1a] border border-[#2a2a2a] rounded-xl"
                       />
-                      <span className="text-xs font-mono text-slate-400">{selectedObj.color}</span>
+                      <span className="text-xs font-mono text-[#999]">{selectedObj.color}</span>
                     </div>
                   </div>
                   
-                  <div className="pt-4 border-t border-slate-700">
+                  <div className="pt-4 border-t border-[#1e1e1e]">
                     <div className="flex items-center justify-between mb-3">
-                      <h4 className="text-xs font-semibold text-slate-300">Components</h4>
-                      <span className="text-xs text-slate-400">
+                      <h4 className="text-xs font-semibold text-[#ccc]">Components</h4>
+                      <span className="text-xs text-[#999]">
                         {selectedObj.components.length} attached
                       </span>
                     </div>
@@ -1011,7 +1011,7 @@ const GameEditor: React.FC = () => {
                         const compInfo = COMPONENT_TYPES.find(c => c.type === comp.type);
                         const Icon = compInfo?.icon || Square;
                         return (
-                          <div key={i} className="p-3 bg-[#1a1a1a] rounded-xl text-xs border border-slate-600 flex items-center justify-between">
+                          <div key={i} className="p-3 bg-[#1a1a1a] rounded-xl text-xs border border-[#2a2a2a] flex items-center justify-between">
                             <div className="flex items-center gap-2">
                               <Icon className={`w-4 h-4 ${compInfo?.color}`} />
                               <span className="font-semibold">{comp.type}</span>
@@ -1027,7 +1027,7 @@ const GameEditor: React.FC = () => {
                       })}
                     </div>
                     
-                    <h4 className="text-xs font-semibold text-slate-300 mb-3 mt-4">Add Components</h4>
+                    <h4 className="text-xs font-semibold text-[#ccc] mb-3 mt-4">Add Components</h4>
                     <div className="grid grid-cols-2 gap-2">
                       {COMPONENT_TYPES.map(compType => {
                         const Icon = compType.icon;
@@ -1039,8 +1039,8 @@ const GameEditor: React.FC = () => {
                             disabled={hasComponent}
                             className={`p-2 rounded-xl border-2 flex flex-col items-center gap-1 transition-all text-xs ${
                               hasComponent
-                                ? 'border-slate-700 bg-slate-800 text-slate-500 cursor-not-allowed'
-                                : 'border-slate-600 hover:border-purple-400 bg-[#1a1a1a] text-[#ddd] hover:scale-105'
+                                ? 'border-[#1e1e1e] bg-[#0f0f0f] text-[#666] cursor-not-allowed'
+                                : 'border-[#2a2a2a] hover:border-purple-400 bg-[#1a1a1a] text-[#ddd] hover:scale-105'
                             }`}
                           >
                             <Icon className={`w-4 h-4 ${compType.color}`} />
@@ -1062,19 +1062,19 @@ const GameEditor: React.FC = () => {
               </div>
             </div>
           ) : (
-            <div className="h-full flex flex-col items-center justify-center text-slate-500 text-sm">
+            <div className="h-full flex flex-col items-center justify-center text-[#666] text-sm">
               <Box className="w-20 h-20 mb-4 opacity-30" />
               <p className="text-center">Select an object from the left sidebar<br />to edit its properties</p>
             </div>
           )}
           
-          <div className="mt-6 pt-4 border-t border-slate-700">
-            <h4 className="text-xs font-semibold text-slate-300 mb-4 flex items-center gap-2">
+          <div className="mt-6 pt-4 border-t border-[#1e1e1e]">
+            <h4 className="text-xs font-semibold text-[#ccc] mb-4 flex items-center gap-2">
               <Camera className="w-4 h-4" />
               Camera Settings
             </h4>
             <div className="space-y-3">
-              <label className="flex items-center gap-3 text-sm text-slate-300 cursor-pointer select-none">
+              <label className="flex items-center gap-3 text-sm text-[#ccc] cursor-pointer select-none">
                 <input
                   type="checkbox"
                   checked={camera.followPlayer}

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'stems' | 'playlists';
 
@@ -33,7 +34,7 @@ const InteractiveAudioPanel: React.FC = () => {
   const [playlistName, setPlaylistName] = useState('');
   const [playlistStems, setPlaylistStems] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultStems: AudioStem[] = [
     { id: uid(), name: 'piano_theme', layer: 'melody', volume: 0.85 },

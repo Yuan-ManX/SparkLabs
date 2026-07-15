@@ -6,6 +6,7 @@ import {
   Eye, Brain, Zap, Target, TrendingUp, Clock, BarChart3,
   CheckCircle2, ArrowRight, Layers
 } from 'lucide-react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'cycle' | 'history' | 'state';
 
@@ -60,7 +61,7 @@ const InteractionLoopPanel: React.FC = () => {
 
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent/loop';
+  const apiBase = API_ROOT + '/agent/loop';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

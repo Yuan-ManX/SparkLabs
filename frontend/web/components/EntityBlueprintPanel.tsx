@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'blueprints' | 'components' | 'instantiate';
 
@@ -41,7 +42,7 @@ const EntityBlueprintPanel: React.FC = () => {
   const [variantName, setVariantName] = useState('');
   const [variantBlueprint, setVariantBlueprint] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultBlueprints: Blueprint[] = [
     { id: uid(), name: 'Player', parent: null, component_count: 4 },

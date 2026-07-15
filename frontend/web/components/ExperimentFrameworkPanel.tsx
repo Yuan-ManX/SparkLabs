@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'experiments' | 'trials' | 'results';
 
@@ -61,7 +62,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
   const [resultsExpId, setResultsExpId] = useState('');
   const [listStatus, setListStatus] = useState('active');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultExperiments: Experiment[] = [
     { id: uid(), name: 'Prompt Length A/B Test', description: 'Compare short vs detailed prompts', variant_count: 2, metrics: ['latency', 'accuracy'], status: 'active', created_at: Date.now() - 86400000 },

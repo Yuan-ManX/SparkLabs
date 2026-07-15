@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ActiveTab = 'fog' | 'light' | 'cloud' | 'raymarch' | 'status';
 
@@ -101,7 +102,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
   });
   const [rayMarchResult, setRayMarchResult] = useState<RayMarchResult | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/engine';
+  const apiBase = API_ROOT + '/engine';
 
   const defaultStatus: VolumetricStatus = {
     total_renders: 1520,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type MetricType = 'performance' | 'usage' | 'quality' | 'cost';
 type TimeRange = '1h' | '24h' | '7d' | '30d';
@@ -87,7 +88,7 @@ const InsightsGeneratorPanel: React.FC = () => {
   const [selectedTimeRange, setSelectedTimeRange] = useState<TimeRange>('24h');
   const [selectedFormat, setSelectedFormat] = useState<ReportFormat>('pdf');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultInsights: Insight[] = [
     { id: uid(), title: 'Response latency improved', description: 'Average response time dropped by 23% in the last hour', metric_type: 'performance', severity: 'info', created_at: Date.now() - 600000, value: 23, unit: '%' },

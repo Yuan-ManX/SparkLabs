@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'brainstorm' | 'analyze' | 'evaluate' | 'iterate' | 'pitch';
 
@@ -65,7 +66,7 @@ const GameDesignIntelligencePanel: React.FC = () => {
   const [pitchConceptId, setPitchConceptId] = useState('');
   const [pitchResult, setPitchResult] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultConcepts: DesignConcept[] = [
     {

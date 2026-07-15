@@ -489,7 +489,7 @@ const GameGenerator: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-full bg-gradient-to-br from-slate-900 via-purple-900/20 to-slate-900">
+    <div className="flex flex-col h-full bg-gradient-to-br from-\[#0a0a0a\] via-purple-900/20 to-[#0a0a0a]">
       <div className="bg-[#0f0f0f]/90 border-b border-[#1e1e1e] px-6 py-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">

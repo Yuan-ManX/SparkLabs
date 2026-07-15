@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'status' | 'tick' | 'render' | 'subsystems' | 'report' | 'control';
 
@@ -60,7 +61,7 @@ interface DiagnosticReport {
   recommendations: string[];
 }
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 const ENGINE_MODES = ['full', 'headless', 'minimal', 'server', 'editor'];
 

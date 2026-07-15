@@ -6,6 +6,7 @@ import {
   Code2, ChevronDown, ChevronRight, RefreshCw, CheckCircle2,
   XCircle, Loader2, Filter, Layers, Cpu
 } from 'lucide-react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 // Tab identifiers for the panel
 type TabId = 'generate' | 'reason' | 'templates' | 'stats';
@@ -89,7 +90,7 @@ const LLMPipelinePanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabId>('generate');
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent/llm';
+  const apiBase = API_ROOT + '/agent/llm';
 
   // Default templates for offline fallback
   const defaultTemplates: LLMTemplate[] = [
@@ -290,7 +291,7 @@ const LLMPipelinePanel: React.FC = () => {
       case 'online': return 'text-green-400';
       case 'degraded': return 'text-yellow-400';
       case 'offline': return 'text-red-400';
-      default: return 'text-gray-400';
+      default: return 'text-[#999]';
     }
   };
 
@@ -299,7 +300,7 @@ const LLMPipelinePanel: React.FC = () => {
       case 'online': return 'bg-green-400/10';
       case 'degraded': return 'bg-yellow-400/10';
       case 'offline': return 'bg-red-400/10';
-      default: return 'bg-gray-400/10';
+      default: return 'bg-\[#999\]/10';
     }
   };
 

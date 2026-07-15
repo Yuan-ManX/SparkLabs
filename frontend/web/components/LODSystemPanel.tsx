@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'groups' | 'levels' | 'evaluate';
 
@@ -48,7 +49,7 @@ const LODSystemPanel: React.FC = () => {
   const [evalEntityId, setEvalEntityId] = useState('');
   const [evalCamDist, setEvalCamDist] = useState('25');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultGroups: LODGroup[] = [
     { id: uid(), name: 'Oak Tree', entity_id: 'tree_oak', level_count: 3, created_at: Date.now() - 86400000 },

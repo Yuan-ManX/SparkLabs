@@ -19,7 +19,7 @@ const DOMAIN_COLORS: Record<string, string> = {
 };
 
 const CONFIDENCE_BADGE: Record<string, { bg: string; text: string }> = {
-  speculative: { bg: 'bg-gray-800', text: 'text-gray-400' },
+  speculative: { bg: 'bg-[#0f0f0f]', text: 'text-[#999]' },
   experimental: { bg: 'bg-blue-900/40', text: 'text-blue-400' },
   validated: { bg: 'bg-green-900/40', text: 'text-green-400' },
   proven: { bg: 'bg-yellow-900/40', text: 'text-yellow-400' },

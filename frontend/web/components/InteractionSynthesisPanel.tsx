@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'synthesize' | 'progression' | 'conflicts' | 'feedback' | 'validate';
 
@@ -56,7 +57,7 @@ const InteractionSynthesisPanel: React.FC = () => {
   const [validateNetworkId, setValidateNetworkId] = useState('');
   const [validateResult, setValidateResult] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultNetworks: Network[] = [
     { id: uid(), name: 'Platformer Core Loop', interaction_count: 8, density: 0.45, cohesion: 0.72 },

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 interface InteractionStats {
   total_interactions: number;
@@ -61,7 +62,7 @@ export default function InteractionDesignerPanel() {
             className={`px-4 py-2 rounded text-sm font-medium ${
               activeTab === tab
                 ? 'bg-[#00d4ff] text-black'
-                : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'
+                : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -79,7 +80,7 @@ export default function InteractionDesignerPanel() {
         {activeTab === 'overview' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Interaction Designer</h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-[#999] text-sm">
               Design and manage player interactions, UI flows, and input-response patterns for your game.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -101,12 +102,12 @@ export default function InteractionDesignerPanel() {
               <div className="space-y-2">
                 {Object.entries(stats.interaction_types).map(([type, count]) => (
                   <div key={type} className="flex justify-between items-center">
-                    <span className="text-gray-300">{type}</span>
+                    <span className="text-[#ccc]">{type}</span>
                     <span className="text-[#00d4ff]">{count}</span>
                   </div>
                 ))}
                 {Object.keys(stats.interaction_types).length === 0 && (
-                  <p className="text-gray-500 text-sm">No interactions defined yet</p>
+                  <p className="text-[#666] text-sm">No interactions defined yet</p>
                 )}
               </div>
             </div>
@@ -116,14 +117,14 @@ export default function InteractionDesignerPanel() {
         {activeTab === 'design' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Design Interactions</h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-[#999] text-sm">
               Define how players interact with game objects, UI elements, and other entities.
             </p>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
               <h3 className="text-[#00d4ff] font-medium mb-3">Interaction Builder</h3>
               <div className="space-y-3">
                 <div>
-                  <label className="text-gray-400 text-sm block mb-1">Interaction Name</label>
+                  <label className="text-[#999] text-sm block mb-1">Interaction Name</label>
                   <input
                     type="text"
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
@@ -131,7 +132,7 @@ export default function InteractionDesignerPanel() {
                   />
                 </div>
                 <div>
-                  <label className="text-gray-400 text-sm block mb-1">Trigger Type</label>
+                  <label className="text-[#999] text-sm block mb-1">Trigger Type</label>
                   <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
                     <option value="click">Click</option>
                     <option value="proximity">Proximity</option>
@@ -141,7 +142,7 @@ export default function InteractionDesignerPanel() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-gray-400 text-sm block mb-1">Response Type</label>
+                  <label className="text-[#999] text-sm block mb-1">Response Type</label>
                   <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
                     <option value="animation">Animation</option>
                     <option value="dialogue">Dialogue</option>
@@ -161,7 +162,7 @@ export default function InteractionDesignerPanel() {
         {activeTab === 'patterns' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Interaction Patterns</h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-[#999] text-sm">
               Pre-built interaction patterns for common game mechanics.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -180,7 +181,7 @@ export default function InteractionDesignerPanel() {
                   className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] cursor-pointer transition-colors"
                 >
                   <h3 className="text-[#00d4ff] font-medium">{pattern}</h3>
-                  <p className="text-gray-500 text-xs mt-1">Pre-built interaction pattern</p>
+                  <p className="text-[#666] text-xs mt-1">Pre-built interaction pattern</p>
                 </div>
               ))}
             </div>
@@ -190,12 +191,12 @@ export default function InteractionDesignerPanel() {
         {activeTab === 'testing' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Interaction Testing</h2>
-            <p className="text-gray-400 text-sm">
+            <p className="text-[#999] text-sm">
               Test and validate your interaction designs.
             </p>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
               <h3 className="text-[#00d4ff] font-medium mb-3">Test Runner</h3>
-              <p className="text-gray-500 text-sm mb-4">
+              <p className="text-[#666] text-sm mb-4">
                 Run automated tests on all defined interactions to verify correctness.
               </p>
               <button className="px-4 py-2 bg-green-600 text-white rounded text-sm font-medium hover:opacity-90">

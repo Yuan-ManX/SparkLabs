@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'lights' | 'layers';
 
@@ -57,7 +58,7 @@ const Lighting2DPanel: React.FC = () => {
   const [visibleEntities, setVisibleEntities] = useState('');
   const [lightingResult, setLightingResult] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultLights: Light[] = [
     { id: uid(), name: 'Sun Light', light_type: 'directional', position: '0,0', color: '#fff8dc', intensity: 0.8, radius: 500, created_at: Date.now() - 86400000 },

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'memories' | 'skills' | 'experiences' | 'nudges';
 
@@ -123,7 +124,7 @@ const MemoryOrchestratorPanel: React.FC = () => {
   const [expSummary, setExpSummary] = useState('');
   const [expLessons, setExpLessons] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

@@ -6,6 +6,7 @@ import {
   Play, Loader2, RefreshCw, ChevronDown, Shield, Zap,
   AlertTriangle, CheckCircle2, Star, Target, Layers, ArrowUp
 } from 'lucide-react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'analyze' | 'patterns' | 'suggestions';
 
@@ -67,7 +68,7 @@ const GameIntelligencePanel: React.FC = () => {
 
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent/game-intel';
+  const apiBase = API_ROOT + '/agent/game-intel';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

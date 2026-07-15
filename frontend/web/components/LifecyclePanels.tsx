@@ -89,7 +89,7 @@ const LifecyclePanel: React.FC = () => {
                     bp.tier === 'director' ? 'bg-orange-500/20 text-orange-500' :
                     bp.tier === 'lead' ? 'bg-blue-500/20 text-blue-500' :
                     bp.tier === 'specialist' ? 'bg-green-500/20 text-green-500' :
-                    'bg-gray-500/20 text-gray-400'
+                    'bg-\[#f5f5f5\]0/20 text-[#999]'
                   }`}>
                     {String(bp.tier)}
                   </span>
@@ -123,7 +123,7 @@ const LifecyclePanel: React.FC = () => {
                   (ev.phase as string) === 'execute' ? 'bg-blue-500' :
                   (ev.phase as string) === 'reflect' ? 'bg-yellow-500' :
                   (ev.phase as string) === 'verify' ? 'bg-purple-500' :
-                  'bg-gray-500'
+                  'bg-\[#f5f5f5\]0'
                 }`} />
                 <span className="text-[#888]">{String(ev.phase)}</span>
                 <span className="text-[#666]">agent:{String(ev.agent_id)}</span>
@@ -375,7 +375,7 @@ const ValidationHooksPanel: React.FC = () => {
                     (rule.severity as string) === 'critical' ? 'bg-red-500' :
                     (rule.severity as string) === 'high' ? 'bg-orange-500' :
                     (rule.severity as string) === 'medium' ? 'bg-yellow-500' :
-                    'bg-gray-500'
+                    'bg-\[#f5f5f5\]0'
                   }`} />
                   <span className="text-[12px] font-semibold text-[#e0e0e0]">{String(rule.name)}</span>
                 </div>
