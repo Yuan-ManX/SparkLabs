@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'worlds' | 'generator' | 'dungeons' | 'biomes';
 type TerrainType = 'ocean' | 'coast' | 'beach' | 'plains' | 'forest' | 'hills' | 'mountains' | 'snow' | 'desert' | 'swamp' | 'tundra' | 'volcanic';
@@ -108,7 +109,7 @@ const ProceduralWorldPanel: React.FC = () => {
   const [dungeonSeed, setDungeonSeed] = useState(Math.floor(Math.random() * 99999));
   const [loadingDungeon, setLoadingDungeon] = useState(false);
 
-  const apiBase = 'http://localhost:8000/api/agent/procedural-world';
+  const apiBase = API_ROOT + '/agent/procedural-world';
 
   const defaultWorlds: GeneratedWorld[] = [
     { world_id: uid(), name: 'Eldoria Realm', config: { world_size: 256, seed: 4242, ocean_level: 0.3, mountain_level: 0.7, island_count: 4, biome_count: 8 }, width: 256, height: 256, tile_count: 65536, land_percentage: 62, biome_distribution: { forest: 25, plains: 20, mountains: 12, desert: 8, tundra: 7, swamp: 5, volcanic: 3 }, structure_count: 18, road_length: 1420, river_count: 7, dungeon_count: 4, created_at: '3d ago' },

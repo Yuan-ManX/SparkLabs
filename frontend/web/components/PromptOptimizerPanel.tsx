@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type PromptDomain = 'game_generation' | 'level_design' | 'character_creation' | 'code_generation' | 'balancing' | 'ui_design' | 'sound_design' | 'narrative' | 'testing' | 'general';
 
@@ -70,7 +71,7 @@ const PromptOptimizerPanel: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error') => {
     setMessage({ text, type });

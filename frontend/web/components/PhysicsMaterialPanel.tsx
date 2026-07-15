@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'materials' | 'interactions' | 'templates';
 
@@ -49,7 +50,7 @@ const PhysicsMaterialPanel: React.FC = () => {
   const [templateFriction, setTemplateFriction] = useState('0.3');
   const [applyTarget, setApplyTarget] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultMaterials: Material[] = [
     { id: uid(), name: 'Metal', density: 7.8, restitution: 0.1, friction: 0.6 },

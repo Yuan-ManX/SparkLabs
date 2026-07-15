@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'scan' | 'rules' | 'quarantine';
 
@@ -45,7 +46,7 @@ const SecurityScannerPanel: React.FC = () => {
   const [content, setContent] = useState('');
   const [sourceType, setSourceType] = useState('text');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultRules: SecurityRule[] = [
     { id: uid(), name: 'SQL Injection Detection', category: 'injection', enabled: true, pattern: '/(DROP|INSERT|SELECT)\s+/i', created_at: Date.now() - 86400000 },

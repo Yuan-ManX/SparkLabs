@@ -38,7 +38,7 @@ const StoryboardEditor: React.FC = () => {
           <h1 className="text-2xl font-bold">Storyboard Editor</h1>
         </div>
 
-        <div className="bg-slate-800/50 border border-slate-700 rounded-xl p-4 mb-6">
+        <div className="bg-[#0f0f0f]/50 border border-[#1e1e1e] rounded-xl p-4 mb-6">
           <div className="flex gap-3">
             <input
               type="text"
@@ -46,7 +46,7 @@ const StoryboardEditor: React.FC = () => {
               onChange={(e) => setNewDesc(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && addFrame()}
               placeholder="Describe the scene frame..."
-              className="flex-1 px-4 py-2 bg-slate-700 border border-slate-600 rounded-lg text-sm"
+              className="flex-1 px-4 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg text-sm"
             />
             <button onClick={addFrame} className="px-4 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg text-sm font-medium flex items-center gap-2">
               <Plus className="w-4 h-4" />
@@ -60,12 +60,12 @@ const StoryboardEditor: React.FC = () => {
             <div
               key={frame.id}
               onClick={() => setSelectedFrame(frame.id)}
-              className={`bg-slate-800/50 border rounded-xl overflow-hidden cursor-pointer transition-all ${
-                selectedFrame === frame.id ? 'border-orange-500 ring-1 ring-orange-500/30' : 'border-slate-700 hover:border-slate-600'
+              className={`bg-[#0f0f0f]/50 border rounded-xl overflow-hidden cursor-pointer transition-all ${
+                selectedFrame === frame.id ? 'border-orange-500 ring-1 ring-orange-500/30' : 'border-[#1e1e1e] hover:border-[#2a2a2a]'
               }`}
             >
-              <div className="aspect-video bg-slate-700/50 flex items-center justify-center relative">
-                <Film className="w-8 h-8 text-slate-500" />
+              <div className="aspect-video bg-[#1a1a1a]/50 flex items-center justify-center relative">
+                <Film className="w-8 h-8 text-[#666]" />
                 <span className="absolute top-2 left-2 text-xs bg-black/50 px-2 py-0.5 rounded">
                   Frame {index + 1}
                 </span>
@@ -77,8 +77,8 @@ const StoryboardEditor: React.FC = () => {
                 </button>
               </div>
               <div className="p-3">
-                <p className="text-sm text-slate-300 line-clamp-2">{frame.description}</p>
-                <div className="flex items-center gap-2 mt-2 text-xs text-slate-500">
+                <p className="text-sm text-[#ccc] line-clamp-2">{frame.description}</p>
+                <div className="flex items-center gap-2 mt-2 text-xs text-[#666]">
                   <span>{frame.duration}s</span>
                   <span>|</span>
                   <span>{frame.cameraAngle}</span>
@@ -87,8 +87,8 @@ const StoryboardEditor: React.FC = () => {
             </div>
           ))}
           {frames.length === 0 && (
-            <div className="col-span-full text-center py-20 text-slate-500">
-              <Layout className="w-16 h-16 mx-auto mb-4 text-slate-600" />
+            <div className="col-span-full text-center py-20 text-[#666]">
+              <Layout className="w-16 h-16 mx-auto mb-4 text-[#555]" />
               <p className="text-lg font-medium">Storyboard Editor</p>
               <p className="text-sm mt-1">Add frames to design your cinematic sequences</p>
             </div>

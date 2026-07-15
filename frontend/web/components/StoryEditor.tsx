@@ -50,8 +50,8 @@ const StoryEditor: React.FC = () => {
 
   return (
     <div className="flex h-full">
-      <div className="w-72 bg-slate-800 border-r border-slate-700 flex flex-col">
-        <div className="p-4 border-b border-slate-700">
+      <div className="w-72 bg-[#0f0f0f] border-r border-[#1e1e1e] flex flex-col">
+        <div className="p-4 border-b border-[#1e1e1e]">
           <h2 className="font-bold text-sm mb-3 flex items-center gap-2">
             <FileText className="w-4 h-4 text-blue-400" />
             Story Nodes
@@ -62,13 +62,13 @@ const StoryEditor: React.FC = () => {
               value={newNodeName}
               onChange={(e) => setNewNodeName(e.target.value)}
               placeholder="Node name..."
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-sm"
+              className="w-full px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-sm"
               onKeyDown={(e) => e.key === 'Enter' && addNode()}
             />
             <select
               value={newNodeType}
               onChange={(e) => setNewNodeType(e.target.value)}
-              className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-sm"
+              className="w-full px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-sm"
             >
               <option value="beginning">Beginning</option>
               <option value="plot_point">Plot Point</option>
@@ -88,8 +88,8 @@ const StoryEditor: React.FC = () => {
             <div
               key={node.id}
               onClick={() => setSelectedNode(node.id)}
-              className={`p-3 border-b border-slate-700/50 cursor-pointer hover:bg-slate-700/50 transition-colors ${
-                selectedNode === node.id ? 'bg-slate-700' : ''
+              className={`p-3 border-b border-[#1e1e1e]/50 cursor-pointer hover:bg-[#1a1a1a]/50 transition-colors ${
+                selectedNode === node.id ? 'bg-[#1a1a1a]' : ''
               }`}
             >
               <div className="flex items-center justify-between">
@@ -99,14 +99,14 @@ const StoryEditor: React.FC = () => {
                     {node.type}
                   </span>
                 </div>
-                <button onClick={(e) => { e.stopPropagation(); removeNode(node.id); }} className="p-1 hover:bg-slate-600 rounded">
-                  <Trash2 className="w-3 h-3 text-slate-400" />
+                <button onClick={(e) => { e.stopPropagation(); removeNode(node.id); }} className="p-1 hover:bg-[#222] rounded">
+                  <Trash2 className="w-3 h-3 text-[#999]" />
                 </button>
               </div>
             </div>
           ))}
           {nodes.length === 0 && (
-            <div className="p-4 text-center text-sm text-slate-500">Add story nodes to build your narrative</div>
+            <div className="p-4 text-center text-sm text-[#666]">Add story nodes to build your narrative</div>
           )}
         </div>
       </div>
@@ -114,7 +114,7 @@ const StoryEditor: React.FC = () => {
       <div className="flex-1 flex flex-col">
         {selected ? (
           <>
-            <div className="p-4 border-b border-slate-700 flex items-center justify-between">
+            <div className="p-4 border-b border-[#1e1e1e] flex items-center justify-between">
               <div>
                 <h3 className="font-bold">{selected.name}</h3>
                 <span className={`text-xs px-2 py-0.5 rounded-full border ${typeColors[selected.type] || ''}`}>
@@ -125,27 +125,27 @@ const StoryEditor: React.FC = () => {
             <div className="flex-1 p-4 overflow-y-auto">
               <div className="space-y-4">
                 <div>
-                  <label className="text-xs text-slate-400 block mb-1">Node Name</label>
+                  <label className="text-xs text-[#999] block mb-1">Node Name</label>
                   <input
                     type="text"
                     value={selected.name}
                     onChange={(e) => updateNode(selected.id, 'name', e.target.value)}
-                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-sm"
+                    className="w-full px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-sm"
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-400 block mb-1">Content</label>
+                  <label className="text-xs text-[#999] block mb-1">Content</label>
                   <textarea
                     value={selected.content}
                     onChange={(e) => updateNode(selected.id, 'content', e.target.value)}
                     rows={8}
-                    className="w-full px-3 py-2 bg-slate-700 border border-slate-600 rounded text-sm resize-none"
+                    className="w-full px-3 py-2 bg-[#1a1a1a] border border-[#2a2a2a] rounded text-sm resize-none"
                     placeholder="Write the narrative content for this story node..."
                   />
                 </div>
                 <div>
-                  <label className="text-xs text-slate-400 block mb-1">Connected Nodes</label>
-                  <div className="text-sm text-slate-300">
+                  <label className="text-xs text-[#999] block mb-1">Connected Nodes</label>
+                  <div className="text-sm text-[#ccc]">
                     {selected.possible_next.length > 0
                       ? selected.possible_next.join(', ')
                       : 'No connections yet'}
@@ -155,9 +155,9 @@ const StoryEditor: React.FC = () => {
             </div>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-slate-500">
+          <div className="flex-1 flex items-center justify-center text-[#666]">
             <div className="text-center">
-              <FileText className="w-16 h-16 mx-auto mb-4 text-slate-600" />
+              <FileText className="w-16 h-16 mx-auto mb-4 text-[#444]" />
               <p className="text-lg font-medium">Story Editor</p>
               <p className="text-sm mt-1">Build branching narratives with AI-powered story generation</p>
             </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'generate' | 'encounters' | 'treasures' | 'overview';
 
@@ -75,7 +76,7 @@ const ProceduralDungeonPanel: React.FC = () => {
 
   const [generatedLayout, setGeneratedLayout] = useState<Layout | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

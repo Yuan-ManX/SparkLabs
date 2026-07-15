@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ExportPlatform = 'WEB' | 'WINDOWS' | 'MACOS' | 'LINUX' | 'ANDROID' | 'IOS';
 type JobStatus = 'QUEUED' | 'ASSET_OPTIMIZATION' | 'CODE_BUNDLING' | 'PACKAGING' | 'VALIDATING' | 'COMPLETED' | 'FAILED';
@@ -95,7 +96,7 @@ const ProjectExporterPanel: React.FC = () => {
   const [stats, setStats] = useState<any>(null);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

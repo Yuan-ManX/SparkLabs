@@ -6,6 +6,7 @@ import {
   CheckCircle2, Circle, Loader2, Download, Upload, FolderTree,
   Copy, RefreshCw, Move3D, GripHorizontal
 } from 'lucide-react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 // Tab identifiers
 type TabId = 'scene' | 'prefabs' | 'serialize';
@@ -148,7 +149,7 @@ const SceneGraphPanel: React.FC = () => {
   // UI state
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api';
+  const apiBase = API_ROOT;
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

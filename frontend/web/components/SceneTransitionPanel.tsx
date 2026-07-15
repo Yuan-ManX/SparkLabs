@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'config' | 'events' | 'sequences';
 
@@ -53,7 +54,7 @@ const SceneTransitionPanel: React.FC = () => {
   const [stepConfig, setStepConfig] = useState('');
   const [stepDelay, setStepDelay] = useState('0.5');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultConfigs: TransitionConfig[] = [
     { id: uid(), name: 'CrossFade', type: 'FADE', duration: 1.0 },

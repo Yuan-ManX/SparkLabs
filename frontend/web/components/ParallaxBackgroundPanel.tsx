@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'layers' | 'scenes';
 
@@ -54,7 +55,7 @@ const ParallaxBackgroundPanel: React.FC = () => {
   const [transType, setTransType] = useState('fade');
   const [transDuration, setTransDuration] = useState('1.0');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultLayers: ParallaxLayer[] = [
     { id: uid(), name: 'Far Mountains', texture_ref: 'mountains_bg.png', parallax_factor: 0.2, scroll_direction: 'horizontal', created_at: Date.now() - 86400000 },

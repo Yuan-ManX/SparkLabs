@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'scrub' | 'rules';
 
@@ -29,7 +30,7 @@ const StreamingScrubberPanel: React.FC = () => {
   const [blockType, setBlockType] = useState('tool_call');
   const [visibility, setVisibility] = useState('hidden');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultRules: ScrubRule[] = [
     { id: uid(), block_type: 'xml_fence', visibility: 'hidden' },

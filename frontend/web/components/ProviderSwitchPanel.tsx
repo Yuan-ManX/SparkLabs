@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ProviderStatus = 'CONNECTED' | 'DEGRADED' | 'DISCONNECTED';
 type TabId = 'providers' | 'models' | 'rules';
@@ -53,7 +54,7 @@ const ProviderSwitchPanel: React.FC = () => {
   const [selectedProvider, setSelectedProvider] = useState('');
   const [selectedModel, setSelectedModel] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultProviders: Provider[] = [
     { id: uid(), name: 'OpenAI', provider_type: 'openai', base_url: 'https://api.openai.com/v1', status: 'CONNECTED', model_count: 4 },

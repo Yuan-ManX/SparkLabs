@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 interface PhysicsConfig {
   solver_type: string;
@@ -190,7 +191,7 @@ const PhysicsOptimizerPanel: React.FC = () => {
   }, [initialize, fetchConfig, fetchStats, fetchRecommendations]);
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a1a] text-gray-200 overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm font-bold">
@@ -198,12 +199,12 @@ const PhysicsOptimizerPanel: React.FC = () => {
           </div>
           <div>
             <h2 className="text-sm font-semibold">Physics Optimizer</h2>
-            <p className="text-[10px] text-gray-500">Simulation performance tuning</p>
+            <p className="text-[10px] text-[#666]">Simulation performance tuning</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className={`w-2 h-2 rounded-full ${isInitialized ? 'bg-green-400' : 'bg-yellow-400'}`} />
-          <span className="text-[10px] text-gray-500">{isInitialized ? 'Active' : 'Initializing...'}</span>
+          <span className="text-[10px] text-[#666]">{isInitialized ? 'Active' : 'Initializing...'}</span>
         </div>
       </div>
 
@@ -225,7 +226,7 @@ const PhysicsOptimizerPanel: React.FC = () => {
             className={`px-4 py-2 text-xs font-medium transition-colors ${
               activeTab === tab
                 ? 'text-cyan-400 border-b-2 border-cyan-500 bg-cyan-500/5'
-                : 'text-gray-500 hover:text-gray-300'
+                : 'text-[#666] hover:text-[#ccc]'
             }`}
           >
             {tab === 'config' ? 'Configuration' : tab === 'recommendations' ? 'Recommendations' : 'Statistics'}
@@ -238,38 +239,38 @@ const PhysicsOptimizerPanel: React.FC = () => {
           <div className="space-y-4">
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Solver</div>
+                <div className="text-xs text-[#666] mb-1">Solver</div>
                 <div className="text-sm font-medium text-cyan-400">{config.solver_type.replace(/_/g, ' ')}</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Spatial Strategy</div>
+                <div className="text-xs text-[#666] mb-1">Spatial Strategy</div>
                 <div className="text-sm font-medium text-blue-400">{config.spatial_strategy.replace(/_/g, ' ')}</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Quality Level</div>
+                <div className="text-xs text-[#666] mb-1">Quality Level</div>
                 <div className="text-sm font-medium text-purple-400 capitalize">{config.quality_level}</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Timestep</div>
+                <div className="text-xs text-[#666] mb-1">Timestep</div>
                 <div className="text-sm font-medium text-amber-400">{(config.fixed_timestep * 1000).toFixed(1)}ms</div>
               </div>
             </div>
             <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-              <h3 className="text-xs font-medium text-gray-300 mb-2">Solver Settings</h3>
+              <h3 className="text-xs font-medium text-[#ccc] mb-2">Solver Settings</h3>
               <div className="grid grid-cols-2 gap-2 text-[10px]">
-                <div className="flex justify-between"><span className="text-gray-500">Velocity Iterations</span><span className="text-gray-300">{config.velocity_iterations}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Position Iterations</span><span className="text-gray-300">{config.position_iterations}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Max Sub Steps</span><span className="text-gray-300">{config.max_sub_steps}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Max Contacts/Pair</span><span className="text-gray-300">{config.max_contacts_per_pair}</span></div>
+                <div className="flex justify-between"><span className="text-[#666]">Velocity Iterations</span><span className="text-[#ccc]">{config.velocity_iterations}</span></div>
+                <div className="flex justify-between"><span className="text-[#666]">Position Iterations</span><span className="text-[#ccc]">{config.position_iterations}</span></div>
+                <div className="flex justify-between"><span className="text-[#666]">Max Sub Steps</span><span className="text-[#ccc]">{config.max_sub_steps}</span></div>
+                <div className="flex justify-between"><span className="text-[#666]">Max Contacts/Pair</span><span className="text-[#ccc]">{config.max_contacts_per_pair}</span></div>
               </div>
             </div>
             <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-              <h3 className="text-xs font-medium text-gray-300 mb-2">Sleep Management</h3>
+              <h3 className="text-xs font-medium text-[#ccc] mb-2">Sleep Management</h3>
               <div className="grid grid-cols-2 gap-2 text-[10px]">
-                <div className="flex justify-between"><span className="text-gray-500">Sleeping Enabled</span><span className={config.enable_sleeping ? 'text-green-400' : 'text-red-400'}>{config.enable_sleeping ? 'Yes' : 'No'}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Warm Starting</span><span className={config.enable_warm_starting ? 'text-green-400' : 'text-red-400'}>{config.enable_warm_starting ? 'Yes' : 'No'}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">CCD</span><span className={config.enable_continuous_collision ? 'text-green-400' : 'text-red-400'}>{config.enable_continuous_collision ? 'Yes' : 'No'}</span></div>
-                <div className="flex justify-between"><span className="text-gray-500">Gravity</span><span className="text-gray-300">({config.gravity[0]}, {config.gravity[1]})</span></div>
+                <div className="flex justify-between"><span className="text-[#666]">Sleeping Enabled</span><span className={config.enable_sleeping ? 'text-green-400' : 'text-red-400'}>{config.enable_sleeping ? 'Yes' : 'No'}</span></div>
+                <div className="flex justify-between"><span className="text-[#666]">Warm Starting</span><span className={config.enable_warm_starting ? 'text-green-400' : 'text-red-400'}>{config.enable_warm_starting ? 'Yes' : 'No'}</span></div>
+                <div className="flex justify-between"><span className="text-[#666]">CCD</span><span className={config.enable_continuous_collision ? 'text-green-400' : 'text-red-400'}>{config.enable_continuous_collision ? 'Yes' : 'No'}</span></div>
+                <div className="flex justify-between"><span className="text-[#666]">Gravity</span><span className="text-[#ccc]">({config.gravity[0]}, {config.gravity[1]})</span></div>
               </div>
             </div>
             <div className="flex gap-2">
@@ -292,7 +293,7 @@ const PhysicsOptimizerPanel: React.FC = () => {
         {activeTab === 'recommendations' && (
           <div className="space-y-3">
             {recommendations.length === 0 ? (
-              <div className="text-center text-gray-500 py-8 text-sm">
+              <div className="text-center text-[#666] py-8 text-sm">
                 Record a profile and run analysis to see recommendations
               </div>
             ) : (
@@ -306,14 +307,14 @@ const PhysicsOptimizerPanel: React.FC = () => {
                       'bg-red-900/50 text-red-300'
                     }`}>{rec.difficulty}</span>
                   </div>
-                  <div className="text-[10px] text-gray-500 mb-2">{rec.rationale}</div>
+                  <div className="text-[10px] text-[#666] mb-2">{rec.rationale}</div>
                   <div className="flex items-center gap-4 text-[10px] mb-2">
                     <div>
-                      <span className="text-gray-500">Current: </span>
-                      <span className="text-gray-400">{String(rec.current_value)}</span>
+                      <span className="text-[#666]">Current: </span>
+                      <span className="text-[#999]">{String(rec.current_value)}</span>
                     </div>
                     <div>
-                      <span className="text-gray-500">Recommended: </span>
+                      <span className="text-[#666]">Recommended: </span>
                       <span className="text-green-400">{String(rec.recommended_value)}</span>
                     </div>
                     <div className="ml-auto">
@@ -339,23 +340,23 @@ const PhysicsOptimizerPanel: React.FC = () => {
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                 <div className="text-xl font-bold text-cyan-400">{stats.profiles_collected}</div>
-                <div className="text-[10px] text-gray-500">Profiles</div>
+                <div className="text-[10px] text-[#666]">Profiles</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                 <div className="text-xl font-bold text-blue-400">{stats.recommendations_count}</div>
-                <div className="text-[10px] text-gray-500">Recommendations</div>
+                <div className="text-[10px] text-[#666]">Recommendations</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                 <div className={`text-xl font-bold ${stats.initialized ? 'text-green-400' : 'text-yellow-400'}`}>
                   {stats.initialized ? 'ON' : 'OFF'}
                 </div>
-                <div className="text-[10px] text-gray-500">Status</div>
+                <div className="text-[10px] text-[#666]">Status</div>
               </div>
             </div>
             {stats.latest_profile && (
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                <h3 className="text-xs font-medium text-gray-300 mb-2">Latest Profile</h3>
-                <pre className="text-[10px] text-gray-500 whitespace-pre-wrap">
+                <h3 className="text-xs font-medium text-[#ccc] mb-2">Latest Profile</h3>
+                <pre className="text-[10px] text-[#666] whitespace-pre-wrap">
                   {JSON.stringify(stats.latest_profile, null, 2)}
                 </pre>
               </div>

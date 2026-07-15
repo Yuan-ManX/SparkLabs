@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'revenue' | 'pricing' | 'iap' | 'audit';
 
@@ -227,7 +228,7 @@ const MonetizationDesignerPanel: React.FC = () => {
   const [loadingIap, setLoadingIap] = useState(false);
   const [loadingAudit, setLoadingAudit] = useState(false);
 
-  const apiBase = 'http://localhost:8000/api/agent/monetization-designer';
+  const apiBase = API_ROOT + '/agent/monetization-designer';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

@@ -367,7 +367,7 @@ const NodeCanvas: React.FC = () => {
                 data.maturity === 'core' ? 'bg-green-500/20 text-green-400' :
                 data.maturity === 'proven' ? 'bg-blue-500/20 text-blue-400' :
                 data.maturity === 'validated' ? 'bg-yellow-500/20 text-yellow-400' :
-                'bg-gray-500/20 text-gray-400'
+                'bg-\[#f5f5f5\]0/20 text-[#999]'
               }`}>
                 {data.maturity}
               </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'teams' | 'tasks' | 'synergy' | 'communication';
 
@@ -127,7 +128,7 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
   const [optimizeMissionType, setOptimizeMissionType] = useState('');
   const [availableAgentsInput, setAvailableAgentsInput] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultTeams: AgentTeam[] = [
     { id: uid(), name: 'Alpha Squad', members: ['agent-oracle', 'agent-builder', 'agent-analyst'], coordination_mode: 'collaborative', created_at: Date.now() - 600000, task_count: 3, active: true },

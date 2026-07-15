@@ -17,6 +17,7 @@ from backend.routes import (
     agent_engine_integration,
 )
 from backend.websocket import router as ws_router
+from sparkai.api.routes import llm_router_routes
 
 config = SparkAIConfig()
 
@@ -65,6 +66,7 @@ app.include_router(agent_game_forge.router, prefix="/api/agent", tags=["Agent Ga
 app.include_router(agent_engine_unified_v2.router, prefix="/api", tags=["Unified Agent & Engine Core v2"])
 app.include_router(agent_ai_native_orchestrator.router, prefix="/api/agent", tags=["AI-Native Game Orchestrator"])
 app.include_router(agent_engine_integration.router, prefix="/api", tags=["Agent & Engine Integration"])
+app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
 @app.get("/api/health")

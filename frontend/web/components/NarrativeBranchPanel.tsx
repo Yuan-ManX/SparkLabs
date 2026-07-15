@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'branches' | 'nodes' | 'characters';
 
@@ -61,7 +62,7 @@ const NarrativeBranchPanel: React.FC = () => {
   const [charRole, setCharRole] = useState('');
   const [charTraits, setCharTraits] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultBranches: Branch[] = [
     { id: uid(), name: 'Main Quest Line', strategy: 'branching', root_content: 'The hero awakens in a mysterious land...', created_at: Date.now() - 86400000 },

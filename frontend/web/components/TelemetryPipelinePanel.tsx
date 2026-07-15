@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'sinks' | 'metrics' | 'throughput';
 
@@ -49,7 +50,7 @@ const TelemetryPipelinePanel: React.FC = () => {
 
   const [flushSinkId, setFlushSinkId] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSinks: TelemetrySink[] = [
     { id: uid(), name: 'Prometheus Main', sink_type: 'prometheus', endpoint: 'http://localhost:9090', metric_count: 1240, status: 'active' },

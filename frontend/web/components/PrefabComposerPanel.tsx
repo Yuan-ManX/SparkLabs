@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'prefabs' | 'instances';
 
@@ -34,7 +35,7 @@ const PrefabComposerPanel: React.FC = () => {
   const [instanceScene, setInstanceScene] = useState('');
   const [instancePosition, setInstancePosition] = useState('0,0,0');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultPrefabs: Prefab[] = [
     { id: uid(), name: 'player_character', type: 'entity', components: ['mesh_renderer', 'rigidbody', 'capsule_collider', 'player_controller'] },

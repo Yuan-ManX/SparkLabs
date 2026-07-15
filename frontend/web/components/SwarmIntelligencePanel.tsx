@@ -6,6 +6,7 @@ import {
   Activity, Search, Tag, CheckCircle2, XCircle, MinusCircle,
   Loader2, Brain, Zap, RefreshCw, GitBranch
 } from 'lucide-react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 // Tab identifiers
 type TabId = 'agents' | 'consensus' | 'tasks' | 'knowledge' | 'emergence';
@@ -121,7 +122,7 @@ const SwarmIntelligencePanel: React.FC = () => {
   // UI state
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent/swarm-intel';
+  const apiBase = API_ROOT + '/agent/swarm-intel';
 
   // Default agents
   const defaultAgents: SwarmAgent[] = [

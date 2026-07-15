@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 export default function EngineAIBridgePanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -89,7 +90,7 @@ export default function EngineAIBridgePanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -111,7 +112,7 @@ export default function EngineAIBridgePanel() {
                 </div>
               ))}
               {Object.keys(stats).length === 0 && (
-                <div className="col-span-full text-gray-400 text-sm">No bridge stats available</div>
+                <div className="col-span-full text-[#999] text-sm">No bridge stats available</div>
               )}
             </div>
           </div>
@@ -124,12 +125,12 @@ export default function EngineAIBridgePanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Send Command</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Command Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Command Name</label>
                   <input type="text" value={cmdName} onChange={e => setCmdName(e.target.value)}
                     placeholder="e.g. start_game" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Payload (JSON)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Payload (JSON)</label>
                   <textarea value={cmdPayload} onChange={e => setCmdPayload(e.target.value)}
                     rows={3} placeholder='{"level": "tutorial"}'
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
@@ -152,7 +153,7 @@ export default function EngineAIBridgePanel() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">Command History</h2>
                 <button onClick={fetchCommandHistory}
-                  className="text-xs px-3 py-1 bg-[#1a1a2e] text-gray-300 rounded hover:bg-[#2a2a4a]">
+                  className="text-xs px-3 py-1 bg-[#1a1a2e] text-[#ccc] rounded hover:bg-[#2a2a4a]">
                   Refresh
                 </button>
               </div>
@@ -165,16 +166,16 @@ export default function EngineAIBridgePanel() {
                         <span className={`text-xs px-2 py-0.5 rounded ${
                           c.status === 'success' ? 'bg-green-900 text-green-300' :
                           c.status === 'failed' ? 'bg-red-900 text-red-300' :
-                          'bg-gray-700 text-gray-300'
+                          'bg-[#1a1a1a] text-[#ccc]'
                         }`}>{c.status || 'pending'}</span>
                       </div>
-                      {c.payload && <div className="mt-1 text-xs text-gray-400 font-mono">{JSON.stringify(c.payload)}</div>}
-                      {c.timestamp && <div className="mt-1 text-xs text-gray-500">{c.timestamp}</div>}
+                      {c.payload && <div className="mt-1 text-xs text-[#999] font-mono">{JSON.stringify(c.payload)}</div>}
+                      {c.timestamp && <div className="mt-1 text-xs text-[#666]">{c.timestamp}</div>}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No command history</div>
+                <div className="text-[#999] text-xs">No command history</div>
               )}
             </div>
           </div>
@@ -187,17 +188,17 @@ export default function EngineAIBridgePanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Send Event</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Event Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Event Name</label>
                   <input type="text" value={evtName} onChange={e => setEvtName(e.target.value)}
                     placeholder="e.g. player_death" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Source</label>
+                  <label className="text-xs text-[#999] mb-1 block">Source</label>
                   <input type="text" value={evtSource} onChange={e => setEvtSource(e.target.value)}
                     placeholder="e.g. combat_system" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Payload (JSON)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Payload (JSON)</label>
                   <textarea value={evtPayload} onChange={e => setEvtPayload(e.target.value)}
                     rows={3} placeholder='{"player_id": "123", "cause": "fall_damage"}'
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
@@ -220,7 +221,7 @@ export default function EngineAIBridgePanel() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">Event History</h2>
                 <button onClick={fetchEventHistory}
-                  className="text-xs px-3 py-1 bg-[#1a1a2e] text-gray-300 rounded hover:bg-[#2a2a4a]">
+                  className="text-xs px-3 py-1 bg-[#1a1a2e] text-[#ccc] rounded hover:bg-[#2a2a4a]">
                   Refresh
                 </button>
               </div>
@@ -230,15 +231,15 @@ export default function EngineAIBridgePanel() {
                     <div key={e.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{e.name || e.event}</span>
-                        <span className="text-xs bg-[#0f0f23] text-gray-300 px-2 py-0.5 rounded">{e.source || 'unknown'}</span>
+                        <span className="text-xs bg-[#0f0f23] text-[#ccc] px-2 py-0.5 rounded">{e.source || 'unknown'}</span>
                       </div>
-                      {e.payload && <div className="mt-1 text-xs text-gray-400 font-mono">{JSON.stringify(e.payload)}</div>}
-                      {e.timestamp && <div className="mt-1 text-xs text-gray-500">{e.timestamp}</div>}
+                      {e.payload && <div className="mt-1 text-xs text-[#999] font-mono">{JSON.stringify(e.payload)}</div>}
+                      {e.timestamp && <div className="mt-1 text-xs text-[#666]">{e.timestamp}</div>}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No event history</div>
+                <div className="text-[#999] text-xs">No event history</div>
               )}
             </div>
           </div>
@@ -251,19 +252,19 @@ export default function EngineAIBridgePanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Sync Entity</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Entity ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Entity ID</label>
                   <input type="text" value={syncEntityId} onChange={e => setSyncEntityId(e.target.value)}
                     placeholder="entity_123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Entity Type</label>
+                  <label className="text-xs text-[#999] mb-1 block">Entity Type</label>
                   <select value={syncEntityType} onChange={e => setSyncEntityType(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {entityTypes.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Entity Data (JSON)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Entity Data (JSON)</label>
                   <textarea value={syncEntityData} onChange={e => setSyncEntityData(e.target.value)}
                     rows={4} placeholder='{"position": {"x": 0, "y": 0}, "health": 100}'
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
@@ -288,7 +289,7 @@ export default function EngineAIBridgePanel() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">Synced State</h2>
                 <button onClick={fetchSyncedState}
-                  className="text-xs px-3 py-1 bg-[#1a1a2e] text-gray-300 rounded hover:bg-[#2a2a4a]">
+                  className="text-xs px-3 py-1 bg-[#1a1a2e] text-[#ccc] rounded hover:bg-[#2a2a4a]">
                   Refresh
                 </button>
               </div>
@@ -296,24 +297,24 @@ export default function EngineAIBridgePanel() {
                 <div className="space-y-3">
                   {Object.entries(syncedState).filter(([k]) => k !== 'entities').map(([key, value]) => (
                     <div key={key} className="flex justify-between bg-[#1a1a2e] rounded px-3 py-2">
-                      <span className="text-gray-400 text-xs capitalize">{key.replace(/_/g, ' ')}</span>
+                      <span className="text-[#999] text-xs capitalize">{key.replace(/_/g, ' ')}</span>
                       <span className="text-white text-xs font-mono">{String(value)}</span>
                     </div>
                   ))}
                   {syncedState.entities && (
                     <div className="mt-2">
-                      <div className="text-gray-400 text-xs mb-2">Entities:</div>
+                      <div className="text-[#999] text-xs mb-2">Entities:</div>
                       {Object.entries(syncedState.entities).map(([key, value]) => (
                         <div key={key} className="bg-[#1a1a2e] rounded p-2 mb-1">
                           <div className="text-white text-xs font-medium">{key}</div>
-                          <pre className="text-xs text-gray-400 font-mono mt-1">{JSON.stringify(value, null, 2)}</pre>
+                          <pre className="text-xs text-[#999] font-mono mt-1">{JSON.stringify(value, null, 2)}</pre>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No synced state available</div>
+                <div className="text-[#999] text-xs">No synced state available</div>
               )}
             </div>
           </div>
@@ -326,22 +327,22 @@ export default function EngineAIBridgePanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Record Metric</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Metric Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Metric Name</label>
                   <input type="text" value={metricName} onChange={e => setMetricName(e.target.value)}
                     placeholder="e.g. latency_ms" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Value</label>
+                  <label className="text-xs text-[#999] mb-1 block">Value</label>
                   <input type="number" value={metricValue} onChange={e => setMetricValue(e.target.value)}
                     step="0.01" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Unit</label>
+                  <label className="text-xs text-[#999] mb-1 block">Unit</label>
                   <input type="text" value={metricUnit} onChange={e => setMetricUnit(e.target.value)}
                     placeholder="ms" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Tags (comma-separated)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Tags (comma-separated)</label>
                   <input type="text" value={metricTags} onChange={e => setMetricTags(e.target.value)}
                     placeholder="env:prod, region:us" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -367,7 +368,7 @@ export default function EngineAIBridgePanel() {
                 <div className="grid grid-cols-2 gap-4">
                   {Object.entries(metricSummary).map(([key, value]) => (
                     <div key={key} className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                      <span className="text-gray-400 text-xs capitalize">{key.replace(/_/g, ' ')}</span>
+                      <span className="text-[#999] text-xs capitalize">{key.replace(/_/g, ' ')}</span>
                       <div className="text-white text-sm font-bold mt-1">
                         {typeof value === 'number' ? value.toLocaleString() : String(value)}
                       </div>
@@ -375,7 +376,7 @@ export default function EngineAIBridgePanel() {
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No metric summary available</div>
+                <div className="text-[#999] text-xs">No metric summary available</div>
               )}
             </div>
 
@@ -383,7 +384,7 @@ export default function EngineAIBridgePanel() {
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">Metrics ({metrics.length})</h2>
                 <button onClick={fetchMetrics}
-                  className="text-xs px-3 py-1 bg-[#1a1a2e] text-gray-300 rounded hover:bg-[#2a2a4a]">
+                  className="text-xs px-3 py-1 bg-[#1a1a2e] text-[#ccc] rounded hover:bg-[#2a2a4a]">
                   Refresh
                 </button>
               </div>
@@ -392,10 +393,10 @@ export default function EngineAIBridgePanel() {
                   <table className="w-full text-xs">
                     <thead>
                       <tr className="border-b border-[#2a2a4a]">
-                        <th className="text-left p-2 text-gray-400">Name</th>
-                        <th className="text-left p-2 text-gray-400">Value</th>
-                        <th className="text-left p-2 text-gray-400">Unit</th>
-                        <th className="text-left p-2 text-gray-400">Timestamp</th>
+                        <th className="text-left p-2 text-[#999]">Name</th>
+                        <th className="text-left p-2 text-[#999]">Value</th>
+                        <th className="text-left p-2 text-[#999]">Unit</th>
+                        <th className="text-left p-2 text-[#999]">Timestamp</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -403,15 +404,15 @@ export default function EngineAIBridgePanel() {
                         <tr key={m.id || i} className="border-b border-[#2a2a4a]/30">
                           <td className="p-2 text-white">{m.name}</td>
                           <td className="p-2 text-[#00d4ff] font-mono">{m.value}</td>
-                          <td className="p-2 text-gray-300">{m.unit || '-'}</td>
-                          <td className="p-2 text-gray-500">{m.timestamp || '-'}</td>
+                          <td className="p-2 text-[#ccc]">{m.unit || '-'}</td>
+                          <td className="p-2 text-[#666]">{m.timestamp || '-'}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No metrics recorded</div>
+                <div className="text-[#999] text-xs">No metrics recorded</div>
               )}
             </div>
           </div>

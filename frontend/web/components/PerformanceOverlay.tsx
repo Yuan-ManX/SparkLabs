@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 interface FrameData {
   fps: number;
@@ -83,7 +84,7 @@ const PerformanceOverlay: React.FC = () => {
     objects: { warning: 5000, error: 10000 },
   });
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const fetchFps = useCallback(async () => {
     try {

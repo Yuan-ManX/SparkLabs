@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'config' | 'chunks' | 'queue' | 'memory';
 
@@ -125,7 +126,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
   const [loadingPrioritize, setLoadingPrioritize] = useState(false);
   const [loadingMemory, setLoadingMemory] = useState(false);
 
-  const apiBase = 'http://localhost:8000/api/agent/progressive-loading';
+  const apiBase = API_ROOT + '/agent/progressive-loading';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

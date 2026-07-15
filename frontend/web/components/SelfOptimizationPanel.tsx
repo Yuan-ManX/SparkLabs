@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'profiles' | 'calibration' | 'variants';
 
@@ -67,7 +68,7 @@ const SelfOptimizationPanel: React.FC = () => {
   const [variantProfileId, setVariantProfileId] = useState('');
   const [variantCount, setVariantCount] = useState('3');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultProfiles: OptimizationProfile[] = [
     { id: uid(), name: 'Response Quality Optimizer', target_metric: 'user_satisfaction', current_value: 0.82, created_at: Date.now() - 600000, strategy: 'A/B prompt testing' },

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'layers' | 'groups';
 
@@ -45,7 +46,7 @@ const RenderLayerPanel: React.FC = () => {
   const [reorderGroupId, setReorderGroupId] = useState('');
   const [reorderLayerOrder, setReorderLayerOrder] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultLayers: RenderLayer[] = [
     { id: uid(), name: 'Background', z_index: 0, sort_strategy: 'none', entity_count: 5, created_at: Date.now() - 86400000 },

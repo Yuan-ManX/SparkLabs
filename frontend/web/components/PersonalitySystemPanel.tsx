@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type Archetype = 'mentor' | 'collaborator' | 'analyst' | 'creative' | 'coach';
 type TabId = 'profiles' | 'traits' | 'blend';
@@ -66,7 +67,7 @@ const PersonalitySystemPanel: React.FC = () => {
   const [profileNameInput, setProfileNameInput] = useState('');
   const [selectedArchetype, setSelectedArchetype] = useState<Archetype>('mentor');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultProfiles: PersonalityProfile[] = [
     { id: uid(), name: 'Friendly Mentor', archetype: 'mentor', style: 'encouraging', is_active: true, created_at: '3 days ago', trait_count: 6, description: 'Patient and encouraging teaching style with clear explanations' },

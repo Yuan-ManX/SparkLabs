@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 interface SynthesisResult {
   result_id: string;
@@ -187,7 +188,7 @@ const StrategicSynthesisPanel: React.FC = () => {
   ];
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a1a] text-gray-200 overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a]">
         <div className="flex items-center gap-3">
@@ -196,12 +197,12 @@ const StrategicSynthesisPanel: React.FC = () => {
           </div>
           <div>
             <h2 className="text-sm font-semibold">Strategic Synthesis</h2>
-            <p className="text-[10px] text-gray-500">Multi-step reasoning engine</p>
+            <p className="text-[10px] text-[#666]">Multi-step reasoning engine</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
           <span className={`w-2 h-2 rounded-full ${isInitialized ? 'bg-green-400' : 'bg-yellow-400'}`} />
-          <span className="text-[10px] text-gray-500">{isInitialized ? 'Active' : 'Initializing...'}</span>
+          <span className="text-[10px] text-[#666]">{isInitialized ? 'Active' : 'Initializing...'}</span>
         </div>
       </div>
 
@@ -225,7 +226,7 @@ const StrategicSynthesisPanel: React.FC = () => {
             className={`px-4 py-2 text-xs font-medium transition-colors ${
               activeTab === tab
                 ? 'text-purple-400 border-b-2 border-purple-500 bg-purple-500/5'
-                : 'text-gray-500 hover:text-gray-300'
+                : 'text-[#666] hover:text-[#ccc]'
             }`}
           >
             {tab === 'synthesize' ? 'Synthesize' : tab === 'results' ? 'Results' : 'Statistics'}
@@ -238,21 +239,21 @@ const StrategicSynthesisPanel: React.FC = () => {
         {activeTab === 'synthesize' && (
           <div className="space-y-4">
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Objective</label>
+              <label className="block text-xs text-[#999] mb-1">Objective</label>
               <textarea
                 value={objective}
                 onChange={(e) => setObjective(e.target.value)}
                 placeholder="Describe your strategic objective for analysis..."
-                className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-purple-500 resize-none h-20"
+                className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-\[#ddd\] placeholder-gray-600 focus:outline-none focus:border-purple-500 resize-none h-20"
               />
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Domain</label>
+                <label className="block text-xs text-[#999] mb-1">Domain</label>
                 <select
                   value={domain}
                   onChange={(e) => setDomain(e.target.value)}
-                  className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-\[#ddd\] focus:outline-none focus:border-purple-500"
                 >
                   {domains.map((d) => (
                     <option key={d.value} value={d.value}>{d.label}</option>
@@ -260,11 +261,11 @@ const StrategicSynthesisPanel: React.FC = () => {
                 </select>
               </div>
               <div>
-                <label className="block text-xs text-gray-400 mb-1">Strategy</label>
+                <label className="block text-xs text-[#999] mb-1">Strategy</label>
                 <select
                   value={strategy}
                   onChange={(e) => setStrategy(e.target.value)}
-                  className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-gray-200 focus:outline-none focus:border-purple-500"
+                  className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-\[#ddd\] focus:outline-none focus:border-purple-500"
                 >
                   {strategies.map((s) => (
                     <option key={s.value} value={s.value}>{s.label}</option>
@@ -273,13 +274,13 @@ const StrategicSynthesisPanel: React.FC = () => {
               </div>
             </div>
             <div>
-              <label className="block text-xs text-gray-400 mb-1">Constraints (comma-separated)</label>
+              <label className="block text-xs text-[#999] mb-1">Constraints (comma-separated)</label>
               <input
                 type="text"
                 value={constraints}
                 onChange={(e) => setConstraints(e.target.value)}
                 placeholder="e.g. performance, memory, time"
-                className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-gray-200 placeholder-gray-600 focus:outline-none focus:border-purple-500"
+                className="w-full bg-[#0a0a2e] border border-[#1a1a4e] rounded-lg px-3 py-2 text-sm text-\[#ddd\] placeholder-gray-600 focus:outline-none focus:border-purple-500"
               />
             </div>
             <button
@@ -295,44 +296,44 @@ const StrategicSynthesisPanel: React.FC = () => {
         {activeTab === 'results' && (
           <div className="space-y-3">
             {results.length === 0 ? (
-              <div className="text-center text-gray-500 py-8 text-sm">No synthesis results yet</div>
+              <div className="text-center text-[#666] py-8 text-sm">No synthesis results yet</div>
             ) : (
               results.map((result) => (
                 <div key={result.result_id} className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs font-medium text-purple-400">{result.objective}</span>
-                    <span className="text-[10px] text-gray-500">
+                    <span className="text-[10px] text-[#666]">
                       {result.strategy_used} | {(result.total_time_ms).toFixed(1)}ms
                     </span>
                   </div>
-                  <p className="text-xs text-gray-400 mb-2">{result.final_conclusion}</p>
+                  <p className="text-xs text-[#999] mb-2">{result.final_conclusion}</p>
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-[10px] text-gray-500">Confidence:</span>
+                    <span className="text-[10px] text-[#666]">Confidence:</span>
                     <div className="flex-1 h-1.5 bg-[#1a1a3e] rounded-full">
                       <div
                         className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"
                         style={{ width: `${(result.confidence_score * 100).toFixed(0)}%` }}
                       />
                     </div>
-                    <span className="text-[10px] text-gray-400">{(result.confidence_score * 100).toFixed(0)}%</span>
+                    <span className="text-[10px] text-[#999]">{(result.confidence_score * 100).toFixed(0)}%</span>
                   </div>
                   <div className="space-y-1">
-                    <span className="text-[10px] text-gray-500">Reasoning Chain:</span>
+                    <span className="text-[10px] text-[#666]">Reasoning Chain:</span>
                     {result.reasoning_chain.map((step) => (
                       <div key={step.step_id} className="flex items-center gap-2 text-[10px]">
                         <span className={`w-1.5 h-1.5 rounded-full ${
                           step.status === 'completed' ? 'bg-green-400' : 'bg-yellow-400'
                         }`} />
-                        <span className="text-gray-500">{step.step_type}</span>
-                        <span className="text-gray-600">-</span>
-                        <span className="text-gray-400">{step.description}</span>
-                        <span className="text-gray-600 ml-auto">{(step.confidence * 100).toFixed(0)}%</span>
+                        <span className="text-[#666]">{step.step_type}</span>
+                        <span className="text-[#555]">-</span>
+                        <span className="text-[#999]">{step.description}</span>
+                        <span className="text-[#555] ml-auto">{(step.confidence * 100).toFixed(0)}%</span>
                       </div>
                     ))}
                   </div>
                   {result.recommendations.length > 0 && (
                     <div className="mt-2 pt-2 border-t border-[#1a1a4e]">
-                      <span className="text-[10px] text-gray-500">Recommendations:</span>
+                      <span className="text-[10px] text-[#666]">Recommendations:</span>
                       {result.recommendations.map((rec, i) => (
                         <div key={i} className="flex items-center gap-2 text-[10px] mt-1">
                           <span className={`px-1 py-0.5 rounded text-[9px] ${
@@ -340,7 +341,7 @@ const StrategicSynthesisPanel: React.FC = () => {
                             rec.priority === 'medium' ? 'bg-yellow-900/50 text-yellow-300' :
                             'bg-blue-900/50 text-blue-300'
                           }`}>{rec.priority}</span>
-                          <span className="text-gray-400">{rec.action}</span>
+                          <span className="text-[#999]">{rec.action}</span>
                         </div>
                       ))}
                     </div>
@@ -356,34 +357,34 @@ const StrategicSynthesisPanel: React.FC = () => {
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                 <div className="text-xl font-bold text-purple-400">{stats.total_synthesis_results}</div>
-                <div className="text-[10px] text-gray-500">Total Results</div>
+                <div className="text-[10px] text-[#666]">Total Results</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                 <div className="text-xl font-bold text-blue-400">{stats.active_sessions}</div>
-                <div className="text-[10px] text-gray-500">Active Sessions</div>
+                <div className="text-[10px] text-[#666]">Active Sessions</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                 <div className={`text-xl font-bold ${stats.initialized ? 'text-green-400' : 'text-yellow-400'}`}>
                   {stats.initialized ? 'ON' : 'OFF'}
                 </div>
-                <div className="text-[10px] text-gray-500">Status</div>
+                <div className="text-[10px] text-[#666]">Status</div>
               </div>
             </div>
             <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-              <h3 className="text-xs font-medium text-gray-300 mb-2">Hypothesis Engine</h3>
-              <pre className="text-[10px] text-gray-500 whitespace-pre-wrap">
+              <h3 className="text-xs font-medium text-[#ccc] mb-2">Hypothesis Engine</h3>
+              <pre className="text-[10px] text-[#666] whitespace-pre-wrap">
                 {JSON.stringify(stats.hypothesis_stats, null, 2)}
               </pre>
             </div>
             <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-              <h3 className="text-xs font-medium text-gray-300 mb-2">Constraint Solver</h3>
-              <pre className="text-[10px] text-gray-500 whitespace-pre-wrap">
+              <h3 className="text-xs font-medium text-[#ccc] mb-2">Constraint Solver</h3>
+              <pre className="text-[10px] text-[#666] whitespace-pre-wrap">
                 {JSON.stringify(stats.constraint_stats, null, 2)}
               </pre>
             </div>
             <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-              <h3 className="text-xs font-medium text-gray-300 mb-2">Analogical Reasoner</h3>
-              <pre className="text-[10px] text-gray-500 whitespace-pre-wrap">
+              <h3 className="text-xs font-medium text-[#ccc] mb-2">Analogical Reasoner</h3>
+              <pre className="text-[10px] text-[#666] whitespace-pre-wrap">
                 {JSON.stringify(stats.analogy_stats, null, 2)}
               </pre>
             </div>

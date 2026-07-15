@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'effects' | 'chains' | 'profiles';
 
@@ -58,7 +59,7 @@ const PostProcessingPanel: React.FC = () => {
   const [profileDesc, setProfileDesc] = useState('');
   const [applyProfileId, setApplyProfileId] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultEffects: PostEffect[] = [
     { id: uid(), name: 'Bloom Glow', effect_type: 'bloom', enabled: true, quality: 'high', created_at: Date.now() - 86400000 },

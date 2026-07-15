@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'world' | 'bodies' | 'forces' | 'collisions';
 
@@ -78,7 +79,7 @@ const PhysicsWorld2DPanel: React.FC = () => {
   const [rayMaxDist, setRayMaxDist] = useState('100');
   const [rayResult, setRayResult] = useState<{ hit: boolean; point_x?: number; point_y?: number; distance?: number } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent/physics-world-2d';
+  const apiBase = API_ROOT + '/agent/physics-world-2d';
 
   const defaultWorlds: PhysicsWorld[] = [
     { id: uid(), name: 'Default World', gravity_x: 0, gravity_y: -9.81, body_count: 3, is_active: true },

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'occluders' | 'cameras' | 'query';
 
@@ -64,7 +65,7 @@ const OcclusionCullingPanel: React.FC = () => {
 
   const [queryCamId, setQueryCamId] = useState('main-camera');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultOccluders: Occluder[] = [
     { id: uid(), entity_id: 'wall_north', x: 0, y: 0, z: 50, width: 100, height: 20, depth: 2, created_at: Date.now() - 86400000 },

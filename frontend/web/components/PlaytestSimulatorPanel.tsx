@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'sessions' | 'actions';
 
@@ -50,7 +51,7 @@ const PlaytestSimulatorPanel: React.FC = () => {
   const [summarySessionId, setSummarySessionId] = useState('');
   const [sessionSummary, setSessionSummary] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSessions: PlaySession[] = [
     { id: uid(), game_scene: 'Level 1 Forest', mode: 'automated', player_profile: 'casual', status: 'running', actions_count: 45, created_at: Date.now() - 86400000 },

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 interface GridData {
   grid_id: string;
@@ -247,7 +248,7 @@ const PathfindingPanel: React.FC = () => {
                   <div className="text-[10px] text-[#ccc]">pos: ({o.position?.[0]?.toFixed(1)}, {o.position?.[1]?.toFixed(1)})</div>
                   <div className="text-[8px] text-[#666]">r={o.radius}</div>
                 </div>
-                <span className={`text-[8px] px-1.5 py-0.5 rounded ${o.is_active ? 'bg-red-500/20 text-red-400' : 'bg-gray-500/20 text-gray-500'}`}>
+                <span className={`text-[8px] px-1.5 py-0.5 rounded ${o.is_active ? 'bg-red-500/20 text-red-400' : 'bg-\[#f5f5f5\]0/20 text-[#666]'}`}>
                   {o.is_active ? 'ACTIVE' : 'INACTIVE'}
                 </span>
               </div>
