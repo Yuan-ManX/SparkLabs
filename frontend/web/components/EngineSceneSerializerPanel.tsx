@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 const SERIALIZE_FORMATS = ['json', 'yaml', 'binary', 'msgpack'];
 const SCENE_LAYERS = ['background', 'terrain', 'props', 'characters', 'lighting', 'effects', 'ui', 'audio', 'triggers', 'debug'];
@@ -112,7 +113,7 @@ export default function EngineSceneSerializerPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a] flex-wrap">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ')}
           </button>
         ))}
@@ -136,7 +137,7 @@ export default function EngineSceneSerializerPanel() {
                 { label: 'Deserializations', value: stats.total_deserializations, color: 'text-purple-300' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}</p>
                 </div>
               ))}
@@ -145,12 +146,12 @@ export default function EngineSceneSerializerPanel() {
               <div className="grid grid-cols-4 gap-4">
                 {[
                   { label: 'Active Scenes', value: stats.active_scenes, color: 'text-[#00d4ff]' },
-                  { label: 'Archived Scenes', value: stats.archived_scenes, color: 'text-gray-400' },
+                  { label: 'Archived Scenes', value: stats.archived_scenes, color: 'text-[#999]' },
                   { label: 'Avg Scene Size', value: stats.avg_scene_size, color: 'text-amber-300', suffix: ' KB' },
                   { label: 'Total Diffs', value: stats.total_diffs, color: 'text-pink-300' },
                 ].map(s => (
                   <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                    <h3 className="text-xs text-gray-400">{s.label}</h3>
+                    <h3 className="text-xs text-[#999]">{s.label}</h3>
                     <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}{s.suffix || ''}</p>
                   </div>
                 ))}
@@ -158,21 +159,21 @@ export default function EngineSceneSerializerPanel() {
             )}
             {stats.by_format && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">By Format</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">By Format</h3>
                 <div className="space-y-1">
                   {Object.entries(stats.by_format).map(([k, v]) => (
-                    <div key={k} className="flex justify-between text-xs"><span className="text-gray-400 uppercase">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
+                    <div key={k} className="flex justify-between text-xs"><span className="text-[#999] uppercase">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
                   ))}
                 </div>
               </div>
             )}
             {stats.recent_activity && Array.isArray(stats.recent_activity) && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Recent Activity</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Recent Activity</h3>
                 <div className="space-y-1">
                   {stats.recent_activity.map((act: any, i: number) => (
                     <div key={i} className="flex justify-between text-xs">
-                      <span className="text-gray-400">{act.action ?? act.type}</span>
+                      <span className="text-[#999]">{act.action ?? act.type}</span>
                       <span className="text-[#00d4ff]">{act.scene_name ?? act.scene_id ?? '—'}</span>
                     </div>
                   ))}
@@ -189,10 +190,10 @@ export default function EngineSceneSerializerPanel() {
             <div className={cardCls + ' space-y-3'}>
               <input className={inputCls} placeholder="Scene Name" value={sceneName} onChange={e => setSceneName(e.target.value)} />
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Layers</label>
+                <label className="text-xs text-[#999] mb-1 block">Layers</label>
                 <div className="flex flex-wrap gap-2 mb-2">
                   {SCENE_LAYERS.map(l => (
-                    <label key={l} className={`flex items-center gap-1 px-3 py-1 rounded text-xs cursor-pointer border transition-colors ${selectedLayers.includes(l) ? 'bg-[#00d4ff]/20 border-[#00d4ff] text-[#00d4ff]' : 'bg-[#1a1a2e] border-[#2a2a4a] text-gray-400 hover:border-[#00d4ff]/50'}`}>
+                    <label key={l} className={`flex items-center gap-1 px-3 py-1 rounded text-xs cursor-pointer border transition-colors ${selectedLayers.includes(l) ? 'bg-[#00d4ff]/20 border-[#00d4ff] text-[#00d4ff]' : 'bg-[#1a1a2e] border-[#2a2a4a] text-[#999] hover:border-[#00d4ff]/50'}`}>
                       <input type="checkbox" checked={selectedLayers.includes(l)} onChange={() => toggleLayer(l)} className="sr-only" />
                       {l.charAt(0).toUpperCase() + l.slice(1)}
                     </label>
@@ -220,7 +221,7 @@ export default function EngineSceneSerializerPanel() {
                 {result.layers && (
                   <div className="flex gap-1 mt-2 flex-wrap">
                     {result.layers.map((l: string, i: number) => (
-                      <span key={i} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-400 capitalize">{l}</span>
+                      <span key={i} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#999] capitalize">{l}</span>
                     ))}
                   </div>
                 )}
@@ -238,7 +239,7 @@ export default function EngineSceneSerializerPanel() {
               <select className={selectCls} value={serFormat} onChange={e => setSerFormat(e.target.value)}>
                 {SERIALIZE_FORMATS.map(f => <option key={f} value={f}>{f.toUpperCase()}</option>)}
               </select>
-              <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-[#999] cursor-pointer">
                 <input type="checkbox" checked={serIncludeMeta} onChange={e => setSerIncludeMeta(e.target.checked)} className="accent-[#00d4ff]" />
                 Include Metadata
               </label>
@@ -254,11 +255,11 @@ export default function EngineSceneSerializerPanel() {
             {result && activeTab === 'serialize' && result.data !== undefined && (
               <div className={cardCls}>
                 <h3 className="text-sm font-bold text-[#00ff88] mb-2">Serialized Output</h3>
-                <div className="flex gap-4 mb-2 text-xs text-gray-400">
+                <div className="flex gap-4 mb-2 text-xs text-[#999]">
                   <span>Format: <span className="text-white uppercase">{result.format ?? serFormat}</span></span>
                   <span>Size: <span className="text-white">{result.size ?? 'N/A'}</span></span>
                 </div>
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-300 overflow-auto max-h-64 font-mono whitespace-pre-wrap">
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#ccc] overflow-auto max-h-64 font-mono whitespace-pre-wrap">
                   {typeof result.data === 'string' ? result.data : JSON.stringify(result.data, null, 2)}
                 </pre>
               </div>
@@ -295,7 +296,7 @@ export default function EngineSceneSerializerPanel() {
                 {result.layers && (
                   <div className="flex gap-1 mt-2 flex-wrap">
                     {result.layers.map((l: string, i: number) => (
-                      <span key={i} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-400 capitalize">{l}</span>
+                      <span key={i} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#999] capitalize">{l}</span>
                     ))}
                   </div>
                 )}
@@ -344,8 +345,8 @@ export default function EngineSceneSerializerPanel() {
                         <span className={`w-12 px-1 py-0.5 rounded text-center text-[10px] font-medium ${ch.type === 'added' ? 'bg-[#00ff88]/20 text-[#00ff88]' : ch.type === 'removed' ? 'bg-red-500/20 text-red-400' : 'bg-amber-500/20 text-amber-400'}`}>
                           {ch.type ?? ch.op}
                         </span>
-                        <span className="text-gray-400">{ch.path ?? ch.key}</span>
-                        {ch.value !== undefined && <span className="text-gray-300 font-mono">{JSON.stringify(ch.value)}</span>}
+                        <span className="text-[#999]">{ch.path ?? ch.key}</span>
+                        {ch.value !== undefined && <span className="text-[#ccc] font-mono">{JSON.stringify(ch.value)}</span>}
                       </div>
                     ))}
                   </div>
@@ -378,8 +379,8 @@ export default function EngineSceneSerializerPanel() {
                   <h3 className="text-sm font-bold text-white">{result.label ?? svLabel}</h3>
                   <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-pink-300 font-mono">{result.savepoint_id ?? result.timestamp}</span>
                 </div>
-                {result.description && <p className="text-xs text-gray-400 mt-1">{result.description}</p>}
-                <div className="flex gap-3 mt-2 text-[10px] text-gray-500">
+                {result.description && <p className="text-xs text-[#999] mt-1">{result.description}</p>}
+                <div className="flex gap-3 mt-2 text-[10px] text-[#666]">
                   {result.scene_id && <span>Scene: {result.scene_id}</span>}
                   {result.created_at && <span>Created: {result.created_at}</span>}
                 </div>
@@ -394,7 +395,7 @@ export default function EngineSceneSerializerPanel() {
             <div className="flex justify-between items-center">
               <h2 className="text-lg font-bold text-[#00d4ff]">All Scenes</h2>
               <button
-                className="px-3 py-1.5 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-gray-300 hover:border-[#00d4ff] transition-colors"
+                className="px-3 py-1.5 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:border-[#00d4ff] transition-colors"
                 onClick={() => handleGet(`${API_BASE}/scene-serializer/scenes`)}>
                 Refresh
               </button>
@@ -405,7 +406,7 @@ export default function EngineSceneSerializerPanel() {
                   <div key={i} className={cardCls + ' flex justify-between items-start'}>
                     <div>
                       <h3 className="text-sm font-bold text-white">{scene.name ?? 'Unnamed Scene'}</h3>
-                      <div className="flex gap-2 mt-1 text-[10px] text-gray-500">
+                      <div className="flex gap-2 mt-1 text-[10px] text-[#666]">
                         <span className="text-[#00d4ff] font-mono">{scene.scene_id ?? scene.id}</span>
                         {scene.entity_count !== undefined && <span>{scene.entity_count} entities</span>}
                         {scene.savepoint_count !== undefined && <span>{scene.savepoint_count} savepoints</span>}
@@ -414,15 +415,15 @@ export default function EngineSceneSerializerPanel() {
                       {scene.layers && Array.isArray(scene.layers) && (
                         <div className="flex gap-1 mt-2 flex-wrap">
                           {scene.layers.map((l: string, j: number) => (
-                            <span key={j} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-400 capitalize">{l}</span>
+                            <span key={j} className="text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#999] capitalize">{l}</span>
                           ))}
                         </div>
                       )}
                     </div>
                     <div className="flex flex-col items-end gap-1">
-                      {scene.created_at && <span className="text-[10px] text-gray-500">{scene.created_at}</span>}
+                      {scene.created_at && <span className="text-[10px] text-[#666]">{scene.created_at}</span>}
                       {scene.status && (
-                        <span className={`text-[10px] px-2 py-0.5 rounded border ${scene.status === 'active' ? 'text-[#00ff88] border-[#00ff88]/30' : 'text-gray-400 border-[#2a2a4a]'} capitalize`}>
+                        <span className={`text-[10px] px-2 py-0.5 rounded border ${scene.status === 'active' ? 'text-[#00ff88] border-[#00ff88]/30' : 'text-[#999] border-[#2a2a4a]'} capitalize`}>
                           {scene.status}
                         </span>
                       )}
@@ -432,7 +433,7 @@ export default function EngineSceneSerializerPanel() {
               </div>
             ) : (
               <div className={cardCls}>
-                <p className="text-sm text-gray-500 text-center py-8">No scenes found. Click Refresh or create a scene first.</p>
+                <p className="text-sm text-[#666] text-center py-8">No scenes found. Click Refresh or create a scene first.</p>
               </div>
             )}
           </div>

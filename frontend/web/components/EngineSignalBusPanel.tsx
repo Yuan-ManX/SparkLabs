@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 export default function EngineSignalBusPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -70,7 +71,7 @@ export default function EngineSignalBusPanel() {
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a] flex-wrap">
         {tabs.map(t => (
-          <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+          <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -126,7 +127,7 @@ export default function EngineSignalBusPanel() {
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Callback Name" value={connCallbackName} onChange={e => setConnCallbackName(e.target.value)} />
                 <input className="w-32 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Priority" type="number" value={connPriority} onChange={e => setConnPriority(e.target.value)} />
               </div>
-              <label className="flex items-center gap-2 text-sm text-gray-300">
+              <label className="flex items-center gap-2 text-sm text-[#ccc]">
                 <input type="checkbox" checked={connOneShot} onChange={e => setConnOneShot(e.target.checked)} className="accent-[#00d4ff]" /> One-shot
               </label>
               <button className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium" onClick={async () => {
@@ -204,12 +205,12 @@ export default function EngineSignalBusPanel() {
                 <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] max-h-80 overflow-auto">
                   {history.map((h: any, i: number) => (
                     <div key={i} className="text-xs py-2 border-b border-[#2a2a4a] last:border-0">
-                      <div className="flex gap-4 text-gray-400">
+                      <div className="flex gap-4 text-[#999]">
                         <span className="text-[#00d4ff]">{h.signal_id || h.signal_name || h.id}</span>
                         <span>{h.timestamp}</span>
                         {h.emitted_by && <span>by {h.emitted_by}</span>}
                       </div>
-                      {h.payload && <pre className="mt-1 text-gray-300 overflow-x-auto">{JSON.stringify(h.payload, null, 2)}</pre>}
+                      {h.payload && <pre className="mt-1 text-[#ccc] overflow-x-auto">{JSON.stringify(h.payload, null, 2)}</pre>}
                     </div>
                   ))}
                 </div>
@@ -229,13 +230,13 @@ export default function EngineSignalBusPanel() {
               }}>Load Namespaces</button>
               {namespaces.length > 0 && (
                 <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] max-h-60 overflow-auto">
-                  <pre className="text-xs text-gray-300">{JSON.stringify(namespaces, null, 2)}</pre>
+                  <pre className="text-xs text-[#ccc]">{JSON.stringify(namespaces, null, 2)}</pre>
                 </div>
               )}
             </div>
 
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
-              <h3 className="text-sm font-medium text-gray-300">Search Definitions</h3>
+              <h3 className="text-sm font-medium text-[#ccc]">Search Definitions</h3>
               <div className="flex gap-3">
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Namespace filter" value={defNamespaceFilter} onChange={e => setDefNamespaceFilter(e.target.value)} />
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Category filter" value={defCategoryFilter} onChange={e => setDefCategoryFilter(e.target.value)} />
@@ -251,13 +252,13 @@ export default function EngineSignalBusPanel() {
                 <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] max-h-80 overflow-auto">
                   {definitions.map((d: any, i: number) => (
                     <div key={i} className="text-xs py-2 border-b border-[#2a2a4a] last:border-0">
-                      <div className="flex gap-3 text-gray-400">
+                      <div className="flex gap-3 text-[#999]">
                         <span className="text-[#00d4ff] font-medium">{d.id}</span>
                         <span className="text-white">{d.name}</span>
                         {d.category && <span className="text-yellow-500">{d.category}</span>}
                         {d.namespace && <span className="text-green-400">{d.namespace}</span>}
                       </div>
-                      {d.description && <p className="mt-1 text-gray-400">{d.description}</p>}
+                      {d.description && <p className="mt-1 text-[#999]">{d.description}</p>}
                     </div>
                   ))}
                 </div>

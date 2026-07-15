@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 // Types for the Sprite Batcher API responses and forms
 
@@ -114,7 +115,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
   // Frame Report tab
   const [frameReport, setFrameReport] = useState<FrameReport | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/engine';
+  const apiBase = API_ROOT + '/engine';
 
   const tabs = [
     { id: 'status', label: 'Status' },
@@ -306,33 +307,33 @@ const EngineSpriteBatcherPanel: React.FC = () => {
       {status ? (
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Command Count</div>
+            <div className="text-[#999] text-xs">Command Count</div>
             <div className="text-white text-sm font-mono">{status.command_count}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Batch Count</div>
+            <div className="text-[#999] text-xs">Batch Count</div>
             <div className="text-white text-sm font-mono">{status.batch_count}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Atlas Count</div>
+            <div className="text-[#999] text-xs">Atlas Count</div>
             <div className="text-white text-sm font-mono">{status.atlas_count}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Draw Calls Saved</div>
+            <div className="text-[#999] text-xs">Draw Calls Saved</div>
             <div className="text-white text-sm font-mono">{status.draw_calls_saved}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center col-span-2">
-            <div className="text-gray-400 text-xs">GPU Memory</div>
+            <div className="text-[#999] text-xs">GPU Memory</div>
             <div className="text-white text-sm font-mono">{formatMemory(status.gpu_memory)}</div>
           </div>
         </div>
       ) : (
-        <div className="text-gray-400 text-sm">No status data available.</div>
+        <div className="text-[#999] text-sm">No status data available.</div>
       )}
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -346,7 +347,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           {/* Texture Name */}
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Texture Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Texture Name</label>
             <input
               type="text"
               value={submitForm.textureName}
@@ -358,7 +359,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
           {/* Position */}
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Position X</label>
+            <label className="text-xs text-[#999] mb-1 block">Position X</label>
             <input
               type="number"
               value={submitForm.positionX}
@@ -367,7 +368,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Position Y</label>
+            <label className="text-xs text-[#999] mb-1 block">Position Y</label>
             <input
               type="number"
               value={submitForm.positionY}
@@ -378,7 +379,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
           {/* Scale */}
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Scale X</label>
+            <label className="text-xs text-[#999] mb-1 block">Scale X</label>
             <input
               type="number"
               value={submitForm.scaleX}
@@ -388,7 +389,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Scale Y</label>
+            <label className="text-xs text-[#999] mb-1 block">Scale Y</label>
             <input
               type="number"
               value={submitForm.scaleY}
@@ -400,7 +401,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
           {/* Rotation */}
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Rotation (degrees)</label>
+            <label className="text-xs text-[#999] mb-1 block">Rotation (degrees)</label>
             <input
               type="number"
               value={submitForm.rotationDegrees}
@@ -411,7 +412,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
           {/* Z-Order */}
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Z-Order</label>
+            <label className="text-xs text-[#999] mb-1 block">Z-Order</label>
             <input
               type="number"
               value={submitForm.zOrder}
@@ -422,7 +423,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
           {/* Color RGBA */}
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Color R</label>
+            <label className="text-xs text-[#999] mb-1 block">Color R</label>
             <input
               type="number"
               min={0}
@@ -433,7 +434,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Color G</label>
+            <label className="text-xs text-[#999] mb-1 block">Color G</label>
             <input
               type="number"
               min={0}
@@ -444,7 +445,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Color B</label>
+            <label className="text-xs text-[#999] mb-1 block">Color B</label>
             <input
               type="number"
               min={0}
@@ -455,7 +456,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Color A</label>
+            <label className="text-xs text-[#999] mb-1 block">Color A</label>
             <input
               type="number"
               min={0}
@@ -468,7 +469,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
           {/* Blend Mode */}
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Blend Mode</label>
+            <label className="text-xs text-[#999] mb-1 block">Blend Mode</label>
             <select
               value={submitForm.blendMode}
               onChange={e => setSubmitForm(prev => ({ ...prev, blendMode: e.target.value }))}
@@ -493,7 +494,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
       {result && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">
             {JSON.stringify(result, null, 2)}
           </div>
         </div>
@@ -501,7 +502,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -528,7 +529,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             {loading ? 'Clearing...' : 'Clear Frame Buffer'}
           </button>
         </div>
-        <p className="text-gray-400 text-xs mt-2">
+        <p className="text-[#999] text-xs mt-2">
           Flush sends all batched commands to the GPU. Clear empties the frame buffer without rendering.
         </p>
       </div>
@@ -538,15 +539,15 @@ const EngineSpriteBatcherPanel: React.FC = () => {
           <div className="text-sm font-medium text-[#00d4ff]">Batches</div>
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-              <div className="text-gray-400 text-xs">Total Vertices</div>
+              <div className="text-[#999] text-xs">Total Vertices</div>
               <div className="text-white text-sm font-mono">{flushResult.total_vertices}</div>
             </div>
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-              <div className="text-gray-400 text-xs">Total Indices</div>
+              <div className="text-[#999] text-xs">Total Indices</div>
               <div className="text-white text-sm font-mono">{flushResult.total_indices}</div>
             </div>
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center col-span-2">
-              <div className="text-gray-400 text-xs">Total GPU Memory Estimate</div>
+              <div className="text-[#999] text-xs">Total GPU Memory Estimate</div>
               <div className="text-white text-sm font-mono">{formatMemory(flushResult.total_gpu_memory_estimate)}</div>
             </div>
           </div>
@@ -556,22 +557,22 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               <div className="text-sm font-medium text-[#00d4ff] mb-2">Batch Details</div>
               {flushResult.batches.map((batch, i) => (
                 <div key={batch.batch_id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-                  <div className="text-xs text-gray-400 mb-2">Batch ID: {batch.batch_id}</div>
+                  <div className="text-xs text-[#999] mb-2">Batch ID: {batch.batch_id}</div>
                   <div className="grid grid-cols-2 gap-3">
                     <div>
-                      <div className="text-gray-400 text-xs">Vertices</div>
+                      <div className="text-[#999] text-xs">Vertices</div>
                       <div className="text-white text-sm font-mono">{batch.vertex_count}</div>
                     </div>
                     <div>
-                      <div className="text-gray-400 text-xs">Indices</div>
+                      <div className="text-[#999] text-xs">Indices</div>
                       <div className="text-white text-sm font-mono">{batch.index_count}</div>
                     </div>
                     <div>
-                      <div className="text-gray-400 text-xs">Draw Calls</div>
+                      <div className="text-[#999] text-xs">Draw Calls</div>
                       <div className="text-white text-sm font-mono">{batch.draw_call_count}</div>
                     </div>
                     <div>
-                      <div className="text-gray-400 text-xs">GPU Memory</div>
+                      <div className="text-[#999] text-xs">GPU Memory</div>
                       <div className="text-white text-sm font-mono">{formatMemory(batch.gpu_memory_estimate)}</div>
                     </div>
                   </div>
@@ -584,7 +585,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -597,7 +598,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Name</label>
             <input
               type="text"
               value={atlasForm.name}
@@ -607,7 +608,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Size</label>
+            <label className="text-xs text-[#999] mb-1 block">Size</label>
             <input
               type="number"
               value={atlasForm.size}
@@ -616,7 +617,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Pack Mode</label>
+            <label className="text-xs text-[#999] mb-1 block">Pack Mode</label>
             <select
               value={atlasForm.packMode}
               onChange={e => setAtlasForm(prev => ({ ...prev, packMode: e.target.value }))}
@@ -627,7 +628,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             </select>
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Texture Names (comma-separated)</label>
+            <label className="text-xs text-[#999] mb-1 block">Texture Names (comma-separated)</label>
             <textarea
               value={atlasForm.textureNames}
               onChange={e => setAtlasForm(prev => ({ ...prev, textureNames: e.target.value }))}
@@ -653,26 +654,26 @@ const EngineSpriteBatcherPanel: React.FC = () => {
           <div key={atlas.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
             <div className="flex justify-between items-center mb-2">
               <div className="text-white text-sm font-medium">{atlas.name}</div>
-              <div className="text-gray-400 text-xs">
+              <div className="text-[#999] text-xs">
                 {atlas.texture_count || (atlas.texture_names?.length || 0)} textures
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="text-gray-400 text-xs">Size</div>
+                <div className="text-[#999] text-xs">Size</div>
                 <div className="text-white text-sm font-mono">{atlas.size}px</div>
               </div>
               <div>
-                <div className="text-gray-400 text-xs">Pack Mode</div>
+                <div className="text-[#999] text-xs">Pack Mode</div>
                 <div className="text-white text-sm font-mono">{atlas.pack_mode}</div>
               </div>
             </div>
             {atlas.texture_names && atlas.texture_names.length > 0 && (
               <div className="mt-2">
-                <div className="text-gray-400 text-xs mb-1">Textures</div>
+                <div className="text-[#999] text-xs mb-1">Textures</div>
                 <div className="flex flex-wrap gap-1">
                   {atlas.texture_names.map((name, j) => (
-                    <span key={j} className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-gray-300 font-mono">
+                    <span key={j} className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-[#ccc] font-mono">
                       {name}
                     </span>
                   ))}
@@ -682,12 +683,12 @@ const EngineSpriteBatcherPanel: React.FC = () => {
           </div>
         ))
       ) : (
-        <div className="text-gray-400 text-sm">No atlases created yet.</div>
+        <div className="text-[#999] text-sm">No atlases created yet.</div>
       )}
 
       {result && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">
             {JSON.stringify(result, null, 2)}
           </div>
         </div>
@@ -695,7 +696,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -708,29 +709,29 @@ const EngineSpriteBatcherPanel: React.FC = () => {
       {frameReport ? (
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Frame Number</div>
+            <div className="text-[#999] text-xs">Frame Number</div>
             <div className="text-white text-sm font-mono">{frameReport.frame_number}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Draw Calls</div>
+            <div className="text-[#999] text-xs">Draw Calls</div>
             <div className="text-white text-sm font-mono">{frameReport.frame_draw_calls}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Batch Count</div>
+            <div className="text-[#999] text-xs">Batch Count</div>
             <div className="text-white text-sm font-mono">{frameReport.frame_batch_count}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Commands Processed</div>
+            <div className="text-[#999] text-xs">Commands Processed</div>
             <div className="text-white text-sm font-mono">{frameReport.commands_processed}</div>
           </div>
         </div>
       ) : (
-        <div className="text-gray-400 text-sm">No frame report data available.</div>
+        <div className="text-[#999] text-sm">No frame report data available.</div>
       )}
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -743,14 +744,14 @@ const EngineSpriteBatcherPanel: React.FC = () => {
           <button
             key={t.id}
             onClick={() => { setActiveTab(t.id); setError(null); }}
-            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-gray-400 hover:text-white'}`}
+            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-[#999] hover:text-white'}`}
           >
             {t.label}
           </button>
         ))}
       </div>
       <div className="flex-1 overflow-auto p-4">
-        {loading && <div className="text-gray-400 text-sm">Loading...</div>}
+        {loading && <div className="text-[#999] text-sm">Loading...</div>}
         {renderTab()}
       </div>
     </div>
