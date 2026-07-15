@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type AssistantMode = 'CODE_SUGGESTION' | 'ERROR_DIAGNOSIS' | 'DESIGN_REVIEW' | 'PERFORMANCE_TUNING' | 'LEARNING_TRACKER';
 type SuggestionType = 'COMPLETION' | 'REFACTOR' | 'PATTERN' | 'FIX' | 'OPTIMIZATION' | 'BEST_PRACTICE';
@@ -87,7 +88,7 @@ const AICoPilotPanel: React.FC = () => {
   const [inputCode, setInputCode] = useState('');
   const [inputError, setInputError] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

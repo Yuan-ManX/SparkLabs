@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const WORLD_SIZES = ['small', 'medium', 'large', 'huge'];
 const BIOMES = ['forest', 'desert', 'tundra', 'swamp', 'mountain', 'volcanic', 'ocean', 'plains', 'jungle', 'taiga', 'savanna', 'cave', 'urban', 'ruins', 'corrupted', 'celestial'];
@@ -134,15 +135,15 @@ export default function AgentWorldBuilderPanel() {
         ].map(s => (
           <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+            <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
         ))}
       </div>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Supported Biomes</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Supported Biomes</h3>
         <div className="flex flex-wrap gap-2">
           {BIOMES.map(b => (
-            <span key={b} className="px-2 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300 capitalize">{b}</span>
+            <span key={b} className="px-2 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">{b}</span>
           ))}
         </div>
       </div>
@@ -153,7 +154,7 @@ export default function AgentWorldBuilderPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Create World</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">New World</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">New World</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="World Name" value={createName} onChange={e => setCreateName(e.target.value)} className={inputCls} />
           <input type="number" placeholder="Seed Number" value={createSeed} onChange={e => setCreateSeed(e.target.value)} className={inputCls} />
@@ -172,10 +173,10 @@ export default function AgentWorldBuilderPanel() {
       {result && result.name && (
         <div className={`${cardCls} mt-4 border-[#00d4ff]/30`}>
           <h3 className="text-sm font-medium text-[#00d4ff] mb-2">{result.name}</h3>
-          {result.lore && <p className="text-xs text-gray-400 mb-2">{result.lore}</p>}
+          {result.lore && <p className="text-xs text-[#999] mb-2">{result.lore}</p>}
           {result.regions && Array.isArray(result.regions) && (
             <div>
-              <span className="text-xs text-gray-500">Regions ({result.regions.length}):</span>
+              <span className="text-xs text-[#666]">Regions ({result.regions.length}):</span>
               <div className="flex flex-wrap gap-1 mt-1">
                 {result.regions.map((r: any, i: number) => (
                   <span key={i} className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#00ff88] capitalize">
@@ -194,7 +195,7 @@ export default function AgentWorldBuilderPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Generate Random World</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Random World Generator</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Random World Generator</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="World Name" value={randomName} onChange={e => setRandomName(e.target.value)} className={inputCls} />
           <input type="number" placeholder="Number of Regions" value={randomNumRegions} onChange={e => setRandomNumRegions(e.target.value)} min="1" max="20" className={inputCls} />
@@ -211,10 +212,10 @@ export default function AgentWorldBuilderPanel() {
               {result.regions.map((r: any, i: number) => (
                 <div key={i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-300 font-medium capitalize">{r.name || `Region ${i + 1}`}</span>
+                    <span className="text-xs text-[#ccc] font-medium capitalize">{r.name || `Region ${i + 1}`}</span>
                     <span className="text-xs text-[#00d4ff] capitalize">{r.biome || ''}</span>
                   </div>
-                  {r.size && <span className="text-xs text-gray-500">Size: {r.size}</span>}
+                  {r.size && <span className="text-xs text-[#666]">Size: {r.size}</span>}
                 </div>
               ))}
             </div>
@@ -222,20 +223,20 @@ export default function AgentWorldBuilderPanel() {
         </div>
       )}
       <div className="mt-6">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Worlds</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Worlds</h3>
         {worlds.length > 0 ? (
           <div className="space-y-2">
             {worlds.map((w: any) => (
               <div key={w.id || w.map_id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3">
                 <div className="flex items-center justify-between">
                   <span className="text-sm text-white">{w.name}</span>
-                  <span className="text-xs text-gray-500 capitalize">{w.world_size || ''}</span>
+                  <span className="text-xs text-[#666] capitalize">{w.world_size || ''}</span>
                 </div>
               </div>
             ))}
           </div>
         ) : (
-          <p className="text-xs text-gray-500 py-4 text-center">No worlds created yet.</p>
+          <p className="text-xs text-[#666] py-4 text-center">No worlds created yet.</p>
         )}
       </div>
     </div>
@@ -247,7 +248,7 @@ export default function AgentWorldBuilderPanel() {
 
       {/* Add Region */}
       <div className={`${cardCls} mb-4`}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Add Region</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Add Region</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Map ID" value={regionMapId} onChange={e => setRegionMapId(e.target.value)} className={inputCls} />
           <select value={regionBiome} onChange={e => setRegionBiome(e.target.value)} className={selectCls}>
@@ -263,7 +264,7 @@ export default function AgentWorldBuilderPanel() {
 
       {/* Add POI */}
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Add Point of Interest</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Add Point of Interest</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Region ID" value={poiRegionId} onChange={e => setPoiRegionId(e.target.value)} className={inputCls} />
           <input type="text" placeholder="POI Name" value={poiName} onChange={e => setPoiName(e.target.value)} className={inputCls} />
@@ -289,7 +290,7 @@ export default function AgentWorldBuilderPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Validate World</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">World Validation</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">World Validation</h3>
         <div className="flex gap-3 items-end">
           <input type="text" placeholder="Map ID" value={validateMapId} onChange={e => setValidateMapId(e.target.value)}
             className={`flex-1 ${inputCls}`} />
@@ -300,7 +301,7 @@ export default function AgentWorldBuilderPanel() {
       </div>
       {result && (result.issues || result.validation) && (
         <div className={`${cardCls} mt-4`}>
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Validation Results</h3>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Validation Results</h3>
           {result.valid !== undefined && (
             <div className={`mb-3 px-3 py-2 rounded text-sm font-medium ${result.valid ? 'bg-green-900/30 text-[#00ff88] border border-green-800/50' : 'bg-red-900/30 text-red-400 border border-red-800/50'}`}>
               {result.valid ? '✓ World is valid' : '✗ World has issues'}
@@ -308,7 +309,7 @@ export default function AgentWorldBuilderPanel() {
           )}
           {result.issues && Array.isArray(result.issues) && result.issues.length > 0 && (
             <div className="space-y-2">
-              <span className="text-xs text-gray-500">Issues Found:</span>
+              <span className="text-xs text-[#666]">Issues Found:</span>
               {result.issues.map((issue: any, i: number) => (
                 <div key={i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-3">
                   <div className="flex items-start gap-2">
@@ -316,17 +317,17 @@ export default function AgentWorldBuilderPanel() {
                       {issue.severity === 'error' ? '✗' : issue.severity === 'warning' ? '⚠' : 'ℹ'}
                     </span>
                     <div>
-                      <span className="text-xs text-gray-300">{issue.message || issue.description || `Issue ${i + 1}`}</span>
-                      {issue.detail && <p className="text-xs text-gray-500 mt-1">{issue.detail}</p>}
+                      <span className="text-xs text-[#ccc]">{issue.message || issue.description || `Issue ${i + 1}`}</span>
+                      {issue.detail && <p className="text-xs text-[#666] mt-1">{issue.detail}</p>}
                     </div>
                   </div>
-                  {issue.type && <span className="text-xs text-gray-500 ml-5 capitalize">{issue.type}</span>}
+                  {issue.type && <span className="text-xs text-[#666] ml-5 capitalize">{issue.type}</span>}
                 </div>
               ))}
             </div>
           )}
           {result.validation && typeof result.validation === 'object' && (
-            <pre className="text-xs text-gray-400 mt-3 p-3 bg-[#1a1a2e] border border-[#2a2a4a] rounded overflow-auto max-h-48">{JSON.stringify(result.validation, null, 2)}</pre>
+            <pre className="text-xs text-[#999] mt-3 p-3 bg-[#1a1a2e] border border-[#2a2a4a] rounded overflow-auto max-h-48">{JSON.stringify(result.validation, null, 2)}</pre>
           )}
         </div>
       )}
@@ -338,7 +339,7 @@ export default function AgentWorldBuilderPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}

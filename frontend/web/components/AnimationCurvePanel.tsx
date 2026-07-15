@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'curves' | 'sequences';
 
@@ -65,7 +66,7 @@ const AnimationCurvePanel: React.FC = () => {
   const [seqDuration, setSeqDuration] = useState('1.0');
   const [seqLoop, setSeqLoop] = useState(false);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultCurves: Curve[] = [
     { id: uid(), name: 'Bounce', curve_type: 'float', easing: 'bounce', created_at: Date.now() - 86400000 },

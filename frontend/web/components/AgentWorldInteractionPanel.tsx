@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 // --- Type Definitions ---
 
@@ -240,7 +241,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
             fetchAgents();
             showMessage('Refreshed', 'info');
           }}
-          className="px-3 py-1 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-gray-400 rounded hover:text-white hover:border-[#3a3a5a]"
+          className="px-3 py-1 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-[#999] rounded hover:text-white hover:border-[#3a3a5a]"
         >
           ↻ Refresh
         </button>
@@ -270,7 +271,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
             className={
               activeTab === tab.id
                 ? 'px-4 py-2 text-sm bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t'
-                : 'px-4 py-2 text-sm text-gray-400 hover:text-white cursor-pointer'
+                : 'px-4 py-2 text-sm text-[#999] hover:text-white cursor-pointer'
             }
           >
             {tab.label}
@@ -284,25 +285,25 @@ const AgentWorldInteractionPanel: React.FC = () => {
         {activeTab === 'status' && (
           <div>
             {statusLoading && !status ? (
-              <div className="text-sm text-gray-500 text-center py-8">Loading status...</div>
+              <div className="text-sm text-[#666] text-center py-8">Loading status...</div>
             ) : status ? (
               <>
                 <div className="grid grid-cols-2 gap-3 mb-4">
                   <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
                     <div className="text-2xl font-bold text-[#00d4ff]">{status.cycle_count}</div>
-                    <div className="text-xs text-gray-400 mt-1">Interaction Cycles</div>
+                    <div className="text-xs text-[#999] mt-1">Interaction Cycles</div>
                   </div>
                   <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
                     <div className="text-2xl font-bold text-green-400">{status.registered_agents}</div>
-                    <div className="text-xs text-gray-400 mt-1">Registered Agents</div>
+                    <div className="text-xs text-[#999] mt-1">Registered Agents</div>
                   </div>
                   <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
                     <div className="text-2xl font-bold text-yellow-400">{status.entities_tracked}</div>
-                    <div className="text-xs text-gray-400 mt-1">Entities Tracked</div>
+                    <div className="text-xs text-[#999] mt-1">Entities Tracked</div>
                   </div>
                   <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
                     <div className="text-2xl font-bold text-purple-400">{status.interest_regions}</div>
-                    <div className="text-xs text-gray-400 mt-1">Interest Regions</div>
+                    <div className="text-xs text-[#999] mt-1">Interest Regions</div>
                   </div>
                 </div>
 
@@ -315,8 +316,8 @@ const AgentWorldInteractionPanel: React.FC = () => {
                         .filter(([k]) => !['cycle_count', 'registered_agents', 'entities_tracked', 'interest_regions'].includes(k))
                         .map(([key, value]) => (
                           <div key={key} className="flex justify-between text-xs">
-                            <span className="text-gray-400">{key}</span>
-                            <span className="text-gray-200">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
+                            <span className="text-[#999]">{key}</span>
+                            <span className="text-\[#ddd\]">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
                           </div>
                         ))}
                     </div>
@@ -324,7 +325,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                 )}
               </>
             ) : (
-              <div className="text-sm text-gray-500 text-center py-8">No status data available</div>
+              <div className="text-sm text-[#666] text-center py-8">No status data available</div>
             )}
           </div>
         )}
@@ -337,7 +338,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
               <h3 className="text-sm font-medium text-[#00d4ff] mb-3">Run Interaction Cycle</h3>
 
               <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Agent ID</label>
+                <label className="text-xs text-[#999] mb-1 block">Agent ID</label>
                 <input
                   type="text"
                   value={agentId}
@@ -348,7 +349,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">View Radius</label>
+                <label className="text-xs text-[#999] mb-1 block">View Radius</label>
                 <input
                   type="number"
                   value={viewRadius}
@@ -360,7 +361,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Goal (optional)</label>
+                <label className="text-xs text-[#999] mb-1 block">Goal (optional)</label>
                 <input
                   type="text"
                   value={goal}
@@ -371,7 +372,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Mode</label>
+                <label className="text-xs text-[#999] mb-1 block">Mode</label>
                 <select
                   value={mode}
                   onChange={(e) => setMode(e.target.value)}
@@ -398,41 +399,41 @@ const AgentWorldInteractionPanel: React.FC = () => {
                 <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="text-sm font-medium text-[#00d4ff]">Cycle Result</span>
-                    <span className="text-xs text-gray-500">{cycleResult.cycle_id}</span>
+                    <span className="text-xs text-[#666]">{cycleResult.cycle_id}</span>
                   </div>
 
                   {/* Percept section */}
                   <div className="mb-3">
-                    <h4 className="text-xs text-gray-400 mb-1 font-semibold uppercase tracking-wider">Percept</h4>
+                    <h4 className="text-xs text-[#999] mb-1 font-semibold uppercase tracking-wider">Percept</h4>
                     <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
                       {Array.isArray(cycleResult.percept) ? (
                         <div className="space-y-1">
                           {cycleResult.percept.map((p: any, idx: number) => (
-                            <div key={idx} className="text-xs text-gray-300 flex gap-3">
-                              <span className="text-gray-500">→</span>
+                            <div key={idx} className="text-xs text-[#ccc] flex gap-3">
+                              <span className="text-[#666]">→</span>
                               <span className="text-white">{p.entity}</span>
-                              <span className="text-gray-500">{p.type}</span>
-                              {p.distance !== undefined && <span className="text-gray-600">{p.distance}u</span>}
+                              <span className="text-[#666]">{p.type}</span>
+                              {p.distance !== undefined && <span className="text-[#555]">{p.distance}u</span>}
                             </div>
                           ))}
                         </div>
                       ) : (
-                        <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{JSON.stringify(cycleResult.percept, null, 2)}</pre>
+                        <pre className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{JSON.stringify(cycleResult.percept, null, 2)}</pre>
                       )}
                     </div>
                   </div>
 
                   {/* Intentions section */}
                   <div className="mb-3">
-                    <h4 className="text-xs text-gray-400 mb-1 font-semibold uppercase tracking-wider">Intentions</h4>
+                    <h4 className="text-xs text-[#999] mb-1 font-semibold uppercase tracking-wider">Intentions</h4>
                     <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
                       {Array.isArray(cycleResult.intentions) ? (
                         <div className="space-y-1">
                           {cycleResult.intentions.map((i: any, idx: number) => (
-                            <div key={idx} className="text-xs text-gray-300 flex gap-3 items-center">
-                              <span className="text-gray-500">→</span>
+                            <div key={idx} className="text-xs text-[#ccc] flex gap-3 items-center">
+                              <span className="text-[#666]">→</span>
                               <span className="text-white">{i.action}</span>
-                              <span className="text-gray-500">{i.target}</span>
+                              <span className="text-[#666]">{i.target}</span>
                               {i.priority && (
                                 <span className={`px-1.5 py-0.5 rounded text-xs font-medium ${
                                   i.priority === 'high' ? 'bg-red-500/20 text-red-400' : i.priority === 'medium' ? 'bg-yellow-500/20 text-yellow-400' : 'bg-blue-500/20 text-blue-400'
@@ -442,24 +443,24 @@ const AgentWorldInteractionPanel: React.FC = () => {
                           ))}
                         </div>
                       ) : (
-                        <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{JSON.stringify(cycleResult.intentions, null, 2)}</pre>
+                        <pre className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{JSON.stringify(cycleResult.intentions, null, 2)}</pre>
                       )}
                     </div>
                   </div>
 
                   {/* Action section */}
                   <div className="mb-3">
-                    <h4 className="text-xs text-gray-400 mb-1 font-semibold uppercase tracking-wider">Action</h4>
+                    <h4 className="text-xs text-[#999] mb-1 font-semibold uppercase tracking-wider">Action</h4>
                     <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
-                      <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{JSON.stringify(cycleResult.action, null, 2)}</pre>
+                      <pre className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{JSON.stringify(cycleResult.action, null, 2)}</pre>
                     </div>
                   </div>
 
                   {/* Feedback section */}
                   <div>
-                    <h4 className="text-xs text-gray-400 mb-1 font-semibold uppercase tracking-wider">Feedback</h4>
+                    <h4 className="text-xs text-[#999] mb-1 font-semibold uppercase tracking-wider">Feedback</h4>
                     <div className={`bg-[#0f0f23] border rounded p-3 ${cycleResult.feedback?.success !== false ? 'border-[#2a2a4a]' : 'border-red-800'}`}>
-                      <pre className={`text-xs font-mono whitespace-pre-wrap ${cycleResult.feedback?.success !== false ? 'text-gray-300' : 'text-red-400'}`}>{JSON.stringify(cycleResult.feedback, null, 2)}</pre>
+                      <pre className={`text-xs font-mono whitespace-pre-wrap ${cycleResult.feedback?.success !== false ? 'text-[#ccc]' : 'text-red-400'}`}>{JSON.stringify(cycleResult.feedback, null, 2)}</pre>
                     </div>
                   </div>
                 </div>
@@ -476,7 +477,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
               <h3 className="text-sm font-medium text-[#00d4ff] mb-3">Query Entities</h3>
               <div className="flex gap-3 mb-3">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Region Filter</label>
+                  <label className="text-xs text-[#999] mb-1 block">Region Filter</label>
                   <input
                     type="text"
                     value={entityRegionFilter}
@@ -486,7 +487,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                   />
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Type Filter</label>
+                  <label className="text-xs text-[#999] mb-1 block">Type Filter</label>
                   <input
                     type="text"
                     value={entityTypeFilter}
@@ -509,7 +510,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                     setEntityTypeFilter('');
                     fetchEntities();
                   }}
-                  className="px-3 py-2 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-gray-400 rounded hover:text-white"
+                  className="px-3 py-2 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-[#999] rounded hover:text-white"
                 >
                   Clear Filters
                 </button>
@@ -518,9 +519,9 @@ const AgentWorldInteractionPanel: React.FC = () => {
 
             {/* Entity list */}
             {entitiesLoading && entities.length === 0 ? (
-              <div className="text-sm text-gray-500 text-center py-8">Loading entities...</div>
+              <div className="text-sm text-[#666] text-center py-8">Loading entities...</div>
             ) : entities.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-[#666]">
                 <div className="text-4xl mb-2 opacity-30">📦</div>
                 <div className="text-sm">No entities found</div>
               </div>
@@ -531,13 +532,13 @@ const AgentWorldInteractionPanel: React.FC = () => {
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center gap-2">
                         <h4 className="text-sm font-semibold text-white">{entity.name}</h4>
-                        <span className="text-xs text-gray-500">{entity.id}</span>
+                        <span className="text-xs text-[#666]">{entity.id}</span>
                       </div>
                       <span className="px-2 py-0.5 rounded text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
                         {entity.type}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-gray-500">
+                    <div className="flex items-center gap-4 text-xs text-[#666]">
                       <span>Position: {formatPosition(entity.position)}</span>
                       <span>Region: {entity.region}</span>
                     </div>
@@ -553,15 +554,15 @@ const AgentWorldInteractionPanel: React.FC = () => {
           <div>
             <button
               onClick={fetchAgents}
-              className="px-3 py-1.5 mb-3 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-gray-400 rounded hover:text-white"
+              className="px-3 py-1.5 mb-3 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-[#999] rounded hover:text-white"
             >
               ↻ Refresh
             </button>
 
             {agentsLoading && agents.length === 0 ? (
-              <div className="text-sm text-gray-500 text-center py-8">Loading agents...</div>
+              <div className="text-sm text-[#666] text-center py-8">Loading agents...</div>
             ) : agents.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-[#666]">
                 <div className="text-4xl mb-2 opacity-30">🤖</div>
                 <div className="text-sm">No registered agents found</div>
               </div>
@@ -572,13 +573,13 @@ const AgentWorldInteractionPanel: React.FC = () => {
                     <div className="flex items-start justify-between mb-1">
                       <div className="flex items-center gap-2">
                         <h4 className="text-sm font-semibold text-white">{agent.name}</h4>
-                        <span className="text-xs text-gray-500">{agent.id}</span>
+                        <span className="text-xs text-[#666]">{agent.id}</span>
                       </div>
                       <span
                         className={`px-2 py-0.5 rounded text-xs font-semibold ${
                           agent.active
                             ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                            : 'bg-gray-500/20 text-gray-500 border border-gray-500/30'
+                            : 'bg-\[#f5f5f5\]0/20 text-[#666] border border-\[#f5f5f5\]0/30'
                         }`}
                       >
                         {agent.active ? 'Active' : 'Inactive'}
@@ -603,7 +604,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
       </div>
 
       {/* Footer status bar */}
-      <div className="px-4 py-1.5 border-t border-[#2a2a4a] bg-[#0a0a1a] flex items-center justify-between text-xs text-gray-600">
+      <div className="px-4 py-1.5 border-t border-[#2a2a4a] bg-[#0a0a1a] flex items-center justify-between text-xs text-[#555]">
         <span>
           {status ? `${status.cycle_count} cycles · ${status.registered_agents} agents · ${status.entities_tracked} entities · ${status.interest_regions} regions` : 'Connected'}
         </span>

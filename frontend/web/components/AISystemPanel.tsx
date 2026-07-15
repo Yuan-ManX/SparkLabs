@@ -6,6 +6,7 @@ import {
   CircleDot, Gauge, RefreshCw, CheckCircle2, Circle,
   Loader2, Target, ArrowRight, Play, Pause
 } from 'lucide-react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 // Tab identifiers
 type TabId = 'agents' | 'navmesh' | 'pathfinding' | 'behaviors' | 'perception' | 'statemachine';
@@ -136,7 +137,7 @@ const AISystemPanel: React.FC = () => {
   // UI state
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/engine';
+  const apiBase = API_ROOT + '/engine';
 
   // Default agents
   const defaultAgents: AIAgent[] = [

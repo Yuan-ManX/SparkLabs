@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const ENTITY_TYPES = ['npc', 'creature', 'plant', 'structure', 'item', 'vehicle', 'terrain', 'decorative'];
 const INTERACTION_TYPES = ['dialogue', 'trade', 'combat', 'quest', 'explore', 'craft', 'build', 'move', 'use', 'give'];
@@ -152,14 +153,14 @@ export default function AgentWorldSimulatorPanel() {
         ].map(s => (
           <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+            <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
         ))}
       </div>
       {Object.keys(stats).length > 0 && (
         <div className={cardCls}>
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Simulation State</h3>
-          <pre className="text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(stats, null, 2)}</pre>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Simulation State</h3>
+          <pre className="text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(stats, null, 2)}</pre>
         </div>
       )}
     </div>
@@ -169,7 +170,7 @@ export default function AgentWorldSimulatorPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Create Entity</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">New Entity</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">New Entity</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Entity Name" value={entityName} onChange={e => setEntityName(e.target.value)} className={inputCls} />
           <select value={entityType} onChange={e => setEntityType(e.target.value)} className={selectCls}>
@@ -177,7 +178,7 @@ export default function AgentWorldSimulatorPanel() {
           </select>
         </div>
         <div className="mb-3">
-          <label className="text-xs text-gray-500 mb-1 block">Position (X, Y, Z)</label>
+          <label className="text-xs text-[#666] mb-1 block">Position (X, Y, Z)</label>
           <div className="grid grid-cols-3 gap-2">
             <input type="number" placeholder="X" value={entityPosX} onChange={e => setEntityPosX(e.target.value)} className={inputCls} />
             <input type="number" placeholder="Y" value={entityPosY} onChange={e => setEntityPosY(e.target.value)} className={inputCls} />
@@ -185,7 +186,7 @@ export default function AgentWorldSimulatorPanel() {
           </div>
         </div>
         <div className="mb-3">
-          <label className="text-xs text-gray-500 mb-1 block">Properties (JSON)</label>
+          <label className="text-xs text-[#666] mb-1 block">Properties (JSON)</label>
           <textarea
             placeholder='{"health": 100, "faction": "neutral"}'
             value={entityProperties}
@@ -201,7 +202,7 @@ export default function AgentWorldSimulatorPanel() {
       {result && result.name && (
         <div className={`${cardCls} mt-4 border-[#00d4ff]/30`}>
           <h3 className="text-sm font-medium text-[#00d4ff] mb-2">Created: {result.name}</h3>
-          <pre className="text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+          <pre className="text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
     </div>
@@ -211,10 +212,10 @@ export default function AgentWorldSimulatorPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Simulate Ticks</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Advance Simulation</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Advance Simulation</h3>
         <div className="flex items-end gap-3">
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Number of Ticks</label>
+            <label className="text-xs text-[#666] mb-1 block">Number of Ticks</label>
             <input
               type="number"
               placeholder="1"
@@ -232,11 +233,11 @@ export default function AgentWorldSimulatorPanel() {
       {result && result.tick !== undefined && (
         <div className={`${cardCls} mt-4 border-[#00ff88]/30`}>
           <h3 className="text-sm font-medium text-[#00ff88] mb-2">Simulation Result</h3>
-          <pre className="text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+          <pre className="text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
       <div className="mt-6">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Simulation Stats</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Simulation Stats</h3>
         <div className="grid grid-cols-2 gap-4">
           {[
             { label: 'Total Ticks', value: stats.total_ticks ?? stats.tick_count ?? '-', color: '#00ff88' },
@@ -244,7 +245,7 @@ export default function AgentWorldSimulatorPanel() {
           ].map(s => (
             <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
               <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-              <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+              <div className="text-xs text-[#999] mt-1">{s.label}</div>
             </div>
           ))}
         </div>
@@ -256,7 +257,7 @@ export default function AgentWorldSimulatorPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Entity Interaction</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">New Interaction</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">New Interaction</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Source Entity ID" value={sourceId} onChange={e => setSourceId(e.target.value)} className={inputCls} />
           <input type="text" placeholder="Target Entity ID" value={targetId} onChange={e => setTargetId(e.target.value)} className={inputCls} />
@@ -265,7 +266,7 @@ export default function AgentWorldSimulatorPanel() {
           </select>
         </div>
         <div className="mb-3">
-          <label className="text-xs text-gray-500 mb-1 block">Description</label>
+          <label className="text-xs text-[#666] mb-1 block">Description</label>
           <textarea
             placeholder="What happened during the interaction..."
             value={interactionDescription}
@@ -275,7 +276,7 @@ export default function AgentWorldSimulatorPanel() {
           />
         </div>
         <div className="mb-3">
-          <label className="text-xs text-gray-500 mb-1 block">Outcome</label>
+          <label className="text-xs text-[#666] mb-1 block">Outcome</label>
           <input
             type="text"
             placeholder="Result of the interaction"
@@ -291,7 +292,7 @@ export default function AgentWorldSimulatorPanel() {
       {result && result.interaction_id && (
         <div className={`${cardCls} mt-4 border-[#fdcb6e]/30`}>
           <h3 className="text-sm font-medium text-[#fdcb6e] mb-2">Interaction Recorded</h3>
-          <pre className="text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+          <pre className="text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
     </div>
@@ -301,7 +302,7 @@ export default function AgentWorldSimulatorPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Broadcast Event</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">New Event</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">New Event</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Event Name" value={eventName} onChange={e => setEventName(e.target.value)} className={inputCls} />
           <select value={eventCategory} onChange={e => setEventCategory(e.target.value)} className={selectCls}>
@@ -309,7 +310,7 @@ export default function AgentWorldSimulatorPanel() {
           </select>
         </div>
         <div className="mb-3">
-          <label className="text-xs text-gray-500 mb-1 block">Description</label>
+          <label className="text-xs text-[#666] mb-1 block">Description</label>
           <textarea
             placeholder="Describe the event..."
             value={eventDescription}
@@ -320,7 +321,7 @@ export default function AgentWorldSimulatorPanel() {
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Affected Entities (comma-separated IDs)</label>
+            <label className="text-xs text-[#666] mb-1 block">Affected Entities (comma-separated IDs)</label>
             <input
               type="text"
               placeholder="entity-1, entity-2"
@@ -330,7 +331,7 @@ export default function AgentWorldSimulatorPanel() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-500 mb-1 block">Affected Regions (comma-separated)</label>
+            <label className="text-xs text-[#666] mb-1 block">Affected Regions (comma-separated)</label>
             <input
               type="text"
               placeholder="forest, village"
@@ -341,7 +342,7 @@ export default function AgentWorldSimulatorPanel() {
           </div>
         </div>
         <div className="mb-3">
-          <label className="text-xs text-gray-500 mb-1 block">Intensity (1-10)</label>
+          <label className="text-xs text-[#666] mb-1 block">Intensity (1-10)</label>
           <input
             type="range"
             min="1"
@@ -350,7 +351,7 @@ export default function AgentWorldSimulatorPanel() {
             onChange={e => setEventIntensity(e.target.value)}
             className="w-full accent-[#00d4ff]"
           />
-          <div className="flex justify-between text-xs text-gray-500">
+          <div className="flex justify-between text-xs text-[#666]">
             <span>Low</span>
             <span className="text-[#00d4ff] font-medium">{eventIntensity}</span>
             <span>High</span>
@@ -363,7 +364,7 @@ export default function AgentWorldSimulatorPanel() {
       {result && result.event_id && (
         <div className={`${cardCls} mt-4 border-[#ff6b6b]/30`}>
           <h3 className="text-sm font-medium text-[#ff6b6b] mb-2">Event Broadcast</h3>
-          <pre className="text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+          <pre className="text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
     </div>
@@ -377,7 +378,7 @@ export default function AgentWorldSimulatorPanel() {
             key={t}
             onClick={() => setActiveTab(t)}
             className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-              activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'
+              activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'
             }`}
           >
             {t.charAt(0).toUpperCase() + t.slice(1)}

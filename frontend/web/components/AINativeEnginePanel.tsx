@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const ENGINE_COMMANDS = [
   'create_scene', 'load_scene', 'spawn_entity', 'destroy_entity',
@@ -172,14 +173,14 @@ export default function AINativeEnginePanel() {
   const cardCls = 'bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4';
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a1a] text-gray-200 overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a] shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm font-bold">AE</div>
           <div>
             <h2 className="text-sm font-semibold">AI-Native Engine</h2>
-            <p className="text-[10px] text-gray-500">Agent-controlled game engine</p>
+            <p className="text-[10px] text-[#666]">Agent-controlled game engine</p>
           </div>
         </div>
         <div className="flex items-center gap-2">
@@ -188,7 +189,7 @@ export default function AINativeEnginePanel() {
             Init
           </button>
           <span className={`w-2 h-2 rounded-full ${engineStatus?.initialized ? 'bg-green-400' : 'bg-yellow-400'}`} />
-          <span className="text-[10px] text-gray-500">{engineStatus?.initialized ? 'Active' : 'Idle'}</span>
+          <span className="text-[10px] text-[#666]">{engineStatus?.initialized ? 'Active' : 'Idle'}</span>
         </div>
       </div>
 
@@ -196,7 +197,7 @@ export default function AINativeEnginePanel() {
       <div className="flex border-b border-[#1a1a3e] shrink-0 overflow-x-auto">
         {tabs.map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
-            className={`px-4 py-2 text-[11px] font-medium transition-colors whitespace-nowrap ${activeTab === tab ? 'text-cyan-400 border-b border-cyan-400 bg-[#0a2a2e]' : 'text-gray-500 hover:text-gray-300'}`}>
+            className={`px-4 py-2 text-[11px] font-medium transition-colors whitespace-nowrap ${activeTab === tab ? 'text-cyan-400 border-b border-cyan-400 bg-[#0a2a2e]' : 'text-[#666] hover:text-[#ccc]'}`}>
             {tab === 'overview' ? 'Overview' : tab === 'command' ? 'Command' : tab === 'game' ? 'Game' : tab === 'entity' ? 'Entity' : tab === 'optimize' ? 'Optimize' : tab === 'world' ? 'World' : 'Hub'}
           </button>
         ))}
@@ -223,20 +224,20 @@ export default function AINativeEnginePanel() {
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold capitalize" style={{ color: s.color }}>{s.value}</div>
-                  <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+                  <div className="text-xs text-[#999] mt-1">{s.label}</div>
                 </div>
               ))}
             </div>
             {engineStatus && (
               <div className={cardCls}>
-                <h3 className="text-sm font-medium text-gray-300 mb-3">Engine Status</h3>
-                <pre className="text-xs text-gray-400 overflow-auto max-h-64">{JSON.stringify(engineStatus, null, 2)}</pre>
+                <h3 className="text-sm font-medium text-[#ccc] mb-3">Engine Status</h3>
+                <pre className="text-xs text-[#999] overflow-auto max-h-64">{JSON.stringify(engineStatus, null, 2)}</pre>
               </div>
             )}
             {engineState && (
               <div className={`${cardCls} mt-4`}>
-                <h3 className="text-sm font-medium text-gray-300 mb-3">Engine State</h3>
-                <pre className="text-xs text-gray-400 overflow-auto max-h-64">{JSON.stringify(engineState, null, 2)}</pre>
+                <h3 className="text-sm font-medium text-[#ccc] mb-3">Engine State</h3>
+                <pre className="text-xs text-[#999] overflow-auto max-h-64">{JSON.stringify(engineState, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -249,7 +250,7 @@ export default function AINativeEnginePanel() {
             <div className={cardCls}>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">Command</label>
+                  <label className="text-xs text-[#666] mb-1 block">Command</label>
                   <select value={selectedCommand} onChange={e => setSelectedCommand(e.target.value)} className={selectCls + ' w-full'}>
                     {ENGINE_COMMANDS.map(c => (
                       <option key={c} value={c} className="bg-[#1a1a2e]">{c.replace(/_/g, ' ')}</option>
@@ -257,7 +258,7 @@ export default function AINativeEnginePanel() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">Parameters (JSON)</label>
+                  <label className="text-xs text-[#666] mb-1 block">Parameters (JSON)</label>
                   <textarea
                     value={commandParams}
                     onChange={e => setCommandParams(e.target.value)}
@@ -274,7 +275,7 @@ export default function AINativeEnginePanel() {
             {result && (
               <div className={`${cardCls} mt-4 border-[#00d4ff]/30`}>
                 <h3 className="text-sm font-medium text-[#00d4ff] mb-2">Result</h3>
-                <pre className="text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -287,19 +288,19 @@ export default function AINativeEnginePanel() {
             <div className={cardCls}>
               <div className="space-y-3">
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">Game Name</label>
+                  <label className="text-xs text-[#666] mb-1 block">Game Name</label>
                   <input type="text" value={gameName} onChange={e => setGameName(e.target.value)}
                     placeholder="My Game" className={`w-full ${inputCls}`} />
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Genre</label>
+                    <label className="text-xs text-[#666] mb-1 block">Genre</label>
                     <select value={gameGenre} onChange={e => setGameGenre(e.target.value)} className={selectCls + ' w-full'}>
                       {GAME_GENRES.map(g => <option key={g} value={g} className="bg-[#1a1a2e] capitalize">{g}</option>)}
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Visual Style</label>
+                    <label className="text-xs text-[#666] mb-1 block">Visual Style</label>
                     <select value={gameVisualStyle} onChange={e => setGameVisualStyle(e.target.value)} className={selectCls + ' w-full'}>
                       {VISUAL_STYLES.map(s => <option key={s} value={s} className="bg-[#1a1a2e]">{s.replace(/_/g, ' ')}</option>)}
                     </select>
@@ -307,13 +308,13 @@ export default function AINativeEnginePanel() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Entity Count</label>
+                    <label className="text-xs text-[#666] mb-1 block">Entity Count</label>
                     <input type="number" value={gameEntityCount} onChange={e => setGameEntityCount(e.target.value)}
                       className={`w-full ${inputCls}`} min="1" max="100" />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">Description</label>
+                  <label className="text-xs text-[#666] mb-1 block">Description</label>
                   <textarea value={gameDescription} onChange={e => setGameDescription(e.target.value)}
                     rows={3} className={`w-full ${inputCls} resize-none`}
                     placeholder="A fun platformer game..." />
@@ -334,12 +335,12 @@ export default function AINativeEnginePanel() {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Name</label>
+                    <label className="text-xs text-[#666] mb-1 block">Name</label>
                     <input type="text" value={entityName} onChange={e => setEntityName(e.target.value)}
                       placeholder="Entity Name" className={`w-full ${inputCls}`} />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Category</label>
+                    <label className="text-xs text-[#666] mb-1 block">Category</label>
                     <select value={entityCategory} onChange={e => setEntityCategory(e.target.value)} className={selectCls + ' w-full'}>
                       {ENTITY_CATEGORIES.map(c => <option key={c} value={c} className="bg-[#1a1a2e] capitalize">{c}</option>)}
                     </select>
@@ -347,12 +348,12 @@ export default function AINativeEnginePanel() {
                 </div>
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Position X</label>
+                    <label className="text-xs text-[#666] mb-1 block">Position X</label>
                     <input type="number" value={entityPosX} onChange={e => setEntityPosX(e.target.value)}
                       className={`w-full ${inputCls}`} />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Position Y</label>
+                    <label className="text-xs text-[#666] mb-1 block">Position Y</label>
                     <input type="number" value={entityPosY} onChange={e => setEntityPosY(e.target.value)}
                       className={`w-full ${inputCls}`} />
                   </div>
@@ -371,15 +372,15 @@ export default function AINativeEnginePanel() {
             <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Optimization</h2>
             <div className="space-y-4">
               <div className={cardCls}>
-                <h3 className="text-sm font-medium text-gray-300 mb-3">Rendering Optimization</h3>
+                <h3 className="text-sm font-medium text-[#ccc] mb-3">Rendering Optimization</h3>
                 <div className="grid grid-cols-2 gap-3 mb-3">
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Target FPS</label>
+                    <label className="text-xs text-[#666] mb-1 block">Target FPS</label>
                     <input type="number" value={targetFps} onChange={e => setTargetFps(e.target.value)}
                       className={`w-full ${inputCls}`} min="30" max="144" />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Quality</label>
+                    <label className="text-xs text-[#666] mb-1 block">Quality</label>
                     <select value={qualityLevel} onChange={e => setQualityLevel(e.target.value)} className={selectCls + ' w-full'}>
                       {['low', 'balanced', 'high', 'ultra'].map(q => <option key={q} value={q} className="bg-[#1a1a2e] capitalize">{q}</option>)}
                     </select>
@@ -390,18 +391,18 @@ export default function AINativeEnginePanel() {
                 </button>
               </div>
               <div className={cardCls}>
-                <h3 className="text-sm font-medium text-gray-300 mb-3">Performance Analysis</h3>
+                <h3 className="text-sm font-medium text-[#ccc] mb-3">Performance Analysis</h3>
                 <button onClick={analyzePerformance} disabled={loading} className={btnPrimary}>
                   Analyze Performance
                 </button>
               </div>
               <div className={cardCls}>
-                <h3 className="text-sm font-medium text-gray-300 mb-3">Simulation Control</h3>
+                <h3 className="text-sm font-medium text-[#ccc] mb-3">Simulation Control</h3>
                 <div className="flex gap-2">
                   <button onClick={() => simulateTicks(1)} disabled={loading} className={btnSuccess}>1 Tick</button>
                   <button onClick={() => simulateTicks(10)} disabled={loading} className={btnWarning}>10 Ticks</button>
                   <button onClick={() => simulateTicks(100)} disabled={loading} className={btnDanger}>100 Ticks</button>
-                  <button onClick={resetSimulation} disabled={loading} className="bg-gray-700 text-white px-4 py-2 rounded text-sm font-medium hover:bg-gray-600">Reset</button>
+                  <button onClick={resetSimulation} disabled={loading} className="bg-[#1a1a1a] text-white px-4 py-2 rounded text-sm font-medium hover:bg-[#222]">Reset</button>
                 </div>
               </div>
             </div>
@@ -416,18 +417,18 @@ export default function AINativeEnginePanel() {
               <div className="space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">World Name</label>
+                    <label className="text-xs text-[#666] mb-1 block">World Name</label>
                     <input type="text" value={worldName} onChange={e => setWorldName(e.target.value)}
                       className={`w-full ${inputCls}`} />
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Seed</label>
+                    <label className="text-xs text-[#666] mb-1 block">Seed</label>
                     <input type="number" value={worldSeed} onChange={e => setWorldSeed(e.target.value)}
                       className={`w-full ${inputCls}`} />
                   </div>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-500 mb-1 block">Biome Count</label>
+                  <label className="text-xs text-[#666] mb-1 block">Biome Count</label>
                   <input type="number" value={biomeCount} onChange={e => setBiomeCount(e.target.value)}
                     className={`w-full ${inputCls}`} min="1" max="20" />
                 </div>
@@ -445,16 +446,16 @@ export default function AINativeEnginePanel() {
             <h2 className="text-lg font-semibold mb-4 text-[#a29bfe]">Agent Hub</h2>
             <div className="space-y-4">
               <div className={cardCls}>
-                <h3 className="text-sm font-medium text-gray-300 mb-3">Initialize Hub</h3>
+                <h3 className="text-sm font-medium text-[#ccc] mb-3">Initialize Hub</h3>
                 <button onClick={initializeHub} disabled={loading} className="bg-purple-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-purple-500">
                   Initialize Agent Hub
                 </button>
               </div>
               <div className={cardCls}>
-                <h3 className="text-sm font-medium text-gray-300 mb-3">Submit Task</h3>
+                <h3 className="text-sm font-medium text-[#ccc] mb-3">Submit Task</h3>
                 <div className="space-y-3">
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Task Type</label>
+                    <label className="text-xs text-[#666] mb-1 block">Task Type</label>
                     <select value={taskType} onChange={e => setTaskType(e.target.value)} className={selectCls + ' w-full'}>
                       {['game_design', 'code_generation', 'asset_creation', 'level_design', 'world_building', 'npc_design', 'dialogue_writing', 'testing', 'optimization', 'deployment', 'analysis', 'documentation'].map(t => (
                         <option key={t} value={t} className="bg-[#1a1a2e] capitalize">{t.replace(/_/g, ' ')}</option>
@@ -462,7 +463,7 @@ export default function AINativeEnginePanel() {
                     </select>
                   </div>
                   <div>
-                    <label className="text-xs text-gray-500 mb-1 block">Description</label>
+                    <label className="text-xs text-[#666] mb-1 block">Description</label>
                     <textarea value={taskDescription} onChange={e => setTaskDescription(e.target.value)}
                       rows={3} className={`w-full ${inputCls} resize-none`}
                       placeholder="Describe the task..." />

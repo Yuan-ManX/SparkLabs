@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ActiveTab = 'perceive' | 'entities' | 'region' | 'changes' | 'status';
 
@@ -93,7 +94,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
 
   const [changeResults, setChangeResults] = useState<ChangeDetectionResult[]>([]);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultStatus: PerceptionStatus = {
     entities_tracked: 156,
