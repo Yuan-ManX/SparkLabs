@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 export default function EngineAIGameRuntimePanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -62,7 +63,7 @@ export default function EngineAIGameRuntimePanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
       {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
@@ -85,17 +86,17 @@ export default function EngineAIGameRuntimePanel() {
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <h3 className="text-sm font-medium text-[#00d4ff]">Register Agent</h3>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Agent Name</label>
+                <label className="text-xs text-[#999] mb-1 block">Agent Name</label>
                 <input type="text" value={regName} onChange={e => setRegName(e.target.value)} placeholder="guard_npc_01" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Agent Type</label>
+                <label className="text-xs text-[#999] mb-1 block">Agent Type</label>
                 <select value={regType} onChange={e => setRegType(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                   {AGENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Config (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Config (JSON)</label>
                 <textarea value={regConfig} onChange={e => setRegConfig(e.target.value)} placeholder='{"health": 100, "speed": 5, "team": "guard"}' rows={3} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button
@@ -118,16 +119,16 @@ export default function EngineAIGameRuntimePanel() {
               <h3 className="text-sm font-medium text-[#00d4ff]">Submit Action</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Agent ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Agent ID</label>
                   <input type="text" value={actAgentId} onChange={e => setActAgentId(e.target.value)} placeholder="agent_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Action</label>
+                  <label className="text-xs text-[#999] mb-1 block">Action</label>
                   <input type="text" value={actAction} onChange={e => setActAction(e.target.value)} placeholder="move_to" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Parameters (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Parameters (JSON)</label>
                 <textarea value={actParams} onChange={e => setActParams(e.target.value)} placeholder='{"x": 10, "y": 20}' rows={2} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button
@@ -149,7 +150,7 @@ export default function EngineAIGameRuntimePanel() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-[#00d4ff]">Registered Agents ({agents.length})</h3>
-                <button onClick={fetchAgents} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-gray-300 hover:bg-[#2a2a4a]">Refresh</button>
+                <button onClick={fetchAgents} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
               </div>
               {agents.length > 0 ? (
                 <div className="space-y-2">
@@ -157,14 +158,14 @@ export default function EngineAIGameRuntimePanel() {
                     <div key={a.id || i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a] flex items-center justify-between">
                       <div>
                         <span className="text-white text-sm font-medium">{a.name || a.id}</span>
-                        <span className="text-xs bg-[#1a1a2e] text-gray-300 px-2 py-0.5 rounded ml-2">{a.agent_type || a.type}</span>
+                        <span className="text-xs bg-[#1a1a2e] text-[#ccc] px-2 py-0.5 rounded ml-2">{a.agent_type || a.type}</span>
                       </div>
-                      <span className={`text-xs px-2 py-0.5 rounded ${a.status === 'active' ? 'bg-green-900 text-green-300' : 'bg-gray-700 text-gray-300'}`}>{a.status || 'idle'}</span>
+                      <span className={`text-xs px-2 py-0.5 rounded ${a.status === 'active' ? 'bg-green-900 text-green-300' : 'bg-[#1a1a1a] text-[#ccc]'}`}>{a.status || 'idle'}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No agents registered</div>
+                <div className="text-[#999] text-xs">No agents registered</div>
               )}
             </div>
           </div>
@@ -175,17 +176,17 @@ export default function EngineAIGameRuntimePanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Add Hook</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Hook Name</label>
+                <label className="text-xs text-[#999] mb-1 block">Hook Name</label>
                 <input type="text" value={hookName} onChange={e => setHookName(e.target.value)} placeholder="patrol_behavior" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Event</label>
+                <label className="text-xs text-[#999] mb-1 block">Event</label>
                 <select value={hookEvent} onChange={e => setHookEvent(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                   {HOOK_EVENTS.map(e => <option key={e} value={e}>{e}</option>)}
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Handler (JSON with logic description)</label>
+                <label className="text-xs text-[#999] mb-1 block">Handler (JSON with logic description)</label>
                 <textarea value={hookHandler} onChange={e => setHookHandler(e.target.value)} placeholder='{"logic": "patrol between waypoints", "priority": 5}' rows={3} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button
@@ -210,7 +211,7 @@ export default function EngineAIGameRuntimePanel() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#00d4ff]">Pending Actions</h2>
-              <button onClick={fetchPendingActions} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-gray-300 hover:bg-[#2a2a4a]">Refresh</button>
+              <button onClick={fetchPendingActions} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
             </div>
 
             {pendingActions.length > 0 ? (
@@ -221,7 +222,7 @@ export default function EngineAIGameRuntimePanel() {
                       <span className="text-white text-sm font-medium">{a.action || a.type || `Action #${i + 1}`}</span>
                       <span className="text-xs bg-yellow-900 text-yellow-300 px-2 py-0.5 rounded">pending</span>
                     </div>
-                    <div className="text-xs text-gray-400">
+                    <div className="text-xs text-[#999]">
                       <span>Agent: <span className="text-white">{a.agent_id || 'N/A'}</span></span>
                       {a.parameters && <span className="ml-4">Params: <span className="text-white font-mono">{JSON.stringify(a.parameters)}</span></span>}
                     </div>
@@ -229,13 +230,13 @@ export default function EngineAIGameRuntimePanel() {
                 ))}
               </div>
             ) : (
-              <div className="text-gray-400 text-sm">No pending actions</div>
+              <div className="text-[#999] text-sm">No pending actions</div>
             )}
 
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3 mt-4">
               <h3 className="text-sm font-medium text-[#00d4ff]">Execute Hooks</h3>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Agent ID</label>
+                <label className="text-xs text-[#999] mb-1 block">Agent ID</label>
                 <input type="text" value={execHookAgentId} onChange={e => setExecHookAgentId(e.target.value)} placeholder="agent_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <button

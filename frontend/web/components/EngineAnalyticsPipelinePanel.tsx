@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 const METRIC_TYPES = [
   'fps','memory','draw_calls','entity_count','player_deaths','player_actions',
@@ -79,7 +80,7 @@ export default function EngineAnalyticsPipelinePanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
@@ -103,12 +104,12 @@ export default function EngineAnalyticsPipelinePanel() {
                 { label: 'Alerts Triggered', value: stats.alerts_triggered, color: 'text-red-400' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}</p>
                 </div>
               ))}
             </div>
-            <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+            <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
           </div>
         )}
 
@@ -177,11 +178,11 @@ export default function EngineAnalyticsPipelinePanel() {
               </select>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] text-gray-500 block mb-1">Time Range Start</label>
+                  <label className="text-[10px] text-[#666] block mb-1">Time Range Start</label>
                   <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-400" type="datetime-local" value={qTimeStart} onChange={e => setQTimeStart(e.target.value)} />
                 </div>
                 <div>
-                  <label className="text-[10px] text-gray-500 block mb-1">Time Range End</label>
+                  <label className="text-[10px] text-[#666] block mb-1">Time Range End</label>
                   <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-400" type="datetime-local" value={qTimeEnd} onChange={e => setQTimeEnd(e.target.value)} />
                 </div>
               </div>
@@ -209,24 +210,24 @@ export default function EngineAnalyticsPipelinePanel() {
                 {result.value !== undefined && (
                   <div className="text-center">
                     <span className="text-3xl font-bold text-amber-300">{typeof result.value === 'number' ? result.value.toLocaleString() : result.value}</span>
-                    <p className="text-xs text-gray-500 mt-1">{qAggregation} of {qMetricType.replace(/_/g,' ')}</p>
+                    <p className="text-xs text-[#666] mt-1">{qAggregation} of {qMetricType.replace(/_/g,' ')}</p>
                   </div>
                 )}
                 {result.data && Array.isArray(result.data) && (
                   <div>
-                    <h4 className="text-xs font-semibold text-gray-400 mb-2">Data Points ({result.data.length})</h4>
+                    <h4 className="text-xs font-semibold text-[#999] mb-2">Data Points ({result.data.length})</h4>
                     <div className="max-h-48 overflow-auto space-y-1">
                       {result.data.slice(0, 20).map((row: any, i: number) => (
                         <div key={i} className="flex justify-between text-xs bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">
-                          <span className="text-gray-400">{row.label || row.group || row.key || i}</span>
+                          <span className="text-[#999]">{row.label || row.group || row.key || i}</span>
                           <span className="text-amber-300">{row.value}</span>
                         </div>
                       ))}
-                      {result.data.length > 20 && <p className="text-xs text-gray-600 text-center">... and {result.data.length - 20} more</p>}
+                      {result.data.length > 20 && <p className="text-xs text-[#555] text-center">... and {result.data.length - 20} more</p>}
                     </div>
                   </div>
                 )}
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -238,7 +239,7 @@ export default function EngineAnalyticsPipelinePanel() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#00d4ff]">Realtime Dashboard</h2>
               <button
-                className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-gray-400 hover:text-white hover:border-[#00d4ff] transition-colors"
+                className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#999] hover:text-white hover:border-[#00d4ff] transition-colors"
                 onClick={fetchDashboard}>
                 Refresh
               </button>
@@ -270,7 +271,7 @@ export default function EngineAnalyticsPipelinePanel() {
                           {status}
                         </span>
                         {typeof metricValue === 'object' && metricValue !== null && metricValue.timestamp && (
-                          <span className="text-[10px] text-gray-600">{new Date(metricValue.timestamp).toLocaleTimeString()}</span>
+                          <span className="text-[10px] text-[#555]">{new Date(metricValue.timestamp).toLocaleTimeString()}</span>
                         )}
                       </div>
                     </div>
@@ -279,7 +280,7 @@ export default function EngineAnalyticsPipelinePanel() {
               </div>
             ) : (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                <p className="text-sm text-gray-500 text-center py-8">No dashboard data available</p>
+                <p className="text-sm text-[#666] text-center py-8">No dashboard data available</p>
               </div>
             )}
           </div>
@@ -295,11 +296,11 @@ export default function EngineAnalyticsPipelinePanel() {
               </select>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] text-gray-500 block mb-1">Time Range Start</label>
+                  <label className="text-[10px] text-[#666] block mb-1">Time Range Start</label>
                   <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-red-400" type="datetime-local" value={aTimeStart} onChange={e => setATimeStart(e.target.value)} />
                 </div>
                 <div>
-                  <label className="text-[10px] text-gray-500 block mb-1">Time Range End</label>
+                  <label className="text-[10px] text-[#666] block mb-1">Time Range End</label>
                   <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-red-400" type="datetime-local" value={aTimeEnd} onChange={e => setATimeEnd(e.target.value)} />
                 </div>
               </div>
@@ -327,36 +328,36 @@ export default function EngineAnalyticsPipelinePanel() {
                       </div>
                       <div className="grid grid-cols-2 gap-2 text-xs">
                         <div>
-                          <span className="text-gray-500">Z-Score: </span>
-                          <span className={Math.abs(anomaly.z_score || 0) > 2 ? 'text-red-400 font-bold' : 'text-gray-300'}>
+                          <span className="text-[#666]">Z-Score: </span>
+                          <span className={Math.abs(anomaly.z_score || 0) > 2 ? 'text-red-400 font-bold' : 'text-[#ccc]'}>
                             {anomaly.z_score !== undefined ? anomaly.z_score.toFixed(2) : '-'}
                           </span>
                         </div>
                         <div>
-                          <span className="text-gray-500">IQR: </span>
-                          <span className="text-gray-300">{anomaly.iqr !== undefined ? (typeof anomaly.iqr === 'number' ? anomaly.iqr.toFixed(2) : anomaly.iqr) : '-'}</span>
+                          <span className="text-[#666]">IQR: </span>
+                          <span className="text-[#ccc]">{anomaly.iqr !== undefined ? (typeof anomaly.iqr === 'number' ? anomaly.iqr.toFixed(2) : anomaly.iqr) : '-'}</span>
                         </div>
                         <div>
-                          <span className="text-gray-500">Value: </span>
-                          <span className="text-gray-300">{anomaly.value !== undefined ? anomaly.value : '-'}</span>
+                          <span className="text-[#666]">Value: </span>
+                          <span className="text-[#ccc]">{anomaly.value !== undefined ? anomaly.value : '-'}</span>
                         </div>
                         <div>
-                          <span className="text-gray-500">Expected: </span>
-                          <span className="text-gray-300">{anomaly.expected !== undefined ? anomaly.expected : '-'}</span>
+                          <span className="text-[#666]">Expected: </span>
+                          <span className="text-[#ccc]">{anomaly.expected !== undefined ? anomaly.expected : '-'}</span>
                         </div>
                       </div>
                       {anomaly.timestamp && (
-                        <p className="text-[10px] text-gray-600 mt-2">{new Date(anomaly.timestamp).toLocaleString()}</p>
+                        <p className="text-[10px] text-[#555] mt-2">{new Date(anomaly.timestamp).toLocaleString()}</p>
                       )}
-                      {anomaly.description && <p className="text-xs text-gray-500 mt-1">{anomaly.description}</p>}
+                      {anomaly.description && <p className="text-xs text-[#666] mt-1">{anomaly.description}</p>}
                     </div>
                   ))
                 ) : (
                   <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                    <p className="text-sm text-gray-500 text-center py-4">No anomalies detected</p>
+                    <p className="text-sm text-[#666] text-center py-4">No anomalies detected</p>
                   </div>
                 )}
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>

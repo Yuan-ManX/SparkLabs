@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 const AUDIO_CATEGORIES = ['sfx', 'music', 'ambient', 'voice', 'ui', 'footstep', 'weapon', 'environment', 'vehicle', 'magic'];
 const PRIORITIES = ['low', 'medium', 'high', 'critical', 'always'];
@@ -85,7 +86,7 @@ export default function EngineAudioSystemPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -109,17 +110,17 @@ export default function EngineAudioSystemPanel() {
                 { label: 'Categories', value: stats.categories ? Object.keys(stats.categories).length : 0, color: 'text-pink-300', suffix: ' categories' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}{s.suffix || ''}</p>
                 </div>
               ))}
             </div>
             {stats.categories && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Assets by Category</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Assets by Category</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(stats.categories).map(([k, v]) => (
-                    <div key={k} className="flex justify-between text-xs"><span className="text-gray-400 capitalize">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
+                    <div key={k} className="flex justify-between text-xs"><span className="text-[#999] capitalize">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
                   ))}
                 </div>
               </div>
@@ -153,7 +154,7 @@ export default function EngineAudioSystemPanel() {
                 </select>
               </div>
               <div className="flex items-center gap-2">
-                <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+                <label className="flex items-center gap-2 text-sm text-[#999] cursor-pointer">
                   <input type="checkbox" checked={assetIs3d} onChange={e => setAssetIs3d(e.target.checked)} className="accent-[#00d4ff]" />
                   3D Audio
                 </label>
@@ -184,7 +185,7 @@ export default function EngineAudioSystemPanel() {
                 <input className={inputCls} placeholder="Volume (0-1)" type="number" step="0.1" min="0" max="1" value={playVolume} onChange={e => setPlayVolume(e.target.value)} />
                 <input className={inputCls} placeholder="Pitch" type="number" step="0.1" value={playPitch} onChange={e => setPlayPitch(e.target.value)} />
                 <div className="flex items-center">
-                  <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+                  <label className="flex items-center gap-2 text-sm text-[#999] cursor-pointer">
                     <input type="checkbox" checked={playLoop} onChange={e => setPlayLoop(e.target.checked)} className="accent-[#00ff88]" />
                     Loop
                   </label>
@@ -230,7 +231,7 @@ export default function EngineAudioSystemPanel() {
             </div>
 
             <div className={cardCls}>
-              <h3 className="text-sm font-bold text-gray-300 mb-3">Active Instances</h3>
+              <h3 className="text-sm font-bold text-[#ccc] mb-3">Active Instances</h3>
               <button
                 className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6] transition-colors disabled:opacity-50"
                 disabled={loading}
@@ -243,8 +244,8 @@ export default function EngineAudioSystemPanel() {
                     <div key={i} className="bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a] flex justify-between items-center text-xs">
                       <span className="text-white">{inst.asset_name ?? inst.id}</span>
                       <div className="flex gap-2">
-                        <span className="text-gray-500">Vol: {inst.volume}</span>
-                        <span className="text-gray-500">{inst.loop ? '🔁' : '▶'}</span>
+                        <span className="text-[#666]">Vol: {inst.volume}</span>
+                        <span className="text-[#666]">{inst.loop ? '🔁' : '▶'}</span>
                         <span className="text-[#00ff88]">{inst.state ?? 'playing'}</span>
                       </div>
                     </div>
@@ -279,17 +280,17 @@ export default function EngineAudioSystemPanel() {
 
             {result && activeTab === 'channels' && Array.isArray(result.channels) && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-3">Channel List</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-3">Channel List</h3>
                 <div className="space-y-2">
                   {result.channels.map((ch: any, i: number) => (
                     <div key={i} className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] flex justify-between items-center">
                       <div>
                         <span className="text-sm text-white">{ch.name}</span>
-                        <span className="text-xs text-gray-500 ml-2 capitalize">{ch.category}</span>
+                        <span className="text-xs text-[#666] ml-2 capitalize">{ch.category}</span>
                       </div>
                       <div className="flex items-center gap-3">
                         <div className="flex items-center gap-1">
-                          <span className="text-xs text-gray-500">Vol:</span>
+                          <span className="text-xs text-[#666]">Vol:</span>
                           <div className="w-16 bg-[#2a2a4a] rounded-full h-1.5 overflow-hidden">
                             <div className="h-full bg-purple-400 rounded-full" style={{ width: `${(ch.volume ?? 1) * 100}%` }} />
                           </div>

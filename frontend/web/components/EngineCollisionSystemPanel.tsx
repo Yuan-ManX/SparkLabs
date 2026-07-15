@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 export default function EngineCollisionSystemPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -30,7 +31,7 @@ export default function EngineCollisionSystemPanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
       {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
@@ -50,7 +51,7 @@ export default function EngineCollisionSystemPanel() {
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Create Body</h2>
             <button className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm" onClick={async () => { const r = await handleSubmit(`${API_BASE}/collision-system/create-body`, {entity_id: 'test', shape: 'aabb', position: [0,0], size: [1,1]}); if (r?.body_id) setBodyId(r.body_id); setResult(r); }}>Create</button>
-            {bodyId && <p className="text-sm text-gray-400">Body ID: {bodyId}</p>}
+            {bodyId && <p className="text-sm text-[#999]">Body ID: {bodyId}</p>}
             {result && <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
           </div>
         )}

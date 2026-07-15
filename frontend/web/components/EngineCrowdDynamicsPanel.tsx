@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ActiveTab = 'agent' | 'group' | 'simulation' | 'flowfield' | 'status';
 
@@ -57,7 +58,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
   const [flowFieldForm, setFlowFieldForm] = useState({ name: '', resW: 16, resH: 16 });
   const [flowFields, setFlowFields] = useState<{ id: string; name: string; resolution: number[] }[]>([]);
 
-  const apiBase = 'http://localhost:8000/api/engine';
+  const apiBase = API_ROOT + '/engine';
 
   const defaultStatus: CrowdStatus = {
     total_agents: 250, total_groups: 8, total_updates: 5400,

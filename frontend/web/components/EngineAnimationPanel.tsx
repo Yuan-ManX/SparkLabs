@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = API_ROOT;
 
 interface AnimationStats {
   total_clips: number;
@@ -110,7 +111,7 @@ const EngineAnimationPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           {Object.entries(data).map(([key, value]) => (
             <div key={key} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-              <span className="text-gray-400 text-xs">{key.replace(/_/g, ' ')}</span>
+              <span className="text-[#999] text-xs">{key.replace(/_/g, ' ')}</span>
               <div className="text-white text-sm font-mono mt-1">
                 {typeof value === 'number' ? value.toLocaleString() : String(value)}
               </div>
@@ -118,7 +119,7 @@ const EngineAnimationPanel: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="text-gray-400 text-sm">No animation data available</div>
+        <div className="text-[#999] text-sm">No animation data available</div>
       )}
     </div>
   );
@@ -129,19 +130,19 @@ const EngineAnimationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Create Animation Clip</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Clip Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Clip Name</label>
             <input type="text" value={clipName} onChange={(e) => setClipName(e.target.value)} placeholder="player_idle" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Duration (s)</label>
+            <label className="text-xs text-[#999] mb-1 block">Duration (s)</label>
             <input type="number" value={clipDuration} onChange={(e) => setClipDuration(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">FPS</label>
+            <label className="text-xs text-[#999] mb-1 block">FPS</label>
             <input type="number" value={clipFps} onChange={(e) => setClipFps(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Loop</label>
+            <label className="text-xs text-[#999] mb-1 block">Loop</label>
             <div className="flex items-center mt-2">
               <input type="checkbox" checked={clipLoop} onChange={(e) => setClipLoop(e.target.checked)} className="accent-[#00d4ff]" />
               <span className="text-white text-sm ml-2">{clipLoop ? 'Yes' : 'No'}</span>
@@ -149,7 +150,7 @@ const EngineAnimationPanel: React.FC = () => {
           </div>
         </div>
         <div className="mt-3">
-          <label className="text-xs text-gray-400 mb-1 block">Frames (JSON array)</label>
+          <label className="text-xs text-[#999] mb-1 block">Frames (JSON array)</label>
           <textarea
             value={clipFrames}
             onChange={(e) => setClipFrames(e.target.value)}
@@ -180,7 +181,7 @@ const EngineAnimationPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Create State Machine</div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Machine Name</label>
+          <label className="text-xs text-[#999] mb-1 block">Machine Name</label>
           <input type="text" value={machineName} onChange={(e) => setMachineName(e.target.value)} placeholder="player_controller" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/animation-controller/create-state-machine', { name: machineName })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -193,15 +194,15 @@ const EngineAnimationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Add State</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Machine ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Machine ID</label>
             <input type="text" value={stateMachineId} onChange={(e) => setStateMachineId(e.target.value)} placeholder="player_controller" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">State Name</label>
+            <label className="text-xs text-[#999] mb-1 block">State Name</label>
             <input type="text" value={stateName} onChange={(e) => setStateName(e.target.value)} placeholder="Idle" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Clip Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Clip Name</label>
             <input type="text" value={stateClipName} onChange={(e) => setStateClipName(e.target.value)} placeholder="player_idle" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -215,15 +216,15 @@ const EngineAnimationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Add Transition</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">From State</label>
+            <label className="text-xs text-[#999] mb-1 block">From State</label>
             <input type="text" value={fromState} onChange={(e) => setFromState(e.target.value)} placeholder="Idle" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">To State</label>
+            <label className="text-xs text-[#999] mb-1 block">To State</label>
             <input type="text" value={toState} onChange={(e) => setToState(e.target.value)} placeholder="Walk" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Condition</label>
+            <label className="text-xs text-[#999] mb-1 block">Condition</label>
             <input type="text" value={transitionCondition} onChange={(e) => setTransitionCondition(e.target.value)} placeholder="speed > 0" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -237,11 +238,11 @@ const EngineAnimationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Add Parameter</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Parameter Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Parameter Name</label>
             <input type="text" value={paramName} onChange={(e) => setParamName(e.target.value)} placeholder="speed" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Type</label>
+            <label className="text-xs text-[#999] mb-1 block">Type</label>
             <select value={paramType} onChange={(e) => setParamType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="bool">Boolean</option>
               <option value="float">Float</option>
@@ -250,7 +251,7 @@ const EngineAnimationPanel: React.FC = () => {
             </select>
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Default Value</label>
+            <label className="text-xs text-[#999] mb-1 block">Default Value</label>
             <input type="text" value={paramDefault} onChange={(e) => setParamDefault(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -268,11 +269,11 @@ const EngineAnimationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Create Instance</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Entity ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Entity ID</label>
             <input type="text" value={instanceEntityId} onChange={(e) => setInstanceEntityId(e.target.value)} placeholder="player_1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Clip Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Clip Name</label>
             <input type="text" value={instanceClipName} onChange={(e) => setInstanceClipName(e.target.value)} placeholder="player_idle" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -286,11 +287,11 @@ const EngineAnimationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Update Instance</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Entity ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Entity ID</label>
             <input type="text" value={instanceEntityId} onChange={(e) => setInstanceEntityId(e.target.value)} placeholder="player_1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Machine ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Machine ID</label>
             <input type="text" value={instanceMachineId} onChange={(e) => setInstanceMachineId(e.target.value)} placeholder="player_controller" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -303,7 +304,7 @@ const EngineAnimationPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Get Current Frame</div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Entity ID / Instance ID</label>
+          <label className="text-xs text-[#999] mb-1 block">Entity ID / Instance ID</label>
           <input type="text" value={getFrameInstanceId} onChange={(e) => setGetFrameInstanceId(e.target.value)} placeholder="player_1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button
@@ -330,7 +331,7 @@ const EngineAnimationPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Pause / Resume</div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Instance ID</label>
+          <label className="text-xs text-[#999] mb-1 block">Instance ID</label>
           <input type="text" value={controlInstanceId} onChange={(e) => setControlInstanceId(e.target.value)} placeholder="player_1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <div className="flex gap-2 mt-3">
@@ -348,11 +349,11 @@ const EngineAnimationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Set Speed</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Instance ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Instance ID</label>
             <input type="text" value={controlInstanceId} onChange={(e) => setControlInstanceId(e.target.value)} placeholder="player_1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Speed Multiplier</label>
+            <label className="text-xs text-[#999] mb-1 block">Speed Multiplier</label>
             <input type="number" value={controlSpeed} onChange={(e) => setControlSpeed(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -366,16 +367,16 @@ const EngineAnimationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Trigger Event</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Instance ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Instance ID</label>
             <input type="text" value={controlInstanceId} onChange={(e) => setControlInstanceId(e.target.value)} placeholder="player_1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Event Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Event Name</label>
             <input type="text" value={eventName} onChange={(e) => setEventName(e.target.value)} placeholder="on_hit" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <div className="mt-2">
-          <label className="text-xs text-gray-400 mb-1 block">Event Data (JSON)</label>
+          <label className="text-xs text-[#999] mb-1 block">Event Data (JSON)</label>
           <textarea value={eventData} onChange={(e) => setEventData(e.target.value)} rows={2} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button
@@ -413,13 +414,13 @@ const EngineAnimationPanel: React.FC = () => {
       <div className="flex gap-1 border-b border-[#2a2a4a] px-4 pt-2">
         {tabs.map((t) => (
           <button key={t.id} onClick={() => setActiveTab(t.id)}
-            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-gray-400 hover:text-white'}`}>
+            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-[#999] hover:text-white'}`}>
             {t.label}
           </button>
         ))}
       </div>
       <div className="flex-1 overflow-auto p-4">
-        {loading && <div className="text-gray-400 text-sm mb-2">Loading...</div>}
+        {loading && <div className="text-[#999] text-sm mb-2">Loading...</div>}
         {renderTab()}
       </div>
     </div>

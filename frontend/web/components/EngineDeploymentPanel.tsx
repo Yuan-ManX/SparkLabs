@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 export default function EngineDeploymentPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -69,20 +70,20 @@ export default function EngineDeploymentPanel() {
     building: 'bg-blue-900 text-blue-300',
     queued: 'bg-yellow-900 text-yellow-300',
     failed: 'bg-red-900 text-red-300',
-    cancelled: 'bg-gray-700 text-gray-300',
+    cancelled: 'bg-[#1a1a1a] text-[#ccc]',
   };
 
   const platformBadgeColors: Record<string, string> = {
     web: 'bg-blue-900 text-blue-300',
     windows: 'bg-sky-900 text-sky-300',
-    macos: 'bg-gray-700 text-gray-300',
+    macos: 'bg-[#1a1a1a] text-[#ccc]',
     linux: 'bg-orange-900 text-orange-300',
-    ios: 'bg-gray-700 text-gray-300',
+    ios: 'bg-[#1a1a1a] text-[#ccc]',
     android: 'bg-green-900 text-green-300',
     html5: 'bg-red-900 text-red-300',
     pwa: 'bg-purple-900 text-purple-300',
     steam: 'bg-indigo-900 text-indigo-300',
-    epic: 'bg-gray-700 text-gray-300',
+    epic: 'bg-[#1a1a1a] text-[#ccc]',
     itch: 'bg-pink-900 text-pink-300',
   };
 
@@ -108,7 +109,7 @@ export default function EngineDeploymentPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -141,7 +142,7 @@ export default function EngineDeploymentPanel() {
             {Object.keys(stats).length > 0 && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">All Stats</h3>
-                <pre className="text-xs text-gray-300 overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -154,12 +155,12 @@ export default function EngineDeploymentPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Deployment Config</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Config Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Config Name</label>
                   <input type="text" value={ccName} onChange={e => setCcName(e.target.value)}
                     placeholder="production_web_build" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Platform</label>
+                  <label className="text-xs text-[#999] mb-1 block">Platform</label>
                   <select value={ccPlatform} onChange={e => setCcPlatform(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {platformOptions.map(p => (
@@ -168,7 +169,7 @@ export default function EngineDeploymentPanel() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Optimization Level</label>
+                  <label className="text-xs text-[#999] mb-1 block">Optimization Level</label>
                   <select value={ccOptimization} onChange={e => setCcOptimization(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {optimizationOptions.map(o => (
@@ -177,7 +178,7 @@ export default function EngineDeploymentPanel() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Target Resolution</label>
+                  <label className="text-xs text-[#999] mb-1 block">Target Resolution</label>
                   <input type="text" value={ccTargetRes} onChange={e => setCcTargetRes(e.target.value)}
                     placeholder="1920x1080" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -185,21 +186,21 @@ export default function EngineDeploymentPanel() {
                   <label className="flex items-center gap-2 cursor-pointer">
                     <input type="checkbox" checked={ccCompression} onChange={e => setCcCompression(e.target.checked)}
                       className="accent-[#00d4ff]" />
-                    <span className="text-xs text-gray-300">Enable Compression</span>
+                    <span className="text-xs text-[#ccc]">Enable Compression</span>
                   </label>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Include Assets (comma-separated)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Include Assets (comma-separated)</label>
                   <input type="text" value={ccIncludeAssets} onChange={e => setCcIncludeAssets(e.target.value)}
                     placeholder="*.png,*.wav,*.json" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Exclude Patterns (comma-separated)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Exclude Patterns (comma-separated)</label>
                   <input type="text" value={ccExcludePatterns} onChange={e => setCcExcludePatterns(e.target.value)}
                     placeholder="*.psd,*.blend,node_modules" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Custom Flags (JSON)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Custom Flags (JSON)</label>
                   <textarea value={ccCustomFlags} onChange={e => setCcCustomFlags(e.target.value)}
                     rows={3} placeholder='{"debug": false, "sourcemaps": true}' className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -229,10 +230,10 @@ export default function EngineDeploymentPanel() {
                 <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Config Created</h2>
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div className="bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">
-                    <span className="text-gray-400">ID: </span><span className="text-white font-mono">{result.id}</span>
+                    <span className="text-[#999]">ID: </span><span className="text-white font-mono">{result.id}</span>
                   </div>
                   <div className="bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">
-                    <span className="text-gray-400">Platform: </span><span className="text-white">{result.platform}</span>
+                    <span className="text-[#999]">Platform: </span><span className="text-white">{result.platform}</span>
                   </div>
                 </div>
               </div>
@@ -247,7 +248,7 @@ export default function EngineDeploymentPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Queue Build</h2>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Config ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Config ID</label>
                   <input type="text" value={qbConfigId} onChange={e => setQbConfigId(e.target.value)}
                     placeholder="config_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -266,7 +267,7 @@ export default function EngineDeploymentPanel() {
             {result && result.job_id && (
               <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
                 <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Build Queued</h2>
-                <p className="text-sm text-gray-300">Job ID: <span className="text-[#00d4ff] font-mono">{result.job_id}</span></p>
+                <p className="text-sm text-[#ccc]">Job ID: <span className="text-[#00d4ff] font-mono">{result.job_id}</span></p>
               </div>
             )}
 
@@ -274,7 +275,7 @@ export default function EngineDeploymentPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Execute Build</h2>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Job ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Job ID</label>
                   <input type="text" value={ebJobId} onChange={e => setEbJobId(e.target.value)}
                     placeholder="build_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -295,13 +296,13 @@ export default function EngineDeploymentPanel() {
                 <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Build Progress</h2>
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs text-gray-400">Status</span>
-                    <span className={`text-xs px-2 py-0.5 rounded font-mono ${statusColors[result.status] || 'bg-gray-700 text-gray-300'}`}>{result.status}</span>
+                    <span className="text-xs text-[#999]">Status</span>
+                    <span className={`text-xs px-2 py-0.5 rounded font-mono ${statusColors[result.status] || 'bg-[#1a1a1a] text-[#ccc]'}`}>{result.status}</span>
                   </div>
                   {result.progress != null && (
                     <div>
                       <div className="flex justify-between text-xs mb-1">
-                        <span className="text-gray-400">Progress</span>
+                        <span className="text-[#999]">Progress</span>
                         <span className="text-[#00d4ff]">{result.progress}%</span>
                       </div>
                       <div className="h-2 bg-[#2a2a4a] rounded-full overflow-hidden">
@@ -335,7 +336,7 @@ export default function EngineDeploymentPanel() {
                       await handlePost(`${API_BASE}/deployment-orchestrator/optimize-assets`, { job_id: ebJobId || result.job_id });
                     }}
                     disabled={loading}
-                    className="px-4 py-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-gray-300 hover:bg-[#2a2a4a] disabled:opacity-50">
+                    className="px-4 py-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#ccc] hover:bg-[#2a2a4a] disabled:opacity-50">
                     Optimize Assets
                   </button>
                 </div>
@@ -351,7 +352,7 @@ export default function EngineDeploymentPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Build List</h2>
               <div className="flex gap-3 mb-3">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Platform Filter</label>
+                  <label className="text-xs text-[#999] mb-1 block">Platform Filter</label>
                   <select value={buildFilter.platform} onChange={e => setBuildFilter(prev => ({ ...prev, platform: e.target.value }))}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     <option value="">All Platforms</option>
@@ -361,7 +362,7 @@ export default function EngineDeploymentPanel() {
                   </select>
                 </div>
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Status Filter</label>
+                  <label className="text-xs text-[#999] mb-1 block">Status Filter</label>
                   <select value={buildFilter.status} onChange={e => setBuildFilter(prev => ({ ...prev, status: e.target.value }))}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     <option value="">All Statuses</option>
@@ -388,15 +389,15 @@ export default function EngineDeploymentPanel() {
                     <div className="flex items-center justify-between mb-2">
                       <div className="flex items-center gap-2">
                         <span className="text-white text-sm font-medium">{b.name || b.id || `Build ${i + 1}`}</span>
-                        <span className={`text-xs px-2 py-0.5 rounded ${platformBadgeColors[b.platform] || 'bg-gray-700 text-gray-300'}`}>
+                        <span className={`text-xs px-2 py-0.5 rounded ${platformBadgeColors[b.platform] || 'bg-[#1a1a1a] text-[#ccc]'}`}>
                           {b.platform || 'unknown'}
                         </span>
                       </div>
-                      <span className={`text-xs px-2 py-0.5 rounded font-mono ${statusColors[b.status] || 'bg-gray-700 text-gray-300'}`}>
+                      <span className={`text-xs px-2 py-0.5 rounded font-mono ${statusColors[b.status] || 'bg-[#1a1a1a] text-[#ccc]'}`}>
                         {b.status || 'unknown'}
                       </span>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-gray-400">
+                    <div className="flex items-center gap-4 text-xs text-[#999]">
                       {b.file_size != null && <span>Size: <span className="text-white">{typeof b.file_size === 'number' ? (b.file_size / 1024 / 1024).toFixed(1) + ' MB' : b.file_size}</span></span>}
                       {b.duration != null && <span>Duration: <span className="text-white">{typeof b.duration === 'number' ? b.duration.toFixed(1) + 's' : b.duration}</span></span>}
                       {b.config_id && <span>Config: <span className="text-white font-mono">{b.config_id}</span></span>}
@@ -405,13 +406,13 @@ export default function EngineDeploymentPanel() {
                 ))}
               </div>
             ) : (
-              <div className="text-gray-400 text-sm text-center py-4">No builds found. Use the filters above to search.</div>
+              <div className="text-[#999] text-sm text-center py-4">No builds found. Use the filters above to search.</div>
             )}
 
             {result && Array.isArray(result) && builds.length === 0 && (
               <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
                 <h3 className="text-[#00d4ff] text-sm mb-2">Raw Results</h3>
-                <pre className="text-xs text-gray-300 overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
