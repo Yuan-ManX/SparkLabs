@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 interface RenderingConfig {
   current_tier: string;
@@ -147,11 +148,11 @@ const AdaptiveRenderingPanel: React.FC = () => {
     medium: 'from-yellow-500 to-amber-500',
     low: 'from-orange-500 to-red-500',
     minimal: 'from-red-500 to-red-700',
-    performance: 'from-red-700 to-gray-700',
+    performance: 'from-red-700 to-\[#1a1a1a\]',
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0a0a1a] text-gray-200 overflow-hidden">
+    <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-sm font-bold">
@@ -159,7 +160,7 @@ const AdaptiveRenderingPanel: React.FC = () => {
           </div>
           <div>
             <h2 className="text-sm font-semibold">Adaptive Rendering</h2>
-            <p className="text-[10px] text-gray-500">Dynamic quality optimization</p>
+            <p className="text-[10px] text-[#666]">Dynamic quality optimization</p>
           </div>
         </div>
         <div className="flex items-center gap-3">
@@ -193,7 +194,7 @@ const AdaptiveRenderingPanel: React.FC = () => {
             className={`px-4 py-2 text-xs font-medium transition-colors ${
               activeTab === tab
                 ? 'text-green-400 border-b-2 border-green-500 bg-green-500/5'
-                : 'text-gray-500 hover:text-gray-300'
+                : 'text-[#666] hover:text-[#ccc]'
             }`}
           >
             {tab === 'config' ? 'Configuration' : tab === 'stats' ? 'Statistics' : 'Presets'}
@@ -205,36 +206,36 @@ const AdaptiveRenderingPanel: React.FC = () => {
         {activeTab === 'config' && config && (
           <div className="space-y-4">
             <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-              <h3 className="text-xs font-medium text-gray-300 mb-2">Current Tier</h3>
-              <div className={`px-3 py-2 rounded-lg bg-gradient-to-r ${tierColors[config.current_tier] || 'from-gray-500 to-gray-600'} text-white text-sm font-bold text-center uppercase`}>
+              <h3 className="text-xs font-medium text-[#ccc] mb-2">Current Tier</h3>
+              <div className={`px-3 py-2 rounded-lg bg-gradient-to-r ${tierColors[config.current_tier] || 'from-\[#f5f5f5\]0 to-\[#555\]'} text-white text-sm font-bold text-center uppercase`}>
                 {config.current_tier}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Target FPS</div>
+                <div className="text-xs text-[#666] mb-1">Target FPS</div>
                 <div className="text-lg font-bold text-green-400">{config.target_fps}</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Strategy</div>
+                <div className="text-xs text-[#666] mb-1">Strategy</div>
                 <div className="text-lg font-bold text-blue-400 capitalize">{config.strategy}</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Resolution Scale</div>
+                <div className="text-xs text-[#666] mb-1">Resolution Scale</div>
                 <div className="text-lg font-bold text-purple-400">{(config.preset.resolution_scale * 100).toFixed(0)}%</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-                <div className="text-xs text-gray-500 mb-1">Max Particles</div>
+                <div className="text-xs text-[#666] mb-1">Max Particles</div>
                 <div className="text-lg font-bold text-amber-400">{config.preset.max_particles}</div>
               </div>
             </div>
             <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-              <h3 className="text-xs font-medium text-gray-300 mb-2">Render Features</h3>
+              <h3 className="text-xs font-medium text-[#ccc] mb-2">Render Features</h3>
               <div className="grid grid-cols-2 gap-1">
                 {Object.entries(config.preset.features).map(([feature, isOn]) => (
                   <div key={feature} className="flex items-center gap-2 text-[10px]">
                     <span className={`w-1.5 h-1.5 rounded-full ${isOn ? 'bg-green-400' : 'bg-red-400'}`} />
-                    <span className="text-gray-400">{feature.replace(/_/g, ' ')}</span>
+                    <span className="text-[#999]">{feature.replace(/_/g, ' ')}</span>
                   </div>
                 ))}
               </div>
@@ -248,7 +249,7 @@ const AdaptiveRenderingPanel: React.FC = () => {
               </button>
               <button
                 onClick={initialize}
-                className="flex-1 py-2 rounded-lg bg-[#0f0f2a] border border-[#1a1a4e] text-gray-300 text-xs font-medium hover:border-green-500 transition-all"
+                className="flex-1 py-2 rounded-lg bg-[#0f0f2a] border border-[#1a1a4e] text-[#ccc] text-xs font-medium hover:border-green-500 transition-all"
               >
                 Reinitialize
               </button>
@@ -261,27 +262,27 @@ const AdaptiveRenderingPanel: React.FC = () => {
             <div className="grid grid-cols-3 gap-2">
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                 <div className="text-xl font-bold text-green-400">{stats.metrics.average_fps.toFixed(1)}</div>
-                <div className="text-[10px] text-gray-500">Avg FPS</div>
+                <div className="text-[10px] text-[#666]">Avg FPS</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                 <div className="text-xl font-bold text-blue-400">{stats.metrics.samples_collected}</div>
-                <div className="text-[10px] text-gray-500">Samples</div>
+                <div className="text-[10px] text-[#666]">Samples</div>
               </div>
               <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3 text-center">
                 <div className={`text-xl font-bold ${
                   stats.metrics.fps_trend === 'stable' ? 'text-green-400' :
                   stats.metrics.fps_trend === 'improving' ? 'text-blue-400' : 'text-red-400'
                 }`}>{stats.metrics.fps_trend}</div>
-                <div className="text-[10px] text-gray-500">Trend</div>
+                <div className="text-[10px] text-[#666]">Trend</div>
               </div>
             </div>
             <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
-              <h3 className="text-xs font-medium text-gray-300 mb-2">Adaptation History</h3>
-              <div className="text-center text-gray-500 text-sm py-2">
+              <h3 className="text-xs font-medium text-[#ccc] mb-2">Adaptation History</h3>
+              <div className="text-center text-[#666] text-sm py-2">
                 {stats.adaptation_count} adaptations recorded
               </div>
               {stats.last_adaptation && (
-                <pre className="text-[10px] text-gray-500 whitespace-pre-wrap mt-2">
+                <pre className="text-[10px] text-[#666] whitespace-pre-wrap mt-2">
                   {JSON.stringify(stats.last_adaptation, null, 2)}
                 </pre>
               )}
@@ -306,9 +307,9 @@ const AdaptiveRenderingPanel: React.FC = () => {
                   )}
                 </div>
                 <div className="grid grid-cols-3 gap-2 text-[10px]">
-                  <div className="text-gray-500">Resolution: <span className="text-gray-300">{(tier === 'ultra' || tier === 'high' ? 100 : tier === 'medium' ? 85 : tier === 'low' ? 70 : tier === 'minimal' ? 50 : 40)}%</span></div>
-                  <div className="text-gray-500">Particles: <span className="text-gray-300">{tier === 'ultra' ? '5000' : tier === 'high' ? '3000' : tier === 'medium' ? '1500' : tier === 'low' ? '500' : tier === 'minimal' ? '100' : '0'}</span></div>
-                  <div className="text-gray-500">LOD Bias: <span className="text-gray-300">{tier === 'ultra' || tier === 'high' ? '0.0' : tier === 'medium' ? '0.5' : tier === 'low' ? '1.0' : tier === 'minimal' ? '2.0' : '3.0'}</span></div>
+                  <div className="text-[#666]">Resolution: <span className="text-[#ccc]">{(tier === 'ultra' || tier === 'high' ? 100 : tier === 'medium' ? 85 : tier === 'low' ? 70 : tier === 'minimal' ? 50 : 40)}%</span></div>
+                  <div className="text-[#666]">Particles: <span className="text-[#ccc]">{tier === 'ultra' ? '5000' : tier === 'high' ? '3000' : tier === 'medium' ? '1500' : tier === 'low' ? '500' : tier === 'minimal' ? '100' : '0'}</span></div>
+                  <div className="text-[#666]">LOD Bias: <span className="text-[#ccc]">{tier === 'ultra' || tier === 'high' ? '0.0' : tier === 'medium' ? '0.5' : tier === 'low' ? '1.0' : tier === 'minimal' ? '2.0' : '3.0'}</span></div>
                 </div>
               </div>
             ))}

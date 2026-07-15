@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const COLLAB_MODES = ['sequential', 'parallel', 'iterative', 'consensus', 'leader_follower'];
 const AGENT_ROLES = ['coordinator', 'executor', 'reviewer', 'planner', 'observer', 'specialist', 'mediator'];
@@ -155,15 +156,15 @@ export default function AgentCollaborationSystemPanel() {
         {statCards.map(s => (
           <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+            <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
         ))}
       </div>
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Collaboration Modes</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Collaboration Modes</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {COLLAB_MODES.map(mode => (
-            <div key={mode} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-xs text-gray-300 capitalize">
+            <div key={mode} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-xs text-[#ccc] capitalize">
               {mode.replace(/_/g, ' ')}
             </div>
           ))}
@@ -178,7 +179,7 @@ export default function AgentCollaborationSystemPanel() {
 
       {/* Create Session Form */}
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-6">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Create Session</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Create Session</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input
             type="text" placeholder="Session Name"
@@ -206,7 +207,7 @@ export default function AgentCollaborationSystemPanel() {
 
       {/* Register Agent Form */}
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-6">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Register Agent</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Register Agent</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input
             type="text" placeholder="Session ID"
@@ -255,7 +256,7 @@ export default function AgentCollaborationSystemPanel() {
 
       {/* Sessions List */}
       <div>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Active Sessions ({sessions.length})</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Active Sessions ({sessions.length})</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {sessions.map(s => (
             <div key={s.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
@@ -266,10 +267,10 @@ export default function AgentCollaborationSystemPanel() {
                   s.mode === 'consensus' ? 'bg-blue-900/50 text-blue-300' :
                   s.mode === 'iterative' ? 'bg-green-900/50 text-green-300' :
                   s.mode === 'parallel' ? 'bg-yellow-900/50 text-yellow-300' :
-                  'bg-gray-700/50 text-gray-300'
+                  'bg-[#1a1a1a]/50 text-[#ccc]'
                 }`}>{s.mode.replace(/_/g, ' ')}</span>
               </div>
-              <div className="flex gap-4 text-xs text-gray-400">
+              <div className="flex gap-4 text-xs text-[#999]">
                 <span>{s.agent_count} agents</span>
                 <span>{s.task_count} tasks</span>
               </div>
@@ -286,7 +287,7 @@ export default function AgentCollaborationSystemPanel() {
 
       {/* Assign Task Form */}
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-6">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Assign Task</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Assign Task</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input
             type="text" placeholder="Session ID"
@@ -337,7 +338,7 @@ export default function AgentCollaborationSystemPanel() {
       {/* Tasks List */}
       {tasks.length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Assigned Tasks ({tasks.length})</h3>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Assigned Tasks ({tasks.length})</h3>
           <div className="space-y-3">
             {tasks.map(t => (
               <div key={t.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
@@ -347,10 +348,10 @@ export default function AgentCollaborationSystemPanel() {
                     t.priority === 'critical' ? 'bg-red-900/50 text-red-300' :
                     t.priority === 'high' ? 'bg-orange-900/50 text-orange-300' :
                     t.priority === 'medium' ? 'bg-yellow-900/50 text-yellow-300' :
-                    'bg-gray-700/50 text-gray-300'
+                    'bg-[#1a1a1a]/50 text-[#ccc]'
                   }`}>{t.priority}</span>
                 </div>
-                <p className="text-xs text-gray-400 mb-2">{t.description}</p>
+                <p className="text-xs text-[#999] mb-2">{t.description}</p>
                 <div className="flex flex-wrap gap-1">
                   {t.agent_ids.map(a => (
                     <span key={a} className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#00d4ff]">{a}</span>
@@ -369,7 +370,7 @@ export default function AgentCollaborationSystemPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}

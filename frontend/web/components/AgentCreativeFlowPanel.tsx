@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentCreativeFlowPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -51,7 +52,7 @@ export default function AgentCreativeFlowPanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
       {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
@@ -68,7 +69,7 @@ export default function AgentCreativeFlowPanel() {
             {Object.keys(stats).length > 0 && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">All Stats</h3>
-                <pre className="text-xs text-gray-300 overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -79,15 +80,15 @@ export default function AgentCreativeFlowPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Create Flow</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Flow Name</label>
+                <label className="text-xs text-[#999] mb-1 block">Flow Name</label>
                 <input type="text" value={cfName} onChange={e => setCfName(e.target.value)} placeholder="Character Design Flow" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Stages (comma-separated)</label>
+                <label className="text-xs text-[#999] mb-1 block">Stages (comma-separated)</label>
                 <input type="text" value={cfStages} onChange={e => setCfStages(e.target.value)} placeholder="concept, sketch, prototype, final" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Metadata (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Metadata (JSON)</label>
                 <textarea value={cfMeta} onChange={e => setCfMeta(e.target.value)} placeholder='{"project": "game_v1", "owner": "designer"}' rows={3} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button
@@ -114,7 +115,7 @@ export default function AgentCreativeFlowPanel() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#00d4ff]">Flows</h2>
-              <button onClick={fetchFlows} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-gray-300 hover:bg-[#2a2a4a]">Refresh</button>
+              <button onClick={fetchFlows} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
             </div>
 
             {flows.length > 0 ? (
@@ -124,28 +125,28 @@ export default function AgentCreativeFlowPanel() {
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-white text-sm font-medium">{f.name || f.id}</span>
                       <div className="flex gap-1">
-                        <span className={`text-xs px-2 py-0.5 rounded ${f.status === 'completed' ? 'bg-green-900 text-green-300' : f.status === 'active' ? 'bg-blue-900 text-blue-300' : 'bg-gray-700 text-gray-300'}`}>{f.status || 'pending'}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded ${f.status === 'completed' ? 'bg-green-900 text-green-300' : f.status === 'active' ? 'bg-blue-900 text-blue-300' : 'bg-[#1a1a1a] text-[#ccc]'}`}>{f.status || 'pending'}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-gray-400">
+                    <div className="flex items-center gap-4 text-xs text-[#999]">
                       <span>Stages: <span className="text-white">{Array.isArray(f.stages) ? f.stages.join(', ') : f.stages}</span></span>
                       <span>Current: <span className="text-[#00d4ff]">{f.current_stage || 'N/A'}</span></span>
                     </div>
                     <div className="flex gap-2 mt-2">
-                      <button onClick={() => setSelectedFlow(f)} className="px-3 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300 hover:bg-[#2a2a4a]">Details</button>
+                      <button onClick={() => setSelectedFlow(f)} className="px-3 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Details</button>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-gray-400 text-sm">No flows found</div>
+              <div className="text-[#999] text-sm">No flows found</div>
             )}
 
             {selectedFlow && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] mt-4">
                 <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Flow Details: {selectedFlow.name || selectedFlow.id}</h3>
-                <pre className="text-xs text-gray-300 overflow-auto mb-3">{JSON.stringify(selectedFlow, null, 2)}</pre>
-                <button onClick={() => setSelectedFlow(null)} className="px-3 py-1 bg-[#2a2a4a] text-gray-300 rounded text-xs hover:bg-[#3a3a5a]">Close</button>
+                <pre className="text-xs text-[#ccc] overflow-auto mb-3">{JSON.stringify(selectedFlow, null, 2)}</pre>
+                <button onClick={() => setSelectedFlow(null)} className="px-3 py-1 bg-[#2a2a4a] text-[#ccc] rounded text-xs hover:bg-[#3a3a5a]">Close</button>
               </div>
             )}
 
@@ -153,7 +154,7 @@ export default function AgentCreativeFlowPanel() {
               <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Advance Stage</h3>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Flow ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Flow ID</label>
                   <input type="text" value={advanceFlowId} onChange={e => setAdvanceFlowId(e.target.value)} placeholder="flow_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <button
@@ -178,15 +179,15 @@ export default function AgentCreativeFlowPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Add Artifact</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Flow ID</label>
+                <label className="text-xs text-[#999] mb-1 block">Flow ID</label>
                 <input type="text" value={artFlowId} onChange={e => setArtFlowId(e.target.value)} placeholder="flow_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Stage</label>
+                <label className="text-xs text-[#999] mb-1 block">Stage</label>
                 <input type="text" value={artStage} onChange={e => setArtStage(e.target.value)} placeholder="concept" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Content Type</label>
+                <label className="text-xs text-[#999] mb-1 block">Content Type</label>
                 <select value={artContentType} onChange={e => setArtContentType(e.target.value)} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                   <option value="text">Text</option>
                   <option value="image">Image</option>
@@ -197,7 +198,7 @@ export default function AgentCreativeFlowPanel() {
                 </select>
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Data (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Data (JSON)</label>
                 <textarea value={artData} onChange={e => setArtData(e.target.value)} placeholder='{"content": "Your content here"}' rows={4} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button

@@ -1,7 +1,7 @@
 import React, { useCallback, useRef, useEffect, useState } from 'react';
 import { useEditorStore, type ChatMessage } from '../store/editorStore';
 import { agentApi } from '../utils/api';
-import { processAIPrompt } from '../services/aiService';
+import { processAIPrompt, detectGameConcept } from '../services/aiService';
 import ModelSelector from './ModelSelector';
 
 const QUICK_ACTIONS = [
@@ -53,7 +53,7 @@ const renderContent = (content: string): React.ReactNode => {
   });
 };
 
-const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
+const MessageBubble: React.FC<{ message: ChatMessage; onPlayGame?: () => void }> = ({ message, onPlayGame }) => {
   const isUser = message.role === 'user';
   const isSystem = message.role === 'system';
 
@@ -112,6 +112,14 @@ const MessageBubble: React.FC<{ message: ChatMessage }> = ({ message }) => {
             ))}
           </div>
         )}
+        {message.gameGenerated && onPlayGame && (
+          <button
+            onClick={onPlayGame}
+            className="mt-1.5 flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-green-600 hover:bg-green-700 text-white text-[11px] font-semibold transition-all"
+          >
+            <i className="fa-solid fa-play text-[9px]" /> Play Game
+          </button>
+        )}
       </div>
     </div>
   );
@@ -122,6 +130,8 @@ const AgentChatPanel: React.FC = () => {
     chatMessages, chatInput, isAgentThinking, chatPanelCollapsed,
     setChatInput, addChatMessage, updateChatMessage, setAgentThinking,
     clearChatMessages, setChatPanelCollapsed, agentId, backendConnected,
+    setActiveCenterTab, saveCurrentChatSession, createChatSession,
+    setChatHistoryCollapsed,
   } = useEditorStore();
 
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -133,6 +143,12 @@ const AgentChatPanel: React.FC = () => {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [chatMessages]);
+
+  // Switch the editor center area to the viewport tab so the generated
+  // game becomes visible in the GameRunner.
+  const handlePlayGame = useCallback(() => {
+    setActiveCenterTab('viewport');
+  }, [setActiveCenterTab]);
 
   const sendMessage = useCallback(async (text: string) => {
     const trimmed = text.trim();
@@ -161,8 +177,29 @@ const AgentChatPanel: React.FC = () => {
     try {
       let response: string = '';
       let actions: string[] = [];
+      let gameGenerated = false;
 
-      if (backendConnected && agentId) {
+      // Always run the local game-generation pipeline — it produces a
+      // complete, playable game regardless of backend availability.
+      gameGenerated = await processAIPrompt(trimmed);
+
+      if (gameGenerated) {
+        const concept = detectGameConcept(trimmed);
+        const conceptLabels: Record<string, string> = {
+          'boss-battle': 'Boss Battle Arena',
+          'narrative': 'Story Narrative Adventure',
+          'terrain': 'Procedural Terrain Explorer',
+          'music': 'Music Collection Game',
+          'platformer': 'Platformer Game',
+          'shooter': 'Top-Down Shooter',
+          'dungeon': 'Dungeon Crawler RPG',
+          'puzzle': 'Puzzle Game',
+          'racing': 'Racing Collection Game',
+          'exploration': 'Open World Exploration',
+        };
+        const label = conceptLabels[concept] || 'Game';
+        response = `I've generated a **${label}** from your request: "${trimmed}".\n\nThe game is ready in the viewport. Click **Play Game** below to launch it, or switch to the Game view in the viewport toolbar.\n\nThe scene now contains the entities I created — explore the Scene panel to inspect them.`;
+      } else if (backendConnected && agentId) {
         const result = await agentApi.think(agentId, trimmed, {
           scene: 'main_world',
           timestamp: Date.now(),
@@ -170,8 +207,7 @@ const AgentChatPanel: React.FC = () => {
         response = (result?.response || result?.thought || result?.message || JSON.stringify(result, null, 2)) as string;
         if (Array.isArray(result?.actions)) actions = result.actions as string[];
       } else {
-        await processAIPrompt(trimmed);
-        response = `I've processed your request: "${trimmed}".\n\nThe SparkLabs AI Agent system has been notified. In production with an LLM API configured, I would provide a detailed creative response with actionable steps for your game development workflow.\n\n**What I can help with:**\n- World building and scene composition\n- Character and NPC design with cognitive architecture\n- Narrative design with branching stories\n- Combat balancing and mechanics\n- Procedural content generation\n- Asset synthesis and harmonization\n- Game testing and bug hunting`;
+        response = `I've processed your request: "${trimmed}".\n\nThe SparkLabs AI Agent system has been notified. Configure an LLM API key in Settings to enable full conversational AI capabilities, or describe a game you want to build and I will generate it.\n\n**What I can help with:**\n- World building and scene composition\n- Character and NPC design with cognitive architecture\n- Narrative design with branching stories\n- Combat balancing and mechanics\n- Procedural content generation\n- Asset synthesis and harmonization\n- Game testing and bug hunting`;
       }
 
       const chunks = response.match(/.{1,3}/gs) || [response];
@@ -187,7 +223,11 @@ const AgentChatPanel: React.FC = () => {
         content: response,
         isStreaming: false,
         actions: actions.length > 0 ? actions : undefined,
+        gameGenerated,
       });
+
+      // Persist the conversation into the chat history sidebar
+      saveCurrentChatSession();
     } catch (err) {
       updateChatMessage(assistantId, {
         content: `I encountered an issue processing that request: ${err instanceof Error ? err.message : 'Unknown error'}. The engine is running in standalone mode — configure an LLM API key in Settings to enable full AI agent capabilities.`,
@@ -196,7 +236,7 @@ const AgentChatPanel: React.FC = () => {
     } finally {
       setAgentThinking(false);
     }
-  }, [isAgentThinking, addChatMessage, updateChatMessage, setChatInput, setAgentThinking, agentId, backendConnected]);
+  }, [isAgentThinking, addChatMessage, updateChatMessage, setChatInput, setAgentThinking, agentId, backendConnected, saveCurrentChatSession]);
 
   const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -219,10 +259,6 @@ const AgentChatPanel: React.FC = () => {
         >
           <i className="fa-solid fa-bolt text-[11px]" />
         </button>
-        <div className="w-px h-4 bg-[#222]" />
-        <div className="text-[8px] text-[#444] writing-mode-vertical font-mono tracking-wider" style={{ writingMode: 'vertical-rl' }}>
-          AI AGENT
-        </div>
       </div>
     );
   }
@@ -244,6 +280,13 @@ const AgentChatPanel: React.FC = () => {
         </div>
         <div className="flex items-center gap-1">
           <button
+            onClick={() => createChatSession()}
+            className="w-6 h-6 rounded hover:bg-[#1a1a1a] text-[#555] hover:text-orange-400 flex items-center justify-center transition-colors"
+            title="New chat"
+          >
+            <i className="fa-solid fa-pen-to-square text-[9px]" />
+          </button>
+          <button
             onClick={clearChatMessages}
             className="w-6 h-6 rounded hover:bg-[#1a1a1a] text-[#555] hover:text-[#888] flex items-center justify-center transition-colors"
             title="Clear chat"
@@ -263,7 +306,7 @@ const AgentChatPanel: React.FC = () => {
       {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto px-3 py-3 sl-chat-scroll">
         {chatMessages.map((msg) => (
-          <MessageBubble key={msg.id} message={msg} />
+          <MessageBubble key={msg.id} message={msg} onPlayGame={handlePlayGame} />
         ))}
 
         {!hasMessages && !isAgentThinking && (

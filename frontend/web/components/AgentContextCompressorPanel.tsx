@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ChunkPriority = 'high' | 'medium' | 'low';
 type ChunkStatus = 'active' | 'archived' | 'pending';
@@ -88,7 +89,7 @@ const AgentContextCompressorPanel: React.FC = () => {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [selectedChunk, setSelectedChunk] = useState<string | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultChunks: ContextChunk[] = [
     { id: uid(), title: 'Dialogue Context #42', content_preview: 'Player enters the tavern and speaks to the innkeeper about...', token_count: 1240, priority: 'high', status: 'active', created_at: '2m ago', relevance_score: 0.94 },

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TaskStatus = 'pending' | 'running' | 'paused' | 'completed' | 'failed' | 'cancelled';
 type ExecutionOutcome = 'success' | 'failure' | 'timeout' | 'skipped';
@@ -72,7 +73,7 @@ const AgentCronSchedulerPanel: React.FC = () => {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [activeTab, setActiveTab] = useState<'tasks' | 'history' | 'rules'>('tasks');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultTasks: ScheduledTask[] = [
     { id: uid(), name: 'Daily Report Generation', task_type: 'report', status: 'pending', cron_rule_id: 'rule-1', next_run: 'in 2h', priority: 5, retry_count: 0, max_retries: 3, created_at: '1d ago' },

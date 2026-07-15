@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentAdaptiveCognitionPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -74,7 +75,7 @@ export default function AgentAdaptiveCognitionPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -96,7 +97,7 @@ export default function AgentAdaptiveCognitionPanel() {
                 </div>
               ))}
               {Object.keys(stats).length === 0 && (
-                <div className="col-span-full text-gray-400 text-sm">No stats available</div>
+                <div className="col-span-full text-[#999] text-sm">No stats available</div>
               )}
             </div>
           </div>
@@ -109,12 +110,12 @@ export default function AgentAdaptiveCognitionPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Register Strategy</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Strategy Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Strategy Name</label>
                   <input type="text" value={strategyName} onChange={e => setStrategyName(e.target.value)}
                     placeholder="exploration_strategy" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Strategy Type</label>
+                  <label className="text-xs text-[#999] mb-1 block">Strategy Type</label>
                   <select value={strategyType} onChange={e => setStrategyType(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     <option value="learning">Learning</option>
@@ -125,7 +126,7 @@ export default function AgentAdaptiveCognitionPanel() {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Configuration (JSON)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Configuration (JSON)</label>
                   <textarea value={strategyConfig} onChange={e => setStrategyConfig(e.target.value)}
                     rows={3} placeholder='{"learning_rate": 0.01, "epsilon": 0.1}'
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
@@ -156,12 +157,12 @@ export default function AgentAdaptiveCognitionPanel() {
                         <span className="text-white text-sm font-medium">{s.name || s.id}</span>
                         <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded">{s.type || 'unknown'}</span>
                       </div>
-                      {s.config && <div className="mt-1 text-xs text-gray-400 font-mono">{JSON.stringify(s.config)}</div>}
+                      {s.config && <div className="mt-1 text-xs text-[#999] font-mono">{JSON.stringify(s.config)}</div>}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No strategies registered</div>
+                <div className="text-[#999] text-xs">No strategies registered</div>
               )}
             </div>
           </div>
@@ -174,22 +175,22 @@ export default function AgentAdaptiveCognitionPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Record Experience</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Context</label>
+                  <label className="text-xs text-[#999] mb-1 block">Context</label>
                   <input type="text" value={expContext} onChange={e => setExpContext(e.target.value)}
                     placeholder="e.g. combat_scenario_1" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Action</label>
+                  <label className="text-xs text-[#999] mb-1 block">Action</label>
                   <input type="text" value={expAction} onChange={e => setExpAction(e.target.value)}
                     placeholder="e.g. attack_heavy" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Reward</label>
+                  <label className="text-xs text-[#999] mb-1 block">Reward</label>
                   <input type="number" value={expReward} onChange={e => setExpReward(e.target.value)}
                     step="0.01" placeholder="0.0" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Outcome</label>
+                  <label className="text-xs text-[#999] mb-1 block">Outcome</label>
                   <input type="text" value={expOutcome} onChange={e => setExpOutcome(e.target.value)}
                     placeholder="e.g. enemy_defeated" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -220,7 +221,7 @@ export default function AgentAdaptiveCognitionPanel() {
                           Reward: {e.reward ?? 0}
                         </span>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-400 mt-1">
+                      <div className="flex items-center gap-4 text-xs text-[#999] mt-1">
                         <span>Action: <span className="text-white">{e.action}</span></span>
                         <span>Outcome: <span className="text-white">{e.outcome || 'N/A'}</span></span>
                       </div>
@@ -228,7 +229,7 @@ export default function AgentAdaptiveCognitionPanel() {
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No experiences recorded</div>
+                <div className="text-[#999] text-xs">No experiences recorded</div>
               )}
             </div>
           </div>
@@ -243,13 +244,13 @@ export default function AgentAdaptiveCognitionPanel() {
                 <div className="space-y-3">
                   {Object.entries(cognitiveState).filter(([k]) => k !== 'params' && k !== 'state').map(([key, value]) => (
                     <div key={key} className="flex justify-between bg-[#1a1a2e] rounded px-3 py-2">
-                      <span className="text-gray-400 text-xs capitalize">{key.replace(/_/g, ' ')}</span>
+                      <span className="text-[#999] text-xs capitalize">{key.replace(/_/g, ' ')}</span>
                       <span className="text-white text-xs font-mono">{String(value)}</span>
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">Loading cognitive state...</div>
+                <div className="text-[#999] text-xs">Loading cognitive state...</div>
               )}
             </div>
 
@@ -260,7 +261,7 @@ export default function AgentAdaptiveCognitionPanel() {
                   {Object.entries(stateUpdate).map(([key, value]) => (
                     <div key={key}>
                       <div className="flex justify-between mb-1">
-                        <label className="text-xs text-gray-400 capitalize">{key.replace(/_/g, ' ')}</label>
+                        <label className="text-xs text-[#999] capitalize">{key.replace(/_/g, ' ')}</label>
                         <span className="text-xs text-[#00d4ff] font-mono">
                           {typeof value === 'number' ? value.toFixed(2) : String(value)}
                         </span>
@@ -280,7 +281,7 @@ export default function AgentAdaptiveCognitionPanel() {
                   </button>
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No adjustable parameters available</div>
+                <div className="text-[#999] text-xs">No adjustable parameters available</div>
               )}
             </div>
           </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type AgentStatus = 'active' | 'idle' | 'error' | 'offline';
 type AgentRole = 'game_director' | 'balance_analyzer' | 'narrative_composer' | 'player_modeler' | 'developer_assistant' | 'playtest_simulator';
@@ -74,7 +75,7 @@ const AgentDashboard: React.FC = () => {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [selectedAgent, setSelectedAgent] = useState<AgentRole | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultAgents: AgentData[] = [
     { id: uid(), role: 'game_director', name: 'Game Director', status: 'active', task_count: 3, completed_tasks: 12, last_activity: '10s ago', uptime: '2h 34m', current_task: 'Sprint Planning' },

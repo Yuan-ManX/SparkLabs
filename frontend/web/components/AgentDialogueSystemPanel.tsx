@@ -1,19 +1,20 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const NPC_STYLES = ['formal', 'casual', 'mysterious', 'aggressive', 'friendly', 'sarcastic', 'fearful', 'wise', 'humorous', 'melancholic'];
 const TONES = ['friendly', 'hostile', 'neutral', 'mysterious', 'formal', 'casual'];
 
 const styleColors: Record<string, string> = {
-  formal: 'bg-slate-500/20 text-slate-300 border-slate-500/30',
+  formal: 'bg-\[#f5f5f5\]0/20 text-[#ccc] border-\[#f5f5f5\]0/30',
   casual: 'bg-green-500/20 text-green-300 border-green-500/30',
   mysterious: 'bg-purple-500/20 text-purple-300 border-purple-500/30',
   aggressive: 'bg-red-500/20 text-red-300 border-red-500/30',
   friendly: 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30',
   sarcastic: 'bg-amber-500/20 text-amber-300 border-amber-500/30',
-  fearful: 'bg-gray-500/20 text-gray-300 border-gray-500/30',
+  fearful: 'bg-\[#f5f5f5\]0/20 text-[#ccc] border-\[#f5f5f5\]0/30',
   wise: 'bg-cyan-500/20 text-cyan-300 border-cyan-500/30',
   humorous: 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30',
   melancholic: 'bg-blue-500/20 text-blue-300 border-blue-500/30',
@@ -85,7 +86,7 @@ export default function AgentDialogueSystemPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
@@ -111,12 +112,12 @@ export default function AgentDialogueSystemPanel() {
                 { label: 'Active Conversations', value: stats.active_conversations, color: 'text-pink-300' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}</p>
                 </div>
               ))}
             </div>
-            <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+            <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
           </div>
         )}
 
@@ -148,20 +149,20 @@ export default function AgentDialogueSystemPanel() {
               </button>
             </div>
 
-            <h3 className="text-md font-bold text-gray-300 mt-6">NPC List</h3>
+            <h3 className="text-md font-bold text-[#ccc] mt-6">NPC List</h3>
             <div className="grid gap-3">
               {npcList.map((npc: any) => (
                 <div key={npc.npc_id || npc.id} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-semibold text-white">{npc.name}</h4>
-                    <span className={`text-[10px] px-2 py-0.5 rounded border ${styleColors[npc.style] || 'bg-gray-500/20 text-gray-300 border-gray-500/30'}`}>{npc.style}</span>
+                    <span className={`text-[10px] px-2 py-0.5 rounded border ${styleColors[npc.style] || 'bg-\[#f5f5f5\]0/20 text-[#ccc] border-\[#f5f5f5\]0/30'}`}>{npc.style}</span>
                   </div>
-                  <p className="text-xs text-gray-400 mb-1"><span className="text-gray-500">Role:</span> {npc.role}</p>
-                  {npc.traits && <p className="text-xs text-gray-500"><span className="text-gray-600">Traits:</span> {Array.isArray(npc.traits) ? npc.traits.join(', ') : npc.traits}</p>}
-                  {npc.background && <p className="text-xs text-gray-600 mt-1 line-clamp-2">{npc.background}</p>}
+                  <p className="text-xs text-[#999] mb-1"><span className="text-[#666]">Role:</span> {npc.role}</p>
+                  {npc.traits && <p className="text-xs text-[#666]"><span className="text-[#555]">Traits:</span> {Array.isArray(npc.traits) ? npc.traits.join(', ') : npc.traits}</p>}
+                  {npc.background && <p className="text-xs text-[#555] mt-1 line-clamp-2">{npc.background}</p>}
                 </div>
               ))}
-              {npcList.length === 0 && <p className="text-sm text-gray-500 text-center py-8">No NPCs created yet</p>}
+              {npcList.length === 0 && <p className="text-sm text-[#666] text-center py-8">No NPCs created yet</p>}
             </div>
           </div>
         )}
@@ -212,19 +213,19 @@ export default function AgentDialogueSystemPanel() {
             {result?.dialogue && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#00ff88]">
                 <h3 className="text-sm font-bold text-[#00ff88] mb-2">Generated Dialogue</h3>
-                <pre className="text-xs text-gray-300 whitespace-pre-wrap font-sans">{typeof result.dialogue === 'string' ? result.dialogue : JSON.stringify(result.dialogue, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] whitespace-pre-wrap font-sans">{typeof result.dialogue === 'string' ? result.dialogue : JSON.stringify(result.dialogue, null, 2)}</pre>
               </div>
             )}
 
-            <h3 className="text-md font-bold text-gray-300 mt-4">Dialogue Trees</h3>
+            <h3 className="text-md font-bold text-[#ccc] mt-4">Dialogue Trees</h3>
             <div className="grid gap-3">
               {treeList.map((tree: any) => (
                 <div key={tree.tree_id || tree.id} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a]">
                   <h4 className="text-sm font-semibold text-white">{tree.title}</h4>
-                  <p className="text-xs text-gray-500">NPC: {tree.npc_id} | Nodes: {tree.node_count||0}</p>
+                  <p className="text-xs text-[#666]">NPC: {tree.npc_id} | Nodes: {tree.node_count||0}</p>
                 </div>
               ))}
-              {treeList.length === 0 && <p className="text-sm text-gray-500 text-center py-8">No dialogue trees yet</p>}
+              {treeList.length === 0 && <p className="text-sm text-[#666] text-center py-8">No dialogue trees yet</p>}
             </div>
           </div>
         )}
@@ -249,14 +250,14 @@ export default function AgentDialogueSystemPanel() {
               <div className="bg-[#0f0f23] p-4 rounded border border-[#00d4ff] space-y-2">
                 <h3 className="text-sm font-bold text-[#00d4ff]">Session Details</h3>
                 <div className="grid grid-cols-2 gap-3 text-xs">
-                  <div><span className="text-gray-500">Session ID:</span> <span className="text-gray-300">{result.session_id}</span></div>
-                  <div><span className="text-gray-500">Player:</span> <span className="text-gray-300">{result.player_id}</span></div>
-                  <div><span className="text-gray-500">NPC:</span> <span className="text-gray-300">{result.npc_id}</span></div>
-                  <div><span className="text-gray-500">Tree:</span> <span className="text-gray-300">{result.tree_id}</span></div>
-                  <div><span className="text-gray-500">Status:</span> <span className="text-[#00ff88]">{result.status||'Active'}</span></div>
-                  <div><span className="text-gray-500">Node:</span> <span className="text-gray-300">{result.current_node_id||'-'}</span></div>
+                  <div><span className="text-[#666]">Session ID:</span> <span className="text-[#ccc]">{result.session_id}</span></div>
+                  <div><span className="text-[#666]">Player:</span> <span className="text-[#ccc]">{result.player_id}</span></div>
+                  <div><span className="text-[#666]">NPC:</span> <span className="text-[#ccc]">{result.npc_id}</span></div>
+                  <div><span className="text-[#666]">Tree:</span> <span className="text-[#ccc]">{result.tree_id}</span></div>
+                  <div><span className="text-[#666]">Status:</span> <span className="text-[#00ff88]">{result.status||'Active'}</span></div>
+                  <div><span className="text-[#666]">Node:</span> <span className="text-[#ccc]">{result.current_node_id||'-'}</span></div>
                 </div>
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto mt-2">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto mt-2">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>

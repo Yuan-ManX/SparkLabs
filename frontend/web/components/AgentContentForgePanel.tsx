@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentContentForgePanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -78,7 +79,7 @@ export default function AgentContentForgePanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -107,7 +108,7 @@ export default function AgentContentForgePanel() {
                 <div className="space-y-2">
                   {Object.entries(stats.by_type).map(([key, value]) => (
                     <div key={key} className="flex justify-between bg-[#1a1a2e] rounded px-3 py-2">
-                      <span className="text-gray-400 text-xs capitalize">{key}</span>
+                      <span className="text-[#999] text-xs capitalize">{key}</span>
                       <span className="text-white text-xs font-mono">{String(value)}</span>
                     </div>
                   ))}
@@ -121,7 +122,7 @@ export default function AgentContentForgePanel() {
                 <div className="space-y-2">
                   {Object.entries(stats.by_status).map(([key, value]) => (
                     <div key={key} className="flex justify-between bg-[#1a1a2e] rounded px-3 py-2">
-                      <span className="text-gray-400 text-xs capitalize">{key}</span>
+                      <span className="text-[#999] text-xs capitalize">{key}</span>
                       <span className="text-white text-xs font-mono">{String(value)}</span>
                     </div>
                   ))}
@@ -138,33 +139,33 @@ export default function AgentContentForgePanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Generate Content</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Content Type</label>
+                  <label className="text-xs text-[#999] mb-1 block">Content Type</label>
                   <select value={genContentType} onChange={e => setGenContentType(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {contentTypes.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Style</label>
+                  <label className="text-xs text-[#999] mb-1 block">Style</label>
                   <select value={genStyle} onChange={e => setGenStyle(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {styles.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Quality</label>
+                  <label className="text-xs text-[#999] mb-1 block">Quality</label>
                   <select value={genQuality} onChange={e => setGenQuality(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {qualities.map(q => <option key={q} value={q}>{q}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Batch Size</label>
+                  <label className="text-xs text-[#999] mb-1 block">Batch Size</label>
                   <input type="number" value={genBatchSize} onChange={e => setGenBatchSize(e.target.value)}
                     min="1" max="100" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Tags (comma-separated)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Tags (comma-separated)</label>
                   <input type="text" value={genTags} onChange={e => setGenTags(e.target.value)}
                     placeholder="fantasy, combat, npc" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -193,7 +194,7 @@ export default function AgentContentForgePanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Filters</h2>
               <div className="grid grid-cols-3 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Type</label>
+                  <label className="text-xs text-[#999] mb-1 block">Type</label>
                   <select value={assetFilterType} onChange={e => setAssetFilterType(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     <option value="">All Types</option>
@@ -201,7 +202,7 @@ export default function AgentContentForgePanel() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Status</label>
+                  <label className="text-xs text-[#999] mb-1 block">Status</label>
                   <select value={assetFilterStatus} onChange={e => setAssetFilterStatus(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     <option value="">All Statuses</option>
@@ -209,7 +210,7 @@ export default function AgentContentForgePanel() {
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Style</label>
+                  <label className="text-xs text-[#999] mb-1 block">Style</label>
                   <select value={assetFilterStyle} onChange={e => setAssetFilterStyle(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     <option value="">All Styles</option>
@@ -236,17 +237,17 @@ export default function AgentContentForgePanel() {
                           <span className={`text-xs px-2 py-0.5 rounded ${
                             (a.status || '') === 'approved' ? 'bg-green-900 text-green-300' :
                             (a.status || '') === 'published' ? 'bg-blue-900 text-blue-300' :
-                            'bg-gray-700 text-gray-300'
+                            'bg-[#1a1a1a] text-[#ccc]'
                           }`}>{a.status || 'draft'}</span>
                         </div>
                       </div>
-                      <div className="flex items-center gap-4 text-xs text-gray-400 mt-1">
+                      <div className="flex items-center gap-4 text-xs text-[#999] mt-1">
                         <span>Style: <span className="text-white">{a.style || 'N/A'}</span></span>
                         <span>Quality: <span className="text-white">{a.quality || 'N/A'}</span></span>
                       </div>
                       <div className="flex gap-2 mt-2">
                         <button onClick={() => setSelectedAsset(selectedAsset?.id === a.id ? null : a)}
-                          className="text-xs px-3 py-1 bg-[#0f0f23] text-gray-300 rounded hover:bg-[#2a2a4a]">
+                          className="text-xs px-3 py-1 bg-[#0f0f23] text-[#ccc] rounded hover:bg-[#2a2a4a]">
                           {selectedAsset?.id === a.id ? 'Hide Details' : 'View Details'}
                         </button>
                         <button onClick={async () => {
@@ -259,7 +260,7 @@ export default function AgentContentForgePanel() {
                       </div>
                       {selectedAsset?.id === a.id && (
                         <div className="mt-2 bg-[#0f0f23] rounded p-3">
-                          <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap overflow-auto max-h-48">
+                          <pre className="text-xs text-[#ccc] font-mono whitespace-pre-wrap overflow-auto max-h-48">
                             {JSON.stringify(a, null, 2)}
                           </pre>
                         </div>
@@ -268,7 +269,7 @@ export default function AgentContentForgePanel() {
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No assets found</div>
+                <div className="text-[#999] text-xs">No assets found</div>
               )}
             </div>
           </div>
@@ -281,19 +282,19 @@ export default function AgentContentForgePanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Add Template</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Template Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Template Name</label>
                   <input type="text" value={tplName} onChange={e => setTplName(e.target.value)}
                     placeholder="dialogue_template_1" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Content Type</label>
+                  <label className="text-xs text-[#999] mb-1 block">Content Type</label>
                   <select value={tplContentType} onChange={e => setTplContentType(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {contentTypes.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Template Structure (JSON)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Template Structure (JSON)</label>
                   <textarea value={tplStructure} onChange={e => setTplStructure(e.target.value)}
                     rows={4} placeholder='{"fields": ["name", "description", "dialog"]}'
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
@@ -326,7 +327,7 @@ export default function AgentContentForgePanel() {
                       </div>
                       {t.structure && (
                         <div className="mt-1 bg-[#0f0f23] rounded p-2">
-                          <pre className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
+                          <pre className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">
                             {JSON.stringify(t.structure, null, 2)}
                           </pre>
                         </div>
@@ -335,7 +336,7 @@ export default function AgentContentForgePanel() {
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No templates available</div>
+                <div className="text-[#999] text-xs">No templates available</div>
               )}
             </div>
           </div>

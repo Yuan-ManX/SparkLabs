@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const ROLES = ['player', 'npc', 'enemy', 'boss', 'companion', 'merchant', 'quest_giver', 'trainer', 'guardian', 'villain'];
 const CHAR_CLASSES = ['warrior', 'mage', 'rogue', 'cleric', 'ranger', 'paladin', 'druid', 'warlock', 'bard', 'monk', 'sorcerer', 'barbarian', 'necromancer', 'artificer', 'alchemist'];
@@ -107,33 +108,33 @@ export default function AgentCharacterCreatorPanel() {
         <div className="flex items-center justify-between mb-3">
           <h3 className="text-sm font-medium text-[#00d4ff]">{char.name || 'Character'}</h3>
           <div className="flex gap-2">
-            <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300 capitalize">{char.role || ''}</span>
-            <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300 capitalize">Lv.{char.level || 1}</span>
+            <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">{char.role || ''}</span>
+            <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">Lv.{char.level || 1}</span>
           </div>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-4 gap-2 mb-3">
           {char.class && (
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2 text-center">
-              <div className="text-xs text-gray-500">Class</div>
+              <div className="text-xs text-[#666]">Class</div>
               <div className="text-xs text-[#00d4ff] capitalize">{char.class.replace(/_/g, ' ')}</div>
             </div>
           )}
           {char.race && (
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2 text-center">
-              <div className="text-xs text-gray-500">Race</div>
+              <div className="text-xs text-[#666]">Race</div>
               <div className="text-xs text-[#00ff88] capitalize">{char.race.replace(/_/g, ' ')}</div>
             </div>
           )}
           {char.alignment && (
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2 text-center">
-              <div className="text-xs text-gray-500">Alignment</div>
+              <div className="text-xs text-[#666]">Alignment</div>
               <div className="text-xs text-[#fdcb6e] capitalize">{char.alignment.replace(/_/g, ' ')}</div>
             </div>
           )}
           {char.power !== undefined && (
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2 text-center">
-              <div className="text-xs text-gray-500">Power</div>
+              <div className="text-xs text-[#666]">Power</div>
               <div className="text-xs text-[#a29bfe]">{char.power}</div>
             </div>
           )}
@@ -141,12 +142,12 @@ export default function AgentCharacterCreatorPanel() {
 
         {char.attributes && (
           <div className="mb-3">
-            <span className="text-xs text-gray-500 block mb-1">Attributes</span>
+            <span className="text-xs text-[#666] block mb-1">Attributes</span>
             <div className="grid grid-cols-3 md:grid-cols-6 gap-1">
               {Object.entries(char.attributes).map(([k, v]: [string, any]) => (
                 <div key={k} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-1 text-center">
                   <div className="text-xs text-[#00d4ff]">{v}</div>
-                  <div className="text-[10px] text-gray-500 capitalize">{k}</div>
+                  <div className="text-[10px] text-[#666] capitalize">{k}</div>
                 </div>
               ))}
             </div>
@@ -155,7 +156,7 @@ export default function AgentCharacterCreatorPanel() {
 
         {char.abilities && Array.isArray(char.abilities) && char.abilities.length > 0 && (
           <div className="mb-3">
-            <span className="text-xs text-gray-500 block mb-1">Abilities</span>
+            <span className="text-xs text-[#666] block mb-1">Abilities</span>
             <div className="flex flex-wrap gap-1">
               {char.abilities.map((a: any, i: number) => (
                 <span key={i} className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#fdcb6e]">
@@ -168,14 +169,14 @@ export default function AgentCharacterCreatorPanel() {
 
         {char.backstory && (
           <div className="mb-3">
-            <span className="text-xs text-gray-500 block mb-1">Backstory</span>
-            <p className="text-xs text-gray-400 bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2">{char.backstory}</p>
+            <span className="text-xs text-[#666] block mb-1">Backstory</span>
+            <p className="text-xs text-[#999] bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2">{char.backstory}</p>
           </div>
         )}
 
         {char.equipment && Array.isArray(char.equipment) && char.equipment.length > 0 && (
           <div>
-            <span className="text-xs text-gray-500 block mb-1">Equipment</span>
+            <span className="text-xs text-[#666] block mb-1">Equipment</span>
             <div className="flex flex-wrap gap-1">
               {char.equipment.map((eq: any, i: number) => (
                 <span key={i} className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#00ff88]">
@@ -202,23 +203,23 @@ export default function AgentCharacterCreatorPanel() {
         ].map(s => (
           <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+            <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
         ))}
       </div>
       <div className={`${cardCls} mb-4`}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Supported Classes</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Supported Classes</h3>
         <div className="flex flex-wrap gap-2">
           {CHAR_CLASSES.map(c => (
-            <span key={c} className="px-2 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300 capitalize">{c}</span>
+            <span key={c} className="px-2 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">{c}</span>
           ))}
         </div>
       </div>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Supported Races</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Supported Races</h3>
         <div className="flex flex-wrap gap-2">
           {RACES.map(r => (
-            <span key={r} className="px-2 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300 capitalize">{r.replace(/_/g, ' ')}</span>
+            <span key={r} className="px-2 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">{r.replace(/_/g, ' ')}</span>
           ))}
         </div>
       </div>
@@ -229,7 +230,7 @@ export default function AgentCharacterCreatorPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Create Character</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">New Character</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">New Character</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Character Name" value={createName} onChange={e => setCreateName(e.target.value)} className={inputCls} />
           <select value={createRole} onChange={e => setCreateRole(e.target.value)} className={selectCls}>
@@ -258,7 +259,7 @@ export default function AgentCharacterCreatorPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Generate Random Character</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Random Generator</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Random Generator</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <select value={randomRole} onChange={e => setRandomRole(e.target.value)} className={selectCls}>
             {ROLES.map(r => <option key={r} value={r} className="bg-[#1a1a2e] capitalize">{r.replace(/_/g, ' ')}</option>)}
@@ -277,7 +278,7 @@ export default function AgentCharacterCreatorPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Generate Enemy</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Enemy Generator</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Enemy Generator</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
           <input type="text" placeholder="Enemy Name" value={enemyName} onChange={e => setEnemyName(e.target.value)} className={inputCls} />
           <input type="number" placeholder="Level" value={enemyLevel} onChange={e => setEnemyLevel(e.target.value)} min="1" max="100" className={inputCls} />
@@ -297,17 +298,17 @@ export default function AgentCharacterCreatorPanel() {
               <span className="px-2 py-0.5 bg-red-900/30 border border-red-800/50 rounded text-xs text-red-300 capitalize">
                 {result.difficulty || enemyDifficulty}
               </span>
-              <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300">Lv.{result.level || enemyLevel}</span>
+              <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc]">Lv.{result.level || enemyLevel}</span>
             </div>
           </div>
           {result.attributes && (
             <div className="mb-3">
-              <span className="text-xs text-gray-500 block mb-1">Attributes</span>
+              <span className="text-xs text-[#666] block mb-1">Attributes</span>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-1">
                 {Object.entries(result.attributes).map(([k, v]: [string, any]) => (
                   <div key={k} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-1 text-center">
                     <div className="text-xs text-red-400">{v}</div>
-                    <div className="text-[10px] text-gray-500 capitalize">{k}</div>
+                    <div className="text-[10px] text-[#666] capitalize">{k}</div>
                   </div>
                 ))}
               </div>
@@ -315,7 +316,7 @@ export default function AgentCharacterCreatorPanel() {
           )}
           {result.abilities && Array.isArray(result.abilities) && result.abilities.length > 0 && (
             <div>
-              <span className="text-xs text-gray-500 block mb-1">Abilities</span>
+              <span className="text-xs text-[#666] block mb-1">Abilities</span>
               <div className="flex flex-wrap gap-1">
                 {result.abilities.map((a: any, i: number) => (
                   <span key={i} className="px-2 py-0.5 bg-red-900/20 border border-red-800/40 rounded text-xs text-red-300">
@@ -334,7 +335,7 @@ export default function AgentCharacterCreatorPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Generate Boss</h2>
       <div className={cardCls}>
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Boss Generator</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Boss Generator</h3>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
           <input type="text" placeholder="Boss Name" value={bossName} onChange={e => setBossName(e.target.value)} className={inputCls} />
           <input type="number" placeholder="Level" value={bossLevel} onChange={e => setBossLevel(e.target.value)} min="1" max="100" className={inputCls} />
@@ -354,17 +355,17 @@ export default function AgentCharacterCreatorPanel() {
               <span className="px-2 py-0.5 bg-purple-900/30 border border-purple-800/50 rounded text-xs text-purple-300 capitalize">
                 {result.theme || bossTheme}
               </span>
-              <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300">Lv.{result.level || bossLevel}</span>
+              <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc]">Lv.{result.level || bossLevel}</span>
             </div>
           </div>
           {result.attributes && (
             <div className="mb-3">
-              <span className="text-xs text-gray-500 block mb-1">Attributes</span>
+              <span className="text-xs text-[#666] block mb-1">Attributes</span>
               <div className="grid grid-cols-3 md:grid-cols-6 gap-1">
                 {Object.entries(result.attributes).map(([k, v]: [string, any]) => (
                   <div key={k} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-1 text-center">
                     <div className="text-xs text-purple-400">{v}</div>
-                    <div className="text-[10px] text-gray-500 capitalize">{k}</div>
+                    <div className="text-[10px] text-[#666] capitalize">{k}</div>
                   </div>
                 ))}
               </div>
@@ -372,7 +373,7 @@ export default function AgentCharacterCreatorPanel() {
           )}
           {result.abilities && Array.isArray(result.abilities) && result.abilities.length > 0 && (
             <div className="mb-3">
-              <span className="text-xs text-gray-500 block mb-1">Boss Abilities</span>
+              <span className="text-xs text-[#666] block mb-1">Boss Abilities</span>
               <div className="space-y-1">
                 {result.abilities.map((a: any, i: number) => (
                   <div key={i} className="bg-purple-900/20 border border-purple-800/40 rounded p-2">
@@ -382,7 +383,7 @@ export default function AgentCharacterCreatorPanel() {
                       </span>
                       {a.damage && <span className="text-xs text-purple-400">{a.damage} dmg</span>}
                     </div>
-                    {a.description && <p className="text-xs text-gray-500 mt-1">{a.description}</p>}
+                    {a.description && <p className="text-xs text-[#666] mt-1">{a.description}</p>}
                   </div>
                 ))}
               </div>
@@ -390,7 +391,7 @@ export default function AgentCharacterCreatorPanel() {
           )}
           {result.phases && Array.isArray(result.phases) && result.phases.length > 0 && (
             <div>
-              <span className="text-xs text-gray-500 block mb-1">Phases</span>
+              <span className="text-xs text-[#666] block mb-1">Phases</span>
               <div className="flex flex-wrap gap-1">
                 {result.phases.map((p: any, i: number) => (
                   <span key={i} className="px-2 py-0.5 bg-purple-900/20 border border-purple-800/40 rounded text-xs text-purple-300">
@@ -410,7 +411,7 @@ export default function AgentCharacterCreatorPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a] flex-wrap">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}

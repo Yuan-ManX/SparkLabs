@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ActiveTab = 'discovery' | 'intervention' | 'counterfactuals' | 'status';
 
@@ -77,7 +78,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
 
   const [counterfactualResult, setCounterfactualResult] = useState<CounterfactualResult | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultStatus: CausalStatus = {
     total_discoveries: 42,
