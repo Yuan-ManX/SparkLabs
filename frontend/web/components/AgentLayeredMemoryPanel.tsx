@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'overview' | 'store-core' | 'store-session' | 'search' | 'consolidate' | 'context';
 
@@ -97,7 +98,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
   // Context form state
   const [contextMaxTokens, setContextMaxTokens] = useState('2000');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultStats: LayerStats = {
     total_core_memories: 12,

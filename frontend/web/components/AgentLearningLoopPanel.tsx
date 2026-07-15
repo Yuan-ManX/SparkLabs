@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type SkillCategory = 'reasoning' | 'tool_use' | 'communication' | 'planning' | 'memory';
 type SkillState = 'acquired' | 'practicing' | 'mastered' | 'dormant';
@@ -107,7 +108,7 @@ const AgentLearningLoopPanel: React.FC = () => {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [activeTab, setActiveTab] = useState<'skills' | 'memories' | 'sessions' | 'nudges'>('skills');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSkills: Skill[] = [
     { id: uid(), name: 'Context Analysis', state: 'mastered', category: 'reasoning', level: 5, xp: 940, last_practiced: '2m ago', description: 'Analyze and decompose complex user contexts' },

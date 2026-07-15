@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'status' | 'reasoning' | 'perception' | 'learning' | 'synthesis' | 'report';
 
@@ -151,7 +152,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
   const [report, setReport] = useState<IntelligenceReport | null>(null);
   const [reportLoading, setReportLoading] = useState(false);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

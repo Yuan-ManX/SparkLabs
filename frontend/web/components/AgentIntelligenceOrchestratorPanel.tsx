@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentIntelligenceOrchestratorPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -49,7 +50,7 @@ export default function AgentIntelligenceOrchestratorPanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
       {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
@@ -66,7 +67,7 @@ export default function AgentIntelligenceOrchestratorPanel() {
             {Object.keys(stats).length > 0 && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">All Stats</h3>
-                <pre className="text-xs text-gray-300 overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -77,15 +78,15 @@ export default function AgentIntelligenceOrchestratorPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Create Pipeline</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Pipeline Name</label>
+                <label className="text-xs text-[#999] mb-1 block">Pipeline Name</label>
                 <input type="text" value={pipeName} onChange={e => setPipeName(e.target.value)} placeholder="Combat Analysis Pipeline" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Stages (comma-separated)</label>
+                <label className="text-xs text-[#999] mb-1 block">Stages (comma-separated)</label>
                 <input type="text" value={pipeStages} onChange={e => setPipeStages(e.target.value)} placeholder="capture, analyze, optimize, report" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Metadata (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Metadata (JSON)</label>
                 <textarea value={pipeMeta} onChange={e => setPipeMeta(e.target.value)} placeholder='{"domain": "combat", "auto_execute": true}' rows={3} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button
@@ -112,7 +113,7 @@ export default function AgentIntelligenceOrchestratorPanel() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#00d4ff]">Pipelines</h2>
-              <button onClick={fetchPipelines} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-gray-300 hover:bg-[#2a2a4a]">Refresh</button>
+              <button onClick={fetchPipelines} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
             </div>
 
             {pipelines.length > 0 ? (
@@ -122,28 +123,28 @@ export default function AgentIntelligenceOrchestratorPanel() {
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-white text-sm font-medium">{p.name || p.id}</span>
                       <div className="flex gap-1">
-                        <span className={`text-xs px-2 py-0.5 rounded ${p.status === 'completed' ? 'bg-green-900 text-green-300' : p.status === 'running' ? 'bg-blue-900 text-blue-300' : 'bg-gray-700 text-gray-300'}`}>{p.status || 'pending'}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded ${p.status === 'completed' ? 'bg-green-900 text-green-300' : p.status === 'running' ? 'bg-blue-900 text-blue-300' : 'bg-[#1a1a1a] text-[#ccc]'}`}>{p.status || 'pending'}</span>
                       </div>
                     </div>
-                    <div className="flex items-center gap-4 text-xs text-gray-400">
+                    <div className="flex items-center gap-4 text-xs text-[#999]">
                       <span>Stages: <span className="text-white">{Array.isArray(p.stages) ? p.stages.join(' → ') : p.stages}</span></span>
                       <span>Progress: <span className="text-[#00d4ff]">{p.current_stage ?? 0}/{Array.isArray(p.stages) ? p.stages.length : '-'}</span></span>
                     </div>
                     <div className="flex gap-2 mt-2">
-                      <button onClick={() => setSelectedPipeline(p)} className="px-3 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300 hover:bg-[#2a2a4a]">Details</button>
+                      <button onClick={() => setSelectedPipeline(p)} className="px-3 py-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Details</button>
                     </div>
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-gray-400 text-sm">No pipelines found</div>
+              <div className="text-[#999] text-sm">No pipelines found</div>
             )}
 
             {selectedPipeline && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] mt-4">
                 <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Pipeline Details: {selectedPipeline.name || selectedPipeline.id}</h3>
-                <pre className="text-xs text-gray-300 overflow-auto mb-3">{JSON.stringify(selectedPipeline, null, 2)}</pre>
-                <button onClick={() => setSelectedPipeline(null)} className="px-3 py-1 bg-[#2a2a4a] text-gray-300 rounded text-xs hover:bg-[#3a3a5a]">Close</button>
+                <pre className="text-xs text-[#ccc] overflow-auto mb-3">{JSON.stringify(selectedPipeline, null, 2)}</pre>
+                <button onClick={() => setSelectedPipeline(null)} className="px-3 py-1 bg-[#2a2a4a] text-[#ccc] rounded text-xs hover:bg-[#3a3a5a]">Close</button>
               </div>
             )}
           </div>
@@ -154,11 +155,11 @@ export default function AgentIntelligenceOrchestratorPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Execute Stage</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Pipeline ID</label>
+                <label className="text-xs text-[#999] mb-1 block">Pipeline ID</label>
                 <input type="text" value={execPipelineId} onChange={e => setExecPipelineId(e.target.value)} placeholder="pipe_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Stage Index</label>
+                <label className="text-xs text-[#999] mb-1 block">Stage Index</label>
                 <input type="number" value={execStageIndex} onChange={e => setExecStageIndex(e.target.value)} min="0" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <button
@@ -178,7 +179,7 @@ export default function AgentIntelligenceOrchestratorPanel() {
             {execResult && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Execution Result</h3>
-                <pre className="text-xs text-gray-300 overflow-auto max-h-64">{JSON.stringify(execResult, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto max-h-64">{JSON.stringify(execResult, null, 2)}</pre>
               </div>
             )}
           </div>

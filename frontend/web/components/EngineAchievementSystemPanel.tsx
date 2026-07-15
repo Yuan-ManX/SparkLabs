@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 const ACHIEVEMENT_CATEGORIES = ['combat', 'exploration', 'collection', 'progression', 'social', 'mastery', 'challenge', 'story', 'secret', 'milestone'];
 const RARITIES = ['common', 'uncommon', 'rare', 'epic', 'legendary', 'mythic'];
@@ -81,25 +82,25 @@ export default function EngineAchievementSystemPanel() {
 
   const rarityColor = (r: string) => {
     switch (r) {
-      case 'common': return 'text-gray-400';
+      case 'common': return 'text-[#999]';
       case 'uncommon': return 'text-green-300';
       case 'rare': return 'text-blue-300';
       case 'epic': return 'text-purple-300';
       case 'legendary': return 'text-orange-300';
       case 'mythic': return 'text-pink-300';
-      default: return 'text-gray-400';
+      default: return 'text-[#999]';
     }
   };
 
   const rarityBg = (r: string) => {
     switch (r) {
-      case 'common': return 'border-gray-500';
+      case 'common': return 'border-\[#f5f5f5\]0';
       case 'uncommon': return 'border-green-500';
       case 'rare': return 'border-blue-500';
       case 'epic': return 'border-purple-500';
       case 'legendary': return 'border-orange-500';
       case 'mythic': return 'border-pink-500';
-      default: return 'border-gray-500';
+      default: return 'border-\[#f5f5f5\]0';
     }
   };
 
@@ -108,7 +109,7 @@ export default function EngineAchievementSystemPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -132,7 +133,7 @@ export default function EngineAchievementSystemPanel() {
                 { label: 'Rarities', value: stats.by_rarity ? Object.keys(stats.by_rarity).length : 0, color: 'text-pink-300', suffix: ' rarities' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}{s.suffix || ''}</p>
                 </div>
               ))}
@@ -140,17 +141,17 @@ export default function EngineAchievementSystemPanel() {
             <div className="grid grid-cols-2 gap-4">
               {stats.by_category && (
                 <div className={cardCls}>
-                  <h3 className="text-sm font-bold text-gray-300 mb-2">By Category</h3>
+                  <h3 className="text-sm font-bold text-[#ccc] mb-2">By Category</h3>
                   <div className="space-y-1">
                     {Object.entries(stats.by_category).map(([k, v]) => (
-                      <div key={k} className="flex justify-between text-xs"><span className="text-gray-400 capitalize">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
+                      <div key={k} className="flex justify-between text-xs"><span className="text-[#999] capitalize">{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
                     ))}
                   </div>
                 </div>
               )}
               {stats.by_rarity && (
                 <div className={cardCls}>
-                  <h3 className="text-sm font-bold text-gray-300 mb-2">By Rarity</h3>
+                  <h3 className="text-sm font-bold text-[#ccc] mb-2">By Rarity</h3>
                   <div className="space-y-1">
                     {Object.entries(stats.by_rarity).map(([k, v]) => (
                       <div key={k} className="flex justify-between text-xs"><span className={`capitalize ${rarityColor(k)}`}>{k}</span><span className="text-[#00d4ff]">{v as any}</span></div>
@@ -183,7 +184,7 @@ export default function EngineAchievementSystemPanel() {
               </div>
               <textarea className={inputCls + ' resize-none'} rows={2} placeholder="Reward Currency (JSON)" value={achRewardCurrency} onChange={e => setAchRewardCurrency(e.target.value)} />
               <input className={inputCls} placeholder="Reward Items (comma-separated)" value={achRewardItems} onChange={e => setAchRewardItems(e.target.value)} />
-              <label className="flex items-center gap-2 text-sm text-gray-400 cursor-pointer">
+              <label className="flex items-center gap-2 text-sm text-[#999] cursor-pointer">
                 <input type="checkbox" checked={achIsHidden} onChange={e => setAchIsHidden(e.target.checked)} className="accent-[#00d4ff]" />
                 Hidden Achievement
               </label>
@@ -206,9 +207,9 @@ export default function EngineAchievementSystemPanel() {
                   <h3 className="text-sm font-bold text-white">{result.name ?? achName}</h3>
                   <span className={`text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${rarityColor(result.rarity ?? achRarity)}`}>{result.rarity ?? achRarity}</span>
                 </div>
-                <p className="text-xs text-gray-400 mt-1">{result.description ?? achDescription}</p>
+                <p className="text-xs text-[#999] mt-1">{result.description ?? achDescription}</p>
                 <div className="flex gap-2 mt-2">
-                  <span className="text-[10px] text-gray-500 capitalize">{result.category ?? achCategory}</span>
+                  <span className="text-[10px] text-[#666] capitalize">{result.category ?? achCategory}</span>
                   <span className="text-[10px] text-[#00ff88]">+{result.reward_exp ?? achRewardExp} EXP</span>
                 </div>
               </div>
@@ -239,16 +240,16 @@ export default function EngineAchievementSystemPanel() {
 
             {result && activeTab === 'generate' && Array.isArray(result.achievements) && (
               <div className="space-y-2">
-                <h3 className="text-sm font-bold text-gray-300">Generated Achievements</h3>
+                <h3 className="text-sm font-bold text-[#ccc]">Generated Achievements</h3>
                 {result.achievements.map((ach: any, i: number) => (
                   <div key={i} className={`${cardCls} border-l-4 ${rarityBg(ach.rarity ?? 'common')}`}>
                     <div className="flex justify-between items-center">
                       <span className="text-sm text-white">{ach.name}</span>
                       <span className={`text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${rarityColor(ach.rarity ?? 'common')}`}>{ach.rarity ?? 'common'}</span>
                     </div>
-                    <p className="text-xs text-gray-400 mt-1">{ach.description}</p>
+                    <p className="text-xs text-[#999] mt-1">{ach.description}</p>
                     <div className="flex gap-2 mt-1">
-                      <span className="text-[10px] text-gray-500 capitalize">{ach.category}</span>
+                      <span className="text-[10px] text-[#666] capitalize">{ach.category}</span>
                       <span className="text-[10px] text-[#00ff88]">Target: {ach.target_value}</span>
                       <span className="text-[10px] text-amber-300">+{ach.reward_exp} EXP</span>
                     </div>
@@ -270,12 +271,12 @@ export default function EngineAchievementSystemPanel() {
 
             {result && activeTab === 'generate' && Array.isArray(result.recommendations) && (
               <div className="space-y-2">
-                <h3 className="text-sm font-bold text-gray-300">Recommendations</h3>
+                <h3 className="text-sm font-bold text-[#ccc]">Recommendations</h3>
                 {result.recommendations.map((rec: any, i: number) => (
                   <div key={i} className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] flex justify-between items-center">
                     <div>
                       <span className="text-sm text-white">{rec.name ?? rec.achievement_id}</span>
-                      <span className="text-xs text-gray-500 ml-2 capitalize">{rec.category}</span>
+                      <span className="text-xs text-[#666] ml-2 capitalize">{rec.category}</span>
                     </div>
                     <div className="flex gap-2">
                       <span className="text-xs text-[#00ff88]">{rec.progress ?? 0}%</span>
@@ -310,7 +311,7 @@ export default function EngineAchievementSystemPanel() {
 
             {result && activeTab === 'progress' && result.progress !== undefined && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Progress Updated</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Progress Updated</h3>
                 <div className="flex items-center gap-3">
                   <div className="flex-1 bg-[#1a1a2e] rounded h-3 overflow-hidden">
                     <div className="h-full bg-[#00ff88] rounded transition-all" style={{ width: `${Math.min(result.progress ?? 0, 100)}%` }} />
@@ -372,11 +373,11 @@ export default function EngineAchievementSystemPanel() {
 
             {result && activeTab === 'leaderboard' && Array.isArray(result.leaderboard) && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-3">Leaderboard - {lbCategory}</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-3">Leaderboard - {lbCategory}</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-xs">
                     <thead>
-                      <tr className="text-gray-400 border-b border-[#2a2a4a]">
+                      <tr className="text-[#999] border-b border-[#2a2a4a]">
                         <th className="text-left py-2 px-2">#</th>
                         <th className="text-left py-2 px-2">Player</th>
                         <th className="text-right py-2 px-2">Achievements</th>
@@ -388,7 +389,7 @@ export default function EngineAchievementSystemPanel() {
                       {result.leaderboard.map((entry: any, i: number) => (
                         <tr key={i} className={`border-b border-[#2a2a4a]/50 ${i < 3 ? 'bg-[#1a1a2e]/50' : ''}`}>
                           <td className="py-2 px-2">
-                            <span className={`font-bold ${i === 0 ? 'text-yellow-300' : i === 1 ? 'text-gray-300' : i === 2 ? 'text-amber-600' : 'text-gray-500'}`}>
+                            <span className={`font-bold ${i === 0 ? 'text-yellow-300' : i === 1 ? 'text-[#ccc]' : i === 2 ? 'text-amber-600' : 'text-[#666]'}`}>
                               {i + 1}
                             </span>
                           </td>
