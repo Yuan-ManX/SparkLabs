@@ -759,8 +759,6 @@ class PvPArenaSystem:
                     "winner_rating": winner.rating, "loser_rating": loser.rating}
 
     # ------------------------------------------------------------------
-    # Round Management
-    # ------------------------------------------------------------------
 
     def start_round(self, match_id: str) -> Dict[str, Any]:
         with self._lock:

@@ -1683,7 +1683,6 @@ class AgentCoalitionNegotiator:
                     shares[aid] = 0.7 * shapley_share + 0.3 * even_share
             else:
                 return False, f"unknown method '{method}'", None
-            # Round shares to 2 decimal places for clarity.
             shares = {k: round(v, 2) for k, v in shares.items()}
             # Compute fairness score.
             fairness = self._compute_fairness_from_shares(

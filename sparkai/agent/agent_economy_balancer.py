@@ -1112,7 +1112,6 @@ class EconomyBalancerEngine:
         economy_adjusted = base_reward * economy_modifier
         final_reward = economy_adjusted * sustainability_factor
 
-        # Round to reasonable precision
         final_reward = round(final_reward, 2)
 
         # Record in history

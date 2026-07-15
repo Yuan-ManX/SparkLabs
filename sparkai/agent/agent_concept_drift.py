@@ -1079,7 +1079,6 @@ class ConceptDriftEngine:
                 agent.versions[concept.concept_id] = [version]
                 new_concepts.append(concept)
             _evict_fifo_dict(agent.concepts, _MAX_CONCEPTS_PER_AGENT)
-            # Round-robin redistribute parent occurrences
             parent_occs = list(agent.occurrences.get(concept_id, []))
             for i, occ in enumerate(parent_occs):
                 target = new_concepts[i % len(new_concepts)]

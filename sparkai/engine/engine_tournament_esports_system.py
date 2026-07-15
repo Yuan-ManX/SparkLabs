@@ -590,7 +590,6 @@ class TournamentEsportsSystem:
             self._brackets[bracket_spring.bracket_id] = bracket_spring
             t1.bracket_ids.append(bracket_spring.bracket_id)
 
-            # Round 1 matches (8 matches)
             r1_pairs = [
                 ("player_alpha", "player_beta", "player_alpha", 2, 1, MatchStatus.COMPLETED.value),
                 ("player_gamma", "player_delta", "player_delta", 2, 0, MatchStatus.COMPLETED.value),
@@ -626,7 +625,6 @@ class TournamentEsportsSystem:
                     loser = p1 if winner == p2 else p2
                     self._participants[loser].losses += 1
 
-            # Round 2 matches (2 ready matches from completed round 1 winners)
             r2_pairs = [
                 ("player_alpha", "player_delta", "", 0, 0, MatchStatus.READY.value),
                 ("player_epsilon", "player_theta", "", 0, 0, MatchStatus.READY.value),

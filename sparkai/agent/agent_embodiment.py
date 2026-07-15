@@ -335,7 +335,6 @@ class AgentEmbodimentEngine:
         ] = {}
         # Event history
         self._events: List[EmbodimentEvent] = []
-        # Round-robin rotation index keyed by (entity_id, channel)
         self._round_robin_index: Dict[Tuple[str, str], int] = {}
         # Tick counter
         self._tick_count: int = 0

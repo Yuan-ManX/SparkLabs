@@ -51,6 +51,26 @@ export interface HistorySnapshot {
   selectedEntity: string | null;
 }
 
+export interface ChatMessage {
+  id: string;
+  role: 'user' | 'assistant' | 'system';
+  content: string;
+  timestamp: number;
+  isStreaming?: boolean;
+  actions?: string[];
+  gameGenerated?: boolean;
+}
+
+// A saved chat conversation session, persisted to localStorage so the user
+// can revisit previous discussions across page reloads.
+export interface ChatSession {
+  id: string;
+  title: string;
+  messages: ChatMessage[];
+  createdAt: number;
+  updatedAt: number;
+}
+
 export interface EditorState {
   activeMode: ViewMode;
   currentTool: 'move' | 'rotate' | 'scale';
@@ -63,12 +83,20 @@ export interface EditorState {
   logs: ConsoleLine[];
   aiGeneration: AIGenerationState;
   fps: number;
-  leftTab: 'scene' | 'assets' | 'nodes';
-  rightTab: 'inspector' | 'ai-config';
-  bottomTab: 'console' | 'timeline' | 'ai-assistant';
+  leftTab: 'scene' | 'assets' | 'nodes' | 'agents' | 'world';
+  rightTab: 'inspector' | 'ai-config' | 'tools' | 'modules';
+  bottomTab: 'console' | 'timeline' | 'agent-log';
+  centerTabs: { id: string; label: string; icon: string; mode: string }[];
+  activeCenterTab: string;
   leftPanelWidth: number;
   rightPanelWidth: number;
   bottomPanelHeight: number;
+  chatPanelWidth: number;
+  chatPanelCollapsed: boolean;
+  rightPanelCollapsed: boolean;
+  chatMessages: ChatMessage[];
+  chatInput: string;
+  isAgentThinking: boolean;
   engineStatus: Record<string, unknown> | null;
   backendConnected: boolean;
   worldId: string | null;
@@ -77,9 +105,20 @@ export interface EditorState {
   sessionId: string | null;
   history: HistorySnapshot[];
   historyIndex: number;
+  gameHtml: string | null;
+  chatHistoryCollapsed: boolean;
+  chatSessions: ChatSession[];
+  activeChatSessionId: string | null;
 }
 
 export interface EditorActions {
+  setGameHtml: (html: string | null) => void;
+  setChatHistoryCollapsed: (collapsed: boolean) => void;
+  createChatSession: () => string;
+  saveCurrentChatSession: () => void;
+  loadChatSession: (id: string) => void;
+  deleteChatSession: (id: string) => void;
+  renameChatSession: (id: string, title: string) => void;
   setActiveMode: (mode: ViewMode) => void;
   setCurrentTool: (tool: 'move' | 'rotate' | 'scale') => void;
   togglePlay: () => void;
@@ -101,12 +140,23 @@ export interface EditorActions {
   completeAIGeneration: (result?: Record<string, unknown>) => void;
   failAIGeneration: (error: string) => void;
   setFps: (fps: number) => void;
-  setLeftTab: (tab: 'scene' | 'assets' | 'nodes') => void;
-  setRightTab: (tab: 'inspector' | 'ai-config') => void;
-  setBottomTab: (tab: 'console' | 'timeline' | 'ai-assistant') => void;
+  setLeftTab: (tab: 'scene' | 'assets' | 'nodes' | 'agents' | 'world') => void;
+  setRightTab: (tab: 'inspector' | 'ai-config' | 'tools' | 'modules') => void;
+  setBottomTab: (tab: 'console' | 'timeline' | 'agent-log') => void;
+  openCenterTab: (tab: { id: string; label: string; icon: string; mode: string }) => void;
+  closeCenterTab: (id: string) => void;
+  setActiveCenterTab: (id: string) => void;
   setLeftPanelWidth: (width: number) => void;
   setRightPanelWidth: (width: number) => void;
   setBottomPanelHeight: (height: number) => void;
+  setChatPanelWidth: (width: number) => void;
+  setChatPanelCollapsed: (collapsed: boolean) => void;
+  setRightPanelCollapsed: (collapsed: boolean) => void;
+  addChatMessage: (message: ChatMessage) => void;
+  updateChatMessage: (id: string, updates: Partial<ChatMessage>) => void;
+  setChatInput: (text: string) => void;
+  setAgentThinking: (thinking: boolean) => void;
+  clearChatMessages: () => void;
   setEngineStatus: (status: Record<string, unknown>) => void;
   setBackendConnected: (connected: boolean) => void;
   setWorldId: (id: string | null) => void;
@@ -173,6 +223,30 @@ const defaultPropertySections: PropertySection[] = [
   },
 ];
 
+// ===== Chat session persistence helpers (localStorage) =====
+const CHAT_SESSIONS_KEY = 'sparklabs_chat_sessions';
+
+function loadChatSessionsFromStorage(): ChatSession[] {
+  try {
+    const raw = localStorage.getItem(CHAT_SESSIONS_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
+function persistChatSessions(sessions: ChatSession[]): void {
+  try {
+    // Keep only the 50 most recent sessions to avoid unbounded growth
+    const trimmed = [...sessions].sort((a, b) => b.updatedAt - a.updatedAt).slice(0, 50);
+    localStorage.setItem(CHAT_SESSIONS_KEY, JSON.stringify(trimmed));
+  } catch {
+    // localStorage may be unavailable (private mode) — silently skip
+  }
+}
+
 export const useEditorStore = create<EditorState & EditorActions>((set, get) => ({
   activeMode: 'dashboard',
   currentTool: 'move',
@@ -195,9 +269,24 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   leftTab: 'scene',
   rightTab: 'inspector',
   bottomTab: 'console',
+  centerTabs: [],
+  activeCenterTab: 'viewport',
   leftPanelWidth: 260,
   rightPanelWidth: 300,
   bottomPanelHeight: 180,
+  chatPanelWidth: 340,
+  chatPanelCollapsed: false,
+  rightPanelCollapsed: false,
+  chatMessages: [
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: 'Welcome to SparkLabs AI-Native Game Engine. I am your AI Agent collaborator. Describe the game you want to create, and I will help you design worlds, compose assets, direct narratives, balance combat, and bring your vision to life.',
+      timestamp: Date.now(),
+    },
+  ],
+  chatInput: '',
+  isAgentThinking: false,
   engineStatus: null,
   backendConnected: false,
   worldId: null,
@@ -206,8 +295,96 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   sessionId: null,
   history: [],
   historyIndex: -1,
+  gameHtml: null,
+  chatHistoryCollapsed: true,
+  chatSessions: loadChatSessionsFromStorage(),
+  activeChatSessionId: null,
 
   setActiveMode: (mode) => set({ activeMode: mode }),
+  setGameHtml: (html) => set({ gameHtml: html }),
+  setChatHistoryCollapsed: (collapsed) => set({ chatHistoryCollapsed: collapsed }),
+
+  // Create a fresh chat session, clear current messages, and set it active.
+  // Returns the new session id so callers can track it.
+  createChatSession: () => {
+    const id = `session_${Date.now()}_${Math.random().toString(36).slice(2, 6)}`;
+    const welcomeMsg: ChatMessage = {
+      id: 'welcome_' + id,
+      role: 'assistant',
+      content: 'Welcome to SparkLabs AI-Native Game Engine. I am your AI Agent collaborator. Describe the game you want to create, and I will help you design worlds, compose assets, direct narratives, balance combat, and bring your vision to life.',
+      timestamp: Date.now(),
+    };
+    set({
+      chatMessages: [welcomeMsg],
+      activeChatSessionId: id,
+      gameHtml: null,
+    });
+    return id;
+  },
+
+  // Persist the current chat messages into the active session (or create one
+  // if none is active). Called after each assistant response completes.
+  saveCurrentChatSession: () => {
+    const state = get();
+    const messages = state.chatMessages;
+    // Derive a title from the first user message, or use a default
+    const firstUserMsg = messages.find((m) => m.role === 'user');
+    const title = firstUserMsg
+      ? firstUserMsg.content.substring(0, 40).trim() + (firstUserMsg.content.length > 40 ? '...' : '')
+      : 'New Conversation';
+
+    const now = Date.now();
+    let sessionId = state.activeChatSessionId;
+
+    if (!sessionId) {
+      sessionId = `session_${now}_${Math.random().toString(36).slice(2, 6)}`;
+    }
+
+    const existingIdx = state.chatSessions.findIndex((s) => s.id === sessionId);
+    const session: ChatSession = {
+      id: sessionId,
+      title,
+      messages: messages.map((m) => ({ ...m, isStreaming: false })),
+      createdAt: existingIdx >= 0 ? state.chatSessions[existingIdx].createdAt : now,
+      updatedAt: now,
+    };
+
+    const newSessions = existingIdx >= 0
+      ? state.chatSessions.map((s) => (s.id === sessionId ? session : s))
+      : [session, ...state.chatSessions];
+
+    persistChatSessions(newSessions);
+    set({ chatSessions: newSessions, activeChatSessionId: sessionId });
+  },
+
+  // Load a saved session into the active chat panel
+  loadChatSession: (id) => {
+    const session = get().chatSessions.find((s) => s.id === id);
+    if (!session) return;
+    set({
+      chatMessages: session.messages.map((m) => ({ ...m, isStreaming: false })),
+      activeChatSessionId: id,
+      chatHistoryCollapsed: false,
+    });
+  },
+
+  deleteChatSession: (id) => {
+    const newSessions = get().chatSessions.filter((s) => s.id !== id);
+    persistChatSessions(newSessions);
+    set((s) => ({
+      chatSessions: newSessions,
+      activeChatSessionId: s.activeChatSessionId === id ? null : s.activeChatSessionId,
+    }));
+  },
+
+  renameChatSession: (id, title) => {
+    const newSessions = get().chatSessions.map((s) =>
+      s.id === id ? { ...s, title, updatedAt: Date.now() } : s
+    );
+    persistChatSessions(newSessions);
+    set({ chatSessions: newSessions });
+  },
+
   setCurrentTool: (tool) => set({ currentTool: tool }),
   togglePlay: () => set((s) => ({ isPlaying: !s.isPlaying, isPaused: false })),
   togglePause: () => set((s) => ({ isPaused: !s.isPaused })),
@@ -294,9 +471,33 @@ export const useEditorStore = create<EditorState & EditorActions>((set, get) => 
   setLeftTab: (tab) => set({ leftTab: tab }),
   setRightTab: (tab) => set({ rightTab: tab }),
   setBottomTab: (tab) => set({ bottomTab: tab }),
+  openCenterTab: (tab) => set((s) => {
+    const exists = s.centerTabs.find((t) => t.id === tab.id);
+    if (exists) return { activeCenterTab: tab.id };
+    return { centerTabs: [...s.centerTabs, tab], activeCenterTab: tab.id };
+  }),
+  closeCenterTab: (id) => set((s) => {
+    const idx = s.centerTabs.findIndex((t) => t.id === id);
+    const newTabs = s.centerTabs.filter((t) => t.id !== id);
+    const newActive = s.activeCenterTab === id
+      ? (idx > 0 ? s.centerTabs[idx - 1].id : (newTabs.length > 0 ? newTabs[0].id : 'viewport'))
+      : s.activeCenterTab;
+    return { centerTabs: newTabs, activeCenterTab: newActive };
+  }),
+  setActiveCenterTab: (id) => set({ activeCenterTab: id }),
   setLeftPanelWidth: (width) => set({ leftPanelWidth: width }),
   setRightPanelWidth: (width) => set({ rightPanelWidth: width }),
   setBottomPanelHeight: (height) => set({ bottomPanelHeight: height }),
+  setChatPanelWidth: (width) => set({ chatPanelWidth: Math.max(280, Math.min(600, width)) }),
+  setChatPanelCollapsed: (collapsed) => set({ chatPanelCollapsed: collapsed }),
+  setRightPanelCollapsed: (collapsed) => set({ rightPanelCollapsed: collapsed }),
+  addChatMessage: (message) => set((s) => ({ chatMessages: [...s.chatMessages, message] })),
+  updateChatMessage: (id, updates) => set((s) => ({
+    chatMessages: s.chatMessages.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+  })),
+  setChatInput: (text) => set({ chatInput: text }),
+  setAgentThinking: (thinking) => set({ isAgentThinking: thinking }),
+  clearChatMessages: () => set({ chatMessages: [] }),
   setEngineStatus: (status) => set({ engineStatus: status }),
   setBackendConnected: (connected) => set({ backendConnected: connected }),
   setWorldId: (id) => set({ worldId: id }),

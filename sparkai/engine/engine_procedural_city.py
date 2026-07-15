@@ -984,7 +984,6 @@ class ProceduralCityEngine:
         base = 256.0
         scale = math.sqrt(max(cfg.target_population, 100) / 1000.0)
         size = max(base, base * scale)
-        # Round to a clean multiple of 8 for tidy grid alignment.
         size = max(128.0, math.floor(size / 8.0) * 8.0)
         return size, size
 
