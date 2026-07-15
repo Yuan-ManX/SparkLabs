@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentGameStateIntelligencePanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -64,7 +65,7 @@ export default function AgentGameStateIntelligencePanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
       {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
@@ -81,7 +82,7 @@ export default function AgentGameStateIntelligencePanel() {
                 <h3 className="text-[#00d4ff] text-sm mb-2">Insights by Domain</h3>
                 <div className="space-y-1">
                   {Object.entries(stats.insights_by_domain as Record<string, number>).map(([k, v]) => (
-                    <div key={k} className="flex justify-between text-xs"><span className="text-gray-400">{k}</span><span className="text-white">{v}</span></div>
+                    <div key={k} className="flex justify-between text-xs"><span className="text-[#999]">{k}</span><span className="text-white">{v}</span></div>
                   ))}
                 </div>
               </div>
@@ -91,7 +92,7 @@ export default function AgentGameStateIntelligencePanel() {
                 <h3 className="text-[#00d4ff] text-sm mb-2">Insights by Severity</h3>
                 <div className="space-y-1">
                   {Object.entries(stats.insights_by_severity as Record<string, number>).map(([k, v]) => (
-                    <div key={k} className="flex justify-between text-xs"><span className={`${k === 'critical' ? 'text-red-400' : k === 'warning' ? 'text-yellow-400' : 'text-gray-400'}`}>{k}</span><span className="text-white">{v}</span></div>
+                    <div key={k} className="flex justify-between text-xs"><span className={`${k === 'critical' ? 'text-red-400' : k === 'warning' ? 'text-yellow-400' : 'text-[#999]'}`}>{k}</span><span className="text-white">{v}</span></div>
                   ))}
                 </div>
               </div>
@@ -104,15 +105,15 @@ export default function AgentGameStateIntelligencePanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Capture Game State</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Entities (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Entities (JSON)</label>
                 <textarea value={capEntities} onChange={e => setCapEntities(e.target.value)} placeholder='[{"id": "player1", "type": "player", "health": 100}]' rows={3} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Metrics (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Metrics (JSON)</label>
                 <textarea value={capMetrics} onChange={e => setCapMetrics(e.target.value)} placeholder='{"fps": 60, "time_played": 300, "score": 1500}' rows={3} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Metadata (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Metadata (JSON)</label>
                 <textarea value={capMeta} onChange={e => setCapMeta(e.target.value)} placeholder='{"level": "forest_1", "difficulty": "normal"}' rows={2} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
               </div>
               <button
@@ -140,14 +141,14 @@ export default function AgentGameStateIntelligencePanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Analyze Snapshot</h2>
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Snapshot ID</label>
+                <label className="text-xs text-[#999] mb-1 block">Snapshot ID</label>
                 <input type="text" value={analyzeSnapshotId} onChange={e => setAnalyzeSnapshotId(e.target.value)} placeholder="snap_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
-                <label className="text-xs text-gray-400 mb-1 block">Domains</label>
+                <label className="text-xs text-[#999] mb-1 block">Domains</label>
                 <div className="flex flex-wrap gap-2">
                   {DOMAIN_OPTIONS.map(d => (
-                    <label key={d} className={`flex items-center gap-1 px-3 py-1 rounded text-xs cursor-pointer border ${analyzeDomains.includes(d) ? 'bg-[#00d4ff]/20 border-[#00d4ff] text-[#00d4ff]' : 'bg-[#1a1a2e] border-[#2a2a4a] text-gray-300'}`}>
+                    <label key={d} className={`flex items-center gap-1 px-3 py-1 rounded text-xs cursor-pointer border ${analyzeDomains.includes(d) ? 'bg-[#00d4ff]/20 border-[#00d4ff] text-[#00d4ff]' : 'bg-[#1a1a2e] border-[#2a2a4a] text-[#ccc]'}`}>
                       <input type="checkbox" checked={analyzeDomains.includes(d)} onChange={() => toggleDomain(d)} className="hidden" />
                       {d}
                     </label>
@@ -174,7 +175,7 @@ export default function AgentGameStateIntelligencePanel() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#00d4ff]">Insights</h2>
-              <button onClick={fetchInsights} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-gray-300 hover:bg-[#2a2a4a]">Refresh</button>
+              <button onClick={fetchInsights} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
             </div>
 
             <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
@@ -200,16 +201,16 @@ export default function AgentGameStateIntelligencePanel() {
                       <span className="text-white text-sm font-medium">{ins.title || ins.id || `Insight #${i + 1}`}</span>
                       <div className="flex gap-1">
                         {ins.domain && <span className="text-xs bg-[#1a1a2e] text-[#00d4ff] px-2 py-0.5 rounded">{ins.domain}</span>}
-                        {ins.severity && <span className={`text-xs px-2 py-0.5 rounded ${ins.severity === 'critical' ? 'bg-red-900 text-red-300' : ins.severity === 'warning' ? 'bg-yellow-900 text-yellow-300' : 'bg-gray-700 text-gray-300'}`}>{ins.severity}</span>}
+                        {ins.severity && <span className={`text-xs px-2 py-0.5 rounded ${ins.severity === 'critical' ? 'bg-red-900 text-red-300' : ins.severity === 'warning' ? 'bg-yellow-900 text-yellow-300' : 'bg-[#1a1a1a] text-[#ccc]'}`}>{ins.severity}</span>}
                         {ins.confidence != null && <span className="text-xs bg-[#1a1a2e] text-green-400 px-2 py-0.5 rounded">{Number(ins.confidence * 100).toFixed(0)}%</span>}
                       </div>
                     </div>
-                    {ins.description && <p className="text-xs text-gray-400 mt-1">{ins.description}</p>}
+                    {ins.description && <p className="text-xs text-[#999] mt-1">{ins.description}</p>}
                   </div>
                 ))}
               </div>
             ) : (
-              <div className="text-gray-400 text-sm">No insights found. Try running an analysis first.</div>
+              <div className="text-[#999] text-sm">No insights found. Try running an analysis first.</div>
             )}
           </div>
         )}

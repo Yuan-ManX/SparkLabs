@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 // --- Type Definitions ---
 
@@ -252,7 +253,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
             fetchAuditTrail();
             showMessage('Refreshed', 'info');
           }}
-          className="px-3 py-1 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-gray-400 rounded hover:text-white hover:border-[#3a3a5a]"
+          className="px-3 py-1 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-[#999] rounded hover:text-white hover:border-[#3a3a5a]"
         >
           ↻ Refresh
         </button>
@@ -282,7 +283,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
             className={
               activeTab === tab.id
                 ? 'px-4 py-2 text-sm bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t'
-                : 'px-4 py-2 text-sm text-gray-400 hover:text-white cursor-pointer'
+                : 'px-4 py-2 text-sm text-[#999] hover:text-white cursor-pointer'
             }
           >
             {tab.label}
@@ -296,24 +297,24 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
         {activeTab === 'status' && (
           <div>
             {statusLoading && !status ? (
-              <div className="text-sm text-gray-500 text-center py-8">Loading status...</div>
+              <div className="text-sm text-[#666] text-center py-8">Loading status...</div>
             ) : status ? (
               <div className="grid grid-cols-3 gap-3 mb-4">
                 <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-[#00d4ff]">{status.registered_functions_count}</div>
-                  <div className="text-xs text-gray-400 mt-1">Registered Functions</div>
+                  <div className="text-xs text-[#999] mt-1">Registered Functions</div>
                 </div>
                 <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-green-400">{status.dispatch_count}</div>
-                  <div className="text-xs text-gray-400 mt-1">Total Dispatches</div>
+                  <div className="text-xs text-[#999] mt-1">Total Dispatches</div>
                 </div>
                 <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold text-yellow-400">{status.audit_trail_count}</div>
-                  <div className="text-xs text-gray-400 mt-1">Audit Trail Entries</div>
+                  <div className="text-xs text-[#999] mt-1">Audit Trail Entries</div>
                 </div>
               </div>
             ) : (
-              <div className="text-sm text-gray-500 text-center py-8">No status data available</div>
+              <div className="text-sm text-[#666] text-center py-8">No status data available</div>
             )}
 
             {/* Additional status details if available */}
@@ -325,8 +326,8 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
                     .filter(([k]) => !['registered_functions_count', 'dispatch_count', 'audit_trail_count'].includes(k))
                     .map(([key, value]) => (
                       <div key={key} className="flex justify-between text-xs">
-                        <span className="text-gray-400">{key}</span>
-                        <span className="text-gray-200">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
+                        <span className="text-[#999]">{key}</span>
+                        <span className="text-\[#ddd\]">{typeof value === 'object' ? JSON.stringify(value) : String(value)}</span>
                       </div>
                     ))}
                 </div>
@@ -343,7 +344,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
               <h3 className="text-sm font-medium text-[#00d4ff] mb-3">Dispatch Function</h3>
 
               <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Function Name</label>
+                <label className="text-xs text-[#999] mb-1 block">Function Name</label>
                 <input
                   type="text"
                   value={functionName}
@@ -354,7 +355,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Parameters (JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Parameters (JSON)</label>
                 <textarea
                   value={parameters}
                   onChange={(e) => setParameters(e.target.value)}
@@ -365,7 +366,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Policy</label>
+                <label className="text-xs text-[#999] mb-1 block">Policy</label>
                 <select
                   value={policy}
                   onChange={(e) => setPolicy(e.target.value)}
@@ -378,7 +379,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
               </div>
 
               <div className="mb-3">
-                <label className="text-xs text-gray-400 mb-1 block">Metadata (optional JSON)</label>
+                <label className="text-xs text-[#999] mb-1 block">Metadata (optional JSON)</label>
                 <textarea
                   value={metadata}
                   onChange={(e) => setMetadata(e.target.value)}
@@ -412,7 +413,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
                   </div>
                 )}
                 {dispatchResult.result !== undefined && (
-                  <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-gray-300 font-mono whitespace-pre-wrap overflow-auto max-h-40">
+                  <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-[#ccc] font-mono whitespace-pre-wrap overflow-auto max-h-40">
                     {typeof dispatchResult.result === 'string' ? dispatchResult.result : JSON.stringify(dispatchResult.result, null, 2)}
                   </div>
                 )}
@@ -426,15 +427,15 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
           <div>
             <button
               onClick={fetchRegisteredFunctions}
-              className="px-3 py-1.5 mb-3 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-gray-400 rounded hover:text-white"
+              className="px-3 py-1.5 mb-3 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-[#999] rounded hover:text-white"
             >
               ↻ Refresh
             </button>
 
             {functionsLoading && registeredFunctions.length === 0 ? (
-              <div className="text-sm text-gray-500 text-center py-8">Loading functions...</div>
+              <div className="text-sm text-[#666] text-center py-8">Loading functions...</div>
             ) : registeredFunctions.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-[#666]">
                 <div className="text-4xl mb-2 opacity-30">📋</div>
                 <div className="text-sm">No registered functions found</div>
               </div>
@@ -444,9 +445,9 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
                   <div key={fn.name || idx} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
                     <div className="flex items-start justify-between mb-1">
                       <h4 className="text-sm font-semibold text-white">{fn.name}</h4>
-                      <span className="text-xs text-gray-500">{fn.parameter_count} params</span>
+                      <span className="text-xs text-[#666]">{fn.parameter_count} params</span>
                     </div>
-                    <p className="text-xs text-gray-400 mb-2">{fn.description}</p>
+                    <p className="text-xs text-[#999] mb-2">{fn.description}</p>
                     <div className="flex gap-1.5 flex-wrap">
                       {(fn.policies || []).map((p) => (
                         <span
@@ -475,15 +476,15 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
           <div>
             <button
               onClick={fetchAuditTrail}
-              className="px-3 py-1.5 mb-3 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-gray-400 rounded hover:text-white"
+              className="px-3 py-1.5 mb-3 text-xs bg-[#1a1a2e] border border-[#2a2a4a] text-[#999] rounded hover:text-white"
             >
               ↻ Refresh
             </button>
 
             {auditLoading && auditTrail.length === 0 ? (
-              <div className="text-sm text-gray-500 text-center py-8">Loading audit trail...</div>
+              <div className="text-sm text-[#666] text-center py-8">Loading audit trail...</div>
             ) : auditTrail.length === 0 ? (
-              <div className="text-center py-12 text-gray-500">
+              <div className="text-center py-12 text-[#666]">
                 <div className="text-4xl mb-2 opacity-30">📜</div>
                 <div className="text-sm">No audit trail entries found</div>
               </div>
@@ -506,7 +507,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
                         {entry.success ? 'OK' : 'FAIL'}
                       </span>
                     </div>
-                    <div className="flex items-center gap-3 text-xs text-gray-500">
+                    <div className="flex items-center gap-3 text-xs text-[#666]">
                       <span>{entry.policy}</span>
                       <span>{formatTimestamp(entry.timestamp)}</span>
                     </div>
@@ -519,7 +520,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
       </div>
 
       {/* Footer status bar */}
-      <div className="px-4 py-1.5 border-t border-[#2a2a4a] bg-[#0a0a1a] flex items-center justify-between text-xs text-gray-600">
+      <div className="px-4 py-1.5 border-t border-[#2a2a4a] bg-[#0a0a1a] flex items-center justify-between text-xs text-[#555]">
         <span>
           {status ? `${status.registered_functions_count} functions · ${status.dispatch_count} dispatched · ${status.audit_trail_count} audited` : 'Connected'}
         </span>

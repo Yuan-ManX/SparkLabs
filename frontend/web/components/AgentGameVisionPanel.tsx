@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentGameVisionPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -72,7 +73,7 @@ export default function AgentGameVisionPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -94,7 +95,7 @@ export default function AgentGameVisionPanel() {
                 </div>
               ))}
               {Object.keys(stats).length === 0 && (
-                <div className="col-span-full text-gray-400 text-sm">No vision stats available</div>
+                <div className="col-span-full text-[#999] text-sm">No vision stats available</div>
               )}
             </div>
           </div>
@@ -107,31 +108,31 @@ export default function AgentGameVisionPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Set Project Identity</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Project Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Project Name</label>
                   <input type="text" value={identityName} onChange={e => setIdentityName(e.target.value)}
                     placeholder="My Game Project" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Pillars (comma-separated)</label>
+                  <label className="text-xs text-[#999] mb-1 block">Pillars (comma-separated)</label>
                   <input type="text" value={identityPillars} onChange={e => setIdentityPillars(e.target.value)}
                     placeholder="Exploration, Combat, Story" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Narrative Style</label>
+                  <label className="text-xs text-[#999] mb-1 block">Narrative Style</label>
                   <select value={identityNarrative} onChange={e => setIdentityNarrative(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {narrativeStyles.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Visual Style</label>
+                  <label className="text-xs text-[#999] mb-1 block">Visual Style</label>
                   <select value={identityVisual} onChange={e => setIdentityVisual(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {visualStyles.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Emotional Tone</label>
+                  <label className="text-xs text-[#999] mb-1 block">Emotional Tone</label>
                   <select value={identityEmotional} onChange={e => setIdentityEmotional(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {emotionalTones.map(s => <option key={s} value={s}>{s}</option>)}
@@ -163,12 +164,12 @@ export default function AgentGameVisionPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Add Element</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Element Name</label>
+                  <label className="text-xs text-[#999] mb-1 block">Element Name</label>
                   <input type="text" value={elemName} onChange={e => setElemName(e.target.value)}
                     placeholder="element_name" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Element Type</label>
+                  <label className="text-xs text-[#999] mb-1 block">Element Type</label>
                   <select value={elemType} onChange={e => setElemType(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     <option value="mechanic">Mechanic</option>
@@ -180,7 +181,7 @@ export default function AgentGameVisionPanel() {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Description</label>
+                  <label className="text-xs text-[#999] mb-1 block">Description</label>
                   <textarea value={elemDescription} onChange={e => setElemDescription(e.target.value)}
                     rows={3} placeholder="Describe the element..."
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -209,12 +210,12 @@ export default function AgentGameVisionPanel() {
                         <span className="text-white text-sm font-medium">{el.name}</span>
                         <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded">{el.type || 'unknown'}</span>
                       </div>
-                      {el.description && <div className="mt-1 text-xs text-gray-400">{el.description}</div>}
+                      {el.description && <div className="mt-1 text-xs text-[#999]">{el.description}</div>}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No elements added</div>
+                <div className="text-[#999] text-xs">No elements added</div>
               )}
             </div>
           </div>
@@ -227,22 +228,22 @@ export default function AgentGameVisionPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Record Decision</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Decision Title</label>
+                  <label className="text-xs text-[#999] mb-1 block">Decision Title</label>
                   <input type="text" value={decTitle} onChange={e => setDecTitle(e.target.value)}
                     placeholder="e.g. Art Style Direction" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Context</label>
+                  <label className="text-xs text-[#999] mb-1 block">Context</label>
                   <input type="text" value={decContext} onChange={e => setDecContext(e.target.value)}
                     placeholder="e.g. Choosing between realistic and stylized" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Choice Made</label>
+                  <label className="text-xs text-[#999] mb-1 block">Choice Made</label>
                   <input type="text" value={decChoice} onChange={e => setDecChoice(e.target.value)}
                     placeholder="e.g. stylized" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Rationale</label>
+                  <label className="text-xs text-[#999] mb-1 block">Rationale</label>
                   <input type="text" value={decRationale} onChange={e => setDecRationale(e.target.value)}
                     placeholder="e.g. Better performance" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -270,13 +271,13 @@ export default function AgentGameVisionPanel() {
                         <span className="text-white text-sm font-medium">{d.title}</span>
                         <span className="text-xs text-[#00d4ff] font-mono">{d.choice}</span>
                       </div>
-                      {d.context && <div className="mt-1 text-xs text-gray-400">{d.context}</div>}
-                      {d.rationale && <div className="mt-1 text-xs text-gray-500 italic">Rationale: {d.rationale}</div>}
+                      {d.context && <div className="mt-1 text-xs text-[#999]">{d.context}</div>}
+                      {d.rationale && <div className="mt-1 text-xs text-[#666] italic">Rationale: {d.rationale}</div>}
                     </div>
                   ))}
                 </div>
               ) : (
-                <div className="text-gray-400 text-xs">No decisions recorded</div>
+                <div className="text-[#999] text-xs">No decisions recorded</div>
               )}
             </div>
           </div>
@@ -287,7 +288,7 @@ export default function AgentGameVisionPanel() {
           <div className="space-y-4">
             <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Validate Coherence</h2>
-              <p className="text-gray-400 text-sm mb-3">
+              <p className="text-[#999] text-sm mb-3">
                 Check if all game vision elements, decisions, and identity form a coherent whole.
               </p>
               <button onClick={async () => {
@@ -305,7 +306,7 @@ export default function AgentGameVisionPanel() {
                 <div className="space-y-3">
                   {coherenceResult.score !== undefined && (
                     <div className="flex items-center gap-4 mb-3">
-                      <span className="text-gray-400 text-sm">Coherence Score:</span>
+                      <span className="text-[#999] text-sm">Coherence Score:</span>
                       <div className="flex-1 bg-[#1a1a2e] rounded-full h-4 overflow-hidden">
                         <div className="h-full rounded-full bg-[#00d4ff]"
                           style={{ width: `${Math.min(100, (coherenceResult.score || 0) * 100)}%` }} />
@@ -335,7 +336,7 @@ export default function AgentGameVisionPanel() {
                   )}
                   {Object.entries(coherenceResult).filter(([k]) => !['score', 'issues', 'suggestions'].includes(k)).map(([key, value]) => (
                     <div key={key} className="flex justify-between bg-[#1a1a2e] rounded px-3 py-2">
-                      <span className="text-gray-400 text-xs capitalize">{key.replace(/_/g, ' ')}</span>
+                      <span className="text-[#999] text-xs capitalize">{key.replace(/_/g, ' ')}</span>
                       <span className="text-white text-xs font-mono">{String(value)}</span>
                     </div>
                   ))}

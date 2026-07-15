@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'sessions' | 'codegen' | 'testing';
 
@@ -50,7 +51,7 @@ const AgenticCodingPanel: React.FC = () => {
   const [summarySessionId, setSummarySessionId] = useState('');
   const [sessionSummary, setSessionSummary] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSessions: Session[] = [
     { id: uid(), name: 'Auth Module', task: 'Implement JWT authentication', language: 'typescript', created_at: Date.now() - 86400000 },

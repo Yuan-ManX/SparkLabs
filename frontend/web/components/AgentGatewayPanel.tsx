@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ConnectionStatus = 'connected' | 'connecting' | 'disconnected' | 'error';
 type MessagePriority = 'high' | 'normal' | 'low';
@@ -115,7 +116,7 @@ const AgentGatewayPanel: React.FC = () => {
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
   const [selectedEndpoint, setSelectedEndpoint] = useState<string | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultEndpoints: GatewayEndpoint[] = [
     { id: uid(), name: 'Game Director API', url: 'ws://localhost:9001/director', protocol: 'ws', status: 'connected', messages_routed: 45231, last_activity: '3s ago', uptime: '4h 22m' },
