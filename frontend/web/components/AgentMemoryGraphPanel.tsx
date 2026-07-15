@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type NodeType = 'fact' | 'concept' | 'event' | 'entity' | 'relation';
 type EdgeType = 'association' | 'causation' | 'hierarchy' | 'temporal' | 'similarity';
@@ -82,7 +83,7 @@ const AgentMemoryGraphPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<'graph' | 'search' | 'context' | 'export'>('graph');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultNodes: GraphNode[] = [
     { id: uid(), label: 'User Preference: Dark Mode', node_type: 'fact', weight: 0.9, created_at: '2d ago', last_accessed: '10m ago', metadata_tags: ['preference', 'ui'] },

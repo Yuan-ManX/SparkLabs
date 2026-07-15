@@ -698,7 +698,7 @@ const AgentPanel: React.FC = () => {
                 evo.maturity === 'core' ? 'bg-green-500/20 text-green-400' :
                 evo.maturity === 'proven' ? 'bg-blue-500/20 text-blue-400' :
                 evo.maturity === 'validated' ? 'bg-yellow-500/20 text-yellow-400' :
-                'bg-gray-500/20 text-gray-400'
+                'bg-\[#f5f5f5\]0/20 text-[#999]'
               }`}>{evo.maturity}</span>
             </div>
             <div className="flex items-center gap-3 mt-1">

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ActiveTab = 'problem' | 'solver' | 'tradeoff' | 'status';
 
@@ -79,7 +80,7 @@ const AgentMultiObjectiveOptimizerPanel: React.FC = () => {
   const [tradeoffObj2, setTradeoffObj2] = useState('');
   const [tradeoffPoints, setTradeoffPoints] = useState<TradeoffPoint[]>([]);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultStatus: OptimizerStatus = {
     total_problems: 15,

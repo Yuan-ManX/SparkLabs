@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type CognitiveState = 'OPTIMAL' | 'LOADED' | 'STRESSED' | 'OVERWHELMED' | 'RECOVERING';
 type ActiveTab = 'confidence' | 'cognitive' | 'outcome' | 'status';
@@ -129,7 +130,7 @@ const AgentMetacognitionPanel: React.FC = () => {
     was_correct: true,
   });
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   // ---- Default / Fallback Data ----
 
