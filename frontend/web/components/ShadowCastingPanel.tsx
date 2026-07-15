@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'lights' | 'occluders' | 'shadows';
 
@@ -47,7 +48,7 @@ const ShadowCastingPanel: React.FC = () => {
   const [occluderName, setOccluderName] = useState('');
   const [occluderVertices, setOccluderVertices] = useState('[[0,0],[1,0],[1,1],[0,1]]');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultLights: Light[] = [
     { id: uid(), name: 'Sun', type: 'DIRECTIONAL', x: 0, y: 100, intensity: 1.0 },

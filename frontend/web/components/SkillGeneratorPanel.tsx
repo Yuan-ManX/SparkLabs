@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'generate' | 'compose' | 'trees';
 
@@ -101,7 +102,7 @@ const SkillGeneratorPanel: React.FC = () => {
   const [treeDepth, setTreeDepth] = useState('4');
   const [treeBranches, setTreeBranches] = useState('3');
 
-  const apiBase = 'http://localhost:8000/api/agent/skill-generator';
+  const apiBase = API_ROOT + '/agent/skill-generator';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

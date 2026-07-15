@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'observe' | 'analyze' | 'synthesize' | 'catalog';
 
@@ -37,7 +38,7 @@ const SkillSynthesizerPanel: React.FC = () => {
 
   const [selectedPatternId, setSelectedPatternId] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSkills: SkillEntry[] = [
     { id: uid(), name: 'data_cleaning', maturity: 'production', usage_count: 142, description: 'Clean and normalize tabular datasets', created_at: Date.now() - 86400000 },

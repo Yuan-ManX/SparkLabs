@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'snapshots' | 'recording';
 
@@ -38,7 +39,7 @@ const StateSynchronizerPanel: React.FC = () => {
   const [replaySessionId, setReplaySessionId] = useState('');
   const [replaySummary, setReplaySummary] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSnapshots: Snapshot[] = [
     { id: uid(), entity_id: 'player_1', state_data: '{"position":{"x":0,"y":0},"health":100}', timestamp: Date.now() - 3600000, created_at: Date.now() - 3600000 },

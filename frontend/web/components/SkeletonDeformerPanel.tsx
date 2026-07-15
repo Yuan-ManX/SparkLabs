@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'skeletons' | 'joints' | 'pose';
 
@@ -68,7 +69,7 @@ const SkeletonDeformerPanel: React.FC = () => {
   const [deformSkeletonId, setDeformSkeletonId] = useState('');
   const [deformMeshId, setDeformMeshId] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSkeletons: SkeletonRig[] = [
     { id: uid(), name: 'Humanoid Rig', entity_id: 'entity-humanoid', joints: [], created_at: Date.now() - 86400000 },

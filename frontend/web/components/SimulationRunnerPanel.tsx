@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'scenarios' | 'runs' | 'evaluate';
 
@@ -51,7 +52,7 @@ const SimulationRunnerPanel: React.FC = () => {
 
   const [listScenarioId, setListScenarioId] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultScenarios: Scenario[] = [
     { id: uid(), name: 'Code Generation Test', description: 'Test agent ability to generate React components from natural language prompts', mode: 'interactive', created_at: Date.now() - 86400000 },

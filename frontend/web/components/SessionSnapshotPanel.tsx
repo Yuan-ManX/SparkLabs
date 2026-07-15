@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type SnapshotMode = 'full' | 'delta' | 'checkpoint';
 type TabId = 'snapshots' | 'restore' | 'compare';
@@ -53,7 +54,7 @@ const SessionSnapshotPanel: React.FC = () => {
   const [compareA, setCompareA] = useState('');
   const [compareB, setCompareB] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultSnapshots: SessionSnapshot[] = [
     { id: uid(), session_id: 'session-001', snapshot_mode: 'full', state_data: '{"conversation":[],"memory":{},"tools":{}}', timestamp: Date.now() - 300000, size_bytes: 12480, label: 'Initial State' },

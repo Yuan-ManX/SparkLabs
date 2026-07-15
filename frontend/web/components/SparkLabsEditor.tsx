@@ -1,11 +1,13 @@
 import React, { useCallback, useRef, useEffect } from 'react';
 import EditorToolbar from './EditorToolbar';
+import { modeGroups } from './EditorToolbar';
+import AgentChatPanel from './AgentChatPanel';
+import ChatHistorySidebar from './ChatHistorySidebar';
 import SceneOutliner from './SceneOutliner';
 import GameViewport from './GameViewport';
 import PropertyEditor from './PropertyEditor';
 import NodeGraphEditor from './NodeGraphEditor';
 import AssetLibrary from './AssetLibrary';
-import AIPromptBar from './AIPromptBar';
 import ConsolePanel from './ConsolePanel';
 import WelcomeDashboard from './WelcomeDashboard';
 import GameEditor from './GameEditor';
@@ -294,6 +296,7 @@ import { useWebSocket } from '../hooks/useWebSocket';
 import type { ViewMode } from '../types';
 import type { ShortcutDef } from './KeyboardShortcuts';
 import BlockProgrammerPanel from './BlockProgrammerPanel';
+import LLMRouterPanel from './LLMRouterPanel';
 
 type TransformTool = 'move' | 'rotate' | 'scale';
 
@@ -326,20 +329,24 @@ const ResizableHandle: React.FC<{
 const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
   const store = useEditorStore();
   const {
-    activeMode, currentTool, isPlaying, isPaused, selectedEntity, selectedEntityName,
+    currentTool, isPlaying, isPaused, selectedEntity, selectedEntityName,
     sceneNodes, propertySections, logs, aiGeneration, fps,
     leftTab, rightTab, bottomTab,
+    centerTabs, activeCenterTab,
     leftPanelWidth, rightPanelWidth, bottomPanelHeight,
+    chatPanelWidth, chatPanelCollapsed, rightPanelCollapsed,
     backendConnected,
-    setActiveMode, setCurrentTool, togglePlay, togglePause,
+    setCurrentTool, togglePlay, togglePause,
     selectEntity, addSceneNode, removeSceneNode, reorderNodes, toggleNodeVisibility, toggleNodeLock,
     updatePropertyField, addLog, pushHistory, undo, redo,
     setLeftTab, setRightTab, setBottomTab,
+    openCenterTab, closeCenterTab, setActiveCenterTab,
     setLeftPanelWidth, setRightPanelWidth, setBottomPanelHeight,
+    setChatPanelWidth, setRightPanelCollapsed,
   } = store;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const resizingRef = useRef<{ type: 'left' | 'right' | 'bottom'; startX: number; startSize: number } | null>(null);
+  const resizingRef = useRef<{ type: 'chat' | 'left' | 'right' | 'bottom'; startX: number; startSize: number } | null>(null);
   const fpsFrameRef = useRef<number>(0);
   const fpsLastTimeRef = useRef<number>(performance.now());
   const fpsCountRef = useRef<number>(0);
@@ -376,7 +383,9 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       if (!resizingRef.current || !containerRef.current) return;
       const { type, startX, startSize } = resizingRef.current;
       const delta = e.clientX - startX;
-      if (type === 'left') {
+      if (type === 'chat') {
+        setChatPanelWidth(Math.max(280, startSize + delta));
+      } else if (type === 'left') {
         setLeftPanelWidth(Math.max(MIN_PANEL_SIZES.left, startSize + delta));
       } else if (type === 'right') {
         setRightPanelWidth(Math.max(MIN_PANEL_SIZES.right, startSize - delta));
@@ -396,16 +405,16 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       window.removeEventListener('mousemove', handleMouseMove);
       window.removeEventListener('mouseup', handleMouseUp);
     };
-  }, [setLeftPanelWidth, setRightPanelWidth, setBottomPanelHeight]);
+  }, [setLeftPanelWidth, setRightPanelWidth, setBottomPanelHeight, setChatPanelWidth]);
 
-  const startResize = useCallback((type: 'left' | 'right' | 'bottom', e: React.MouseEvent) => {
+  const startResize = useCallback((type: 'chat' | 'left' | 'right' | 'bottom', e: React.MouseEvent) => {
     e.preventDefault();
     const startX = type === 'bottom' ? e.clientY : e.clientX;
-    const startSize = type === 'left' ? leftPanelWidth : type === 'right' ? rightPanelWidth : bottomPanelHeight;
+    const startSize = type === 'chat' ? chatPanelWidth : type === 'left' ? leftPanelWidth : type === 'right' ? rightPanelWidth : bottomPanelHeight;
     resizingRef.current = { type, startX, startSize };
     document.body.style.cursor = type === 'bottom' ? 'row-resize' : 'col-resize';
     document.body.style.userSelect = 'none';
-  }, [leftPanelWidth, rightPanelWidth, bottomPanelHeight]);
+  }, [chatPanelWidth, leftPanelWidth, rightPanelWidth, bottomPanelHeight]);
 
   const handleSelectEntity = useCallback((id: string, name: string) => {
     selectEntity(id, name);
@@ -467,8 +476,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
   }, [updatePropertyField, selectedEntity]);
 
   const handleAIGenerate = useCallback(() => {
-    setActiveMode('dashboard');
-  }, [setActiveMode]);
+    setActiveCenterTab('viewport');
+  }, [setActiveCenterTab]);
 
   const handleAIPrompt = useCallback(async (prompt: string) => {
     await processAIPrompt(prompt);
@@ -492,6 +501,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
     addLog(willPlay ? 'success' : 'info', willPlay ? '[Engine] Play mode started' : '[Engine] Play mode stopped');
 
     if (willPlay) {
+      // Switch to the viewport tab so the game is visible when playing
+      useEditorStore.getState().setActiveCenterTab('viewport');
       try {
         const { initializeEditorBackend, createWorldInBackend, startWorldInBackend } = await import('../services/aiService');
         await initializeEditorBackend();
@@ -525,12 +536,21 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
   }, [setCurrentTool, addLog]);
 
   const handleModeSwitch = useCallback((mode: string) => {
-    setActiveMode(mode as ViewMode);
-    addLog('info', `[Editor] Switched to ${mode}`);
-  }, [setActiveMode, addLog]);
+    if (mode === 'dashboard') {
+      setActiveCenterTab('viewport');
+      addLog('info', '[Editor] Returned to viewport');
+      return;
+    }
+    // Find the mode label and icon from toolbar groups
+    const modeItem = modeGroups.flatMap((g: { items: { id: string; label: string; icon: string }[] }) => g.items).find((i: { id: string }) => i.id === mode);
+    const label = modeItem?.label || mode;
+    const icon = modeItem?.icon || 'fa-puzzle-piece';
+    openCenterTab({ id: mode, label, icon, mode });
+    addLog('info', `[Editor] Opened module: ${label}`);
+  }, [openCenterTab, addLog]);
 
-  const renderModePanel = () => {
-    switch (activeMode) {
+  const renderModePanel = (mode: string) => {
+    switch (mode) {
       case 'dashboard': return null;
       case 'game-studio': return <GameEditor />;
       case 'templates': return <GameGenerator />;
@@ -814,12 +834,67 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'ai-native-engine': return <AINativeEnginePanel />;
       case 'agent-engine-unified': return <AgentEngineUnifiedPanel />;
       case 'block-programmer': return <BlockProgrammerPanel />;
+      // Consolidated mode ID mappings — map new unified category IDs to existing panels
+      case 'agent-studio': return <AgentPanel />;
+      case 'agent-cognition': return <AgentIntelligenceCorePanel />;
+      case 'agent-memory': return <MemoryHierarchyPanel />;
+      case 'agent-reasoning': return <ReasoningChainPanel />;
+      case 'agent-emotion': return <AgentEmotionSynthesisPanel />;
+      case 'agent-dialogue': return <AgentDialogueEnginePanel />;
+      case 'agent-swarm': return <MultiAgentCoordinatorPanel />;
+      case 'agent-testing': return <AgentAutonomousTesterPanel />;
+      case 'world-builder': return <WorldBuilderPanel />;
+      case 'terrain-gen': return <EngineTerrainSystemPanel />;
+      case 'biome-gen': return <BiomeGenerationPanel />;
+      case 'weather-sim': return <WeatherSystemPanel />;
+      case 'water-sim': return <WaterSimulationPanel />;
+      case 'ecosystem': return <EngineEcosystemDynamicsPanel />;
+      case 'char-forge': return <NPCDesigner />;
+      case 'npc-designer': return <NPCDesigner />;
+      case 'personality': return <PersonalitySystemPanel />;
+      case 'animation': return <EngineProceduralAnimationPanel />;
+      case 'voice-actor': return <VoiceSynthesizer />;
+      case 'narrative-engine': return <AgentEmergentNarrativePanel />;
+      case 'story-editor': return <StoryEditor />;
+      case 'dialogue-tree': return <DialogueEditor />;
+      case 'quest-designer': return <AgentQuestGeneratorPanel />;
+      case 'combat-system': return <GameDesignIntelligencePanel />;
+      case 'difficulty-ai': return <GameReasonerPanel />;
+      case 'economy-sim': return <EconomySimulatorPanel />;
+      case 'balance-opt': return <AgentBalanceOptimizerPanel />;
+      case 'lighting': return <Lighting2DPanel />;
+      case 'materials': return <MaterialGraphPanel />;
+      case 'particles': return <ParticleEmitterPanel />;
+      case 'post-fx': return <PostProcessingPanel />;
+      case 'camera-ctrl': return <CameraControllerPanel />;
+      case 'collision-det': return <EngineSpatialPartitionPanel />;
+      case 'fluid-sim': return <EngineFluidSimulationPanel />;
+      case 'cloth-sim': return <EngineClothPhysicsPanel />;
+      case 'ik-system': return <EngineInverseKinematicsPanel />;
+      case 'audio-engine': return <AudioSynthesisPanel />;
+      case 'music-gen': return <ProceduralAudioPanel />;
+      case 'sfx-gen': return <InteractiveAudioPanel />;
+      case 'voice-synth': return <VoiceSynthesizer />;
+      case 'asset-gen': return <AssetGenerator />;
+      case 'asset-sync': return <AssetSynthesizerPanel />;
+      case 'import-export': return <ImportPipelinePanel />;
+      case 'build-pipeline': return <BuildExporter />;
+      case 'qa-dashboard': return <TestingDashboard />;
+      case 'playtest-sim': return <PlaytestSimulatorPanel />;
+      case 'bug-hunter': return <BugForensicsPanel />;
+      case 'perf-monitor': return <EnginePerformanceMonitorPanel />;
+      case 'security-scan': return <SecurityScannerPanel />;
+      case 'node-editor': return <EngineNodeEditorPanel />;
+      case 'state-machine': return <StateMachineEnginePanel />;
+      case 'visual-script': return <VisualScriptingPanel />;
+      case 'event-system': return <EngineEventSystemPanel />;
+      case 'llm-router': return <LLMRouterPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
 
-  const isEditorMode = activeMode === 'dashboard';
   const entityCount = sceneNodes.reduce((acc, n) => acc + 1 + n.children.length, 0);
+  const isViewportActive = activeCenterTab === 'viewport';
 
   const shortcuts: ShortcutDef[] = [
     { key: 'z', ctrl: true, label: 'Undo', category: 'Edit', action: () => undo() },
@@ -845,214 +920,368 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
         isPlaying={isPlaying}
         onTogglePlay={handleTogglePlay}
         onModeSwitch={handleModeSwitch}
-        activeMode={activeMode}
+        activeMode={activeCenterTab === 'viewport' ? 'dashboard' : activeCenterTab}
         onGoHome={onGoHome}
       />
 
-      {isEditorMode ? (
-        <div ref={containerRef} className="flex overflow-hidden">
-          <div style={{ width: leftPanelWidth }} className="flex-shrink-0 flex flex-col overflow-hidden">
-            <div className="sl-tab-bar">
-              {([['scene', 'Scene', 'fa-sitemap'], ['assets', 'Assets', 'fa-folder-open'], ['nodes', 'Nodes', 'fa-diagram-project']] as const).map(([id, label, icon]) => (
-                <button
-                  key={id}
-                  onClick={() => setLeftTab(id)}
-                  className={`sl-tab ${leftTab === id ? 'active' : ''}`}
-                >
-                  <i className={`fa-solid ${icon} text-[9px]`} />
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div className="flex-1 overflow-hidden">
-              {leftTab === 'scene' && (
-                <SceneOutliner
-                  selectedId={selectedEntity}
-                  onSelect={handleSelectEntity}
-                  onAddEntity={handleAddEntity}
-                  onDeleteEntity={handleDeleteEntity}
-                  onToggleVisibility={toggleNodeVisibility}
-                  onToggleLock={toggleNodeLock}
-                  onReorder={handleReorder}
-                  nodes={sceneNodes}
+      <div ref={containerRef} className="flex overflow-hidden">
+        {/* Chat History Sidebar — far left, ChatGPT-style, collapsed by default */}
+        <ChatHistorySidebar />
+
+        {/* AI Agent Chat Panel */}
+        <div style={{ width: chatPanelCollapsed ? 40 : chatPanelWidth }} className="flex-shrink-0 flex flex-col overflow-hidden">
+          <AgentChatPanel />
+        </div>
+
+        {!chatPanelCollapsed && <ResizableHandle direction="vertical" onMouseDown={(e) => startResize('chat', e)} />}
+
+        {/* Left Panel — Scene / Assets / Nodes / Agents / World */}
+        <div style={{ width: leftPanelWidth }} className="flex-shrink-0 flex flex-col overflow-hidden">
+          <div className="sl-tab-bar">
+            {([
+              ['scene', 'Scene', 'fa-sitemap'],
+              ['assets', 'Assets', 'fa-folder-open'],
+              ['nodes', 'Nodes', 'fa-diagram-project'],
+              ['agents', 'Agents', 'fa-brain'],
+              ['world', 'World', 'fa-globe'],
+            ] as const).map(([id, label, icon]) => (
+              <button
+                key={id}
+                onClick={() => setLeftTab(id)}
+                className={`sl-tab ${leftTab === id ? 'active' : ''}`}
+                title={label}
+              >
+                <i className={`fa-solid ${icon} text-[9px]`} />
+                <span className="hidden xl:inline">{label}</span>
+              </button>
+            ))}
+          </div>
+          <div className="flex-1 overflow-hidden">
+            {leftTab === 'scene' && (
+              <SceneOutliner
+                selectedId={selectedEntity}
+                onSelect={handleSelectEntity}
+                onAddEntity={handleAddEntity}
+                onDeleteEntity={handleDeleteEntity}
+                onToggleVisibility={toggleNodeVisibility}
+                onToggleLock={toggleNodeLock}
+                onReorder={handleReorder}
+                nodes={sceneNodes}
+              />
+            )}
+            {leftTab === 'assets' && <AssetLibrary />}
+            {leftTab === 'nodes' && <NodeGraphEditor />}
+            {leftTab === 'agents' && (
+              <div className="sl-module">
+                <div className="sl-module-body">
+                  <div className="sl-module-card-header"><i className="fa-solid fa-brain text-[10px] text-orange-500" />Active Agents</div>
+                  <div className="space-y-1.5">
+                    {['World Designer', 'Character Creator', 'Narrative Director', 'Combat Balancer', 'Asset Synthesizer', 'QA Tester'].map((name, i) => (
+                      <div key={i} className="sl-module-list-item">
+                        <div className="w-6 h-6 rounded bg-orange-500/10 flex items-center justify-center flex-shrink-0">
+                          <i className="fa-solid fa-brain text-[9px] text-orange-500" />
+                        </div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-[11px] text-[#aaa] truncate">{name}</div>
+                          <div className="text-[9px] text-[#444]">Idle</div>
+                        </div>
+                        <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            {leftTab === 'world' && (
+              <div className="sl-module">
+                <div className="sl-module-body">
+                  <div className="sl-module-card-header"><i className="fa-solid fa-globe text-[10px] text-sky-400" />World Hierarchy</div>
+                  <div className="space-y-1.5">
+                    {['Main World', 'Underground Cavern', 'Sky Islands', 'Dungeon Level 1', 'Town Center', 'Forest Path'].map((name, i) => (
+                      <div key={i} className="sl-module-list-item">
+                        <i className="fa-solid fa-cube text-[9px] text-sky-400 flex-shrink-0" />
+                        <span className="flex-1 truncate">{name}</span>
+                        <i className="fa-solid fa-eye text-[8px] text-[#444]" />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <ResizableHandle direction="vertical" onMouseDown={(e) => startResize('left', e)} />
+
+        {/* Center Area — Viewport + Module Tabs */}
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+          {/* Center tab bar */}
+          <div className="sl-tab-bar !gap-0">
+            <button
+              onClick={() => setActiveCenterTab('viewport')}
+              className={`sl-tab ${activeCenterTab === 'viewport' ? 'active' : ''}`}
+            >
+              <i className="fa-solid fa-gamepad text-[9px]" />
+              Viewport
+            </button>
+            {centerTabs.map((tab) => (
+              <button
+                key={tab.id}
+                onClick={() => setActiveCenterTab(tab.id)}
+                className={`sl-tab group ${activeCenterTab === tab.id ? 'active' : ''}`}
+              >
+                <i className={`fa-solid ${tab.icon} text-[9px]`} />
+                <span className="max-w-[100px] truncate">{tab.label}</span>
+                <i
+                  onClick={(e) => { e.stopPropagation(); closeCenterTab(tab.id); }}
+                  className="fa-solid fa-xmark text-[7px] text-[#444] hover:text-[#888] ml-1 opacity-0 group-hover:opacity-100 transition-opacity"
                 />
-              )}
-              {leftTab === 'assets' && <AssetLibrary />}
-              {leftTab === 'nodes' && <NodeGraphEditor />}
-            </div>
+              </button>
+            ))}
           </div>
 
-          <ResizableHandle direction="vertical" onMouseDown={(e) => startResize('left', e)} />
-
-          <div className="flex-1 flex flex-col overflow-hidden min-w-0">
-            <div className="flex-1 overflow-hidden">
-              <GameViewport
-                isPlaying={isPlaying}
-                isGenerating={aiGeneration.isGenerating}
-                generatingStatus={aiGeneration.phase || aiGeneration.status}
-                onTogglePlay={handleTogglePlay}
-                onStep={() => {
-                  addLog('info', '[Engine] Step frame');
-                  if (ws.send) ws.send({ type: 'engine_command', command: 'step' });
-                }}
-                onTogglePause={() => { togglePause(); addLog('info', '[Engine] Pause toggled'); }}
-                fps={fps}
-              />
-            </div>
-
-            <ResizableHandle direction="horizontal" onMouseDown={(e) => startResize('bottom', e)} />
-
-            <div style={{ height: bottomPanelHeight }} className="flex-shrink-0 flex flex-col overflow-hidden">
-              <div className="sl-tab-bar">
-                {([['console', 'Console', 'fa-terminal'], ['timeline', 'Timeline', 'fa-film'], ['ai-assistant', 'AI Assistant', 'fa-wand-magic-sparkles']] as const).map(([id, label, icon]) => (
-                  <button
-                    key={id}
-                    onClick={() => setBottomTab(id)}
-                    className={`sl-tab ${bottomTab === id ? 'active' : ''}`}
-                  >
-                    <i className={`fa-solid ${icon} text-[9px]`} />
-                    {label}
-                  </button>
-                ))}
-              </div>
+          {/* Center content */}
+          {isViewportActive ? (
+            <>
               <div className="flex-1 overflow-hidden">
-                {bottomTab === 'console' && (
-                  <ConsolePanel logs={logs} onAddLog={addLog} onAIGenerate={handleAIPrompt} />
-                )}
-                {bottomTab === 'timeline' && <TimelineEditor />}
-                {bottomTab === 'ai-assistant' && (
-                  <div className="h-full flex flex-col bg-[#111]">
-                    <div className="flex-1 overflow-y-auto p-3 space-y-2">
-                      <div className="text-[11px] text-[#666] text-center py-4">
-                        <i className="fa-solid fa-wand-magic-sparkles text-orange-500 text-lg mb-2 block" />
-                        AI Assistant ready. Describe what you want to create.
-                      </div>
+                <GameViewport
+                  isPlaying={isPlaying}
+                  isGenerating={aiGeneration.isGenerating}
+                  generatingStatus={aiGeneration.phase || aiGeneration.status}
+                  onTogglePlay={handleTogglePlay}
+                  onStep={() => {
+                    addLog('info', '[Engine] Step frame');
+                    if (ws.send) ws.send({ type: 'engine_command', command: 'step' });
+                  }}
+                  onTogglePause={() => { togglePause(); addLog('info', '[Engine] Pause toggled'); }}
+                  fps={fps}
+                />
+              </div>
+
+              <ResizableHandle direction="horizontal" onMouseDown={(e) => startResize('bottom', e)} />
+
+              <div style={{ height: bottomPanelHeight }} className="flex-shrink-0 flex flex-col overflow-hidden">
+                <div className="sl-tab-bar">
+                  {([
+                    ['console', 'Console', 'fa-terminal'],
+                    ['timeline', 'Timeline', 'fa-film'],
+                    ['agent-log', 'Agent Log', 'fa-list-check'],
+                  ] as const).map(([id, label, icon]) => (
+                    <button
+                      key={id}
+                      onClick={() => setBottomTab(id)}
+                      className={`sl-tab ${bottomTab === id ? 'active' : ''}`}
+                    >
+                      <i className={`fa-solid ${icon} text-[9px]`} />
+                      <span className="hidden lg:inline">{label}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex-1 overflow-hidden">
+                  {bottomTab === 'console' && (
+                    <ConsolePanel logs={logs} onAddLog={addLog} onAIGenerate={handleAIPrompt} />
+                  )}
+                  {bottomTab === 'timeline' && <TimelineEditor />}
+                  {bottomTab === 'agent-log' && (
+                    <div className="h-full overflow-y-auto p-2 bg-[#0a0a0a]">
+                      {logs.filter(l => l.message.includes('[Agent]') || l.message.includes('[AI]')).length > 0 ? (
+                        logs.filter(l => l.message.includes('[Agent]') || l.message.includes('[AI]')).map((log, i) => (
+                          <div key={i} className="text-[10px] font-mono py-0.5 px-2 border-b border-[#111]">
+                            <span className={log.type === 'error' ? 'text-red-500' : log.type === 'warn' ? 'text-yellow-500' : 'text-[#666]'}>
+                              {log.message}
+                            </span>
+                          </div>
+                        ))
+                      ) : (
+                        <div className="text-center text-[11px] text-[#444] py-8">
+                          <i className="fa-solid fa-list-check text-lg mb-2 block opacity-30" />
+                          No agent activity yet. Start a conversation with the AI Agent.
+                        </div>
+                      )}
                     </div>
-                    <div className="p-2 border-t border-[#1e1e1e]">
-                      <AIPromptBar
-                        onPrompt={handleAIPrompt}
-                        onQuickAction={handleQuickAction}
-                        isGenerating={aiGeneration.isGenerating}
-                      />
+                  )}
+                </div>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 overflow-hidden">
+              {renderModePanel(activeCenterTab)}
+            </div>
+          )}
+        </div>
+
+        {/* Right Panel — Inspector / AI Config / Tools / Modules (collapsible) */}
+        {!rightPanelCollapsed && <ResizableHandle direction="vertical" onMouseDown={(e) => startResize('right', e)} />}
+        {rightPanelCollapsed ? (
+          <div className="flex-shrink-0 w-9 bg-[#0a0a0a] border-l border-[#1e1e1e] flex flex-col items-center py-2 gap-2">
+            {([
+              ['inspector', 'fa-sliders'],
+              ['ai-config', 'fa-brain'],
+              ['tools', 'fa-toolbox'],
+              ['modules', 'fa-puzzle-piece'],
+            ] as const).map(([id, icon]) => (
+              <button
+                key={id}
+                onClick={() => { setRightTab(id); setRightPanelCollapsed(false); }}
+                className={`w-7 h-7 rounded flex items-center justify-center transition-colors ${rightTab === id ? 'bg-orange-500/10 text-orange-500' : 'text-[#555] hover:bg-[#1a1a1a] hover:text-[#888]'}`}
+                title={id}
+              >
+                <i className={`fa-solid ${icon} text-[10px]`} />
+              </button>
+            ))}
+          </div>
+        ) : (
+        <div style={{ width: rightPanelWidth }} className="flex-shrink-0 flex flex-col overflow-hidden">
+          <div className="sl-tab-bar">
+            {([
+              ['inspector', 'Inspector', 'fa-sliders'],
+              ['ai-config', 'AI Config', 'fa-brain'],
+              ['tools', 'Tools', 'fa-toolbox'],
+              ['modules', 'Modules', 'fa-puzzle-piece'],
+            ] as const).map(([id, label, icon]) => (
+              <button
+                key={id}
+                onClick={() => setRightTab(id)}
+                className={`sl-tab ${rightTab === id ? 'active' : ''}`}
+                title={label}
+              >
+                <i className={`fa-solid ${icon} text-[9px]`} />
+                <span className="hidden xl:inline">{label}</span>
+              </button>
+            ))}
+          </div>
+          <div className="flex-1 overflow-hidden">
+            {rightTab === 'inspector' && (
+              <PropertyEditor
+                selectedName={selectedEntityName}
+                sections={propertySections}
+                onFieldChange={handleFieldChange}
+              />
+            )}
+            {rightTab === 'ai-config' && (
+              <div className="sl-panel h-full">
+                <div className="p-3 space-y-3">
+                  <div className="sl-property-section">
+                    <div className="sl-property-section-header">
+                      <i className="fa-solid fa-brain text-[10px] text-purple-500" />
+                      <span>Generation Mode</span>
+                    </div>
+                    <div className="grid grid-cols-3 gap-1.5 px-2 py-2">
+                      {(['World', 'Character', 'Mechanic'] as const).map((mode) => (
+                        <button
+                          key={mode}
+                          className="px-2 py-1.5 text-[10px] rounded bg-[#0d0d0d] border border-[#2a2a2a] text-[#888] hover:border-orange-500/40 hover:text-orange-400 transition-all"
+                        >
+                          {mode}
+                        </button>
+                      ))}
                     </div>
                   </div>
-                )}
+                  <div className="sl-property-section">
+                    <div className="sl-property-section-header">
+                      <i className="fa-solid fa-sliders text-[10px] text-orange-500" />
+                      <span>Neural Parameters</span>
+                    </div>
+                    <div className="space-y-2 px-2 py-2">
+                      {(['Creativity', 'Coherence', 'Detail'] as const).map((param) => (
+                        <div key={param} className="sl-property-row">
+                          <span className="sl-property-label !w-20">{param}</span>
+                          <input type="range" min={0} max={100} defaultValue={70} className="flex-1 accent-orange-500" />
+                          <span className="text-[10px] text-[#555] w-6 text-right">70</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="px-2">
+                    <textarea
+                      placeholder="Describe your world model..."
+                      className="sl-property-input w-full h-20 resize-none"
+                    />
+                  </div>
+                  <div className="px-2">
+                    <button
+                      onClick={() => handleAIPrompt('Generate based on current configuration')}
+                      className="w-full py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg text-[12px] font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2"
+                    >
+                      <i className="fa-solid fa-wand-magic-sparkles text-[10px]" />
+                      Generate with AI
+                    </button>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-
-          <ResizableHandle direction="vertical" onMouseDown={(e) => startResize('right', e)} />
-
-          <div style={{ width: rightPanelWidth }} className="flex-shrink-0 flex flex-col overflow-hidden">
-            <div className="sl-tab-bar">
-              {([['inspector', 'Inspector', 'fa-sliders'], ['ai-config', 'AI Config', 'fa-brain']] as const).map(([id, label, icon]) => (
-                <button
-                  key={id}
-                  onClick={() => setRightTab(id)}
-                  className={`sl-tab ${rightTab === id ? 'active' : ''}`}
-                >
-                  <i className={`fa-solid ${icon} text-[9px]`} />
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div className="flex-1 overflow-hidden">
-              {rightTab === 'inspector' && (
-                <PropertyEditor
-                  selectedName={selectedEntityName}
-                  sections={propertySections}
-                  onFieldChange={handleFieldChange}
-                />
-              )}
-              {rightTab === 'ai-config' && (
-                <div className="sl-panel h-full">
-                  <div className="p-3 space-y-3">
-                    <div className="sl-property-section">
-                      <div className="sl-property-section-header">
-                        <i className="fa-solid fa-brain text-[10px] text-purple-500" />
-                        <span>Generation Mode</span>
-                      </div>
-                      <div className="grid grid-cols-3 gap-1.5 px-2 py-2">
-                        {(['World', 'Character', 'Mechanic'] as const).map((mode) => (
+            )}
+            {rightTab === 'tools' && (
+              <div className="sl-module">
+                <div className="sl-module-body">
+                  <div className="sl-module-card-header"><i className="fa-solid fa-toolbox text-[10px] text-orange-500" />Engine Tools</div>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    {[
+                      { label: 'Node Editor', icon: 'fa-diagram-project', mode: 'node-editor-panel' },
+                      { label: 'Scene Serialize', icon: 'fa-floppy-disk', mode: 'scene-serializer' },
+                      { label: 'Signal Bus', icon: 'fa-tower-broadcast', mode: 'engine-signal-bus' },
+                      { label: 'NavMesh', icon: 'fa-map', mode: 'navmesh-forge' },
+                      { label: 'Pathfinding', icon: 'fa-route', mode: 'pathfinding' },
+                      { label: 'State Machine', icon: 'fa-sitemap', mode: 'state-machine-engine' },
+                      { label: 'Visual Script', icon: 'fa-code', mode: 'visual-scripting-panel' },
+                      { label: 'Event System', icon: 'fa-bolt', mode: 'engine-event-system' },
+                    ].map((tool) => (
+                      <button
+                        key={tool.mode}
+                        onClick={() => handleModeSwitch(tool.mode)}
+                        className="sl-module-btn !flex-col !gap-1 !py-2.5"
+                      >
+                        <i className={`fa-solid ${tool.icon} text-[12px] text-[#555]`} />
+                        <span className="text-[9px]">{tool.label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
+            {rightTab === 'modules' && (
+              <div className="sl-module">
+                <div className="sl-module-body">
+                  <div className="sl-module-card-header"><i className="fa-solid fa-puzzle-piece text-[10px] text-orange-500" />Quick Modules</div>
+                  <div className="space-y-1">
+                    {modeGroups.slice(0, 6).map((group) => (
+                      <div key={group.label}>
+                        <div className="text-[8px] font-bold text-[#444] uppercase tracking-wider px-1 py-1">{group.label}</div>
+                        {group.items.slice(0, 3).map((item) => (
                           <button
-                            key={mode}
-                            className="px-2 py-1.5 text-[10px] rounded bg-[#0d0d0d] border border-[#2a2a2a] text-[#888] hover:border-orange-500/40 hover:text-orange-400 transition-all"
+                            key={item.id}
+                            onClick={() => handleModeSwitch(item.id)}
+                            className="sl-module-list-item !py-1.5"
                           >
-                            {mode}
+                            <i className={`fa-solid ${item.icon} text-[9px] text-[#555] w-3 text-center`} />
+                            <span className="truncate text-[10px]">{item.label}</span>
                           </button>
                         ))}
                       </div>
-                    </div>
-                    <div className="sl-property-section">
-                      <div className="sl-property-section-header">
-                        <i className="fa-solid fa-sliders text-[10px] text-orange-500" />
-                        <span>Neural Parameters</span>
-                      </div>
-                      <div className="space-y-2 px-2 py-2">
-                        {(['Creativity', 'Coherence', 'Detail'] as const).map((param) => (
-                          <div key={param} className="sl-property-row">
-                            <span className="sl-property-label !w-20">{param}</span>
-                            <input type="range" min={0} max={100} defaultValue={70} className="flex-1 accent-orange-500" />
-                            <span className="text-[10px] text-[#555] w-6 text-right">70</span>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                    <div className="px-2">
-                      <textarea
-                        placeholder="Describe your world model..."
-                        className="sl-property-input w-full h-20 resize-none"
-                      />
-                    </div>
-                    <div className="px-2">
-                      <button
-                        onClick={() => handleAIPrompt('Generate based on current configuration')}
-                        className="w-full py-2 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg text-[12px] font-semibold hover:opacity-90 transition-all flex items-center justify-center gap-2"
-                      >
-                        <i className="fa-solid fa-wand-magic-sparkles text-[10px]" />
-                        Generate with AI
-                      </button>
-                    </div>
+                    ))}
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
           </div>
         </div>
-      ) : (
-        <div className="flex flex-col overflow-hidden">
-          <div className="px-3 py-1.5 border-b border-[#1e1e1e] bg-[#0d0d0d]">
-            <AIPromptBar
-              onPrompt={handleAIPrompt}
-              onQuickAction={handleQuickAction}
-              isGenerating={aiGeneration.isGenerating}
-            />
-          </div>
-          <div className="flex-1 overflow-hidden">
-            {renderModePanel()}
-          </div>
-        </div>
-      )}
+        )}
+      </div>
 
       <div className="bg-[#0d0d0d] border-t border-[#1e1e1e] flex items-center px-3 text-[10px] text-[#444] font-mono h-6">
-        <div className="flex items-center gap-1.5">
-          <div className={`w-1.5 h-1.5 rounded-full pulse-dot ${backendConnected ? 'bg-green-500' : 'bg-yellow-500'}`} />
-          <span className="text-[#666]">SparkLabs Engine v17.0.0</span>
-        </div>
+        <div className={`w-1.5 h-1.5 rounded-full pulse-dot ${backendConnected ? 'bg-green-500' : 'bg-yellow-500'}`} />
+        <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
+        <span className="text-orange-500">AI-Native Game Engine</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span>Scene: Main World</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span>Entities: {entityCount}</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
+        <span className="text-sky-400">895 Modules</span>
+        <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span>WebGL 2.0</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span className={fps >= 55 ? 'text-green-600' : 'text-yellow-600'}>{fps} FPS</span>
-        <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
-        <span className={backendConnected ? 'text-green-500' : 'text-yellow-500'}>
-          {backendConnected ? 'Backend Connected' : 'Standalone Mode'}
-        </span>
         <div className="flex-1" />
-        <span className="text-orange-500">AI Ready</span>
       </div>
       </div>
     </div>

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'agents' | 'world' | 'simulate';
 
@@ -79,7 +80,7 @@ const SimulationControllerPanel: React.FC = () => {
   const [simulateWorldId, setSimulateWorldId] = useState('default_world');
   const [simulateTickCount, setSimulateTickCount] = useState('1');
 
-  const apiBase = 'http://localhost:8000/api/agent/simulation-controller';
+  const apiBase = API_ROOT + '/agent/simulation-controller';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

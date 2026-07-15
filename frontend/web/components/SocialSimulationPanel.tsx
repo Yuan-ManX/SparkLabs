@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'characters' | 'relationships' | 'network' | 'events';
 type Faction = 'order_of_light' | 'shadow_syndicate' | 'free_markets' | 'arcane_academy' | 'wild_tribes' | 'neutral';
@@ -96,7 +97,7 @@ const SocialSimulationPanel: React.FC = () => {
   const [loadingEvent, setLoadingEvent] = useState(false);
   const [loadingChar, setLoadingChar] = useState(false);
 
-  const apiBase = 'http://localhost:8000/api/agent/social-simulation';
+  const apiBase = API_ROOT + '/agent/social-simulation';
 
   const defaultCharacters: Character[] = [
     { id: uid(), name: 'Lady Elara', faction: 'order_of_light', backstory: 'A noble knight seeking justice across the realm', social_goals: 'Unite the fractured kingdoms', extroversion: 0.75, agreeableness: 0.85, loyalty: 0.9, charisma: 0.8, created_at: '3 days ago' },

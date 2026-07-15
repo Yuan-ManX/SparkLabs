@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type SkillStatus = 'published' | 'installed' | 'pending' | 'deprecated';
 type TabId = 'browse' | 'installed' | 'details';
@@ -63,7 +64,7 @@ const SkillsHubPanel: React.FC = () => {
   const [activeTab, setActiveTab] = useState<TabId>('browse');
   const [searchQuery, setSearchQuery] = useState('');
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultBrowseSkills: SkillItem[] = [
     { id: uid(), name: 'Code Refactoring Assistant', category: 'development', version: '2.1.0', rating: 4.7, status: 'published', description: 'Automates code refactoring with intelligent pattern recognition', author: 'SparkLabs', downloads: 3420 },
