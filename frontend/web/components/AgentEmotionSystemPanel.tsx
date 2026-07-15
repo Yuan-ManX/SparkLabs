@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentEmotionSystemPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -35,7 +36,7 @@ export default function AgentEmotionSystemPanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
       {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
@@ -64,7 +65,7 @@ export default function AgentEmotionSystemPanel() {
             <select className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-sm" value={eventType} onChange={e => setEventType(e.target.value)}>
               <option value="reward">Reward</option><option value="threat">Threat</option><option value="loss">Loss</option><option value="social">Social</option>
             </select>
-            <label className="text-sm text-gray-400">Intensity: {eventIntensity}</label>
+            <label className="text-sm text-[#999]">Intensity: {eventIntensity}</label>
             <input type="range" min="0" max="1" step="0.1" value={eventIntensity} onChange={e => setEventIntensity(parseFloat(e.target.value))} className="w-full" />
             <button className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm" onClick={async () => { const r = await handleSubmit(`${API_BASE}/emotion-system/process-event`, {agent_id: agentId, event_type: eventType, intensity: eventIntensity}); if (r) setAgentState(r); }}>Process</button>
           </div>

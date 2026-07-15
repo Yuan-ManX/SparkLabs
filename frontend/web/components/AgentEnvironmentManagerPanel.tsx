@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 interface EnvironmentData {
   id: string;
@@ -120,7 +121,7 @@ const AgentEnvironmentManagerPanel: React.FC = () => {
                       env.state === 'active' ? 'bg-green-500' :
                       env.state === 'provisioning' ? 'bg-yellow-500' :
                       env.state === 'error' ? 'bg-red-500' :
-                      'bg-gray-500'
+                      'bg-\[#f5f5f5\]0'
                     }`} />
                     <span className="text-[10px] text-[#ccc]">{env.name}</span>
                   </div>
@@ -128,7 +129,7 @@ const AgentEnvironmentManagerPanel: React.FC = () => {
                     <span className="text-[9px] text-[#666]">{env.env_type}</span>
                     <span className={`text-[9px] px-1.5 py-0.5 rounded ${
                       env.state === 'active' ? 'bg-green-500/20 text-green-400' :
-                      'bg-gray-500/20 text-gray-400'
+                      'bg-\[#f5f5f5\]0/20 text-[#999]'
                     }`}>{env.state}</span>
                   </div>
                 </div>

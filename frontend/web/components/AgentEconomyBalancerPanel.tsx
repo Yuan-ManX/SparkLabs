@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const CURRENCY_TYPES = ['gold', 'gems', 'credits', 'tokens', 'essence', 'souls', 'crystals', 'reputation', 'honor', 'energy'];
 const TRANSACTION_TYPES = ['earn', 'spend', 'transfer', 'tax', 'interest', 'reward', 'penalty', 'refund', 'trade'];
@@ -80,7 +81,7 @@ export default function AgentEconomyBalancerPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -104,15 +105,15 @@ export default function AgentEconomyBalancerPanel() {
                 { label: 'Economy State', value: stats.economy_state, color: 'text-pink-300' },
               ].map(s => (
                 <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-xs text-gray-400">{s.label}</h3>
+                  <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}</p>
                 </div>
               ))}
             </div>
             {Object.keys(stats).length > 0 && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-2">Detailed Stats</h3>
-                <pre className="text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(stats, null, 2)}</pre>
+                <h3 className="text-sm font-bold text-[#ccc] mb-2">Detailed Stats</h3>
+                <pre className="text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(stats, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -189,24 +190,24 @@ export default function AgentEconomyBalancerPanel() {
 
             {result && activeTab === 'market' && (
               <div className={cardCls}>
-                <h3 className="text-sm font-bold text-gray-300 mb-3">Market Items</h3>
+                <h3 className="text-sm font-bold text-[#ccc] mb-3">Market Items</h3>
                 {Array.isArray(result.items) ? (
                   <div className="space-y-2">
                     {result.items.map((item: any, i: number) => (
                       <div key={i} className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] flex justify-between items-center">
                         <div>
                           <span className="text-sm text-white">{item.name}</span>
-                          <span className="text-xs text-gray-500 ml-2">{item.category}</span>
+                          <span className="text-xs text-[#666] ml-2">{item.category}</span>
                         </div>
                         <div className="text-right">
                           <span className="text-sm text-amber-300">${item.current_price ?? item.base_price}</span>
-                          <span className="text-xs text-gray-500 ml-2">x{item.supply}</span>
+                          <span className="text-xs text-[#666] ml-2">x{item.supply}</span>
                         </div>
                       </div>
                     ))}
                   </div>
                 ) : (
-                  <pre className="text-xs text-gray-400 overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+                  <pre className="text-xs text-[#999] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
                 )}
               </div>
             )}
@@ -238,25 +239,25 @@ export default function AgentEconomyBalancerPanel() {
                     { label: 'Transaction Volume', value: result.transaction_volume, color: 'text-[#00d4ff]' },
                   ].map(s => (
                     <div key={s.label} className={cardCls + ' text-center'}>
-                      <h3 className="text-xs text-gray-400">{s.label}</h3>
+                      <h3 className="text-xs text-[#999]">{s.label}</h3>
                       <p className={`text-xl font-bold ${s.color}`}>{s.value ?? '--'}</p>
                     </div>
                   ))}
                 </div>
                 {result.price_history && (
                   <div className={cardCls}>
-                    <h3 className="text-sm font-bold text-gray-300 mb-2">Price History</h3>
+                    <h3 className="text-sm font-bold text-[#ccc] mb-2">Price History</h3>
                     <div className="space-y-1">
                       {(Array.isArray(result.price_history) ? result.price_history : []).map((entry: any, i: number) => (
                         <div key={i} className="flex justify-between bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a] text-xs">
-                          <span className="text-gray-400">Cycle {entry.cycle ?? i}</span>
+                          <span className="text-[#999]">Cycle {entry.cycle ?? i}</span>
                           <span className="text-amber-300">{entry.price ?? JSON.stringify(entry)}</span>
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
-                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-400 overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+                <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -283,18 +284,18 @@ export default function AgentEconomyBalancerPanel() {
                     { label: 'Faucet/Sink Ratio', value: result.faucet_sink_ratio, color: 'text-[#00ff88]' },
                   ].map(s => (
                     <div key={s.label} className={cardCls}>
-                      <h3 className="text-xs text-gray-400">{s.label}</h3>
+                      <h3 className="text-xs text-[#999]">{s.label}</h3>
                       <p className={`text-xl font-bold ${s.color}`}>{s.value ?? '--'}</p>
                     </div>
                   ))}
                 </div>
                 {result.per_currency_breakdown && (
                   <div className={cardCls}>
-                    <h3 className="text-sm font-bold text-gray-300 mb-2">Per-Currency Breakdown</h3>
+                    <h3 className="text-sm font-bold text-[#ccc] mb-2">Per-Currency Breakdown</h3>
                     <div className="space-y-2">
                       {Object.entries(result.per_currency_breakdown).map(([k, v]) => (
                         <div key={k} className="bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a] flex justify-between text-xs">
-                          <span className="text-gray-400 capitalize">{k}</span>
+                          <span className="text-[#999] capitalize">{k}</span>
                           <span className="text-[#00d4ff]">{typeof v === 'object' ? JSON.stringify(v) : String(v)}</span>
                         </div>
                       ))}
@@ -304,7 +305,7 @@ export default function AgentEconomyBalancerPanel() {
                 {result.suggestions && Array.isArray(result.suggestions) && result.suggestions.length > 0 && (
                   <div className={cardCls}>
                     <h3 className="text-sm font-bold text-[#00ff88] mb-2">Suggestions</h3>
-                    <ul className="list-disc list-inside text-xs text-gray-300 space-y-1">
+                    <ul className="list-disc list-inside text-xs text-[#ccc] space-y-1">
                       {result.suggestions.map((s: string, i: number) => <li key={i}>{s}</li>)}
                     </ul>
                   </div>

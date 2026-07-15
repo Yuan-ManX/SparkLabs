@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ActiveTab = 'graph' | 'actions' | 'characters' | 'branches' | 'status';
 
@@ -103,7 +104,7 @@ const AgentDynamicNarrativePanel: React.FC = () => {
   const [outcomes, setOutcomes] = useState<PredictedOutcome[]>([]);
   const [outcomeDepth, setOutcomeDepth] = useState(2);
 
-  const apiBase = 'http://localhost:8000/api/agent';
+  const apiBase = API_ROOT + '/agent';
 
   const defaultStatus: NarrativeStatus = {
     total_nodes: 128,

@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type TabId = 'stories' | 'arcs' | 'themes' | 'conflicts';
 type EventSignificance = 'minor' | 'moderate' | 'major' | 'cataclysmic';
@@ -117,7 +118,7 @@ const AgentEmergentNarrativePanel: React.FC = () => {
   const [loadingSummary, setLoadingSummary] = useState(false);
   const [summary, setSummary] = useState<string | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/agent/emergent-narrative';
+  const apiBase = API_ROOT + '/agent/emergent-narrative';
 
   const defaultEvents: NarrativeEvent[] = [
     { event_id: uid(), event_type: 'betrayal', description: 'A trusted ally reveals hidden loyalties to the opposing faction', significance: 'major', involved_agents: ['agent_1', 'agent_2'], location: 'Grand Council Chamber', emotional_weight: 0.85, themes: ['trust', 'betrayal', 'politics'], recorded_at: '2h ago' },

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -69,7 +70,7 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ t
 );
 
 const JSONView: React.FC<{ data: any }> = ({ data }) => (
-  <pre className="bg-[#0d0d1a] border border-[#2a2a3e] rounded p-3 text-xs text-gray-300 font-mono overflow-auto max-h-64 whitespace-pre-wrap">
+  <pre className="bg-[#0d0d1a] border border-[#2a2a3e] rounded p-3 text-xs text-[#ccc] font-mono overflow-auto max-h-64 whitespace-pre-wrap">
     {formatJSON(data)}
   </pre>
 );
@@ -79,7 +80,7 @@ const TextInput: React.FC<{
   placeholder?: string; type?: string;
 }> = ({ label, value, onChange, placeholder, type = 'text' }) => (
   <div>
-    <label className="text-xs text-gray-400 mb-1 block">{label}</label>
+    <label className="text-xs text-[#999] mb-1 block">{label}</label>
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
       className="w-full bg-[#0d0d1a] border border-[#2a2a3e] rounded px-3 py-2 text-white text-sm focus:border-[#7c6ff7] focus:outline-none" />
   </div>
@@ -90,7 +91,7 @@ const TextArea: React.FC<{
   placeholder?: string; rows?: number;
 }> = ({ label, value, onChange, placeholder, rows = 3 }) => (
   <div>
-    <label className="text-xs text-gray-400 mb-1 block">{label}</label>
+    <label className="text-xs text-[#999] mb-1 block">{label}</label>
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
       className="w-full bg-[#0d0d1a] border border-[#2a2a3e] rounded px-3 py-2 text-white text-sm focus:border-[#7c6ff7] focus:outline-none" />
   </div>
@@ -163,7 +164,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderActionSpace = () => (
     <div>
       <SectionCard title="Engine Status">
-        {asStatus ? <JSONView data={asStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {asStatus ? <JSONView data={asStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Execute Action">
@@ -195,10 +196,10 @@ export default function AgentEngineUnifiedPanel() {
 
       <SectionCard title="Registered Actions">
         {asActions.length === 0
-          ? <div className="text-gray-500 text-sm">No actions registered.</div>
+          ? <div className="text-[#666] text-sm">No actions registered.</div>
           : <div className="flex flex-wrap gap-2">
             {asActions.map((a: any, i: number) => (
-              <span key={i} className="px-2 py-1 rounded text-xs border bg-[#0d0d1a] border-[#2a2a3e] text-gray-300">
+              <span key={i} className="px-2 py-1 rounded text-xs border bg-[#0d0d1a] border-[#2a2a3e] text-[#ccc]">
                 {a.name || a.action_name || a}
               </span>
             ))}
@@ -206,9 +207,9 @@ export default function AgentEngineUnifiedPanel() {
       </SectionCard>
 
       <SectionCard title="Action History">
-        <button onClick={fetchActionSpaceHistory} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        <button onClick={fetchActionSpaceHistory} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
         {asHistory.length === 0
-          ? <div className="text-gray-500 text-sm">No history.</div>
+          ? <div className="text-[#666] text-sm">No history.</div>
           : <JSONView data={asHistory} />}
       </SectionCard>
     </div>
@@ -233,7 +234,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderSelfReflection = () => (
     <div>
       <SectionCard title="Engine Status">
-        {srStatus ? <JSONView data={srStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {srStatus ? <JSONView data={srStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Start Session">
@@ -276,13 +277,13 @@ export default function AgentEngineUnifiedPanel() {
       {srResult && <SectionCard title="Result"><JSONView data={srResult} /></SectionCard>}
 
       <SectionCard title="Sessions">
-        <button onClick={fetchSRSessions} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {srSessions.length === 0 ? <div className="text-gray-500 text-sm">No sessions.</div> : <JSONView data={srSessions} />}
+        <button onClick={fetchSRSessions} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {srSessions.length === 0 ? <div className="text-[#666] text-sm">No sessions.</div> : <JSONView data={srSessions} />}
       </SectionCard>
 
       <SectionCard title="Insights">
-        <button onClick={fetchSRInsights} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {srInsights.length === 0 ? <div className="text-gray-500 text-sm">No insights.</div> : <JSONView data={srInsights} />}
+        <button onClick={fetchSRInsights} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {srInsights.length === 0 ? <div className="text-[#666] text-sm">No insights.</div> : <JSONView data={srInsights} />}
       </SectionCard>
     </div>
   );
@@ -303,7 +304,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderReasoningChain = () => (
     <div>
       <SectionCard title="Engine Status">
-        {rcStatus ? <JSONView data={rcStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {rcStatus ? <JSONView data={rcStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Start Reasoning">
@@ -319,8 +320,8 @@ export default function AgentEngineUnifiedPanel() {
       {rcResult && <SectionCard title="Result"><JSONView data={rcResult} /></SectionCard>}
 
       <SectionCard title="Results">
-        <button onClick={fetchRCResults} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {rcResults.length === 0 ? <div className="text-gray-500 text-sm">No results.</div> : <JSONView data={rcResults} />}
+        <button onClick={fetchRCResults} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {rcResults.length === 0 ? <div className="text-[#666] text-sm">No results.</div> : <JSONView data={rcResults} />}
       </SectionCard>
     </div>
   );
@@ -341,7 +342,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderTaskDecomposer = () => (
     <div>
       <SectionCard title="Engine Status">
-        {tdStatus ? <JSONView data={tdStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {tdStatus ? <JSONView data={tdStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Decompose Task">
@@ -357,8 +358,8 @@ export default function AgentEngineUnifiedPanel() {
       {tdResult && <SectionCard title="Execution Plan"><JSONView data={tdResult} /></SectionCard>}
 
       <SectionCard title="Plans">
-        <button onClick={fetchTDPlans} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {tdPlans.length === 0 ? <div className="text-gray-500 text-sm">No plans.</div> : <JSONView data={tdPlans} />}
+        <button onClick={fetchTDPlans} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {tdPlans.length === 0 ? <div className="text-[#666] text-sm">No plans.</div> : <JSONView data={tdPlans} />}
       </SectionCard>
     </div>
   );
@@ -379,7 +380,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderPerceptionPipeline = () => (
     <div>
       <SectionCard title="Engine Status">
-        {ppStatus ? <JSONView data={ppStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {ppStatus ? <JSONView data={ppStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Run Perception Snapshot">
@@ -395,8 +396,8 @@ export default function AgentEngineUnifiedPanel() {
       {ppResult && <SectionCard title="Result"><JSONView data={ppResult} /></SectionCard>}
 
       <SectionCard title="Snapshots">
-        <button onClick={fetchPPSnapshots} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {ppSnapshots.length === 0 ? <div className="text-gray-500 text-sm">No snapshots.</div> : <JSONView data={ppSnapshots} />}
+        <button onClick={fetchPPSnapshots} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {ppSnapshots.length === 0 ? <div className="text-[#666] text-sm">No snapshots.</div> : <JSONView data={ppSnapshots} />}
       </SectionCard>
     </div>
   );
@@ -420,7 +421,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderDecisionGraph = () => (
     <div>
       <SectionCard title="Engine Status">
-        {dgStatus ? <JSONView data={dgStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {dgStatus ? <JSONView data={dgStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Create Graph">
@@ -454,8 +455,8 @@ export default function AgentEngineUnifiedPanel() {
       {dgResult && <SectionCard title="Result"><JSONView data={dgResult} /></SectionCard>}
 
       <SectionCard title="Graphs">
-        <button onClick={fetchDGGraphs} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {dgGraphs.length === 0 ? <div className="text-gray-500 text-sm">No graphs.</div> : <JSONView data={dgGraphs} />}
+        <button onClick={fetchDGGraphs} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {dgGraphs.length === 0 ? <div className="text-[#666] text-sm">No graphs.</div> : <JSONView data={dgGraphs} />}
       </SectionCard>
     </div>
   );
@@ -476,7 +477,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderContextHypergraph = () => (
     <div>
       <SectionCard title="Engine Status">
-        {chStatus ? <JSONView data={chStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {chStatus ? <JSONView data={chStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Query Context Subgraph">
@@ -492,8 +493,8 @@ export default function AgentEngineUnifiedPanel() {
       {chResult && <SectionCard title="Result"><JSONView data={chResult} /></SectionCard>}
 
       <SectionCard title="Nodes">
-        <button onClick={fetchCHNodes} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {chNodes.length === 0 ? <div className="text-gray-500 text-sm">No nodes.</div> : <JSONView data={chNodes} />}
+        <button onClick={fetchCHNodes} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {chNodes.length === 0 ? <div className="text-[#666] text-sm">No nodes.</div> : <JSONView data={chNodes} />}
       </SectionCard>
     </div>
   );
@@ -516,7 +517,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderEventBus = () => (
     <div>
       <SectionCard title="Engine Status">
-        {ebStatus ? <JSONView data={ebStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {ebStatus ? <JSONView data={ebStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Publish Event">
@@ -537,8 +538,8 @@ export default function AgentEngineUnifiedPanel() {
       {ebResult && <SectionCard title="Result"><JSONView data={ebResult} /></SectionCard>}
 
       <SectionCard title="Channels">
-        <button onClick={fetchEBChannels} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {ebChannels.length === 0 ? <div className="text-gray-500 text-sm">No channels.</div> : <JSONView data={ebChannels} />}
+        <button onClick={fetchEBChannels} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {ebChannels.length === 0 ? <div className="text-[#666] text-sm">No channels.</div> : <JSONView data={ebChannels} />}
       </SectionCard>
     </div>
   );
@@ -561,7 +562,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderTileMap = () => (
     <div>
       <SectionCard title="Engine Status">
-        {tmStatus ? <JSONView data={tmStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {tmStatus ? <JSONView data={tmStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Create Tile Map">
@@ -581,8 +582,8 @@ export default function AgentEngineUnifiedPanel() {
       {tmResult && <SectionCard title="Result"><JSONView data={tmResult} /></SectionCard>}
 
       <SectionCard title="Maps">
-        <button onClick={fetchTMMaps} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {tmMaps.length === 0 ? <div className="text-gray-500 text-sm">No maps.</div> : <JSONView data={tmMaps} />}
+        <button onClick={fetchTMMaps} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {tmMaps.length === 0 ? <div className="text-[#666] text-sm">No maps.</div> : <JSONView data={tmMaps} />}
       </SectionCard>
     </div>
   );
@@ -604,7 +605,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderPrefabSystem = () => (
     <div>
       <SectionCard title="Engine Status">
-        {psStatus ? <JSONView data={psStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {psStatus ? <JSONView data={psStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Create Prefab">
@@ -623,8 +624,8 @@ export default function AgentEngineUnifiedPanel() {
       {psResult && <SectionCard title="Result"><JSONView data={psResult} /></SectionCard>}
 
       <SectionCard title="Prefabs">
-        <button onClick={fetchPSPrefabs} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {psPrefabs.length === 0 ? <div className="text-gray-500 text-sm">No prefabs.</div> : <JSONView data={psPrefabs} />}
+        <button onClick={fetchPSPrefabs} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {psPrefabs.length === 0 ? <div className="text-[#666] text-sm">No prefabs.</div> : <JSONView data={psPrefabs} />}
       </SectionCard>
     </div>
   );
@@ -646,7 +647,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderInputAction = () => (
     <div>
       <SectionCard title="Engine Status">
-        {iaStatus ? <JSONView data={iaStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {iaStatus ? <JSONView data={iaStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Register Action">
@@ -665,8 +666,8 @@ export default function AgentEngineUnifiedPanel() {
       {iaResult && <SectionCard title="Result"><JSONView data={iaResult} /></SectionCard>}
 
       <SectionCard title="Actions">
-        <button onClick={fetchIAActions} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {iaActions.length === 0 ? <div className="text-gray-500 text-sm">No actions.</div> : <JSONView data={iaActions} />}
+        <button onClick={fetchIAActions} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {iaActions.length === 0 ? <div className="text-[#666] text-sm">No actions.</div> : <JSONView data={iaActions} />}
       </SectionCard>
     </div>
   );
@@ -688,7 +689,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderShaderMaterial = () => (
     <div>
       <SectionCard title="Engine Status">
-        {smStatus ? <JSONView data={smStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {smStatus ? <JSONView data={smStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Create Material">
@@ -705,8 +706,8 @@ export default function AgentEngineUnifiedPanel() {
       {smResult && <SectionCard title="Result"><JSONView data={smResult} /></SectionCard>}
 
       <SectionCard title="Materials">
-        <button onClick={fetchSMMaterials} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {smMaterials.length === 0 ? <div className="text-gray-500 text-sm">No materials.</div> : <JSONView data={smMaterials} />}
+        <button onClick={fetchSMMaterials} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {smMaterials.length === 0 ? <div className="text-[#666] text-sm">No materials.</div> : <JSONView data={smMaterials} />}
       </SectionCard>
     </div>
   );
@@ -728,7 +729,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderResourceStreaming = () => (
     <div>
       <SectionCard title="Engine Status">
-        {rsStatus ? <JSONView data={rsStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {rsStatus ? <JSONView data={rsStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Create Zone">
@@ -747,8 +748,8 @@ export default function AgentEngineUnifiedPanel() {
       {rsResult && <SectionCard title="Result"><JSONView data={rsResult} /></SectionCard>}
 
       <SectionCard title="Zones">
-        <button onClick={fetchRSZones} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {rsZones.length === 0 ? <div className="text-gray-500 text-sm">No zones.</div> : <JSONView data={rsZones} />}
+        <button onClick={fetchRSZones} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {rsZones.length === 0 ? <div className="text-[#666] text-sm">No zones.</div> : <JSONView data={rsZones} />}
       </SectionCard>
     </div>
   );
@@ -770,7 +771,7 @@ export default function AgentEngineUnifiedPanel() {
   const renderStateReconciliation = () => (
     <div>
       <SectionCard title="Engine Status">
-        {srcStatus ? <JSONView data={srcStatus} /> : <div className="text-gray-500 text-sm">Loading...</div>}
+        {srcStatus ? <JSONView data={srcStatus} /> : <div className="text-[#666] text-sm">Loading...</div>}
       </SectionCard>
 
       <SectionCard title="Reconcile States">
@@ -789,8 +790,8 @@ export default function AgentEngineUnifiedPanel() {
       {srcResult && <SectionCard title="Result"><JSONView data={srcResult} /></SectionCard>}
 
       <SectionCard title="History">
-        <button onClick={fetchSRCHistory} className="px-3 py-1.5 bg-[#2a2a3e] text-gray-300 rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
-        {srcHistory.length === 0 ? <div className="text-gray-500 text-sm">No history.</div> : <JSONView data={srcHistory} />}
+        <button onClick={fetchSRCHistory} className="px-3 py-1.5 bg-[#2a2a3e] text-[#ccc] rounded text-xs mb-2 hover:bg-[#313145]">Refresh</button>
+        {srcHistory.length === 0 ? <div className="text-[#666] text-sm">No history.</div> : <JSONView data={srcHistory} />}
       </SectionCard>
     </div>
   );
@@ -842,7 +843,7 @@ export default function AgentEngineUnifiedPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a3e] flex-wrap">
         {tabs.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`px-3 py-1.5 rounded text-xs font-medium ${activeTab === tab.id ? 'bg-[#6c5ce7] text-white' : 'bg-[#1e1e2e] text-gray-400 hover:bg-[#2a2a3e] hover:text-gray-200'}`}>
+            className={`px-3 py-1.5 rounded text-xs font-medium ${activeTab === tab.id ? 'bg-[#6c5ce7] text-white' : 'bg-[#1e1e2e] text-[#999] hover:bg-[#2a2a3e] hover:text-\[#ddd\]'}`}>
             {tab.label}
           </button>
         ))}

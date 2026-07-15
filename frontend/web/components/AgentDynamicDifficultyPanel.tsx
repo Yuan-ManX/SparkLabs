@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 export default function AgentDynamicDifficultyPanel() {
   const [activeTab, setActiveTab] = useState('overview');
@@ -80,7 +81,7 @@ export default function AgentDynamicDifficultyPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
@@ -113,7 +114,7 @@ export default function AgentDynamicDifficultyPanel() {
             {Object.keys(stats).length > 0 && (
               <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">All Stats</h3>
-                <pre className="text-xs text-gray-300 overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+                <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
               </div>
             )}
           </div>
@@ -126,12 +127,12 @@ export default function AgentDynamicDifficultyPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Difficulty Profile</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Player ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Player ID</label>
                   <input type="text" value={cpPlayerId} onChange={e => setCpPlayerId(e.target.value)}
                     placeholder="player_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
                 <div>
-                  <label className="text-xs text-gray-400 mb-1 block">Strategy</label>
+                  <label className="text-xs text-[#999] mb-1 block">Strategy</label>
                   <select value={cpStrategy} onChange={e => setCpStrategy(e.target.value)}
                     className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
                     {strategyOptions.map(s => (
@@ -140,7 +141,7 @@ export default function AgentDynamicDifficultyPanel() {
                   </select>
                 </div>
                 <div className="col-span-2">
-                  <label className="text-xs text-gray-400 mb-1 block">Baseline Difficulty</label>
+                  <label className="text-xs text-[#999] mb-1 block">Baseline Difficulty</label>
                   <div className="flex items-center gap-3">
                     <input type="range" min="0" max="1" step="0.01"
                       value={baselineDifficulty} onChange={e => setBaselineDifficulty(e.target.value)}
@@ -167,7 +168,7 @@ export default function AgentDynamicDifficultyPanel() {
               <div className="grid grid-cols-3 gap-3">
                 {metricFields.map(({ key, label }) => (
                   <div key={key}>
-                    <label className="text-xs text-gray-400 mb-1 block">{label}</label>
+                    <label className="text-xs text-[#999] mb-1 block">{label}</label>
                     <input type="number" step="0.01"
                       value={metrics[key as keyof typeof metrics]}
                       onChange={e => setMetrics(prev => ({ ...prev, [key]: e.target.value }))}
@@ -199,7 +200,7 @@ export default function AgentDynamicDifficultyPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Adjust Difficulty</h2>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Player ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Player ID</label>
                   <input type="text" value={adjPlayerId} onChange={e => setAdjPlayerId(e.target.value)}
                     placeholder="player_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -220,7 +221,7 @@ export default function AgentDynamicDifficultyPanel() {
                 <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Adjustment Results</h2>
                 {result.player_state && (
                   <div className="mb-3 flex items-center gap-2">
-                    <span className="text-xs text-gray-400">Player State:</span>
+                    <span className="text-xs text-[#999]">Player State:</span>
                     <span className="text-xs bg-[#1a1a2e] text-[#00d4ff] px-2 py-0.5 rounded border border-[#2a2a4a]">{result.player_state}</span>
                   </div>
                 )}
@@ -252,7 +253,7 @@ export default function AgentDynamicDifficultyPanel() {
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Get Player Profile & History</h2>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
-                  <label className="text-xs text-gray-400 mb-1 block">Player ID</label>
+                  <label className="text-xs text-[#999] mb-1 block">Player ID</label>
                   <input type="text" value={histPlayerId} onChange={e => setHistPlayerId(e.target.value)}
                     placeholder="player_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
                 </div>
@@ -273,11 +274,11 @@ export default function AgentDynamicDifficultyPanel() {
                 <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Profile & History</h2>
                 {result.difficulty_history && (
                   <div className="mb-4">
-                    <h3 className="text-xs text-gray-400 mb-2">Difficulty History</h3>
+                    <h3 className="text-xs text-[#999] mb-2">Difficulty History</h3>
                     <div className="space-y-1">
                       {(Array.isArray(result.difficulty_history) ? result.difficulty_history : []).map((h: any, i: number) => (
                         <div key={i} className="flex items-center justify-between bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a] text-xs">
-                          <span className="text-gray-400">{h.timestamp || `Entry ${i + 1}`}</span>
+                          <span className="text-[#999]">{h.timestamp || `Entry ${i + 1}`}</span>
                           <span className="text-[#00d4ff] font-mono">{h.value ?? JSON.stringify(h)}</span>
                         </div>
                       ))}
@@ -286,11 +287,11 @@ export default function AgentDynamicDifficultyPanel() {
                 )}
                 {result.parameter_values && (
                   <div className="mb-4">
-                    <h3 className="text-xs text-gray-400 mb-2">Parameter Values</h3>
+                    <h3 className="text-xs text-[#999] mb-2">Parameter Values</h3>
                     <div className="grid grid-cols-3 gap-2">
                       {Object.entries(result.parameter_values).map(([key, value]) => (
                         <div key={key} className="bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">
-                          <span className="text-xs text-gray-400 capitalize block">{key.replace(/_/g, ' ')}</span>
+                          <span className="text-xs text-[#999] capitalize block">{key.replace(/_/g, ' ')}</span>
                           <span className="text-sm text-white font-mono">{String(value)}</span>
                         </div>
                       ))}
@@ -299,21 +300,21 @@ export default function AgentDynamicDifficultyPanel() {
                 )}
                 {result.state_transitions && (
                   <div>
-                    <h3 className="text-xs text-gray-400 mb-2">State Transitions</h3>
+                    <h3 className="text-xs text-[#999] mb-2">State Transitions</h3>
                     <div className="space-y-1">
                       {(Array.isArray(result.state_transitions) ? result.state_transitions : []).map((st: any, i: number) => (
                         <div key={i} className="flex items-center gap-2 bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a] text-xs">
-                          <span className="text-gray-400">{st.from}</span>
+                          <span className="text-[#999]">{st.from}</span>
                           <span className="text-[#00d4ff]">→</span>
                           <span className="text-white">{st.to}</span>
-                          {st.reason && <span className="text-gray-500 ml-auto">{st.reason}</span>}
+                          {st.reason && <span className="text-[#666] ml-auto">{st.reason}</span>}
                         </div>
                       ))}
                     </div>
                   </div>
                 )}
                 {!result.difficulty_history && !result.parameter_values && !result.state_transitions && (
-                  <pre className="text-xs text-gray-300 overflow-auto">{JSON.stringify(result, null, 2)}</pre>
+                  <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(result, null, 2)}</pre>
                 )}
               </div>
             )}

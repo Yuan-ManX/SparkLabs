@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/agent';
+const API_BASE = API_ROOT + '/agent';
 
 const STAGE_LABELS: Record<string, string> = {
   ideation: 'IDEATION',
@@ -167,7 +168,7 @@ export default function AgentEngineOrchestratorPanel() {
             <div key={key} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
                 <i className={`fa-solid ${icon} text-[#00d4ff] text-xs`} />
-                <span className="text-gray-400 text-xs">{label}</span>
+                <span className="text-[#999] text-xs">{label}</span>
               </div>
               <div className="text-white text-xl font-bold font-mono">
                 {stats[key] !== undefined ? stats[key].toLocaleString() : '-'}
@@ -181,7 +182,7 @@ export default function AgentEngineOrchestratorPanel() {
             <div className="text-sm font-medium text-[#00d4ff] mb-2">Workflows by Type</div>
             <div className="flex flex-wrap gap-2">
               {Object.entries(byType).map(([type, count]) => (
-                <span key={type} className="px-2 py-1 rounded text-xs border bg-[#1a1a2e] border-[#2a2a4a] text-gray-300">
+                <span key={type} className="px-2 py-1 rounded text-xs border bg-[#1a1a2e] border-[#2a2a4a] text-[#ccc]">
                   {type.replace(/_/g, ' ')}: <span className="text-[#00d4ff] font-bold">{count as number}</span>
                 </span>
               ))}
@@ -194,7 +195,7 @@ export default function AgentEngineOrchestratorPanel() {
             <div className="text-sm font-medium text-[#00d4ff] mb-2">Workflows by Status</div>
             <div className="flex flex-wrap gap-2">
               {Object.entries(byStatus).map(([status, count]) => (
-                <span key={status} className="px-2 py-1 rounded text-xs border bg-[#1a1a2e] border-[#2a2a4a] text-gray-300">
+                <span key={status} className="px-2 py-1 rounded text-xs border bg-[#1a1a2e] border-[#2a2a4a] text-[#ccc]">
                   {status}: <span className="text-[#00d4ff] font-bold">{count as number}</span>
                 </span>
               ))}
@@ -215,25 +216,25 @@ export default function AgentEngineOrchestratorPanel() {
         <div className="text-sm font-medium text-[#00d4ff] mb-3">Create New Project</div>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Project Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Project Name</label>
             <input type="text" value={projName} onChange={e => setProjName(e.target.value)}
               placeholder="My Epic Game" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Description</label>
+            <label className="text-xs text-[#999] mb-1 block">Description</label>
             <textarea value={projDesc} onChange={e => setProjDesc(e.target.value)} rows={2}
               placeholder="A brief description of your game..."
               className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Genre</label>
+            <label className="text-xs text-[#999] mb-1 block">Genre</label>
             <select value={projGenre} onChange={e => setProjGenre(e.target.value)}
               className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               {GENRES.map(g => <option key={g} value={g}>{g.charAt(0).toUpperCase() + g.slice(1)}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Platform</label>
+            <label className="text-xs text-[#999] mb-1 block">Platform</label>
             <select value={projPlatform} onChange={e => setProjPlatform(e.target.value)}
               className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               {PLATFORMS.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
@@ -251,11 +252,11 @@ export default function AgentEngineOrchestratorPanel() {
       </div>
 
       {/* Project List */}
-      <div className="text-sm font-medium text-gray-400 mb-2">
+      <div className="text-sm font-medium text-[#999] mb-2">
         {projects.length} Project{projects.length !== 1 ? 's' : ''}
       </div>
       {projects.length === 0 ? (
-        <div className="text-gray-500 text-sm">No projects yet. Create one above.</div>
+        <div className="text-[#666] text-sm">No projects yet. Create one above.</div>
       ) : (
         <div className="grid grid-cols-1 gap-3">
           {projects.map((p: any) => (
@@ -263,15 +264,15 @@ export default function AgentEngineOrchestratorPanel() {
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <div className="text-white font-medium text-sm">{p.name}</div>
-                  <div className="text-gray-500 text-xs mt-0.5">{p.project_id}</div>
+                  <div className="text-[#666] text-xs mt-0.5">{p.project_id}</div>
                 </div>
                 <span className="px-2 py-0.5 rounded text-xs font-medium border"
                   style={{ color: STAGE_COLORS[p.current_stage] || '#00d4ff', borderColor: STAGE_COLORS[p.current_stage] || '#00d4ff', backgroundColor: `${STAGE_COLORS[p.current_stage] || '#00d4ff'}15` }}>
                   {STAGE_LABELS[p.current_stage] || p.current_stage}
                 </span>
               </div>
-              <div className="text-gray-400 text-xs mb-2">{p.description}</div>
-              <div className="flex flex-wrap gap-2 text-xs text-gray-500 mb-3">
+              <div className="text-[#999] text-xs mb-2">{p.description}</div>
+              <div className="flex flex-wrap gap-2 text-xs text-[#666] mb-3">
                 <span className="px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a]">{p.genre}</span>
                 <span className="px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a]">{p.platform}</span>
                 <span className="px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a]">Scenes: {p.scene_count}</span>
@@ -314,25 +315,25 @@ export default function AgentEngineOrchestratorPanel() {
         {/* Create Game Form */}
         <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
           <div className="text-sm font-medium text-[#00d4ff] mb-1">Create Game from Description</div>
-          <div className="text-xs text-gray-500 mb-3">
+          <div className="text-xs text-[#666] mb-3">
             Describe your game idea and let the AI orchestration pipeline generate a complete project with all workflow stages.
           </div>
           <div className="mb-3">
-            <label className="text-xs text-gray-400 mb-1 block">Game Description</label>
+            <label className="text-xs text-[#999] mb-1 block">Game Description</label>
             <textarea value={gameDesc} onChange={e => setGameDesc(e.target.value)} rows={4}
               placeholder='E.g., "A 2D platformer where the player controls a wizard who can cast fire and ice spells to solve puzzles and defeat enemies across 5 elemental worlds"'
               className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div>
-              <label className="text-xs text-gray-400 mb-1 block">Genre</label>
+              <label className="text-xs text-[#999] mb-1 block">Genre</label>
               <select value={gameGenre} onChange={e => setGameGenre(e.target.value)}
                 className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
                 {GENRES.map(g => <option key={g} value={g}>{g.charAt(0).toUpperCase() + g.slice(1)}</option>)}
               </select>
             </div>
             <div>
-              <label className="text-xs text-gray-400 mb-1 block">Platform</label>
+              <label className="text-xs text-[#999] mb-1 block">Platform</label>
               <select value={gamePlatform} onChange={e => setGamePlatform(e.target.value)}
                 className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
                 {PLATFORMS.map(p => <option key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</option>)}
@@ -360,14 +361,14 @@ export default function AgentEngineOrchestratorPanel() {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="text-white font-medium">{createdGame.name}</div>
-                  <div className="text-gray-500 text-xs">{createdGame.project_id}</div>
+                  <div className="text-[#666] text-xs">{createdGame.project_id}</div>
                 </div>
                 <span className="px-2 py-0.5 rounded text-xs font-medium border"
                   style={{ color: STAGE_COLORS[createdGame.current_stage] || '#00d4ff', borderColor: STAGE_COLORS[createdGame.current_stage] || '#00d4ff', backgroundColor: `${STAGE_COLORS[createdGame.current_stage] || '#00d4ff'}15` }}>
                   {STAGE_LABELS[createdGame.current_stage] || createdGame.current_stage}
                 </span>
               </div>
-              <div className="text-gray-400 text-xs mb-3">{createdGame.description}</div>
+              <div className="text-[#999] text-xs mb-3">{createdGame.description}</div>
 
               {/* Pipeline Stages */}
               <div className="flex items-center gap-0.5">
@@ -381,7 +382,7 @@ export default function AgentEngineOrchestratorPanel() {
                         style={{ borderColor: STAGE_COLORS[stage], color: STAGE_COLORS[stage], backgroundColor: `${STAGE_COLORS[stage]}15` }}>
                         {i + 1}
                       </div>
-                      <span className="text-[10px] text-gray-500 mt-1">{STAGE_LABELS[stage]}</span>
+                      <span className="text-[10px] text-[#666] mt-1">{STAGE_LABELS[stage]}</span>
                     </div>
                   </React.Fragment>
                 ))}
@@ -408,16 +409,16 @@ export default function AgentEngineOrchestratorPanel() {
                         {wf.status}
                       </span>
                     </div>
-                    <span className="text-xs text-gray-500">{wf.mode} mode</span>
+                    <span className="text-xs text-[#666]">{wf.mode} mode</span>
                   </div>
                   <div className="grid grid-cols-5 gap-2">
                     {pipelineStages.map(stage => (
                       <div key={stage} className="bg-[#1a1a2e] rounded p-2 border border-[#2a2a4a]">
-                        <div className="text-[10px] text-gray-500 mb-1">{STAGE_LABELS[stage]}</div>
+                        <div className="text-[10px] text-[#666] mb-1">{STAGE_LABELS[stage]}</div>
                         <div className="text-lg font-bold" style={{ color: STAGE_COLORS[stage] }}>
                           {(tasksByStage[stage] || []).length}
                         </div>
-                        <div className="text-[10px] text-gray-600">tasks</div>
+                        <div className="text-[10px] text-[#555]">tasks</div>
                       </div>
                     ))}
                   </div>
@@ -460,7 +461,7 @@ export default function AgentEngineOrchestratorPanel() {
           <div className="mt-2 flex flex-wrap gap-1">
             {projects.map((p: any) => (
               <button key={p.project_id} onClick={() => { setWfProjectId(p.project_id); fetchWorkflows(p.project_id); setFeatureProjectId(p.project_id); setBalanceProjectId(p.project_id); }}
-                className="px-2 py-0.5 text-[10px] bg-[#1a1a2e] border border-[#2a2a4a] rounded text-gray-400 hover:text-[#00d4ff] hover:border-[#00d4ff]">
+                className="px-2 py-0.5 text-[10px] bg-[#1a1a2e] border border-[#2a2a4a] rounded text-[#999] hover:text-[#00d4ff] hover:border-[#00d4ff]">
                 {p.name}
               </button>
             ))}
@@ -471,16 +472,16 @@ export default function AgentEngineOrchestratorPanel() {
       {/* Workflows List */}
       {workflows.length > 0 && (
         <div className="mb-4">
-          <div className="text-sm font-medium text-gray-400 mb-2">{workflows.length} Workflow{workflows.length !== 1 ? 's' : ''}</div>
+          <div className="text-sm font-medium text-[#999] mb-2">{workflows.length} Workflow{workflows.length !== 1 ? 's' : ''}</div>
           <div className="grid grid-cols-1 gap-3">
             {workflows.map((w: any) => (
               <div key={w.workflow_id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <div className="text-white text-sm font-medium">{w.name}</div>
-                    <div className="text-gray-600 text-[10px] font-mono mt-0.5">{w.workflow_id}</div>
+                    <div className="text-[#555] text-[10px] font-mono mt-0.5">{w.workflow_id}</div>
                   </div>
-                  <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${WORKFLOW_TYPE_BADGES[w.workflow_type] || 'bg-gray-500/20 text-gray-400 border-gray-500/30'}`}>
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${WORKFLOW_TYPE_BADGES[w.workflow_type] || 'bg-\[#f5f5f5\]0/20 text-[#999] border-\[#f5f5f5\]0/30'}`}>
                     {w.workflow_type ? w.workflow_type.replace(/_/g, ' ') : 'unknown'}
                   </span>
                 </div>
@@ -489,13 +490,13 @@ export default function AgentEngineOrchestratorPanel() {
                     style={{ color: STATUS_COLORS[w.status] || '#6b7280', borderColor: STATUS_COLORS[w.status] || '#2a2a4a' }}>
                     {w.status}
                   </span>
-                  <span className="px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-500 text-[10px]">
+                  <span className="px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#666] text-[10px]">
                     {w.mode}
                   </span>
-                  <span className="px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-500 text-[10px]">
+                  <span className="px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#666] text-[10px]">
                     {(w.tasks || []).length} tasks
                   </span>
-                  <span className="px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-gray-500 text-[10px]">
+                  <span className="px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#666] text-[10px]">
                     {w.created_at ? new Date(w.created_at * 1000).toLocaleDateString() : 'N/A'}
                   </span>
                 </div>
@@ -514,7 +515,7 @@ export default function AgentEngineOrchestratorPanel() {
                     setMetricsWorkflowId(w.workflow_id);
                     fetchMetrics(w.workflow_id);
                     setActiveTab('metrics');
-                  }} className="px-3 py-1.5 bg-[#1a1a2e] border border-[#2a2a4a] text-gray-300 rounded text-xs font-medium hover:border-[#00d4ff] hover:text-[#00d4ff]">
+                  }} className="px-3 py-1.5 bg-[#1a1a2e] border border-[#2a2a4a] text-[#ccc] rounded text-xs font-medium hover:border-[#00d4ff] hover:text-[#00d4ff]">
                     <i className="fa-solid fa-chart-bar mr-1" /> Metrics
                   </button>
                 </div>
@@ -529,12 +530,12 @@ export default function AgentEngineOrchestratorPanel() {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Add Feature</div>
         <div className="grid grid-cols-1 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Project ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Project ID</label>
             <input type="text" value={featureProjectId} onChange={e => setFeatureProjectId(e.target.value)}
               placeholder="Project ID" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Feature Description</label>
+            <label className="text-xs text-[#999] mb-1 block">Feature Description</label>
             <textarea value={featureDesc} onChange={e => setFeatureDesc(e.target.value)} rows={2}
               placeholder='E.g., "Add a crafting system with 20+ recipes"'
               className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -553,12 +554,12 @@ export default function AgentEngineOrchestratorPanel() {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Tune Balance</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Project ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Project ID</label>
             <input type="text" value={balanceProjectId} onChange={e => setBalanceProjectId(e.target.value)}
               placeholder="Project ID" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Aspect</label>
+            <label className="text-xs text-[#999] mb-1 block">Aspect</label>
             <select value={balanceAspect} onChange={e => setBalanceAspect(e.target.value)}
               className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               {ASPECTS.map(a => <option key={a} value={a}>{a.charAt(0).toUpperCase() + a.slice(1)}</option>)}
@@ -620,7 +621,7 @@ export default function AgentEngineOrchestratorPanel() {
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="text-white text-sm font-medium">{pipelineResult.name}</div>
-                  <div className="text-gray-500 text-[10px] font-mono">{pipelineResult.workflow_id}</div>
+                  <div className="text-[#666] text-[10px] font-mono">{pipelineResult.workflow_id}</div>
                 </div>
                 <span className="px-2 py-0.5 rounded text-xs border"
                   style={{ color: STATUS_COLORS[pipelineResult.status] || '#6b7280', borderColor: STATUS_COLORS[pipelineResult.status] || '#2a2a4a' }}>
@@ -632,7 +633,7 @@ export default function AgentEngineOrchestratorPanel() {
                   <div className="h-full rounded-full transition-all duration-500"
                     style={{ width: `${progress}%`, backgroundColor: failedCount > 0 ? '#ef4444' : '#22c55e' }} />
                 </div>
-                <span className="text-xs text-gray-400">{completedCount}/{tasks.length}</span>
+                <span className="text-xs text-[#999]">{completedCount}/{tasks.length}</span>
               </div>
             </div>
 
@@ -645,8 +646,8 @@ export default function AgentEngineOrchestratorPanel() {
                 <div key={stage} className="mb-4">
                   <div className="flex items-center gap-2 mb-2">
                     <div className="w-2 h-2 rounded-full" style={{ backgroundColor: STAGE_COLORS[stage] }} />
-                    <span className="text-xs font-medium text-gray-300">{STAGE_LABELS[stage]}</span>
-                    <span className="text-[10px] text-gray-600">{stageDone}/{stageTasks.length} done</span>
+                    <span className="text-xs font-medium text-[#ccc]">{STAGE_LABELS[stage]}</span>
+                    <span className="text-[10px] text-[#555]">{stageDone}/{stageTasks.length} done</span>
                   </div>
                   <div className="grid grid-cols-1 gap-2">
                     {stageTasks.map((task: any) => (
@@ -659,7 +660,7 @@ export default function AgentEngineOrchestratorPanel() {
                               {task.status}
                             </span>
                           </div>
-                          <div className="flex gap-3 mt-1 text-[10px] text-gray-600">
+                          <div className="flex gap-3 mt-1 text-[10px] text-[#555]">
                             {task.agent_module && (
                               <span title="Agent Module"><i className="fa-solid fa-brain mr-0.5" />{task.agent_module}</span>
                             )}
@@ -671,14 +672,14 @@ export default function AgentEngineOrchestratorPanel() {
                             )}
                           </div>
                           {task.description && (
-                            <div className="text-[10px] text-gray-600 mt-1 truncate">{task.description}</div>
+                            <div className="text-[10px] text-[#555] mt-1 truncate">{task.description}</div>
                           )}
                         </div>
                         <div className="ml-3 flex-shrink-0">
                           {task.status === 'completed' && <i className="fa-solid fa-circle-check text-green-500" />}
                           {task.status === 'failed' && <i className="fa-solid fa-circle-xmark text-red-500" />}
                           {task.status === 'running' && <i className="fa-solid fa-spinner fa-spin text-amber-500" />}
-                          {task.status === 'ready' && <i className="fa-solid fa-circle text-gray-600" />}
+                          {task.status === 'ready' && <i className="fa-solid fa-circle text-[#555]" />}
                         </div>
                       </div>
                     ))}
@@ -720,7 +721,7 @@ export default function AgentEngineOrchestratorPanel() {
           <>
             {/* Progress Bar */}
             <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
-              <div className="text-sm font-medium text-gray-300 mb-3">Task Completion</div>
+              <div className="text-sm font-medium text-[#ccc] mb-3">Task Completion</div>
               <div className="flex items-center gap-3 mb-2">
                 <div className="flex-1 h-3 bg-[#1a1a2e] rounded-full overflow-hidden">
                   <div className="h-full rounded-full transition-all duration-500 flex"
@@ -733,7 +734,7 @@ export default function AgentEngineOrchestratorPanel() {
                 </div>
                 <span className="text-sm font-bold text-white">{barPct.toFixed(1)}%</span>
               </div>
-              <div className="flex gap-4 text-xs text-gray-500">
+              <div className="flex gap-4 text-xs text-[#666]">
                 <span><span className="inline-block w-2 h-2 rounded-full bg-green-500 mr-1" />Completed: {completedTasks}</span>
                 <span><span className="inline-block w-2 h-2 rounded-full bg-red-500 mr-1" />Failed: {failedTasks}</span>
                 <span>Total: {totalTasks}</span>
@@ -743,25 +744,25 @@ export default function AgentEngineOrchestratorPanel() {
             {/* Metrics Cards */}
             <div className="grid grid-cols-2 gap-3 mb-4">
               <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-                <div className="text-xs text-gray-500 mb-1">Avg Task Duration</div>
+                <div className="text-xs text-[#666] mb-1">Avg Task Duration</div>
                 <div className="text-xl font-bold text-[#00d4ff] font-mono">
-                  {metrics.avg_task_duration_ms?.toLocaleString() ?? '-'}<span className="text-xs text-gray-500 ml-1">ms</span>
+                  {metrics.avg_task_duration_ms?.toLocaleString() ?? '-'}<span className="text-xs text-[#666] ml-1">ms</span>
                 </div>
               </div>
               <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-                <div className="text-xs text-gray-500 mb-1">Total Duration</div>
+                <div className="text-xs text-[#666] mb-1">Total Duration</div>
                 <div className="text-xl font-bold text-[#00d4ff] font-mono">
-                  {metrics.total_duration_ms?.toLocaleString() ?? '-'}<span className="text-xs text-gray-500 ml-1">ms</span>
+                  {metrics.total_duration_ms?.toLocaleString() ?? '-'}<span className="text-xs text-[#666] ml-1">ms</span>
                 </div>
               </div>
               <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-                <div className="text-xs text-gray-500 mb-1">Agent Calls</div>
+                <div className="text-xs text-[#666] mb-1">Agent Calls</div>
                 <div className="text-xl font-bold text-purple-400 font-mono">
                   {metrics.agent_calls?.toLocaleString() ?? '-'}
                 </div>
               </div>
               <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-                <div className="text-xs text-gray-500 mb-1">Engine Calls</div>
+                <div className="text-xs text-[#666] mb-1">Engine Calls</div>
                 <div className="text-xl font-bold text-emerald-400 font-mono">
                   {metrics.engine_calls?.toLocaleString() ?? '-'}
                 </div>
@@ -808,7 +809,7 @@ export default function AgentEngineOrchestratorPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a] flex-wrap">
         {tabs.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5 ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5 ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             <i className={`fa-solid ${tab.icon} text-xs`} />
             {tab.label}
           </button>
