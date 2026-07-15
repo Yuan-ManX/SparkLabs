@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 // Types for the Node Composer API responses and forms
 
@@ -160,7 +161,7 @@ const EngineNodeComposerPanel: React.FC = () => {
   const [exportTreeId, setExportTreeId] = useState('');
   const [exportData, setExportData] = useState<any>(null);
 
-  const apiBase = 'http://localhost:8000/api/engine';
+  const apiBase = API_ROOT + '/engine';
 
   const tabs = [
     { id: 'status', label: 'Status' },
@@ -496,25 +497,25 @@ const EngineNodeComposerPanel: React.FC = () => {
       {status ? (
         <div className="grid grid-cols-2 gap-3">
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Tree Count</div>
+            <div className="text-[#999] text-xs">Tree Count</div>
             <div className="text-white text-sm font-mono">{status.tree_count}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-            <div className="text-gray-400 text-xs">Node Count</div>
+            <div className="text-[#999] text-xs">Node Count</div>
             <div className="text-white text-sm font-mono">{status.node_count}</div>
           </div>
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center col-span-2">
-            <div className="text-gray-400 text-xs">Group Count</div>
+            <div className="text-[#999] text-xs">Group Count</div>
             <div className="text-white text-sm font-mono">{status.group_count}</div>
           </div>
         </div>
       ) : (
-        <div className="text-gray-400 text-sm">No status data available.</div>
+        <div className="text-[#999] text-sm">No status data available.</div>
       )}
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -527,7 +528,7 @@ const EngineNodeComposerPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Tree Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Tree Name</label>
             <input
               type="text"
               value={treeForm.name}
@@ -537,7 +538,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Root Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Root Name</label>
             <input
               type="text"
               value={treeForm.rootName}
@@ -547,7 +548,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Metadata (JSON)</label>
+            <label className="text-xs text-[#999] mb-1 block">Metadata (JSON)</label>
             <textarea
               value={treeForm.metadata}
               onChange={e => setTreeForm(prev => ({ ...prev, metadata: e.target.value }))}
@@ -579,23 +580,23 @@ const EngineNodeComposerPanel: React.FC = () => {
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <div className="text-gray-400 text-xs">Root</div>
+                <div className="text-[#999] text-xs">Root</div>
                 <div className="text-white text-sm font-mono">{tree.root_name}</div>
               </div>
               <div>
-                <div className="text-gray-400 text-xs">Tree ID</div>
+                <div className="text-[#999] text-xs">Tree ID</div>
                 <div className="text-white text-sm font-mono text-xs truncate">{tree.id}</div>
               </div>
             </div>
           </div>
         ))
       ) : (
-        <div className="text-gray-400 text-sm">No trees built yet.</div>
+        <div className="text-[#999] text-sm">No trees built yet.</div>
       )}
 
       {result && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">
             {JSON.stringify(result, null, 2)}
           </div>
         </div>
@@ -603,7 +604,7 @@ const EngineNodeComposerPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -616,7 +617,7 @@ const EngineNodeComposerPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Name</label>
             <input
               type="text"
               value={createNodeForm.name}
@@ -626,7 +627,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Node Type</label>
+            <label className="text-xs text-[#999] mb-1 block">Node Type</label>
             <select
               value={createNodeForm.nodeType}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, nodeType: e.target.value }))}
@@ -643,7 +644,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Position X</label>
+            <label className="text-xs text-[#999] mb-1 block">Position X</label>
             <input
               type="number"
               value={createNodeForm.positionX}
@@ -652,7 +653,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Position Y</label>
+            <label className="text-xs text-[#999] mb-1 block">Position Y</label>
             <input
               type="number"
               value={createNodeForm.positionY}
@@ -661,7 +662,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Rotation</label>
+            <label className="text-xs text-[#999] mb-1 block">Rotation</label>
             <input
               type="number"
               value={createNodeForm.rotation}
@@ -670,7 +671,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Scale X</label>
+            <label className="text-xs text-[#999] mb-1 block">Scale X</label>
             <input
               type="number"
               value={createNodeForm.scaleX}
@@ -680,7 +681,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Scale Y</label>
+            <label className="text-xs text-[#999] mb-1 block">Scale Y</label>
             <input
               type="number"
               value={createNodeForm.scaleY}
@@ -704,7 +705,7 @@ const EngineNodeComposerPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Tree</label>
+            <label className="text-xs text-[#999] mb-1 block">Tree</label>
             <select
               value={addChildForm.treeId}
               onChange={e => setAddChildForm(prev => ({ ...prev, treeId: e.target.value }))}
@@ -717,7 +718,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Parent Node ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Parent Node ID</label>
             <input
               type="text"
               value={addChildForm.parentNodeId}
@@ -727,7 +728,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Child Type</label>
+            <label className="text-xs text-[#999] mb-1 block">Child Type</label>
             <select
               value={addChildForm.childType}
               onChange={e => setAddChildForm(prev => ({ ...prev, childType: e.target.value }))}
@@ -744,7 +745,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Child Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Child Name</label>
             <input
               type="text"
               value={addChildForm.childName}
@@ -754,7 +755,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Child Pos X</label>
+            <label className="text-xs text-[#999] mb-1 block">Child Pos X</label>
             <input
               type="number"
               value={addChildForm.childPosX}
@@ -763,7 +764,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Child Pos Y</label>
+            <label className="text-xs text-[#999] mb-1 block">Child Pos Y</label>
             <input
               type="number"
               value={addChildForm.childPosY}
@@ -786,7 +787,7 @@ const EngineNodeComposerPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Tree</label>
+            <label className="text-xs text-[#999] mb-1 block">Tree</label>
             <select
               value={reparentForm.treeId}
               onChange={e => setReparentForm(prev => ({ ...prev, treeId: e.target.value }))}
@@ -799,7 +800,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Node ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Node ID</label>
             <input
               type="text"
               value={reparentForm.nodeId}
@@ -809,7 +810,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">New Parent ID</label>
+            <label className="text-xs text-[#999] mb-1 block">New Parent ID</label>
             <input
               type="text"
               value={reparentForm.newParentId}
@@ -830,7 +831,7 @@ const EngineNodeComposerPanel: React.FC = () => {
 
       {result && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">
             {JSON.stringify(result, null, 2)}
           </div>
         </div>
@@ -838,7 +839,7 @@ const EngineNodeComposerPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -851,7 +852,7 @@ const EngineNodeComposerPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Tree</label>
+            <label className="text-xs text-[#999] mb-1 block">Tree</label>
             <select
               value={queryForm.treeId}
               onChange={e => setQueryForm(prev => ({ ...prev, treeId: e.target.value }))}
@@ -864,7 +865,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Node Type</label>
+            <label className="text-xs text-[#999] mb-1 block">Node Type</label>
             <select
               value={queryForm.nodeType}
               onChange={e => setQueryForm(prev => ({ ...prev, nodeType: e.target.value }))}
@@ -882,7 +883,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">State</label>
+            <label className="text-xs text-[#999] mb-1 block">State</label>
             <select
               value={queryForm.state}
               onChange={e => setQueryForm(prev => ({ ...prev, state: e.target.value }))}
@@ -895,7 +896,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Name Pattern</label>
+            <label className="text-xs text-[#999] mb-1 block">Name Pattern</label>
             <input
               type="text"
               value={queryForm.namePattern}
@@ -905,7 +906,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Tags (comma-separated)</label>
+            <label className="text-xs text-[#999] mb-1 block">Tags (comma-separated)</label>
             <input
               type="text"
               value={queryForm.tags}
@@ -939,22 +940,22 @@ const EngineNodeComposerPanel: React.FC = () => {
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <div className="text-gray-400 text-xs">Node ID</div>
+                  <div className="text-[#999] text-xs">Node ID</div>
                   <div className="text-white text-sm font-mono text-xs truncate">{node.id}</div>
                 </div>
                 {node.parent_id && (
                   <div>
-                    <div className="text-gray-400 text-xs">Parent ID</div>
+                    <div className="text-[#999] text-xs">Parent ID</div>
                     <div className="text-white text-sm font-mono text-xs truncate">{node.parent_id}</div>
                   </div>
                 )}
                 <div>
-                  <div className="text-gray-400 text-xs">Position</div>
+                  <div className="text-[#999] text-xs">Position</div>
                   <div className="text-white text-sm font-mono">({node.position_x}, {node.position_y})</div>
                 </div>
                 {node.tree_id && (
                   <div>
-                    <div className="text-gray-400 text-xs">Tree ID</div>
+                    <div className="text-[#999] text-xs">Tree ID</div>
                     <div className="text-white text-sm font-mono text-xs truncate">{node.tree_id}</div>
                   </div>
                 )}
@@ -965,12 +966,12 @@ const EngineNodeComposerPanel: React.FC = () => {
       )}
 
       {result && result.total !== undefined && queryResults.length === 0 && (
-        <div className="text-gray-400 text-sm">No nodes matched the query filters.</div>
+        <div className="text-[#999] text-sm">No nodes matched the query filters.</div>
       )}
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -983,7 +984,7 @@ const EngineNodeComposerPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Tree</label>
+            <label className="text-xs text-[#999] mb-1 block">Tree</label>
             <select
               value={signalForm.treeId}
               onChange={e => setSignalForm(prev => ({ ...prev, treeId: e.target.value }))}
@@ -996,7 +997,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Source Node ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Source Node ID</label>
             <input
               type="text"
               value={signalForm.sourceNodeId}
@@ -1006,7 +1007,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Signal Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Signal Name</label>
             <input
               type="text"
               value={signalForm.signalName}
@@ -1016,7 +1017,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Direction</label>
+            <label className="text-xs text-[#999] mb-1 block">Direction</label>
             <select
               value={signalForm.direction}
               onChange={e => setSignalForm(prev => ({ ...prev, direction: e.target.value }))}
@@ -1028,7 +1029,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Target Node ID (optional)</label>
+            <label className="text-xs text-[#999] mb-1 block">Target Node ID (optional)</label>
             <input
               type="text"
               value={signalForm.targetNodeId}
@@ -1038,7 +1039,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             />
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Data (JSON, optional)</label>
+            <label className="text-xs text-[#999] mb-1 block">Data (JSON, optional)</label>
             <textarea
               value={signalForm.data}
               onChange={e => setSignalForm(prev => ({ ...prev, data: e.target.value }))}
@@ -1062,15 +1063,15 @@ const EngineNodeComposerPanel: React.FC = () => {
           <div className="text-sm font-medium text-[#00d4ff]">Signal Results</div>
           <div className="grid grid-cols-2 gap-3">
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-              <div className="text-gray-400 text-xs">Signal Name</div>
+              <div className="text-[#999] text-xs">Signal Name</div>
               <div className="text-white text-sm font-mono">{signalResult.signal_name}</div>
             </div>
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center">
-              <div className="text-gray-400 text-xs">Direction</div>
+              <div className="text-[#999] text-xs">Direction</div>
               <div className="text-white text-sm font-mono">{signalResult.direction}</div>
             </div>
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 text-center col-span-2">
-              <div className="text-gray-400 text-xs">Total Recipients</div>
+              <div className="text-[#999] text-xs">Total Recipients</div>
               <div className="text-white text-sm font-mono">{signalResult.total_recipients}</div>
             </div>
           </div>
@@ -1088,7 +1089,7 @@ const EngineNodeComposerPanel: React.FC = () => {
                       {r.received ? 'Received' : 'Missed'}
                     </span>
                   </div>
-                  <div className="text-gray-400 text-xs mt-1">Node ID: {r.node_id}</div>
+                  <div className="text-[#999] text-xs mt-1">Node ID: {r.node_id}</div>
                 </div>
               ))}
             </div>
@@ -1098,7 +1099,7 @@ const EngineNodeComposerPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -1111,7 +1112,7 @@ const EngineNodeComposerPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-1 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Tree</label>
+            <label className="text-xs text-[#999] mb-1 block">Tree</label>
             <select
               value={exportTreeId}
               onChange={e => setExportTreeId(e.target.value)}
@@ -1137,7 +1138,7 @@ const EngineNodeComposerPanel: React.FC = () => {
         <div>
           <div className="text-sm font-medium text-[#00d4ff] mb-2">Exported Tree JSON</div>
           <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3">
-            <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap max-h-96 overflow-auto">
+            <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap max-h-96 overflow-auto">
               {JSON.stringify(exportData, null, 2)}
             </div>
           </div>
@@ -1146,7 +1147,7 @@ const EngineNodeComposerPanel: React.FC = () => {
 
       {error && (
         <div className="bg-[#16213e] border border-[#2a2a4a] rounded p-3 mt-3">
-          <div className="text-xs text-gray-300 font-mono whitespace-pre-wrap">{error}</div>
+          <div className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{error}</div>
         </div>
       )}
     </div>
@@ -1159,14 +1160,14 @@ const EngineNodeComposerPanel: React.FC = () => {
           <button
             key={t.id}
             onClick={() => { setActiveTab(t.id); setError(null); }}
-            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-gray-400 hover:text-white'}`}
+            className={`px-4 py-2 text-sm ${activeTab === t.id ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t' : 'text-[#999] hover:text-white'}`}
           >
             {t.label}
           </button>
         ))}
       </div>
       <div className="flex-1 overflow-auto p-4">
-        {loading && <div className="text-gray-400 text-sm">Loading...</div>}
+        {loading && <div className="text-[#999] text-sm">Loading...</div>}
         {renderTab()}
       </div>
     </div>

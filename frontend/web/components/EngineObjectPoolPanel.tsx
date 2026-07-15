@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
 type ActiveTab = 'pool-manager' | 'borrow-return' | 'optimization' | 'status';
 
@@ -83,7 +84,7 @@ const EngineObjectPoolPanel: React.FC = () => {
   const [predictResult, setPredictResult] = useState<PredictDemandResult | null>(null);
   const [optimizationResult, setOptimizationResult] = useState<OptimizationResult | null>(null);
 
-  const apiBase = 'http://localhost:8000/api/engine';
+  const apiBase = API_ROOT + '/engine';
 
   const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
     setMessage({ text, type });

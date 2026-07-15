@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 const CATEGORIES = ['performance', 'balance', 'visual', 'audio', 'ui_ux', 'gameplay', 'accessibility', 'localization', 'networking', 'security'];
 const SEVERITIES = ['low', 'medium', 'high', 'critical'];
@@ -171,7 +172,7 @@ export default function EngineLiveFeedbackPanel() {
       networking: 'bg-orange-900/50 text-orange-300',
       security: 'bg-pink-900/50 text-pink-300',
     };
-    return colors[category] || 'bg-gray-700/50 text-gray-300';
+    return colors[category] || 'bg-[#1a1a1a]/50 text-[#ccc]';
   };
 
   const overviewContent = (
@@ -186,14 +187,14 @@ export default function EngineLiveFeedbackPanel() {
         ].map(s => (
           <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
-            <div className="text-xs text-gray-400 mt-1">{s.label}</div>
+            <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
         ))}
       </div>
 
       {Object.keys(stats.feedback_by_category).length > 0 && (
         <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Feedback by Category</h3>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Feedback by Category</h3>
           <div className="space-y-2">
             {Object.entries(stats.feedback_by_category).map(([category, count]) => (
               <div key={category} className="flex items-center justify-between">
@@ -204,7 +205,7 @@ export default function EngineLiveFeedbackPanel() {
                   <div className="w-32 h-2 bg-[#1a1a2e] rounded-full overflow-hidden">
                     <div className="h-full bg-[#00d4ff] rounded-full" style={{ width: `${Math.min(100, (count / Math.max(stats.total_feedback_items, 1)) * 100)}%` }} />
                   </div>
-                  <span className="text-xs text-gray-400 w-8 text-right">{count}</span>
+                  <span className="text-xs text-[#999] w-8 text-right">{count}</span>
                 </div>
               </div>
             ))}
@@ -220,7 +221,7 @@ export default function EngineLiveFeedbackPanel() {
 
       {/* Entity Analysis */}
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Entity Analysis</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Entity Analysis</h3>
         <div className="grid grid-cols-1 gap-3 mb-3">
           <input
             type="text" placeholder="Entity ID"
@@ -246,7 +247,7 @@ export default function EngineLiveFeedbackPanel() {
 
       {/* Scene Analysis */}
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Scene Analysis</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Scene Analysis</h3>
         <div className="mb-3">
           <textarea
             placeholder='Scene Data (JSON) e.g. {"name": "Level1", "objects": [...]}'
@@ -266,7 +267,7 @@ export default function EngineLiveFeedbackPanel() {
 
       {/* Project Analysis */}
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Project Analysis</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Project Analysis</h3>
         <div className="mb-3">
           <textarea
             placeholder='Project Data (JSON) e.g. {"name": "MyGame", "settings": {...}}'
@@ -286,7 +287,7 @@ export default function EngineLiveFeedbackPanel() {
 
       {/* Runtime Analysis */}
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Runtime Analysis</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Runtime Analysis</h3>
         <div className="mb-3">
           <textarea
             placeholder='Runtime Data (JSON) e.g. {"fps": 60, "memory": 512}'
@@ -307,19 +308,19 @@ export default function EngineLiveFeedbackPanel() {
       {/* Analysis Result */}
       {analysisResult && (
         <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mt-4">
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Analysis Result</h3>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Analysis Result</h3>
           <div className="flex gap-4 mb-3">
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-center">
               <div className="text-sm font-bold text-[#00d4ff]">{analysisResult.issues_found}</div>
-              <div className="text-xs text-gray-500">Issues Found</div>
+              <div className="text-xs text-[#666]">Issues Found</div>
             </div>
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-center">
               <div className="text-sm font-bold" style={{ color: analysisResult.score >= 7 ? '#6bcb77' : analysisResult.score >= 4 ? '#fdcb6e' : '#ff6b6b' }}>{analysisResult.score}/10</div>
-              <div className="text-xs text-gray-500">Score</div>
+              <div className="text-xs text-[#666]">Score</div>
             </div>
           </div>
           {analysisResult.summary && (
-            <p className="text-xs text-gray-300">{analysisResult.summary}</p>
+            <p className="text-xs text-[#ccc]">{analysisResult.summary}</p>
           )}
         </div>
       )}
@@ -334,7 +335,7 @@ export default function EngineLiveFeedbackPanel() {
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
-            <label className="text-xs text-gray-500 block mb-1">Category</label>
+            <label className="text-xs text-[#666] block mb-1">Category</label>
             <select
               value={filterCategory}
               onChange={e => setFilterCategory(e.target.value)}
@@ -347,7 +348,7 @@ export default function EngineLiveFeedbackPanel() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-500 block mb-1">Severity</label>
+            <label className="text-xs text-[#666] block mb-1">Severity</label>
             <select
               value={filterSeverity}
               onChange={e => setFilterSeverity(e.target.value)}
@@ -360,7 +361,7 @@ export default function EngineLiveFeedbackPanel() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-500 block mb-1">Scope</label>
+            <label className="text-xs text-[#666] block mb-1">Scope</label>
             <select
               value={filterScope}
               onChange={e => setFilterScope(e.target.value)}
@@ -393,23 +394,23 @@ export default function EngineLiveFeedbackPanel() {
                 {item.severity.toUpperCase()}
               </span>
             </div>
-            <p className="text-xs text-gray-400 mb-2">{item.description}</p>
+            <p className="text-xs text-[#999] mb-2">{item.description}</p>
             <div className="flex flex-wrap gap-2 mb-2">
               <span className={`px-2 py-0.5 rounded text-xs ${getCategoryBadgeColor(item.category)} capitalize`}>{item.category.replace(/_/g, ' ')}</span>
-              <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-300 capitalize">{item.scope}</span>
-              <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-gray-500">{item.entity_id}</span>
+              <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">{item.scope}</span>
+              <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#666]">{item.entity_id}</span>
             </div>
             {item.suggestion && (
               <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2">
                 <span className="text-xs text-[#6bcb77]">Suggestion: </span>
-                <span className="text-xs text-gray-300">{item.suggestion}</span>
+                <span className="text-xs text-[#ccc]">{item.suggestion}</span>
               </div>
             )}
           </div>
         ))}
       </div>
       {feedback.length === 0 && (
-        <div className="text-center text-gray-500 py-8">No feedback items found. Run an analysis first.</div>
+        <div className="text-center text-[#666] py-8">No feedback items found. Run an analysis first.</div>
       )}
     </div>
   );
@@ -419,7 +420,7 @@ export default function EngineLiveFeedbackPanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Apply Fixes</h2>
 
       <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-6">
-        <h3 className="text-sm font-medium text-gray-300 mb-3">Apply Fix by Feedback ID</h3>
+        <h3 className="text-sm font-medium text-[#ccc] mb-3">Apply Fix by Feedback ID</h3>
         <div className="flex gap-3 items-end">
           <input
             type="text" placeholder="Feedback ID"
@@ -439,13 +440,13 @@ export default function EngineLiveFeedbackPanel() {
       {/* Unfixed Items Quick Reference */}
       {feedback.filter(f => !f.fixed).length > 0 && (
         <div>
-          <h3 className="text-sm font-medium text-gray-300 mb-3">Unfixed Items ({feedback.filter(f => !f.fixed).length})</h3>
+          <h3 className="text-sm font-medium text-[#ccc] mb-3">Unfixed Items ({feedback.filter(f => !f.fixed).length})</h3>
           <div className="space-y-2">
             {feedback.filter(f => !f.fixed).map(item => (
               <div key={item.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3 flex items-center justify-between">
                 <div>
                   <span className="text-sm text-white">{item.title}</span>
-                  <span className="text-xs text-gray-500 ml-2">ID: {item.id}</span>
+                  <span className="text-xs text-[#666] ml-2">ID: {item.id}</span>
                 </div>
                 <span
                   className="px-2 py-0.5 rounded text-xs font-medium"
@@ -466,7 +467,7 @@ export default function EngineLiveFeedbackPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}

@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = API_ROOT;
 
 interface ReplicationStats {
   active_connections: number;
@@ -198,7 +199,7 @@ const EngineNetworkReplicationPanel: React.FC = () => {
             <div key={key} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
                 <span className="text-[#00d4ff] text-xs font-bold bg-[#0f0f23] px-2 py-0.5 rounded">{icon}</span>
-                <span className="text-gray-400 text-xs">{label}</span>
+                <span className="text-[#999] text-xs">{label}</span>
               </div>
               <div className="text-white text-2xl font-bold">
                 {key === 'avg_latency_ms' || key === 'bandwidth_usage_kbps' || key === 'packet_loss_pct'
@@ -209,13 +210,13 @@ const EngineNetworkReplicationPanel: React.FC = () => {
           ))}
           {Object.entries(data).filter(([k]) => !['active_connections', 'total_events', 'avg_latency_ms', 'bandwidth_usage_kbps', 'packet_loss_pct', 'entities_replicated', 'uptime_seconds'].includes(k)).map(([key, value]) => (
             <div key={key} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-              <span className="text-gray-400 text-xs">{key.replace(/_/g, ' ')}</span>
+              <span className="text-[#999] text-xs">{key.replace(/_/g, ' ')}</span>
               <div className="text-white text-sm font-mono mt-1">{typeof value === 'number' ? value.toLocaleString() : String(value)}</div>
             </div>
           ))}
         </div>
       ) : (
-        <div className="text-gray-400 text-sm">No network replication stats available</div>
+        <div className="text-[#999] text-sm">No network replication stats available</div>
       )}
     </div>
   );
@@ -226,25 +227,25 @@ const EngineNetworkReplicationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-3">Register Network Identity</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Entity Type</label>
+            <label className="text-xs text-[#999] mb-1 block">Entity Type</label>
             <input type="text" value={eType} onChange={(e) => setEType(e.target.value)} placeholder="player" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Owner Client ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Owner Client ID</label>
             <input type="text" value={eOwnerId} onChange={(e) => setEOwnerId(e.target.value)} placeholder="client_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Replication Mode</label>
+            <label className="text-xs text-[#999] mb-1 block">Replication Mode</label>
             <select value={eReplicationMode} onChange={(e) => setEReplicationMode(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {REPLICATION_MODES.map((m) => <option key={m} value={m}>{m}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Priority</label>
+            <label className="text-xs text-[#999] mb-1 block">Priority</label>
             <input type="number" value={ePriority} onChange={(e) => setEPriority(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Authoritative</label>
+            <label className="text-xs text-[#999] mb-1 block">Authoritative</label>
             <label className="flex items-center gap-2 cursor-pointer mt-1">
               <input type="checkbox" checked={eAuthoritative} onChange={(e) => setEAuthoritative(e.target.checked)} className="accent-[#00d4ff]" />
               <span className="text-white text-xs">Server has authority</span>
@@ -252,7 +253,7 @@ const EngineNetworkReplicationPanel: React.FC = () => {
           </div>
           <div></div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Spawn Position</label>
+            <label className="text-xs text-[#999] mb-1 block">Spawn Position</label>
             <div className="grid grid-cols-3 gap-2">
               <input type="number" value={ePosX} onChange={(e) => setEPosX(e.target.value)} placeholder="X" className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               <input type="number" value={ePosY} onChange={(e) => setEPosY(e.target.value)} placeholder="Y" className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -298,9 +299,9 @@ const EngineNetworkReplicationPanel: React.FC = () => {
               <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-2 text-xs">
                 <div className="flex items-center justify-between">
                   <span className="text-white font-mono">{entry.identity_id}</span>
-                  <span className="text-gray-500">{new Date(entry.timestamp).toLocaleTimeString()}</span>
+                  <span className="text-[#666]">{new Date(entry.timestamp).toLocaleTimeString()}</span>
                 </div>
-                <div className="text-gray-400 mt-1">
+                <div className="text-[#999] mt-1">
                   Pos: ({entry.position.x}, {entry.position.y}, {entry.position.z})
                 </div>
               </div>
@@ -317,12 +318,12 @@ const EngineNetworkReplicationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-3">Submit State Update</div>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Identity ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Identity ID</label>
             <input type="text" value={stIdentityId} onChange={(e) => setStIdentityId(e.target.value)} placeholder="identity_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
 
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Position (X, Y, Z)</label>
+            <label className="text-xs text-[#999] mb-1 block">Position (X, Y, Z)</label>
             <div className="grid grid-cols-3 gap-2">
               <input type="number" value={stPosX} onChange={(e) => setStPosX(e.target.value)} placeholder="X" className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               <input type="number" value={stPosY} onChange={(e) => setStPosY(e.target.value)} placeholder="Y" className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -331,7 +332,7 @@ const EngineNetworkReplicationPanel: React.FC = () => {
           </div>
 
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Rotation (X, Y, Z)</label>
+            <label className="text-xs text-[#999] mb-1 block">Rotation (X, Y, Z)</label>
             <div className="grid grid-cols-3 gap-2">
               <input type="number" value={stRotX} onChange={(e) => setStRotX(e.target.value)} placeholder="X" className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               <input type="number" value={stRotY} onChange={(e) => setStRotY(e.target.value)} placeholder="Y" className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -340,7 +341,7 @@ const EngineNetworkReplicationPanel: React.FC = () => {
           </div>
 
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Velocity (X, Y, Z)</label>
+            <label className="text-xs text-[#999] mb-1 block">Velocity (X, Y, Z)</label>
             <div className="grid grid-cols-3 gap-2">
               <input type="number" value={stVelX} onChange={(e) => setStVelX(e.target.value)} placeholder="X" className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               <input type="number" value={stVelY} onChange={(e) => setStVelY(e.target.value)} placeholder="Y" className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -349,7 +350,7 @@ const EngineNetworkReplicationPanel: React.FC = () => {
           </div>
 
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Custom State (JSON)</label>
+            <label className="text-xs text-[#999] mb-1 block">Custom State (JSON)</label>
             <textarea value={stCustom} onChange={(e) => setStCustom(e.target.value)} placeholder='{"health": 100, "ammo": 30}' rows={3} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -383,28 +384,28 @@ const EngineNetworkReplicationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-3">Send Network Event</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Event Type</label>
+            <label className="text-xs text-[#999] mb-1 block">Event Type</label>
             <select value={evType} onChange={(e) => setEvType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {EVENT_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Reliable</label>
+            <label className="text-xs text-[#999] mb-1 block">Reliable</label>
             <label className="flex items-center gap-2 cursor-pointer mt-2">
               <input type="checkbox" checked={evReliable} onChange={(e) => setEvReliable(e.target.checked)} className="accent-[#00d4ff]" />
               <span className="text-white text-xs">Guaranteed delivery</span>
             </label>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Source ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Source ID</label>
             <input type="text" value={evSourceId} onChange={(e) => setEvSourceId(e.target.value)} placeholder="client_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Target ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Target ID</label>
             <input type="text" value={evTargetId} onChange={(e) => setEvTargetId(e.target.value)} placeholder="client_002" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Payload (JSON)</label>
+            <label className="text-xs text-[#999] mb-1 block">Payload (JSON)</label>
             <textarea value={evPayload} onChange={(e) => setEvPayload(e.target.value)} placeholder='{"action": "shoot", "damage": 25}' rows={3} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -439,15 +440,15 @@ const EngineNetworkReplicationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-3">Register Client</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Address</label>
+            <label className="text-xs text-[#999] mb-1 block">Address</label>
             <input type="text" value={cAddress} onChange={(e) => setCAddress(e.target.value)} placeholder="192.168.1.100" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Port</label>
+            <label className="text-xs text-[#999] mb-1 block">Port</label>
             <input type="number" value={cPort} onChange={(e) => setCPort(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Role</label>
+            <label className="text-xs text-[#999] mb-1 block">Role</label>
             <select value={cRole} onChange={(e) => setCRole(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {ROLES.map((r) => <option key={r} value={r}>{r}</option>)}
             </select>
@@ -480,10 +481,10 @@ const EngineNetworkReplicationPanel: React.FC = () => {
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-white text-sm font-medium">{c.address}:{c.port}</span>
                   <div className="flex gap-1">
-                    <span className={`text-xs px-2 py-0.5 rounded ${c.status === 'connected' ? 'bg-green-900 text-green-300' : c.status === 'disconnected' ? 'bg-red-900 text-red-300' : 'bg-gray-700 text-gray-300'}`}>
+                    <span className={`text-xs px-2 py-0.5 rounded ${c.status === 'connected' ? 'bg-green-900 text-green-300' : c.status === 'disconnected' ? 'bg-red-900 text-red-300' : 'bg-[#1a1a1a] text-[#ccc]'}`}>
                       {c.status || 'unknown'}
                     </span>
-                    <span className="text-xs bg-[#1a1a2e] text-gray-300 px-2 py-0.5 rounded">{c.role}</span>
+                    <span className="text-xs bg-[#1a1a2e] text-[#ccc] px-2 py-0.5 rounded">{c.role}</span>
                   </div>
                 </div>
                 {c.id && (
@@ -523,7 +524,7 @@ const EngineNetworkReplicationPanel: React.FC = () => {
             ))}
           </div>
         ) : (
-          <div className="text-gray-400 text-xs">No clients connected</div>
+          <div className="text-[#999] text-xs">No clients connected</div>
         )}
       </div>
     </div>
@@ -535,15 +536,15 @@ const EngineNetworkReplicationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-3">Create Match</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Room Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Room Name</label>
             <input type="text" value={mRoomName} onChange={(e) => setMRoomName(e.target.value)} placeholder="Deathmatch Arena #1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Max Players</label>
+            <label className="text-xs text-[#999] mb-1 block">Max Players</label>
             <input type="number" value={mMaxPlayers} onChange={(e) => setMMaxPlayers(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Game Mode</label>
+            <label className="text-xs text-[#999] mb-1 block">Game Mode</label>
             <select value={mGameMode} onChange={(e) => setMGameMode(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {GAME_MODES.map((m) => <option key={m} value={m}>{m.replace(/_/g, ' ')}</option>)}
             </select>
@@ -570,11 +571,11 @@ const EngineNetworkReplicationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-3">Interest Management</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Client ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Client ID</label>
             <input type="text" value={interestClientId} onChange={(e) => setInterestClientId(e.target.value)} placeholder="client_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">View Radius</label>
+            <label className="text-xs text-[#999] mb-1 block">View Radius</label>
             <input type="number" value={interestRadius} onChange={(e) => setInterestRadius(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -597,12 +598,12 @@ const EngineNetworkReplicationPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-3">State Reconciliation</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Client ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Client ID</label>
             <input type="text" value={reconcileClientId} onChange={(e) => setReconcileClientId(e.target.value)} placeholder="client_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div></div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Server State (JSON)</label>
+            <label className="text-xs text-[#999] mb-1 block">Server State (JSON)</label>
             <textarea value={reconcileState} onChange={(e) => setReconcileState(e.target.value)} placeholder='{"pos": [100, 200, 0], "health": 80}' rows={4} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
@@ -634,7 +635,7 @@ const EngineNetworkReplicationPanel: React.FC = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'}`}
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}
           >
             {tab.label}
           </button>

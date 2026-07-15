@@ -1,7 +1,8 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api/engine';
+const API_BASE = API_ROOT + '/engine';
 
 // ── Types ──
 
@@ -330,7 +331,7 @@ export default function EngineNodeEditorPanel() {
           </div>
         ))}
         {Object.keys(stats).length === 0 && (
-          <div className="col-span-full text-gray-400 text-sm">No stats available.</div>
+          <div className="col-span-full text-[#999] text-sm">No stats available.</div>
         )}
       </div>
     </div>
@@ -344,7 +345,7 @@ export default function EngineNodeEditorPanel() {
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Graph</h2>
         <div className="grid grid-cols-1 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Graph Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Graph Name</label>
             <input
               type="text"
               value={createGraphForm.name}
@@ -354,7 +355,7 @@ export default function EngineNodeEditorPanel() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Description</label>
+            <label className="text-xs text-[#999] mb-1 block">Description</label>
             <textarea
               value={createGraphForm.description}
               onChange={e => setCreateGraphForm(prev => ({ ...prev, description: e.target.value }))}
@@ -378,7 +379,7 @@ export default function EngineNodeEditorPanel() {
           <h2 className="text-lg font-bold text-[#00d4ff]">Graphs ({graphs.length})</h2>
           <button
             onClick={fetchGraphs}
-            className="text-xs px-3 py-1 bg-[#1a1a2e] text-gray-300 rounded hover:bg-[#2a2a4a]"
+            className="text-xs px-3 py-1 bg-[#1a1a2e] text-[#ccc] rounded hover:bg-[#2a2a4a]"
           >
             Refresh
           </button>
@@ -394,9 +395,9 @@ export default function EngineNodeEditorPanel() {
                   </span>
                 </div>
                 {g.description && (
-                  <div className="mt-1 text-xs text-gray-400">{g.description}</div>
+                  <div className="mt-1 text-xs text-[#999]">{g.description}</div>
                 )}
-                <div className="mt-1 flex gap-3 text-xs text-gray-500">
+                <div className="mt-1 flex gap-3 text-xs text-[#666]">
                   <span>ID: {g.id}</span>
                   {g.created_at && <span>{g.created_at}</span>}
                 </div>
@@ -404,7 +405,7 @@ export default function EngineNodeEditorPanel() {
             ))}
           </div>
         ) : (
-          <div className="text-gray-400 text-xs">No graphs created yet.</div>
+          <div className="text-[#999] text-xs">No graphs created yet.</div>
         )}
       </div>
     </div>
@@ -418,7 +419,7 @@ export default function EngineNodeEditorPanel() {
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Node</h2>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Graph</label>
+            <label className="text-xs text-[#999] mb-1 block">Graph</label>
             <select
               value={createNodeForm.graphId}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, graphId: e.target.value }))}
@@ -431,7 +432,7 @@ export default function EngineNodeEditorPanel() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Node Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Node Name</label>
             <input
               type="text"
               value={createNodeForm.name}
@@ -441,7 +442,7 @@ export default function EngineNodeEditorPanel() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Node Type</label>
+            <label className="text-xs text-[#999] mb-1 block">Node Type</label>
             <select
               value={createNodeForm.nodeType}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, nodeType: e.target.value }))}
@@ -453,7 +454,7 @@ export default function EngineNodeEditorPanel() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Category</label>
+            <label className="text-xs text-[#999] mb-1 block">Category</label>
             <select
               value={createNodeForm.category}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, category: e.target.value }))}
@@ -465,7 +466,7 @@ export default function EngineNodeEditorPanel() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Position X</label>
+            <label className="text-xs text-[#999] mb-1 block">Position X</label>
             <input
               type="number"
               value={createNodeForm.positionX}
@@ -474,7 +475,7 @@ export default function EngineNodeEditorPanel() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Position Y</label>
+            <label className="text-xs text-[#999] mb-1 block">Position Y</label>
             <input
               type="number"
               value={createNodeForm.positionY}
@@ -483,7 +484,7 @@ export default function EngineNodeEditorPanel() {
             />
           </div>
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Properties (JSON)</label>
+            <label className="text-xs text-[#999] mb-1 block">Properties (JSON)</label>
             <textarea
               value={createNodeForm.properties}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, properties: e.target.value }))}
@@ -512,7 +513,7 @@ export default function EngineNodeEditorPanel() {
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Connect Nodes</h2>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
-            <label className="text-xs text-gray-400 mb-1 block">Graph</label>
+            <label className="text-xs text-[#999] mb-1 block">Graph</label>
             <select
               value={connectNodesForm.graphId}
               onChange={e => setConnectNodesForm(prev => ({ ...prev, graphId: e.target.value }))}
@@ -525,7 +526,7 @@ export default function EngineNodeEditorPanel() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Source Node ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Source Node ID</label>
             <input
               type="text"
               value={connectNodesForm.sourceNodeId}
@@ -535,7 +536,7 @@ export default function EngineNodeEditorPanel() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Source Port ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Source Port ID</label>
             <input
               type="text"
               value={connectNodesForm.sourcePortId}
@@ -545,7 +546,7 @@ export default function EngineNodeEditorPanel() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Target Node ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Target Node ID</label>
             <input
               type="text"
               value={connectNodesForm.targetNodeId}
@@ -555,7 +556,7 @@ export default function EngineNodeEditorPanel() {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Target Port ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Target Port ID</label>
             <input
               type="text"
               value={connectNodesForm.targetPortId}
@@ -584,7 +585,7 @@ export default function EngineNodeEditorPanel() {
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Execute Graph</h2>
         <div className="grid grid-cols-1 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Graph</label>
+            <label className="text-xs text-[#999] mb-1 block">Graph</label>
             <select
               value={executeGraphForm.graphId}
               onChange={e => setExecuteGraphForm(prev => ({ ...prev, graphId: e.target.value }))}
@@ -597,7 +598,7 @@ export default function EngineNodeEditorPanel() {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Inputs (JSON)</label>
+            <label className="text-xs text-[#999] mb-1 block">Inputs (JSON)</label>
             <textarea
               value={executeGraphForm.inputs}
               onChange={e => setExecuteGraphForm(prev => ({ ...prev, inputs: e.target.value }))}
@@ -621,33 +622,33 @@ export default function EngineNodeEditorPanel() {
           <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Execution Result</h2>
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-              <span className="text-gray-400 text-xs">Status</span>
+              <span className="text-[#999] text-xs">Status</span>
               <div className={`text-sm font-bold mt-1 ${executionResult.success ? 'text-green-400' : 'text-red-400'}`}>
                 {executionResult.success ? 'Success' : 'Failed'}
               </div>
             </div>
             {executionResult.error && (
               <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
-                <span className="text-gray-400 text-xs">Error</span>
+                <span className="text-[#999] text-xs">Error</span>
                 <div className="text-sm text-red-400 mt-1">{executionResult.error}</div>
               </div>
             )}
           </div>
           {executionResult.output !== undefined && (
             <div>
-              <span className="text-gray-400 text-xs mb-1 block">Output</span>
-              <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-gray-300 font-mono overflow-auto max-h-64">
+              <span className="text-[#999] text-xs mb-1 block">Output</span>
+              <pre className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a] text-xs text-[#ccc] font-mono overflow-auto max-h-64">
                 {JSON.stringify(executionResult.output, null, 2)}
               </pre>
             </div>
           )}
           {executionResult.node_results && executionResult.node_results.length > 0 && (
             <div className="mt-3">
-              <span className="text-gray-400 text-xs mb-2 block">Node Results</span>
+              <span className="text-[#999] text-xs mb-2 block">Node Results</span>
               <div className="space-y-1">
                 {executionResult.node_results.map((nr: any, i: number) => (
                   <div key={i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded p-2">
-                    <pre className="text-xs text-gray-300 font-mono">{JSON.stringify(nr, null, 2)}</pre>
+                    <pre className="text-xs text-[#ccc] font-mono">{JSON.stringify(nr, null, 2)}</pre>
                   </div>
                 ))}
               </div>
@@ -666,7 +667,7 @@ export default function EngineNodeEditorPanel() {
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Browse Templates</h2>
         <div className="flex gap-3 items-end mb-4">
           <div className="flex-1">
-            <label className="text-xs text-gray-400 mb-1 block">Filter by Category</label>
+            <label className="text-xs text-[#999] mb-1 block">Filter by Category</label>
             <input
               type="text"
               value={templateCategory}
@@ -691,7 +692,7 @@ export default function EngineNodeEditorPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Templates ({templates.length})</h2>
             <button
               onClick={() => fetchTemplates(templateCategory || undefined)}
-              className="text-xs px-3 py-1 bg-[#1a1a2e] text-gray-300 rounded hover:bg-[#2a2a4a]"
+              className="text-xs px-3 py-1 bg-[#1a1a2e] text-[#ccc] rounded hover:bg-[#2a2a4a]"
             >
               Refresh
             </button>
@@ -714,9 +715,9 @@ export default function EngineNodeEditorPanel() {
                 </button>
               </div>
               {t.description && (
-                <div className="text-xs text-gray-400 mb-2">{t.description}</div>
+                <div className="text-xs text-[#999] mb-2">{t.description}</div>
               )}
-              <div className="grid grid-cols-2 gap-2 text-xs text-gray-500">
+              <div className="grid grid-cols-2 gap-2 text-xs text-[#666]">
                 <span>ID: {t.id}</span>
                 <span>{t.nodes?.length ?? 0} nodes, {t.connections?.length ?? 0} connections</span>
               </div>
@@ -725,7 +726,7 @@ export default function EngineNodeEditorPanel() {
         </div>
       ) : (
         <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-          <div className="text-gray-400 text-xs">
+          <div className="text-[#999] text-xs">
             {templateCategory ? 'No templates found for this category.' : 'Enter a category to load templates.'}
           </div>
         </div>
@@ -743,7 +744,7 @@ export default function EngineNodeEditorPanel() {
             className={`px-4 py-2 rounded text-sm font-medium ${
               activeTab === t.id
                 ? 'bg-[#00d4ff] text-black'
-                : 'bg-[#0f0f23] text-gray-300 hover:bg-[#2a2a4a]'
+                : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'
             }`}
           >
             {t.label}
@@ -756,7 +757,7 @@ export default function EngineNodeEditorPanel() {
         </div>
       )}
       <div className="flex-1 overflow-auto p-4">
-        {loading && <div className="text-gray-400 text-sm mb-3">Loading...</div>}
+        {loading && <div className="text-[#999] text-sm mb-3">Loading...</div>}
         {renderTab()}
       </div>
     </div>

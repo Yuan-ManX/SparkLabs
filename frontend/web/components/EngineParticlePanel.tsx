@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from 'react';
+import { API_BASE as API_ROOT } from '../utils/api';
 
-const API_BASE = 'http://localhost:8000/api';
+const API_BASE = API_ROOT;
 
 interface ParticleStats {
   active_emitters: number;
@@ -181,7 +182,7 @@ const EngineParticlePanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           {Object.entries(data).map(([key, value]) => (
             <div key={key} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
-              <span className="text-gray-400 text-xs">{key.replace(/_/g, ' ')}</span>
+              <span className="text-[#999] text-xs">{key.replace(/_/g, ' ')}</span>
               <div className="text-white text-sm font-mono mt-1">
                 {typeof value === 'number' ? value.toLocaleString() : String(value)}
               </div>
@@ -189,7 +190,7 @@ const EngineParticlePanel: React.FC = () => {
           ))}
         </div>
       ) : (
-        <div className="text-gray-400 text-sm">No particle system data available</div>
+        <div className="text-[#999] text-sm">No particle system data available</div>
       )}
     </div>
   );
@@ -200,7 +201,7 @@ const EngineParticlePanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Emitter Name</label>
+            <label className="text-xs text-[#999] mb-1 block">Emitter Name</label>
             <input
               type="text"
               value={emitterName}
@@ -210,7 +211,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Shape</label>
+            <label className="text-xs text-[#999] mb-1 block">Shape</label>
             <select
               value={shape}
               onChange={(e) => setShape(e.target.value)}
@@ -224,7 +225,7 @@ const EngineParticlePanel: React.FC = () => {
             </select>
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Emission Rate</label>
+            <label className="text-xs text-[#999] mb-1 block">Emission Rate</label>
             <input
               type="number"
               value={emissionRate}
@@ -233,7 +234,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Max Particles</label>
+            <label className="text-xs text-[#999] mb-1 block">Max Particles</label>
             <input
               type="number"
               value={maxParticles}
@@ -242,7 +243,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Lifetime Min (s)</label>
+            <label className="text-xs text-[#999] mb-1 block">Lifetime Min (s)</label>
             <input
               type="number"
               step="0.1"
@@ -252,7 +253,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Lifetime Max (s)</label>
+            <label className="text-xs text-[#999] mb-1 block">Lifetime Max (s)</label>
             <input
               type="number"
               step="0.1"
@@ -262,7 +263,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Speed Min</label>
+            <label className="text-xs text-[#999] mb-1 block">Speed Min</label>
             <input
               type="number"
               value={speedMin}
@@ -271,7 +272,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Speed Max</label>
+            <label className="text-xs text-[#999] mb-1 block">Speed Max</label>
             <input
               type="number"
               value={speedMax}
@@ -280,7 +281,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Size Start</label>
+            <label className="text-xs text-[#999] mb-1 block">Size Start</label>
             <input
               type="number"
               step="0.1"
@@ -290,7 +291,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Size End</label>
+            <label className="text-xs text-[#999] mb-1 block">Size End</label>
             <input
               type="number"
               step="0.1"
@@ -300,7 +301,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Color Start</label>
+            <label className="text-xs text-[#999] mb-1 block">Color Start</label>
             <input
               type="color"
               value={colorStart}
@@ -309,7 +310,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Color End</label>
+            <label className="text-xs text-[#999] mb-1 block">Color End</label>
             <input
               type="color"
               value={colorEnd}
@@ -318,7 +319,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Gravity</label>
+            <label className="text-xs text-[#999] mb-1 block">Gravity</label>
             <input
               type="number"
               step="0.1"
@@ -328,7 +329,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Texture (optional)</label>
+            <label className="text-xs text-[#999] mb-1 block">Texture (optional)</label>
             <input
               type="text"
               value={emitterTexture}
@@ -339,10 +340,10 @@ const EngineParticlePanel: React.FC = () => {
           </div>
         </div>
 
-        <div className="text-xs text-gray-400 mb-1 mt-3 block">Position</div>
+        <div className="text-xs text-[#999] mb-1 mt-3 block">Position</div>
         <div className="grid grid-cols-3 gap-2">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">X</label>
+            <label className="text-xs text-[#999] mb-1 block">X</label>
             <input
               type="number"
               step="0.1"
@@ -352,7 +353,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Y</label>
+            <label className="text-xs text-[#999] mb-1 block">Y</label>
             <input
               type="number"
               step="0.1"
@@ -362,7 +363,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Z</label>
+            <label className="text-xs text-[#999] mb-1 block">Z</label>
             <input
               type="number"
               step="0.1"
@@ -388,7 +389,7 @@ const EngineParticlePanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Update All Particles</div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Delta Time</label>
+          <label className="text-xs text-[#999] mb-1 block">Delta Time</label>
           <input
             type="number"
             step="0.001"
@@ -429,7 +430,7 @@ const EngineParticlePanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Burst Particles</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Emitter ID</label>
+            <label className="text-xs text-[#999] mb-1 block">Emitter ID</label>
             <input
               type="text"
               value={burstEmitterId}
@@ -439,7 +440,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Burst Count</label>
+            <label className="text-xs text-[#999] mb-1 block">Burst Count</label>
             <input
               type="number"
               value={burstCount}
@@ -464,9 +465,9 @@ const EngineParticlePanel: React.FC = () => {
 
       {/* Set Position */}
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-xs text-gray-400 mb-2">Set Position</div>
+        <div className="text-xs text-[#999] mb-2">Set Position</div>
         <div>
-          <label className="text-xs text-gray-400 mb-1 block">Emitter ID</label>
+          <label className="text-xs text-[#999] mb-1 block">Emitter ID</label>
           <input
             type="text"
             value={controlEmitterId}
@@ -477,7 +478,7 @@ const EngineParticlePanel: React.FC = () => {
         </div>
         <div className="grid grid-cols-2 gap-2 mb-2">
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">X</label>
+            <label className="text-xs text-[#999] mb-1 block">X</label>
             <input
               type="number"
               step="0.1"
@@ -487,7 +488,7 @@ const EngineParticlePanel: React.FC = () => {
             />
           </div>
           <div>
-            <label className="text-xs text-gray-400 mb-1 block">Y</label>
+            <label className="text-xs text-[#999] mb-1 block">Y</label>
             <input
               type="number"
               step="0.1"
@@ -507,9 +508,9 @@ const EngineParticlePanel: React.FC = () => {
 
       {/* Set Active / Remove */}
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
-        <div className="text-xs text-gray-400 mb-2">Active / Remove</div>
+        <div className="text-xs text-[#999] mb-2">Active / Remove</div>
         <div className="flex items-center gap-3 mb-2">
-          <label className="text-xs text-gray-400">Active State</label>
+          <label className="text-xs text-[#999]">Active State</label>
           <input
             type="checkbox"
             checked={controlActive}
@@ -539,7 +540,7 @@ const EngineParticlePanel: React.FC = () => {
     <div>
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Clear All Particles</div>
-        <p className="text-gray-400 text-xs mb-3">
+        <p className="text-[#999] text-xs mb-3">
           This will remove all active emitters and particles from the system.
         </p>
         <button
@@ -588,7 +589,7 @@ const EngineParticlePanel: React.FC = () => {
             className={`px-4 py-2 text-sm ${
               activeTab === t.id
                 ? 'bg-[#1a1a2e] text-[#00d4ff] border-t border-x border-[#2a2a4a] rounded-t'
-                : 'text-gray-400 hover:text-white'
+                : 'text-[#999] hover:text-white'
             }`}
           >
             {t.label}
@@ -598,7 +599,7 @@ const EngineParticlePanel: React.FC = () => {
 
       {/* Content area */}
       <div className="flex-1 overflow-auto p-4">
-        {loading && <div className="text-gray-400 text-sm mb-2">Loading...</div>}
+        {loading && <div className="text-[#999] text-sm mb-2">Loading...</div>}
         {renderTab()}
       </div>
     </div>
