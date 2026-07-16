@@ -109,7 +109,7 @@ const BlueprintEditor: React.FC = () => {
     const stateColor = STATE_COLORS[selectedBp.state] || '#888';
     return (
       <div className="p-4 space-y-3">
-        <div className="bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+        <div className="bg-[#111] border border-[#2a2a2a] rounded-lg p-3">
           <div className="flex items-center gap-2 mb-2">
             <span className="text-[11px] font-semibold text-[#ddd]">{selectedBp.name}</span>
             <span className="text-[9px] px-1.5 py-0.5 rounded" style={{ backgroundColor: `${stateColor}20`, color: stateColor }}>
@@ -121,7 +121,7 @@ const BlueprintEditor: React.FC = () => {
           {selectedBp.description && <div className="text-[10px] text-[#888]">{selectedBp.description}</div>}
         </div>
 
-        <div className="bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+        <div className="bg-[#111] border border-[#2a2a2a] rounded-lg p-3">
           <div className="text-[10px] text-[#888] mb-2">Core Loop</div>
           {selectedBp.core_loop ? (
             <div className="space-y-1">
@@ -140,7 +140,7 @@ const BlueprintEditor: React.FC = () => {
           )}
         </div>
 
-        <div className="bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+        <div className="bg-[#111] border border-[#2a2a2a] rounded-lg p-3">
           <div className="text-[10px] text-[#888] mb-2">State Transition</div>
           <div className="flex gap-1 flex-wrap">
             {['draft', 'review', 'approved', 'implementing', 'iterating', 'finalized'].map(state => (
@@ -161,7 +161,7 @@ const BlueprintEditor: React.FC = () => {
           </div>
         </div>
 
-        <div className="bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+        <div className="bg-[#111] border border-[#2a2a2a] rounded-lg p-3">
           <div className="text-[10px] text-[#888] mb-1">Revisions ({(selectedBp.revisions || []).length})</div>
           <div className="space-y-1 max-h-32 overflow-y-auto">
             {(selectedBp.revisions || []).slice(-5).reverse().map((rev: Record<string, any>, i: number) => (
@@ -197,7 +197,7 @@ const BlueprintEditor: React.FC = () => {
           mechanics.map((mech: Record<string, any>) => {
             const color = MECHANIC_COLORS[mech.mechanic_type] || '#888';
             return (
-              <div key={mech.id} className="p-2.5 rounded-lg border border-[#2a2a2a] bg-[#141414]">
+              <div key={mech.id} className="p-2.5 rounded-lg border border-[#2a2a2a] bg-[#111]">
                 <div className="flex items-center gap-2 mb-1">
                   <div className="w-4 h-4 rounded flex items-center justify-center" style={{ backgroundColor: `${color}20` }}>
                     <i className="fa-solid fa-gear text-[7px]" style={{ color }} />
@@ -228,7 +228,7 @@ const BlueprintEditor: React.FC = () => {
     return (
       <div className="p-4 space-y-3">
         {prog ? (
-          <div className="bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+          <div className="bg-[#111] border border-[#2a2a2a] rounded-lg p-3">
             <div className="flex items-center gap-2 mb-2">
               <span className="text-[11px] font-semibold text-[#ddd]">{prog.name}</span>
               <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-500/20 text-blue-400">{prog.progression_type}</span>
@@ -265,7 +265,7 @@ const BlueprintEditor: React.FC = () => {
     return (
       <div className="p-4 space-y-3">
         {aes ? (
-          <div className="bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+          <div className="bg-[#111] border border-[#2a2a2a] rounded-lg p-3">
             <div className="text-[11px] font-semibold text-[#ddd] mb-2">{aes.name}</div>
             {aes.pillars && aes.pillars.length > 0 && (
               <div className="flex flex-wrap gap-1 mb-2">
@@ -324,13 +324,13 @@ const BlueprintEditor: React.FC = () => {
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
             placeholder="Blueprint name..."
-            className="flex-1 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-[11px] text-[#ddd] placeholder-[#555] focus:border-cyan-500/50 focus:outline-none"
+            className="flex-1 bg-[#111] border border-[#2a2a2a] rounded-lg px-3 py-1.5 text-[11px] text-[#ddd] placeholder-[#555] focus:border-cyan-500/50 focus:outline-none"
             onKeyDown={(e) => e.key === 'Enter' && handleCreate()}
           />
           <select
             value={newGenre}
             onChange={(e) => setNewGenre(e.target.value)}
-            className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-2 py-1.5 text-[11px] text-[#ddd] focus:outline-none"
+            className="bg-[#111] border border-[#2a2a2a] rounded-lg px-2 py-1.5 text-[11px] text-[#ddd] focus:outline-none"
           >
             <option value="">Genre</option>
             <option value="platformer">Platformer</option>
@@ -345,7 +345,7 @@ const BlueprintEditor: React.FC = () => {
           <button
             onClick={handleCreate}
             disabled={!newName.trim()}
-            className="px-3 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded-lg text-[10px] font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
+            className="px-3 py-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded-lg text-[10px] font-semibold hover:opacity-90 disabled:opacity-50 transition-opacity"
           >
             Create
           </button>
@@ -380,8 +380,8 @@ const BlueprintEditor: React.FC = () => {
               <div
                 key={bp.id}
                 onClick={() => setSelectedBp(bp)}
-                className={`px-3 py-2 border-b border-[#1a1a1a] cursor-pointer transition-colors ${
-                  isSelected ? 'bg-cyan-500/10' : 'hover:bg-[#141414]'
+                className={`px-3 py-2 border-b border-[#1e1e1e] cursor-pointer transition-colors ${
+                  isSelected ? 'bg-cyan-500/10' : 'hover:bg-[#111]'
                 }`}
               >
                 <div className="flex items-center gap-1.5">

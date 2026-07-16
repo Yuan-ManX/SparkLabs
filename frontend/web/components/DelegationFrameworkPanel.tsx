@@ -126,7 +126,7 @@ const DelegationFrameworkPanel: React.FC = () => {
     { key: 'tasks', label: 'Tasks' },
   ];
 
-  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
+  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
 
   const statusColor = (status: string) => {
     switch (status) {
@@ -185,7 +185,7 @@ const DelegationFrameworkPanel: React.FC = () => {
                 <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Role: <span style={{ color: '#aaa' }}>{child.role}</span></div>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   {child.capabilities.map(cap => (
-                    <span key={cap} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe', border: '1px solid #2a2a3e' }}>{cap}</span>
+                    <span key={cap} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe', border: '1px solid #2a2a3e' }}>{cap}</span>
                   ))}
                 </div>
               </div>
@@ -223,7 +223,7 @@ const DelegationFrameworkPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDC65'} {children.length} children · {tasks.length} tasks</span>
         <span>Connected</span>
       </div>

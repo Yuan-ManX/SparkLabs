@@ -227,7 +227,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a4a]">
         <div className="flex items-center gap-2">
@@ -344,7 +344,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                   value={agentId}
                   onChange={(e) => setAgentId(e.target.value)}
                   placeholder="e.g. guard_captain"
-                  className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
                 />
               </div>
 
@@ -356,7 +356,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                   onChange={(e) => setViewRadius(Number(e.target.value))}
                   min={10}
                   max={10000}
-                  className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
                 />
               </div>
 
@@ -367,7 +367,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                   value={goal}
                   onChange={(e) => setGoal(e.target.value)}
                   placeholder="e.g. patrol the northern gate"
-                  className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
                 />
               </div>
 
@@ -376,7 +376,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                 <select
                   value={mode}
                   onChange={(e) => setMode(e.target.value)}
-                  className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
                 >
                   <option value="participant">Participant</option>
                   <option value="observer">Observer</option>
@@ -405,7 +405,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                   {/* Percept section */}
                   <div className="mb-3">
                     <h4 className="text-xs text-[#999] mb-1 font-semibold uppercase tracking-wider">Percept</h4>
-                    <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
+                    <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded p-3">
                       {Array.isArray(cycleResult.percept) ? (
                         <div className="space-y-1">
                           {cycleResult.percept.map((p: any, idx: number) => (
@@ -426,7 +426,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                   {/* Intentions section */}
                   <div className="mb-3">
                     <h4 className="text-xs text-[#999] mb-1 font-semibold uppercase tracking-wider">Intentions</h4>
-                    <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
+                    <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded p-3">
                       {Array.isArray(cycleResult.intentions) ? (
                         <div className="space-y-1">
                           {cycleResult.intentions.map((i: any, idx: number) => (
@@ -451,7 +451,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                   {/* Action section */}
                   <div className="mb-3">
                     <h4 className="text-xs text-[#999] mb-1 font-semibold uppercase tracking-wider">Action</h4>
-                    <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
+                    <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded p-3">
                       <pre className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">{JSON.stringify(cycleResult.action, null, 2)}</pre>
                     </div>
                   </div>
@@ -459,7 +459,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                   {/* Feedback section */}
                   <div>
                     <h4 className="text-xs text-[#999] mb-1 font-semibold uppercase tracking-wider">Feedback</h4>
-                    <div className={`bg-[#0f0f23] border rounded p-3 ${cycleResult.feedback?.success !== false ? 'border-[#2a2a4a]' : 'border-red-800'}`}>
+                    <div className={`bg-[#0d0d0d] border rounded p-3 ${cycleResult.feedback?.success !== false ? 'border-[#2a2a4a]' : 'border-red-800'}`}>
                       <pre className={`text-xs font-mono whitespace-pre-wrap ${cycleResult.feedback?.success !== false ? 'text-[#ccc]' : 'text-red-400'}`}>{JSON.stringify(cycleResult.feedback, null, 2)}</pre>
                     </div>
                   </div>
@@ -483,7 +483,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                     value={entityRegionFilter}
                     onChange={(e) => setEntityRegionFilter(e.target.value)}
                     placeholder="e.g. forest, village"
-                    className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+                    className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
                   />
                 </div>
                 <div className="flex-1">
@@ -493,7 +493,7 @@ const AgentWorldInteractionPanel: React.FC = () => {
                     value={entityTypeFilter}
                     onChange={(e) => setEntityTypeFilter(e.target.value)}
                     placeholder="e.g. tree, door, interactive"
-                    className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+                    className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
                   />
                 </div>
               </div>

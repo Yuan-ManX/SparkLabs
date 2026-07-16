@@ -249,15 +249,15 @@ const CapabilityRegistryPanel: React.FC = () => {
       )}
 
       <div style={{ padding: '10px 12px', display: 'flex', gap: 6, borderBottom: '1px solid #2a2a3e', flexWrap: 'wrap', alignItems: 'center' }}>
-        <input value={capNameInput} onChange={e => setCapNameInput(e.target.value)} placeholder="Name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
-        <input value={capDomainInput} onChange={e => setCapDomainInput(e.target.value)} placeholder="Domain..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
-        <input value={capAgentIdInput} onChange={e => setCapAgentIdInput(e.target.value)} placeholder="Agent ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
-        <input value={capProficiencyInput} onChange={e => setCapProficiencyInput(e.target.value)} placeholder="Prof..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 55, outline: 'none' }} />
+        <input value={capNameInput} onChange={e => setCapNameInput(e.target.value)} placeholder="Name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+        <input value={capDomainInput} onChange={e => setCapDomainInput(e.target.value)} placeholder="Domain..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
+        <input value={capAgentIdInput} onChange={e => setCapAgentIdInput(e.target.value)} placeholder="Agent ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
+        <input value={capProficiencyInput} onChange={e => setCapProficiencyInput(e.target.value)} placeholder="Prof..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 55, outline: 'none' }} />
         <button onClick={handleRegisterCapability} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
           {'\u2795'} Register
         </button>
-        <input value={updateCapId} onChange={e => setUpdateCapId(e.target.value)} placeholder="Cap ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 80, outline: 'none' }} />
-        <input value={updateProficiency} onChange={e => setUpdateProficiency(e.target.value)} placeholder="New prof..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 65, outline: 'none' }} />
+        <input value={updateCapId} onChange={e => setUpdateCapId(e.target.value)} placeholder="Cap ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 80, outline: 'none' }} />
+        <input value={updateProficiency} onChange={e => setUpdateProficiency(e.target.value)} placeholder="New prof..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 65, outline: 'none' }} />
         <button onClick={handleUpdateProficiency} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
           {'\uD83D\uDCC8'} Update
         </button>
@@ -291,7 +291,7 @@ const CapabilityRegistryPanel: React.FC = () => {
                     <span style={{ fontWeight: 600, fontSize: 13 }}>{cap.name}</span>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#a29bfe', fontWeight: 600,
+                      backgroundColor: '#111', color: '#a29bfe', fontWeight: 600,
                     }}>{cap.domain}</span>
                   </div>
                   <span style={{ fontSize: 10, color: '#666' }}>
@@ -303,7 +303,7 @@ const CapabilityRegistryPanel: React.FC = () => {
                   <span>{formatTime(cap.registered_at)}</span>
                 </div>
                 <div style={{
-                  height: 4, backgroundColor: '#141428', borderRadius: 2, marginTop: 6,
+                  height: 4, backgroundColor: '#111', borderRadius: 2, marginTop: 6,
                 }}>
                   <div style={{
                     height: '100%', width: `${cap.proficiency * 100}%`,
@@ -325,11 +325,11 @@ const CapabilityRegistryPanel: React.FC = () => {
         {activeTab === 'profiles' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={profileAgentId} onChange={e => setProfileAgentId(e.target.value)} placeholder="Agent ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
+              <input value={profileAgentId} onChange={e => setProfileAgentId(e.target.value)} placeholder="Agent ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
               <button onClick={handleGetAgentProfile} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDC64'} Get Profile
               </button>
-              <input value={discoverAgentId} onChange={e => setDiscoverAgentId(e.target.value)} placeholder="Agent ID to discover..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
+              <input value={discoverAgentId} onChange={e => setDiscoverAgentId(e.target.value)} placeholder="Agent ID to discover..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
               <button onClick={handleDiscoverCapabilities} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDD0D'} Discover
               </button>
@@ -339,7 +339,7 @@ const CapabilityRegistryPanel: React.FC = () => {
                 <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, color: '#a29bfe' }}>{'\uD83D\uDD0D'} Discovered Capabilities</div>
                 {discoveredCapabilities.map(dc => (
                   <div key={dc.id} style={{
-                    padding: '6px 8px', backgroundColor: '#141428', borderRadius: 3,
+                    padding: '6px 8px', backgroundColor: '#111', borderRadius: 3,
                     marginBottom: 4, fontSize: 10, color: '#aaa',
                     display: 'flex', justifyContent: 'space-between',
                   }}>
@@ -373,12 +373,12 @@ const CapabilityRegistryPanel: React.FC = () => {
                   {profile.capabilities.map(c => (
                     <span key={c} style={{
                       fontSize: 9, padding: '2px 8px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#a29bfe',
+                      backgroundColor: '#111', color: '#a29bfe',
                     }}>{c}</span>
                   ))}
                 </div>
                 <div style={{
-                  height: 4, backgroundColor: '#141428', borderRadius: 2, marginTop: 6,
+                  height: 4, backgroundColor: '#111', borderRadius: 2, marginTop: 6,
                 }}>
                   <div style={{
                     height: '100%', width: `${profile.overall_proficiency * 100}%`,
@@ -400,7 +400,7 @@ const CapabilityRegistryPanel: React.FC = () => {
         {activeTab === 'match' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={queryDomainInput} onChange={e => setQueryDomainInput(e.target.value)} placeholder="Domain to query..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
+              <input value={queryDomainInput} onChange={e => setQueryDomainInput(e.target.value)} placeholder="Domain to query..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
               <button onClick={handleQueryCapabilities} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDD0D'} Query Capabilities
               </button>
@@ -426,8 +426,8 @@ const CapabilityRegistryPanel: React.FC = () => {
               </div>
             )}
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <input value={matchTaskInput} onChange={e => setMatchTaskInput(e.target.value)} placeholder="Task description..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 150, outline: 'none' }} />
-              <input value={matchDomainInput} onChange={e => setMatchDomainInput(e.target.value)} placeholder="Domain..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+              <input value={matchTaskInput} onChange={e => setMatchTaskInput(e.target.value)} placeholder="Task description..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 150, outline: 'none' }} />
+              <input value={matchDomainInput} onChange={e => setMatchDomainInput(e.target.value)} placeholder="Domain..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
               <button onClick={handleMatchAgentForTask} style={{ padding: '6px 12px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83C\uDFAF'} Match Agent
               </button>
@@ -438,14 +438,14 @@ const CapabilityRegistryPanel: React.FC = () => {
                   {'\uD83C\uDFAF'} Match Found
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 11, marginBottom: 8 }}>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Agent: <span style={{ color: '#74b9ff', fontWeight: 600, fontFamily: 'monospace' }}>{matchResult.matched_agent}</span>
                   </div>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Score: <span style={{ color: '#6bcb77', fontWeight: 600 }}>{(matchResult.match_score * 100).toFixed(0)}%</span>
                   </div>
                 </div>
-                <div style={{ fontSize: 10, color: '#888', padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                <div style={{ fontSize: 10, color: '#888', padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                   {matchResult.details}
                 </div>
               </div>
@@ -462,7 +462,7 @@ const CapabilityRegistryPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

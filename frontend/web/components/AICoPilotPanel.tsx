@@ -445,7 +445,7 @@ const AICoPilotPanel: React.FC = () => {
                   </div>
                   <div style={{ fontSize: 12, color: '#bbb', marginBottom: 6 }}>{sug.explanation}</div>
                   <div style={{
-                    padding: '6px 10px', backgroundColor: '#141428', borderRadius: 4,
+                    padding: '6px 10px', backgroundColor: '#111', borderRadius: 4,
                     fontFamily: 'monospace', fontSize: 11, color: '#ddd',
                     whiteSpace: 'pre-wrap', marginBottom: 8,
                   }}>
@@ -613,7 +613,7 @@ const AICoPilotPanel: React.FC = () => {
       {/* Bottom status bar */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

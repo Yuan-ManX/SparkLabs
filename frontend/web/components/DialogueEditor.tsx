@@ -7,23 +7,23 @@ const MOOD_COLORS: Record<string, string> = {
   neutral: '#6b7280',
   happy: '#22c55e',
   angry: '#ef4444',
-  sad: '#3b82f6',
-  fearful: '#8b5cf6',
+  sad: '#f97316',
+  fearful: '#f97316',
   surprised: '#f59e0b',
   disgusted: '#84cc16',
   contemptuous: '#ec4899',
   excited: '#f97316',
-  mysterious: '#06b6d4',
+  mysterious: '#f97316',
 };
 
 const TYPE_COLORS: Record<string, string> = {
   greeting: '#22c55e',
   quest: '#f59e0b',
-  shop: '#8b5cf6',
-  lore: '#3b82f6',
+  shop: '#f97316',
+  lore: '#f97316',
   combat: '#ef4444',
   romance: '#ec4899',
-  tutorial: '#06b6d4',
+  tutorial: '#f97316',
   random: '#6b7280',
   story: '#f97316',
   trade: '#84cc16',
@@ -148,7 +148,7 @@ const DialogueEditor: React.FC = () => {
 
                 <rect
                   x={x} y={y} width={nodeWidth} height={nodeHeight} rx={8}
-                  fill={selectedNode?.id === node.id ? '#1a1a2e' : '#1a1a1a'}
+                  fill={selectedNode?.id === node.id ? '#1a1a1a' : '#1a1a1a'}
                   stroke={moodColor} strokeWidth={selectedNode?.id === node.id ? 2.5 : 1.5}
                 />
                 <text x={x + 8} y={y + 16} fill={moodColor} fontSize={9}>
@@ -267,7 +267,7 @@ const DialogueEditor: React.FC = () => {
                 <h3 className="text-[14px] font-bold">Node Editor</h3>
                 <button
                   onClick={handleAddNode}
-                  className="flex items-center gap-1 px-3 py-1.5 bg-blue-600/20 text-blue-400 rounded text-[11px] hover:bg-blue-600/30 transition-colors"
+                  className="flex items-center gap-1 px-3 py-1.5 bg-orange-500/15 text-orange-400 rounded text-[11px] hover:bg-orange-500/25 transition-colors"
                 >
                   <i className="fa-solid fa-plus text-[9px]" />
                   Add Node
@@ -324,7 +324,7 @@ const DialogueEditor: React.FC = () => {
                   <div key={arc.id} className="bg-[#0a0a0a] rounded-lg border border-[#2a2a2a] p-3">
                     <div className="flex items-center gap-2">
                       <span className="text-[12px] font-medium">{arc.name}</span>
-                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-blue-900/30 text-blue-400">
+                      <span className="text-[9px] px-1.5 py-0.5 rounded bg-orange-500/15 text-orange-400">
                         {arc.status}
                       </span>
                     </div>

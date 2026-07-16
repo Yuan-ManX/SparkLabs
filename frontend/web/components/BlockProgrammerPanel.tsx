@@ -339,14 +339,14 @@ const BlockProgrammerPanel: React.FC = () => {
                     <button
                       onClick={validateProgram}
                       disabled={loading}
-                      className="px-2 py-1 text-xs bg-blue-600 hover:bg-blue-700 rounded disabled:opacity-50"
+                      className="px-2 py-1 text-xs bg-orange-500 hover:bg-orange-600 rounded disabled:opacity-50"
                     >
                       Validate
                     </button>
                     <button
                       onClick={dryRun}
                       disabled={loading}
-                      className="px-2 py-1 text-xs bg-purple-600 hover:bg-purple-700 rounded disabled:opacity-50"
+                      className="px-2 py-1 text-xs bg-orange-500 hover:bg-orange-600 rounded disabled:opacity-50"
                     >
                       Dry Run
                     </button>

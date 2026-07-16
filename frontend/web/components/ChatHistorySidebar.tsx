@@ -65,7 +65,7 @@ const ChatHistorySidebar: React.FC = () => {
   // Collapsed state: narrow strip with toggle button
   if (chatHistoryCollapsed) {
     return (
-      <div className="w-10 flex-shrink-0 bg-[#080808] border-r border-[#1a1a1a] flex flex-col items-center py-2 gap-2">
+      <div className="w-10 flex-shrink-0 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col items-center py-2 gap-2">
         <button
           onClick={() => setChatHistoryCollapsed(false)}
           className="w-7 h-7 rounded-lg bg-[#1a1a1a] hover:bg-[#222] text-[#888] hover:text-[#ccc] flex items-center justify-center transition-colors"
@@ -89,7 +89,7 @@ const ChatHistorySidebar: React.FC = () => {
 
   // Expanded state: full sidebar
   return (
-    <div className="w-[260px] flex-shrink-0 bg-[#080808] border-r border-[#1a1a1a] flex flex-col overflow-hidden">
+    <div className="w-[260px] flex-shrink-0 bg-[#0a0a0a] border-r border-[#1a1a1a] flex flex-col overflow-hidden">
       {/* Header with toggle and new chat */}
       <div className="flex items-center justify-between px-3 py-2.5 border-b border-[#1a1a1a]">
         <div className="flex items-center gap-2">

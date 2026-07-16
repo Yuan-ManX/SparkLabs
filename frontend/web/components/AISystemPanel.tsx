@@ -356,7 +356,7 @@ const AISystemPanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#1a1a2e] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Brain className="w-[18px] h-[18px] text-[#a29bfe]" />
           <span className="font-bold text-[15px]">AI System</span>
@@ -369,9 +369,9 @@ const AISystemPanel: React.FC = () => {
       {/* Message */}
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#16213e]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
@@ -379,7 +379,7 @@ const AISystemPanel: React.FC = () => {
 
       {/* Performance budget bar */}
       {perfBudget && (
-        <div className="px-4 py-2 border-b border-[#0f3460]/50 bg-[#16213e]/50">
+        <div className="px-4 py-2 border-b border-[#1e1e1e]/50 bg-[#16213e]/50">
           <div className="flex items-center gap-2 mb-1">
             <Gauge className="w-3 h-3 text-[#fdcb6e]" />
             <span className="text-[10px] text-[#888]">AI Budget: {perfBudget.used_ms.toFixed(1)}ms / {perfBudget.total_budget_ms.toFixed(1)}ms</span>
@@ -397,7 +397,7 @@ const AISystemPanel: React.FC = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[#0f3460]/50 overflow-x-auto">
+      <div className="flex border-b border-[#1e1e1e]/50 overflow-x-auto">
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -422,7 +422,7 @@ const AISystemPanel: React.FC = () => {
             {agents.map(agent => (
               <div
                 key={agent.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3"
                 style={{ opacity: agent.status === 'disabled' ? 0.5 : 1 }}
               >
                 <div className="flex items-center justify-between mb-1">
@@ -436,19 +436,19 @@ const AISystemPanel: React.FC = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-2 gap-2 text-[10px]">
-                  <div className="bg-[#1a1a2e] rounded px-2 py-1 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded px-2 py-1 border border-[#1e1e1e]/20">
                     <span className="text-[#666]">Behavior: </span>
                     <span className="text-[#00d4ff]">{agent.behavior_type}</span>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded px-2 py-1 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded px-2 py-1 border border-[#1e1e1e]/20">
                     <span className="text-[#666]">State: </span>
                     <span className="text-[#a29bfe]">{agent.current_state}</span>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded px-2 py-1 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded px-2 py-1 border border-[#1e1e1e]/20">
                     <span className="text-[#666]">CPU: </span>
                     <span className="text-[#fdcb6e]">{agent.cpu_budget_ms.toFixed(1)}ms</span>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded px-2 py-1 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded px-2 py-1 border border-[#1e1e1e]/20">
                     <span className="text-[#666]">Memory: </span>
                     <span className="text-[#fd79a8]">{agent.memory_mb}MB</span>
                   </div>
@@ -456,7 +456,7 @@ const AISystemPanel: React.FC = () => {
               </div>
             ))}
             {agents.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Bot className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No AI agents registered</span>
               </div>
@@ -479,7 +479,7 @@ const AISystemPanel: React.FC = () => {
 
             {/* NavMesh stats */}
             {navMeshStats && (
-              <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+              <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Map className="w-3.5 h-3.5 text-[#a29bfe]" />
@@ -490,19 +490,19 @@ const AISystemPanel: React.FC = () => {
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-[#1a1a2e] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Polygons</div>
                     <div className="text-[16px] font-bold text-[#00d4ff]">{navMeshStats.polygon_count.toLocaleString()}</div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Vertices</div>
                     <div className="text-[16px] font-bold text-[#a29bfe]">{navMeshStats.vertex_count.toLocaleString()}</div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Area</div>
                     <div className="text-[16px] font-bold text-[#6bcb77]">{(navMeshStats.total_area / 1000).toFixed(1)}k</div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Build Time</div>
                     <div className="text-[16px] font-bold text-[#fdcb6e]">{navMeshStats.build_time_ms.toFixed(1)}ms</div>
                   </div>
@@ -519,7 +519,7 @@ const AISystemPanel: React.FC = () => {
         {activeTab === 'pathfinding' && (
           <div className="flex flex-col gap-3">
             {/* Start point */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Target className="w-3.5 h-3.5 text-[#6bcb77]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Start Point</span>
@@ -528,23 +528,23 @@ const AISystemPanel: React.FC = () => {
                 <div>
                   <div className="text-[8px] text-[#666] mb-0.5">X</div>
                   <input type="number" value={startX} onChange={e => setStartX(e.target.value)} step={1}
-                    className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#6bcb77]/50" />
+                    className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#6bcb77]/50" />
                 </div>
                 <div>
                   <div className="text-[8px] text-[#666] mb-0.5">Y</div>
                   <input type="number" value={startY} onChange={e => setStartY(e.target.value)} step={1}
-                    className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#6bcb77]/50" />
+                    className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#6bcb77]/50" />
                 </div>
                 <div>
                   <div className="text-[8px] text-[#666] mb-0.5">Z</div>
                   <input type="number" value={startZ} onChange={e => setStartZ(e.target.value)} step={1}
-                    className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#6bcb77]/50" />
+                    className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#6bcb77]/50" />
                 </div>
               </div>
             </div>
 
             {/* End point */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Target className="w-3.5 h-3.5 text-[#e94560]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">End Point</span>
@@ -553,17 +553,17 @@ const AISystemPanel: React.FC = () => {
                 <div>
                   <div className="text-[8px] text-[#666] mb-0.5">X</div>
                   <input type="number" value={endX} onChange={e => setEndX(e.target.value)} step={1}
-                    className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#e94560]/50" />
+                    className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#e94560]/50" />
                 </div>
                 <div>
                   <div className="text-[8px] text-[#666] mb-0.5">Y</div>
                   <input type="number" value={endY} onChange={e => setEndY(e.target.value)} step={1}
-                    className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#e94560]/50" />
+                    className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#e94560]/50" />
                 </div>
                 <div>
                   <div className="text-[8px] text-[#666] mb-0.5">Z</div>
                   <input type="number" value={endZ} onChange={e => setEndZ(e.target.value)} step={1}
-                    className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#e94560]/50" />
+                    className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#e94560]/50" />
                 </div>
               </div>
             </div>
@@ -591,19 +591,19 @@ const AISystemPanel: React.FC = () => {
                   </span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 mb-2">
-                  <div className="bg-[#1a1a2e] rounded p-1.5 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded p-1.5 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666]">Length</div>
                     <div className="text-[14px] font-bold text-[#00d4ff]">{pathResult.path_length.toFixed(1)}</div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded p-1.5 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded p-1.5 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666]">Waypoints</div>
                     <div className="text-[14px] font-bold text-[#a29bfe]">{pathResult.waypoint_count}</div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded p-1.5 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded p-1.5 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666]">Time</div>
                     <div className="text-[14px] font-bold text-[#fdcb6e]">{pathResult.search_time_ms.toFixed(2)}ms</div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded p-1.5 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded p-1.5 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666]">Visited</div>
                     <div className="text-[14px] font-bold text-[#fd79a8]">{pathResult.nodes_visited}</div>
                   </div>
@@ -612,7 +612,7 @@ const AISystemPanel: React.FC = () => {
                 <div className="text-[9px] text-[#555] mb-1">Waypoints:</div>
                 <div className="flex flex-wrap gap-1">
                   {pathResult.waypoints.map((wp, i) => (
-                    <span key={i} className="text-[9px] bg-[#1a1a2e] rounded px-1.5 py-0.5 border border-[#0f3460]/20 text-[#00d4ff]">
+                    <span key={i} className="text-[9px] bg-[#1a1a2e] rounded px-1.5 py-0.5 border border-[#1e1e1e]/20 text-[#00d4ff]">
                       ({wp.x.toFixed(0)}, {wp.y.toFixed(0)}, {wp.z.toFixed(0)})
                       {i < pathResult.waypoints.length - 1 && <span className="text-[#555]"> →</span>}
                     </span>
@@ -634,7 +634,7 @@ const AISystemPanel: React.FC = () => {
                 className={`bg-[#16213e] rounded-lg border p-3 cursor-pointer transition-all ${
                   selectedBehaviorNode === node.id
                     ? 'border-[#a29bfe]/50 bg-[#a29bfe]/5'
-                    : 'border-[#0f3460]/30 hover:border-[#0f3460]/60'
+                    : 'border-[#1e1e1e]/30 hover:border-[#1e1e1e]/60'
                 }`}
                 style={{ opacity: node.is_active ? 1 : 0.5 }}
               >
@@ -655,7 +655,7 @@ const AISystemPanel: React.FC = () => {
                   </div>
                 </div>
                 {selectedBehaviorNode === node.id && (
-                  <div className="mt-2 text-[10px] text-[#888] bg-[#1a1a2e] rounded p-2 border border-[#0f3460]/20">
+                  <div className="mt-2 text-[10px] text-[#888] bg-[#1a1a2e] rounded p-2 border border-[#1e1e1e]/20">
                     {node.description}
                     {node.children.length > 0 && (
                       <div className="mt-1 text-[#666]">
@@ -667,7 +667,7 @@ const AISystemPanel: React.FC = () => {
               </div>
             ))}
             {behaviorNodes.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <GitBranch className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No behavior tree nodes defined</span>
               </div>
@@ -678,7 +678,7 @@ const AISystemPanel: React.FC = () => {
         {/* ==================== PERCEPTION TAB ==================== */}
         {activeTab === 'perception' && (
           <div className="flex flex-col gap-3">
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Eye className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Vision</span>
@@ -715,7 +715,7 @@ const AISystemPanel: React.FC = () => {
               </div>
             </div>
 
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Ear className="w-3.5 h-3.5 text-[#fdcb6e]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Hearing</span>
@@ -754,19 +754,19 @@ const AISystemPanel: React.FC = () => {
             </div>
 
             {/* Settings display */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Gauge className="w-3.5 h-3.5 text-[#00d4ff]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Settings</span>
               </div>
               <div className="grid grid-cols-2 gap-2 text-[10px]">
-                <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#0f3460]/20">
+                <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#1e1e1e]/20">
                   <span className="text-[#666]">See Through Walls:</span>
                   <span className={`ml-1 font-semibold ${perception.can_see_through_walls ? 'text-[#6bcb77]' : 'text-[#e94560]'}`}>
                     {perception.can_see_through_walls ? 'Yes' : 'No'}
                   </span>
                 </div>
-                <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#0f3460]/20">
+                <div className="bg-[#1a1a2e] rounded px-2 py-1.5 border border-[#1e1e1e]/20">
                   <span className="text-[#666]">Update Rate:</span>
                   <span className="ml-1 font-semibold text-[#00d4ff]">{perception.update_rate_ms}ms</span>
                 </div>
@@ -779,7 +779,7 @@ const AISystemPanel: React.FC = () => {
         {activeTab === 'statemachine' && (
           <div className="flex flex-col gap-3">
             {/* States */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <CircleDot className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">States</span>
@@ -791,7 +791,7 @@ const AISystemPanel: React.FC = () => {
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg border text-[11px] font-semibold transition-all ${
                       state.is_active
                         ? 'bg-[#a29bfe]/10 border-[#a29bfe]/50 text-[#a29bfe]'
-                        : 'bg-[#1a1a2e] border-[#0f3460]/30 text-[#888]'
+                        : 'bg-[#1a1a2e] border-[#1e1e1e]/30 text-[#888]'
                     }`}
                   >
                     {state.is_active ? (
@@ -806,7 +806,7 @@ const AISystemPanel: React.FC = () => {
             </div>
 
             {/* Transitions */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <ArrowRight className="w-3.5 h-3.5 text-[#00d4ff]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Transitions</span>
@@ -815,7 +815,7 @@ const AISystemPanel: React.FC = () => {
                 {smTransitions.map(transition => (
                   <div
                     key={transition.id}
-                    className="flex items-center gap-2 bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#0f3460]/20 text-[10px]"
+                    className="flex items-center gap-2 bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#1e1e1e]/20 text-[10px]"
                   >
                     <span className="text-[#a29bfe] font-semibold">{transition.from}</span>
                     <ArrowRight className="w-3 h-3 text-[#555]" />
@@ -835,7 +835,7 @@ const AISystemPanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <Brain className="w-3 h-3" />
           {agents.filter(a => a.status === 'active').length} active · {behaviorNodes.filter(b => b.is_active).length} behaviors · {smStates.length} states

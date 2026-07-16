@@ -255,7 +255,7 @@ const CompositionGraph: React.FC = () => {
                 key={chain.id}
                 onClick={() => handleSelectChain(chain.id)}
                 className={`p-2.5 rounded-lg mb-1.5 cursor-pointer transition-colors ${
-                  selectedItem?.id === chain.id ? 'bg-blue-500/10 border border-blue-500/30' : 'bg-[#1a1a1a] hover:bg-[#222] border border-transparent'
+                  selectedItem?.id === chain.id ? 'bg-orange-500/10 border border-orange-500/30' : 'bg-[#1a1a1a] hover:bg-[#222] border border-transparent'
                 }`}
               >
                 <div className="text-[12px] font-medium">{chain.name}</div>

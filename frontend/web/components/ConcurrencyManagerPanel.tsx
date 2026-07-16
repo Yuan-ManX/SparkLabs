@@ -206,11 +206,11 @@ const ConcurrencyManagerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={queueName} onChange={e => setQueueName(e.target.value)} placeholder="e.g. Code Gen" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={queueName} onChange={e => setQueueName(e.target.value)} placeholder="e.g. Code Gen" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Strategy</div>
-                  <select value={queueStrategy} onChange={e => setQueueStrategy(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={queueStrategy} onChange={e => setQueueStrategy(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="fifo">FIFO</option>
                     <option value="lifo">LIFO</option>
                     <option value="priority">Priority</option>
@@ -219,7 +219,7 @@ const ConcurrencyManagerPanel: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Max Concurrent</div>
-                  <input value={queueMaxConcurrent} onChange={e => setQueueMaxConcurrent(e.target.value)} type="number" min="1" max="20" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={queueMaxConcurrent} onChange={e => setQueueMaxConcurrent(e.target.value)} type="number" min="1" max="20" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCreateQueue} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Create</button>
               </div>
@@ -230,12 +230,12 @@ const ConcurrencyManagerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Queue ID</div>
-                  <input value={statsQueueId} onChange={e => setStatsQueueId(e.target.value)} placeholder="Enter queue ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={statsQueueId} onChange={e => setStatsQueueId(e.target.value)} placeholder="Enter queue ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleQueueStats} style={{ padding: '6px 14px', backgroundColor: '#3a2d4a', color: '#a29bfe', border: '1px solid #4a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Get Stats</button>
               </div>
               {queueStats && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
                   <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(queueStats, null, 2)}</pre>
                 </div>
               )}
@@ -246,7 +246,7 @@ const ConcurrencyManagerPanel: React.FC = () => {
               <div key={q.id} style={{ padding: 12, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #74b9ff' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{q.name}</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#fdcb6e', textTransform: 'uppercase' }}>{q.strategy}</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#fdcb6e', textTransform: 'uppercase' }}>{q.strategy}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 16, fontSize: 10, color: '#888' }}>
                   <span>Max: <span style={{ color: '#6bcb77' }}>{q.max_concurrent}</span></span>
@@ -265,15 +265,15 @@ const ConcurrencyManagerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Queue ID</div>
-                  <input value={taskQueueId} onChange={e => setTaskQueueId(e.target.value)} placeholder="Queue ID" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={taskQueueId} onChange={e => setTaskQueueId(e.target.value)} placeholder="Queue ID" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Agent ID</div>
-                  <input value={taskAgentId} onChange={e => setTaskAgentId(e.target.value)} placeholder="Agent ID" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={taskAgentId} onChange={e => setTaskAgentId(e.target.value)} placeholder="Agent ID" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
-                  <select value={taskType} onChange={e => setTaskType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={taskType} onChange={e => setTaskType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="reasoning">Reasoning</option>
                     <option value="compilation">Compilation</option>
                     <option value="processing">Processing</option>
@@ -283,7 +283,7 @@ const ConcurrencyManagerPanel: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Priority</div>
-                  <select value={taskPriority} onChange={e => setTaskPriority(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={taskPriority} onChange={e => setTaskPriority(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="normal">Normal</option>
                     <option value="low">Low</option>
                     <option value="high">High</option>
@@ -292,7 +292,7 @@ const ConcurrencyManagerPanel: React.FC = () => {
                 </div>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Payload</div>
-                  <input value={taskPayload} onChange={e => setTaskPayload(e.target.value)} placeholder="Task payload..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={taskPayload} onChange={e => setTaskPayload(e.target.value)} placeholder="Task payload..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleEnqueueTask} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Enqueue</button>
               </div>
@@ -303,7 +303,7 @@ const ConcurrencyManagerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Task ID</div>
-                  <input value={executeTaskId} onChange={e => setExecuteTaskId(e.target.value)} placeholder="Enter task ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={executeTaskId} onChange={e => setExecuteTaskId(e.target.value)} placeholder="Enter task ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleExecuteTask} style={{ padding: '6px 14px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Execute</button>
               </div>
@@ -328,7 +328,7 @@ const ConcurrencyManagerPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDD01'} {queues.length} queues · {tasks.length} tasks</span>
         <span>Connected</span>
       </div>

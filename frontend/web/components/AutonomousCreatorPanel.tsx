@@ -222,7 +222,7 @@ const AutonomousCreatorPanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#1a1a2e] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Wand2 className="w-[18px] h-[18px] text-[#fdcb6e]" />
           <span className="font-bold text-[15px]">Autonomous Creator</span>
@@ -234,16 +234,16 @@ const AutonomousCreatorPanel: React.FC = () => {
 
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#16213e]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[#0f3460]/50">
+      <div className="flex border-b border-[#1e1e1e]/50">
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -264,7 +264,7 @@ const AutonomousCreatorPanel: React.FC = () => {
         {/* ==================== GENERATE TAB ==================== */}
         {activeTab === 'generate' && (
           <div className="flex flex-col gap-3">
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Grid3X3 className="w-3.5 h-3.5 text-[#fdcb6e]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Category</span>
@@ -272,13 +272,13 @@ const AutonomousCreatorPanel: React.FC = () => {
               <select
                 value={category}
                 onChange={e => setCategory(e.target.value)}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50"
               >
                 {CATEGORIES.map(c => <option key={c} value={c}>{c}</option>)}
               </select>
             </div>
 
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Star className="w-3.5 h-3.5 text-[#fdcb6e]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Theme</span>
@@ -286,13 +286,13 @@ const AutonomousCreatorPanel: React.FC = () => {
               <select
                 value={theme}
                 onChange={e => setTheme(e.target.value)}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50"
               >
                 {THEMES.map(t => <option key={t} value={t}>{t}</option>)}
               </select>
             </div>
 
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Layers className="w-3.5 h-3.5 text-[#fdcb6e]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Complexity</span>
@@ -300,13 +300,13 @@ const AutonomousCreatorPanel: React.FC = () => {
               <select
                 value={complexity}
                 onChange={e => setComplexity(e.target.value)}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50"
               >
                 {COMPLEXITIES.map(c => <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>)}
               </select>
             </div>
 
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Zap className="w-3.5 h-3.5 text-[#fdcb6e]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Seed (Optional)</span>
@@ -316,7 +316,7 @@ const AutonomousCreatorPanel: React.FC = () => {
                 value={seed}
                 onChange={e => setSeed(e.target.value)}
                 placeholder="Enter a seed for reproducible generation..."
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50 placeholder-[#555]"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50 placeholder-[#555]"
               />
             </div>
 
@@ -344,7 +344,7 @@ const AutonomousCreatorPanel: React.FC = () => {
                 <div className="text-[11px] text-[#888] mb-1">{lastGenerated.description}</div>
                 <div className="flex flex-wrap gap-1">
                   {lastGenerated.tags.map(tag => (
-                    <span key={tag} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] border border-[#0f3460]/30 text-[#fdcb6e] rounded">
+                    <span key={tag} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] border border-[#1e1e1e]/30 text-[#fdcb6e] rounded">
                       {tag}
                     </span>
                   ))}
@@ -364,7 +364,7 @@ const AutonomousCreatorPanel: React.FC = () => {
                 className={`px-3 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${
                   contentFilter === 'all'
                     ? 'bg-[#fdcb6e]/20 border border-[#fdcb6e]/50 text-[#fdcb6e]'
-                    : 'bg-[#16213e] border border-[#0f3460]/30 text-[#888] hover:border-[#0f3460]/60'
+                    : 'bg-[#16213e] border border-[#1e1e1e]/30 text-[#888] hover:border-[#1e1e1e]/60'
                 }`}
               >
                 All
@@ -376,7 +376,7 @@ const AutonomousCreatorPanel: React.FC = () => {
                   className={`px-3 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${
                     contentFilter === cat
                       ? 'bg-[#fdcb6e]/20 border border-[#fdcb6e]/50 text-[#fdcb6e]'
-                      : 'bg-[#16213e] border border-[#0f3460]/30 text-[#888] hover:border-[#0f3460]/60'
+                      : 'bg-[#16213e] border border-[#1e1e1e]/30 text-[#888] hover:border-[#1e1e1e]/60'
                   }`}
                 >
                   {cat}
@@ -392,7 +392,7 @@ const AutonomousCreatorPanel: React.FC = () => {
                   className={`bg-[#16213e] rounded-lg border p-3 cursor-pointer transition-all ${
                     selectedContent?.id === item.id
                       ? 'border-[#fdcb6e]/50 bg-[#fdcb6e]/5'
-                      : 'border-[#0f3460]/30 hover:border-[#0f3460]/60'
+                      : 'border-[#1e1e1e]/30 hover:border-[#1e1e1e]/60'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -416,7 +416,7 @@ const AutonomousCreatorPanel: React.FC = () => {
                 </div>
               ))}
               {filteredContent.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+                <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                   <Box className="w-10 h-10 mb-2 opacity-20" />
                   <span className="text-[12px]">No content items yet</span>
                 </div>
@@ -430,21 +430,21 @@ const AutonomousCreatorPanel: React.FC = () => {
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Detail</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2 mb-2 text-[11px]">
-                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[#666] mb-0.5">Title</div>
                     <div className="text-[#ccc]">{selectedContent.title}</div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[#666] mb-0.5">Quality</div>
                     <div className={getQualityColor(selectedContent.quality_score)}>
                       {(selectedContent.quality_score * 100).toFixed(1)}%
                     </div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[#666] mb-0.5">Category</div>
                     <div className="text-[#ccc]">{selectedContent.category}</div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[#666] mb-0.5">Theme</div>
                     <div className="text-[#ccc]">{selectedContent.theme}</div>
                   </div>
@@ -452,7 +452,7 @@ const AutonomousCreatorPanel: React.FC = () => {
                 <div className="text-[11px] text-[#888] mb-2">{selectedContent.description}</div>
                 <div className="flex flex-wrap gap-1">
                   {selectedContent.tags.map(tag => (
-                    <span key={tag} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] border border-[#0f3460]/30 text-[#fdcb6e] rounded">
+                    <span key={tag} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] border border-[#1e1e1e]/30 text-[#fdcb6e] rounded">
                       {tag}
                     </span>
                   ))}
@@ -467,19 +467,19 @@ const AutonomousCreatorPanel: React.FC = () => {
           <div className="flex flex-col gap-3">
             {stats && (
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Total Generated</div>
                   <div className="text-[20px] font-bold text-[#fdcb6e]">{stats.total_generated}</div>
                 </div>
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Avg Quality</div>
                   <div className="text-[20px] font-bold text-[#6bcb77]">{(stats.avg_quality_score * 100).toFixed(1)}%</div>
                 </div>
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Categories</div>
                   <div className="text-[20px] font-bold text-[#00d4ff]">{stats.categories_used.length}</div>
                 </div>
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Rate</div>
                   <div className="text-[20px] font-bold text-[#a29bfe]">{stats.generation_rate.toFixed(1)}/hr</div>
                 </div>
@@ -487,14 +487,14 @@ const AutonomousCreatorPanel: React.FC = () => {
             )}
 
             {stats && stats.popular_themes && (
-              <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+              <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Star className="w-3.5 h-3.5 text-[#fdcb6e]" />
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Popular Themes</span>
                 </div>
                 <div className="flex flex-col gap-1.5">
                   {stats.popular_themes.map((pt, idx) => (
-                    <div key={idx} className="flex items-center justify-between bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#0f3460]/20">
+                    <div key={idx} className="flex items-center justify-between bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#1e1e1e]/20">
                       <span className="text-[12px] text-[#ccc]">{pt.theme}</span>
                       <span className="text-[12px] font-semibold text-[#fdcb6e]">{pt.count}</span>
                     </div>
@@ -505,7 +505,7 @@ const AutonomousCreatorPanel: React.FC = () => {
 
             <button
               onClick={() => { fetchContent(); fetchStats(); }}
-              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#0f3460]/50 text-[#888] rounded-lg text-[12px] hover:border-[#0f3460] transition-all"
+              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#1e1e1e]/50 text-[#888] rounded-lg text-[12px] hover:border-[#1e1e1e] transition-all"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Refresh Statistics
@@ -515,7 +515,7 @@ const AutonomousCreatorPanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <Wand2 className="w-3 h-3" />
           {contentItems.length} items · {stats?.categories_used.length || 0} categories

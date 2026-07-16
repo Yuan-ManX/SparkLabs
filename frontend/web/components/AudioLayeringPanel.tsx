@@ -373,7 +373,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={layerName} onChange={e => setLayerName(e.target.value)} placeholder="e.g. Music" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -381,7 +381,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Volume</div>
                   <input value={layerVolume} onChange={e => setLayerVolume(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 70,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -403,7 +403,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>X</div>
                   <input value={spatialX} onChange={e => setSpatialX(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -411,7 +411,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Y</div>
                   <input value={spatialY} onChange={e => setSpatialY(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -419,7 +419,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Z</div>
                   <input value={spatialZ} onChange={e => setSpatialZ(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -442,7 +442,7 @@ const AudioLayeringPanel: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <span style={{ fontWeight: 600, fontSize: 13, color: '#ccc' }}>{layer.name}</span>
                   <div style={{
-                    width: 60, height: 4, backgroundColor: '#141428', borderRadius: 2, overflow: 'hidden',
+                    width: 60, height: 4, backgroundColor: '#111', borderRadius: 2, overflow: 'hidden',
                   }}>
                     <div style={{
                       width: `${layer.volume * 100}%`, height: '100%',
@@ -474,7 +474,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={presetName} onChange={e => setPresetName(e.target.value)} placeholder="e.g. Combat" style={{
                     padding: '6px 10px', fontSize: 11, width: 180,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -497,7 +497,7 @@ const AudioLayeringPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Layer Name</div>
                     <input value={presetLayer} onChange={e => setPresetLayer(e.target.value)} placeholder="e.g. SFX" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -519,7 +519,7 @@ const AudioLayeringPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Preset</div>
                     <input value={applyPreset} onChange={e => setApplyPreset(e.target.value)} placeholder="e.g. Combat" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -577,7 +577,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={ruleName} onChange={e => setRuleName(e.target.value)} placeholder="e.g. DuckSFX" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -585,7 +585,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Condition</div>
                   <input value={ruleCondition} onChange={e => setRuleCondition(e.target.value)} placeholder="e.g. voice_active" style={{
                     padding: '6px 10px', fontSize: 11, width: 130,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -593,7 +593,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Action</div>
                   <input value={ruleAction} onChange={e => setRuleAction(e.target.value)} placeholder="e.g. lower_sfx" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -628,7 +628,7 @@ const AudioLayeringPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Layer</div>
                     <input value={duckTarget} onChange={e => setDuckTarget(e.target.value)} placeholder="e.g. SFX" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -653,7 +653,7 @@ const AudioLayeringPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Master Volume (0-1)</div>
                   <input value={masterVolume} onChange={e => setMasterVolume(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -682,7 +682,7 @@ const AudioLayeringPanel: React.FC = () => {
                 </div>
                 <div style={{ marginTop: 6 }}>
                   <div style={{
-                    width: '100%', height: 4, backgroundColor: '#141428', borderRadius: 2, overflow: 'hidden',
+                    width: '100%', height: 4, backgroundColor: '#111', borderRadius: 2, overflow: 'hidden',
                   }}>
                     <div style={{
                       width: `${activeMix.master_volume * 100}%`, height: '100%',
@@ -717,7 +717,7 @@ const AudioLayeringPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

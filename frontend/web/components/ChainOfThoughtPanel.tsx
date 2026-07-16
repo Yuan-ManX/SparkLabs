@@ -229,7 +229,7 @@ const ChainOfThoughtPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -259,9 +259,9 @@ const ChainOfThoughtPanel: React.FC = () => {
       )}
 
       <div style={{ padding: '10px 12px', display: 'flex', gap: 6, borderBottom: '1px solid #2a2a3e', flexWrap: 'wrap', alignItems: 'center' }}>
-        <input value={questionInput} onChange={e => setQuestionInput(e.target.value)} placeholder="Question..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
-        <input value={contextInput} onChange={e => setContextInput(e.target.value)} placeholder="Context..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
-        <input value={agentIdInput} onChange={e => setAgentIdInput(e.target.value)} placeholder="Agent ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+        <input value={questionInput} onChange={e => setQuestionInput(e.target.value)} placeholder="Question..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
+        <input value={contextInput} onChange={e => setContextInput(e.target.value)} placeholder="Context..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
+        <input value={agentIdInput} onChange={e => setAgentIdInput(e.target.value)} placeholder="Agent ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
         <button onClick={handleStartChain} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
           {'\uD83D\uDD17'} Start Chain
         </button>
@@ -322,21 +322,21 @@ const ChainOfThoughtPanel: React.FC = () => {
         {activeTab === 'nodes' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={chainIdInput} onChange={e => setChainIdInput(e.target.value)} placeholder="Chain ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
-              <input value={stepTypeInput} onChange={e => setStepTypeInput(e.target.value)} placeholder="Step type..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
-              <input value={contentInput} onChange={e => setContentInput(e.target.value)} placeholder="Content..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
-              <input value={confidenceInput} onChange={e => setConfidenceInput(e.target.value)} placeholder="Confidence..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
-              <input value={evidenceInput} onChange={e => setEvidenceInput(e.target.value)} placeholder="Evidence..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
+              <input value={chainIdInput} onChange={e => setChainIdInput(e.target.value)} placeholder="Chain ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+              <input value={stepTypeInput} onChange={e => setStepTypeInput(e.target.value)} placeholder="Step type..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+              <input value={contentInput} onChange={e => setContentInput(e.target.value)} placeholder="Content..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+              <input value={confidenceInput} onChange={e => setConfidenceInput(e.target.value)} placeholder="Confidence..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
+              <input value={evidenceInput} onChange={e => setEvidenceInput(e.target.value)} placeholder="Evidence..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
               <button onClick={handleAddReasoningStep} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\u2795'} Add Step
               </button>
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={branchSourceId} onChange={e => setBranchSourceId(e.target.value)} placeholder="Source node ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
+              <input value={branchSourceId} onChange={e => setBranchSourceId(e.target.value)} placeholder="Source node ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
               <button onClick={handleAddBranch} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83C\uDF3F'} Add Branch
               </button>
-              <input value={finalizeChainId} onChange={e => setFinalizeChainId(e.target.value)} placeholder="Chain ID to finalize..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
+              <input value={finalizeChainId} onChange={e => setFinalizeChainId(e.target.value)} placeholder="Chain ID to finalize..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
               <button onClick={handleFinalizeChain} style={{ padding: '6px 12px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\u2705'} Finalize Chain
               </button>
@@ -352,7 +352,7 @@ const ChainOfThoughtPanel: React.FC = () => {
                     <span style={{ fontWeight: 600, fontSize: 13 }}>{node.step_type}</span>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#a29bfe', fontWeight: 600,
+                      backgroundColor: '#111', color: '#a29bfe', fontWeight: 600,
                     }}>{node.step_type}</span>
                   </div>
                   <span style={{ fontSize: 10, color: '#666' }}>
@@ -383,7 +383,7 @@ const ChainOfThoughtPanel: React.FC = () => {
         {activeTab === 'visualize' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <input value={visualizeChainId} onChange={e => setVisualizeChainId(e.target.value)} placeholder="Chain ID to visualize..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 160, outline: 'none' }} />
+              <input value={visualizeChainId} onChange={e => setVisualizeChainId(e.target.value)} placeholder="Chain ID to visualize..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 160, outline: 'none' }} />
               <button onClick={handleVisualizeChain} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDCCA'} Visualize Chain
               </button>
@@ -394,15 +394,15 @@ const ChainOfThoughtPanel: React.FC = () => {
                   {'\uD83D\uDCCA'} Chain Visualization
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 11, marginBottom: 8 }}>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Nodes: <span style={{ color: '#74b9ff', fontWeight: 600 }}>{visualizeResult.node_count}</span>
                   </div>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Edges: <span style={{ color: '#6bcb77', fontWeight: 600 }}>{visualizeResult.edge_count}</span>
                   </div>
                 </div>
                 <div style={{
-                  padding: 12, backgroundColor: '#141428', borderRadius: 4,
+                  padding: 12, backgroundColor: '#111', borderRadius: 4,
                   fontSize: 10, color: '#aaa', fontFamily: 'monospace',
                   whiteSpace: 'pre-wrap',
                 }}>
@@ -411,9 +411,9 @@ const ChainOfThoughtPanel: React.FC = () => {
               </div>
             )}
             <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginTop: 6 }}>
-              <input value={compareChainA} onChange={e => setCompareChainA(e.target.value)} placeholder="Chain A ID..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+              <input value={compareChainA} onChange={e => setCompareChainA(e.target.value)} placeholder="Chain A ID..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
               <span style={{ color: '#888' }}>vs</span>
-              <input value={compareChainB} onChange={e => setCompareChainB(e.target.value)} placeholder="Chain B ID..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+              <input value={compareChainB} onChange={e => setCompareChainB(e.target.value)} placeholder="Chain B ID..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
               <button onClick={handleCompareChains} style={{ padding: '8px 16px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDD0D'} Compare
               </button>
@@ -438,7 +438,7 @@ const ChainOfThoughtPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

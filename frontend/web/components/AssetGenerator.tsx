@@ -64,7 +64,7 @@ const AssetGenerator: React.FC = () => {
             </div>
             <button
               onClick={handleGenerate}
-              className="w-full px-4 py-3 bg-purple-600 hover:bg-purple-700 rounded-lg font-medium flex items-center justify-center gap-2"
+              className="w-full px-4 py-3 bg-orange-500 hover:bg-orange-600 rounded-lg font-medium flex items-center justify-center gap-2"
             >
               <Sparkles className="w-4 h-4" />
               Generate Asset

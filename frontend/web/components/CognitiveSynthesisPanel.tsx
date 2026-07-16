@@ -191,7 +191,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#1a1a2e] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Brain className="w-[18px] h-[18px] text-[#a29bfe]" />
           <span className="font-bold text-[15px]">Cognitive Synthesis</span>
@@ -203,16 +203,16 @@ const CognitiveSynthesisPanel: React.FC = () => {
 
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#16213e]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[#0f3460]/50">
+      <div className="flex border-b border-[#1e1e1e]/50">
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -233,7 +233,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
         {/* ==================== SYNTHESIZE TAB ==================== */}
         {activeTab === 'synthesize' && (
           <div className="flex flex-col gap-3">
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Lightbulb className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Prompt</span>
@@ -243,11 +243,11 @@ const CognitiveSynthesisPanel: React.FC = () => {
                 onChange={e => setPrompt(e.target.value)}
                 placeholder="Enter your synthesis prompt..."
                 rows={4}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555]"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555]"
               />
             </div>
 
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Layers className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Reasoning Depth</span>
@@ -255,7 +255,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
               <select
                 value={reasoningDepth}
                 onChange={e => setReasoningDepth(e.target.value)}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#a29bfe]/50"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#a29bfe]/50"
               >
                 {REASONING_DEPTHS.map(d => (
                   <option key={d} value={d}>{d.charAt(0).toUpperCase() + d.slice(1)}</option>
@@ -275,7 +275,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
             {currentReport && (
               <div className="flex flex-col gap-2">
                 {/* Confidence & Timing */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <Target className="w-3.5 h-3.5 text-[#a29bfe]" />
@@ -292,22 +292,22 @@ const CognitiveSynthesisPanel: React.FC = () => {
                       </span>
                     </div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded-md p-3 text-[12px] text-[#ccc] whitespace-pre-wrap max-h-[200px] overflow-auto font-mono border border-[#0f3460]/30">
+                  <div className="bg-[#1a1a2e] rounded-md p-3 text-[12px] text-[#ccc] whitespace-pre-wrap max-h-[200px] overflow-auto font-mono border border-[#1e1e1e]/30">
                     {currentReport.result}
                   </div>
                 </div>
 
                 {/* Phases */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Activity className="w-3.5 h-3.5 text-[#a29bfe]" />
                     <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Synthesis Phases</span>
                   </div>
                   <div className="flex flex-col gap-1.5">
                     {currentReport.phases.map((phase, idx) => (
-                      <div key={idx} className="flex items-center justify-between bg-[#1a1a2e] rounded-md px-3 py-2 border border-[#0f3460]/20">
+                      <div key={idx} className="flex items-center justify-between bg-[#1a1a2e] rounded-md px-3 py-2 border border-[#1e1e1e]/20">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-bold text-[#666] bg-[#0f3460]/30 px-1.5 py-0.5 rounded">{idx + 1}</span>
+                          <span className="text-[10px] font-bold text-[#666] bg-[#1e1e1e]/30 px-1.5 py-0.5 rounded">{idx + 1}</span>
                           <div>
                             <span className="text-[12px] text-[#ccc]">{phase.phase}</span>
                             <span className="text-[10px] text-[#666] ml-2">{phase.description}</span>
@@ -327,7 +327,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
             )}
 
             {!currentReport && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Brain className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">Enter a prompt to synthesize</span>
               </div>
@@ -341,7 +341,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
             {history.map(report => (
               <div
                 key={report.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3"
               >
                 <div
                   className="flex items-center justify-between cursor-pointer"
@@ -360,9 +360,9 @@ const CognitiveSynthesisPanel: React.FC = () => {
                   </div>
                 </div>
                 {expandedReport === report.id && (
-                  <div className="mt-2 pt-2 border-t border-[#0f3460]/30">
+                  <div className="mt-2 pt-2 border-t border-[#1e1e1e]/30">
                     <div className="text-[11px] text-[#888] mb-1">{new Date(report.created_at).toLocaleString()}</div>
-                    <div className="bg-[#1a1a2e] rounded-md p-2 text-[11px] text-[#ccc] whitespace-pre-wrap max-h-[150px] overflow-auto font-mono border border-[#0f3460]/20">
+                    <div className="bg-[#1a1a2e] rounded-md p-2 text-[11px] text-[#ccc] whitespace-pre-wrap max-h-[150px] overflow-auto font-mono border border-[#1e1e1e]/20">
                       {report.result}
                     </div>
                     <div className="flex gap-3 mt-1 text-[10px] text-[#666]">
@@ -374,7 +374,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
               </div>
             ))}
             {history.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <History className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No synthesis history yet</span>
               </div>
@@ -387,19 +387,19 @@ const CognitiveSynthesisPanel: React.FC = () => {
           <div className="flex flex-col gap-3">
             {metrics && (
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Total Syntheses</div>
                   <div className="text-[20px] font-bold text-[#a29bfe]">{metrics.total_syntheses}</div>
                 </div>
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Avg Confidence</div>
                   <div className="text-[20px] font-bold text-[#6bcb77]">{(metrics.avg_confidence * 100).toFixed(1)}%</div>
                 </div>
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Avg Time</div>
                   <div className="text-[20px] font-bold text-[#fdcb6e]">{metrics.avg_time_ms.toFixed(0)}ms</div>
                 </div>
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Success Rate</div>
                   <div className="text-[20px] font-bold text-[#00d4ff]">{metrics.success_rate.toFixed(1)}%</div>
                 </div>
@@ -407,14 +407,14 @@ const CognitiveSynthesisPanel: React.FC = () => {
             )}
 
             {metrics && metrics.depth_distribution && (
-              <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+              <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Layers className="w-3.5 h-3.5 text-[#a29bfe]" />
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Depth Distribution</span>
                 </div>
                 <div className="flex flex-col gap-1.5">
                   {Object.entries(metrics.depth_distribution).map(([depth, count]) => (
-                    <div key={depth} className="flex items-center justify-between bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#0f3460]/20">
+                    <div key={depth} className="flex items-center justify-between bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#1e1e1e]/20">
                       <span className="text-[12px] text-[#ccc] capitalize">{depth}</span>
                       <span className="text-[12px] font-semibold text-[#a29bfe]">{count}</span>
                     </div>
@@ -425,7 +425,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
 
             <button
               onClick={() => { fetchHistory(); fetchMetrics(); }}
-              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#0f3460]/50 text-[#888] rounded-lg text-[12px] hover:border-[#0f3460] transition-all"
+              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#1e1e1e]/50 text-[#888] rounded-lg text-[12px] hover:border-[#1e1e1e] transition-all"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Refresh Metrics
@@ -435,7 +435,7 @@ const CognitiveSynthesisPanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <Brain className="w-3 h-3" />
           {history.length} syntheses

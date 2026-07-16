@@ -261,7 +261,7 @@ const AssetHarmonizerPanel: React.FC = () => {
                   {dimKeys.slice(0, 3).map(dk => (
                     <span key={dk} style={{
                       fontSize: 8, padding: '1px 4px', borderRadius: 3,
-                      background: '#1a1a3e', color: '#aaa',
+                      background: '#1a1a1a', color: '#aaa',
                     }}>{asset.dimensions[dk]}</span>
                   ))}
                   {dimKeys.length > 3 && (
@@ -308,7 +308,7 @@ const AssetHarmonizerPanel: React.FC = () => {
         </div>
         <div style={{ display: 'flex', gap: 8 }}>
           <button onClick={handleCheckCompatibility} style={{
-            padding: '5px 14px', borderRadius: 6, border: 'none', background: '#8b5cf6',
+            padding: '5px 14px', borderRadius: 6, border: 'none', background: '#f97316',
             color: '#fff', cursor: 'pointer', fontSize: 11,
           }}>Check Pair</button>
           <button onClick={handleBatchCheck} style={{

@@ -170,12 +170,12 @@ export default function AINativeEnginePanel() {
   const btnSuccess = 'bg-[#00ff88] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#00e67a] disabled:opacity-50 transition-colors';
   const btnWarning = 'bg-[#fdcb6e] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#e8b94e] disabled:opacity-50 transition-colors';
   const btnDanger = 'bg-[#ff6b6b] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#e55a5a] disabled:opacity-50 transition-colors';
-  const cardCls = 'bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4';
+  const cardCls = 'bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4';
 
   return (
     <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a] shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-[#0f0f2a] shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm font-bold">AE</div>
           <div>
@@ -194,7 +194,7 @@ export default function AINativeEnginePanel() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#1a1a3e] shrink-0 overflow-x-auto">
+      <div className="flex border-b border-[#1a1a1a] shrink-0 overflow-x-auto">
         {tabs.map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 text-[11px] font-medium transition-colors whitespace-nowrap ${activeTab === tab ? 'text-cyan-400 border-b border-cyan-400 bg-[#0a2a2e]' : 'text-[#666] hover:text-[#ccc]'}`}>
@@ -222,7 +222,7 @@ export default function AINativeEnginePanel() {
                 { label: 'Scenes', value: engineStatus?.scene_count ?? 0, color: '#fdcb6e' },
                 { label: 'Commands', value: engineStatus?.agent_commands_processed ?? 0, color: '#a29bfe' },
               ].map(s => (
-                <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
+                <div key={s.label} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 text-center">
                   <div className="text-2xl font-bold capitalize" style={{ color: s.color }}>{s.value}</div>
                   <div className="text-xs text-[#999] mt-1">{s.label}</div>
                 </div>
@@ -447,7 +447,7 @@ export default function AINativeEnginePanel() {
             <div className="space-y-4">
               <div className={cardCls}>
                 <h3 className="text-sm font-medium text-[#ccc] mb-3">Initialize Hub</h3>
-                <button onClick={initializeHub} disabled={loading} className="bg-purple-600 text-white px-4 py-2 rounded text-sm font-medium hover:bg-purple-500">
+                <button onClick={initializeHub} disabled={loading} className="bg-orange-500 text-white px-4 py-2 rounded text-sm font-medium hover:bg-orange-600">
                   Initialize Agent Hub
                 </button>
               </div>

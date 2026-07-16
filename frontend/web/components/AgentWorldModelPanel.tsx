@@ -30,45 +30,45 @@ export default function AgentWorldModelPanel() {
   const tabs = ['overview', 'world', 'predict', 'simulate'];
 
   return (
-    <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
-      <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+    <div className="h-full flex flex-col bg-[#1a1a1a] text-white">
+      <div className="flex gap-1 p-3 border-b border-[#2a2a2a]">
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#f97316] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a2a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a2a] rounded text-sm text-[#f97316]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
         {activeTab === 'overview' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-[#00d4ff]">World Model</h2>
+            <h2 className="text-lg font-bold text-[#f97316]">World Model</h2>
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Agents</h3><p className="text-2xl">{stats.total_agents||0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Transitions</h3><p className="text-2xl">{stats.total_transitions||0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Predictions</h3><p className="text-2xl">{stats.total_predictions||0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a2a]"><h3 className="text-[#f97316] text-sm">Agents</h3><p className="text-2xl">{stats.total_agents||0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a2a]"><h3 className="text-[#f97316] text-sm">Transitions</h3><p className="text-2xl">{stats.total_transitions||0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a2a]"><h3 className="text-[#f97316] text-sm">Predictions</h3><p className="text-2xl">{stats.total_predictions||0}</p></div>
             </div>
           </div>
         )}
         {activeTab === 'world' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-[#00d4ff]">Initialize World</h2>
-            <input className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Agent ID" value={agentId} onChange={e => setAgentId(e.target.value)} />
-            <button className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm" onClick={async () => { const r = await handleSubmit(`${API_BASE}/world-model/initialize-world`, {agent_id: agentId, initial_state: {health: 100, position: [0,0]}}); if (r) setResult(r); }}>Initialize</button>
-            {result && <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
+            <h2 className="text-lg font-bold text-[#f97316]">Initialize World</h2>
+            <input className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-3 py-2 text-sm" placeholder="Agent ID" value={agentId} onChange={e => setAgentId(e.target.value)} />
+            <button className="px-4 py-2 bg-[#f97316] text-black rounded text-sm" onClick={async () => { const r = await handleSubmit(`${API_BASE}/world-model/initialize-world`, {agent_id: agentId, initial_state: {health: 100, position: [0,0]}}); if (r) setResult(r); }}>Initialize</button>
+            {result && <pre className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a2a] text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
           </div>
         )}
         {activeTab === 'predict' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-[#00d4ff]">Predict Outcome</h2>
-            <input className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Agent ID" value={agentId} onChange={e => setAgentId(e.target.value)} />
-            <input className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Action Name" value={actionName} onChange={e => setActionName(e.target.value)} />
-            <button className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm" onClick={async () => { const r = await handleSubmit(`${API_BASE}/world-model/predict`, {agent_id: agentId, action_name: actionName}); if (r) setResult(r); }}>Predict</button>
-            {result && <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
+            <h2 className="text-lg font-bold text-[#f97316]">Predict Outcome</h2>
+            <input className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-3 py-2 text-sm" placeholder="Agent ID" value={agentId} onChange={e => setAgentId(e.target.value)} />
+            <input className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-3 py-2 text-sm" placeholder="Action Name" value={actionName} onChange={e => setActionName(e.target.value)} />
+            <button className="px-4 py-2 bg-[#f97316] text-black rounded text-sm" onClick={async () => { const r = await handleSubmit(`${API_BASE}/world-model/predict`, {agent_id: agentId, action_name: actionName}); if (r) setResult(r); }}>Predict</button>
+            {result && <pre className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a2a] text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
           </div>
         )}
         {activeTab === 'simulate' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-[#00d4ff]">Simulate Sequence</h2>
-            <input className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Agent ID" value={agentId} onChange={e => setAgentId(e.target.value)} />
-            <button className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm" onClick={async () => { const r = await handleSubmit(`${API_BASE}/world-model/simulate`, {agent_id: agentId, actions: [["move", {x: 10, y: 0}], ["attack", {target: "enemy1"}]]}); if (r) setResult(r); }}>Simulate</button>
-            {result && <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
+            <h2 className="text-lg font-bold text-[#f97316]">Simulate Sequence</h2>
+            <input className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-3 py-2 text-sm" placeholder="Agent ID" value={agentId} onChange={e => setAgentId(e.target.value)} />
+            <button className="px-4 py-2 bg-[#f97316] text-black rounded text-sm" onClick={async () => { const r = await handleSubmit(`${API_BASE}/world-model/simulate`, {agent_id: agentId, actions: [["move", {x: 10, y: 0}], ["attack", {target: "enemy1"}]]}); if (r) setResult(r); }}>Simulate</button>
+            {result && <pre className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a2a] text-xs overflow-auto">{JSON.stringify(result, null, 2)}</pre>}
           </div>
         )}
       </div>

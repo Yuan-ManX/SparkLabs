@@ -275,7 +275,7 @@ const DecalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={projName} onChange={e => setProjName(e.target.value)} placeholder="e.g. Bullet Hole" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -283,7 +283,7 @@ const DecalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Width</div>
                   <input value={projWidth} onChange={e => setProjWidth(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -291,7 +291,7 @@ const DecalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Height</div>
                   <input value={projHeight} onChange={e => setProjHeight(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -299,7 +299,7 @@ const DecalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Projection</div>
                   <select value={projProjection} onChange={e => setProjProjection(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="orthographic">Orthographic</option>
@@ -325,7 +325,7 @@ const DecalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Projector ID</div>
                   <input value={decProjId} onChange={e => setDecProjId(e.target.value)} placeholder="Select projector" style={{
                     padding: '6px 10px', fontSize: 11, width: 110,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -334,17 +334,17 @@ const DecalSystemPanel: React.FC = () => {
                   <div style={{ display: 'flex', gap: 4 }}>
                     <input value={decX} onChange={e => setDecX(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 45,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                     <input value={decY} onChange={e => setDecY(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 45,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                     <input value={decZ} onChange={e => setDecZ(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 45,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -353,7 +353,7 @@ const DecalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Material</div>
                   <input value={decMaterialId} onChange={e => setDecMaterialId(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 110,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -434,17 +434,17 @@ const DecalSystemPanel: React.FC = () => {
                   <div style={{ display: 'flex', gap: 4 }}>
                     <input value={batchCamX} onChange={e => setBatchCamX(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 55,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                     <input value={batchCamY} onChange={e => setBatchCamY(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 55,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                     <input value={batchCamZ} onChange={e => setBatchCamZ(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 55,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -453,7 +453,7 @@ const DecalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Max Distance</div>
                   <input value={batchMaxDist} onChange={e => setBatchMaxDist(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 70,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -477,10 +477,10 @@ const DecalSystemPanel: React.FC = () => {
                   <span style={{ fontSize: 10, color: '#666' }}>{formatTime(result.processed_at)}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 12, fontSize: 10, marginBottom: 6 }}>
-                  <div style={{ padding: '6px 12px', backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: '6px 12px', backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Decals: <span style={{ color: '#6bcb77', fontWeight: 600 }}>{result.decal_count}</span>
                   </div>
-                  <div style={{ padding: '6px 12px', backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: '6px 12px', backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Batch Size: <span style={{ color: '#fdcb6e', fontWeight: 600 }}>{result.batch_size} bytes</span>
                   </div>
                 </div>
@@ -495,7 +495,7 @@ const DecalSystemPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -260,7 +260,7 @@ const CutsceneTimeline: React.FC = () => {
             {tracks.map(track => (
               <div
                 key={track.track_id}
-                className="border-b border-[#1a1a1a]"
+                className="border-b border-[#1e1e1e]"
               >
                 <div className="flex items-center gap-2 px-4 py-1.5 bg-[#0d0d0d]">
                   <div

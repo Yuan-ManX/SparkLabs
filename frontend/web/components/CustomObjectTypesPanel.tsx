@@ -273,7 +273,7 @@ const CustomObjectTypesPanel: React.FC = () => {
           onChange={e => setNewBaseType(e.target.value as BaseType)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="SPRITE">Sprite</option>
@@ -291,7 +291,7 @@ const CustomObjectTypesPanel: React.FC = () => {
           onChange={e => setNewPropType(e.target.value)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="float">float</option>
@@ -388,7 +388,7 @@ const CustomObjectTypesPanel: React.FC = () => {
                       <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{prop.name}</span>
                       <span style={{
                         fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                        backgroundColor: '#141428', color: '#fdcb6e', fontWeight: 600,
+                        backgroundColor: '#111', color: '#fdcb6e', fontWeight: 600,
                         fontFamily: 'monospace',
                       }}>{prop.property_type}</span>
                     </div>
@@ -396,7 +396,7 @@ const CustomObjectTypesPanel: React.FC = () => {
                   </div>
                   <div style={{ fontSize: 10, color: '#888' }}>
                     Default: <code style={{
-                      padding: '1px 6px', backgroundColor: '#141428',
+                      padding: '1px 6px', backgroundColor: '#111',
                       color: '#6bcb77', borderRadius: 3, fontFamily: 'monospace',
                     }}>{prop.default_value}</code>
                   </div>
@@ -431,7 +431,7 @@ const CustomObjectTypesPanel: React.FC = () => {
                   </div>
                   <div style={{ fontSize: 10, color: '#888' }}>
                     Params: <code style={{
-                      padding: '1px 6px', backgroundColor: '#141428',
+                      padding: '1px 6px', backgroundColor: '#111',
                       color: '#a29bfe', borderRadius: 3, fontFamily: 'monospace',
                       fontSize: 9,
                     }}>{behavior.parameters}</code>
@@ -453,7 +453,7 @@ const CustomObjectTypesPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

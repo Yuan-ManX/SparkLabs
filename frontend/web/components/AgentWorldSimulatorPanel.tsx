@@ -133,25 +133,25 @@ export default function AgentWorldSimulatorPanel() {
 
   const tabs = ['overview', 'entity', 'simulate', 'interaction', 'event'];
 
-  const inputCls = 'bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#00d4ff] outline-none';
-  const selectCls = 'bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white focus:border-[#00d4ff] outline-none';
-  const btnPrimary = 'bg-[#00d4ff] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#00b8e0] disabled:opacity-50 transition-colors';
+  const inputCls = 'bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 focus:border-[#f97316] outline-none';
+  const selectCls = 'bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-sm text-white focus:border-[#f97316] outline-none';
+  const btnPrimary = 'bg-[#f97316] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#00b8e0] disabled:opacity-50 transition-colors';
   const btnSuccess = 'bg-[#00ff88] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#00e67a] disabled:opacity-50 transition-colors';
   const btnWarning = 'bg-[#fdcb6e] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#e8b94e] disabled:opacity-50 transition-colors';
   const btnDanger = 'bg-[#ff6b6b] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#e55a5a] disabled:opacity-50 transition-colors';
-  const cardCls = 'bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4';
+  const cardCls = 'bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4';
 
   const overviewContent = (
     <div>
-      <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">World Simulator Overview</h2>
+      <h2 className="text-lg font-semibold mb-4 text-[#f97316]">World Simulator Overview</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {[
-          { label: 'Total Entities', value: stats.total_entities ?? stats.entity_count ?? 0, color: '#00d4ff' },
+          { label: 'Total Entities', value: stats.total_entities ?? stats.entity_count ?? 0, color: '#f97316' },
           { label: 'Total Ticks', value: stats.total_ticks ?? stats.tick_count ?? 0, color: '#00ff88' },
           { label: 'Interactions', value: stats.total_interactions ?? stats.interaction_count ?? 0, color: '#fdcb6e' },
           { label: 'Active Events', value: stats.active_events ?? stats.event_count ?? 0, color: '#a29bfe' },
         ].map(s => (
-          <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
+          <div key={s.label} className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
             <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
@@ -168,13 +168,13 @@ export default function AgentWorldSimulatorPanel() {
 
   const entityContent = (
     <div>
-      <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Create Entity</h2>
+      <h2 className="text-lg font-semibold mb-4 text-[#f97316]">Create Entity</h2>
       <div className={cardCls}>
         <h3 className="text-sm font-medium text-[#ccc] mb-3">New Entity</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Entity Name" value={entityName} onChange={e => setEntityName(e.target.value)} className={inputCls} />
           <select value={entityType} onChange={e => setEntityType(e.target.value)} className={selectCls}>
-            {ENTITY_TYPES.map(t => <option key={t} value={t} className="bg-[#1a1a2e] capitalize">{t}</option>)}
+            {ENTITY_TYPES.map(t => <option key={t} value={t} className="bg-[#1a1a1a] capitalize">{t}</option>)}
           </select>
         </div>
         <div className="mb-3">
@@ -200,8 +200,8 @@ export default function AgentWorldSimulatorPanel() {
         </button>
       </div>
       {result && result.name && (
-        <div className={`${cardCls} mt-4 border-[#00d4ff]/30`}>
-          <h3 className="text-sm font-medium text-[#00d4ff] mb-2">Created: {result.name}</h3>
+        <div className={`${cardCls} mt-4 border-[#f97316]/30`}>
+          <h3 className="text-sm font-medium text-[#f97316] mb-2">Created: {result.name}</h3>
           <pre className="text-xs text-[#999] overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
         </div>
       )}
@@ -210,7 +210,7 @@ export default function AgentWorldSimulatorPanel() {
 
   const simulateContent = (
     <div>
-      <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Simulate Ticks</h2>
+      <h2 className="text-lg font-semibold mb-4 text-[#f97316]">Simulate Ticks</h2>
       <div className={cardCls}>
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Advance Simulation</h3>
         <div className="flex items-end gap-3">
@@ -241,9 +241,9 @@ export default function AgentWorldSimulatorPanel() {
         <div className="grid grid-cols-2 gap-4">
           {[
             { label: 'Total Ticks', value: stats.total_ticks ?? stats.tick_count ?? '-', color: '#00ff88' },
-            { label: 'Entities', value: stats.total_entities ?? stats.entity_count ?? '-', color: '#00d4ff' },
+            { label: 'Entities', value: stats.total_entities ?? stats.entity_count ?? '-', color: '#f97316' },
           ].map(s => (
-            <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
+            <div key={s.label} className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4 text-center">
               <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
               <div className="text-xs text-[#999] mt-1">{s.label}</div>
             </div>
@@ -255,14 +255,14 @@ export default function AgentWorldSimulatorPanel() {
 
   const interactionContent = (
     <div>
-      <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Entity Interaction</h2>
+      <h2 className="text-lg font-semibold mb-4 text-[#f97316]">Entity Interaction</h2>
       <div className={cardCls}>
         <h3 className="text-sm font-medium text-[#ccc] mb-3">New Interaction</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Source Entity ID" value={sourceId} onChange={e => setSourceId(e.target.value)} className={inputCls} />
           <input type="text" placeholder="Target Entity ID" value={targetId} onChange={e => setTargetId(e.target.value)} className={inputCls} />
           <select value={interactionType} onChange={e => setInteractionType(e.target.value)} className={selectCls}>
-            {INTERACTION_TYPES.map(t => <option key={t} value={t} className="bg-[#1a1a2e] capitalize">{t}</option>)}
+            {INTERACTION_TYPES.map(t => <option key={t} value={t} className="bg-[#1a1a1a] capitalize">{t}</option>)}
           </select>
         </div>
         <div className="mb-3">
@@ -300,13 +300,13 @@ export default function AgentWorldSimulatorPanel() {
 
   const eventContent = (
     <div>
-      <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Broadcast Event</h2>
+      <h2 className="text-lg font-semibold mb-4 text-[#f97316]">Broadcast Event</h2>
       <div className={cardCls}>
         <h3 className="text-sm font-medium text-[#ccc] mb-3">New Event</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input type="text" placeholder="Event Name" value={eventName} onChange={e => setEventName(e.target.value)} className={inputCls} />
           <select value={eventCategory} onChange={e => setEventCategory(e.target.value)} className={selectCls}>
-            {EVENT_CATEGORIES.map(c => <option key={c} value={c} className="bg-[#1a1a2e] capitalize">{c}</option>)}
+            {EVENT_CATEGORIES.map(c => <option key={c} value={c} className="bg-[#1a1a1a] capitalize">{c}</option>)}
           </select>
         </div>
         <div className="mb-3">
@@ -349,11 +349,11 @@ export default function AgentWorldSimulatorPanel() {
             max="10"
             value={eventIntensity}
             onChange={e => setEventIntensity(e.target.value)}
-            className="w-full accent-[#00d4ff]"
+            className="w-full accent-[#f97316]"
           />
           <div className="flex justify-between text-xs text-[#666]">
             <span>Low</span>
-            <span className="text-[#00d4ff] font-medium">{eventIntensity}</span>
+            <span className="text-[#f97316] font-medium">{eventIntensity}</span>
             <span>High</span>
           </div>
         </div>
@@ -371,14 +371,14 @@ export default function AgentWorldSimulatorPanel() {
   );
 
   return (
-    <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
-      <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
+    <div className="h-full flex flex-col bg-[#1a1a1a] text-white">
+      <div className="flex gap-1 p-3 border-b border-[#2a2a2a]">
         {tabs.map(t => (
           <button
             key={t}
             onClick={() => setActiveTab(t)}
             className={`px-3 py-2 rounded text-sm font-medium transition-colors ${
-              activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'
+              activeTab === t ? 'bg-[#f97316] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a2a]'
             }`}
           >
             {t.charAt(0).toUpperCase() + t.slice(1)}
@@ -388,8 +388,8 @@ export default function AgentWorldSimulatorPanel() {
       {message && (
         <div className={`mx-4 mt-2 p-2 rounded text-sm border ${
           message === 'Success'
-            ? 'bg-[#0f0f23] border-[#00ff88]/40 text-[#00ff88]'
-            : 'bg-[#0f0f23] border-[#fdcb6e]/40 text-[#fdcb6e]'
+            ? 'bg-[#0d0d0d] border-[#00ff88]/40 text-[#00ff88]'
+            : 'bg-[#0d0d0d] border-[#fdcb6e]/40 text-[#fdcb6e]'
         }`}>{message}</div>
       )}
       <div className="flex-1 overflow-auto p-4">

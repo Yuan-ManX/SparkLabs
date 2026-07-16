@@ -586,7 +586,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>NPC ID</div>
                   <input value={treeNpcId} onChange={e => setTreeNpcId(e.target.value)} placeholder="e.g. npc_guard_01" style={{
                     padding: '6px 10px', fontSize: 11, width: 130,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -594,7 +594,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Archetype</div>
                   <select value={treeArchetype} onChange={e => setTreeArchetype(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     {ARCHETYPES.map(a => (
@@ -642,7 +642,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                   }}>{tree.archetype}</span>
                 </div>
                 <div style={{
-                  padding: 8, backgroundColor: '#141428', borderRadius: 4,
+                  padding: 8, backgroundColor: '#111', borderRadius: 4,
                   maxHeight: 200, overflow: 'auto',
                 }}>
                   {renderTreeNode(tree.root)}
@@ -667,7 +667,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>NPC ID</div>
                   <input value={smNpcId} onChange={e => setSmNpcId(e.target.value)} placeholder="e.g. npc_guard_01" style={{
                     padding: '6px 10px', fontSize: 11, width: 130,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -675,7 +675,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Archetype</div>
                   <select value={smArchetype} onChange={e => setSmArchetype(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     {ARCHETYPES.map(a => (
@@ -760,7 +760,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                     {sm.transitions.map((t, i) => (
                       <div key={i} style={{
                         display: 'flex', alignItems: 'center', gap: 8, padding: '4px 8px',
-                        backgroundColor: '#141428', borderRadius: 3,
+                        backgroundColor: '#111', borderRadius: 3,
                         fontSize: 10,
                       }}>
                         <span style={{ color: '#74b9ff' }}>{t.from}</span>
@@ -796,7 +796,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Archetype</div>
                   <select value={patternArchetype} onChange={e => setPatternArchetype(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     {ARCHETYPES.map(a => (
@@ -899,7 +899,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Tree ID</div>
                   <input value={simTreeId} onChange={e => setSimTreeId(e.target.value)} placeholder="Select a behavior tree" style={{
                     padding: '6px 10px', fontSize: 11, width: 150,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -907,7 +907,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scenario</div>
                   <select value={simScenario} onChange={e => setSimScenario(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     {SCENARIOS.map(s => (
@@ -952,7 +952,7 @@ const BehaviorDesignerPanel: React.FC = () => {
                 <div>
                   <div style={{ fontSize: 10, fontWeight: 600, color: '#888', marginBottom: 4 }}>Execution Trace</div>
                   <div style={{
-                    padding: 8, backgroundColor: '#141428', borderRadius: 4,
+                    padding: 8, backgroundColor: '#111', borderRadius: 4,
                     maxHeight: 180, overflow: 'auto',
                   }}>
                     {sr.trace.map((step, i) => (
@@ -987,7 +987,7 @@ const BehaviorDesignerPanel: React.FC = () => {
 
                 <div style={{
                   marginTop: 6, padding: '4px 8px',
-                  backgroundColor: '#141428', borderRadius: 3,
+                  backgroundColor: '#111', borderRadius: 3,
                   display: 'flex', justifyContent: 'space-between',
                   fontSize: 10,
                 }}>
@@ -1002,7 +1002,7 @@ const BehaviorDesignerPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

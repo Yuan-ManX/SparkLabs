@@ -260,7 +260,7 @@ const AuditTrailPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Agent ID</div>
                   <input value={eventAgentId} onChange={e => setEventAgentId(e.target.value)} placeholder="e.g. agent-001" style={{
                     padding: '6px 10px', fontSize: 11, width: 100,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -268,7 +268,7 @@ const AuditTrailPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Event Type</div>
                   <select value={eventType} onChange={e => setEventType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="action">Action</option>
@@ -282,7 +282,7 @@ const AuditTrailPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Severity</div>
                   <select value={eventSeverity} onChange={e => setEventSeverity(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="info">Info</option>
@@ -295,7 +295,7 @@ const AuditTrailPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Description</div>
                   <input value={eventDesc} onChange={e => setEventDesc(e.target.value)} placeholder="What happened?" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -305,7 +305,7 @@ const AuditTrailPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Details</div>
                   <input value={eventDetails} onChange={e => setEventDetails(e.target.value)} placeholder="Additional details..." style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -337,7 +337,7 @@ const AuditTrailPanel: React.FC = () => {
                     }}>{event.severity}</span>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#aaa', fontWeight: 600,
+                      backgroundColor: '#111', color: '#aaa', fontWeight: 600,
                     }}>{event.event_type}</span>
                   </div>
                   <span style={{ fontSize: 10, color: '#666' }}>{formatTime(event.timestamp)}</span>
@@ -365,7 +365,7 @@ const AuditTrailPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Agent ID</div>
                   <input value={queryAgentId} onChange={e => setQueryAgentId(e.target.value)} placeholder="e.g. agent-001" style={{
                     padding: '6px 10px', fontSize: 11, width: 110,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -373,7 +373,7 @@ const AuditTrailPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Event Type</div>
                   <select value={queryEventType} onChange={e => setQueryEventType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="">All</option>
@@ -387,7 +387,7 @@ const AuditTrailPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Limit</div>
                   <input value={queryLimit} onChange={e => setQueryLimit(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -448,7 +448,7 @@ const AuditTrailPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Time Range (days)</div>
                   <input value={reportDays} onChange={e => setReportDays(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -491,7 +491,7 @@ const AuditTrailPanel: React.FC = () => {
                 {report.top_event_types.map(tet => (
                   <div key={tet.event_type} style={{
                     display: 'flex', justifyContent: 'space-between', padding: '4px 8px',
-                    backgroundColor: '#141428', borderRadius: 3, marginBottom: 3, fontSize: 10,
+                    backgroundColor: '#111', borderRadius: 3, marginBottom: 3, fontSize: 10,
                   }}>
                     <span style={{ color: '#ccc' }}>{tet.event_type}</span>
                     <span style={{ color: '#fdcb6e', fontWeight: 600 }}>{tet.count}</span>
@@ -505,7 +505,7 @@ const AuditTrailPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -162,10 +162,10 @@ const CreativeDirectorPanel: React.FC = () => {
     } catch {
       setArtProfile({
         id: uid(), style: 'stylized',
-        primary_palette: ['#1a1a2e', '#16213e', '#0f3460'],
+        primary_palette: ['#1a1a1a', '#0f0f0f', '#1e1e1e'],
         secondary_palette: ['#e94560', '#ff6b6b', '#f8b500'],
         accent_palette: ['#00d2ff', '#00b4d8', '#0096c7'],
-        background_palette: ['#0a0a1a', '#12122a', '#1a1a3e'],
+        background_palette: ['#0a0a1a', '#12122a', '#1a1a1a'],
         lighting_approach: 'dynamic',
       });
       showMessage('Art direction simulated (offline)', 'info');
@@ -224,10 +224,10 @@ const CreativeDirectorPanel: React.FC = () => {
   };
 
   const styles: Record<string, React.CSSProperties> = {
-    container: { background: '#1a1a2e', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
+    container: { background: '#1a1a1a', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
     header: { fontSize: 18, fontWeight: 'bold', marginBottom: 16, color: '#e94560' },
     tabs: { display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' },
-    tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a4a', color: '#aab' },
+    tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a2a', color: '#aab' },
     tabActive: { background: '#3a3a6a', color: '#e94560', fontWeight: 'bold' },
     card: { background: '#202040', borderRadius: 8, padding: 16, marginBottom: 12 },
     cardTitle: { fontSize: 14, fontWeight: 'bold', color: '#ff6b6b', marginBottom: 8 },
@@ -406,7 +406,7 @@ const CreativeDirectorPanel: React.FC = () => {
             <div style={{ fontSize: 13 }}>
               <div style={{ marginBottom: 4 }}><span style={styles.label}>Difficulty: </span>{expMap.difficulty_progression}</div>
               <div style={{ marginBottom: 4 }}><span style={styles.label}>Learning Curve: </span>
-                <div style={{ background: '#2a2a4a', borderRadius: 4, height: 6, marginTop: 4, width: 200 }}>
+                <div style={{ background: '#2a2a2a', borderRadius: 4, height: 6, marginTop: 4, width: 200 }}>
                   <div style={{ background: '#e94560', borderRadius: 4, height: 6, width: `${expMap.learning_curve_steepness * 100}%` }} />
                 </div>
               </div>

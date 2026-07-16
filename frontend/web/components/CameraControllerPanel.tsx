@@ -124,7 +124,7 @@ const CameraControllerPanel: React.FC = () => {
                 onChange={e => setCameraName(e.target.value)}
                 className="w-full bg-[#111] border border-[#333] rounded p-1.5 text-[11px] text-[#ccc] outline-none" />
               <button onClick={createCamera}
-                className="w-full bg-indigo-600 hover:bg-indigo-700 text-white text-[11px] py-1.5 rounded transition-colors">
+                className="w-full bg-orange-500 hover:bg-orange-600 text-white text-[11px] py-1.5 rounded transition-colors">
                 Create Camera
               </button>
             </div>

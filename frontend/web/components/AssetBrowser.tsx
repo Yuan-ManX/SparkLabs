@@ -11,10 +11,10 @@ const CATEGORY_ICONS: Record<string, string> = {
 };
 
 const CATEGORY_COLORS: Record<string, string> = {
-  templates: '#3b82f6',
+  templates: '#f97316',
   commands: '#10b981',
   genres: '#f97316',
-  knowledge: '#8b5cf6',
+  knowledge: '#f97316',
 };
 
 interface AssetItem {
@@ -152,7 +152,7 @@ const AssetBrowser: React.FC = () => {
     <div className="h-full flex flex-col bg-[#0d0d0d]">
       <div className="px-4 py-3 border-b border-[#1e1e1e]">
         <div className="flex items-center gap-2 mb-3">
-          <div className="w-7 h-7 bg-gradient-to-br from-blue-500 to-purple-600 rounded-lg flex items-center justify-center">
+          <div className="w-7 h-7 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
             <i className="fa-solid fa-box-archive text-white text-[11px]" />
           </div>
           <div>
@@ -168,7 +168,7 @@ const AssetBrowser: React.FC = () => {
               onClick={() => handleCategoryChange(cat.id)}
               className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-[10px] font-medium transition-all ${
                 activeCategory === cat.id
-                  ? 'bg-blue-500/15 text-blue-500 border border-blue-500/30'
+                  ? 'bg-orange-500/15 text-orange-500 border border-orange-500/30'
                   : 'text-[#888] hover:text-[#bbb] hover:bg-[#1a1a1a] border border-transparent'
               }`}
             >
@@ -185,7 +185,7 @@ const AssetBrowser: React.FC = () => {
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             placeholder={`Search ${activeCategory}...`}
-            className="w-full bg-[#141414] border border-[#2a2a2a] rounded-lg pl-8 pr-3 py-1.5 text-[11px] text-[#ddd] placeholder-[#555] focus:border-blue-500/50 focus:outline-none"
+            className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg pl-8 pr-3 py-1.5 text-[11px] text-[#ddd] placeholder-[#555] focus:border-orange-500/50 focus:outline-none"
           />
         </div>
       </div>
@@ -218,8 +218,8 @@ const AssetBrowser: React.FC = () => {
                     onClick={() => setSelectedItem(isSelected ? null : item)}
                     className={`p-2.5 rounded-lg border cursor-pointer transition-all ${
                       isSelected
-                        ? 'border-blue-500/50 bg-blue-500/10'
-                        : 'border-[#2a2a2a] bg-[#141414] hover:border-[#3a3a3a]'
+                        ? 'border-orange-500/50 bg-orange-500/10'
+                        : 'border-[#2a2a2a] bg-[#0d0d0d] hover:border-[#3a3a3a]'
                     }`}
                   >
                     <div className="flex items-center gap-2 mb-1">
@@ -295,7 +295,7 @@ const AssetBrowser: React.FC = () => {
 
               {selectedItem.category === 'templates' && (
                 <button
-                  className="w-full mt-2 px-3 py-1.5 bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-lg text-[10px] font-semibold hover:opacity-90 transition-opacity"
+                  className="w-full mt-2 px-3 py-1.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded-lg text-[10px] font-semibold hover:opacity-90 transition-opacity"
                   onClick={() => {
                     const genre = selectedItem.id;
                     gameTemplateApi.scaffold('NewProject', genre);

@@ -227,11 +227,11 @@ const AnimationCurvePanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={curveName} onChange={e => setCurveName(e.target.value)} placeholder="e.g. Bounce" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={curveName} onChange={e => setCurveName(e.target.value)} placeholder="e.g. Bounce" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
-                  <select value={curveType} onChange={e => setCurveType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={curveType} onChange={e => setCurveType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="float">Float</option>
                     <option value="vector2">Vector2</option>
                     <option value="vector3">Vector3</option>
@@ -241,7 +241,7 @@ const AnimationCurvePanel: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Easing</div>
-                  <select value={curveEasing} onChange={e => setCurveEasing(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={curveEasing} onChange={e => setCurveEasing(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="linear">Linear</option>
                     <option value="ease_in">Ease In</option>
                     <option value="ease_out">Ease Out</option>
@@ -259,23 +259,23 @@ const AnimationCurvePanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Curve ID</div>
-                  <input value={kfCurveId} onChange={e => setKfCurveId(e.target.value)} placeholder="Curve ID" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={kfCurveId} onChange={e => setKfCurveId(e.target.value)} placeholder="Curve ID" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Time</div>
-                  <input value={kfTime} onChange={e => setKfTime(e.target.value)} placeholder="0.0" type="number" step="0.01" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={kfTime} onChange={e => setKfTime(e.target.value)} placeholder="0.0" type="number" step="0.01" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Value</div>
-                  <input value={kfValue} onChange={e => setKfValue(e.target.value)} placeholder="0.0" type="number" step="0.01" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={kfValue} onChange={e => setKfValue(e.target.value)} placeholder="0.0" type="number" step="0.01" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>In Tangent</div>
-                  <input value={kfInTangent} onChange={e => setKfInTangent(e.target.value)} placeholder="0" type="number" step="0.1" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={kfInTangent} onChange={e => setKfInTangent(e.target.value)} placeholder="0" type="number" step="0.1" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Out Tangent</div>
-                  <input value={kfOutTangent} onChange={e => setKfOutTangent(e.target.value)} placeholder="0" type="number" step="0.1" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={kfOutTangent} onChange={e => setKfOutTangent(e.target.value)} placeholder="0" type="number" step="0.1" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleAddKeyframe} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Add</button>
               </div>
@@ -286,16 +286,16 @@ const AnimationCurvePanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Curve ID</div>
-                  <input value={evalCurveId} onChange={e => setEvalCurveId(e.target.value)} placeholder="Curve ID" style={{ padding: '6px 10px', fontSize: 11, width: 200, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={evalCurveId} onChange={e => setEvalCurveId(e.target.value)} placeholder="Curve ID" style={{ padding: '6px 10px', fontSize: 11, width: 200, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Time</div>
-                  <input value={evalTime} onChange={e => setEvalTime(e.target.value)} placeholder="0.5" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={evalTime} onChange={e => setEvalTime(e.target.value)} placeholder="0.5" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleEvaluateCurve} style={{ padding: '6px 14px', backgroundColor: '#4a2d4a', color: '#e056a0', border: '1px solid #5a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Evaluate</button>
               </div>
               {evalResult && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
                   <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(evalResult, null, 2)}</pre>
                 </div>
               )}
@@ -307,7 +307,7 @@ const AnimationCurvePanel: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{c.name}</span>
                   <div style={{ display: 'flex', gap: 6 }}>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#aaa', textTransform: 'uppercase' }}>{c.curve_type}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#aaa', textTransform: 'uppercase' }}>{c.curve_type}</span>
                     <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: (EASING_COLORS[c.easing] || '#888') + '33', color: EASING_COLORS[c.easing] || '#888' }}>{c.easing}</span>
                   </div>
                 </div>
@@ -326,15 +326,15 @@ const AnimationCurvePanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={seqName} onChange={e => setSeqName(e.target.value)} placeholder="e.g. Intro" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={seqName} onChange={e => setSeqName(e.target.value)} placeholder="e.g. Intro" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Track IDs (comma)</div>
-                  <input value={seqTrackIds} onChange={e => setSeqTrackIds(e.target.value)} placeholder="t1, t2, t3" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={seqTrackIds} onChange={e => setSeqTrackIds(e.target.value)} placeholder="t1, t2, t3" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Duration (s)</div>
-                  <input value={seqDuration} onChange={e => setSeqDuration(e.target.value)} type="number" step="0.1" min="0.1" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={seqDuration} onChange={e => setSeqDuration(e.target.value)} type="number" step="0.1" min="0.1" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
                   <input type="checkbox" checked={seqLoop} onChange={e => setSeqLoop(e.target.checked)} style={{ cursor: 'pointer' }} />
@@ -356,7 +356,7 @@ const AnimationCurvePanel: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', flexWrap: 'wrap', gap: 3, marginBottom: 4 }}>
                   {s.track_ids.map(tid => (
-                    <span key={tid} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>{tid}</span>
+                    <span key={tid} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>{tid}</span>
                   ))}
                 </div>
                 <div style={{ fontSize: 9, color: '#666' }}>{formatTime(s.created_at)}</div>
@@ -366,7 +366,7 @@ const AnimationCurvePanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDCC8'} {curves.length} curves · {sequences.length} sequences</span>
         <span>Connected</span>
       </div>

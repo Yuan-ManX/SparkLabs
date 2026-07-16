@@ -322,7 +322,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
           <span style={{ color: '#aaa' }}>{label}</span>
           <span style={{ color: '#ccc', fontWeight: 600 }}>{unit === '%' ? `${clampedPct.toFixed(1)}${unit}` : `${value}${unit}`}</span>
         </div>
-        <div style={{ height: 6, backgroundColor: '#141428', borderRadius: 3 }}>
+        <div style={{ height: 6, backgroundColor: '#111', borderRadius: 3 }}>
           <div style={{
             height: '100%', width: `${clampedPct}%`,
             backgroundColor: barColor, borderRadius: 3,
@@ -408,7 +408,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
             backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
             color: activeTab === tab.key ? '#e0e0e0' : '#888',
             border: 'none',
-            borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent',
+            borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent',
             cursor: 'pointer',
           }}>
             {tab.icon} {tab.label}
@@ -423,7 +423,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#74b9ff' }}>
                 Run Perception
@@ -434,14 +434,14 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                   <input type="text" value={perceiveForm.world_id}
                     onChange={e => setPerceiveForm(prev => ({ ...prev, world_id: e.target.value }))}
                     placeholder="e.g. world_01"
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
                   <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 3 }}>Sensory Modality</label>
                   <select value={perceiveForm.modality}
                     onChange={e => setPerceiveForm(prev => ({ ...prev, modality: e.target.value }))}
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   >
                     {modalityOptions.filter(m => m.value !== '').map(m => (
                       <option key={m.value} value={m.value}>{m.label}</option>
@@ -454,7 +454,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                     onChange={e => setPerceiveForm(prev => ({ ...prev, data: e.target.value }))}
                     placeholder='{"intensity": 0.75, "source": "camera_01"}'
                     rows={3}
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box', resize: 'vertical', fontFamily: 'monospace' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box', resize: 'vertical', fontFamily: 'monospace' }}
                   />
                 </div>
                 <div>
@@ -469,7 +469,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handlePerceive} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#74b9ff',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#74b9ff',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -480,7 +480,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
             {perceptionResult && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>
                   Perception Result
@@ -522,7 +522,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#fdcb6e' }}>
                 Filter Entities
@@ -532,7 +532,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                   <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 3 }}>Modality</label>
                   <select value={entitiesFilter.modality}
                     onChange={e => setEntitiesFilter(prev => ({ ...prev, modality: e.target.value }))}
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   >
                     {modalityOptions.map(m => (
                       <option key={m.value} value={m.value}>{m.label}</option>
@@ -551,7 +551,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleFilterEntities} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#fdcb6e',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#fdcb6e',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -562,7 +562,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
             {entities.length > 0 && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, color: '#aaa' }}>
                   Entities ({entities.length})
@@ -603,7 +603,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#6bcb77' }}>
                 Query Region
@@ -615,22 +615,22 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                     <input type="number" value={regionForm.x1}
                       onChange={e => setRegionForm(prev => ({ ...prev, x1: parseInt(e.target.value) || 0 }))}
                       placeholder="x1"
-                      style={{ padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                      style={{ padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                     />
                     <input type="number" value={regionForm.y1}
                       onChange={e => setRegionForm(prev => ({ ...prev, y1: parseInt(e.target.value) || 0 }))}
                       placeholder="y1"
-                      style={{ padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                      style={{ padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                     />
                     <input type="number" value={regionForm.x2}
                       onChange={e => setRegionForm(prev => ({ ...prev, x2: parseInt(e.target.value) || 0 }))}
                       placeholder="x2"
-                      style={{ padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                      style={{ padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                     />
                     <input type="number" value={regionForm.y2}
                       onChange={e => setRegionForm(prev => ({ ...prev, y2: parseInt(e.target.value) || 0 }))}
                       placeholder="y2"
-                      style={{ padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                      style={{ padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                     />
                   </div>
                 </div>
@@ -638,7 +638,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                   <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 3 }}>Layer</label>
                   <select value={regionForm.layer}
                     onChange={e => setRegionForm(prev => ({ ...prev, layer: e.target.value }))}
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   >
                     {layerOptions.map(l => (
                       <option key={l.value} value={l.value}>{l.label}</option>
@@ -652,7 +652,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                       <label key={cat} style={{
                         fontSize: 11, color: '#ccc', display: 'flex', alignItems: 'center', gap: 4,
                         padding: '3px 6px', backgroundColor: '#1a1a2e', borderRadius: 4,
-                        border: regionForm.categories.includes(cat) ? '1px solid #0f3460' : '1px solid #2a2a3e',
+                        border: regionForm.categories.includes(cat) ? '1px solid #1e1e1e' : '1px solid #2a2a3e',
                         cursor: 'pointer',
                       }}>
                         <input type="checkbox" checked={regionForm.categories.includes(cat)}
@@ -673,7 +673,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleRegionQuery} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#6bcb77',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#6bcb77',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -684,7 +684,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
             {regionResults.length > 0 && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, color: '#aaa' }}>
                   Region Results ({regionResults.length})
@@ -719,7 +719,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#a29bfe' }}>
                 Detect Changes
@@ -737,7 +737,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleDetectChanges} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#a29bfe',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#a29bfe',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -748,7 +748,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
             {changeResults.length > 0 && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, color: '#aaa' }}>
                   Change Detection Results ({changeResults.length})
@@ -792,7 +792,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12, color: '#aaa' }}>World Perception System Status</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
@@ -843,7 +843,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
         {activeTab === 'status' && !status && (
           <div style={{
             textAlign: 'center', padding: 40, color: '#555',
-            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460',
+            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e',
           }}>
             <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>{'\u2699\uFE0F'}</span>
             Loading system status...
@@ -854,7 +854,7 @@ const AgentWorldPerceptionPanel: React.FC = () => {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

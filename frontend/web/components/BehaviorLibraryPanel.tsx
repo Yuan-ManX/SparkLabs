@@ -200,11 +200,11 @@ const BehaviorLibraryPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={tmplName} onChange={e => setTmplName(e.target.value)} placeholder="e.g. Patrol" style={{ padding: '6px 10px', fontSize: 11, width: 110, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={tmplName} onChange={e => setTmplName(e.target.value)} placeholder="e.g. Patrol" style={{ padding: '6px 10px', fontSize: 11, width: 110, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Category</div>
-                  <select value={tmplCategory} onChange={e => setTmplCategory(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={tmplCategory} onChange={e => setTmplCategory(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="movement">Movement</option>
                     <option value="combat">Combat</option>
                     <option value="interaction">Interaction</option>
@@ -215,7 +215,7 @@ const BehaviorLibraryPanel: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Exec Mode</div>
-                  <select value={tmplExecMode} onChange={e => setTmplExecMode(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={tmplExecMode} onChange={e => setTmplExecMode(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="update">Update</option>
                     <option value="trigger">Trigger</option>
                     <option value="coroutine">Coroutine</option>
@@ -224,11 +224,11 @@ const BehaviorLibraryPanel: React.FC = () => {
                 </div>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Description</div>
-                  <input value={tmplDescription} onChange={e => setTmplDescription(e.target.value)} placeholder="Brief description..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={tmplDescription} onChange={e => setTmplDescription(e.target.value)} placeholder="Brief description..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 120 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Parameters (comma)</div>
-                  <input value={tmplParameters} onChange={e => setTmplParameters(e.target.value)} placeholder="speed, range, cooldown" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={tmplParameters} onChange={e => setTmplParameters(e.target.value)} placeholder="speed, range, cooldown" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleRegisterTemplate} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Register</button>
               </div>
@@ -241,7 +241,7 @@ const BehaviorLibraryPanel: React.FC = () => {
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{t.name}</span>
                   <div style={{ display: 'flex', gap: 6 }}>
                     <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: (CATEGORY_COLORS[t.category] || '#888') + '33', color: CATEGORY_COLORS[t.category] || '#888' }}>{t.category}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>{t.execution_mode}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>{t.execution_mode}</span>
                   </div>
                 </div>
                 <div style={{ fontSize: 10, color: '#888' }}>{t.description}</div>
@@ -258,15 +258,15 @@ const BehaviorLibraryPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Template ID</div>
-                  <input value={instTemplateId} onChange={e => setInstTemplateId(e.target.value)} placeholder="Template ID" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={instTemplateId} onChange={e => setInstTemplateId(e.target.value)} placeholder="Template ID" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Entity ID</div>
-                  <input value={instEntityId} onChange={e => setInstEntityId(e.target.value)} placeholder="Entity ID" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={instEntityId} onChange={e => setInstEntityId(e.target.value)} placeholder="Entity ID" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Param Overrides</div>
-                  <input value={instParamOverrides} onChange={e => setInstParamOverrides(e.target.value)} placeholder="speed=2.0, range=3.0" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={instParamOverrides} onChange={e => setInstParamOverrides(e.target.value)} placeholder="speed=2.0, range=3.0" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleInstantiateBehavior} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Instantiate</button>
               </div>
@@ -277,7 +277,7 @@ const BehaviorLibraryPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Instance ID</div>
-                  <input value={toggleInstanceId} onChange={e => setToggleInstanceId(e.target.value)} placeholder="Instance ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={toggleInstanceId} onChange={e => setToggleInstanceId(e.target.value)} placeholder="Instance ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <label style={{ display: 'flex', alignItems: 'center', gap: 4, marginBottom: 6 }}>
                   <input type="checkbox" checked={toggleEnabled} onChange={e => setToggleEnabled(e.target.checked)} style={{ cursor: 'pointer' }} />
@@ -292,12 +292,12 @@ const BehaviorLibraryPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Entity ID</div>
-                  <input value={queryEntityId} onChange={e => setQueryEntityId(e.target.value)} placeholder="Entity ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={queryEntityId} onChange={e => setQueryEntityId(e.target.value)} placeholder="Entity ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleEntityBehaviors} style={{ padding: '6px 14px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Query</button>
               </div>
               {entityBehaviors && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
                   <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(entityBehaviors, null, 2)}</pre>
                 </div>
               )}
@@ -321,7 +321,7 @@ const BehaviorLibraryPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDCDA'} {templates.length} templates · {instances.length} instances</span>
         <span>Connected</span>
       </div>

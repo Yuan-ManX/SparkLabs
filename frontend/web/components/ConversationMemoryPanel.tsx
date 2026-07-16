@@ -252,7 +252,7 @@ const ConversationMemoryPanel: React.FC = () => {
       )}
 
       <div style={{ padding: '10px 12px', display: 'flex', gap: 6, borderBottom: '1px solid #2a2a3e', flexWrap: 'wrap', alignItems: 'center' }}>
-        <input value={threadTitleInput} onChange={e => setThreadTitleInput(e.target.value)} placeholder="Thread title..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
+        <input value={threadTitleInput} onChange={e => setThreadTitleInput(e.target.value)} placeholder="Thread title..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
         <button onClick={handleStartThread} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
           {'\u2795'} Start Thread
         </button>
@@ -322,19 +322,19 @@ const ConversationMemoryPanel: React.FC = () => {
         {activeTab === 'turns' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={turnThreadIdInput} onChange={e => setTurnThreadIdInput(e.target.value)} placeholder="Thread ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
-              <select value={turnRoleInput} onChange={e => setTurnRoleInput(e.target.value as 'user' | 'agent' | 'system')} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+              <input value={turnThreadIdInput} onChange={e => setTurnThreadIdInput(e.target.value)} placeholder="Thread ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+              <select value={turnRoleInput} onChange={e => setTurnRoleInput(e.target.value as 'user' | 'agent' | 'system')} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                 <option value="user">User</option>
                 <option value="agent">Agent</option>
                 <option value="system">System</option>
               </select>
-              <input value={turnContentInput} onChange={e => setTurnContentInput(e.target.value)} placeholder="Content..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 180, outline: 'none' }} />
+              <input value={turnContentInput} onChange={e => setTurnContentInput(e.target.value)} placeholder="Content..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 180, outline: 'none' }} />
               <button onClick={handleAddTurn} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\u2795'} Add Turn
               </button>
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={summarizeThreadId} onChange={e => setSummarizeThreadId(e.target.value)} placeholder="Thread ID to summarize..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 160, outline: 'none' }} />
+              <input value={summarizeThreadId} onChange={e => setSummarizeThreadId(e.target.value)} placeholder="Thread ID to summarize..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 160, outline: 'none' }} />
               <button onClick={handleSummarizeThread} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDCC4'} Summarize
               </button>
@@ -378,13 +378,13 @@ const ConversationMemoryPanel: React.FC = () => {
         {activeTab === 'search' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search conversations..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+              <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search conversations..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
               <button onClick={handleSearchConversations} style={{ padding: '8px 16px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDD0D'} Search
               </button>
             </div>
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <input value={exportThreadId} onChange={e => setExportThreadId(e.target.value)} placeholder="Thread ID to export..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+              <input value={exportThreadId} onChange={e => setExportThreadId(e.target.value)} placeholder="Thread ID to export..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
               <button onClick={handleExportThread} style={{ padding: '8px 16px', backgroundColor: '#2d4a3a', color: '#6bcb77', border: '1px solid #3d5a4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDCC4'} Export
               </button>
@@ -393,7 +393,7 @@ const ConversationMemoryPanel: React.FC = () => {
               <div style={{ padding: 12, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #6bcb77' }}>
                 <div style={{ fontSize: 12, fontWeight: 600, marginBottom: 6, color: '#6bcb77' }}>{'\uD83D\uDCC4'} Exported Thread</div>
                 <pre style={{
-                  padding: 10, backgroundColor: '#141428', borderRadius: 4,
+                  padding: 10, backgroundColor: '#111', borderRadius: 4,
                   fontSize: 10, color: '#aaa', fontFamily: 'monospace',
                   overflow: 'auto', maxHeight: 200, margin: 0,
                   whiteSpace: 'pre-wrap',
@@ -431,7 +431,7 @@ const ConversationMemoryPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

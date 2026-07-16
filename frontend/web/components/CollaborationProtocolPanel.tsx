@@ -235,7 +235,7 @@ const CollaborationProtocolPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -265,9 +265,9 @@ const CollaborationProtocolPanel: React.FC = () => {
       )}
 
       <div style={{ padding: '10px 12px', display: 'flex', gap: 6, borderBottom: '1px solid #2a2a3e', flexWrap: 'wrap', alignItems: 'center' }}>
-        <input value={fromAgentInput} onChange={e => setFromAgentInput(e.target.value)} placeholder="From agent..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
-        <input value={toAgentInput} onChange={e => setToAgentInput(e.target.value)} placeholder="To agent..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
-        <input value={taskInput} onChange={e => setTaskInput(e.target.value)} placeholder="Task..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+        <input value={fromAgentInput} onChange={e => setFromAgentInput(e.target.value)} placeholder="From agent..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+        <input value={toAgentInput} onChange={e => setToAgentInput(e.target.value)} placeholder="To agent..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+        <input value={taskInput} onChange={e => setTaskInput(e.target.value)} placeholder="Task..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
         <button onClick={handleProposeCollaboration} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
           {'\uD83D\uDCE8'} Propose
         </button>
@@ -326,20 +326,20 @@ const CollaborationProtocolPanel: React.FC = () => {
         {activeTab === 'teams' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={teamNameInput} onChange={e => setTeamNameInput(e.target.value)} placeholder="Team name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
-              <input value={memberIdsInput} onChange={e => setMemberIdsInput(e.target.value)} placeholder="Members (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 180, outline: 'none' }} />
+              <input value={teamNameInput} onChange={e => setTeamNameInput(e.target.value)} placeholder="Team name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+              <input value={memberIdsInput} onChange={e => setMemberIdsInput(e.target.value)} placeholder="Members (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 180, outline: 'none' }} />
               <button onClick={handleFormTeam} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDC65'} Form Team
               </button>
             </div>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={handoffFrom} onChange={e => setHandoffFrom(e.target.value)} placeholder="From agent..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+              <input value={handoffFrom} onChange={e => setHandoffFrom(e.target.value)} placeholder="From agent..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
               <span style={{ color: '#888' }}>{'\u2192'}</span>
-              <input value={handoffTo} onChange={e => setHandoffTo(e.target.value)} placeholder="To agent..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+              <input value={handoffTo} onChange={e => setHandoffTo(e.target.value)} placeholder="To agent..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
               <button onClick={handleInitiateHandoff} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83E\uDD1D'} Handoff
               </button>
-              <input value={broadcastContent} onChange={e => setBroadcastContent(e.target.value)} placeholder="Broadcast message..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
+              <input value={broadcastContent} onChange={e => setBroadcastContent(e.target.value)} placeholder="Broadcast message..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
               <button onClick={handleBroadcastMessage} style={{ padding: '6px 12px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDCE2'} Broadcast
               </button>
@@ -371,7 +371,7 @@ const CollaborationProtocolPanel: React.FC = () => {
                   {team.members.map(m => (
                     <span key={m} style={{
                       fontSize: 9, padding: '2px 8px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#74b9ff', fontFamily: 'monospace',
+                      backgroundColor: '#111', color: '#74b9ff', fontFamily: 'monospace',
                     }}>{m}</span>
                   ))}
                 </div>
@@ -389,7 +389,7 @@ const CollaborationProtocolPanel: React.FC = () => {
         {activeTab === 'sessions' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={conflictAgentsInput} onChange={e => setConflictAgentsInput(e.target.value)} placeholder="Agents in conflict (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 220, outline: 'none' }} />
+              <input value={conflictAgentsInput} onChange={e => setConflictAgentsInput(e.target.value)} placeholder="Agents in conflict (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 220, outline: 'none' }} />
               <button onClick={handleResolveConflict} style={{ padding: '6px 12px', backgroundColor: '#3a2a2a', color: '#ff6b6b', border: `1px solid #5a3a3a`, borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\u2696\uFE0F'} Resolve Conflict
               </button>
@@ -419,7 +419,7 @@ const CollaborationProtocolPanel: React.FC = () => {
                     <span>Tasks: {wl.active_tasks}</span>
                     <span>Sessions: {wl.total_sessions}</span>
                   </div>
-                  <div style={{ height: 4, backgroundColor: '#141428', borderRadius: 2, marginTop: 6 }}>
+                  <div style={{ height: 4, backgroundColor: '#111', borderRadius: 2, marginTop: 6 }}>
                     <div style={{
                       height: '100%', width: `${wl.utilization * 100}%`,
                       backgroundColor: wl.utilization >= 0.8 ? '#ff6b6b' : wl.utilization >= 0.5 ? '#fdcb6e' : '#6bcb77',
@@ -451,7 +451,7 @@ const CollaborationProtocolPanel: React.FC = () => {
                   {session.agents.map(a => (
                     <span key={a} style={{
                       fontSize: 9, padding: '2px 8px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#74b9ff', fontFamily: 'monospace',
+                      backgroundColor: '#111', color: '#74b9ff', fontFamily: 'monospace',
                     }}>{a}</span>
                   ))}
                 </div>
@@ -469,7 +469,7 @@ const CollaborationProtocolPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

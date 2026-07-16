@@ -96,17 +96,17 @@ const AudioMixer: React.FC = () => {
             <input
               type="text" placeholder="Track name" value={newTrackName}
               onChange={e => setNewTrackName(e.target.value)}
-              className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-cyan-500/50 focus:outline-none"
+              className="w-full bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-cyan-500/50 focus:outline-none"
             />
             <select value={newTrackType} onChange={e => setNewTrackType(e.target.value)}
-              className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none">
+              className="w-full bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none">
               {TRACK_TYPES.map(t => (
                 <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
               ))}
             </select>
             <button
               onClick={handleAddTrack}
-              className="w-full px-2 py-1.5 bg-gradient-to-r from-cyan-500 to-blue-600 text-white rounded text-[10px] font-semibold hover:opacity-90"
+              className="w-full px-2 py-1.5 bg-gradient-to-r from-orange-500 to-red-600 text-white rounded text-[10px] font-semibold hover:opacity-90"
             >
               <i className="fa-solid fa-plus mr-1 text-[8px]" />
               Add Track
@@ -191,20 +191,20 @@ const AudioMixer: React.FC = () => {
                   <div className="flex items-center gap-1">
                     <button
                       onClick={() => updateTrack(track.id, { muted: !track.muted })}
-                      className={`px-2 py-0.5 rounded text-[8px] font-medium ${track.muted ? 'bg-red-500/20 text-red-400' : 'bg-[#141414] text-[#888]'} border border-[#2a2a2a]`}
+                      className={`px-2 py-0.5 rounded text-[8px] font-medium ${track.muted ? 'bg-red-500/20 text-red-400' : 'bg-[#111] text-[#888]'} border border-[#2a2a2a]`}
                     >
                       M
                     </button>
                     <button
                       onClick={() => updateTrack(track.id, { solo: !track.solo })}
-                      className={`px-2 py-0.5 rounded text-[8px] font-medium ${track.solo ? 'bg-cyan-500/20 text-cyan-400' : 'bg-[#141414] text-[#888]'} border border-[#2a2a2a]`}
+                      className={`px-2 py-0.5 rounded text-[8px] font-medium ${track.solo ? 'bg-cyan-500/20 text-cyan-400' : 'bg-[#111] text-[#888]'} border border-[#2a2a2a]`}
                     >
                       S
                     </button>
                     {track.type === 'music' && (
                       <button
                         onClick={() => updateTrack(track.id, { looping: !track.looping })}
-                        className={`px-2 py-0.5 rounded text-[8px] font-medium ${track.looping ? 'bg-violet-500/20 text-violet-400' : 'bg-[#141414] text-[#888]'} border border-[#2a2a2a]`}
+                        className={`px-2 py-0.5 rounded text-[8px] font-medium ${track.looping ? 'bg-violet-500/20 text-violet-400' : 'bg-[#111] text-[#888]'} border border-[#2a2a2a]`}
                       >
                         <i className="fa-solid fa-repeat" />
                       </button>
@@ -212,7 +212,7 @@ const AudioMixer: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="h-6 mb-2 bg-[#141414] rounded overflow-hidden relative">
+                <div className="h-6 mb-2 bg-[#111] rounded overflow-hidden relative">
                   <div className="absolute inset-0 flex items-end gap-px px-1">
                     {waveforms.map((v, i) => (
                       <div
@@ -253,7 +253,7 @@ const AudioMixer: React.FC = () => {
                     <input
                       type="number" min="0" max="10" step="0.1" value={track.fadeIn}
                       onChange={e => updateTrack(track.id, { fadeIn: Number(e.target.value) })}
-                      className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[9px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none"
+                      className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[9px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none"
                     />
                   </div>
                   <div>
@@ -261,7 +261,7 @@ const AudioMixer: React.FC = () => {
                     <input
                       type="number" min="0" max="10" step="0.1" value={track.fadeOut}
                       onChange={e => updateTrack(track.id, { fadeOut: Number(e.target.value) })}
-                      className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[9px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none"
+                      className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[9px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none"
                     />
                   </div>
                 </div>
@@ -270,7 +270,7 @@ const AudioMixer: React.FC = () => {
                   <select
                     value={track.clip}
                     onChange={e => updateTrack(track.id, { clip: e.target.value })}
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[9px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none"
+                    className="w-full bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[9px] text-[#ddd] focus:border-cyan-500/50 focus:outline-none"
                   >
                     {clips.map(c => (
                       <option key={c} value={c}>{c}</option>

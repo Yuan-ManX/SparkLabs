@@ -302,7 +302,7 @@ const BalanceAnalyzerPanel: React.FC = () => {
 
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                   <div style={{
-                    flex: 1, height: 6, backgroundColor: '#141428', borderRadius: 3, overflow: 'hidden',
+                    flex: 1, height: 6, backgroundColor: '#111', borderRadius: 3, overflow: 'hidden',
                     position: 'relative',
                   }}>
                     <div style={{
@@ -372,7 +372,7 @@ const BalanceAnalyzerPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>
