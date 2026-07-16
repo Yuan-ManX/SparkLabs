@@ -189,7 +189,7 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Config ID (optional)</label>
-            <input type="text" value={statsConfigId} onChange={(e) => setStatsConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={statsConfigId} onChange={(e) => setStatsConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={fetchStats} className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -209,7 +209,7 @@ const EngineTerrainSystemPanel: React.FC = () => {
           ].map(({ key, label, icon }) => (
             <div key={key} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[#00d4ff] text-xs font-bold bg-[#0f0f23] px-2 py-0.5 rounded">{icon}</span>
+                <span className="text-[#00d4ff] text-xs font-bold bg-[#0d0d0d] px-2 py-0.5 rounded">{icon}</span>
                 <span className="text-[#999] text-xs">{label}</span>
               </div>
               <div className="text-white text-2xl font-bold">
@@ -239,41 +239,41 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Config Name</label>
-            <input type="text" value={cfgName} onChange={(e) => setCfgName(e.target.value)} placeholder="main_terrain" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={cfgName} onChange={(e) => setCfgName(e.target.value)} placeholder="main_terrain" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Width</label>
-            <input type="number" value={cfgWidth} onChange={(e) => setCfgWidth(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={cfgWidth} onChange={(e) => setCfgWidth(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Depth</label>
-            <input type="number" value={cfgDepth} onChange={(e) => setCfgDepth(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={cfgDepth} onChange={(e) => setCfgDepth(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Height Scale</label>
-            <input type="number" value={cfgHeightScale} onChange={(e) => setCfgHeightScale(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={cfgHeightScale} onChange={(e) => setCfgHeightScale(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Seed</label>
-            <input type="number" value={cfgSeed} onChange={(e) => setCfgSeed(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={cfgSeed} onChange={(e) => setCfgSeed(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Algorithm</label>
-            <select value={cfgAlgorithm} onChange={(e) => setCfgAlgorithm(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={cfgAlgorithm} onChange={(e) => setCfgAlgorithm(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {ALGORITHMS.map((a) => <option key={a} value={a}>{a.replace(/_/g, ' ')}</option>)}
             </select>
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Octaves</label>
-            <input type="number" value={cfgOctaves} onChange={(e) => setCfgoctaves(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={cfgOctaves} onChange={(e) => setCfgoctaves(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Persistence</label>
-            <input type="number" value={cfgPersistence} onChange={(e) => setcfgPersistence(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={cfgPersistence} onChange={(e) => setcfgPersistence(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Lacunarity</label>
-            <input type="number" value={cfgLacunarity} onChange={(e) => setCfgLacunarity(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={cfgLacunarity} onChange={(e) => setCfgLacunarity(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -303,7 +303,7 @@ const EngineTerrainSystemPanel: React.FC = () => {
         {configs.length > 0 ? (
           <div className="space-y-2">
             {configs.map((c) => (
-              <div key={c.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3">
+              <div key={c.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-white text-sm font-medium">{c.name || c.id}</span>
                   <span className="text-xs bg-[#1a1a2e] text-[#00d4ff] px-2 py-0.5 rounded">{c.algorithm}</span>
@@ -331,7 +331,7 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Config ID</label>
-            <input type="text" value={genConfigId} onChange={(e) => setGenConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={genConfigId} onChange={(e) => setGenConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -393,16 +393,16 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Config ID</label>
-            <input type="text" value={editConfigId} onChange={(e) => setEditConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={editConfigId} onChange={(e) => setEditConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div></div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">World X</label>
-            <input type="number" value={worldX} onChange={(e) => setWorldX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={worldX} onChange={(e) => setWorldX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">World Z</label>
-            <input type="number" value={worldZ} onChange={(e) => setWorldZ(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={worldZ} onChange={(e) => setWorldZ(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -425,7 +425,7 @@ const EngineTerrainSystemPanel: React.FC = () => {
           Sample Height
         </button>
         {sampledHeight !== null && (
-          <div className="mt-3 bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3">
+          <div className="mt-3 bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3">
             <span className="text-[#999] text-xs">Height at ({worldX}, {worldZ}): </span>
             <span className="text-white text-sm font-bold font-mono">{Number(sampledHeight).toFixed(4)}</span>
           </div>
@@ -437,7 +437,7 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">New Height</label>
-            <input type="number" value={newHeight} onChange={(e) => setNewHeight(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={newHeight} onChange={(e) => setNewHeight(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -462,19 +462,19 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Center X</label>
-            <input type="number" value={flattenX} onChange={(e) => setFlattenX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={flattenX} onChange={(e) => setFlattenX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Center Z</label>
-            <input type="number" value={flattenZ} onChange={(e) => setFlattenZ(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={flattenZ} onChange={(e) => setFlattenZ(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Radius</label>
-            <input type="number" value={flattenRadius} onChange={(e) => setFlattenRadius(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={flattenRadius} onChange={(e) => setFlattenRadius(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Target Height</label>
-            <input type="number" value={flattenTargetHeight} onChange={(e) => setFlattenTargetHeight(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={flattenTargetHeight} onChange={(e) => setFlattenTargetHeight(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -501,19 +501,19 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Center X</label>
-            <input type="number" value={raiseX} onChange={(e) => setRaiseX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={raiseX} onChange={(e) => setRaiseX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Center Z</label>
-            <input type="number" value={raiseZ} onChange={(e) => setRaiseZ(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={raiseZ} onChange={(e) => setRaiseZ(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Radius</label>
-            <input type="number" value={raiseRadius} onChange={(e) => setRaiseRadius(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={raiseRadius} onChange={(e) => setRaiseRadius(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Raise Amount</label>
-            <input type="number" value={raiseAmount} onChange={(e) => setRaiseAmount(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={raiseAmount} onChange={(e) => setRaiseAmount(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -540,11 +540,11 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">World X</label>
-            <input type="number" value={slopeX} onChange={(e) => setSlopeX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={slopeX} onChange={(e) => setSlopeX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">World Z</label>
-            <input type="number" value={slopeZ} onChange={(e) => setSlopeZ(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={slopeZ} onChange={(e) => setSlopeZ(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -567,7 +567,7 @@ const EngineTerrainSystemPanel: React.FC = () => {
           Get Slope
         </button>
         {slopeResult !== null && (
-          <div className="mt-3 bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3">
+          <div className="mt-3 bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3">
             <span className="text-[#999] text-xs">Slope at ({slopeX}, {slopeZ}): </span>
             <span className="text-white text-sm font-bold font-mono">{Number(slopeResult).toFixed(4)}</span>
           </div>
@@ -583,33 +583,33 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Config ID</label>
-            <input type="text" value={erosionConfigId} onChange={(e) => setErosionConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={erosionConfigId} onChange={(e) => setErosionConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Erosion Type</label>
-            <select value={erosionType} onChange={(e) => setErosionType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={erosionType} onChange={(e) => setErosionType(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {EROSION_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Iterations</label>
-            <input type="number" value={erosionIterations} onChange={(e) => setErosionIterations(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={erosionIterations} onChange={(e) => setErosionIterations(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Erosion Rate</label>
-            <input type="number" value={erosionRate} onChange={(e) => setErosionRate(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={erosionRate} onChange={(e) => setErosionRate(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Deposition Rate</label>
-            <input type="number" value={depositionRate} onChange={(e) => setDepositionRate(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={depositionRate} onChange={(e) => setDepositionRate(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Evaporation Rate</label>
-            <input type="number" value={evaporationRate} onChange={(e) => setEvaporationRate(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={evaporationRate} onChange={(e) => setEvaporationRate(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Rain Amount</label>
-            <input type="number" value={rainAmount} onChange={(e) => setRainAmount(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={rainAmount} onChange={(e) => setRainAmount(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -638,7 +638,7 @@ const EngineTerrainSystemPanel: React.FC = () => {
           <div className="text-sm font-medium text-[#00d4ff] mb-3">Erosion Result</div>
           <div className="grid grid-cols-2 gap-3">
             {Object.entries(erosionResult).map(([key, value]) => (
-              <div key={key} className="bg-[#0f0f23] rounded px-3 py-2">
+              <div key={key} className="bg-[#0d0d0d] rounded px-3 py-2">
                 <span className="text-[#999] text-xs">{key.replace(/_/g, ' ')}</span>
                 <div className="text-white text-xs font-mono mt-0.5">
                   {typeof value === 'number' ? Number(value).toFixed(2) : String(value)}
@@ -658,11 +658,11 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Config ID</label>
-            <input type="text" value={islandConfigId} onChange={(e) => setIslandConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={islandConfigId} onChange={(e) => setIslandConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Shore Threshold</label>
-            <input type="number" value={shoreThreshold} onChange={(e) => setShoreThreshold(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={shoreThreshold} onChange={(e) => setShoreThreshold(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -722,19 +722,19 @@ const EngineTerrainSystemPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Config ID</label>
-            <input type="text" value={biomeConfigId} onChange={(e) => setBiomeConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={biomeConfigId} onChange={(e) => setBiomeConfigId(e.target.value)} placeholder="cfg_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Biome Name</label>
-            <input type="text" value={biomeName} onChange={(e) => setBiomeName(e.target.value)} placeholder="forest" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={biomeName} onChange={(e) => setBiomeName(e.target.value)} placeholder="forest" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Min Height</label>
-            <input type="number" value={biomeMinHeight} onChange={(e) => setBiomeMinHeight(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={biomeMinHeight} onChange={(e) => setBiomeMinHeight(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Max Height</label>
-            <input type="number" value={biomeMaxHeight} onChange={(e) => setBiomeMaxHeight(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={biomeMaxHeight} onChange={(e) => setBiomeMaxHeight(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
 
           <div className="col-span-2">
@@ -742,19 +742,19 @@ const EngineTerrainSystemPanel: React.FC = () => {
             <div className="grid grid-cols-4 gap-2">
               <div>
                 <label className="text-xs text-[#666] mb-0.5 block">R</label>
-                <input type="number" value={biomeColorR} onChange={(e) => setBiomeColorR(e.target.value)} min="0" max="255" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                <input type="number" value={biomeColorR} onChange={(e) => setBiomeColorR(e.target.value)} min="0" max="255" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
                 <label className="text-xs text-[#666] mb-0.5 block">G</label>
-                <input type="number" value={biomeColorG} onChange={(e) => setBiomeColorG(e.target.value)} min="0" max="255" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                <input type="number" value={biomeColorG} onChange={(e) => setBiomeColorG(e.target.value)} min="0" max="255" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
                 <label className="text-xs text-[#666] mb-0.5 block">B</label>
-                <input type="number" value={biomeColorB} onChange={(e) => setBiomeColorB(e.target.value)} min="0" max="255" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                <input type="number" value={biomeColorB} onChange={(e) => setBiomeColorB(e.target.value)} min="0" max="255" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
               <div>
                 <label className="text-xs text-[#666] mb-0.5 block">A</label>
-                <input type="number" value={biomeColorA} onChange={(e) => setBiomeColorA(e.target.value)} min="0" max="255" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                <input type="number" value={biomeColorA} onChange={(e) => setBiomeColorA(e.target.value)} min="0" max="255" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
               </div>
             </div>
             <div
@@ -767,20 +767,20 @@ const EngineTerrainSystemPanel: React.FC = () => {
 
           <div>
             <label className="text-xs text-[#999] mb-1 block">Texture ID</label>
-            <input type="text" value={biomeTextureId} onChange={(e) => setBiomeTextureId(e.target.value)} placeholder="tex_grass" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={biomeTextureId} onChange={(e) => setBiomeTextureId(e.target.value)} placeholder="tex_grass" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div></div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Tree Density</label>
-            <input type="number" value={biomeTreeDensity} onChange={(e) => setBiomeTreeDensity(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={biomeTreeDensity} onChange={(e) => setBiomeTreeDensity(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Rock Density</label>
-            <input type="number" value={biomeRockDensity} onChange={(e) => setBiomeRockDensity(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={biomeRockDensity} onChange={(e) => setBiomeRockDensity(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Grass Coverage</label>
-            <input type="number" value={biomeGrassCoverage} onChange={(e) => setBiomeGrassCoverage(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={biomeGrassCoverage} onChange={(e) => setBiomeGrassCoverage(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -821,7 +821,7 @@ const EngineTerrainSystemPanel: React.FC = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}
           >
             {tab.label}
           </button>

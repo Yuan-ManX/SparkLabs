@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
-const API_BASE = "http://localhost:8000/api/agent";
+const API_BASE = `${API_ROOT}/agent`;
 
 interface SubsystemStats {
   forecasts_run: number;
@@ -193,7 +194,7 @@ export default function GameForecasterPanel() {
                   rows={2}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem", resize: "vertical"
                   }}
                 />
@@ -204,7 +205,7 @@ export default function GameForecasterPanel() {
                   onChange={(e) => setSimParams(e.target.value)}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 />
@@ -216,7 +217,7 @@ export default function GameForecasterPanel() {
                     onChange={(e) => setSimDepth(e.target.value)}
                     style={{
                       width: "80px", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />
@@ -227,7 +228,7 @@ export default function GameForecasterPanel() {
                     onChange={(e) => setSimHorizon(e.target.value)}
                     style={{
                       width: "80px", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />
@@ -258,7 +259,7 @@ export default function GameForecasterPanel() {
                   onChange={(e) => setAnalyzeParamName(e.target.value)}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 />
@@ -269,7 +270,7 @@ export default function GameForecasterPanel() {
                   onChange={(e) => setAnalyzeCurrentValue(e.target.value)}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 />
@@ -281,7 +282,7 @@ export default function GameForecasterPanel() {
                     onChange={(e) => setAnalyzeConstraints(e.target.value)}
                     style={{
                       flex: 1, padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />

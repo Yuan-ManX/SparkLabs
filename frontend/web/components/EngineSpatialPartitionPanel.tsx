@@ -330,7 +330,7 @@ export default function EngineSpatialPartitionPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -343,7 +343,7 @@ export default function EngineSpatialPartitionPanel() {
   };
 
   const cardStyle: React.CSSProperties = {
-    padding: 14, backgroundColor: '#16213e', borderRadius: 6,
+    padding: 14, backgroundColor: '#0f0f0f', borderRadius: 6,
     border: '1px solid #2a2a3e',
   };
 
@@ -353,7 +353,7 @@ export default function EngineSpatialPartitionPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -364,7 +364,7 @@ export default function EngineSpatialPartitionPanel() {
 
   const disabledBtnStyle = (color: string): React.CSSProperties => ({
     ...primaryBtnStyle(color),
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a1a',
     color: '#555',
     cursor: 'not-allowed',
   });
@@ -372,7 +372,7 @@ export default function EngineSpatialPartitionPanel() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       {/* Header */}
@@ -399,7 +399,7 @@ export default function EngineSpatialPartitionPanel() {
           padding: '8px 16px', fontSize: 12,
           backgroundColor: message.type === 'success' ? '#1a3a1a' : message.type === 'error' ? '#3a1a1a' : '#1a2a3a',
           borderBottom: `1px solid ${message.type === 'success' ? '#2d5a2d' : message.type === 'error' ? '#5a2d2d' : '#2a3a4a'}`,
-          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#00d4ff',
+          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#f97316',
         }}>
           {message.text}
         </div>
@@ -413,10 +413,10 @@ export default function EngineSpatialPartitionPanel() {
             onClick={() => setActiveTab(tab.key)}
             style={{
               flex: '0 0 auto', padding: '8px 12px', fontSize: 11, fontWeight: 600,
-              backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
+              backgroundColor: activeTab === tab.key ? '#0f0f0f' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #00d4ff' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #f97316' : '2px solid transparent',
               cursor: 'pointer', whiteSpace: 'nowrap',
             }}
           >
@@ -432,7 +432,7 @@ export default function EngineSpatialPartitionPanel() {
         {activeTab === 'trees' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={cardStyle}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#f97316' }}>
                 {'\uD83C\uDF33'} Create Spatial Tree
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -495,7 +495,7 @@ export default function EngineSpatialPartitionPanel() {
                 </div>
               </div>
               <button onClick={handleCreateTree} disabled={treeLoading}
-                style={treeLoading ? disabledBtnStyle('#00d4ff') : primaryBtnStyle('#00d4ff')}>
+                style={treeLoading ? disabledBtnStyle('#f97316') : primaryBtnStyle('#f97316')}>
                 {treeLoading ? 'Creating...' : '\uD83C\uDF33 Create Tree'}
               </button>
             </div>
@@ -503,10 +503,10 @@ export default function EngineSpatialPartitionPanel() {
             {treeResult && (
               <div style={cardStyle}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Created Tree</div>
-                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10 }}>
+                <div style={{ borderLeft: '3px solid #f97316', paddingLeft: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
-                    <span style={{ fontWeight: 600, fontSize: 12, color: '#00d4ff' }}>{treeResult.tree_id}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#fdcb6e', fontWeight: 600 }}>{treeResult.tree_type}</span>
+                    <span style={{ fontWeight: 600, fontSize: 12, color: '#f97316' }}>{treeResult.tree_id}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#fdcb6e', fontWeight: 600 }}>{treeResult.tree_type}</span>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 9, color: '#666' }}>
                     <span>Entities: <span style={{ color: '#6bcb77' }}>{treeResult.entity_count}</span></span>
@@ -590,7 +590,7 @@ export default function EngineSpatialPartitionPanel() {
                 <div style={{ borderLeft: '3px solid #6bcb77', paddingLeft: 10 }}>
                   <div style={{ fontWeight: 600, fontSize: 12, color: '#6bcb77', marginBottom: 4 }}>{insertResult.entity_id}</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 9, color: '#666' }}>
-                    <span>Tree: <span style={{ color: '#00d4ff' }}>{insertResult.tree_id}</span></span>
+                    <span>Tree: <span style={{ color: '#f97316' }}>{insertResult.tree_id}</span></span>
                     <span>Inserted: <span style={{ color: '#888' }}>{insertResult.inserted_at}</span></span>
                     <span>Bounds: <span style={{ color: '#a29bfe' }}>
                       ({insertResult.bounds.min[0]},{insertResult.bounds.min[1]},{insertResult.bounds.min[2]}) → ({insertResult.bounds.max[0]},{insertResult.bounds.max[1]},{insertResult.bounds.max[2]})
@@ -669,7 +669,7 @@ export default function EngineSpatialPartitionPanel() {
                   </div>
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                     {queryRangeResult.results.map((r: string, i: number) => (
-                      <span key={i} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#00d4ff' }}>{r}</span>
+                      <span key={i} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#f97316' }}>{r}</span>
                     ))}
                   </div>
                 </div>
@@ -728,7 +728,7 @@ export default function EngineSpatialPartitionPanel() {
                   </div>
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                     {queryKnnResult.results.map((r: string, i: number) => (
-                      <span key={i} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>{r}</span>
+                      <span key={i} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>{r}</span>
                     ))}
                   </div>
                 </div>
@@ -746,7 +746,7 @@ export default function EngineSpatialPartitionPanel() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                 {[
-                  { label: 'Total Trees', value: stats?.total_trees, color: '#00d4ff' },
+                  { label: 'Total Trees', value: stats?.total_trees, color: '#f97316' },
                   { label: 'Active Trees', value: stats?.active_trees, color: '#6bcb77' },
                   { label: 'Total Entities', value: stats?.total_entities, color: '#a29bfe' },
                   { label: 'Total Queries', value: stats?.total_queries, color: '#ff6b6b' },
@@ -754,7 +754,7 @@ export default function EngineSpatialPartitionPanel() {
                   { label: 'Max Depth', value: stats?.max_depth, color: '#fd79a8' },
                 ].map(item => (
                   <div key={item.label} style={{
-                    padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                    padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                   }}>
                     <span style={{ fontSize: 10, color: '#888' }}>{item.label}</span>
@@ -770,7 +770,7 @@ export default function EngineSpatialPartitionPanel() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 10, color: '#888' }}>
                 <div>Status: <span style={{ color: '#6bcb77' }}>Connected</span></div>
-                <div>Auto-refresh: <span style={{ color: '#00d4ff' }}>15s</span></div>
+                <div>Auto-refresh: <span style={{ color: '#f97316' }}>15s</span></div>
                 <div>API Base: <span style={{ color: '#a29bfe' }}>{API_BASE}/spatial-partition</span></div>
                 <div>Version: <span style={{ color: '#fdcb6e' }}>1.0.0</span></div>
               </div>
@@ -783,7 +783,7 @@ export default function EngineSpatialPartitionPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

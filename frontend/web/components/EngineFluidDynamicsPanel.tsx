@@ -229,7 +229,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
           <span style={{ color: '#aaa' }}>{label}</span>
           <span style={{ color: '#ccc', fontWeight: 600 }}>{unit === '%' ? `${clampedPct.toFixed(1)}${unit}` : `${value}${unit}`}</span>
         </div>
-        <div style={{ height: 6, backgroundColor: '#141428', borderRadius: 3 }}>
+        <div style={{ height: 6, backgroundColor: '#111', borderRadius: 3 }}>
           <div style={{ height: '100%', width: `${clampedPct}%`, backgroundColor: barColor, borderRadius: 3, transition: 'width 0.3s ease' }} />
         </div>
       </div>
@@ -239,7 +239,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 8px', fontSize: 12,
     backgroundColor: '#1a1a2e', color: '#e0e0e0',
-    border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box',
+    border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box',
   };
 
   const tabItems: { key: ActiveTab; label: string; icon: string }[] = [
@@ -267,7 +267,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
 
       <div style={{ display: 'flex', borderBottom: '1px solid #2a2a3e' }}>
         {tabItems.map(tab => (
-          <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{ flex: 1, padding: '8px 12px', fontSize: 12, fontWeight: 600, backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent', color: activeTab === tab.key ? '#e0e0e0' : '#888', border: 'none', borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent', cursor: 'pointer' }}>
+          <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{ flex: 1, padding: '8px 12px', fontSize: 12, fontWeight: 600, backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent', color: activeTab === tab.key ? '#e0e0e0' : '#888', border: 'none', borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent', cursor: 'pointer' }}>
             {tab.icon} {tab.label}
           </button>
         ))}
@@ -276,7 +276,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
       <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
         {activeTab === 'simulations' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#74b9ff' }}>Create Simulation</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                 <div>
@@ -312,14 +312,14 @@ const EngineFluidDynamicsPanel: React.FC = () => {
                   <input type="number" value={simForm.gravityY} onChange={e => setSimForm(prev => ({ ...prev, gravityY: parseFloat(e.target.value) || 0 }))} style={inputStyle} />
                 </div>
               </div>
-              <button onClick={handleCreateSimulation} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#0f3460', color: '#74b9ff', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
+              <button onClick={handleCreateSimulation} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#74b9ff', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {loading ? 'Creating...' : '\uD83C\uDF0A Create Simulation'}
               </button>
             </div>
 
             <div style={{ fontWeight: 600, fontSize: 13, marginBottom: -4, color: '#aaa' }}>Simulations ({simulations.length})</div>
             {simulations.map(sim => (
-              <div key={sim.id} style={{ padding: 12, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+              <div key={sim.id} style={{ padding: 12, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <span style={{ fontWeight: 600, fontSize: 13 }}>{sim.name}</span>
                   <span style={{ fontSize: 10, color: '#888' }}>ID: {sim.id.slice(0, 8)}</span>
@@ -349,7 +349,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
             ))}
 
             {/* Step Simulation */}
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#6bcb77' }}>Step Simulation</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                 <div>
@@ -364,7 +364,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
                   <input type="number" value={stepForm.deltaTime} onChange={e => setStepForm(prev => ({ ...prev, deltaTime: parseFloat(e.target.value) || 0 }))} step="0.001" style={inputStyle} />
                 </div>
               </div>
-              <button onClick={handleStep} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#0f3460', color: '#6bcb77', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
+              <button onClick={handleStep} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#6bcb77', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {loading ? 'Stepping...' : '\u25B6\uFE0F Step'}
               </button>
               {stepResult && (
@@ -378,7 +378,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
 
         {activeTab === 'particles' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#fdcb6e' }}>Add Particles</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                 <div>
@@ -423,14 +423,14 @@ const EngineFluidDynamicsPanel: React.FC = () => {
                   </div>
                 </div>
               </div>
-              <button onClick={handleAddParticles} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#0f3460', color: '#fdcb6e', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
+              <button onClick={handleAddParticles} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#fdcb6e', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {loading ? 'Adding...' : '\u26C4 Add Particles'}
               </button>
             </div>
 
             <div style={{ fontWeight: 600, fontSize: 13, marginBottom: -4, color: '#aaa' }}>Particle Counts</div>
             {simulations.map(sim => (
-              <div key={sim.id} style={{ padding: 10, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div key={sim.id} style={{ padding: 10, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <span style={{ fontSize: 12 }}>{sim.name}</span>
                 <span style={{ fontSize: 16, fontWeight: 700, color: '#74b9ff' }}>{sim.particle_count ?? 0}</span>
               </div>
@@ -440,7 +440,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
 
         {activeTab === 'boundaries' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#a29bfe' }}>Create Boundary</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                 <div>
@@ -467,14 +467,14 @@ const EngineFluidDynamicsPanel: React.FC = () => {
                     style={{ ...inputStyle, resize: 'vertical', fontFamily: 'monospace' }} />
                 </div>
               </div>
-              <button onClick={handleCreateBoundary} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#0f3460', color: '#a29bfe', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
+              <button onClick={handleCreateBoundary} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#a29bfe', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {loading ? 'Creating...' : '\uD83D\uDDE3\uFE0F Create Boundary'}
               </button>
             </div>
 
             <div style={{ fontWeight: 600, fontSize: 13, marginBottom: -4, color: '#aaa' }}>Boundaries ({boundaries.length})</div>
             {boundaries.map(b => (
-              <div key={b.id} style={{ padding: 10, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div key={b.id} style={{ padding: 10, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <div style={{ fontSize: 12, fontWeight: 600 }}>{b.boundary_type.toUpperCase()}</div>
                   <div style={{ fontSize: 10, color: '#888' }}>Sim: {b.simulation_id.slice(0, 8)}</div>
@@ -487,7 +487,7 @@ const EngineFluidDynamicsPanel: React.FC = () => {
 
         {activeTab === 'status' && status && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12, color: '#aaa' }}>Fluid Dynamics System Status</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10, marginBottom: 14 }}>
                 <div style={{ padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
@@ -513,14 +513,14 @@ const EngineFluidDynamicsPanel: React.FC = () => {
         )}
 
         {activeTab === 'status' && !status && (
-          <div style={{ textAlign: 'center', padding: 40, color: '#555', backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+          <div style={{ textAlign: 'center', padding: 40, color: '#555', backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
             <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>{'\u2699\uFE0F'}</span>
             Loading system status...
           </div>
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDCA7'} Fluid Dynamics Engine</span>
         <span>{status ? `${status.simulation_count} sims · ${status.total_simulation_steps} steps · ${status.avg_frame_time}ms avg` : 'Disconnected'}</span>
       </div>

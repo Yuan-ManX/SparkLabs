@@ -198,13 +198,13 @@ const GameReasonerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Game State</div>
-                  <input value={designGameState} onChange={e => setDesignGameState(e.target.value)} placeholder="Describe the game state..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={designGameState} onChange={e => setDesignGameState(e.target.value)} placeholder="Describe the game state..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleAnalyzeDesign} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Analyze</button>
               </div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 8 }}>
                 {ASPECT_OPTIONS.map(a => (
-                  <button key={a} onClick={() => toggleAspect(a)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: designAspects.includes(a) ? '#2d3a5a' : '#141428', color: designAspects.includes(a) ? '#74b9ff' : '#888', border: `1px solid ${designAspects.includes(a) ? '#3d4a6a' : '#333'}`, cursor: 'pointer' }}>{a}</button>
+                  <button key={a} onClick={() => toggleAspect(a)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: designAspects.includes(a) ? '#2d3a5a' : '#111', color: designAspects.includes(a) ? '#74b9ff' : '#888', border: `1px solid ${designAspects.includes(a) ? '#3d4a6a' : '#333'}`, cursor: 'pointer' }}>{a}</button>
                 ))}
               </div>
             </div>
@@ -214,11 +214,11 @@ const GameReasonerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 180 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Game State</div>
-                  <input value={diffGameState} onChange={e => setDiffGameState(e.target.value)} placeholder="Describe game state..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={diffGameState} onChange={e => setDiffGameState(e.target.value)} placeholder="Describe game state..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Player Skill</div>
-                  <select value={diffPlayerSkill} onChange={e => setDiffPlayerSkill(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={diffPlayerSkill} onChange={e => setDiffPlayerSkill(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="">Select...</option>
                     <option value="beginner">Beginner</option>
                     <option value="intermediate">Intermediate</option>
@@ -229,7 +229,7 @@ const GameReasonerPanel: React.FC = () => {
                 <button onClick={handleEvaluateDifficulty} style={{ padding: '6px 14px', backgroundColor: '#4a2d4a', color: '#e056a0', border: '1px solid #5a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Evaluate</button>
               </div>
               {evalResult && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
                   <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(evalResult, null, 2)}</pre>
                 </div>
               )}
@@ -241,7 +241,7 @@ const GameReasonerPanel: React.FC = () => {
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#ccc', marginBottom: 4 }}>{a.game_state}</div>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 4 }}>
                   {a.aspects.map(asp => (
-                    <span key={asp} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>{asp}</span>
+                    <span key={asp} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>{asp}</span>
                   ))}
                 </div>
                 <div style={{ fontSize: 10, color: '#888' }}>{a.result}</div>
@@ -258,15 +258,15 @@ const GameReasonerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Parameter Name</div>
-                  <input value={balParamName} onChange={e => setBalParamName(e.target.value)} placeholder="e.g. health" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={balParamName} onChange={e => setBalParamName(e.target.value)} placeholder="e.g. health" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Current Value</div>
-                  <input value={balCurrentValue} onChange={e => setBalCurrentValue(e.target.value)} placeholder="e.g. 100" style={{ padding: '6px 10px', fontSize: 11, width: 100, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={balCurrentValue} onChange={e => setBalCurrentValue(e.target.value)} placeholder="e.g. 100" style={{ padding: '6px 10px', fontSize: 11, width: 100, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target Experience</div>
-                  <input value={balTargetExp} onChange={e => setBalTargetExp(e.target.value)} placeholder="e.g. challenging but fair" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={balTargetExp} onChange={e => setBalTargetExp(e.target.value)} placeholder="e.g. challenging but fair" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleSuggestBalancing} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Suggest</button>
               </div>
@@ -281,15 +281,15 @@ const GameReasonerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Curve Name</div>
-                  <input value={curveName} onChange={e => setCurveName(e.target.value)} placeholder="e.g. XP Progression" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={curveName} onChange={e => setCurveName(e.target.value)} placeholder="e.g. XP Progression" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Data Points (comma-separated)</div>
-                  <input value={curveDataPoints} onChange={e => setCurveDataPoints(e.target.value)} placeholder="0, 50, 150, 300, 500" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={curveDataPoints} onChange={e => setCurveDataPoints(e.target.value)} placeholder="0, 50, 150, 300, 500" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target Shape</div>
-                  <select value={curveTargetShape} onChange={e => setCurveTargetShape(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={curveTargetShape} onChange={e => setCurveTargetShape(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="linear">Linear</option>
                     <option value="exponential">Exponential</option>
                     <option value="logarithmic">Logarithmic</option>
@@ -306,7 +306,7 @@ const GameReasonerPanel: React.FC = () => {
               <div key={c.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #6bcb77' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{c.curve_name}</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#fdcb6e', textTransform: 'uppercase' }}>{c.target_shape}</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#fdcb6e', textTransform: 'uppercase' }}>{c.target_shape}</span>
                 </div>
                 <div style={{ fontSize: 9, color: '#888', marginTop: 4 }}>{c.data_points} data points · {formatTime(c.created_at)}</div>
               </div>
@@ -315,7 +315,7 @@ const GameReasonerPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83C\uDFAE'} {analyses.length} analyses · {curves.length} curves</span>
         <span>Connected</span>
       </div>

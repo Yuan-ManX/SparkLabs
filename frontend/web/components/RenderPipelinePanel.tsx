@@ -329,7 +329,7 @@ const RenderPipelinePanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#0a0a0a] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Monitor className="w-[18px] h-[18px] text-[#00d4ff]" />
           <span className="font-bold text-[15px]">Render Pipeline</span>
@@ -346,16 +346,16 @@ const RenderPipelinePanel: React.FC = () => {
       {/* Message */}
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#16213e]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Quality presets + Performance bar */}
-      <div className="px-4 py-2 border-b border-[#0f3460]/50 flex items-center gap-3 bg-[#16213e]/50">
+      <div className="px-4 py-2 border-b border-[#1e1e1e]/50 flex items-center gap-3 bg-[#16213e]/50">
         <span className="text-[10px] text-[#666] uppercase tracking-wider font-semibold">Quality:</span>
         <div className="flex gap-1">
           {QUALITY_PRESETS.map(preset => (
@@ -366,7 +366,7 @@ const RenderPipelinePanel: React.FC = () => {
               className="px-3 py-1 rounded text-[10px] font-semibold transition-all disabled:opacity-50"
               style={{
                 backgroundColor: quality === preset.key ? `${preset.color}20` : '#0a0a0a',
-                border: `1px solid ${quality === preset.key ? preset.color : '#0f3460'}`,
+                border: `1px solid ${quality === preset.key ? preset.color : '#1e1e1e'}`,
                 color: quality === preset.key ? preset.color : '#666',
               }}
             >
@@ -397,7 +397,7 @@ const RenderPipelinePanel: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#0f3460]/50 overflow-x-auto">
+      <div className="flex border-b border-[#1e1e1e]/50 overflow-x-auto">
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -422,7 +422,7 @@ const RenderPipelinePanel: React.FC = () => {
             {passes.map((pass, idx) => (
               <div
                 key={pass.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3"
                 style={{ opacity: pass.enabled ? 1 : 0.5 }}
               >
                 <div className="flex items-center justify-between">
@@ -460,7 +460,7 @@ const RenderPipelinePanel: React.FC = () => {
             {materials.map(material => (
               <div
                 key={material.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3 hover:border-[#0f3460]/60 transition-all cursor-pointer"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3 hover:border-[#1e1e1e]/60 transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-2 mb-1">
                   <Image className="w-3.5 h-3.5 text-[#fdcb6e]" />
@@ -474,7 +474,7 @@ const RenderPipelinePanel: React.FC = () => {
               </div>
             ))}
             {materials.length === 0 && (
-              <div className="col-span-2 flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="col-span-2 flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Image className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No materials loaded</span>
               </div>
@@ -488,7 +488,7 @@ const RenderPipelinePanel: React.FC = () => {
             {shaders.map(shader => (
               <div
                 key={shader.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3 flex items-center justify-between"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3 flex items-center justify-between"
               >
                 <div className="flex items-center gap-2">
                   <span className={`w-5 h-5 rounded flex items-center justify-center text-[9px] font-bold ${getShaderTypeColor(shader.shader_type)}`}>
@@ -512,7 +512,7 @@ const RenderPipelinePanel: React.FC = () => {
               </div>
             ))}
             {shaders.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Code2 className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No shaders available</span>
               </div>
@@ -525,33 +525,33 @@ const RenderPipelinePanel: React.FC = () => {
           <div className="flex flex-col gap-3">
             {/* Performance metrics */}
             {perfMetrics && (
-              <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+              <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Gauge className="w-3.5 h-3.5 text-[#00d4ff]" />
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Performance</span>
                 </div>
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">FPS</div>
                     <div className="text-[18px] font-bold text-[#6bcb77]">{perfMetrics.fps}</div>
                   </div>
-                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Frame Time</div>
                     <div className="text-[18px] font-bold text-[#fdcb6e]">{perfMetrics.frame_time_ms.toFixed(1)}ms</div>
                   </div>
-                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">GPU Mem</div>
                     <div className="text-[18px] font-bold text-[#a29bfe]">{perfMetrics.gpu_memory_mb}MB</div>
                   </div>
-                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">CPU</div>
                     <div className="text-[18px] font-bold text-[#e17055]">{perfMetrics.cpu_usage_percent}%</div>
                   </div>
-                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Draw Calls</div>
                     <div className="text-[18px] font-bold text-[#00d4ff]">{perfMetrics.draw_calls}</div>
                   </div>
-                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 text-center border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Triangles</div>
                     <div className="text-[18px] font-bold text-[#fd79a8]">{(perfMetrics.triangles / 1000).toFixed(1)}k</div>
                   </div>
@@ -561,25 +561,25 @@ const RenderPipelinePanel: React.FC = () => {
 
             {/* Render queue stats */}
             {queueStats && (
-              <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+              <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <BarChart3 className="w-3.5 h-3.5 text-[#00d4ff]" />
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Render Queue</span>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-[#0a0a0a] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Draw Calls</div>
                     <div className="text-[16px] font-bold text-[#00d4ff]">{queueStats.draw_calls}</div>
                   </div>
-                  <div className="bg-[#0a0a0a] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Batches</div>
                     <div className="text-[16px] font-bold text-[#6bcb77]">{queueStats.batches}</div>
                   </div>
-                  <div className="bg-[#0a0a0a] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Culled</div>
                     <div className="text-[16px] font-bold text-[#e94560]">{queueStats.culled}</div>
                   </div>
-                  <div className="bg-[#0a0a0a] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#0a0a0a] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[8px] text-[#666] uppercase">Vertices</div>
                     <div className="text-[16px] font-bold text-[#a29bfe]">{(queueStats.vertices / 1000).toFixed(1)}k</div>
                   </div>
@@ -604,7 +604,7 @@ const RenderPipelinePanel: React.FC = () => {
 
             <button
               onClick={fetchEngineStatus}
-              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#0f3460]/50 text-[#888] rounded-lg text-[12px] hover:border-[#0f3460] transition-all"
+              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#1e1e1e]/50 text-[#888] rounded-lg text-[12px] hover:border-[#1e1e1e] transition-all"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Refresh Statistics
@@ -618,7 +618,7 @@ const RenderPipelinePanel: React.FC = () => {
             {lights.map(light => (
               <div
                 key={light.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3"
                 style={{ opacity: light.enabled ? 1 : 0.5 }}
               >
                 <div className="flex items-center justify-between mb-1">
@@ -641,7 +641,7 @@ const RenderPipelinePanel: React.FC = () => {
                   <span>Intensity: <span className="text-[#fdcb6e]">{light.intensity.toFixed(1)}</span></span>
                   <span className="flex items-center gap-1">
                     Color:
-                    <span className="w-3 h-3 rounded-full border border-[#0f3460]" style={{ backgroundColor: light.color }} />
+                    <span className="w-3 h-3 rounded-full border border-[#1e1e1e]" style={{ backgroundColor: light.color }} />
                   </span>
                   <span className="flex items-center gap-1">
                     Shadows:
@@ -655,7 +655,7 @@ const RenderPipelinePanel: React.FC = () => {
               </div>
             ))}
             {lights.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Sun className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No lights in scene</span>
               </div>
@@ -669,7 +669,7 @@ const RenderPipelinePanel: React.FC = () => {
             {postEffects.map(effect => (
               <div
                 key={effect.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3"
                 style={{ opacity: effect.enabled ? 1 : 0.5 }}
               >
                 <div className="flex items-center justify-between mb-1">
@@ -708,7 +708,7 @@ const RenderPipelinePanel: React.FC = () => {
                 {/* Settings */}
                 <div className="flex flex-wrap gap-2 mt-1">
                   {Object.entries(effect.settings).map(([key, value]) => (
-                    <span key={key} className="text-[9px] bg-[#0a0a0a] rounded px-1.5 py-0.5 border border-[#0f3460]/20 text-[#888]">
+                    <span key={key} className="text-[9px] bg-[#0a0a0a] rounded px-1.5 py-0.5 border border-[#1e1e1e]/20 text-[#888]">
                       {key}: <span className="text-[#aaa]">{value}</span>
                     </span>
                   ))}
@@ -716,7 +716,7 @@ const RenderPipelinePanel: React.FC = () => {
               </div>
             ))}
             {postEffects.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Sliders className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No post-processing effects</span>
               </div>
@@ -726,7 +726,7 @@ const RenderPipelinePanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <Monitor className="w-3 h-3" />
           {passes.filter(p => p.enabled).length} passes · {lights.filter(l => l.enabled).length} lights · {postEffects.filter(e => e.enabled).length} fx

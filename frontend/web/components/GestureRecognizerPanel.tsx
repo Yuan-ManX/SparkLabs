@@ -282,7 +282,7 @@ const GestureRecognizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={patternName} onChange={e => setPatternName(e.target.value)} placeholder="e.g. SwipeLeft" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -290,7 +290,7 @@ const GestureRecognizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
                   <select value={patternType} onChange={e => setPatternType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="SWIPE">Swipe</option>
@@ -320,7 +320,7 @@ const GestureRecognizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={complexName} onChange={e => setComplexName(e.target.value)} placeholder="e.g. SwipeTap" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -328,7 +328,7 @@ const GestureRecognizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Steps (comma-separated)</div>
                   <input value={complexSteps} onChange={e => setComplexSteps(e.target.value)} placeholder="swipe,tap,hold" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -378,7 +378,7 @@ const GestureRecognizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>X</div>
                   <input value={touchX} onChange={e => setTouchX(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -386,7 +386,7 @@ const GestureRecognizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Y</div>
                   <input value={touchY} onChange={e => setTouchY(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -408,7 +408,7 @@ const GestureRecognizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Sensitivity (0.0 - 1.0)</div>
                   <input value={sensitivity} onChange={e => setSensitivity(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -502,7 +502,7 @@ const GestureRecognizerPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

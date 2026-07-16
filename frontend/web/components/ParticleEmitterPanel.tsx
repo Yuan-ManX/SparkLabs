@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
-const API_BASE = "http://localhost:8000/api/agent";
+const API_BASE = `${API_ROOT}/agent`;
 
 interface SubsystemStats {
   active_emitters: number;
@@ -104,21 +105,21 @@ export default function ParticleEmitterPanel() {
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Create Emitter Config</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <input type="text" placeholder="Config Name" value={configName} onChange={(e) => setConfigName(e.target.value)}
-                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" placeholder="Rate" value={emissionRate} onChange={(e) => setEmissionRate(e.target.value)} min="1" max="10000"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Max" value={maxParticles} onChange={(e) => setMaxParticles(e.target.value)} min="1" max="100000"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 </div>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" placeholder="Life Min" value={lifetimeMin} onChange={(e) => setLifetimeMin(e.target.value)} min="0.1" max="60" step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Life Max" value={lifetimeMax} onChange={(e) => setLifetimeMax(e.target.value)} min="0.1" max="60" step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 </div>
                 <select value={shape} onChange={(e) => setShape(e.target.value)}
-                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }}>
+                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }}>
                   <option value="point">Point</option><option value="sphere">Sphere</option>
                   <option value="cone">Cone</option><option value="box">Box</option>
                   <option value="circle">Circle</option>
@@ -133,7 +134,7 @@ export default function ParticleEmitterPanel() {
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Spawn Preset Effect</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <select value={presetEffect} onChange={(e) => setPresetEffect(e.target.value)}
-                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }}>
+                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }}>
                   <option value="fire">Fire</option><option value="smoke">Smoke</option>
                   <option value="magic_sparkle">Magic Sparkle</option><option value="explosion">Explosion</option>
                   <option value="rain">Rain</option><option value="snow">Snow</option>
@@ -142,11 +143,11 @@ export default function ParticleEmitterPanel() {
                 </select>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" placeholder="X" value={posX} onChange={(e) => setPosX(e.target.value)} step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Y" value={posY} onChange={(e) => setPosY(e.target.value)} step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Z" value={posZ} onChange={(e) => setPosZ(e.target.value)} step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 </div>
                 <button onClick={handleSpawnPreset} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#e94560", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600, alignSelf: "flex-start" }}>
                   Spawn Preset

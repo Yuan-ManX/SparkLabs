@@ -456,7 +456,7 @@ const LevelDesigner: React.FC = () => {
         <div className="flex-1" />
         <button
           onClick={handleSaveAll}
-          className="px-3 py-1 bg-[#3b82f6] text-white rounded text-[11px] font-bold border-none cursor-pointer"
+          className="px-3 py-1 bg-[#f97316] text-white rounded text-[11px] font-bold border-none cursor-pointer"
         >
           Save All
         </button>

@@ -115,7 +115,7 @@ const ExtensionSdkPanel: React.FC = () => {
     { key: 'capabilities', label: 'Capabilities' },
   ];
 
-  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
+  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
 
   const statusBadge = (status: string) => {
     const color = status === 'active' ? '#66bb6a' : status === 'disabled' ? '#ef5350' : '#ffa726';
@@ -192,7 +192,7 @@ const ExtensionSdkPanel: React.FC = () => {
                     <div key={ext.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: `3px solid ${typeColor(ext.type)}` }}>
                       <div style={{ fontWeight: 600, fontSize: 12, color: '#ccc', marginBottom: 4 }}>{ext.name}</div>
                       <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4 }}>
-                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: typeColor(ext.type) }}>{ext.type}</span>
+                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: typeColor(ext.type) }}>{ext.type}</span>
                         <span style={{ fontSize: 9, color: '#666' }}>v{ext.version}</span>
                       </div>
                       <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, ...statusBadge(ext.status) }}>{ext.status}</span>
@@ -208,7 +208,7 @@ const ExtensionSdkPanel: React.FC = () => {
                 <div key={ext.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: `3px solid ${typeColor(ext.type)}` }}>
                   <div style={{ fontWeight: 600, fontSize: 12, color: '#ccc', marginBottom: 4 }}>{ext.name}</div>
                   <div style={{ display: 'flex', gap: 6, alignItems: 'center', marginBottom: 4 }}>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: typeColor(ext.type) }}>{ext.type}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: typeColor(ext.type) }}>{ext.type}</span>
                     <span style={{ fontSize: 9, color: '#666' }}>v{ext.version}</span>
                   </div>
                   <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, ...statusBadge(ext.status) }}>{ext.status}</span>
@@ -225,7 +225,7 @@ const ExtensionSdkPanel: React.FC = () => {
               {capabilities.map(cap => (
                 <div key={cap.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e' }}>
                   <div style={{ fontSize: 12, color: '#ccc', marginBottom: 4, fontFamily: 'monospace' }}>{cap.name}</div>
-                  <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: cap.scope === 'global' ? '#ef5350' : cap.scope === 'workspace' ? '#ffa726' : '#4fc3f7' }}>{cap.scope}</span>
+                  <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: cap.scope === 'global' ? '#ef5350' : cap.scope === 'workspace' ? '#ffa726' : '#4fc3f7' }}>{cap.scope}</span>
                 </div>
               ))}
             </div>
@@ -233,7 +233,7 @@ const ExtensionSdkPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83E\uDDE9'} {extensions.length} extensions · {capabilities.length} capabilities</span>
         <span>Connected</span>
       </div>

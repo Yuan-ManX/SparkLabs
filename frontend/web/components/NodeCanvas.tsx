@@ -316,7 +316,7 @@ const NodeCanvas: React.FC = () => {
 
             <button
               onClick={() => handleExecuteWorkflow(selectedNodeData.id)}
-              className="w-full py-1.5 bg-gradient-to-r from-blue-600 to-blue-500 text-white text-[10px] rounded font-medium"
+              className="w-full py-1.5 bg-gradient-to-r from-orange-600 to-orange-500 text-white text-[10px] rounded font-medium"
             >
               Execute Workflow
             </button>

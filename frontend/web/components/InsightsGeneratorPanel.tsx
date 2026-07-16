@@ -325,7 +325,7 @@ const InsightsGeneratorPanel: React.FC = () => {
           onChange={e => setSelectedMetric(e.target.value as MetricType)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           {Object.entries(METRIC_LABELS).map(([key, label]) => (
@@ -337,7 +337,7 @@ const InsightsGeneratorPanel: React.FC = () => {
           onChange={e => setSelectedTimeRange(e.target.value as TimeRange)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="1h">Last Hour</option>
@@ -350,7 +350,7 @@ const InsightsGeneratorPanel: React.FC = () => {
           onChange={e => setSelectedFormat(e.target.value as ReportFormat)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="pdf">PDF</option>
@@ -417,7 +417,7 @@ const InsightsGeneratorPanel: React.FC = () => {
                 </div>
                 {anomalies.map(a => (
                   <div key={a.id} style={{
-                    padding: '6px 8px', backgroundColor: '#141428', borderRadius: 4,
+                    padding: '6px 8px', backgroundColor: '#111', borderRadius: 4,
                     marginBottom: 4, fontSize: 10, color: '#aaa',
                   }}>
                     <span style={{
@@ -544,7 +544,7 @@ const InsightsGeneratorPanel: React.FC = () => {
                     <span style={{ fontWeight: 600, fontSize: 13 }}>{report.title}</span>
                     <span style={{
                       fontSize: 9, padding: '2px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#a29bfe', fontWeight: 600,
+                      backgroundColor: '#111', color: '#a29bfe', fontWeight: 600,
                       textTransform: 'uppercase',
                     }}>{report.format}</span>
                   </div>
@@ -571,7 +571,7 @@ const InsightsGeneratorPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

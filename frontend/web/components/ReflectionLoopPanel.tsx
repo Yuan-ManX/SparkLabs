@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
-const API_BASE = "http://localhost:8000/api/agent";
+const API_BASE = `${API_ROOT}/agent`;
 
 interface SubsystemStats {
   total_reflections: number;
@@ -162,7 +163,7 @@ export default function ReflectionLoopPanel() {
                     onChange={(e) => setReflectionType(e.target.value)}
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   >
@@ -177,7 +178,7 @@ export default function ReflectionLoopPanel() {
                     onChange={(e) => setOutcome(e.target.value)}
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   >
@@ -194,7 +195,7 @@ export default function ReflectionLoopPanel() {
                   onChange={(e) => setContext(e.target.value)}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 />
@@ -205,7 +206,7 @@ export default function ReflectionLoopPanel() {
                   rows={3}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem", resize: "vertical"
                   }}
                 />
@@ -239,7 +240,7 @@ export default function ReflectionLoopPanel() {
                   step="0.1"
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 />

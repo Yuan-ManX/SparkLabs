@@ -253,7 +253,7 @@ export default function EngineEventSystemPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -276,7 +276,7 @@ export default function EngineEventSystemPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -402,7 +402,7 @@ export default function EngineEventSystemPanel() {
                 <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontWeight: 600, fontSize: 12, color: '#00d4ff' }}>{emitResult.event_type}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: getPriorityColor(emitResult.priority), fontWeight: 600 }}>P{emitResult.priority}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: getPriorityColor(emitResult.priority), fontWeight: 600 }}>P{emitResult.priority}</span>
                     <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: emitResult.dispatched ? '#1a3a1a' : '#3a1a1a', color: emitResult.dispatched ? '#6bcb77' : '#ff6b6b', fontWeight: 600 }}>
                       {emitResult.dispatched ? 'DISPATCHED' : 'PENDING'}
                     </span>
@@ -458,7 +458,7 @@ export default function EngineEventSystemPanel() {
                   </div>
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 6 }}>
                     {subscribeResult.event_types.map((t: string, i: number) => (
-                      <span key={i} style={{ fontSize: 8, padding: '2px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#00d4ff' }}>{t}</span>
+                      <span key={i} style={{ fontSize: 8, padding: '2px 6px', borderRadius: 3, backgroundColor: '#111', color: '#00d4ff' }}>{t}</span>
                     ))}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 9, color: '#666' }}>
@@ -521,7 +521,7 @@ export default function EngineEventSystemPanel() {
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{ fontWeight: 600, fontSize: 12, color: '#00d4ff' }}>{evt.event_type}</span>
-                          <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: getPriorityColor(evt.priority), fontWeight: 600 }}>P{evt.priority}</span>
+                          <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: getPriorityColor(evt.priority), fontWeight: 600 }}>P{evt.priority}</span>
                         </div>
                         <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: evt.dispatched ? '#1a3a1a' : '#3a1a1a', color: evt.dispatched ? '#6bcb77' : '#ff6b6b', fontWeight: 600 }}>
                           {evt.dispatched ? 'DISPATCHED' : 'PENDING'}
@@ -534,7 +534,7 @@ export default function EngineEventSystemPanel() {
                       </div>
                       {evt.data && evt.data !== '{}' && (
                         <div style={{
-                          marginTop: 4, padding: 4, backgroundColor: '#141428', borderRadius: 3,
+                          marginTop: 4, padding: 4, backgroundColor: '#111', borderRadius: 3,
                           fontFamily: 'monospace', fontSize: 9, color: '#6bcb77',
                           maxHeight: 60, overflow: 'auto', whiteSpace: 'pre-wrap',
                         }}>
@@ -595,7 +595,7 @@ export default function EngineEventSystemPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

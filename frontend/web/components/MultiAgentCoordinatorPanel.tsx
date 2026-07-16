@@ -472,9 +472,9 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
         {activeTab === 'teams' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <input value={teamNameInput} onChange={e => setTeamNameInput(e.target.value)} placeholder="Team name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
-              <input value={memberIdsInput} onChange={e => setMemberIdsInput(e.target.value)} placeholder="Members (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 200, outline: 'none' }} />
-              <select value={coordinationModeInput} onChange={e => setCoordinationModeInput(e.target.value as CoordinationMode)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+              <input value={teamNameInput} onChange={e => setTeamNameInput(e.target.value)} placeholder="Team name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
+              <input value={memberIdsInput} onChange={e => setMemberIdsInput(e.target.value)} placeholder="Members (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 200, outline: 'none' }} />
+              <select value={coordinationModeInput} onChange={e => setCoordinationModeInput(e.target.value as CoordinationMode)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                 {COORDINATION_MODES.map(m => (
                   <option key={m} value={m}>{MODE_LABELS[m]}</option>
                 ))}
@@ -485,8 +485,8 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
             </div>
 
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <input value={optimizeMissionType} onChange={e => setOptimizeMissionType(e.target.value)} placeholder="Mission type..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
-              <input value={availableAgentsInput} onChange={e => setAvailableAgentsInput(e.target.value)} placeholder="Available agents (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 220, outline: 'none' }} />
+              <input value={optimizeMissionType} onChange={e => setOptimizeMissionType(e.target.value)} placeholder="Mission type..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
+              <input value={availableAgentsInput} onChange={e => setAvailableAgentsInput(e.target.value)} placeholder="Available agents (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 220, outline: 'none' }} />
               <button onClick={handleOptimizeTeam} disabled={loading} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {'\u2699\uFE0F'} Optimize
               </button>
@@ -500,7 +500,7 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', marginBottom: 6 }}>
                   {optimizeResult.recommended_team.map(a => (
-                    <span key={a} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#74b9ff', fontFamily: 'monospace' }}>{a}</span>
+                    <span key={a} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#74b9ff', fontFamily: 'monospace' }}>{a}</span>
                   ))}
                 </div>
                 <div style={{ fontSize: 10, color: '#888' }}>{optimizeResult.rationale}</div>
@@ -532,7 +532,7 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
                   {team.members.map(m => (
                     <span key={m} style={{
                       fontSize: 9, padding: '2px 8px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#74b9ff', fontFamily: 'monospace',
+                      backgroundColor: '#111', color: '#74b9ff', fontFamily: 'monospace',
                     }}>{m}</span>
                   ))}
                 </div>
@@ -553,15 +553,15 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
         {activeTab === 'tasks' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <input value={allocateTeamIdInput} onChange={e => setAllocateTeamIdInput(e.target.value)} placeholder="Team ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
-              <input value={taskInput} onChange={e => setTaskInput(e.target.value)} placeholder="Task description..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 180, outline: 'none' }} />
-              <select value={priorityInput} onChange={e => setPriorityInput(e.target.value as TaskPriority)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+              <input value={allocateTeamIdInput} onChange={e => setAllocateTeamIdInput(e.target.value)} placeholder="Team ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
+              <input value={taskInput} onChange={e => setTaskInput(e.target.value)} placeholder="Task description..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 180, outline: 'none' }} />
+              <select value={priorityInput} onChange={e => setPriorityInput(e.target.value as TaskPriority)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                 <option value="critical">Critical</option>
                 <option value="high">High</option>
                 <option value="medium">Medium</option>
                 <option value="low">Low</option>
               </select>
-              <input value={capabilitiesInput} onChange={e => setCapabilitiesInput(e.target.value)} placeholder="Capabilities (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 200, outline: 'none' }} />
+              <input value={capabilitiesInput} onChange={e => setCapabilitiesInput(e.target.value)} placeholder="Capabilities (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 200, outline: 'none' }} />
               <button onClick={handleAllocateTask} disabled={loading} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {'\uD83D\uDCDD'} Allocate Task
               </button>
@@ -595,7 +595,7 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
                   {task.capabilities_needed.map(c => (
                     <span key={c} style={{
                       fontSize: 9, padding: '2px 8px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#74b9ff', fontFamily: 'monospace',
+                      backgroundColor: '#111', color: '#74b9ff', fontFamily: 'monospace',
                     }}>{c}</span>
                   ))}
                 </div>
@@ -617,9 +617,9 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
         {activeTab === 'synergy' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <input value={synergyAgentA} onChange={e => setSynergyAgentA(e.target.value)} placeholder="Agent A..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
+              <input value={synergyAgentA} onChange={e => setSynergyAgentA(e.target.value)} placeholder="Agent A..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
               <span style={{ color: '#888', fontSize: 12 }}>{'\u2194\uFE0F'}</span>
-              <input value={synergyAgentB} onChange={e => setSynergyAgentB(e.target.value)} placeholder="Agent B..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
+              <input value={synergyAgentB} onChange={e => setSynergyAgentB(e.target.value)} placeholder="Agent B..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none' }} />
               <button onClick={handleCalculateSynergy} disabled={loading} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {'\uD83D\uDD17'} Calculate Synergy
               </button>
@@ -634,7 +634,7 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
                   <span style={{ fontSize: 12, fontWeight: 600, color: '#a29bfe' }}>{'\uD83D\uDCCA'} Overall Synergy Score</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#6bcb77' }}>{(stats.average_synergy * 100).toFixed(0)}%</span>
                 </div>
-                <div style={{ height: 6, backgroundColor: '#141428', borderRadius: 3 }}>
+                <div style={{ height: 6, backgroundColor: '#111', borderRadius: 3 }}>
                   <div style={{
                     height: '100%', width: `${stats.average_synergy * 100}%`,
                     backgroundColor: stats.average_synergy >= 0.7 ? '#6bcb77' : stats.average_synergy >= 0.4 ? '#fdcb6e' : '#ff6b6b',
@@ -671,7 +671,7 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
                     {record.complementary_skills.map(s => (
                       <span key={s} style={{
                         fontSize: 9, padding: '2px 8px', borderRadius: 3,
-                        backgroundColor: '#141428', color: '#74b9ff', fontFamily: 'monospace',
+                        backgroundColor: '#111', color: '#74b9ff', fontFamily: 'monospace',
                       }}>{s}</span>
                     ))}
                   </div>
@@ -692,9 +692,9 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
         {activeTab === 'communication' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <input value={channelInput} onChange={e => setChannelInput(e.target.value)} placeholder="Channel..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
-              <input value={broadcastMessageInput} onChange={e => setBroadcastMessageInput(e.target.value)} placeholder="Message..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 220, outline: 'none' }} />
-              <input value={targetsInput} onChange={e => setTargetsInput(e.target.value)} placeholder="Targets (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 180, outline: 'none' }} />
+              <input value={channelInput} onChange={e => setChannelInput(e.target.value)} placeholder="Channel..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+              <input value={broadcastMessageInput} onChange={e => setBroadcastMessageInput(e.target.value)} placeholder="Message..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 220, outline: 'none' }} />
+              <input value={targetsInput} onChange={e => setTargetsInput(e.target.value)} placeholder="Targets (comma separated)..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 180, outline: 'none' }} />
               <button onClick={handleBroadcastMessage} disabled={loading} style={{ padding: '6px 12px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {'\uD83D\uDCE2'} Broadcast
               </button>
@@ -740,7 +740,7 @@ const MultiAgentCoordinatorPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

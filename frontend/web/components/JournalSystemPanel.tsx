@@ -275,7 +275,7 @@ const JournalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Agent ID</div>
                   <input value={entryAgentId} onChange={e => setEntryAgentId(e.target.value)} placeholder="e.g. agent-001" style={{
                     padding: '6px 10px', fontSize: 11, width: 100,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -283,7 +283,7 @@ const JournalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
                   <select value={entryType} onChange={e => setEntryType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="reflection">Reflection</option>
@@ -297,7 +297,7 @@ const JournalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Mood</div>
                   <select value={entryMood} onChange={e => setEntryMood(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="positive">Positive</option>
@@ -311,7 +311,7 @@ const JournalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Tags</div>
                   <input value={entryTags} onChange={e => setEntryTags(e.target.value)} placeholder="tag1,tag2" style={{
                     padding: '6px 10px', fontSize: 11, width: 130,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -325,7 +325,7 @@ const JournalSystemPanel: React.FC = () => {
                 <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Title</div>
                 <input value={entryTitle} onChange={e => setEntryTitle(e.target.value)} placeholder="Entry title..." style={{
                   padding: '6px 10px', fontSize: 11, width: '100%',
-                  backgroundColor: '#141428', color: '#ccc',
+                  backgroundColor: '#111', color: '#ccc',
                   border: '1px solid #333', borderRadius: 4, outline: 'none',
                 }} />
               </div>
@@ -333,7 +333,7 @@ const JournalSystemPanel: React.FC = () => {
                 <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Content</div>
                 <textarea value={entryContent} onChange={e => setEntryContent(e.target.value)} placeholder="Write your journal entry..." rows={3} style={{
                   padding: '6px 10px', fontSize: 11, width: '100%', resize: 'vertical',
-                  backgroundColor: '#141428', color: '#ccc',
+                  backgroundColor: '#111', color: '#ccc',
                   border: '1px solid #333', borderRadius: 4, outline: 'none',
                   fontFamily: 'system-ui, sans-serif',
                 }} />
@@ -387,7 +387,7 @@ const JournalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Query</div>
                   <input value={searchQuery} onChange={e => setSearchQuery(e.target.value)} placeholder="Search entries..." style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -395,7 +395,7 @@ const JournalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Agent ID</div>
                   <input value={searchAgentId} onChange={e => setSearchAgentId(e.target.value)} placeholder="optional" style={{
                     padding: '6px 10px', fontSize: 11, width: 100,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -403,7 +403,7 @@ const JournalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Limit</div>
                   <input value={searchLimit} onChange={e => setSearchLimit(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -458,7 +458,7 @@ const JournalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Agent ID</div>
                   <input value={summaryAgentId} onChange={e => setSummaryAgentId(e.target.value)} placeholder="e.g. agent-001" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -466,7 +466,7 @@ const JournalSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Days</div>
                   <input value={summaryDays} onChange={e => setSummaryDays(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -500,7 +500,7 @@ const JournalSystemPanel: React.FC = () => {
                   {summary.days}d summary · {summary.entry_count} entries
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#141428', borderRadius: 4,
+                  padding: 10, backgroundColor: '#111', borderRadius: 4,
                   fontSize: 11, color: '#ccc', lineHeight: 1.5,
                 }}>
                   {summary.summary_text}
@@ -513,7 +513,7 @@ const JournalSystemPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

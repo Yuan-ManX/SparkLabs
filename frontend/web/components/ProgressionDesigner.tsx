@@ -371,7 +371,7 @@ const ProgressionDesigner: React.FC = () => {
                 />
               </div>
               <button onClick={handleAddNode} style={{
-                padding: '5px 14px', borderRadius: 6, border: 'none', background: '#3b82f6',
+                padding: '5px 14px', borderRadius: 6, border: 'none', background: '#f97316',
                 color: '#fff', cursor: 'pointer', fontSize: 11,
               }}>Add Node</button>
             </div>

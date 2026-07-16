@@ -223,23 +223,23 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>System Name</div>
-                  <input value={sysName} onChange={e => setSysName(e.target.value)} placeholder="e.g. physics_system" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sysName} onChange={e => setSysName(e.target.value)} placeholder="e.g. physics_system" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Priority</div>
-                  <select value={sysPriority} onChange={e => setSysPriority(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={sysPriority} onChange={e => setSysPriority(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {PRIORITIES.map(p => <option key={p} value={p}>{p}</option>)}
                   </select>
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Budget (ms)</div>
-                  <input value={sysBudget} onChange={e => setSysBudget(e.target.value)} type="number" step="0.5" min="0.5" max="16" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sysBudget} onChange={e => setSysBudget(e.target.value)} type="number" step="0.5" min="0.5" max="16" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleRegisterSystem} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Register</button>
               </div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 8 }}>
                 {PHASES.map(ph => (
-                  <button key={ph} onClick={() => togglePhase(ph)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: sysPhases.includes(ph) ? '#2d3a5a' : '#141428', color: sysPhases.includes(ph) ? '#74b9ff' : '#888', border: `1px solid ${sysPhases.includes(ph) ? '#3d4a6a' : '#333'}`, cursor: 'pointer' }}>{ph.replace(/_/g, ' ')}</button>
+                  <button key={ph} onClick={() => togglePhase(ph)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: sysPhases.includes(ph) ? '#2d3a5a' : '#111', color: sysPhases.includes(ph) ? '#74b9ff' : '#888', border: `1px solid ${sysPhases.includes(ph) ? '#3d4a6a' : '#333'}`, cursor: 'pointer' }}>{ph.replace(/_/g, ' ')}</button>
                 ))}
               </div>
             </div>
@@ -261,7 +261,7 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
                     <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{s.name}</span>
                     {!s.enabled && <span style={{ fontSize: 9, color: '#ff6b6b', marginLeft: 6 }}>DISABLED</span>}
                   </div>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: lifecycleColor(s.lifecycle), textTransform: 'uppercase' }}>{s.lifecycle}</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: lifecycleColor(s.lifecycle), textTransform: 'uppercase' }}>{s.lifecycle}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 4, fontSize: 9, color: '#888' }}>
                   <span style={{ color: priorityColor(s.priority) }}>{s.priority}</span>
@@ -270,7 +270,7 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', gap: 4, marginTop: 2, flexWrap: 'wrap' }}>
                   {s.execution_phases?.map((ph: string, i: number) => (
-                    <span key={i} style={{ fontSize: 8, padding: '1px 4px', borderRadius: 2, backgroundColor: '#141428', color: '#666' }}>{ph.replace(/_/g, ' ')}</span>
+                    <span key={i} style={{ fontSize: 8, padding: '1px 4px', borderRadius: 2, backgroundColor: '#111', color: '#666' }}>{ph.replace(/_/g, ' ')}</span>
                   ))}
                 </div>
               </div>
@@ -285,11 +285,11 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scene Name</div>
-                  <input value={sceneName} onChange={e => setSceneName(e.target.value)} placeholder="e.g. Level 2 - Cave" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sceneName} onChange={e => setSceneName(e.target.value)} placeholder="e.g. Level 2 - Cave" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Entities</div>
-                  <input value={entityCount} onChange={e => setEntityCount(e.target.value)} type="number" min="1" max="10000" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={entityCount} onChange={e => setEntityCount(e.target.value)} type="number" min="1" max="10000" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCreateScene} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Create</button>
               </div>
@@ -301,7 +301,7 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target Scene ID</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={transitionSceneId} onChange={e => setTransitionSceneId(e.target.value)} placeholder="Paste scene ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={transitionSceneId} onChange={e => setTransitionSceneId(e.target.value)} placeholder="Paste scene ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                     <button onClick={handleTransition} style={{ padding: '6px 14px', backgroundColor: '#3a2d4a', color: '#a29bfe', border: '1px solid #4a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>Transition</button>
                   </div>
                 </div>
@@ -313,7 +313,7 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
               <div key={s.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: `3px solid ${statusColor(s.status)}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{s.name}</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: statusColor(s.status), textTransform: 'uppercase' }}>{s.status}</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: statusColor(s.status), textTransform: 'uppercase' }}>{s.status}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 4, fontSize: 9, color: '#888' }}>
                   <span>Entities: {s.entity_count}</span>
@@ -323,7 +323,7 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
                 {s.entity_types && Object.keys(s.entity_types).length > 0 && (
                   <div style={{ display: 'flex', gap: 4, marginTop: 2, flexWrap: 'wrap' }}>
                     {Object.entries(s.entity_types).map(([type, count]) => (
-                      <span key={type} style={{ fontSize: 8, padding: '1px 4px', borderRadius: 2, backgroundColor: '#141428', color: '#a29bfe' }}>{type}: {count}</span>
+                      <span key={type} style={{ fontSize: 8, padding: '1px 4px', borderRadius: 2, backgroundColor: '#111', color: '#a29bfe' }}>{type}: {count}</span>
                     ))}
                   </div>
                 )}
@@ -391,7 +391,7 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
                 and the Orchestrate tab to simulate frame-by-frame execution.
               </div>
               {runtimeState && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#ccc', marginBottom: 4 }}>Current Runtime State</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, fontSize: 10 }}>
                     <div><span style={{ color: '#888' }}>Status: </span><span style={{ color: runtimeState.running ? '#6bcb77' : '#888' }}>{runtimeState.running ? 'Running' : 'Stopped'}</span></div>
@@ -416,7 +416,7 @@ const GameRuntimeOrchestratorPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'⚙️'} {systems.length} systems · {scenes.length} scenes</span>
         <span>Connected</span>
       </div>

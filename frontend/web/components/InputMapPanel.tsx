@@ -276,7 +276,7 @@ const InputMapPanel: React.FC = () => {
           onChange={e => setActionType(e.target.value)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="Digital">Digital</option>
@@ -295,7 +295,7 @@ const InputMapPanel: React.FC = () => {
           onChange={e => setBindingDevice(e.target.value as DeviceType)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="KEYBOARD">{'\u2328'} Keyboard</option>
@@ -357,7 +357,7 @@ const InputMapPanel: React.FC = () => {
                       <span style={{ fontWeight: 600, fontSize: 13, color: '#ccc' }}>{action.name}</span>
                       <span style={{
                         fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                        backgroundColor: '#141428', color: '#fdcb6e', fontWeight: 600,
+                        backgroundColor: '#111', color: '#fdcb6e', fontWeight: 600,
                         textTransform: 'uppercase',
                       }}>{action.action_type}</span>
                     </div>
@@ -399,12 +399,12 @@ const InputMapPanel: React.FC = () => {
                       color: DEVICE_COLORS[binding.device], fontWeight: 600,
                     }}>{binding.device}</span>
                     <code style={{
-                      padding: '2px 8px', backgroundColor: '#141428',
+                      padding: '2px 8px', backgroundColor: '#111',
                       color: '#fdcb6e', borderRadius: 3, fontSize: 11, fontFamily: 'monospace',
                     }}>{binding.input_code}</code>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#888',
+                      backgroundColor: '#111', color: '#888',
                       marginLeft: 'auto',
                     }}>{binding.modifiers}</span>
                   </div>
@@ -465,7 +465,7 @@ const InputMapPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

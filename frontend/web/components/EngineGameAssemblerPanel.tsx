@@ -77,12 +77,12 @@ export default function EngineGameAssemblerPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
 
         {/* Overview Tab */}
@@ -91,7 +91,7 @@ export default function EngineGameAssemblerPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Game Assembler Stats</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {Object.entries(stats).map(([key, value]) => (
-                <div key={key} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={key} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-[#00d4ff] text-xs capitalize">{key.replace(/_/g, ' ')}</h3>
                   <p className="text-2xl font-bold mt-1">
                     {typeof value === 'number' ? value.toLocaleString() : String(value)}
@@ -108,7 +108,7 @@ export default function EngineGameAssemblerPanel() {
         {/* Components Tab */}
         {activeTab === 'components' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Register Component</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -145,7 +145,7 @@ export default function EngineGameAssemblerPanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Components ({components.length})</h2>
               {components.length > 0 ? (
                 <div className="space-y-2">
@@ -153,7 +153,7 @@ export default function EngineGameAssemblerPanel() {
                     <div key={c.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{c.name}</span>
-                        <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded">{c.category || 'unknown'}</span>
+                        <span className="text-xs bg-[#0d0d0d] text-[#00d4ff] px-2 py-0.5 rounded">{c.category || 'unknown'}</span>
                       </div>
                       {c.properties && (
                         <div className="mt-1 text-xs text-[#999] font-mono">{JSON.stringify(c.properties)}</div>
@@ -171,7 +171,7 @@ export default function EngineGameAssemblerPanel() {
         {/* Scenes Tab */}
         {activeTab === 'scenes' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Add Scene</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -198,7 +198,7 @@ export default function EngineGameAssemblerPanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Scenes ({scenes.length})</h2>
               {scenes.length > 0 ? (
                 <div className="space-y-2">
@@ -206,7 +206,7 @@ export default function EngineGameAssemblerPanel() {
                     <div key={s.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{s.name}</span>
-                        <span className="text-xs bg-[#0f0f23] text-[#ccc] px-2 py-0.5 rounded">{s.id || `#${i + 1}`}</span>
+                        <span className="text-xs bg-[#0d0d0d] text-[#ccc] px-2 py-0.5 rounded">{s.id || `#${i + 1}`}</span>
                       </div>
                       {s.description && <div className="mt-1 text-xs text-[#999]">{s.description}</div>}
                     </div>
@@ -222,7 +222,7 @@ export default function EngineGameAssemblerPanel() {
         {/* Plans Tab */}
         {activeTab === 'plans' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Plan</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -259,7 +259,7 @@ export default function EngineGameAssemblerPanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Execute Plan</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -287,7 +287,7 @@ export default function EngineGameAssemblerPanel() {
               )}
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Plans ({plans.length})</h2>
               {plans.length > 0 ? (
                 <div className="space-y-2">
@@ -296,7 +296,7 @@ export default function EngineGameAssemblerPanel() {
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{p.name}</span>
                         <div className="flex gap-1">
-                          <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded">{p.target || 'unknown'}</span>
+                          <span className="text-xs bg-[#0d0d0d] text-[#00d4ff] px-2 py-0.5 rounded">{p.target || 'unknown'}</span>
                           <span className={`text-xs px-2 py-0.5 rounded ${
                             p.status === 'completed' ? 'bg-green-900 text-green-300' :
                             p.status === 'running' ? 'bg-blue-900 text-blue-300' :
@@ -310,7 +310,7 @@ export default function EngineGameAssemblerPanel() {
                         </div>
                       )}
                       <button onClick={() => setExecutePlanId(p.id)}
-                        className="mt-2 text-xs px-3 py-1 bg-[#0f0f23] text-[#00d4ff] rounded hover:bg-[#2a2a4a]">
+                        className="mt-2 text-xs px-3 py-1 bg-[#0d0d0d] text-[#00d4ff] rounded hover:bg-[#2a2a4a]">
                         Select for Execution
                       </button>
                     </div>

@@ -204,19 +204,19 @@ const ParallaxBackgroundPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={layerName} onChange={e => setLayerName(e.target.value)} placeholder="e.g. Far Mountains" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={layerName} onChange={e => setLayerName(e.target.value)} placeholder="e.g. Far Mountains" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Texture Ref</div>
-                  <input value={layerTextureRef} onChange={e => setLayerTextureRef(e.target.value)} placeholder="mountains_bg.png" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={layerTextureRef} onChange={e => setLayerTextureRef(e.target.value)} placeholder="mountains_bg.png" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Factor</div>
-                  <input value={layerParallaxFactor} onChange={e => setLayerParallaxFactor(e.target.value)} type="number" step="0.1" min="0" max="2" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={layerParallaxFactor} onChange={e => setLayerParallaxFactor(e.target.value)} type="number" step="0.1" min="0" max="2" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Direction</div>
-                  <select value={layerScrollDir} onChange={e => setLayerScrollDir(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={layerScrollDir} onChange={e => setLayerScrollDir(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="horizontal">Horizontal</option>
                     <option value="vertical">Vertical</option>
                     <option value="both">Both</option>
@@ -250,19 +250,19 @@ const ParallaxBackgroundPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={sceneName} onChange={e => setSceneName(e.target.value)} placeholder="e.g. Forest" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sceneName} onChange={e => setSceneName(e.target.value)} placeholder="e.g. Forest" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Camera ID</div>
-                  <input value={sceneCameraId} onChange={e => setSceneCameraId(e.target.value)} placeholder="camera_main" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sceneCameraId} onChange={e => setSceneCameraId(e.target.value)} placeholder="camera_main" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Width</div>
-                  <input value={sceneWidth} onChange={e => setSceneWidth(e.target.value)} type="number" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sceneWidth} onChange={e => setSceneWidth(e.target.value)} type="number" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Height</div>
-                  <input value={sceneHeight} onChange={e => setSceneHeight(e.target.value)} type="number" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sceneHeight} onChange={e => setSceneHeight(e.target.value)} type="number" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCreateScene} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Create</button>
               </div>
@@ -273,15 +273,15 @@ const ParallaxBackgroundPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Camera X</div>
-                  <input value={scrollCameraX} onChange={e => setScrollCameraX(e.target.value)} placeholder="0" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={scrollCameraX} onChange={e => setScrollCameraX(e.target.value)} placeholder="0" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Camera Y</div>
-                  <input value={scrollCameraY} onChange={e => setScrollCameraY(e.target.value)} placeholder="0" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={scrollCameraY} onChange={e => setScrollCameraY(e.target.value)} placeholder="0" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scene ID</div>
-                  <input value={scrollSceneId} onChange={e => setScrollSceneId(e.target.value)} placeholder="Scene ID" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={scrollSceneId} onChange={e => setScrollSceneId(e.target.value)} placeholder="Scene ID" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleUpdateScroll} style={{ padding: '6px 14px', backgroundColor: '#3a2d4a', color: '#a29bfe', border: '1px solid #4a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Update</button>
               </div>
@@ -292,15 +292,15 @@ const ParallaxBackgroundPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Current Scene ID</div>
-                  <input value={transCurrentScene} onChange={e => setTransCurrentScene(e.target.value)} placeholder="Current scene" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={transCurrentScene} onChange={e => setTransCurrentScene(e.target.value)} placeholder="Current scene" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Next Scene ID</div>
-                  <input value={transNextScene} onChange={e => setTransNextScene(e.target.value)} placeholder="Next scene" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={transNextScene} onChange={e => setTransNextScene(e.target.value)} placeholder="Next scene" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
-                  <select value={transType} onChange={e => setTransType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={transType} onChange={e => setTransType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="fade">Fade</option>
                     <option value="slide">Slide</option>
                     <option value="zoom">Zoom</option>
@@ -310,7 +310,7 @@ const ParallaxBackgroundPanel: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Duration (s)</div>
-                  <input value={transDuration} onChange={e => setTransDuration(e.target.value)} type="number" step="0.1" min="0.1" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={transDuration} onChange={e => setTransDuration(e.target.value)} type="number" step="0.1" min="0.1" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleTransitionScene} style={{ padding: '6px 14px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Transition</button>
               </div>
@@ -330,7 +330,7 @@ const ParallaxBackgroundPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83C\uDF04'} {layers.length} layers · {scenes.length} scenes</span>
         <span>Connected</span>
       </div>

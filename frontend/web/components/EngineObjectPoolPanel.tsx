@@ -348,7 +348,7 @@ const EngineObjectPoolPanel: React.FC = () => {
     fontSize: 12,
     backgroundColor: '#1a1a2e',
     color: '#e0e0e0',
-    border: '1px solid #0f3460',
+    border: '1px solid #1e1e1e',
     borderRadius: 4,
     boxSizing: 'border-box',
   };
@@ -409,7 +409,7 @@ const EngineObjectPoolPanel: React.FC = () => {
               backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent',
               cursor: 'pointer',
             }}
           >
@@ -425,7 +425,7 @@ const EngineObjectPoolPanel: React.FC = () => {
         {activeTab === 'pool-manager' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {/* Create Pool Form */}
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#74b9ff' }}>
                 Create Pool
               </div>
@@ -502,7 +502,7 @@ const EngineObjectPoolPanel: React.FC = () => {
               <button
                 onClick={handleCreatePool} disabled={loading}
                 style={{
-                  padding: '8px 18px', backgroundColor: '#0f3460', color: '#74b9ff',
+                  padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#74b9ff',
                   border: '1px solid #1a5276', borderRadius: 4,
                   cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600,
                   opacity: loading ? 0.6 : 1,
@@ -513,7 +513,7 @@ const EngineObjectPoolPanel: React.FC = () => {
             </div>
 
             {/* Prewarm Controls */}
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#fdcb6e' }}>
                 Prewarm Configuration
               </div>
@@ -549,7 +549,7 @@ const EngineObjectPoolPanel: React.FC = () => {
                 key={pool.id}
                 style={{
                   padding: 12, backgroundColor: '#16213e', borderRadius: 8,
-                  border: '1px solid #0f3460',
+                  border: '1px solid #1e1e1e',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -589,7 +589,7 @@ const EngineObjectPoolPanel: React.FC = () => {
                     onClick={() => handlePrewarm(pool.id)}
                     disabled={loading}
                     style={{
-                      padding: '5px 12px', backgroundColor: '#0f3460', color: '#fdcb6e',
+                      padding: '5px 12px', backgroundColor: '#1e1e1e', color: '#fdcb6e',
                       border: '1px solid #1a5276', borderRadius: 4,
                       cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600,
                       opacity: loading ? 0.6 : 1,
@@ -601,7 +601,7 @@ const EngineObjectPoolPanel: React.FC = () => {
                     onClick={() => handleRecycle(pool.id)}
                     disabled={loading}
                     style={{
-                      padding: '5px 12px', backgroundColor: '#0f3460', color: '#a29bfe',
+                      padding: '5px 12px', backgroundColor: '#1e1e1e', color: '#a29bfe',
                       border: '1px solid #1a5276', borderRadius: 4,
                       cursor: loading ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600,
                       opacity: loading ? 0.6 : 1,
@@ -616,7 +616,7 @@ const EngineObjectPoolPanel: React.FC = () => {
             {pools.length === 0 && (
               <div style={{
                 textAlign: 'center', padding: 30, color: '#555',
-                backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460',
+                backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e',
               }}>
                 <span style={{ fontSize: 30, opacity: 0.3, display: 'block', marginBottom: 8 }}>{'\uD83D\uDDC2\uFE0F'}</span>
                 No pools created yet. Use the form above to create your first pool.
@@ -629,7 +629,7 @@ const EngineObjectPoolPanel: React.FC = () => {
         {activeTab === 'borrow-return' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {/* Borrow Object */}
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#6bcb77' }}>
                 Borrow Object
               </div>
@@ -663,7 +663,7 @@ const EngineObjectPoolPanel: React.FC = () => {
               <button
                 onClick={handleBorrow} disabled={loading}
                 style={{
-                  padding: '8px 18px', backgroundColor: '#0f3460', color: '#6bcb77',
+                  padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#6bcb77',
                   border: '1px solid #1a5276', borderRadius: 4,
                   cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600,
                   opacity: loading ? 0.6 : 1,
@@ -675,7 +675,7 @@ const EngineObjectPoolPanel: React.FC = () => {
               {borrowResult && (
                 <div style={{
                   marginTop: 10, padding: 10, backgroundColor: '#1a1a2e',
-                  borderRadius: 6, border: '1px solid #0f3460', fontSize: 11,
+                  borderRadius: 6, border: '1px solid #1e1e1e', fontSize: 11,
                 }}>
                   <div style={{ fontWeight: 600, color: '#6bcb77', marginBottom: 6 }}>
                     Borrowed Object Details
@@ -691,7 +691,7 @@ const EngineObjectPoolPanel: React.FC = () => {
                   <div style={{ marginTop: 6 }}>
                     <div style={{ color: '#888', marginBottom: 2 }}>Properties:</div>
                     <pre style={{
-                      margin: 0, padding: '4px 6px', backgroundColor: '#141428',
+                      margin: 0, padding: '4px 6px', backgroundColor: '#111',
                       borderRadius: 3, fontSize: 10, color: '#a29bfe',
                       overflow: 'auto', maxHeight: 100,
                     }}>
@@ -703,7 +703,7 @@ const EngineObjectPoolPanel: React.FC = () => {
             </div>
 
             {/* Return Object */}
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#a29bfe' }}>
                 Return Object
               </div>
@@ -735,7 +735,7 @@ const EngineObjectPoolPanel: React.FC = () => {
                 <button
                   onClick={handleReturn} disabled={loading}
                   style={{
-                    padding: '8px 18px', backgroundColor: '#0f3460', color: '#a29bfe',
+                    padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#a29bfe',
                     border: '1px solid #1a5276', borderRadius: 4,
                     cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600,
                     opacity: loading ? 0.6 : 1,
@@ -746,7 +746,7 @@ const EngineObjectPoolPanel: React.FC = () => {
                 <button
                   onClick={handleForceGC} disabled={loading}
                   style={{
-                    padding: '8px 18px', backgroundColor: '#0f3460', color: '#ff6b6b',
+                    padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#ff6b6b',
                     border: '1px solid #1a5276', borderRadius: 4,
                     cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600,
                     opacity: loading ? 0.6 : 1,
@@ -763,7 +763,7 @@ const EngineObjectPoolPanel: React.FC = () => {
         {activeTab === 'optimization' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {/* Predict Demand */}
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#fdcb6e' }}>
                 Predict Demand
               </div>
@@ -795,7 +795,7 @@ const EngineObjectPoolPanel: React.FC = () => {
               <button
                 onClick={handlePredictDemand} disabled={loading}
                 style={{
-                  padding: '8px 18px', backgroundColor: '#0f3460', color: '#fdcb6e',
+                  padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#fdcb6e',
                   border: '1px solid #1a5276', borderRadius: 4,
                   cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600,
                   opacity: loading ? 0.6 : 1,
@@ -807,7 +807,7 @@ const EngineObjectPoolPanel: React.FC = () => {
               {predictResult && (
                 <div style={{
                   marginTop: 10, padding: 12, backgroundColor: '#1a1a2e',
-                  borderRadius: 6, border: '1px solid #0f3460', fontSize: 11,
+                  borderRadius: 6, border: '1px solid #1e1e1e', fontSize: 11,
                 }}>
                   <div style={{ fontWeight: 600, color: '#fdcb6e', marginBottom: 8 }}>
                     Predicted Demand
@@ -840,7 +840,7 @@ const EngineObjectPoolPanel: React.FC = () => {
             </div>
 
             {/* Auto Optimize */}
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#6bcb77' }}>
                 Auto Optimize All Pools
               </div>
@@ -850,7 +850,7 @@ const EngineObjectPoolPanel: React.FC = () => {
               <button
                 onClick={handleAutoOptimize} disabled={loading}
                 style={{
-                  padding: '8px 18px', backgroundColor: '#0f3460', color: '#6bcb77',
+                  padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#6bcb77',
                   border: '1px solid #1a5276', borderRadius: 4,
                   cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600,
                   opacity: loading ? 0.6 : 1,
@@ -862,7 +862,7 @@ const EngineObjectPoolPanel: React.FC = () => {
               {optimizationResult && (
                 <div style={{
                   marginTop: 10, padding: 12, backgroundColor: '#1a1a2e',
-                  borderRadius: 6, border: '1px solid #0f3460',
+                  borderRadius: 6, border: '1px solid #1e1e1e',
                 }}>
                   <div style={{ fontWeight: 600, color: '#6bcb77', marginBottom: 8 }}>
                     Optimization Results
@@ -910,7 +910,7 @@ const EngineObjectPoolPanel: React.FC = () => {
         {/* ==================== STATUS TAB ==================== */}
         {activeTab === 'status' && status && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12, color: '#aaa' }}>
                 Object Pool System Status
               </div>
@@ -972,7 +972,7 @@ const EngineObjectPoolPanel: React.FC = () => {
                 key={pool.id}
                 style={{
                   padding: 10, backgroundColor: '#16213e', borderRadius: 8,
-                  border: '1px solid #0f3460',
+                  border: '1px solid #1e1e1e',
                 }}
               >
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
@@ -1013,7 +1013,7 @@ const EngineObjectPoolPanel: React.FC = () => {
         {activeTab === 'status' && !status && (
           <div style={{
             textAlign: 'center', padding: 40, color: '#555',
-            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460',
+            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e',
           }}>
             <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>
               {'\u2699\uFE0F'}
@@ -1027,7 +1027,7 @@ const EngineObjectPoolPanel: React.FC = () => {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

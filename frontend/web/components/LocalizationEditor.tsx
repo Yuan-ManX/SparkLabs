@@ -410,9 +410,9 @@ const LocalizationEditor: React.FC = () => {
                 <div
                   key={entry.id}
                   style={{
-                    display: 'flex', padding: '6px 12px', borderBottom: '1px solid #1a1a1a',
+                    display: 'flex', padding: '6px 12px', borderBottom: '1px solid #1e1e1e',
                     fontSize: 12, alignItems: 'center',
-                    background: isEditing ? '#0d1a2a' : 'transparent',
+                    background: isEditing ? 'rgba(249, 115, 22, 0.08)' : 'transparent',
                     transition: 'background 0.15s',
                   }}
                 >
@@ -456,7 +456,7 @@ const LocalizationEditor: React.FC = () => {
                         placeholder="Enter translation..."
                         style={{
                           width: '100%', padding: '4px 8px', borderRadius: 4, fontSize: 12,
-                          background: '#0a1a2e', border: '1px solid #3b82f6', color: '#e0e0e0',
+                          background: '#0d0d0d', border: '1px solid #f97316', color: '#e0e0e0',
                           outline: 'none', fontFamily: 'monospace',
                         }}
                       />
@@ -507,7 +507,7 @@ const LocalizationEditor: React.FC = () => {
           <div
             style={{
               position: 'fixed', top: '50%', left: '50%', transform: 'translate(-50%, -50%)',
-              zIndex: 1001, width: 420, background: '#141414', borderRadius: 10,
+              zIndex: 1001, width: 420, background: '#111', borderRadius: 10,
               border: '1px solid #2a2a2a', padding: 20,
             }}
           >

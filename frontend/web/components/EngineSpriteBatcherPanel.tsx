@@ -353,7 +353,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               value={submitForm.textureName}
               onChange={e => setSubmitForm(prev => ({ ...prev, textureName: e.target.value }))}
               placeholder="e.g. player_sprite.png"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
 
@@ -364,7 +364,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               type="number"
               value={submitForm.positionX}
               onChange={e => setSubmitForm(prev => ({ ...prev, positionX: parseFloat(e.target.value) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -373,7 +373,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               type="number"
               value={submitForm.positionY}
               onChange={e => setSubmitForm(prev => ({ ...prev, positionY: parseFloat(e.target.value) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
 
@@ -385,7 +385,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               value={submitForm.scaleX}
               onChange={e => setSubmitForm(prev => ({ ...prev, scaleX: parseFloat(e.target.value) || 1 }))}
               step="0.1"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -395,7 +395,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               value={submitForm.scaleY}
               onChange={e => setSubmitForm(prev => ({ ...prev, scaleY: parseFloat(e.target.value) || 1 }))}
               step="0.1"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
 
@@ -406,7 +406,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               type="number"
               value={submitForm.rotationDegrees}
               onChange={e => setSubmitForm(prev => ({ ...prev, rotationDegrees: parseFloat(e.target.value) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
 
@@ -417,7 +417,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               type="number"
               value={submitForm.zOrder}
               onChange={e => setSubmitForm(prev => ({ ...prev, zOrder: parseInt(e.target.value, 10) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
 
@@ -430,7 +430,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               max={255}
               value={submitForm.colorR}
               onChange={e => setSubmitForm(prev => ({ ...prev, colorR: parseInt(e.target.value, 10) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -441,7 +441,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               max={255}
               value={submitForm.colorG}
               onChange={e => setSubmitForm(prev => ({ ...prev, colorG: parseInt(e.target.value, 10) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -452,7 +452,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               max={255}
               value={submitForm.colorB}
               onChange={e => setSubmitForm(prev => ({ ...prev, colorB: parseInt(e.target.value, 10) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -463,7 +463,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               max={255}
               value={submitForm.colorA}
               onChange={e => setSubmitForm(prev => ({ ...prev, colorA: parseInt(e.target.value, 10) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
 
@@ -473,7 +473,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             <select
               value={submitForm.blendMode}
               onChange={e => setSubmitForm(prev => ({ ...prev, blendMode: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="normal">Normal</option>
               <option value="additive">Additive</option>
@@ -604,7 +604,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               value={atlasForm.name}
               onChange={e => setAtlasForm(prev => ({ ...prev, name: e.target.value }))}
               placeholder="e.g. MainAtlas"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -613,7 +613,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               type="number"
               value={atlasForm.size}
               onChange={e => setAtlasForm(prev => ({ ...prev, size: parseInt(e.target.value, 10) || 2048 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -621,7 +621,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
             <select
               value={atlasForm.packMode}
               onChange={e => setAtlasForm(prev => ({ ...prev, packMode: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="bin_pack">Bin Pack</option>
               <option value="row_strip">Row Strip</option>
@@ -634,7 +634,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
               onChange={e => setAtlasForm(prev => ({ ...prev, textureNames: e.target.value }))}
               placeholder="sprite1.png, sprite2.png, sprite3.png"
               rows={3}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -673,7 +673,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
                 <div className="text-[#999] text-xs mb-1">Textures</div>
                 <div className="flex flex-wrap gap-1">
                   {atlas.texture_names.map((name, j) => (
-                    <span key={j} className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-[#ccc] font-mono">
+                    <span key={j} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-[#ccc] font-mono">
                       {name}
                     </span>
                   ))}
@@ -738,7 +738,7 @@ const EngineSpriteBatcherPanel: React.FC = () => {
   );
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       <div className="flex gap-1 border-b border-[#2a2a4a] px-4 pt-2">
         {tabs.map(t => (
           <button

@@ -62,7 +62,7 @@ export default function InteractionDesignerPanel() {
             className={`px-4 py-2 rounded text-sm font-medium ${
               activeTab === tab
                 ? 'bg-[#00d4ff] text-black'
-                : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'
+                : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'
             }`}
           >
             {tab.charAt(0).toUpperCase() + tab.slice(1)}
@@ -71,7 +71,7 @@ export default function InteractionDesignerPanel() {
       </div>
 
       {message && (
-        <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">
+        <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">
           {message}
         </div>
       )}
@@ -84,20 +84,20 @@ export default function InteractionDesignerPanel() {
               Design and manage player interactions, UI flows, and input-response patterns for your game.
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] font-medium mb-2">Total Interactions</h3>
                 <p className="text-2xl">{stats.total_interactions}</p>
               </div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] font-medium mb-2">Active Interactions</h3>
                 <p className="text-2xl">{stats.active_interactions}</p>
               </div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] font-medium mb-2">Avg Response Time</h3>
                 <p className="text-2xl">{stats.avg_response_time}ms</p>
               </div>
             </div>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
               <h3 className="text-[#00d4ff] font-medium mb-3">Interaction Types</h3>
               <div className="space-y-2">
                 {Object.entries(stats.interaction_types).map(([type, count]) => (
@@ -120,7 +120,7 @@ export default function InteractionDesignerPanel() {
             <p className="text-[#999] text-sm">
               Define how players interact with game objects, UI elements, and other entities.
             </p>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
               <h3 className="text-[#00d4ff] font-medium mb-3">Interaction Builder</h3>
               <div className="space-y-3">
                 <div>
@@ -178,7 +178,7 @@ export default function InteractionDesignerPanel() {
               ].map((pattern) => (
                 <div
                   key={pattern}
-                  className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] cursor-pointer transition-colors"
+                  className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] cursor-pointer transition-colors"
                 >
                   <h3 className="text-[#00d4ff] font-medium">{pattern}</h3>
                   <p className="text-[#666] text-xs mt-1">Pre-built interaction pattern</p>
@@ -194,7 +194,7 @@ export default function InteractionDesignerPanel() {
             <p className="text-[#999] text-sm">
               Test and validate your interaction designs.
             </p>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
               <h3 className="text-[#00d4ff] font-medium mb-3">Test Runner</h3>
               <p className="text-[#666] text-sm mb-4">
                 Run automated tests on all defined interactions to verify correctness.

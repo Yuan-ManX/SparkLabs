@@ -227,11 +227,11 @@ const NarrativeBranchPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={branchName} onChange={e => setBranchName(e.target.value)} placeholder="e.g. Main Quest" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={branchName} onChange={e => setBranchName(e.target.value)} placeholder="e.g. Main Quest" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Strategy</div>
-                  <select value={branchStrategy} onChange={e => setBranchStrategy(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={branchStrategy} onChange={e => setBranchStrategy(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="branching">Branching</option>
                     <option value="linear">Linear</option>
                     <option value="hub_and_spoke">Hub &amp; Spoke</option>
@@ -240,7 +240,7 @@ const NarrativeBranchPanel: React.FC = () => {
                 </div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Root Content</div>
-                  <input value={branchRootContent} onChange={e => setBranchRootContent(e.target.value)} placeholder="Opening narrative..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={branchRootContent} onChange={e => setBranchRootContent(e.target.value)} placeholder="Opening narrative..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCreateBranch} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Create</button>
               </div>
@@ -251,12 +251,12 @@ const NarrativeBranchPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Branch ID</div>
-                  <input value={checkBranchId} onChange={e => setCheckBranchId(e.target.value)} placeholder="Enter branch ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={checkBranchId} onChange={e => setCheckBranchId(e.target.value)} placeholder="Enter branch ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCheckConsistency} style={{ padding: '6px 14px', backgroundColor: '#3a2d4a', color: '#a29bfe', border: '1px solid #4a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Check</button>
               </div>
               {consistencyResult && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
                   <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(consistencyResult, null, 2)}</pre>
                 </div>
               )}
@@ -267,7 +267,7 @@ const NarrativeBranchPanel: React.FC = () => {
               <div key={b.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #6bcb77' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{b.name}</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe', textTransform: 'uppercase' }}>{b.strategy}</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe', textTransform: 'uppercase' }}>{b.strategy}</span>
                 </div>
                 <div style={{ fontSize: 10, color: '#888' }}>{b.root_content}</div>
               </div>
@@ -282,11 +282,11 @@ const NarrativeBranchPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Branch ID</div>
-                  <input value={nodeBranchId} onChange={e => setNodeBranchId(e.target.value)} placeholder="Branch ID" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={nodeBranchId} onChange={e => setNodeBranchId(e.target.value)} placeholder="Branch ID" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
-                  <select value={nodeType} onChange={e => setNodeType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={nodeType} onChange={e => setNodeType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="story">Story</option>
                     <option value="dialogue">Dialogue</option>
                     <option value="choice">Choice</option>
@@ -296,15 +296,15 @@ const NarrativeBranchPanel: React.FC = () => {
                 </div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Content</div>
-                  <input value={nodeContent} onChange={e => setNodeContent(e.target.value)} placeholder="Node content..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={nodeContent} onChange={e => setNodeContent(e.target.value)} placeholder="Node content..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Parent IDs (comma)</div>
-                  <input value={nodeParentIds} onChange={e => setNodeParentIds(e.target.value)} placeholder="n1, n2" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={nodeParentIds} onChange={e => setNodeParentIds(e.target.value)} placeholder="n1, n2" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 120 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Choices</div>
-                  <input value={nodeChoices} onChange={e => setNodeChoices(e.target.value)} placeholder="Choice text" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={nodeChoices} onChange={e => setNodeChoices(e.target.value)} placeholder="Choice text" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleAddNode} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Add</button>
               </div>
@@ -330,11 +330,11 @@ const NarrativeBranchPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={charName} onChange={e => setCharName(e.target.value)} placeholder="e.g. Elara" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={charName} onChange={e => setCharName(e.target.value)} placeholder="e.g. Elara" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Role</div>
-                  <select value={charRole} onChange={e => setCharRole(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={charRole} onChange={e => setCharRole(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="">Select...</option>
                     <option value="protagonist">Protagonist</option>
                     <option value="antagonist">Antagonist</option>
@@ -345,7 +345,7 @@ const NarrativeBranchPanel: React.FC = () => {
                 </div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Traits</div>
-                  <input value={charTraits} onChange={e => setCharTraits(e.target.value)} placeholder="e.g. brave, curious, kind" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={charTraits} onChange={e => setCharTraits(e.target.value)} placeholder="e.g. brave, curious, kind" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleGenerateCharacter} style={{ padding: '6px 14px', backgroundColor: '#4a2d4a', color: '#e056a0', border: '1px solid #5a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Generate</button>
               </div>
@@ -366,7 +366,7 @@ const NarrativeBranchPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDCD6'} {branches.length} branches · {nodes.length} nodes · {characters.length} characters</span>
         <span>Connected</span>
       </div>

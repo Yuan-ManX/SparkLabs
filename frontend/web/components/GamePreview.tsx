@@ -473,7 +473,7 @@ const GamePreview: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-1.5 px-4 py-2.5 text-[11px] transition-colors border-b-2 ${
               activeTab === tab.id
-                ? 'text-blue-400 border-blue-500 bg-blue-500/5'
+                ? 'text-orange-400 border-orange-500 bg-orange-500/5'
                 : 'text-[#666] border-transparent hover:text-[#999] hover:bg-[#151515]'
             }`}
           >

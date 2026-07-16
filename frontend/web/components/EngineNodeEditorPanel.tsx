@@ -323,7 +323,7 @@ export default function EngineNodeEditorPanel() {
       <h2 className="text-lg font-bold text-[#00d4ff]">Node Editor Stats</h2>
       <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
         {Object.entries(stats).map(([key, value]) => (
-          <div key={key} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+          <div key={key} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
             <h3 className="text-[#00d4ff] text-xs capitalize">{key.replace(/_/g, ' ')}</h3>
             <p className="text-2xl font-bold mt-1">
               {typeof value === 'number' ? value.toLocaleString() : String(value)}
@@ -341,7 +341,7 @@ export default function EngineNodeEditorPanel() {
 
   const renderGraphsTab = () => (
     <div className="space-y-4">
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Graph</h2>
         <div className="grid grid-cols-1 gap-3">
           <div>
@@ -374,7 +374,7 @@ export default function EngineNodeEditorPanel() {
         </button>
       </div>
 
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-lg font-bold text-[#00d4ff]">Graphs ({graphs.length})</h2>
           <button
@@ -390,7 +390,7 @@ export default function EngineNodeEditorPanel() {
               <div key={g.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
                 <div className="flex items-center justify-between">
                   <span className="text-white text-sm font-medium">{g.name}</span>
-                  <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded border border-[#2a2a4a]">
+                  <span className="text-xs bg-[#0d0d0d] text-[#00d4ff] px-2 py-0.5 rounded border border-[#2a2a4a]">
                     {g.node_count ?? 0} nodes
                   </span>
                 </div>
@@ -415,7 +415,7 @@ export default function EngineNodeEditorPanel() {
 
   const renderCreateNodeTab = () => (
     <div className="space-y-4">
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Node</h2>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
@@ -509,7 +509,7 @@ export default function EngineNodeEditorPanel() {
 
   const renderConnectTab = () => (
     <div className="space-y-4">
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Connect Nodes</h2>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
@@ -581,7 +581,7 @@ export default function EngineNodeEditorPanel() {
 
   const renderExecuteTab = () => (
     <div className="space-y-4">
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Execute Graph</h2>
         <div className="grid grid-cols-1 gap-3">
           <div>
@@ -618,7 +618,7 @@ export default function EngineNodeEditorPanel() {
       </div>
 
       {executionResult && (
-        <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+        <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
           <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Execution Result</h2>
           <div className="grid grid-cols-2 gap-3 mb-3">
             <div className="bg-[#1a1a2e] p-3 rounded border border-[#2a2a4a]">
@@ -663,7 +663,7 @@ export default function EngineNodeEditorPanel() {
 
   const renderTemplatesTab = () => (
     <div className="space-y-4">
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Browse Templates</h2>
         <div className="flex gap-3 items-end mb-4">
           <div className="flex-1">
@@ -698,7 +698,7 @@ export default function EngineNodeEditorPanel() {
             </button>
           </div>
           {templates.map((t, i) => (
-            <div key={t.id || i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div key={t.id || i} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <span className="text-white text-sm font-medium">{t.name}</span>
@@ -725,7 +725,7 @@ export default function EngineNodeEditorPanel() {
           ))}
         </div>
       ) : (
-        <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+        <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
           <div className="text-[#999] text-xs">
             {templateCategory ? 'No templates found for this category.' : 'Enter a category to load templates.'}
           </div>
@@ -744,7 +744,7 @@ export default function EngineNodeEditorPanel() {
             className={`px-4 py-2 rounded text-sm font-medium ${
               activeTab === t.id
                 ? 'bg-[#00d4ff] text-black'
-                : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'
+                : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'
             }`}
           >
             {t.label}
@@ -752,7 +752,7 @@ export default function EngineNodeEditorPanel() {
         ))}
       </div>
       {message && (
-        <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">
+        <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">
           {message}
         </div>
       )}

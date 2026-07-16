@@ -307,7 +307,7 @@ export default function EngineInputPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -320,7 +320,7 @@ export default function EngineInputPanel() {
   };
 
   const cardStyle: React.CSSProperties = {
-    padding: 14, backgroundColor: '#16213e', borderRadius: 6,
+    padding: 14, backgroundColor: '#0f0f0f', borderRadius: 6,
     border: '1px solid #2a2a3e',
   };
 
@@ -330,7 +330,7 @@ export default function EngineInputPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -341,7 +341,7 @@ export default function EngineInputPanel() {
 
   const disabledBtnStyle = (color: string): React.CSSProperties => ({
     ...primaryBtnStyle(color),
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a1a',
     color: '#555',
     cursor: 'not-allowed',
   });
@@ -349,7 +349,7 @@ export default function EngineInputPanel() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'monospace', fontSize: 13, padding: '20px',
     }}>
       {/* Header */}
@@ -377,7 +377,7 @@ export default function EngineInputPanel() {
           padding: '8px 16px', fontSize: 12,
           backgroundColor: message.type === 'success' ? '#1a3a1a' : message.type === 'error' ? '#3a1a1a' : '#1a2a3a',
           borderBottom: `1px solid ${message.type === 'success' ? '#2d5a2d' : message.type === 'error' ? '#5a2d2d' : '#2a3a4a'}`,
-          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#00d4ff',
+          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#f97316',
         }}>
           {message.text}
         </div>
@@ -391,10 +391,10 @@ export default function EngineInputPanel() {
             onClick={() => setActiveTab(tab.key)}
             style={{
               padding: '8px 12px', fontSize: 11, fontWeight: 600,
-              backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
+              backgroundColor: activeTab === tab.key ? '#0f0f0f' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #00d4ff' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #f97316' : '2px solid transparent',
               cursor: 'pointer',
             }}
           >
@@ -415,28 +415,28 @@ export default function EngineInputPanel() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Total Events</span>
-                  <span style={{ fontSize: 18, fontWeight: 700, color: '#00d4ff' }}>{stats?.total_events ?? 0}</span>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: '#f97316' }}>{stats?.total_events ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Total Actions</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#6bcb77' }}>{stats?.total_actions ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Active Actions</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#fdcb6e' }}>{stats?.active_actions ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Subscriptions</span>
@@ -451,7 +451,7 @@ export default function EngineInputPanel() {
         {activeTab === 'process-event' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={cardStyle}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#f97316' }}>
                 {'\uD83D\uDCE4'} Process Input Event
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -487,12 +487,12 @@ export default function EngineInputPanel() {
                 </div>
               </div>
               <button onClick={handleProcessEvent} disabled={eventLoading}
-                style={eventLoading ? disabledBtnStyle('#00d4ff') : primaryBtnStyle('#00d4ff')}>
+                style={eventLoading ? disabledBtnStyle('#f97316') : primaryBtnStyle('#f97316')}>
                 {eventLoading ? 'Processing...' : '\uD83D\uDCE4 Process Event'}
               </button>
               {processedEvent && (
-                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10, marginTop: 10, fontSize: 10, color: '#ccc' }}>
-                  <span>ID: <span style={{ color: '#00d4ff' }}>{processedEvent.event_id}</span></span>
+                <div style={{ borderLeft: '3px solid #f97316', paddingLeft: 10, marginTop: 10, fontSize: 10, color: '#ccc' }}>
+                  <span>ID: <span style={{ color: '#f97316' }}>{processedEvent.event_id}</span></span>
                   <span style={{ marginLeft: 12 }}>Type: <span style={{ color: '#6bcb77' }}>{processedEvent.event_type}</span></span>
                   <span style={{ marginLeft: 12 }}>Device: <span style={{ color: '#fdcb6e' }}>{processedEvent.device_type}</span></span>
                 </div>
@@ -515,28 +515,28 @@ export default function EngineInputPanel() {
               {inputState && (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                   {/* Mouse */}
-                  <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                  <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4 }}>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Mouse</div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, fontSize: 10, color: '#ccc' }}>
-                      <span>Pos: <span style={{ color: '#00d4ff' }}>({inputState.mouse_x}, {inputState.mouse_y})</span></span>
+                      <span>Pos: <span style={{ color: '#f97316' }}>({inputState.mouse_x}, {inputState.mouse_y})</span></span>
                       <span>Delta: <span style={{ color: '#fdcb6e' }}>({inputState.mouse_dx}, {inputState.mouse_dy})</span></span>
                       <span>Wheel: <span style={{ color: '#a29bfe' }}>{inputState.mouse_wheel}</span></span>
                     </div>
                     {inputState.mouse_buttons.length > 0 && (
                       <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
                         {inputState.mouse_buttons.map(b => (
-                          <span key={b} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#ff6b6b' }}>Btn {b}</span>
+                          <span key={b} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#ff6b6b' }}>Btn {b}</span>
                         ))}
                       </div>
                     )}
                   </div>
                   {/* Keys */}
-                  <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                  <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4 }}>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Keys Pressed</div>
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                       {inputState.keys_pressed.length > 0
                         ? inputState.keys_pressed.map(k => (
-                            <span key={k} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#00d4ff' }}>{k}</span>
+                            <span key={k} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#f97316' }}>{k}</span>
                           ))
                         : <span style={{ fontSize: 10, color: '#666' }}>No keys pressed</span>
                       }
@@ -544,7 +544,7 @@ export default function EngineInputPanel() {
                   </div>
                   {/* Touch */}
                   {inputState.touch_points.length > 0 && (
-                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4 }}>
                       <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Touch Points</div>
                       {inputState.touch_points.map((tp, i) => (
                         <span key={i} style={{ fontSize: 9, color: '#6bcb77', marginRight: 8 }}>({tp.x}, {tp.y})</span>
@@ -553,7 +553,7 @@ export default function EngineInputPanel() {
                   )}
                   {/* Gamepad */}
                   {(inputState.gamepad_buttons.length > 0 || inputState.gamepad_axes.length > 0) && (
-                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4 }}>
                       <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Gamepad</div>
                       <div style={{ fontSize: 10, color: '#ccc' }}>
                         Buttons: {inputState.gamepad_buttons.join(', ') || 'none'} | Axes: {inputState.gamepad_axes.map(a => a.toFixed(2)).join(', ') || 'none'}
@@ -571,7 +571,7 @@ export default function EngineInputPanel() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {/* Register Action */}
             <div style={cardStyle}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#f97316' }}>
                 {'\uD83C\uDFAF'} Register Action
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -599,17 +599,17 @@ export default function EngineInputPanel() {
                 </div>
               </div>
               <button onClick={handleRegisterAction} disabled={actionLoading}
-                style={actionLoading ? disabledBtnStyle('#00d4ff') : primaryBtnStyle('#00d4ff')}>
+                style={actionLoading ? disabledBtnStyle('#f97316') : primaryBtnStyle('#f97316')}>
                 {actionLoading ? 'Registering...' : '\uD83C\uDFAF Register Action'}
               </button>
               {createdAction && (
-                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10, marginTop: 10, fontSize: 10, color: '#ccc' }}>
-                  <span>ID: <span style={{ color: '#00d4ff' }}>{createdAction.action_id}</span></span>
+                <div style={{ borderLeft: '3px solid #f97316', paddingLeft: 10, marginTop: 10, fontSize: 10, color: '#ccc' }}>
+                  <span>ID: <span style={{ color: '#f97316' }}>{createdAction.action_id}</span></span>
                   <span style={{ marginLeft: 12 }}>Trigger: <span style={{ color: '#fdcb6e' }}>{createdAction.trigger_type}</span></span>
                   {createdAction.bindings.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 4 }}>
                       {createdAction.bindings.map(b => (
-                        <span key={b} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#6bcb77' }}>{b}</span>
+                        <span key={b} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#6bcb77' }}>{b}</span>
                       ))}
                     </div>
                   )}
@@ -649,17 +649,17 @@ export default function EngineInputPanel() {
         {activeTab === 'mouse' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={cardStyle}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#f97316' }}>
                 {'\uD83D\uDDB1\uFE0F'} Mouse Position
               </div>
               <button onClick={handleFetchMousePosition} disabled={mousePosLoading}
-                style={{ ...primaryBtnStyle('#00d4ff'), marginBottom: 10 }}>
+                style={{ ...primaryBtnStyle('#f97316'), marginBottom: 10 }}>
                 {mousePosLoading ? 'Loading...' : '\uD83D\uDD0D Get Position'}
               </button>
               {mousePosition && (
-                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10 }}>
+                <div style={{ borderLeft: '3px solid #f97316', paddingLeft: 10 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 10, color: '#ccc' }}>
-                    <span>X: <span style={{ color: '#00d4ff', fontWeight: 600 }}>{mousePosition[0]}</span></span>
+                    <span>X: <span style={{ color: '#f97316', fontWeight: 600 }}>{mousePosition[0]}</span></span>
                     <span>Y: <span style={{ color: '#6bcb77', fontWeight: 600 }}>{mousePosition[1]}</span></span>
                   </div>
                 </div>
@@ -673,7 +673,7 @@ export default function EngineInputPanel() {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             {/* Is Key Pressed */}
             <div style={cardStyle}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#f97316' }}>
                 {'\u2328\uFE0F'} Check Key Pressed
               </div>
               <div style={{ display: 'flex', gap: 8, marginBottom: 10, alignItems: 'flex-end' }}>
@@ -683,12 +683,12 @@ export default function EngineInputPanel() {
                     onChange={e => setKeyCodeForm(prev => ({ ...prev, key_code: e.target.value }))} />
                 </div>
                 <button onClick={handleIsKeyPressed} disabled={keyPressedLoading}
-                  style={keyPressedLoading ? disabledBtnStyle('#00d4ff') : { ...primaryBtnStyle('#00d4ff'), whiteSpace: 'nowrap' }}>
+                  style={keyPressedLoading ? disabledBtnStyle('#f97316') : { ...primaryBtnStyle('#f97316'), whiteSpace: 'nowrap' }}>
                   {keyPressedLoading ? 'Checking...' : '\uD83D\uDD0D Check'}
                 </button>
               </div>
               {keyPressed !== null && (
-                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10, fontSize: 10 }}>
+                <div style={{ borderLeft: '3px solid #f97316', paddingLeft: 10, fontSize: 10 }}>
                   <span style={{ color: '#888' }}>Key "{keyCodeForm.key_code}": </span>
                   <span style={{ color: keyPressed ? '#6bcb77' : '#ff6b6b', fontWeight: 600 }}>
                     {keyPressed ? 'PRESSED' : 'NOT PRESSED'}
@@ -710,11 +710,11 @@ export default function EngineInputPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {eventHistory.map((ev, i) => (
                     <div key={ev.event_id || i} style={{
-                      padding: 6, backgroundColor: '#1a1a2e', borderRadius: 4,
+                      padding: 6, backgroundColor: '#1a1a1a', borderRadius: 4,
                       border: '1px solid #2a2a3e', display: 'flex', gap: 12, fontSize: 10, color: '#ccc',
                     }}>
                       <span style={{ color: '#888' }}>{ev.event_id}</span>
-                      <span style={{ color: '#00d4ff' }}>{ev.event_type}</span>
+                      <span style={{ color: '#f97316' }}>{ev.event_type}</span>
                       <span style={{ color: '#fdcb6e' }}>{ev.device_type}</span>
                     </div>
                   ))}
@@ -729,7 +729,7 @@ export default function EngineInputPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

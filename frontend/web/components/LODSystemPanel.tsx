@@ -266,7 +266,7 @@ const LODSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={groupName} onChange={e => setGroupName(e.target.value)} placeholder="e.g. Oak Tree" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -274,7 +274,7 @@ const LODSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Entity ID</div>
                   <input value={groupEntityId} onChange={e => setGroupEntityId(e.target.value)} placeholder="e.g. tree_oak" style={{
                     padding: '6px 10px', fontSize: 11, width: 130,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -296,7 +296,7 @@ const LODSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Group ID</div>
                   <input value={levelGroupId} onChange={e => setLevelGroupId(e.target.value)} placeholder="Select group" style={{
                     padding: '6px 10px', fontSize: 11, width: 100,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -304,7 +304,7 @@ const LODSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Level</div>
                   <input value={levelIndex} onChange={e => setLevelIndex(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 50,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -312,7 +312,7 @@ const LODSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Min Dist</div>
                   <input value={levelMinDist} onChange={e => setLevelMinDist(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 65,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -320,7 +320,7 @@ const LODSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Max Dist</div>
                   <input value={levelMaxDist} onChange={e => setLevelMaxDist(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 65,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -370,7 +370,7 @@ const LODSystemPanel: React.FC = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{
                         fontSize: 10, padding: '2px 8px', borderRadius: 3,
-                        backgroundColor: '#141428', color: '#74b9ff', fontWeight: 600,
+                        backgroundColor: '#111', color: '#74b9ff', fontWeight: 600,
                       }}>LOD {level.level}</span>
                       <span style={{ fontSize: 11, color: '#ccc' }}>{group?.name || level.group_id}</span>
                     </div>
@@ -398,7 +398,7 @@ const LODSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Entity ID</div>
                   <input value={evalEntityId} onChange={e => setEvalEntityId(e.target.value)} placeholder="e.g. tree_oak" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -406,7 +406,7 @@ const LODSystemPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Camera Distance</div>
                   <input value={evalCamDist} onChange={e => setEvalCamDist(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -436,7 +436,7 @@ const LODSystemPanel: React.FC = () => {
                   </div>
                 </div>
                 <div style={{
-                  padding: 12, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center',
+                  padding: 12, backgroundColor: '#111', borderRadius: 4, textAlign: 'center',
                 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Active LOD Level</div>
                   <div style={{ fontSize: 28, fontWeight: 700, color: '#6bcb77' }}>
@@ -454,7 +454,7 @@ const LODSystemPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

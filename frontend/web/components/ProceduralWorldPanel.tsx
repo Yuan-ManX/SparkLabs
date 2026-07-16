@@ -285,27 +285,27 @@ const ProceduralWorldPanel: React.FC = () => {
                   <span style={{ fontSize: 9, color: '#666' }}>{world.created_at}</span>
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(100px, 1fr))', gap: 6, marginBottom: 8 }}>
-                  <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Size</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#74b9ff' }}>{world.width}x{world.height}</div>
                   </div>
-                  <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Land</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#6bcb77' }}>{world.land_percentage}%</div>
                   </div>
-                  <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Tiles</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#a29bfe' }}>{(world.tile_count / 1000).toFixed(1)}k</div>
                   </div>
-                  <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Rivers</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#74b9ff' }}>{world.river_count}</div>
                   </div>
-                  <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Structures</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#fdcb6e' }}>{world.structure_count}</div>
                   </div>
-                  <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Dungeons</div>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#e17055' }}>{world.dungeon_count}</div>
                   </div>
@@ -332,7 +332,7 @@ const ProceduralWorldPanel: React.FC = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>World Name</div>
-                  <input value={worldName} onChange={e => setWorldName(e.target.value)} placeholder="e.g. Eldoria" style={{ padding: '8px 12px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={worldName} onChange={e => setWorldName(e.target.value)} placeholder="e.g. Eldoria" style={{ padding: '8px 12px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
                   <div style={{ flex: 1 }}>
@@ -341,7 +341,7 @@ const ProceduralWorldPanel: React.FC = () => {
                   </div>
                   <div style={{ flex: 1 }}>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Seed</div>
-                    <input type="number" value={seed} onChange={e => setSeed(Number(e.target.value))} style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input type="number" value={seed} onChange={e => setSeed(Number(e.target.value))} style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                   </div>
                 </div>
                 <button onClick={handleGenerateWorld} disabled={loadingWorld} style={{ padding: '10px', backgroundColor: loadingWorld ? '#1a2a3a' : '#1a3a2a', color: loadingWorld ? '#666' : '#6bcb77', border: '1px solid #2d5a2d', borderRadius: 4, cursor: loadingWorld ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 700 }}>
@@ -355,7 +355,7 @@ const ProceduralWorldPanel: React.FC = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Dungeon Name</div>
-                  <input value={dungeonName} onChange={e => setDungeonName(e.target.value)} placeholder="e.g. Crypt of Shadows" style={{ padding: '8px 12px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={dungeonName} onChange={e => setDungeonName(e.target.value)} placeholder="e.g. Crypt of Shadows" style={{ padding: '8px 12px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 10 }}>
                   <div style={{ flex: 1 }}>
@@ -387,11 +387,11 @@ const ProceduralWorldPanel: React.FC = () => {
                   <span style={{ fontSize: 9, color: '#666' }}>{dungeon.created_at}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 10, marginBottom: 6 }}>
-                  <div style={{ padding: '4px 10px', backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: '4px 10px', backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 9, color: '#666' }}>Rooms</div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#fdcb6e' }}>{dungeon.total_rooms}</div>
                   </div>
-                  <div style={{ padding: '4px 10px', backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: '4px 10px', backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 9, color: '#666' }}>Corridors</div>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#a29bfe' }}>{dungeon.total_corridors}</div>
                   </div>
@@ -399,7 +399,7 @@ const ProceduralWorldPanel: React.FC = () => {
                 {dungeon.themes.length > 0 && (
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                     {dungeon.themes.map(t => (
-                      <span key={t} style={{ fontSize: 8, padding: '2px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#e17055', fontWeight: 600 }}>#{t}</span>
+                      <span key={t} style={{ fontSize: 8, padding: '2px 6px', borderRadius: 3, backgroundColor: '#111', color: '#e17055', fontWeight: 600 }}>#{t}</span>
                     ))}
                   </div>
                 )}
@@ -420,7 +420,7 @@ const ProceduralWorldPanel: React.FC = () => {
                   <span style={{ fontSize: 10, color: '#888' }}>{biome.coverage_pct}% coverage</span>
                 </div>
                 <div style={{ fontSize: 10, color: '#888' }}>{biome.description}</div>
-                <div style={{ height: 3, backgroundColor: '#141428', borderRadius: 2, marginTop: 6 }}>
+                <div style={{ height: 3, backgroundColor: '#111', borderRadius: 2, marginTop: 6 }}>
                   <div style={{ height: '100%', width: `${biome.coverage_pct}%`, backgroundColor: biome.color, borderRadius: 2 }} />
                 </div>
               </div>
@@ -429,7 +429,7 @@ const ProceduralWorldPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83C\uDF0D'} {worlds.length} worlds · {dungeons.length} dungeons</span>
         <span>{stats ? `${stats.total_tiles?.toLocaleString() || 0} tiles total` : 'Connected'}</span>
       </div>

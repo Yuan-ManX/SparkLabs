@@ -201,10 +201,10 @@ const ProceduralDungeonPanel: React.FC = () => {
   };
 
   const styles: Record<string, React.CSSProperties> = {
-    container: { background: '#1a1a2e', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
+    container: { background: '#1a1a1a', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
     header: { fontSize: 18, fontWeight: 'bold', marginBottom: 16, color: '#c4a43e' },
     tabs: { display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' },
-    tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a4a', color: '#aab' },
+    tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a2a', color: '#aab' },
     tabActive: { background: '#3a3a6a', color: '#c4a43e', fontWeight: 'bold' },
     card: { background: '#202040', borderRadius: 8, padding: 16, marginBottom: 12 },
     cardTitle: { fontSize: 14, fontWeight: 'bold', color: '#daa520', marginBottom: 8 },
@@ -340,14 +340,14 @@ const ProceduralDungeonPanel: React.FC = () => {
           <div key={treas.id} style={{ ...styles.card, borderLeft: '4px solid #ffd700' }}>
             <div style={styles.cardTitle}>{treas.name}</div>
             <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
-              <span style={{ ...styles.badge, background: treas.category === 'legendary' ? '#4a2a1a' : treas.category === 'rare' ? '#3a3a1a' : treas.category === 'key_item' ? '#2a4a4a' : '#2a2a4a' }}>
+              <span style={{ ...styles.badge, background: treas.category === 'legendary' ? '#4a2a1a' : treas.category === 'rare' ? '#3a3a1a' : treas.category === 'key_item' ? '#2a4a4a' : '#2a2a2a' }}>
                 {treas.category}
               </span>
               {treas.is_key_item && <span style={{ ...styles.badge, background: '#2a4a4a' }}>🔑 KEY</span>}
             </div>
             <div>
               <div style={styles.label}>Value</div>
-              <div style={{ background: '#2a2a4a', borderRadius: 4, height: 6, width: 120 }}>
+              <div style={{ background: '#2a2a2a', borderRadius: 4, height: 6, width: 120 }}>
                 <div style={{ background: 'linear-gradient(90deg, #c4a43e, #ffd700)', borderRadius: 4, height: 6, width: `${treas.value_score * 100}%` }} />
               </div>
               <span style={{ fontSize: 11, color: '#889' }}>{(treas.value_score * 100).toFixed(0)}%</span>
@@ -373,7 +373,7 @@ const ProceduralDungeonPanel: React.FC = () => {
               <div>Lighting: {room.lighting}</div>
               <div style={{ marginTop: 4 }}>
                 <div style={styles.label}>Difficulty</div>
-                <div style={{ background: '#2a2a4a', borderRadius: 4, height: 4 }}>
+                <div style={{ background: '#2a2a2a', borderRadius: 4, height: 4 }}>
                   <div style={{ background: `hsl(${120 - room.difficulty_level * 120}, 70%, 50%)`, borderRadius: 4, height: 4, width: `${room.difficulty_level * 100}%` }} />
                 </div>
               </div>

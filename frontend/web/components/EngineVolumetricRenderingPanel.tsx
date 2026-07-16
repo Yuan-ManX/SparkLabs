@@ -295,7 +295,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
           <span style={{ color: '#aaa' }}>{label}</span>
           <span style={{ color: '#ccc', fontWeight: 600 }}>{unit === '%' ? `${clampedPct.toFixed(1)}${unit}` : `${value}${unit}`}</span>
         </div>
-        <div style={{ height: 6, backgroundColor: '#141428', borderRadius: 3 }}>
+        <div style={{ height: 6, backgroundColor: '#111', borderRadius: 3 }}>
           <div style={{
             height: '100%', width: `${clampedPct}%`,
             backgroundColor: barColor, borderRadius: 3,
@@ -309,7 +309,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 8px', fontSize: 12,
     backgroundColor: '#1a1a2e', color: '#e0e0e0',
-    border: '1px solid #0f3460', borderRadius: 4,
+    border: '1px solid #1e1e1e', borderRadius: 4,
     boxSizing: 'border-box',
   };
 
@@ -366,7 +366,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
             backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
             color: activeTab === tab.key ? '#e0e0e0' : '#888',
             border: 'none',
-            borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent',
+            borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent',
             cursor: 'pointer',
           }}>
             {tab.icon} {tab.label}
@@ -381,7 +381,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#74b9ff' }}>
                 Create Fog Configuration
@@ -431,7 +431,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleCreateFog} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#74b9ff',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#74b9ff',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -445,7 +445,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
             {fogConfigs.map(cfg => (
               <div key={cfg.id} style={{
                 padding: 12, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <span style={{ fontWeight: 600, fontSize: 13 }}>{cfg.name}</span>
@@ -479,7 +479,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#fdcb6e' }}>
                 Create Volumetric Light Configuration
@@ -530,7 +530,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleCreateLight} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#fdcb6e',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#fdcb6e',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -544,7 +544,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
             {lightConfigs.map(cfg => (
               <div key={cfg.id} style={{
                 padding: 12, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
                 borderLeft: `3px solid rgb(${cfg.color[0]},${cfg.color[1]},${cfg.color[2]})`,
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
@@ -582,7 +582,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#a29bfe' }}>
                 Create Cloud Configuration
@@ -627,7 +627,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleCreateCloud} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#a29bfe',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#a29bfe',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -641,7 +641,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
             {cloudConfigs.map(cfg => (
               <div key={cfg.id} style={{
                 padding: 12, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 6 }}>{cfg.name}</div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8 }}>
@@ -676,7 +676,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#6bcb77' }}>
                 Ray March Configuration
@@ -720,7 +720,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleRayMarch} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#6bcb77',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#6bcb77',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -731,7 +731,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
             {rayMarchResult && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Ray March Results</div>
                 {renderProgressBar('Transmittance', rayMarchResult.transmittance)}
@@ -753,7 +753,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12, color: '#aaa' }}>Volumetric Rendering Status</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
@@ -800,7 +800,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
         {activeTab === 'status' && !status && (
           <div style={{
             textAlign: 'center', padding: 40, color: '#555',
-            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460',
+            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e',
           }}>
             <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>{'\u2699\uFE0F'}</span>
             Loading system status...
@@ -811,7 +811,7 @@ const EngineVolumetricRenderingPanel: React.FC = () => {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -322,7 +322,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={matName} onChange={e => setMatName(e.target.value)} placeholder="e.g. Concrete" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -330,7 +330,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Density</div>
                   <input value={matDensity} onChange={e => setMatDensity(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -338,7 +338,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Restitution</div>
                   <input value={matRestitution} onChange={e => setMatRestitution(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -346,7 +346,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Friction</div>
                   <input value={matFriction} onChange={e => setMatFriction(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -393,7 +393,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Material A</div>
                   <input value={interA} onChange={e => setInterA(e.target.value)} placeholder="e.g. Metal" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -401,7 +401,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Material B</div>
                   <input value={interB} onChange={e => setInterB(e.target.value)} placeholder="e.g. Rubber" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -424,7 +424,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Normal Vector</div>
                     <input value={contactNormal} onChange={e => setContactNormal(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -487,7 +487,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={templateName} onChange={e => setTemplateName(e.target.value)} placeholder="e.g. Bouncy" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -495,7 +495,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Density</div>
                   <input value={templateDensity} onChange={e => setTemplateDensity(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -503,7 +503,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Restitution</div>
                   <input value={templateRestitution} onChange={e => setTemplateRestitution(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -511,7 +511,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Friction</div>
                   <input value={templateFriction} onChange={e => setTemplateFriction(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -533,7 +533,7 @@ const PhysicsMaterialPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target Material</div>
                   <input value={applyTarget} onChange={e => setApplyTarget(e.target.value)} placeholder="e.g. Wood" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -569,7 +569,7 @@ const PhysicsMaterialPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

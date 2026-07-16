@@ -335,7 +335,7 @@ const GameCreatorPanel: React.FC = () => {
   const getPhaseStatusColor = (status: string) => {
     switch (status) {
       case 'completed': return 'bg-[#6bcb77]';
-      case 'in_progress': return 'bg-[#00d4ff]';
+      case 'in_progress': return 'bg-[#f97316]';
       case 'error': return 'bg-[#e94560]';
       default: return 'bg-[#444]';
     }
@@ -344,7 +344,7 @@ const GameCreatorPanel: React.FC = () => {
   const getPhaseStatusText = (status: string) => {
     switch (status) {
       case 'completed': return 'text-[#6bcb77]';
-      case 'in_progress': return 'text-[#00d4ff]';
+      case 'in_progress': return 'text-[#f97316]';
       case 'error': return 'text-[#e94560]';
       default: return 'text-[#666]';
     }
@@ -363,9 +363,9 @@ const GameCreatorPanel: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-[#1a1a2e] text-[#e0e0e0] font-sans text-[13px]">
+    <div className="flex flex-col h-full bg-[#1a1a1a] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Gamepad2 className="w-[18px] h-[18px] text-[#e94560]" />
           <span className="font-bold text-[15px]">Game Creator</span>
@@ -378,23 +378,23 @@ const GameCreatorPanel: React.FC = () => {
       {/* Message */}
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#f97316]/30 text-[#f97316]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#0f0f0f]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[#0f3460]/50">
+      <div className="flex border-b border-[#1e1e1e]/50">
         {tabItems.map(tab => (
           <button
             key={tab.key}
             onClick={() => setActiveTab(tab.key)}
             className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-[12px] font-semibold transition-colors ${
               activeTab === tab.key
-                ? 'bg-[#16213e] text-[#e94560] border-b-2 border-[#e94560]'
+                ? 'bg-[#0f0f0f] text-[#e94560] border-b-2 border-[#e94560]'
                 : 'text-[#888] hover:text-[#aaa] border-b-2 border-transparent'
             }`}
           >
@@ -410,7 +410,7 @@ const GameCreatorPanel: React.FC = () => {
         {activeTab === 'create' && (
           <div className="flex flex-col gap-3">
             {/* Game name input */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#0f0f0f] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Edit3 className="w-3.5 h-3.5 text-[#e94560]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Game Name</span>
@@ -420,12 +420,12 @@ const GameCreatorPanel: React.FC = () => {
                 value={gameName}
                 onChange={e => setGameName(e.target.value)}
                 placeholder="My Awesome Game"
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#e94560]/50 placeholder-[#555]"
+                className="w-full bg-[#1a1a1a] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#e94560]/50 placeholder-[#555]"
               />
             </div>
 
             {/* Game description */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#0f0f0f] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <FileText className="w-3.5 h-3.5 text-[#e94560]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Describe Your Game</span>
@@ -435,12 +435,12 @@ const GameCreatorPanel: React.FC = () => {
                 onChange={e => setDescription(e.target.value)}
                 placeholder="Describe the game you want to create. Include genre, mechanics, setting, and any special features..."
                 rows={5}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#e94560]/50 resize-none placeholder-[#555]"
+                className="w-full bg-[#1a1a1a] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#e94560]/50 resize-none placeholder-[#555]"
               />
             </div>
 
             {/* Visual style selector */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#0f0f0f] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Palette className="w-3.5 h-3.5 text-[#e94560]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Visual Style</span>
@@ -453,7 +453,7 @@ const GameCreatorPanel: React.FC = () => {
                     className={`flex flex-col items-center gap-1 p-2 rounded-lg border transition-all text-center ${
                       selectedStyle === style.id
                         ? 'bg-[#e94560]/10 border-[#e94560]/50 text-[#e94560]'
-                        : 'bg-[#1a1a2e] border-[#0f3460]/30 text-[#888] hover:border-[#0f3460]/60'
+                        : 'bg-[#1a1a1a] border-[#1e1e1e]/30 text-[#888] hover:border-[#1e1e1e]/60'
                     }`}
                   >
                     <span className="text-lg">{style.icon}</span>
@@ -468,7 +468,7 @@ const GameCreatorPanel: React.FC = () => {
               <button
                 onClick={handleParse}
                 disabled={isParsing || !description.trim()}
-                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#00d4ff]/20 border border-[#00d4ff]/50 text-[#00d4ff] rounded-lg text-[12px] font-semibold hover:bg-[#00d4ff]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex-1 flex items-center justify-center gap-2 py-2.5 bg-[#f97316]/20 border border-[#f97316]/50 text-[#f97316] rounded-lg text-[12px] font-semibold hover:bg-[#f97316]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isParsing ? <Loader2 className="w-4 h-4 animate-spin" /> : <Search className="w-4 h-4" />}
                 Parse Description
@@ -487,20 +487,20 @@ const GameCreatorPanel: React.FC = () => {
             {parseResult && (
               <div className="flex flex-col gap-2">
                 {/* Genre detection */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+                <div className="bg-[#0f0f0f] rounded-lg border border-[#1e1e1e]/50 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Target className="w-3.5 h-3.5 text-[#fdcb6e]" />
                     <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Detected Genres</span>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {parseResult.genres.map((g, i) => (
-                      <div key={i} className="bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#0f3460]/30">
+                      <div key={i} className="bg-[#1a1a1a] rounded-md px-3 py-1.5 border border-[#1e1e1e]/30">
                         <span className="text-[12px] font-semibold text-[#fdcb6e]">{g.genre}</span>
                         <span className="text-[10px] text-[#666] ml-2">{(g.confidence * 100).toFixed(0)}%</span>
                         {g.sub_genres.length > 0 && (
                           <div className="flex gap-1 mt-1">
                             {g.sub_genres.map(sg => (
-                              <span key={sg} className="text-[9px] px-1.5 py-0.5 bg-[#0f3460]/30 text-[#00d4ff] rounded">{sg}</span>
+                              <span key={sg} className="text-[9px] px-1.5 py-0.5 bg-[#1e1e1e]/30 text-[#f97316] rounded">{sg}</span>
                             ))}
                           </div>
                         )}
@@ -510,14 +510,14 @@ const GameCreatorPanel: React.FC = () => {
                 </div>
 
                 {/* Mechanics extraction */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+                <div className="bg-[#0f0f0f] rounded-lg border border-[#1e1e1e]/50 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Box className="w-3.5 h-3.5 text-[#a29bfe]" />
                     <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Extracted Mechanics</span>
                   </div>
                   <div className="flex flex-col gap-1.5">
                     {parseResult.mechanics.map((m, i) => (
-                      <div key={i} className="flex items-center justify-between bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#0f3460]/20">
+                      <div key={i} className="flex items-center justify-between bg-[#1a1a1a] rounded-md px-3 py-1.5 border border-[#1e1e1e]/20">
                         <div>
                           <span className="text-[12px] text-[#ccc]">{m.name}</span>
                           <span className="text-[9px] text-[#666] ml-2">({m.type})</span>
@@ -538,7 +538,7 @@ const GameCreatorPanel: React.FC = () => {
 
             {/* Creation pipeline progress */}
             {(isCreating || currentPhaseIndex >= 0) && (
-              <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+              <div className="bg-[#0f0f0f] rounded-lg border border-[#1e1e1e]/50 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Wand2 className="w-3.5 h-3.5 text-[#e94560]" />
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Creation Pipeline</span>
@@ -551,7 +551,7 @@ const GameCreatorPanel: React.FC = () => {
                         {phase.status === 'completed' ? (
                           <CheckCircle2 className="w-4 h-4 text-[#6bcb77]" />
                         ) : phase.status === 'in_progress' ? (
-                          <Loader2 className="w-4 h-4 text-[#00d4ff] animate-spin" />
+                          <Loader2 className="w-4 h-4 text-[#f97316] animate-spin" />
                         ) : phase.status === 'error' ? (
                           <XCircle className="w-4 h-4 text-[#e94560]" />
                         ) : (
@@ -567,7 +567,7 @@ const GameCreatorPanel: React.FC = () => {
                           <span className="text-[9px] text-[#666]">{phase.progress}%</span>
                         </div>
                         {/* Progress bar */}
-                        <div className="w-full h-1.5 bg-[#1a1a2e] rounded-full overflow-hidden">
+                        <div className="w-full h-1.5 bg-[#1a1a1a] rounded-full overflow-hidden">
                           <div
                             className={`h-full rounded-full transition-all duration-300 ${getPhaseStatusColor(phase.status)}`}
                             style={{ width: `${phase.progress}%` }}
@@ -594,7 +594,7 @@ const GameCreatorPanel: React.FC = () => {
                 value={projectSearch}
                 onChange={e => setProjectSearch(e.target.value)}
                 placeholder="Search projects..."
-                className="w-full bg-[#16213e] border border-[#0f3460]/50 rounded-lg pl-9 pr-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#e94560]/50 placeholder-[#555]"
+                className="w-full bg-[#0f0f0f] border border-[#1e1e1e]/50 rounded-lg pl-9 pr-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#e94560]/50 placeholder-[#555]"
               />
             </div>
 
@@ -604,10 +604,10 @@ const GameCreatorPanel: React.FC = () => {
                 <div
                   key={project.id}
                   onClick={() => { setSelectedProject(project); fetchProject(project.id); }}
-                  className={`bg-[#16213e] rounded-lg border p-3 cursor-pointer transition-all ${
+                  className={`bg-[#0f0f0f] rounded-lg border p-3 cursor-pointer transition-all ${
                     selectedProject?.id === project.id
                       ? 'border-[#e94560]/50 bg-[#e94560]/5'
-                      : 'border-[#0f3460]/30 hover:border-[#0f3460]/60'
+                      : 'border-[#1e1e1e]/30 hover:border-[#1e1e1e]/60'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -617,7 +617,7 @@ const GameCreatorPanel: React.FC = () => {
                     </div>
                     <span className={`text-[9px] font-semibold uppercase px-2 py-0.5 rounded ${
                       project.status === 'complete' ? 'bg-[#6bcb77]/10 text-[#6bcb77]' :
-                      project.status === 'building' ? 'bg-[#00d4ff]/10 text-[#00d4ff]' :
+                      project.status === 'building' ? 'bg-[#f97316]/10 text-[#f97316]' :
                       project.status === 'error' ? 'bg-[#e94560]/10 text-[#e94560]' :
                       'bg-[#444]/10 text-[#888]'
                     }`}>
@@ -632,7 +632,7 @@ const GameCreatorPanel: React.FC = () => {
                 </div>
               ))}
               {filteredProjects.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+                <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#0f0f0f] rounded-lg border border-[#1e1e1e]/30">
                   <FolderOpen className="w-10 h-10 mb-2 opacity-20" />
                   <span className="text-[12px]">No projects found</span>
                 </div>
@@ -641,18 +641,18 @@ const GameCreatorPanel: React.FC = () => {
 
             {/* Selected project detail */}
             {selectedProject && (
-              <div className="bg-[#16213e] rounded-lg border border-[#e94560]/30 p-3">
+              <div className="bg-[#0f0f0f] rounded-lg border border-[#e94560]/30 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Eye className="w-3.5 h-3.5 text-[#e94560]" />
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Project Detail</span>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 mb-3 text-[11px]">
-                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a1a] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[#666] mb-0.5">Name</div>
                     <div className="text-[#ccc]">{selectedProject.name}</div>
                   </div>
-                  <div className="bg-[#1a1a2e] rounded-md p-2 border border-[#0f3460]/20">
+                  <div className="bg-[#1a1a1a] rounded-md p-2 border border-[#1e1e1e]/20">
                     <div className="text-[#666] mb-0.5">Genre</div>
                     <div className="text-[#ccc]">{selectedProject.genre}</div>
                   </div>
@@ -674,7 +674,7 @@ const GameCreatorPanel: React.FC = () => {
                           {phase.status === 'completed' ? (
                             <CheckCircle2 className="w-3 h-3 text-[#6bcb77]" />
                           ) : phase.status === 'in_progress' ? (
-                            <Loader2 className="w-3 h-3 text-[#00d4ff] animate-spin" />
+                            <Loader2 className="w-3 h-3 text-[#f97316] animate-spin" />
                           ) : (
                             <Circle className="w-3 h-3 text-[#444]" />
                           )}
@@ -698,7 +698,7 @@ const GameCreatorPanel: React.FC = () => {
                   {blueprintExpanded['systems'] && (
                     <div className="pl-4 grid grid-cols-2 gap-1">
                       {['Player Controller', 'Game Mode', 'UI System', 'Audio System', 'Save System', 'Input System'].map(sys => (
-                        <div key={sys} className="text-[10px] text-[#888] bg-[#1a1a2e] rounded px-2 py-1 border border-[#0f3460]/20">
+                        <div key={sys} className="text-[10px] text-[#888] bg-[#1a1a1a] rounded px-2 py-1 border border-[#1e1e1e]/20">
                           {sys}
                         </div>
                       ))}
@@ -709,7 +709,7 @@ const GameCreatorPanel: React.FC = () => {
                 {/* Refinement input */}
                 <div>
                   <div className="flex items-center gap-2 mb-1">
-                    <Edit3 className="w-3 h-3 text-[#00d4ff]" />
+                    <Edit3 className="w-3 h-3 text-[#f97316]" />
                     <span className="text-[10px] text-[#aaa]">Refine Project</span>
                   </div>
                   <div className="flex gap-2">
@@ -718,12 +718,12 @@ const GameCreatorPanel: React.FC = () => {
                       value={refinementInput}
                       onChange={e => setRefinementInput(e.target.value)}
                       placeholder="Add more enemies, change color scheme..."
-                      className="flex-1 bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#00d4ff]/50 placeholder-[#555]"
+                      className="flex-1 bg-[#1a1a1a] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#f97316]/50 placeholder-[#555]"
                     />
                     <button
                       onClick={handleRefine}
                       disabled={!refinementInput.trim()}
-                      className="px-3 py-1.5 bg-[#00d4ff]/20 border border-[#00d4ff]/50 text-[#00d4ff] rounded-md text-[11px] font-semibold hover:bg-[#00d4ff]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="px-3 py-1.5 bg-[#f97316]/20 border border-[#f97316]/50 text-[#f97316] rounded-md text-[11px] font-semibold hover:bg-[#f97316]/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       Refine
                     </button>
@@ -740,7 +740,7 @@ const GameCreatorPanel: React.FC = () => {
             {templates.map(template => (
               <div
                 key={template.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3 hover:border-[#0f3460]/60 transition-all cursor-pointer"
+                className="bg-[#0f0f0f] rounded-lg border border-[#1e1e1e]/30 p-3 hover:border-[#1e1e1e]/60 transition-all cursor-pointer"
                 onClick={() => {
                   setDescription(template.description);
                   setGameName(template.name);
@@ -752,7 +752,7 @@ const GameCreatorPanel: React.FC = () => {
                     <Layout className="w-3.5 h-3.5 text-[#e94560]" />
                     <span className="text-[12px] font-semibold text-[#ccc]">{template.name}</span>
                   </div>
-                  <span className="text-[9px] font-semibold uppercase px-2 py-0.5 rounded bg-[#1a1a2e] text-[#e94560]">
+                  <span className="text-[9px] font-semibold uppercase px-2 py-0.5 rounded bg-[#1a1a1a] text-[#e94560]">
                     {template.genre}
                   </span>
                 </div>
@@ -764,7 +764,7 @@ const GameCreatorPanel: React.FC = () => {
               </div>
             ))}
             {templates.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#0f0f0f] rounded-lg border border-[#1e1e1e]/30">
                 <Layout className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No templates available</span>
               </div>
@@ -774,7 +774,7 @@ const GameCreatorPanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <Gamepad2 className="w-3 h-3" />
           {projects.length} projects · {templates.length} templates

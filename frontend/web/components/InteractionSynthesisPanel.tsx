@@ -228,16 +228,16 @@ const InteractionSynthesisPanel: React.FC = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Description</div>
-                  <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe the gameplay interaction you want to design..." rows={3} style={{ padding: '8px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none', resize: 'vertical' }} />
+                  <textarea value={description} onChange={e => setDescription(e.target.value)} placeholder="Describe the gameplay interaction you want to design..." rows={3} style={{ padding: '8px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none', resize: 'vertical' }} />
                 </div>
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                   <div>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Count</div>
-                    <input value={interactionCount} onChange={e => setInteractionCount(e.target.value)} type="number" min="1" max="20" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={interactionCount} onChange={e => setInteractionCount(e.target.value)} type="number" min="1" max="20" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                   </div>
                   <div>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Complexity</div>
-                    <select value={complexityTarget} onChange={e => setComplexityTarget(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                    <select value={complexityTarget} onChange={e => setComplexityTarget(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                       <option value="0.3">Low (0.3)</option>
                       <option value="0.5">Medium (0.5)</option>
                       <option value="0.7">High (0.7)</option>
@@ -248,12 +248,12 @@ const InteractionSynthesisPanel: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   {INTERACTION_DOMAINS.map(d => (
-                    <button key={d} onClick={() => toggleDomain(d)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: selectedDomains.includes(d) ? '#2d3a5a' : '#141428', color: selectedDomains.includes(d) ? '#74b9ff' : '#888', border: `1px solid ${selectedDomains.includes(d) ? '#3d4a6a' : '#333'}`, cursor: 'pointer' }}>{d}</button>
+                    <button key={d} onClick={() => toggleDomain(d)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: selectedDomains.includes(d) ? '#2d3a5a' : '#111', color: selectedDomains.includes(d) ? '#74b9ff' : '#888', border: `1px solid ${selectedDomains.includes(d) ? '#3d4a6a' : '#333'}`, cursor: 'pointer' }}>{d}</button>
                   ))}
                 </div>
               </div>
               {synthesizeResult && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#ccc' }}>{synthesizeResult.name}</div>
                   <div style={{ display: 'flex', gap: 8, marginTop: 4, fontSize: 10 }}>
                     <span style={{ color: '#a29bfe' }}>Interactions: {synthesizeResult.interaction_count}</span>
@@ -285,7 +285,7 @@ const InteractionSynthesisPanel: React.FC = () => {
               <div key={n.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #a29bfe' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{n.name}</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#fdcb6e' }}>{n.interaction_count} interactions</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#fdcb6e' }}>{n.interaction_count} interactions</span>
                 </div>
                 <div style={{ fontSize: 9, color: '#888', marginTop: 2 }}>
                   Density: {(n.density * 100).toFixed(0)}% · Cohesion: {(n.cohesion * 100).toFixed(0)}% · ID: {n.id}
@@ -302,26 +302,26 @@ const InteractionSynthesisPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 180 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Interaction ID</div>
-                  <input value={progressInteractionId} onChange={e => setProgressInteractionId(e.target.value)} placeholder="Paste an interaction ID..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={progressInteractionId} onChange={e => setProgressInteractionId(e.target.value)} placeholder="Paste an interaction ID..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scaling</div>
-                  <select value={scalingType} onChange={e => setScalingType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={scalingType} onChange={e => setScalingType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {SCALING_TYPES.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Initial</div>
-                  <input value={initialDiff} onChange={e => setInitialDiff(e.target.value)} type="number" step="0.1" min="0" max="1" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={initialDiff} onChange={e => setInitialDiff(e.target.value)} type="number" step="0.1" min="0" max="1" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Final</div>
-                  <input value={finalDiff} onChange={e => setFinalDiff(e.target.value)} type="number" step="0.1" min="0" max="1" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={finalDiff} onChange={e => setFinalDiff(e.target.value)} type="number" step="0.1" min="0" max="1" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleProgression} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Compute</button>
               </div>
               {progressionResult && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#ccc', marginBottom: 4 }}>
                     {progressionResult.scaling_curve} curve · {progressionResult.initial_difficulty} → {progressionResult.final_difficulty}
                   </div>
@@ -353,7 +353,7 @@ const InteractionSynthesisPanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Network ID</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={conflictNetworkId} onChange={e => setConflictNetworkId(e.target.value)} placeholder="Enter network ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={conflictNetworkId} onChange={e => setConflictNetworkId(e.target.value)} placeholder="Enter network ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                     <button onClick={handleConflicts} style={{ padding: '6px 14px', backgroundColor: '#4a2d2d', color: '#ff6b6b', border: '1px solid #5a3d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>Detect</button>
                   </div>
                 </div>
@@ -364,7 +364,7 @@ const InteractionSynthesisPanel: React.FC = () => {
                     {conflictResult.count} conflict{conflictResult.count !== 1 ? 's' : ''} detected
                   </div>
                   {conflictResult.conflicts?.map((c: any, i: number) => (
-                    <div key={i} style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, marginBottom: 4, borderLeft: `3px solid ${severityColor(c.severity)}` }}>
+                    <div key={i} style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, marginBottom: 4, borderLeft: `3px solid ${severityColor(c.severity)}` }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#22223a', color: severityColor(c.severity), textTransform: 'uppercase' }}>{c.severity}</span>
                         <span style={{ fontSize: 9, color: '#666' }}>{c.input_conflict ? 'Input' : ''}{c.timing_conflict ? ' Timing' : ''}</span>
@@ -387,11 +387,11 @@ const InteractionSynthesisPanel: React.FC = () => {
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                   <div style={{ flex: 1, minWidth: 180 }}>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Interaction ID</div>
-                    <input value={feedbackInteractionId} onChange={e => setFeedbackInteractionId(e.target.value)} placeholder="Enter interaction ID..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={feedbackInteractionId} onChange={e => setFeedbackInteractionId(e.target.value)} placeholder="Enter interaction ID..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                   </div>
                   <div>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Intensity</div>
-                    <select value={intensity} onChange={e => setIntensity(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                    <select value={intensity} onChange={e => setIntensity(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                       <option value="0.3">Subtle (0.3)</option>
                       <option value="0.5">Moderate (0.5)</option>
                       <option value="0.7">Strong (0.7)</option>
@@ -402,14 +402,14 @@ const InteractionSynthesisPanel: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   {FEEDBACK_CHANNELS.map(ch => (
-                    <button key={ch} onClick={() => toggleChannel(ch)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: selectedChannels.includes(ch) ? '#3a2d2d' : '#141428', color: selectedChannels.includes(ch) ? '#fdcb6e' : '#888', border: `1px solid ${selectedChannels.includes(ch) ? '#4a3d3d' : '#333'}`, cursor: 'pointer' }}>{ch}</button>
+                    <button key={ch} onClick={() => toggleChannel(ch)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: selectedChannels.includes(ch) ? '#3a2d2d' : '#111', color: selectedChannels.includes(ch) ? '#fdcb6e' : '#888', border: `1px solid ${selectedChannels.includes(ch) ? '#4a3d3d' : '#333'}`, cursor: 'pointer' }}>{ch}</button>
                   ))}
                 </div>
               </div>
               {feedbackResult && (
                 <div style={{ marginTop: 8 }}>
                   {feedbackResult.specs?.map((spec: any, i: number) => (
-                    <div key={i} style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div key={i} style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, marginBottom: 4, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                       <span style={{ fontSize: 10, color: '#a29bfe', textTransform: 'uppercase' }}>{spec.channel}</span>
                       <span style={{ fontSize: 9, color: '#888' }}>Intensity: {spec.intensity} · {spec.duration_ms}ms</span>
                     </div>
@@ -428,7 +428,7 @@ const InteractionSynthesisPanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Network ID</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={validateNetworkId} onChange={e => setValidateNetworkId(e.target.value)} placeholder="Enter network ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={validateNetworkId} onChange={e => setValidateNetworkId(e.target.value)} placeholder="Enter network ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                     <button onClick={handleValidate} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>Validate</button>
                   </div>
                 </div>
@@ -461,7 +461,7 @@ const InteractionSynthesisPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'🔗'} {networks.length} networks</span>
         <span>Connected</span>
       </div>

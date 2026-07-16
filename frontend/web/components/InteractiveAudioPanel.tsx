@@ -124,7 +124,7 @@ const InteractiveAudioPanel: React.FC = () => {
     { key: 'playlists', label: 'Playlists' },
   ];
 
-  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
+  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
 
   const layerColor = (layer: string) => {
     switch (layer) {
@@ -200,7 +200,7 @@ const InteractiveAudioPanel: React.FC = () => {
                   <span style={{ fontSize: 10, color: '#666', marginLeft: 8 }}>{stem.layer}</span>
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
-                  <div style={{ width: 60, height: 4, backgroundColor: '#141428', borderRadius: 2, overflow: 'hidden' }}>
+                  <div style={{ width: 60, height: 4, backgroundColor: '#111', borderRadius: 2, overflow: 'hidden' }}>
                     <div style={{ width: `${stem.volume * 100}%`, height: '100%', backgroundColor: layerColor(stem.layer), borderRadius: 2 }} />
                   </div>
                   <span style={{ fontSize: 9, color: '#888', minWidth: 24, textAlign: 'right' }}>{(stem.volume * 100).toFixed(0)}%</span>
@@ -232,7 +232,7 @@ const InteractiveAudioPanel: React.FC = () => {
                   {playlist.stems.map(stemName => {
                     const stem = stems.find(s => s.name === stemName);
                     return (
-                      <span key={stemName} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: stem ? layerColor(stem.layer) : '#888', border: '1px solid #2a2a3e' }}>
+                      <span key={stemName} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: stem ? layerColor(stem.layer) : '#888', border: '1px solid #2a2a3e' }}>
                         {stemName}
                       </span>
                     );
@@ -244,7 +244,7 @@ const InteractiveAudioPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83C\uDFB5'} {stems.length} stems · {playlists.length} playlists</span>
         <span>Connected</span>
       </div>

@@ -376,7 +376,7 @@ const EngineUnificationCorePanel: React.FC = () => {
             style={{
               fontSize: 10,
               padding: '4px 10px',
-              backgroundColor: '#0f3460',
+              backgroundColor: '#1e1e1e',
               color: '#e0e0e0',
               border: '1px solid #1a4a7a',
               borderRadius: 4,
@@ -421,7 +421,7 @@ const EngineUnificationCorePanel: React.FC = () => {
               backgroundColor: activeTab === tab.key ? '#1a1a2e' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent',
               cursor: 'pointer',
               transition: 'all 0.15s',
             }}
@@ -527,7 +527,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                             fontSize: 8,
                             padding: '1px 6px',
                             borderRadius: 3,
-                            backgroundColor: '#141428',
+                            backgroundColor: '#111',
                             color: healthColor(orch.status),
                             textTransform: 'uppercase',
                             fontWeight: 700,
@@ -580,7 +580,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                       borderRadius: 4,
                       outline: 'none',
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#0f3460'}
+                    onFocus={(e) => e.target.style.borderColor = '#1e1e1e'}
                     onBlur={(e) => e.target.style.borderColor = '#2a2a3e'}
                   />
                 </div>
@@ -589,7 +589,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                   disabled={tickLoading}
                   style={{
                     padding: '8px 20px',
-                    backgroundColor: tickLoading ? '#1a2a4a' : '#0f3460',
+                    backgroundColor: tickLoading ? '#1a2a4a' : '#1e1e1e',
                     color: '#e0e0e0',
                     border: '1px solid #1a4a7a',
                     borderRadius: 4,
@@ -651,7 +651,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                               <div style={{
                                 width: `${pct}%`,
                                 height: '100%',
-                                backgroundColor: (time as number) > 8 ? '#ff6b6b' : (time as number) > 4 ? '#fdcb6e' : '#0f3460',
+                                backgroundColor: (time as number) > 8 ? '#ff6b6b' : (time as number) > 4 ? '#fdcb6e' : '#1e1e1e',
                                 borderRadius: 3,
                                 transition: 'width 0.3s',
                               }} />
@@ -679,7 +679,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                 disabled={renderLoading}
                 style={{
                   padding: '12px 32px',
-                  backgroundColor: renderLoading ? '#1a2a4a' : '#0f3460',
+                  backgroundColor: renderLoading ? '#1a2a4a' : '#1e1e1e',
                   color: '#e0e0e0',
                   border: '1px solid #1a4a7a',
                   borderRadius: 6,
@@ -766,7 +766,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                 disabled={subsystemsLoading}
                 style={{
                   padding: '5px 12px',
-                  backgroundColor: '#0f3460',
+                  backgroundColor: '#1e1e1e',
                   color: '#e0e0e0',
                   border: '1px solid #1a4a7a',
                   borderRadius: 4,
@@ -795,12 +795,12 @@ const EngineUnificationCorePanel: React.FC = () => {
             {subsystems && subsystems.orchestrators && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                 {Object.entries(subsystems.orchestrators).map(([orchName, subs]) => (
-                  <div key={orchName} style={{ padding: 10, backgroundColor: '#16213e', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #0f3460' }}>
+                  <div key={orchName} style={{ padding: 10, backgroundColor: '#16213e', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #1e1e1e' }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                       <span className="font-bold" style={{ fontSize: 12, color: '#ccc', textTransform: 'capitalize' }}>
                         {orchName.replace(/_/g, ' ')}
                       </span>
-                      <span style={{ fontSize: 9, padding: '2px 8px', backgroundColor: '#0f3460', color: '#74b9ff', borderRadius: 4, fontWeight: 600 }}>
+                      <span style={{ fontSize: 9, padding: '2px 8px', backgroundColor: '#1e1e1e', color: '#74b9ff', borderRadius: 4, fontWeight: 600 }}>
                         {subs.length} subsystems
                       </span>
                     </div>
@@ -838,7 +838,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                 disabled={reportLoading}
                 style={{
                   padding: '5px 12px',
-                  backgroundColor: '#0f3460',
+                  backgroundColor: '#1e1e1e',
                   color: '#e0e0e0',
                   border: '1px solid #1a4a7a',
                   borderRadius: 4,
@@ -970,7 +970,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                           padding: '6px 14px',
                           fontSize: 11,
                           fontWeight: 600,
-                          backgroundColor: selectedMode === mode ? '#0f3460' : '#1a1a2e',
+                          backgroundColor: selectedMode === mode ? '#1e1e1e' : '#1a1a2e',
                           color: selectedMode === mode ? '#e0e0e0' : '#888',
                           border: selectedMode === mode ? '1px solid #1a4a7a' : '1px solid #2a2a3e',
                           borderRadius: 4,
@@ -1001,7 +1001,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                         borderRadius: 4,
                         outline: 'none',
                       }}
-                      onFocus={(e) => e.target.style.borderColor = '#0f3460'}
+                      onFocus={(e) => e.target.style.borderColor = '#1e1e1e'}
                       onBlur={(e) => e.target.style.borderColor = '#2a2a3e'}
                     />
                   </div>
@@ -1010,7 +1010,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                     disabled={controlLoading}
                     style={{
                       padding: '8px 20px',
-                      backgroundColor: controlLoading ? '#1a2a4a' : '#0f3460',
+                      backgroundColor: controlLoading ? '#1a2a4a' : '#1e1e1e',
                       color: '#e0e0e0',
                       border: '1px solid #1a4a7a',
                       borderRadius: 4,
@@ -1052,7 +1052,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                       borderRadius: 4,
                       outline: 'none',
                     }}
-                    onFocus={(e) => e.target.style.borderColor = '#0f3460'}
+                    onFocus={(e) => e.target.style.borderColor = '#1e1e1e'}
                     onBlur={(e) => e.target.style.borderColor = '#2a2a3e'}
                   />
                 </div>
@@ -1061,7 +1061,7 @@ const EngineUnificationCorePanel: React.FC = () => {
                   disabled={controlLoading}
                   style={{
                     padding: '8px 20px',
-                    backgroundColor: controlLoading ? '#1a2a4a' : '#0f3460',
+                    backgroundColor: controlLoading ? '#1a2a4a' : '#1e1e1e',
                     color: '#e0e0e0',
                     border: '1px solid #1a4a7a',
                     borderRadius: 4,

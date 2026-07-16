@@ -120,7 +120,7 @@ const ImportPipelinePanel: React.FC = () => {
     { key: 'profiles', label: 'Profiles' },
   ];
 
-  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
+  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
 
   const statusBadgeStyle = (status: string) => {
     switch (status) {
@@ -128,7 +128,7 @@ const ImportPipelinePanel: React.FC = () => {
       case 'pending': return { backgroundColor: '#3a2a1a', color: '#ffa726' };
       case 'failed': return { backgroundColor: '#3a1a1a', color: '#ef5350' };
       case 'in_progress': return { backgroundColor: '#1a2a3a', color: '#4fc3f7' };
-      default: return { backgroundColor: '#141428', color: '#888' };
+      default: return { backgroundColor: '#111', color: '#888' };
     }
   };
 
@@ -188,7 +188,7 @@ const ImportPipelinePanel: React.FC = () => {
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 11, color: '#ccc', marginBottom: 2, wordBreak: 'break-all' }}>{task.source}</div>
                   <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: typeColor(task.type) }}>{task.type}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: typeColor(task.type) }}>{task.type}</span>
                     <span style={{ fontSize: 9, color: '#666' }}>{task.file_size}</span>
                   </div>
                 </div>
@@ -225,7 +225,7 @@ const ImportPipelinePanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDCE5'} {importTasks.length} imports · {profiles.length} profiles</span>
         <span>Connected</span>
       </div>

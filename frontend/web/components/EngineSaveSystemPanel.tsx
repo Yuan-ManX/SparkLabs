@@ -280,7 +280,7 @@ export default function EngineSaveSystemPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -303,7 +303,7 @@ export default function EngineSaveSystemPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -421,7 +421,7 @@ export default function EngineSaveSystemPanel() {
                 <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontWeight: 600, fontSize: 12, color: '#00d4ff' }}>{slotResult.slot_name}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#fdcb6e', fontWeight: 600 }}>{slotResult.slot_type}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#fdcb6e', fontWeight: 600 }}>{slotResult.slot_type}</span>
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 9, color: '#666' }}>
                     <span>ID: <span style={{ color: '#888' }}>{slotResult.slot_id}</span></span>
@@ -518,7 +518,7 @@ export default function EngineSaveSystemPanel() {
                     <span>Created: <span style={{ color: '#888' }}>{loadResult.created_at}</span></span>
                   </div>
                   <div style={{
-                    padding: 8, backgroundColor: '#141428', borderRadius: 4,
+                    padding: 8, backgroundColor: '#111', borderRadius: 4,
                     fontFamily: 'monospace', fontSize: 10, color: '#6bcb77',
                     maxHeight: 200, overflow: 'auto', whiteSpace: 'pre-wrap',
                   }}>
@@ -633,7 +633,7 @@ export default function EngineSaveSystemPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

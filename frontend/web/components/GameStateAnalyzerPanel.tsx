@@ -250,15 +250,15 @@ const GameStateAnalyzerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scene ID</div>
-                  <input value={sceneId} onChange={e => setSceneId(e.target.value)} placeholder="e.g. level_01" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sceneId} onChange={e => setSceneId(e.target.value)} placeholder="e.g. level_01" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scene Name</div>
-                  <input value={sceneName} onChange={e => setSceneName(e.target.value)} placeholder="e.g. Forest Level" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sceneName} onChange={e => setSceneName(e.target.value)} placeholder="e.g. Forest Level" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Entities</div>
-                  <input value={entityCount} onChange={e => setEntityCount(e.target.value)} type="number" min="1" max="1000" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={entityCount} onChange={e => setEntityCount(e.target.value)} type="number" min="1" max="1000" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleRegisterScene} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Register</button>
               </div>
@@ -270,18 +270,18 @@ const GameStateAnalyzerPanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 180 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scene ID</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={sceneId} onChange={e => setSceneId(e.target.value)} placeholder="Enter scene ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={sceneId} onChange={e => setSceneId(e.target.value)} placeholder="Enter scene ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                     <button onClick={handleAnalyzeScene} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>Analyze</button>
                   </div>
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 8 }}>
                 {ANALYSIS_DOMAINS.map(d => (
-                  <button key={d} onClick={() => toggleDomain(d)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: selectedDomains.includes(d) ? '#2d3a5a' : '#141428', color: selectedDomains.includes(d) ? '#74b9ff' : '#888', border: `1px solid ${selectedDomains.includes(d) ? '#3d4a6a' : '#333'}`, cursor: 'pointer' }}>{d}</button>
+                  <button key={d} onClick={() => toggleDomain(d)} style={{ padding: '2px 8px', fontSize: 10, borderRadius: 3, backgroundColor: selectedDomains.includes(d) ? '#2d3a5a' : '#111', color: selectedDomains.includes(d) ? '#74b9ff' : '#888', border: `1px solid ${selectedDomains.includes(d) ? '#3d4a6a' : '#333'}`, cursor: 'pointer' }}>{d}</button>
                 ))}
               </div>
               {analysisResult && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#ccc', marginBottom: 4 }}>{analysisResult.scene_name}</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, fontSize: 10 }}>
                     <div><span style={{ color: '#888' }}>Entities: </span><span style={{ color: '#ccc' }}>{analysisResult.entity_count}</span></div>
@@ -321,7 +321,7 @@ const GameStateAnalyzerPanel: React.FC = () => {
               <div key={s.scene_id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #6bcb77' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{s.scene_name}</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>{s.entity_count} entities</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>{s.entity_count} entities</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 4, fontSize: 9, color: '#888' }}>
                   <span>Systems: {s.system_count}</span>
@@ -343,7 +343,7 @@ const GameStateAnalyzerPanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scene ID</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={optimizeSceneId} onChange={e => setOptimizeSceneId(e.target.value)} placeholder="Enter scene ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={optimizeSceneId} onChange={e => setOptimizeSceneId(e.target.value)} placeholder="Enter scene ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                     <button onClick={handleOptimize} style={{ padding: '6px 14px', backgroundColor: '#3a2d4a', color: '#a29bfe', border: '1px solid #4a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>Get Hints</button>
                   </div>
                 </div>
@@ -352,7 +352,7 @@ const GameStateAnalyzerPanel: React.FC = () => {
                 <div style={{ marginTop: 8 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#ccc', marginBottom: 4 }}>{optimizeResult.scene_id} · {optimizeResult.hint_count} hints · {optimizeResult.entity_count} entities</div>
                   {optimizeResult.hints?.map((hint: OptimizationHint, i: number) => (
-                    <div key={i} style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, marginBottom: 4, borderLeft: `3px solid ${priorityColor(hint.priority)}` }}>
+                    <div key={i} style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, marginBottom: 4, borderLeft: `3px solid ${priorityColor(hint.priority)}` }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#22223a', color: priorityColor(hint.priority), textTransform: 'uppercase' }}>{hint.priority}</span>
                         <span style={{ fontSize: 9, color: '#666' }}>{hint.category}</span>
@@ -375,7 +375,7 @@ const GameStateAnalyzerPanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scene ID</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={validateSceneId} onChange={e => setValidateSceneId(e.target.value)} placeholder="Enter scene ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={validateSceneId} onChange={e => setValidateSceneId(e.target.value)} placeholder="Enter scene ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                     <button onClick={handleValidate} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>Validate</button>
                   </div>
                 </div>
@@ -415,7 +415,7 @@ const GameStateAnalyzerPanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 250 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scene IDs (comma-separated)</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={compareIds} onChange={e => setCompareIds(e.target.value)} placeholder="id1, id2, id3..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={compareIds} onChange={e => setCompareIds(e.target.value)} placeholder="id1, id2, id3..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                     <button onClick={handleCompare} style={{ padding: '6px 14px', backgroundColor: '#4a2d4a', color: '#e056a0', border: '1px solid #5a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>Compare</button>
                   </div>
                 </div>
@@ -424,7 +424,7 @@ const GameStateAnalyzerPanel: React.FC = () => {
                 <div style={{ marginTop: 8 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#ccc', marginBottom: 4 }}>Comparison Results</div>
                   {compareResult.compared_scenes && Object.entries(compareResult.compared_scenes).map(([id, info]: [string, any]) => (
-                    <div key={id} style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, marginBottom: 4, borderLeft: `3px solid ${id === compareResult.most_complex ? '#fdcb6e' : id === compareResult.most_optimized ? '#6bcb77' : '#74b9ff'}` }}>
+                    <div key={id} style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, marginBottom: 4, borderLeft: `3px solid ${id === compareResult.most_complex ? '#fdcb6e' : id === compareResult.most_optimized ? '#6bcb77' : '#74b9ff'}` }}>
                       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                         <span style={{ fontWeight: 600, fontSize: 11, color: '#ccc' }}>{info.name}</span>
                         <span style={{ fontSize: 9, color: '#888' }}>{id}</span>
@@ -448,7 +448,7 @@ const GameStateAnalyzerPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDEE0\uFE0F'} {scenes.length} scenes tracked</span>
         <span>Connected</span>
       </div>

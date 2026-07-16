@@ -392,7 +392,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               value={sheetForm.name}
               onChange={e => setSheetForm(prev => ({ ...prev, name: e.target.value }))}
               placeholder="e.g. OnGameStart"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -400,7 +400,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
             <select
               value={sheetForm.scope}
               onChange={e => setSheetForm(prev => ({ ...prev, scope: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="scene">Scene</option>
               <option value="object">Object</option>
@@ -414,7 +414,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               onChange={e => setSheetForm(prev => ({ ...prev, description: e.target.value }))}
               placeholder="Describe the purpose of this event sheet"
               rows={2}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -434,7 +434,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
           <div key={sheet.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
             <div className="flex justify-between items-center mb-2">
               <div className="text-white text-sm font-medium">{sheet.name}</div>
-              <span className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-[#00d4ff]">
+              <span className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-[#00d4ff]">
                 {sheet.scope}
               </span>
             </div>
@@ -485,7 +485,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
             <select
               value={eventForm.sheetId}
               onChange={e => setEventForm(prev => ({ ...prev, sheetId: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="">-- Select Sheet --</option>
               {sheets.map(s => (
@@ -501,7 +501,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               value={eventForm.name}
               onChange={e => setEventForm(prev => ({ ...prev, name: e.target.value }))}
               placeholder="e.g. OnPlayerMove"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
 
@@ -510,7 +510,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
             <select
               value={eventForm.trigger}
               onChange={e => setEventForm(prev => ({ ...prev, trigger: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="every_frame">Every Frame</option>
               <option value="on_start">On Start</option>
@@ -526,7 +526,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               type="number"
               value={eventForm.priority}
               onChange={e => setEventForm(prev => ({ ...prev, priority: parseInt(e.target.value, 10) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -537,7 +537,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
             <div className="text-sm font-medium text-[#00d4ff]">Conditions</div>
             <button
               onClick={addCondition}
-              className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#00d4ff] hover:border-[#00d4ff]"
+              className="px-3 py-1 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-xs text-[#00d4ff] hover:border-[#00d4ff]"
             >
               + Add Condition
             </button>
@@ -546,7 +546,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
           {eventForm.conditions.length > 0 ? (
             <div className="flex flex-col gap-2">
               {eventForm.conditions.map((cond, i) => (
-                <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
+                <div key={i} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded p-3">
                   <div className="flex justify-between items-center mb-2">
                     <div className="text-xs text-[#999]">Condition #{i + 1}</div>
                     <button
@@ -577,7 +577,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
                           type="checkbox"
                           checked={cond.invert}
                           onChange={e => updateCondition(i, 'invert', e.target.checked)}
-                          className="rounded bg-[#0f0f23] border border-[#2a2a4a]"
+                          className="rounded bg-[#0d0d0d] border border-[#2a2a4a]"
                         />
                         Invert
                       </label>
@@ -617,7 +617,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
             <div className="text-sm font-medium text-[#00d4ff]">Actions</div>
             <button
               onClick={addAction}
-              className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#00d4ff] hover:border-[#00d4ff]"
+              className="px-3 py-1 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-xs text-[#00d4ff] hover:border-[#00d4ff]"
             >
               + Add Action
             </button>
@@ -626,7 +626,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
           {eventForm.actions.length > 0 ? (
             <div className="flex flex-col gap-2">
               {eventForm.actions.map((action, i) => (
-                <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
+                <div key={i} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded p-3">
                   <div className="flex justify-between items-center mb-2">
                     <div className="text-xs text-[#999]">Action #{i + 1}</div>
                     <button
@@ -729,7 +729,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
             <select
               value={evalSheetId}
               onChange={e => setEvalSheetId(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="">-- Select Sheet --</option>
               {sheets.map(s => (
@@ -744,7 +744,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               onChange={e => setEvalCustomState(e.target.value)}
               placeholder='{"player": {"health": 100, "position": [0, 0]}}'
               rows={4}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -804,7 +804,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
               <span className={`px-2 py-1 rounded text-xs font-medium ${
                 entry.status === 'success' ? 'bg-green-900/50 text-green-400 border border-green-800' :
                 entry.status === 'error' ? 'bg-red-900/50 text-red-400 border border-red-800' :
-                'bg-[#0f0f23] text-[#999] border border-[#2a2a4a]'
+                'bg-[#0d0d0d] text-[#999] border border-[#2a2a4a]'
               }`}>
                 {entry.status}
               </span>
@@ -834,7 +834,7 @@ const EngineVisualEventSheetPanel: React.FC = () => {
   );
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       <div className="flex gap-1 border-b border-[#2a2a4a] px-4 pt-2">
         {tabs.map(t => (
           <button

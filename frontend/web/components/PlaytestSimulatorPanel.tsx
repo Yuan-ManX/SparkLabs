@@ -206,11 +206,11 @@ const PlaytestSimulatorPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Game Scene</div>
-                  <input value={sessionGameScene} onChange={e => setSessionGameScene(e.target.value)} placeholder="e.g. Level 1 Forest" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sessionGameScene} onChange={e => setSessionGameScene(e.target.value)} placeholder="e.g. Level 1 Forest" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Mode</div>
-                  <select value={sessionMode} onChange={e => setSessionMode(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={sessionMode} onChange={e => setSessionMode(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="manual">Manual</option>
                     <option value="automated">Automated</option>
                     <option value="hybrid">Hybrid</option>
@@ -219,7 +219,7 @@ const PlaytestSimulatorPanel: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Player Profile</div>
-                  <select value={sessionPlayerProfile} onChange={e => setSessionPlayerProfile(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={sessionPlayerProfile} onChange={e => setSessionPlayerProfile(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="">Default</option>
                     <option value="casual">Casual</option>
                     <option value="hardcore">Hardcore</option>
@@ -236,11 +236,11 @@ const PlaytestSimulatorPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={exploreSessionId} onChange={e => setExploreSessionId(e.target.value)} placeholder="Session ID" style={{ padding: '6px 10px', fontSize: 11, width: 200, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={exploreSessionId} onChange={e => setExploreSessionId(e.target.value)} placeholder="Session ID" style={{ padding: '6px 10px', fontSize: 11, width: 200, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Max Actions</div>
-                  <input value={exploreMaxActions} onChange={e => setExploreMaxActions(e.target.value)} type="number" min="1" max="100" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={exploreMaxActions} onChange={e => setExploreMaxActions(e.target.value)} type="number" min="1" max="100" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleAutoExplore} style={{ padding: '6px 14px', backgroundColor: '#3a2d4a', color: '#a29bfe', border: '1px solid #4a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Explore</button>
               </div>
@@ -251,12 +251,12 @@ const PlaytestSimulatorPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={summarySessionId} onChange={e => setSummarySessionId(e.target.value)} placeholder="Session ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={summarySessionId} onChange={e => setSummarySessionId(e.target.value)} placeholder="Session ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleGenerateSummary} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Generate</button>
               </div>
               {sessionSummary && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
                   <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(sessionSummary, null, 2)}</pre>
                 </div>
               )}
@@ -289,11 +289,11 @@ const PlaytestSimulatorPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={actionSessionId} onChange={e => setActionSessionId(e.target.value)} placeholder="Session ID" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={actionSessionId} onChange={e => setActionSessionId(e.target.value)} placeholder="Session ID" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Action Type</div>
-                  <select value={actionType} onChange={e => setActionType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={actionType} onChange={e => setActionType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="click">Click</option>
                     <option value="swipe">Swipe</option>
                     <option value="drag">Drag</option>
@@ -304,7 +304,7 @@ const PlaytestSimulatorPanel: React.FC = () => {
                 </div>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target</div>
-                  <input value={actionTarget} onChange={e => setActionTarget(e.target.value)} placeholder="e.g. start_button" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={actionTarget} onChange={e => setActionTarget(e.target.value)} placeholder="e.g. start_button" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleSimulateAction} style={{ padding: '6px 14px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Simulate</button>
               </div>
@@ -325,7 +325,7 @@ const PlaytestSimulatorPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDD79\uFE0F'} {sessions.length} sessions · {actions.length} actions</span>
         <span>Connected</span>
       </div>

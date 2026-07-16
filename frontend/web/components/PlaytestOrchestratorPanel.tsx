@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
-const API_BASE = "http://localhost:8000/api/agent";
+const API_BASE = `${API_ROOT}/agent`;
 
 interface SubsystemStats {
   archetypes: number;
@@ -116,11 +117,11 @@ export default function PlaytestOrchestratorPanel() {
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Create Playtest Batch</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <input type="text" placeholder="Batch Name" value={batchName} onChange={(e) => setBatchName(e.target.value)}
-                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <input type="text" placeholder="Level ID" value={levelId} onChange={(e) => setLevelId(e.target.value)}
-                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <input type="number" placeholder="Target Sessions" value={targetSessions} onChange={(e) => setTargetSessions(e.target.value)} min="10" max="100000" step="100"
-                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <button onClick={handleCreateBatch} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#e94560", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600, alignSelf: "flex-start" }}>
                   Create Batch
                 </button>
@@ -131,12 +132,12 @@ export default function PlaytestOrchestratorPanel() {
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Execute Batch</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <input type="text" placeholder="Batch ID" value={runBatchId} onChange={(e) => setRunBatchId(e.target.value)}
-                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button onClick={handleRunBatch} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#e94560", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}>
                     Run Batch
                   </button>
-                  <button onClick={handleGenerateReport} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#0f3460", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}>
+                  <button onClick={handleGenerateReport} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#1e1e1e", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}>
                     Generate Report
                   </button>
                 </div>

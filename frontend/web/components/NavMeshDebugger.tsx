@@ -178,22 +178,22 @@ const NavMeshDebugger: React.FC = () => {
               <div>
                 <label className="text-[8px] text-[#666]">Start X</label>
                 <input type="number" value={startX} onChange={e => setStartX(Number(e.target.value))}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
               </div>
               <div>
                 <label className="text-[8px] text-[#666]">Start Y</label>
                 <input type="number" value={startY} onChange={e => setStartY(Number(e.target.value))}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
               </div>
               <div>
                 <label className="text-[8px] text-[#666]">End X</label>
                 <input type="number" value={endX} onChange={e => setEndX(Number(e.target.value))}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
               </div>
               <div>
                 <label className="text-[8px] text-[#666]">End Y</label>
                 <input type="number" value={endY} onChange={e => setEndY(Number(e.target.value))}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
               </div>
             </div>
             <label className="flex items-center gap-2 text-[9px] text-[#aaa] mb-2 cursor-pointer">
@@ -209,7 +209,7 @@ const NavMeshDebugger: React.FC = () => {
               Find Path
             </button>
             {pathResult && (
-              <div className="mt-2 p-2 rounded bg-[#141414] border border-[#2a2a2a] space-y-1">
+              <div className="mt-2 p-2 rounded bg-[#111] border border-[#2a2a2a] space-y-1">
                 <div className="text-[9px] text-[#888]">Path Length: <span className="text-[#ddd]">{pathResult.length.toFixed(1)}</span></div>
                 <div className="text-[9px] text-[#888]">Waypoints: <span className="text-[#ddd]">{pathResult.path.length}</span></div>
                 <div className="text-[9px] text-[#888]">Smoothed: <span className={pathResult.smoothed ? 'text-green-400' : 'text-[#888]'}>{pathResult.smoothed ? 'Yes' : 'No'}</span></div>
@@ -225,11 +225,11 @@ const NavMeshDebugger: React.FC = () => {
             <div className="flex items-center gap-2 mb-2">
               <label className="text-[9px] text-[#666]">Tile Size</label>
               <input type="number" value={tileSize} onChange={e => setTileSize(Number(e.target.value))}
-                className="w-16 bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
+                className="w-16 bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[10px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
             </div>
             <button
               onClick={handleBuildNavMesh}
-              className="w-full px-3 py-1.5 bg-[#141414] border border-[#2a2a2a] text-[#ddd] rounded text-[10px] font-medium hover:border-green-500/30"
+              className="w-full px-3 py-1.5 bg-[#111] border border-[#2a2a2a] text-[#ddd] rounded text-[10px] font-medium hover:border-green-500/30"
             >
               <i className="fa-solid fa-hammer mr-1 text-[8px]" />
               Build NavMesh
@@ -256,7 +256,7 @@ const NavMeshDebugger: React.FC = () => {
                 <div key={label}>
                   <label className="text-[8px] text-[#666]">{label}</label>
                   <input type="number" value={value} onChange={e => setter(Number(e.target.value))}
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1 py-0.5 text-[9px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
+                    className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1 py-0.5 text-[9px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
                 </div>
               ))}
               {([
@@ -267,19 +267,19 @@ const NavMeshDebugger: React.FC = () => {
                 <div key={label}>
                   <label className="text-[8px] text-[#666]">{label}</label>
                   <input type="number" value={value} onChange={e => setter(Number(e.target.value))} step={0.1}
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1 py-0.5 text-[9px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
+                    className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1 py-0.5 text-[9px] text-[#ddd] focus:border-green-500/50 focus:outline-none" />
                 </div>
               ))}
             </div>
             <button
               onClick={handleRaycast}
-              className="w-full px-3 py-1.5 bg-[#141414] border border-[#2a2a2a] text-[#ddd] rounded text-[10px] font-medium hover:border-green-500/30"
+              className="w-full px-3 py-1.5 bg-[#111] border border-[#2a2a2a] text-[#ddd] rounded text-[10px] font-medium hover:border-green-500/30"
             >
               <i className="fa-solid fa-arrow-pointer mr-1 text-[8px]" />
               Test Raycast
             </button>
             {rayResult && (
-              <div className="mt-1 p-1.5 rounded bg-[#141414] border border-[#2a2a2a]">
+              <div className="mt-1 p-1.5 rounded bg-[#111] border border-[#2a2a2a]">
                 <span className={`text-[9px] font-medium ${rayResult.hit ? 'text-green-400' : 'text-red-400'}`}>
                   {rayResult.hit ? 'HIT' : 'MISS'}
                 </span>
@@ -322,7 +322,7 @@ const NavMeshDebugger: React.FC = () => {
               return (
                 <div
                   key={i}
-                  className="border border-[#1a1a1a] flex items-center justify-center transition-colors"
+                  className="border border-[#1e1e1e] flex items-center justify-center transition-colors"
                   style={{
                     backgroundColor: isPath ? '#22c55e30' : isWalkable ? '#22c55e10' : '#ef444410',
                     borderColor: isPath ? '#22c55e40' : isWalkable ? '#22c55e20' : '#ef444420',
@@ -358,7 +358,7 @@ const NavMeshDebugger: React.FC = () => {
           )}
 
           {pathResult && (
-            <div className="absolute top-2 right-2 text-[9px] text-[#666] bg-[#141414]/80 px-2 py-1 rounded">
+            <div className="absolute top-2 right-2 text-[9px] text-[#666] bg-[#111]/80 px-2 py-1 rounded">
               Path: {pathResult.length.toFixed(1)} units | {pathResult.path.length} pts
             </div>
           )}

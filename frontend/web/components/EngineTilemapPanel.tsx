@@ -154,7 +154,7 @@ const EngineTilemapPanel: React.FC = () => {
               value={statusTilemapId}
               onChange={(e) => setStatusTilemapId(e.target.value)}
               placeholder="tilemap_main"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -191,23 +191,23 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Tilemap Name</label>
-            <input type="text" value={tilemapName} onChange={(e) => setTilemapName(e.target.value)} placeholder="main_map" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={tilemapName} onChange={(e) => setTilemapName(e.target.value)} placeholder="main_map" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Map Width (tiles)</label>
-            <input type="number" value={tilemapWidth} onChange={(e) => setTilemapWidth(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tilemapWidth} onChange={(e) => setTilemapWidth(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Map Height (tiles)</label>
-            <input type="number" value={tilemapHeight} onChange={(e) => setTilemapHeight(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tilemapHeight} onChange={(e) => setTilemapHeight(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Tile Width (px)</label>
-            <input type="number" value={tileWidth} onChange={(e) => setTileWidth(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tileWidth} onChange={(e) => setTileWidth(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Tile Height (px)</label>
-            <input type="number" value={tileHeight} onChange={(e) => setTileHeight(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tileHeight} onChange={(e) => setTileHeight(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -227,19 +227,19 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Tileset Name</label>
-            <input type="text" value={tilesetName} onChange={(e) => setTilesetName(e.target.value)} placeholder="tileset_grassland" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={tilesetName} onChange={(e) => setTilesetName(e.target.value)} placeholder="tileset_grassland" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Image Path</label>
-            <input type="text" value={tilesetImage} onChange={(e) => setTilesetImage(e.target.value)} placeholder="/assets/tilesets/grassland.png" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={tilesetImage} onChange={(e) => setTilesetImage(e.target.value)} placeholder="/assets/tilesets/grassland.png" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Columns</label>
-            <input type="number" value={tilesetColumns} onChange={(e) => setTilesetColumns(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tilesetColumns} onChange={(e) => setTilesetColumns(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">First GID</label>
-            <input type="number" value={tilesetFirstGid} onChange={(e) => setTilesetFirstGid(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tilesetFirstGid} onChange={(e) => setTilesetFirstGid(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -263,23 +263,23 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Tilemap ID</label>
-            <input type="text" value={editTilemapId} onChange={(e) => setEditTilemapId(e.target.value)} placeholder="tilemap_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={editTilemapId} onChange={(e) => setEditTilemapId(e.target.value)} placeholder="tilemap_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Layer ID</label>
-            <input type="text" value={editLayerId} onChange={(e) => setEditLayerId(e.target.value)} placeholder="layer_0" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={editLayerId} onChange={(e) => setEditLayerId(e.target.value)} placeholder="layer_0" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">X</label>
-            <input type="number" value={editX} onChange={(e) => setEditX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={editX} onChange={(e) => setEditX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Y</label>
-            <input type="number" value={editY} onChange={(e) => setEditY(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={editY} onChange={(e) => setEditY(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Global Tile ID</label>
-            <input type="number" value={editGid} onChange={(e) => setEditGid(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={editGid} onChange={(e) => setEditGid(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -300,23 +300,23 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Start X</label>
-            <input type="number" value={fillStartX} onChange={(e) => setFillStartX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={fillStartX} onChange={(e) => setFillStartX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Start Y</label>
-            <input type="number" value={fillStartY} onChange={(e) => setFillStartY(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={fillStartY} onChange={(e) => setFillStartY(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">End X</label>
-            <input type="number" value={fillEndX} onChange={(e) => setFillEndX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={fillEndX} onChange={(e) => setFillEndX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">End Y</label>
-            <input type="number" value={fillEndY} onChange={(e) => setFillEndY(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={fillEndY} onChange={(e) => setFillEndY(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Global Tile ID</label>
-            <input type="number" value={fillGid} onChange={(e) => setFillGid(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={fillGid} onChange={(e) => setFillGid(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -339,7 +339,7 @@ const EngineTilemapPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div>
           <label className="text-xs text-[#999] mb-1 block">Tilemap ID</label>
-          <input type="text" value={layerTilemapId} onChange={(e) => setLayerTilemapId(e.target.value)} placeholder="tilemap_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={layerTilemapId} onChange={(e) => setLayerTilemapId(e.target.value)} placeholder="tilemap_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
       </div>
 
@@ -349,11 +349,11 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Layer Name</label>
-            <input type="text" value={tileLayerName} onChange={(e) => setTileLayerName(e.target.value)} placeholder="ground_layer" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={tileLayerName} onChange={(e) => setTileLayerName(e.target.value)} placeholder="ground_layer" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Z-Index</label>
-            <input type="number" value={tileLayerZ} onChange={(e) => setTileLayerZ(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tileLayerZ} onChange={(e) => setTileLayerZ(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -372,11 +372,11 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Layer Name</label>
-            <input type="text" value={objectLayerName} onChange={(e) => setObjectLayerName(e.target.value)} placeholder="collision_layer" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={objectLayerName} onChange={(e) => setObjectLayerName(e.target.value)} placeholder="collision_layer" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Z-Index</label>
-            <input type="number" value={objectLayerZ} onChange={(e) => setObjectLayerZ(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={objectLayerZ} onChange={(e) => setObjectLayerZ(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -395,24 +395,24 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Object Name</label>
-            <input type="text" value={objectName} onChange={(e) => setObjectName(e.target.value)} placeholder="spawn_point" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={objectName} onChange={(e) => setObjectName(e.target.value)} placeholder="spawn_point" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div></div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">X</label>
-            <input type="number" value={objectX} onChange={(e) => setObjectX(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={objectX} onChange={(e) => setObjectX(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Y</label>
-            <input type="number" value={objectY} onChange={(e) => setObjectY(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={objectY} onChange={(e) => setObjectY(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Width</label>
-            <input type="number" value={objectW} onChange={(e) => setObjectW(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={objectW} onChange={(e) => setObjectW(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Height</label>
-            <input type="number" value={objectH} onChange={(e) => setObjectH(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={objectH} onChange={(e) => setObjectH(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -435,7 +435,7 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Coordinate Converters</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Tilemap ID</label>
-          <input type="text" value={queryTilemapId} onChange={(e) => setQueryTilemapId(e.target.value)} placeholder="tilemap_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={queryTilemapId} onChange={(e) => setQueryTilemapId(e.target.value)} placeholder="tilemap_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
       </div>
 
@@ -445,11 +445,11 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">World X</label>
-            <input type="number" value={worldX} onChange={(e) => setWorldX(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={worldX} onChange={(e) => setWorldX(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">World Y</label>
-            <input type="number" value={worldY} onChange={(e) => setWorldY(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={worldY} onChange={(e) => setWorldY(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -471,11 +471,11 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Tile X</label>
-            <input type="number" value={tileX} onChange={(e) => setTileX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tileX} onChange={(e) => setTileX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Tile Y</label>
-            <input type="number" value={tileY} onChange={(e) => setTileY(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tileY} onChange={(e) => setTileY(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -498,7 +498,7 @@ const EngineTilemapPanel: React.FC = () => {
           <textarea
             readOnly
             value={queryResult}
-            className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-24"
+            className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-24"
           />
         </div>
       )}
@@ -511,7 +511,7 @@ const EngineTilemapPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Collision Tiles</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Tilemap ID</label>
-          <input type="text" value={collisionTilemapId} onChange={(e) => setCollisionTilemapId(e.target.value)} placeholder="tilemap_main" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={collisionTilemapId} onChange={(e) => setCollisionTilemapId(e.target.value)} placeholder="tilemap_main" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button
           onClick={async () => {
@@ -530,7 +530,7 @@ const EngineTilemapPanel: React.FC = () => {
           <textarea
             readOnly
             value={JSON.stringify(collisionData, null, 2)}
-            className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-40"
+            className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-40"
           />
         </div>
       )}
@@ -550,7 +550,7 @@ const EngineTilemapPanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       {message && (
         <div className={`mx-4 mt-2 px-3 py-2 rounded text-sm ${message.type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-700' : 'bg-red-900/50 text-red-300 border border-red-700'}`}>
           {message.text}

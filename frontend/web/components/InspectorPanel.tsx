@@ -60,7 +60,7 @@ const InspectorPanel: React.FC<InspectorPanelProps> = ({ selectedEntityName }) =
               { label: 'Rotation', values: ['0.00', '0.00', '0.00'] },
               { label: 'Scale', values: ['1.00', '1.00', '1.00'] },
             ].map((row) => (
-              <div key={row.label} className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1a1a1a]">
+              <div key={row.label} className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1e1e1e]">
                 <span className="text-[#666] w-20 shrink-0 text-[11px]">{row.label}</span>
                 <div className="flex gap-1 flex-1">
                   {row.values.map((val, i) => (
@@ -84,7 +84,7 @@ const InspectorPanel: React.FC<InspectorPanelProps> = ({ selectedEntityName }) =
               { label: 'AI Model', type: 'select', options: ['SparkLabs Neural v2', 'SparkLabs Core v1', 'Custom Model'] },
               { label: 'Behavior', type: 'select', options: ['Autonomous Agent', 'Scripted Path', 'Reactive AI', 'Neural Driven'] },
             ].map((row) => (
-              <div key={row.label} className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1a1a1a]">
+              <div key={row.label} className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1e1e1e]">
                 <span className="text-[#666] w-20 shrink-0 text-[11px]">{row.label}</span>
                 <select className="flex-1 bg-[#0d0d0d] border border-[#222] text-[#ddd] px-1.5 py-[3px] rounded text-[11px] font-mono focus:outline-none focus:border-orange-500/40">
                   {row.options.map((opt) => (
@@ -97,7 +97,7 @@ const InspectorPanel: React.FC<InspectorPanelProps> = ({ selectedEntityName }) =
               { label: 'Awareness', value: 75 },
               { label: 'Memory', value: 60 },
             ].map((row) => (
-              <div key={row.label} className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1a1a1a]">
+              <div key={row.label} className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1e1e1e]">
                 <span className="text-[#666] w-20 shrink-0 text-[11px]">{row.label}</span>
                 <input
                   type="range"
@@ -115,7 +115,7 @@ const InspectorPanel: React.FC<InspectorPanelProps> = ({ selectedEntityName }) =
               <i className="fa-solid fa-cube text-[#60a5fa]" />
               Rendering
             </div>
-            <div className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1a1a1a]">
+            <div className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1e1e1e]">
               <span className="text-[#666] w-20 shrink-0 text-[11px]">Material</span>
               <input
                 className="flex-1 bg-[#0d0d0d] border border-[#222] text-[#ddd] px-1.5 py-[3px] rounded text-[11px] font-mono focus:outline-none focus:border-orange-500/40"
@@ -123,7 +123,7 @@ const InspectorPanel: React.FC<InspectorPanelProps> = ({ selectedEntityName }) =
                 readOnly
               />
             </div>
-            <div className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1a1a1a]">
+            <div className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1e1e1e]">
               <span className="text-[#666] w-20 shrink-0 text-[11px]">Shader</span>
               <select className="flex-1 bg-[#0d0d0d] border border-[#222] text-[#ddd] px-1.5 py-[3px] rounded text-[11px] font-mono focus:outline-none focus:border-orange-500/40">
                 <option>Neural Glow</option>
@@ -139,7 +139,7 @@ const InspectorPanel: React.FC<InspectorPanelProps> = ({ selectedEntityName }) =
               <i className="fa-solid fa-atom text-[#4ade80]" />
               Physics
             </div>
-            <div className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1a1a1a]">
+            <div className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1e1e1e]">
               <span className="text-[#666] w-20 shrink-0 text-[11px]">Body Type</span>
               <select className="flex-1 bg-[#0d0d0d] border border-[#222] text-[#ddd] px-1.5 py-[3px] rounded text-[11px] font-mono focus:outline-none focus:border-orange-500/40">
                 <option>Dynamic</option>
@@ -147,7 +147,7 @@ const InspectorPanel: React.FC<InspectorPanelProps> = ({ selectedEntityName }) =
                 <option>Kinematic</option>
               </select>
             </div>
-            <div className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1a1a1a]">
+            <div className="flex items-center px-3 py-[5px] text-[12px] border-b border-[#1e1e1e]">
               <span className="text-[#666] w-20 shrink-0 text-[11px]">Mass</span>
               <input
                 type="number"

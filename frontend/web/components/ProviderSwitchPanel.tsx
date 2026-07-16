@@ -248,7 +248,7 @@ const ProviderSwitchPanel: React.FC = () => {
           onChange={e => setSelectedProvider(e.target.value)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="">-- Select Provider --</option>
@@ -261,7 +261,7 @@ const ProviderSwitchPanel: React.FC = () => {
           onChange={e => setSelectedModel(e.target.value)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="">-- Select Model --</option>
@@ -355,7 +355,7 @@ const ProviderSwitchPanel: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{ fontWeight: 600, fontSize: 13, color: '#ccc' }}>{model.name}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#888' }}>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#888' }}>
                       {model.provider_name}
                     </span>
                   </div>
@@ -396,7 +396,7 @@ const ProviderSwitchPanel: React.FC = () => {
                     <span style={{ fontWeight: 600, fontSize: 13, color: '#ccc' }}>{rule.model_name}</span>
                     <span style={{
                       fontSize: 10, padding: '2px 8px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#fdcb6e', fontWeight: 600,
+                      backgroundColor: '#111', color: '#fdcb6e', fontWeight: 600,
                     }}>P{rule.priority}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 16, fontSize: 10, color: '#888' }}>
@@ -420,7 +420,7 @@ const ProviderSwitchPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -303,7 +303,7 @@ const PostProcessingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={effectName} onChange={e => setEffectName(e.target.value)} placeholder="e.g. Bloom Glow" style={{
                     padding: '6px 10px', fontSize: 11, width: 130,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -311,7 +311,7 @@ const PostProcessingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
                   <select value={effectType} onChange={e => setEffectType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="bloom">Bloom</option>
@@ -327,7 +327,7 @@ const PostProcessingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Quality</div>
                   <select value={effectQuality} onChange={e => setEffectQuality(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="low">Low</option>
@@ -396,7 +396,7 @@ const PostProcessingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={chainName} onChange={e => setChainName(e.target.value)} placeholder="e.g. Cinematic Look" style={{
                     padding: '6px 10px', fontSize: 11, width: 150,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -404,7 +404,7 @@ const PostProcessingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Effect IDs (comma-separated)</div>
                   <input value={chainEffectIds} onChange={e => setChainEffectIds(e.target.value)} placeholder="eff-1, eff-2, eff-3" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -431,7 +431,7 @@ const PostProcessingPanel: React.FC = () => {
                     return (
                       <span key={eid} style={{
                         fontSize: 9, padding: '2px 6px', borderRadius: 3,
-                        backgroundColor: '#141428',
+                        backgroundColor: '#111',
                         color: eff ? EFFECT_TYPE_COLORS[eff.effect_type] || '#aaa' : '#888',
                       }}>
                         {eff?.name || eid}
@@ -458,7 +458,7 @@ const PostProcessingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={profileName} onChange={e => setProfileName(e.target.value)} placeholder="e.g. Cinematic Ultra" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -466,7 +466,7 @@ const PostProcessingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Description</div>
                   <input value={profileDesc} onChange={e => setProfileDesc(e.target.value)} placeholder="Profile description..." style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -488,7 +488,7 @@ const PostProcessingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Profile ID</div>
                   <input value={applyProfileId} onChange={e => setApplyProfileId(e.target.value)} placeholder="Select profile" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -533,7 +533,7 @@ const PostProcessingPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

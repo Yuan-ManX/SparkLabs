@@ -283,7 +283,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -341,7 +341,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={expName} onChange={e => setExpName(e.target.value)} placeholder="e.g. Prompt A/B Test" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -349,7 +349,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Description</div>
                   <input value={expDesc} onChange={e => setExpDesc(e.target.value)} placeholder="e.g. Compare prompt styles" style={{
                     padding: '6px 10px', fontSize: 11, width: 180,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -357,7 +357,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Variant Count</div>
                   <input value={expVariantCount} onChange={e => setExpVariantCount(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -365,7 +365,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Metrics</div>
                   <input value={expMetrics} onChange={e => setExpMetrics(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 180,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -381,7 +381,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
               <span style={{ fontSize: 10, color: '#888' }}>Filter:</span>
               <select value={listStatus} onChange={e => setListStatus(e.target.value)} style={{
                 padding: '5px 8px', fontSize: 11,
-                backgroundColor: '#141428', color: '#ccc',
+                backgroundColor: '#111', color: '#ccc',
                 border: '1px solid #333', borderRadius: 4, outline: 'none',
               }}>
                 <option value="active">Active</option>
@@ -447,7 +447,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Experiment ID</div>
                   <input value={trialExpId} onChange={e => setTrialExpId(e.target.value)} placeholder="e.g. exp-1" style={{
                     padding: '6px 10px', fontSize: 11, width: 100,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -455,7 +455,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Variant ID</div>
                   <input value={trialVariantId} onChange={e => setTrialVariantId(e.target.value)} placeholder="e.g. var-a" style={{
                     padding: '6px 10px', fontSize: 11, width: 90,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -463,7 +463,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Latency (ms)</div>
                   <input value={trialLatency} onChange={e => setTrialLatency(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 70,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -471,7 +471,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Tokens</div>
                   <input value={trialTokens} onChange={e => setTrialTokens(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 70,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -487,7 +487,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Prompt</div>
                   <input value={trialPrompt} onChange={e => setTrialPrompt(e.target.value)} placeholder="Enter prompt..." style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -495,7 +495,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Response</div>
                   <input value={trialResponse} onChange={e => setTrialResponse(e.target.value)} placeholder="Enter response..." style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -552,7 +552,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Experiment ID</div>
                   <input value={resultsExpId} onChange={e => setResultsExpId(e.target.value)} placeholder="e.g. exp-1" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -577,7 +577,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
                 </div>
                 {result.variant_results.map((vr, idx) => (
                   <div key={idx} style={{
-                    padding: 10, backgroundColor: '#141428', borderRadius: 4,
+                    padding: 10, backgroundColor: '#111', borderRadius: 4,
                     marginBottom: idx < result.variant_results.length - 1 ? 8 : 0,
                   }}>
                     <div style={{ fontSize: 11, color: '#aaa', fontWeight: 600, marginBottom: 6 }}>{vr.variant_name}</div>
@@ -597,7 +597,7 @@ const ExperimentFrameworkPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

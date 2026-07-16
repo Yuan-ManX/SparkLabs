@@ -315,7 +315,7 @@ const LLMPipelinePanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#1a1a2e] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Cpu className="w-[18px] h-[18px] text-[#00d4ff]" />
           <span className="font-bold text-[15px]">LLM Pipeline</span>
@@ -332,16 +332,16 @@ const LLMPipelinePanel: React.FC = () => {
       {/* Message bar */}
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#16213e]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Tab bar */}
-      <div className="flex border-b border-[#0f3460]/50">
+      <div className="flex border-b border-[#1e1e1e]/50">
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -364,7 +364,7 @@ const LLMPipelinePanel: React.FC = () => {
         {activeTab === 'generate' && (
           <div className="flex flex-col gap-3">
             {/* Provider selector */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Database className="w-3.5 h-3.5 text-[#00d4ff]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Provider</span>
@@ -377,7 +377,7 @@ const LLMPipelinePanel: React.FC = () => {
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-[11px] font-medium transition-all ${
                       selectedProvider === provider.id
                         ? 'bg-[#00d4ff]/20 border border-[#00d4ff]/50 text-[#00d4ff]'
-                        : 'bg-[#1a1a2e] border border-[#0f3460]/30 text-[#888] hover:border-[#0f3460]/60'
+                        : 'bg-[#1a1a2e] border border-[#1e1e1e]/30 text-[#888] hover:border-[#1e1e1e]/60'
                     }`}
                   >
                     <span className={`w-2 h-2 rounded-full ${getProviderStatusColor(provider.status)}`} />
@@ -388,7 +388,7 @@ const LLMPipelinePanel: React.FC = () => {
             </div>
 
             {/* Template selector */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Layers className="w-3.5 h-3.5 text-[#00d4ff]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Template</span>
@@ -396,7 +396,7 @@ const LLMPipelinePanel: React.FC = () => {
               <select
                 value={selectedTemplate}
                 onChange={e => handleSelectTemplate(e.target.value)}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#00d4ff]/50"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#00d4ff]/50"
               >
                 <option value="">-- Select a template --</option>
                 {templates.map(t => (
@@ -406,7 +406,7 @@ const LLMPipelinePanel: React.FC = () => {
             </div>
 
             {/* Prompt input */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Code2 className="w-3.5 h-3.5 text-[#00d4ff]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Prompt</span>
@@ -416,7 +416,7 @@ const LLMPipelinePanel: React.FC = () => {
                 onChange={e => setPromptInput(e.target.value)}
                 placeholder="Enter your prompt here..."
                 rows={4}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#00d4ff]/50 resize-none placeholder-[#555]"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#00d4ff]/50 resize-none placeholder-[#555]"
               />
             </div>
 
@@ -442,7 +442,7 @@ const LLMPipelinePanel: React.FC = () => {
 
             {/* Response output */}
             {responseOutput && (
-              <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+              <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <Sparkles className="w-3.5 h-3.5 text-[#00d4ff]" />
@@ -459,7 +459,7 @@ const LLMPipelinePanel: React.FC = () => {
                     </span>
                   </div>
                 </div>
-                <div className="bg-[#1a1a2e] rounded-md p-3 text-[12px] text-[#ccc] whitespace-pre-wrap max-h-[200px] overflow-auto font-mono border border-[#0f3460]/30">
+                <div className="bg-[#1a1a2e] rounded-md p-3 text-[12px] text-[#ccc] whitespace-pre-wrap max-h-[200px] overflow-auto font-mono border border-[#1e1e1e]/30">
                   {responseOutput.text}
                 </div>
                 <div className="flex gap-3 mt-2 text-[10px] text-[#666]">
@@ -476,7 +476,7 @@ const LLMPipelinePanel: React.FC = () => {
                   <Code2 className="w-3.5 h-3.5 text-[#e94560]" />
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Parsed Result</span>
                 </div>
-                <div className="bg-[#1a1a2e] rounded-md p-3 text-[12px] text-[#ccc] whitespace-pre-wrap max-h-[200px] overflow-auto font-mono border border-[#0f3460]/30">
+                <div className="bg-[#1a1a2e] rounded-md p-3 text-[12px] text-[#ccc] whitespace-pre-wrap max-h-[200px] overflow-auto font-mono border border-[#1e1e1e]/30">
                   {parseResult}
                 </div>
               </div>
@@ -487,7 +487,7 @@ const LLMPipelinePanel: React.FC = () => {
         {/* ==================== REASON TAB ==================== */}
         {activeTab === 'reason' && (
           <div className="flex flex-col gap-3">
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Brain className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Chain-of-Thought Reasoning</span>
@@ -497,7 +497,7 @@ const LLMPipelinePanel: React.FC = () => {
                 onChange={e => setReasonInput(e.target.value)}
                 placeholder="Enter a question or problem to reason through..."
                 rows={3}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555]"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555]"
               />
               <button
                 onClick={handleReason}
@@ -519,7 +519,7 @@ const LLMPipelinePanel: React.FC = () => {
                 {reasoningSteps.map((step, index) => (
                   <div
                     key={step.step}
-                    className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 border-l-[3px]"
+                    className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 border-l-[3px]"
                     style={{ borderLeftColor: step.confidence >= 0.9 ? '#6bcb77' : step.confidence >= 0.7 ? '#fdcb6e' : '#ff6b6b' }}
                   >
                     <div className="flex items-center justify-between mb-1">
@@ -546,7 +546,7 @@ const LLMPipelinePanel: React.FC = () => {
             )}
 
             {reasoningSteps.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Brain className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">Enter a question and start reasoning</span>
               </div>
@@ -566,7 +566,7 @@ const LLMPipelinePanel: React.FC = () => {
                   className={`px-3 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${
                     selectedCategory === cat
                       ? 'bg-[#00d4ff]/20 border border-[#00d4ff]/50 text-[#00d4ff]'
-                      : 'bg-[#16213e] border border-[#0f3460]/30 text-[#888] hover:border-[#0f3460]/60'
+                      : 'bg-[#16213e] border border-[#1e1e1e]/30 text-[#888] hover:border-[#1e1e1e]/60'
                   }`}
                 >
                   <Filter className="w-3 h-3 inline mr-1" />
@@ -584,7 +584,7 @@ const LLMPipelinePanel: React.FC = () => {
                   className={`bg-[#16213e] rounded-lg border p-3 cursor-pointer transition-all ${
                     selectedTemplate === template.id
                       ? 'border-[#00d4ff]/50 bg-[#00d4ff]/5'
-                      : 'border-[#0f3460]/30 hover:border-[#0f3460]/60'
+                      : 'border-[#1e1e1e]/30 hover:border-[#1e1e1e]/60'
                   }`}
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -603,7 +603,7 @@ const LLMPipelinePanel: React.FC = () => {
                 </div>
               ))}
               {filteredTemplates.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+                <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                   <Layers className="w-10 h-10 mb-2 opacity-20" />
                   <span className="text-[12px]">No templates in this category</span>
                 </div>
@@ -618,19 +618,19 @@ const LLMPipelinePanel: React.FC = () => {
             {/* Stats overview cards */}
             {stats && (
               <div className="grid grid-cols-2 gap-2">
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Total Requests</div>
                   <div className="text-[20px] font-bold text-[#00d4ff]">{stats.total_requests.toLocaleString()}</div>
                 </div>
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Total Tokens</div>
                   <div className="text-[20px] font-bold text-[#a29bfe]">{stats.total_tokens.toLocaleString()}</div>
                 </div>
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Avg Latency</div>
                   <div className="text-[20px] font-bold text-[#fdcb6e]">{stats.avg_latency_ms.toFixed(0)}ms</div>
                 </div>
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Success Rate</div>
                   <div className="text-[20px] font-bold text-[#6bcb77]">{stats.success_rate.toFixed(1)}%</div>
                 </div>
@@ -638,14 +638,14 @@ const LLMPipelinePanel: React.FC = () => {
             )}
 
             {/* Provider status list */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Database className="w-3.5 h-3.5 text-[#00d4ff]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Provider Status</span>
               </div>
               <div className="flex flex-col gap-1.5">
                 {providers.map(provider => (
-                  <div key={provider.id} className="flex items-center justify-between bg-[#1a1a2e] rounded-md px-3 py-2 border border-[#0f3460]/20">
+                  <div key={provider.id} className="flex items-center justify-between bg-[#1a1a2e] rounded-md px-3 py-2 border border-[#1e1e1e]/20">
                     <div className="flex items-center gap-2">
                       <span className={`w-2 h-2 rounded-full ${getProviderStatusColor(provider.status)}`} />
                       <span className="text-[12px] text-[#ccc]">{provider.name}</span>
@@ -667,7 +667,7 @@ const LLMPipelinePanel: React.FC = () => {
             {/* Refresh button */}
             <button
               onClick={() => { fetchStats(); fetchProviders(); }}
-              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#0f3460]/50 text-[#888] rounded-lg text-[12px] hover:border-[#0f3460] transition-all"
+              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#1e1e1e]/50 text-[#888] rounded-lg text-[12px] hover:border-[#1e1e1e] transition-all"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Refresh Statistics
@@ -677,7 +677,7 @@ const LLMPipelinePanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <Cpu className="w-3 h-3" />
           {templates.length} templates · {providers.filter(p => p.status === 'online').length} online

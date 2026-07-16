@@ -237,7 +237,7 @@ const KnowledgeSynthesisPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -267,14 +267,14 @@ const KnowledgeSynthesisPanel: React.FC = () => {
       )}
 
       <div style={{ padding: '10px 12px', display: 'flex', gap: 6, borderBottom: '1px solid #2a2a3e', flexWrap: 'wrap', alignItems: 'center' }}>
-        <input value={sourceInput} onChange={e => setSourceInput(e.target.value)} placeholder="Source..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
-        <input value={contentInput} onChange={e => setContentInput(e.target.value)} placeholder="Content..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 150, outline: 'none' }} />
-        <input value={domainInput} onChange={e => setDomainInput(e.target.value)} placeholder="Domain..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+        <input value={sourceInput} onChange={e => setSourceInput(e.target.value)} placeholder="Source..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
+        <input value={contentInput} onChange={e => setContentInput(e.target.value)} placeholder="Content..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 150, outline: 'none' }} />
+        <input value={domainInput} onChange={e => setDomainInput(e.target.value)} placeholder="Domain..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
         <button onClick={handleIngestFragment} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
           {'\u2795'} Ingest Fragment
         </button>
-        <input value={mergeSourceInput} onChange={e => setMergeSourceInput(e.target.value)} placeholder="Source ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
-        <input value={mergeTargetInput} onChange={e => setMergeTargetInput(e.target.value)} placeholder="Target ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
+        <input value={mergeSourceInput} onChange={e => setMergeSourceInput(e.target.value)} placeholder="Source ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
+        <input value={mergeTargetInput} onChange={e => setMergeTargetInput(e.target.value)} placeholder="Target ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
         <button onClick={handleMergeFragments} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
           {'\uD83D\uDD17'} Merge
         </button>
@@ -307,7 +307,7 @@ const KnowledgeSynthesisPanel: React.FC = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
                       fontSize: 9, padding: '2px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#a29bfe', fontWeight: 600,
+                      backgroundColor: '#111', color: '#a29bfe', fontWeight: 600,
                     }}>{fragment.domain}</span>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
@@ -336,12 +336,12 @@ const KnowledgeSynthesisPanel: React.FC = () => {
         {activeTab === 'synthesize' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center', marginBottom: 4 }}>
-              <input value={synthesizeTopicInput} onChange={e => setSynthesizeTopicInput(e.target.value)} placeholder="Topic..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
-              <input value={synthesizeDomainInput} onChange={e => setSynthesizeDomainInput(e.target.value)} placeholder="Domain..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
+              <input value={synthesizeTopicInput} onChange={e => setSynthesizeTopicInput(e.target.value)} placeholder="Topic..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+              <input value={synthesizeDomainInput} onChange={e => setSynthesizeDomainInput(e.target.value)} placeholder="Domain..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
               <button onClick={handleSynthesize} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83E\uDDE0'} Synthesize
               </button>
-              <input value={distillSessionId} onChange={e => setDistillSessionId(e.target.value)} placeholder="Session ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
+              <input value={distillSessionId} onChange={e => setDistillSessionId(e.target.value)} placeholder="Session ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
               <button onClick={handleDistillSession} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDCA7'} Distill
               </button>
@@ -358,19 +358,19 @@ const KnowledgeSynthesisPanel: React.FC = () => {
                   {'\uD83E\uDDE0'} Synthesis Result: {synthesizeResult.topic}
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 11, marginBottom: 8 }}>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Sources: <span style={{ color: '#74b9ff', fontWeight: 600 }}>{synthesizeResult.source_count}</span>
                   </div>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Insights: <span style={{ color: '#6bcb77', fontWeight: 600 }}>{synthesizeResult.key_insights.length}</span>
                   </div>
                 </div>
-                <div style={{ fontSize: 10, color: '#aaa', marginBottom: 10, padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                <div style={{ fontSize: 10, color: '#aaa', marginBottom: 10, padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                   {synthesizeResult.summary}
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                   {synthesizeResult.key_insights.map((insight, i) => (
-                    <div key={i} style={{ fontSize: 10, color: '#888', padding: '4px 8px', backgroundColor: '#141428', borderRadius: 3 }}>
+                    <div key={i} style={{ fontSize: 10, color: '#888', padding: '4px 8px', backgroundColor: '#111', borderRadius: 3 }}>
                       {'\uD83D\uDCA1'} {insight}
                     </div>
                   ))}
@@ -389,18 +389,18 @@ const KnowledgeSynthesisPanel: React.FC = () => {
         {activeTab === 'query' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <input value={queryInput} onChange={e => setQueryInput(e.target.value)} placeholder="Search query..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
-              <input value={queryDomainInput} onChange={e => setQueryDomainInput(e.target.value)} placeholder="Domain (optional)..." style={{ padding: '8px 12px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
+              <input value={queryInput} onChange={e => setQueryInput(e.target.value)} placeholder="Search query..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+              <input value={queryDomainInput} onChange={e => setQueryDomainInput(e.target.value)} placeholder="Domain (optional)..." style={{ padding: '8px 12px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 130, outline: 'none' }} />
               <button onClick={handleQueryKnowledge} style={{ padding: '8px 16px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDD0D'} Query
               </button>
             </div>
             <div style={{ display: 'flex', gap: 6, alignItems: 'center' }}>
-              <input value={buildDomainInput} onChange={e => setBuildDomainInput(e.target.value)} placeholder="Domain to index..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+              <input value={buildDomainInput} onChange={e => setBuildDomainInput(e.target.value)} placeholder="Domain to index..." style={{ flex: 1, padding: '8px 12px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
               <button onClick={handleBuildDomainIndex} style={{ padding: '8px 16px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDCC7'} Build Index
               </button>
-              <input value={crossRefFragmentId} onChange={e => setCrossRefFragmentId(e.target.value)} placeholder="Fragment ID..." style={{ padding: '8px 12px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+              <input value={crossRefFragmentId} onChange={e => setCrossRefFragmentId(e.target.value)} placeholder="Fragment ID..." style={{ padding: '8px 12px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
               <button onClick={handleCrossRef} style={{ padding: '8px 16px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83D\uDD17'} Cross Ref
               </button>
@@ -419,7 +419,7 @@ const KnowledgeSynthesisPanel: React.FC = () => {
                 </div>
                 {crossRefResult.related_fragments.map(ref => (
                   <div key={ref.id} style={{
-                    padding: '6px 8px', backgroundColor: '#141428', borderRadius: 3,
+                    padding: '6px 8px', backgroundColor: '#111', borderRadius: 3,
                     marginBottom: 4, fontSize: 10, color: '#aaa',
                     display: 'flex', justifyContent: 'space-between',
                   }}>
@@ -464,7 +464,7 @@ const KnowledgeSynthesisPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

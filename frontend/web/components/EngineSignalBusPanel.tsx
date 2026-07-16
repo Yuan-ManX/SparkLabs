@@ -71,24 +71,24 @@ export default function EngineSignalBusPanel() {
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a] flex-wrap">
         {tabs.map(t => (
-          <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+          <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
         {/* Overview */}
         {activeTab === 'overview' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Signal Bus Engine</h2>
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Defined Signals</h3><p className="text-2xl">{stats.defined_signals ?? stats.total_signals ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Emissions</h3><p className="text-2xl">{stats.emissions ?? stats.total_emissions ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Subscribers</h3><p className="text-2xl">{stats.subscribers ?? stats.total_subscribers ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Categories</h3><p className="text-2xl">{stats.categories ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Namespaces</h3><p className="text-2xl">{stats.namespaces ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Active Connections</h3><p className="text-2xl">{stats.active_connections ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Defined Signals</h3><p className="text-2xl">{stats.defined_signals ?? stats.total_signals ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Emissions</h3><p className="text-2xl">{stats.emissions ?? stats.total_emissions ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Subscribers</h3><p className="text-2xl">{stats.subscribers ?? stats.total_subscribers ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Categories</h3><p className="text-2xl">{stats.categories ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Namespaces</h3><p className="text-2xl">{stats.namespaces ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Active Connections</h3><p className="text-2xl">{stats.active_connections ?? 0}</p></div>
             </div>
           </div>
         )}
@@ -97,7 +97,7 @@ export default function EngineSignalBusPanel() {
         {activeTab === 'define' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Define Signal</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div className="flex gap-3">
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Name" value={defName} onChange={e => setDefName(e.target.value)} />
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Category" value={defCategory} onChange={e => setDefCategory(e.target.value)} />
@@ -118,7 +118,7 @@ export default function EngineSignalBusPanel() {
         {activeTab === 'connect' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Connect Listener to Signal</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div className="flex gap-3">
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Signal ID" value={connSignalId} onChange={e => setConnSignalId(e.target.value)} />
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Listener ID" value={connListenerId} onChange={e => setConnListenerId(e.target.value)} />
@@ -138,7 +138,7 @@ export default function EngineSignalBusPanel() {
             </div>
 
             <h2 className="text-lg font-bold text-[#00d4ff] mt-6">Disconnect</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Connection ID" value={discConnectionId} onChange={e => setDiscConnectionId(e.target.value)} />
               <button className="px-4 py-2 bg-red-600 text-white rounded text-sm font-medium" onClick={async () => {
                 if (!discConnectionId.trim()) { showMessage('Connection ID is required'); return; }
@@ -153,7 +153,7 @@ export default function EngineSignalBusPanel() {
         {activeTab === 'emit' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Emit Signal</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div className="flex gap-3">
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Signal ID" value={emitSignalId} onChange={e => setEmitSignalId(e.target.value)} />
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Emitted By" value={emitEmittedBy} onChange={e => setEmitEmittedBy(e.target.value)} />
@@ -173,7 +173,7 @@ export default function EngineSignalBusPanel() {
         {activeTab === 'batch' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Batch Emit</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Batch ID (optional)" value={batchId} onChange={e => setBatchId(e.target.value)} />
               <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" rows={6} placeholder='Emissions (JSON)&#10;e.g. [{"signal_id":"...","payload":{},"emitted_by":"..."}]' value={batchEmissions} onChange={e => setBatchEmissions(e.target.value)} />
               <button className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium" onClick={async () => {
@@ -189,7 +189,7 @@ export default function EngineSignalBusPanel() {
         {activeTab === 'history' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Emission History</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div className="flex gap-3">
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Signal ID" value={histSignalId} onChange={e => setHistSignalId(e.target.value)} />
                 <input className="w-32 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Limit" type="number" value={histLimit} onChange={e => setHistLimit(e.target.value)} />
@@ -223,7 +223,7 @@ export default function EngineSignalBusPanel() {
         {activeTab === 'namespaces' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Namespaces & Definitions</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <button className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium" onClick={async () => {
                 const r = await fetch(`${API_BASE}/signal-bus/namespaces`);
                 if (r.ok) { const data = await r.json(); setNamespaces(data.namespaces || data || []); } else { showMessage('Failed to fetch namespaces'); }
@@ -235,7 +235,7 @@ export default function EngineSignalBusPanel() {
               )}
             </div>
 
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <h3 className="text-sm font-medium text-[#ccc]">Search Definitions</h3>
               <div className="flex gap-3">
                 <input className="flex-1 bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm" placeholder="Namespace filter" value={defNamespaceFilter} onChange={e => setDefNamespaceFilter(e.target.value)} />

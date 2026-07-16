@@ -391,7 +391,7 @@ const PerformanceOverlay: React.FC = () => {
               Generated Overlay Text
             </div>
             <div style={{
-              padding: 10, backgroundColor: '#141428', borderRadius: 4,
+              padding: 10, backgroundColor: '#111', borderRadius: 4,
               fontFamily: 'monospace', fontSize: 11, whiteSpace: 'pre-wrap',
               border: '1px solid #222', color: '#aaa',
               maxHeight: 160, overflow: 'auto',
@@ -600,7 +600,7 @@ const PerformanceOverlay: React.FC = () => {
           {/* Active indicators */}
           <div style={{
             display: 'flex', gap: 8, alignItems: 'center',
-            padding: '6px 10px', backgroundColor: '#141428',
+            padding: '6px 10px', backgroundColor: '#111',
             borderRadius: 4, fontSize: 10, color: '#666',
           }}>
             <span style={{

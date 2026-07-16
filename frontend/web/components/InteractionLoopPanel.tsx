@@ -286,7 +286,7 @@ const InteractionLoopPanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#1a1a2e] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <RefreshCw className="w-[18px] h-[18px] text-[#6bcb77]" />
           <span className="font-bold text-[15px]">Interaction Loop</span>
@@ -298,16 +298,16 @@ const InteractionLoopPanel: React.FC = () => {
 
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#16213e]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[#0f3460]/50">
+      <div className="flex border-b border-[#1e1e1e]/50">
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -338,7 +338,7 @@ const InteractionLoopPanel: React.FC = () => {
             </button>
 
             {/* Cycle Flow Visualization */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-3">
                 <RefreshCw className="w-3.5 h-3.5 text-[#6bcb77]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Cycle Flow</span>
@@ -356,7 +356,7 @@ const InteractionLoopPanel: React.FC = () => {
                     <div className={`flex-1 flex flex-col items-center gap-1 p-2 rounded-lg border ${
                       phase.status === 'completed' ? 'border-[#6bcb77]/30 bg-[#6bcb77]/5' :
                       phase.status === 'in_progress' ? 'border-[#00d4ff]/30 bg-[#00d4ff]/5' :
-                      'border-[#0f3460]/30 bg-[#1a1a2e]'
+                      'border-[#1e1e1e]/30 bg-[#1a1a2e]'
                     }`}>
                       {phase.status === 'completed' ? (
                         <CheckCircle2 className="w-4 h-4 text-[#6bcb77]" />
@@ -388,7 +388,7 @@ const InteractionLoopPanel: React.FC = () => {
               {/* Detailed phase list */}
               <div className="flex flex-col gap-1.5">
                 {(isRunning ? cyclePhases : currentCycle?.phases || []).map((phase) => (
-                  <div key={phase.phase} className="flex items-center gap-3 bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#0f3460]/20">
+                  <div key={phase.phase} className="flex items-center gap-3 bg-[#1a1a2e] rounded-md px-3 py-1.5 border border-[#1e1e1e]/20">
                     <div className={`w-2 h-2 rounded-full ${getPhaseStatusColor(phase.status)}`} />
                     <div className="flex-1">
                       <span className={`text-[11px] font-semibold capitalize ${getPhaseStatusText(phase.status)}`}>
@@ -428,7 +428,7 @@ const InteractionLoopPanel: React.FC = () => {
             )}
 
             {!currentCycle && !isRunning && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <RefreshCw className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">Run a cycle to see the interaction loop</span>
               </div>
@@ -442,7 +442,7 @@ const InteractionLoopPanel: React.FC = () => {
             {history.map(cycle => (
               <div
                 key={cycle.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3"
               >
                 <div
                   className="flex items-center justify-between cursor-pointer"
@@ -461,7 +461,7 @@ const InteractionLoopPanel: React.FC = () => {
                   </div>
                 </div>
                 {expandedCycle === cycle.id && (
-                  <div className="mt-2 pt-2 border-t border-[#0f3460]/30">
+                  <div className="mt-2 pt-2 border-t border-[#1e1e1e]/30">
                     <div className="text-[10px] text-[#666] mb-1">{new Date(cycle.completed_at).toLocaleString()}</div>
                     <div className="text-[11px] text-[#ccc] mb-2">{cycle.outcome}</div>
                     <div className="flex flex-col gap-1">
@@ -479,7 +479,7 @@ const InteractionLoopPanel: React.FC = () => {
               </div>
             ))}
             {history.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <History className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No cycle history yet</span>
               </div>
@@ -493,26 +493,26 @@ const InteractionLoopPanel: React.FC = () => {
             {loopState && (
               <>
                 <div className="grid grid-cols-2 gap-2">
-                  <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                  <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                     <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Current Cycle</div>
                     <div className="text-[20px] font-bold text-[#6bcb77]">#{loopState.current_cycle}</div>
                   </div>
-                  <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                  <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                     <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Total Cycles</div>
                     <div className="text-[20px] font-bold text-[#00d4ff]">{loopState.total_cycles}</div>
                   </div>
-                  <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                  <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                     <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Exploration</div>
                     <div className="text-[20px] font-bold text-[#fdcb6e]">{(loopState.exploration_rate * 100).toFixed(0)}%</div>
                   </div>
-                  <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                  <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                     <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Learning</div>
                     <div className="text-[20px] font-bold text-[#a29bfe]">{loopState.learning_progress.toFixed(1)}%</div>
                   </div>
                 </div>
 
                 {/* Performance Curve */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <TrendingUp className="w-3.5 h-3.5 text-[#6bcb77]" />
                     <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Performance Curve</span>
@@ -535,7 +535,7 @@ const InteractionLoopPanel: React.FC = () => {
                 </div>
 
                 {/* State description */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Activity className="w-3.5 h-3.5 text-[#6bcb77]" />
                     <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">State</span>
@@ -544,7 +544,7 @@ const InteractionLoopPanel: React.FC = () => {
                 </div>
 
                 {/* Exploration vs Exploitation bar */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <Layers className="w-3.5 h-3.5 text-[#6bcb77]" />
                     <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Explore vs Exploit</span>
@@ -573,7 +573,7 @@ const InteractionLoopPanel: React.FC = () => {
 
             <button
               onClick={() => { fetchHistory(); fetchState(); }}
-              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#0f3460]/50 text-[#888] rounded-lg text-[12px] hover:border-[#0f3460] transition-all"
+              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#1e1e1e]/50 text-[#888] rounded-lg text-[12px] hover:border-[#1e1e1e] transition-all"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Refresh State
@@ -583,7 +583,7 @@ const InteractionLoopPanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <RefreshCw className="w-3 h-3" />
           {history.length} cycles · {loopState ? `E:${(loopState.exploration_rate * 100).toFixed(0)}%` : 'N/A'}

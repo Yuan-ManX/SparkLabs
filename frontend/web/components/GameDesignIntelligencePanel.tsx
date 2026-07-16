@@ -267,21 +267,21 @@ const GameDesignIntelligencePanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Seed Concept</div>
-                  <input value={seedConcept} onChange={e => setSeedConcept(e.target.value)} placeholder="e.g. time manipulation, gravity puzzles..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={seedConcept} onChange={e => setSeedConcept(e.target.value)} placeholder="e.g. time manipulation, gravity puzzles..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Genre</div>
-                  <select value={genre} onChange={e => setGenre(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={genre} onChange={e => setGenre(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {GENRE_OPTIONS.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Count</div>
-                  <input value={count} onChange={e => setCount(e.target.value)} type="number" min="1" max="10" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={count} onChange={e => setCount(e.target.value)} type="number" min="1" max="10" style={{ padding: '6px 10px', fontSize: 11, width: 60, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Innovation Level</div>
-                  <select value={innovationLevel} onChange={e => setInnovationLevel(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={innovationLevel} onChange={e => setInnovationLevel(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="0.3">Low (0.3)</option>
                     <option value="0.5">Medium (0.5)</option>
                     <option value="0.7">High (0.7)</option>
@@ -306,7 +306,7 @@ const GameDesignIntelligencePanel: React.FC = () => {
               <div key={c.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #fdcb6e' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{c.title}</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe', textTransform: 'uppercase' }}>{c.genre}</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe', textTransform: 'uppercase' }}>{c.genre}</span>
                 </div>
                 <div style={{ fontSize: 10, color: '#888', marginTop: 2 }}>Core: {c.core_mechanic} · Phase: {c.phase} · Iterations: {c.iteration_count}</div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
@@ -328,11 +328,11 @@ const GameDesignIntelligencePanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 180 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Mechanic Name</div>
-                  <input value={mechanicName} onChange={e => setMechanicName(e.target.value)} placeholder="e.g. double_jump, dash_ability, grappling_hook..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={mechanicName} onChange={e => setMechanicName(e.target.value)} placeholder="e.g. double_jump, dash_ability, grappling_hook..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 180 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Context (JSON, optional)</div>
-                  <input value={mechanicContext} onChange={e => setMechanicContext(e.target.value)} placeholder='{"related_mechanics": ["dash"]}' style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={mechanicContext} onChange={e => setMechanicContext(e.target.value)} placeholder='{"related_mechanics": ["dash"]}' style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleAnalyzeMechanic} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Analyze</button>
               </div>
@@ -343,7 +343,7 @@ const GameDesignIntelligencePanel: React.FC = () => {
               <div key={a.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #74b9ff' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{a.mechanic_name}</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#fdcb6e', textTransform: 'uppercase' }}>{a.category}</span>
+                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#fdcb6e', textTransform: 'uppercase' }}>{a.category}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 8, marginTop: 4 }}>
                   <span style={{ fontSize: 9, color: scoreColor(a.depth_score) }}>Depth: {(a.depth_score * 100).toFixed(0)}%</span>
@@ -353,7 +353,7 @@ const GameDesignIntelligencePanel: React.FC = () => {
                 <div style={{ fontSize: 10, color: '#6bcb77', marginTop: 4, fontStyle: 'italic' }}>{a.recommendation}</div>
                 {a.known_patterns.length > 0 && (
                   <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
-                    {a.known_patterns.map((p, i) => <span key={i} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>{p}</span>)}
+                    {a.known_patterns.map((p, i) => <span key={i} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>{p}</span>)}
                   </div>
                 )}
                 {a.variation_ideas.length > 0 && (
@@ -375,13 +375,13 @@ const GameDesignIntelligencePanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 250 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Concept ID</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={evaluateConceptId} onChange={e => setEvaluateConceptId(e.target.value)} placeholder="Paste a concept ID from brainstorm..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={evaluateConceptId} onChange={e => setEvaluateConceptId(e.target.value)} placeholder="Paste a concept ID from brainstorm..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                     <button onClick={handleEvaluateFun} style={{ padding: '6px 14px', backgroundColor: '#4a2d4a', color: '#e056a0', border: '1px solid #5a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>Evaluate Fun</button>
                   </div>
                 </div>
               </div>
               {funResult && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                   <div style={{ fontSize: 11, fontWeight: 600, color: '#ccc', marginBottom: 4 }}>{funResult.title || funResult.concept_id}</div>
                   <div style={{ fontSize: 14, fontWeight: 700, color: '#fdcb6e', marginBottom: 4 }}>
                     Fun Factor: {(funResult.fun_factor * 100).toFixed(0)}%
@@ -414,11 +414,11 @@ const GameDesignIntelligencePanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Concept ID</div>
-                  <input value={iterateConceptId} onChange={e => setIterateConceptId(e.target.value)} placeholder="Paste a concept ID..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={iterateConceptId} onChange={e => setIterateConceptId(e.target.value)} placeholder="Paste a concept ID..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Direction</div>
-                  <select value={iterateDirection} onChange={e => setIterateDirection(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={iterateDirection} onChange={e => setIterateDirection(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {ITERATION_DIRECTIONS.map(d => <option key={d} value={d}>{d}</option>)}
                   </select>
                 </div>
@@ -436,13 +436,13 @@ const GameDesignIntelligencePanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 250 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Concept ID</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={pitchConceptId} onChange={e => setPitchConceptId(e.target.value)} placeholder="Paste a concept ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <input value={pitchConceptId} onChange={e => setPitchConceptId(e.target.value)} placeholder="Paste a concept ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                     <button onClick={handleGeneratePitch} style={{ padding: '6px 14px', backgroundColor: '#3a2d4a', color: '#a29bfe', border: '1px solid #4a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap' }}>Generate Pitch</button>
                   </div>
                 </div>
               </div>
               {pitchResult && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                   <div style={{ fontSize: 12, fontWeight: 700, color: '#fdcb6e', marginBottom: 4 }}>{pitchResult.title}</div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 4, fontSize: 10 }}>
                     <div><span style={{ color: '#888' }}>Genre: </span><span style={{ color: '#ccc' }}>{pitchResult.genre}</span></div>
@@ -466,7 +466,7 @@ const GameDesignIntelligencePanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83C\uDFB2'} {concepts.length} concepts · {analyses.length} analyses</span>
         <span>Connected</span>
       </div>

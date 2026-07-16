@@ -210,11 +210,11 @@ const Lighting2DPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={lightName} onChange={e => setLightName(e.target.value)} placeholder="e.g. Sun Light" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={lightName} onChange={e => setLightName(e.target.value)} placeholder="e.g. Sun Light" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
-                  <select value={lightType} onChange={e => setLightType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={lightType} onChange={e => setLightType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="point">Point</option>
                     <option value="directional">Directional</option>
                     <option value="spot">Spot</option>
@@ -224,19 +224,19 @@ const Lighting2DPanel: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Position</div>
-                  <input value={lightPosition} onChange={e => setLightPosition(e.target.value)} placeholder="x,y" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={lightPosition} onChange={e => setLightPosition(e.target.value)} placeholder="x,y" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Color</div>
-                  <input value={lightColor} onChange={e => setLightColor(e.target.value)} type="color" style={{ padding: '2px', width: 36, height: 32, backgroundColor: '#141428', border: '1px solid #333', borderRadius: 4, cursor: 'pointer' }} />
+                  <input value={lightColor} onChange={e => setLightColor(e.target.value)} type="color" style={{ padding: '2px', width: 36, height: 32, backgroundColor: '#111', border: '1px solid #333', borderRadius: 4, cursor: 'pointer' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Intensity</div>
-                  <input value={lightIntensity} onChange={e => setLightIntensity(e.target.value)} type="number" step="0.1" min="0" max="5" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={lightIntensity} onChange={e => setLightIntensity(e.target.value)} type="number" step="0.1" min="0" max="5" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Radius</div>
-                  <input value={lightRadius} onChange={e => setLightRadius(e.target.value)} type="number" min="1" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={lightRadius} onChange={e => setLightRadius(e.target.value)} type="number" min="1" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCreateLight} style={{ padding: '6px 14px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Create</button>
               </div>
@@ -247,19 +247,19 @@ const Lighting2DPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Light ID</div>
-                  <input value={configLightId} onChange={e => setConfigLightId(e.target.value)} placeholder="Light ID" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={configLightId} onChange={e => setConfigLightId(e.target.value)} placeholder="Light ID" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Intensity</div>
-                  <input value={configIntensity} onChange={e => setConfigIntensity(e.target.value)} placeholder="0-5" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={configIntensity} onChange={e => setConfigIntensity(e.target.value)} placeholder="0-5" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Color</div>
-                  <input value={configColor} onChange={e => setConfigColor(e.target.value)} placeholder="#hex" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={configColor} onChange={e => setConfigColor(e.target.value)} placeholder="#hex" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Radius</div>
-                  <input value={configRadius} onChange={e => setConfigRadius(e.target.value)} placeholder="px" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={configRadius} onChange={e => setConfigRadius(e.target.value)} placeholder="px" style={{ padding: '6px 10px', fontSize: 11, width: 70, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleConfigureLight} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Configure</button>
               </div>
@@ -270,16 +270,16 @@ const Lighting2DPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scene Bounds</div>
-                  <input value={sceneBounds} onChange={e => setSceneBounds(e.target.value)} placeholder="x,y,w,h" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sceneBounds} onChange={e => setSceneBounds(e.target.value)} placeholder="x,y,w,h" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Visible Entities (comma)</div>
-                  <input value={visibleEntities} onChange={e => setVisibleEntities(e.target.value)} placeholder="entity1, entity2" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={visibleEntities} onChange={e => setVisibleEntities(e.target.value)} placeholder="entity1, entity2" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCalculateLighting} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Calculate</button>
               </div>
               {lightingResult && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
                   <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(lightingResult, null, 2)}</pre>
                 </div>
               )}
@@ -312,11 +312,11 @@ const Lighting2DPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={layerName} onChange={e => setLayerName(e.target.value)} placeholder="e.g. Ambient Base" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={layerName} onChange={e => setLayerName(e.target.value)} placeholder="e.g. Ambient Base" style={{ padding: '6px 10px', fontSize: 11, width: 140, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Blend Mode</div>
-                  <select value={layerBlendMode} onChange={e => setLayerBlendMode(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={layerBlendMode} onChange={e => setLayerBlendMode(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="additive">Additive</option>
                     <option value="multiply">Multiply</option>
                     <option value="screen">Screen</option>
@@ -326,7 +326,7 @@ const Lighting2DPanel: React.FC = () => {
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Ambient Color</div>
-                  <input value={layerAmbientColor} onChange={e => setLayerAmbientColor(e.target.value)} type="color" style={{ padding: '2px', width: 36, height: 32, backgroundColor: '#141428', border: '1px solid #333', borderRadius: 4, cursor: 'pointer' }} />
+                  <input value={layerAmbientColor} onChange={e => setLayerAmbientColor(e.target.value)} type="color" style={{ padding: '2px', width: 36, height: 32, backgroundColor: '#111', border: '1px solid #333', borderRadius: 4, cursor: 'pointer' }} />
                 </div>
                 <button onClick={handleCreateLayer} style={{ padding: '6px 14px', backgroundColor: '#4a2d4a', color: '#e056a0', border: '1px solid #5a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Create</button>
               </div>
@@ -349,7 +349,7 @@ const Lighting2DPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDCA1'} {lights.length} lights · {layers.length} layers</span>
         <span>Connected</span>
       </div>

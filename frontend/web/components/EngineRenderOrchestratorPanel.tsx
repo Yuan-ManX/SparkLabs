@@ -82,12 +82,12 @@ export default function EngineRenderOrchestratorPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
 
         {/* Overview Tab */}
@@ -96,7 +96,7 @@ export default function EngineRenderOrchestratorPanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">Render Orchestrator Stats</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {Object.entries(stats).map(([key, value]) => (
-                <div key={key} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={key} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-[#00d4ff] text-xs capitalize">{key.replace(/_/g, ' ')}</h3>
                   <p className="text-2xl font-bold mt-1">
                     {typeof value === 'number' ? value.toLocaleString() : String(value)}
@@ -113,7 +113,7 @@ export default function EngineRenderOrchestratorPanel() {
         {/* Passes Tab */}
         {activeTab === 'passes' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Add Render Pass</h2>
               <div className="grid grid-cols-3 gap-3">
                 <div>
@@ -147,7 +147,7 @@ export default function EngineRenderOrchestratorPanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">Passes ({passes.length})</h2>
                 <button onClick={async () => {
@@ -165,8 +165,8 @@ export default function EngineRenderOrchestratorPanel() {
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{p.name}</span>
                         <div className="flex gap-1">
-                          <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded">{p.type || 'unknown'}</span>
-                          <span className="text-xs bg-[#0f0f23] text-[#ccc] px-2 py-0.5 rounded">Priority: {p.priority ?? 0}</span>
+                          <span className="text-xs bg-[#0d0d0d] text-[#00d4ff] px-2 py-0.5 rounded">{p.type || 'unknown'}</span>
+                          <span className="text-xs bg-[#0d0d0d] text-[#ccc] px-2 py-0.5 rounded">Priority: {p.priority ?? 0}</span>
                         </div>
                       </div>
                     </div>
@@ -188,7 +188,7 @@ export default function EngineRenderOrchestratorPanel() {
         {/* Post-effects Tab */}
         {activeTab === 'post-effects' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Set Post-Effects Chain</h2>
               <div>
                 <label className="text-xs text-[#999] mb-1 block">Effects Chain (JSON array)</label>
@@ -208,7 +208,7 @@ export default function EngineRenderOrchestratorPanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Current Post-Effects Chain</h2>
               {postEffects.chain ? (
                 <div className="space-y-2">
@@ -250,7 +250,7 @@ export default function EngineRenderOrchestratorPanel() {
         {/* Quality Tab */}
         {activeTab === 'quality' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Set Quality Preset</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -270,7 +270,7 @@ export default function EngineRenderOrchestratorPanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Current Quality Settings</h2>
               {Object.keys(stats).length > 0 ? (
                 <div className="grid grid-cols-2 gap-4">
@@ -300,7 +300,7 @@ export default function EngineRenderOrchestratorPanel() {
         {/* Performance Tab */}
         {activeTab === 'performance' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Record Frame</h2>
               <div className="grid grid-cols-3 gap-3">
                 <div>
@@ -333,7 +333,7 @@ export default function EngineRenderOrchestratorPanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Performance Metrics</h2>
               {Object.keys(performance).length > 0 ? (
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
@@ -351,7 +351,7 @@ export default function EngineRenderOrchestratorPanel() {
               )}
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">GPU Memory</h2>
                 <button onClick={fetchGpuMemory}

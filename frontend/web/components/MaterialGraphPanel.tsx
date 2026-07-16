@@ -256,7 +256,7 @@ const MaterialGraphPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -314,7 +314,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={graphName} onChange={e => setGraphName(e.target.value)} placeholder="e.g. PBR Metal" style={{
                     padding: '6px 10px', fontSize: 11, width: 150,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -322,7 +322,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Description</div>
                   <input value={graphDesc} onChange={e => setGraphDesc(e.target.value)} placeholder="Graph description..." style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -370,7 +370,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Graph ID</div>
                   <input value={addNodeGraphId} onChange={e => setAddNodeGraphId(e.target.value)} placeholder="Select graph" style={{
                     padding: '6px 10px', fontSize: 11, width: 110,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -378,7 +378,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Node Type</div>
                   <select value={nodeType} onChange={e => setNodeType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="texture">Texture</option>
@@ -393,7 +393,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>X</div>
                   <input value={nodeX} onChange={e => setNodeX(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -401,7 +401,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Y</div>
                   <input value={nodeY} onChange={e => setNodeY(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -425,7 +425,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Graph ID</div>
                   <input value={connGraphId} onChange={e => setConnGraphId(e.target.value)} placeholder="Graph" style={{
                     padding: '6px 10px', fontSize: 11, width: 90,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -433,7 +433,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Source Node</div>
                   <input value={connSourceNodeId} onChange={e => setConnSourceNodeId(e.target.value)} placeholder="Node ID" style={{
                     padding: '6px 10px', fontSize: 11, width: 90,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -441,7 +441,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Source Port</div>
                   <input value={connSourcePort} onChange={e => setConnSourcePort(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -449,7 +449,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target Node</div>
                   <input value={connTargetNodeId} onChange={e => setConnTargetNodeId(e.target.value)} placeholder="Node ID" style={{
                     padding: '6px 10px', fontSize: 11, width: 90,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -457,7 +457,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target Port</div>
                   <input value={connTargetPort} onChange={e => setConnTargetPort(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -525,7 +525,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Graph ID</div>
                   <input value={compileGraphId} onChange={e => setCompileGraphId(e.target.value)} placeholder="Select graph" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -533,7 +533,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target</div>
                   <select value={compileTarget} onChange={e => setCompileTarget(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="glsl">GLSL</option>
@@ -569,7 +569,7 @@ const MaterialGraphPanel: React.FC = () => {
                   <span style={{ fontSize: 10, color: '#888' }}>{result.compile_time_ms}ms</span>
                 </div>
                 <pre style={{
-                  padding: 10, backgroundColor: '#141428', borderRadius: 4,
+                  padding: 10, backgroundColor: '#111', borderRadius: 4,
                   fontSize: 10, color: '#6bcb77', overflow: 'auto',
                   fontFamily: 'monospace', margin: 0,
                   maxHeight: 200,
@@ -584,7 +584,7 @@ const MaterialGraphPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

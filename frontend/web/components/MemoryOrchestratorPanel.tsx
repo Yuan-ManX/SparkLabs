@@ -372,11 +372,11 @@ const MemoryOrchestratorPanel: React.FC = () => {
     tabActive: { background: '#3a3a6a', color: '#e94560', fontWeight: 'bold' },
     card: { background: '#16213e', borderRadius: 8, padding: 16, marginBottom: 12 },
     cardTitle: { fontSize: 14, fontWeight: 'bold', color: '#e94560', marginBottom: 8 },
-    input: { background: '#1a1a3a', border: '1px solid #0f3460', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box' },
-    select: { background: '#1a1a3a', border: '1px solid #0f3460', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13 },
-    textarea: { background: '#1a1a3a', border: '1px solid #0f3460', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box', minHeight: 60, resize: 'vertical', fontFamily: 'monospace' },
+    input: { background: '#1a1a3a', border: '1px solid #1e1e1e', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box' },
+    select: { background: '#1a1a3a', border: '1px solid #1e1e1e', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13 },
+    textarea: { background: '#1a1a3a', border: '1px solid #1e1e1e', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box', minHeight: 60, resize: 'vertical', fontFamily: 'monospace' },
     btn: { background: '#e94560', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 'bold' },
-    btnSecondary: { background: '#0f3460', color: '#aab', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
+    btnSecondary: { background: '#1e1e1e', color: '#aab', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
     row: { display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' },
     grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 },
     label: { fontSize: 12, color: '#889', marginBottom: 4 },
@@ -390,7 +390,7 @@ const MemoryOrchestratorPanel: React.FC = () => {
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      short_term: '#e94560', long_term: '#0f3460', episodic: '#533483',
+      short_term: '#e94560', long_term: '#1e1e1e', episodic: '#f97316',
       semantic: '#e94560', procedural: '#1a1a2e',
     };
     return colors[category] || '#2a2a5a';
@@ -413,7 +413,7 @@ const MemoryOrchestratorPanel: React.FC = () => {
   const renderStats = () => (
     <div>
       {stats && (
-        <div style={{ ...styles.card, background: '#0f3460' }}>
+        <div style={{ ...styles.card, background: '#1e1e1e' }}>
           <div style={styles.cardTitle}>Memory Orchestrator Statistics</div>
           <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 13 }}>
             <div style={{ textAlign: 'center', minWidth: 80 }}>
@@ -524,7 +524,7 @@ const MemoryOrchestratorPanel: React.FC = () => {
                   {mem.tags.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
                       {mem.tags.map(tag => (
-                        <span key={tag} style={{ ...styles.badge, background: '#0f3460', fontSize: 10 }}>{tag}</span>
+                        <span key={tag} style={{ ...styles.badge, background: '#1e1e1e', fontSize: 10 }}>{tag}</span>
                       ))}
                     </div>
                   )}
@@ -615,7 +615,7 @@ const MemoryOrchestratorPanel: React.FC = () => {
               {skill.trigger_patterns.length > 0 && (
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
                   {skill.trigger_patterns.map((p, i) => (
-                    <span key={i} style={{ ...styles.badge, background: '#0f3460', fontSize: 10 }}>{p}</span>
+                    <span key={i} style={{ ...styles.badge, background: '#1e1e1e', fontSize: 10 }}>{p}</span>
                   ))}
                 </div>
               )}
@@ -675,7 +675,7 @@ const MemoryOrchestratorPanel: React.FC = () => {
               )}
               {exp.extracted_patterns.length > 0 && (
                 <div style={{ marginTop: 4 }}>
-                  <span style={{ ...styles.badge, background: '#0f3460', fontSize: 10 }}>
+                  <span style={{ ...styles.badge, background: '#1e1e1e', fontSize: 10 }}>
                     {exp.extracted_patterns.length} patterns
                   </span>
                 </div>
@@ -717,7 +717,7 @@ const MemoryOrchestratorPanel: React.FC = () => {
             <div key={nudge.nudge_id} style={{ ...styles.card, background: '#1a1a3a', borderLeft: `4px solid ${nudge.enabled ? '#4caf50' : '#e94560'}` }}>
               <div style={{ fontSize: 12, color: '#889', marginBottom: 4 }}>{nudge.nudge_id}</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
-                <span style={{ ...styles.badge, background: '#0f3460' }}>{nudge.trigger_type}</span>
+                <span style={{ ...styles.badge, background: '#1e1e1e' }}>{nudge.trigger_type}</span>
                 <span style={{ ...styles.badge, background: nudge.enabled ? '#1a4a1a' : '#4a1a1a', color: nudge.enabled ? '#4caf50' : '#f44336' }}>
                   {nudge.enabled ? 'enabled' : 'disabled'}
                 </span>

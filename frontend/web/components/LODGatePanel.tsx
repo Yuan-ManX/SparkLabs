@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
-const API_BASE = "http://localhost:8000/api/agent";
+const API_BASE = `${API_ROOT}/agent`;
 
 interface SubsystemStats {
   lod_groups: number;
@@ -133,9 +134,9 @@ export default function LODGatePanel() {
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Register LOD Group</h4>
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <input type="text" placeholder="Group Name" value={groupName} onChange={(e) => setGroupName(e.target.value)}
-                  style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <input type="text" placeholder="Object ID" value={objectId} onChange={(e) => setObjectId(e.target.value)}
-                  style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <button onClick={handleRegisterGroup} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#e94560", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}>Register</button>
               </div>
             </div>
@@ -144,14 +145,14 @@ export default function LODGatePanel() {
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Add LOD Level</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <input type="text" placeholder="Group ID" value={lodGroupId} onChange={(e) => setLodGroupId(e.target.value)}
-                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" placeholder="Distance Threshold" value={distance} onChange={(e) => setDistance(e.target.value)} min="0" step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Tri Reduction" value={triangleReduction} onChange={(e) => setTriangleReduction(e.target.value)} min="0" max="1" step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Mip Level" value={textureMip} onChange={(e) => setTextureMip(e.target.value)} min="0" max="12"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 </div>
                 <button onClick={handleAddLevel} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#e94560", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600, alignSelf: "flex-start" }}>Add Level</button>
               </div>
@@ -162,18 +163,18 @@ export default function LODGatePanel() {
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" placeholder="X" value={camX} onChange={(e) => setCamX(e.target.value)} step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Y" value={camY} onChange={(e) => setCamY(e.target.value)} step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Z" value={camZ} onChange={(e) => setCamZ(e.target.value)} step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 </div>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <button onClick={handleUpdateCamera} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#e94560", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}>Update Camera</button>
                   <input type="text" placeholder="Profile Name" value={profileName} onChange={(e) => setProfileName(e.target.value)}
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <select value={qualityTier} onChange={(e) => setQualityTier(e.target.value)}
-                    style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }}>
+                    style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }}>
                     <option value="ultra">Ultra</option><option value="high">High</option>
                     <option value="medium">Medium</option><option value="low">Low</option>
                   </select>

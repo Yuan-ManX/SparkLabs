@@ -126,7 +126,7 @@ const PrefabComposerPanel: React.FC = () => {
     { key: 'instances', label: 'Instances' },
   ];
 
-  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
+  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
 
   const typeColor = (type: string) => {
     switch (type) {
@@ -185,11 +185,11 @@ const PrefabComposerPanel: React.FC = () => {
               <div key={prefab.id} style={{ padding: 12, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: `3px solid ${typeColor(prefab.type)}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <span style={{ fontWeight: 600, fontSize: 13, color: '#ccc' }}>{prefab.name}</span>
-                  <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: typeColor(prefab.type) }}>{prefab.type}</span>
+                  <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: typeColor(prefab.type) }}>{prefab.type}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                   {prefab.components.map(comp => (
-                    <span key={comp} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f0f23', color: '#a29bfe', border: '1px solid #2a2a3e' }}>{comp}</span>
+                    <span key={comp} style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0d0d0d', color: '#a29bfe', border: '1px solid #2a2a3e' }}>{comp}</span>
                   ))}
                 </div>
               </div>
@@ -219,14 +219,14 @@ const PrefabComposerPanel: React.FC = () => {
                   <span style={{ fontSize: 12, color: '#ccc', fontWeight: 600 }}>{instance.prefab_name}</span>
                   <span style={{ fontSize: 10, color: '#666', marginLeft: 8 }}>{instance.scene}</span>
                 </div>
-                <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe', fontFamily: 'monospace' }}>{instance.position}</span>
+                <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe', fontFamily: 'monospace' }}>{instance.position}</span>
               </div>
             ))}
           </div>
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83E\uDDE9'} {prefabs.length} prefabs · {instances.length} instances</span>
         <span>Connected</span>
       </div>

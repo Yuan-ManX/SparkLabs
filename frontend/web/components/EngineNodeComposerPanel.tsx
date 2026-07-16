@@ -534,7 +534,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={treeForm.name}
               onChange={e => setTreeForm(prev => ({ ...prev, name: e.target.value }))}
               placeholder="e.g. MainScene"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -544,7 +544,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={treeForm.rootName}
               onChange={e => setTreeForm(prev => ({ ...prev, rootName: e.target.value }))}
               placeholder="Root"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div className="col-span-2">
@@ -554,7 +554,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               onChange={e => setTreeForm(prev => ({ ...prev, metadata: e.target.value }))}
               placeholder='{"version": "1.0"}'
               rows={2}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -574,7 +574,7 @@ const EngineNodeComposerPanel: React.FC = () => {
           <div key={tree.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
             <div className="flex justify-between items-center mb-2">
               <div className="text-white text-sm font-medium">{tree.name}</div>
-              <span className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-[#00d4ff]">
+              <span className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-[#00d4ff]">
                 {tree.node_count} nodes
               </span>
             </div>
@@ -623,7 +623,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={createNodeForm.name}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, name: e.target.value }))}
               placeholder="e.g. PlayerSprite"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -631,7 +631,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={createNodeForm.nodeType}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, nodeType: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="group">Group</option>
               <option value="sprite">Sprite</option>
@@ -649,7 +649,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               type="number"
               value={createNodeForm.positionX}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, positionX: parseFloat(e.target.value) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -658,7 +658,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               type="number"
               value={createNodeForm.positionY}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, positionY: parseFloat(e.target.value) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -667,7 +667,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               type="number"
               value={createNodeForm.rotation}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, rotation: parseFloat(e.target.value) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -677,7 +677,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={createNodeForm.scaleX}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, scaleX: parseFloat(e.target.value) || 1 }))}
               step="0.1"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -687,7 +687,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={createNodeForm.scaleY}
               onChange={e => setCreateNodeForm(prev => ({ ...prev, scaleY: parseFloat(e.target.value) || 1 }))}
               step="0.1"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -709,7 +709,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={addChildForm.treeId}
               onChange={e => setAddChildForm(prev => ({ ...prev, treeId: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="">-- Select Tree --</option>
               {trees.map(t => (
@@ -724,7 +724,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={addChildForm.parentNodeId}
               onChange={e => setAddChildForm(prev => ({ ...prev, parentNodeId: e.target.value }))}
               placeholder="Enter parent node ID"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -732,7 +732,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={addChildForm.childType}
               onChange={e => setAddChildForm(prev => ({ ...prev, childType: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="group">Group</option>
               <option value="sprite">Sprite</option>
@@ -751,7 +751,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={addChildForm.childName}
               onChange={e => setAddChildForm(prev => ({ ...prev, childName: e.target.value }))}
               placeholder="e.g. ChildNode"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -760,7 +760,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               type="number"
               value={addChildForm.childPosX}
               onChange={e => setAddChildForm(prev => ({ ...prev, childPosX: parseFloat(e.target.value) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -769,7 +769,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               type="number"
               value={addChildForm.childPosY}
               onChange={e => setAddChildForm(prev => ({ ...prev, childPosY: parseFloat(e.target.value) || 0 }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -791,7 +791,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={reparentForm.treeId}
               onChange={e => setReparentForm(prev => ({ ...prev, treeId: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="">-- Select Tree --</option>
               {trees.map(t => (
@@ -806,7 +806,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={reparentForm.nodeId}
               onChange={e => setReparentForm(prev => ({ ...prev, nodeId: e.target.value }))}
               placeholder="Enter node ID to move"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -816,7 +816,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={reparentForm.newParentId}
               onChange={e => setReparentForm(prev => ({ ...prev, newParentId: e.target.value }))}
               placeholder="Enter new parent ID"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -856,7 +856,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={queryForm.treeId}
               onChange={e => setQueryForm(prev => ({ ...prev, treeId: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="">-- Select Tree --</option>
               {trees.map(t => (
@@ -869,7 +869,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={queryForm.nodeType}
               onChange={e => setQueryForm(prev => ({ ...prev, nodeType: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="">-- Any --</option>
               <option value="group">Group</option>
@@ -887,7 +887,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={queryForm.state}
               onChange={e => setQueryForm(prev => ({ ...prev, state: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="">-- Any --</option>
               <option value="active">Active</option>
@@ -902,7 +902,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={queryForm.namePattern}
               onChange={e => setQueryForm(prev => ({ ...prev, namePattern: e.target.value }))}
               placeholder="e.g. Player*"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -912,7 +912,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={queryForm.tags}
               onChange={e => setQueryForm(prev => ({ ...prev, tags: e.target.value }))}
               placeholder="e.g. enemy, boss"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -934,7 +934,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <div key={node.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
               <div className="flex justify-between items-center mb-2">
                 <div className="text-white text-sm font-medium">{node.name}</div>
-                <span className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-[#00d4ff]">
+                <span className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-xs text-[#00d4ff]">
                   {node.node_type}
                 </span>
               </div>
@@ -988,7 +988,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={signalForm.treeId}
               onChange={e => setSignalForm(prev => ({ ...prev, treeId: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="">-- Select Tree --</option>
               {trees.map(t => (
@@ -1003,7 +1003,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={signalForm.sourceNodeId}
               onChange={e => setSignalForm(prev => ({ ...prev, sourceNodeId: e.target.value }))}
               placeholder="Enter source node ID"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -1013,7 +1013,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={signalForm.signalName}
               onChange={e => setSignalForm(prev => ({ ...prev, signalName: e.target.value }))}
               placeholder="e.g. OnDamage"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -1021,7 +1021,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={signalForm.direction}
               onChange={e => setSignalForm(prev => ({ ...prev, direction: e.target.value }))}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="downward">Downward</option>
               <option value="upward">Upward</option>
@@ -1035,7 +1035,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               value={signalForm.targetNodeId}
               onChange={e => setSignalForm(prev => ({ ...prev, targetNodeId: e.target.value }))}
               placeholder="Leave empty for broadcast"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div className="col-span-2">
@@ -1045,7 +1045,7 @@ const EngineNodeComposerPanel: React.FC = () => {
               onChange={e => setSignalForm(prev => ({ ...prev, data: e.target.value }))}
               placeholder='{"damage": 50}'
               rows={2}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -1116,7 +1116,7 @@ const EngineNodeComposerPanel: React.FC = () => {
             <select
               value={exportTreeId}
               onChange={e => setExportTreeId(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="">-- Select Tree --</option>
               {trees.map(t => (
@@ -1154,7 +1154,7 @@ const EngineNodeComposerPanel: React.FC = () => {
   );
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       <div className="flex gap-1 border-b border-[#2a2a4a] px-4 pt-2">
         {tabs.map(t => (
           <button

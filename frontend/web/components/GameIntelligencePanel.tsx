@@ -246,7 +246,7 @@ const GameIntelligencePanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#1a1a2e] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Gamepad2 className="w-[18px] h-[18px] text-[#00d4ff]" />
           <span className="font-bold text-[15px]">Game Intelligence</span>
@@ -258,16 +258,16 @@ const GameIntelligencePanel: React.FC = () => {
 
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#16213e]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[#0f3460]/50">
+      <div className="flex border-b border-[#1e1e1e]/50">
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -300,7 +300,7 @@ const GameIntelligencePanel: React.FC = () => {
             {analysis && (
               <>
                 {/* Overall Score */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3 text-center">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3 text-center">
                   <div className="text-[9px] text-[#666] uppercase tracking-wider mb-1">Overall Score</div>
                   <div className={`text-[32px] font-bold ${getScoreColor(analysis.overall_score, 100)}`}>
                     {analysis.overall_score.toFixed(1)}
@@ -309,7 +309,7 @@ const GameIntelligencePanel: React.FC = () => {
                 </div>
 
                 {/* Quality Scores */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                   <div className="flex items-center gap-2 mb-2">
                     <BarChart3 className="w-3.5 h-3.5 text-[#00d4ff]" />
                     <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Quality Scores</span>
@@ -336,7 +336,7 @@ const GameIntelligencePanel: React.FC = () => {
                 </div>
 
                 {/* SWOT Analysis */}
-                <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+                <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                   <div
                     className="flex items-center justify-between cursor-pointer"
                     onClick={() => setSwotExpanded(!swotExpanded)}
@@ -359,7 +359,7 @@ const GameIntelligencePanel: React.FC = () => {
                           threat: 'border-[#fdcb6e]/50 text-[#fdcb6e]',
                         };
                         return (
-                          <div key={cat} className="bg-[#1a1a2e] rounded-md p-2 border border-[#0f3460]/20">
+                          <div key={cat} className="bg-[#1a1a2e] rounded-md p-2 border border-[#1e1e1e]/20">
                             <span className={`text-[10px] font-semibold uppercase ${catColors[cat]}`}>{cat}s</span>
                             {items.map((item, idx) => (
                               <div key={idx} className="flex items-center justify-between mt-1 pl-2">
@@ -377,7 +377,7 @@ const GameIntelligencePanel: React.FC = () => {
             )}
 
             {!analysis && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Search className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">Run analysis to evaluate your game</span>
               </div>
@@ -391,7 +391,7 @@ const GameIntelligencePanel: React.FC = () => {
             {patterns.map(pattern => (
               <div
                 key={pattern.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3"
               >
                 <div className="flex items-center justify-between mb-1">
                   <div className="flex items-center gap-2">
@@ -416,7 +416,7 @@ const GameIntelligencePanel: React.FC = () => {
               </div>
             ))}
             {patterns.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Layers className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No patterns detected</span>
               </div>
@@ -436,7 +436,7 @@ const GameIntelligencePanel: React.FC = () => {
                   className={`px-3 py-1 rounded-md text-[10px] font-semibold uppercase tracking-wider transition-all ${
                     suggestionFilter === pri
                       ? 'bg-[#00d4ff]/20 border border-[#00d4ff]/50 text-[#00d4ff]'
-                      : 'bg-[#16213e] border border-[#0f3460]/30 text-[#888] hover:border-[#0f3460]/60'
+                      : 'bg-[#16213e] border border-[#1e1e1e]/30 text-[#888] hover:border-[#1e1e1e]/60'
                   }`}
                 >
                   {pri}
@@ -448,7 +448,7 @@ const GameIntelligencePanel: React.FC = () => {
               {filteredSuggestions.map(suggestion => (
                 <div
                   key={suggestion.id}
-                  className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3"
+                  className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3"
                 >
                   <div className="flex items-start justify-between mb-1">
                     <div className="flex items-center gap-2">
@@ -473,7 +473,7 @@ const GameIntelligencePanel: React.FC = () => {
                 </div>
               ))}
               {filteredSuggestions.length === 0 && (
-                <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+                <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                   <Lightbulb className="w-10 h-10 mb-2 opacity-20" />
                   <span className="text-[12px]">No suggestions in this category</span>
                 </div>
@@ -482,7 +482,7 @@ const GameIntelligencePanel: React.FC = () => {
 
             <button
               onClick={() => { fetchPatterns(); fetchSuggestions(); }}
-              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#0f3460]/50 text-[#888] rounded-lg text-[12px] hover:border-[#0f3460] transition-all"
+              className="flex items-center justify-center gap-2 py-2 bg-[#16213e] border border-[#1e1e1e]/50 text-[#888] rounded-lg text-[12px] hover:border-[#1e1e1e] transition-all"
             >
               <RefreshCw className="w-3.5 h-3.5" />
               Refresh Data
@@ -492,7 +492,7 @@ const GameIntelligencePanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <Gamepad2 className="w-3 h-3" />
           {patterns.length} patterns · {suggestions.length} suggestions

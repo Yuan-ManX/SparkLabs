@@ -197,7 +197,7 @@ const GameVisionPanel: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-[#0f0f2a]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-amber-500 to-orange-600 flex items-center justify-center text-sm font-bold">
             GV
@@ -223,7 +223,7 @@ const GameVisionPanel: React.FC = () => {
         </div>
       )}
 
-      <div className="flex border-b border-[#1a1a3e]">
+      <div className="flex border-b border-[#1a1a1a]">
         {(['create', 'visions', 'gameplay'] as const).map((tab) => (
           <button
             key={tab}
@@ -328,7 +328,7 @@ const GameVisionPanel: React.FC = () => {
                     {vision.pillars.slice(0, 4).map((pillar) => (
                       <div key={pillar.pillar} className="flex items-center gap-2">
                         <span className="text-[10px] text-[#999] w-28 truncate">{pillar.pillar.replace(/_/g, ' ')}</span>
-                        <div className="flex-1 h-1 bg-[#1a1a3e] rounded-full">
+                        <div className="flex-1 h-1 bg-[#1a1a1a] rounded-full">
                           <div
                             className="h-full bg-gradient-to-r from-amber-500 to-orange-500 rounded-full"
                             style={{ width: `${(pillar.score * 100).toFixed(0)}%` }}
@@ -365,7 +365,7 @@ const GameVisionPanel: React.FC = () => {
                 <div className="bg-[#0f0f2a] border border-[#1a1a4e] rounded-lg p-3">
                   <h3 className="text-xs font-medium text-[#ccc] mb-2">Core Mechanics</h3>
                   {gameplayAnalysis.core_mechanics.map((m, i) => (
-                    <div key={i} className="flex items-center gap-2 text-[10px] py-1 border-b border-[#1a1a3e] last:border-0">
+                    <div key={i} className="flex items-center gap-2 text-[10px] py-1 border-b border-[#1a1a1a] last:border-0">
                       <span className="text-[#ccc]">{m.name as string}</span>
                       <span className="text-[#666]">complexity: {m.complexity as string}</span>
                       <span className="text-[#555] ml-auto">{m.innovation_potential as string} potential</span>

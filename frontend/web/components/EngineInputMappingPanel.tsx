@@ -76,14 +76,14 @@ export default function EngineInputMappingPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
       </div>
 
       {message && (
-        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0f0f23] border-[#00ff88] text-[#00ff88]">{message}</div>
+        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0d0d0d] border-[#00ff88] text-[#00ff88]">{message}</div>
       )}
 
       <div className="flex-1 overflow-auto p-4">
@@ -99,13 +99,13 @@ export default function EngineInputMappingPanel() {
                 { label: 'Total Gestures', value: stats.total_gestures, color: 'text-amber-300' },
                 { label: 'Default Schemes', value: stats.default_schemes, color: 'text-pink-300' },
               ].map(s => (
-                <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={s.label} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}</p>
                 </div>
               ))}
             </div>
-            <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+            <pre className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
           </div>
         )}
 
@@ -114,7 +114,7 @@ export default function EngineInputMappingPanel() {
           <div className="space-y-6">
             <div>
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Input Scheme</h2>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
                 <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="Scheme Name" value={sName} onChange={e => setSName(e.target.value)} />
                 <div className="grid grid-cols-2 gap-3">
                   <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-[#00d4ff]" value={sDevice} onChange={e => setSDevice(e.target.value)}>
@@ -133,7 +133,7 @@ export default function EngineInputMappingPanel() {
 
             <div>
               <h2 className="text-lg font-bold text-[#00ff88] mb-3">Generate Default Scheme</h2>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
                 <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-[#00ff88]" value={dDevice} onChange={e => setDDevice(e.target.value)}>
                   {DEVICES.map(d => <option key={d} value={d}>{d.replace(/_/g,' ')}</option>)}
                 </select>
@@ -149,7 +149,7 @@ export default function EngineInputMappingPanel() {
             <h3 className="text-md font-bold text-[#ccc]">Input Schemes</h3>
             <div className="grid gap-3">
               {schemeList.map((scheme: any) => (
-                <div key={scheme.scheme_id || scheme.id} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
+                <div key={scheme.scheme_id || scheme.id} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
                   <div className="flex items-center justify-between">
                     <h4 className="text-sm font-semibold text-white">{scheme.name}</h4>
                     <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${deviceColor(scheme.device)}`}>{scheme.device}</span>
@@ -167,7 +167,7 @@ export default function EngineInputMappingPanel() {
         {activeTab === 'bindings' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-amber-300">Bind Action</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-400" placeholder="Scheme ID" value={bSchemeId} onChange={e => setBSchemeId(e.target.value)} />
               <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-amber-400" value={bAction} onChange={e => setBAction(e.target.value)}>
                 {ACTIONS.map(a => <option key={a} value={a}>{a.replace(/_/g,' ')}</option>)}
@@ -202,7 +202,7 @@ export default function EngineInputMappingPanel() {
             </div>
 
             {result && activeTab === 'bindings' && result.binding_id && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-amber-500 space-y-2">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-amber-500 space-y-2">
                 <h3 className="text-sm font-bold text-amber-300">Binding Created</h3>
                 <div className="grid grid-cols-2 gap-2 text-xs">
                   <div><span className="text-[#666]">Action:</span> <span className="text-[#ccc]">{result.action}</span></div>
@@ -219,7 +219,7 @@ export default function EngineInputMappingPanel() {
         {activeTab === 'recommend' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-pink-300">Recommend Bindings</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
                 <label className="text-[10px] text-[#666] block mb-1">Action Frequency (JSON)</label>
                 <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-500 outline-none focus:border-pink-400 resize-none" rows={3} placeholder='{"move_up": 150, "jump": 80}' value={rbActionFrequency} onChange={e => setRbActionFrequency(e.target.value)} />
@@ -252,7 +252,7 @@ export default function EngineInputMappingPanel() {
               <div className="space-y-3">
                 <h3 className="text-md font-bold text-pink-300">Binding Recommendations</h3>
                 {Array.isArray(result.recommendations || result.bindings) ? (result.recommendations || result.bindings).map((rec: any, i: number) => (
-                  <div key={i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a] hover:border-pink-500/30 transition-colors">
+                  <div key={i} className="bg-[#0d0d0d] p-3 rounded border border-[#2a2a4a] hover:border-pink-500/30 transition-colors">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-semibold text-white">{rec.action}</h4>
                       <span className="text-[10px] text-[#666]">Priority: {rec.priority || '-'}</span>
@@ -264,7 +264,7 @@ export default function EngineInputMappingPanel() {
                     {rec.reason && <p className="text-xs text-[#555] mt-1">{rec.reason}</p>}
                   </div>
                 )) : result.binding_id ? (
-                  <div className="bg-[#0f0f23] p-4 rounded border border-pink-500">
+                  <div className="bg-[#0d0d0d] p-4 rounded border border-pink-500">
                     <pre className="text-xs text-[#ccc]">{JSON.stringify(result, null, 2)}</pre>
                   </div>
                 ) : (

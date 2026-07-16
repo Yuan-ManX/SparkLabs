@@ -121,7 +121,7 @@ export default function EnginePhysicsWorldPanel() {
   const btnPrimary = 'bg-[#00d4ff] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#00b8e0] disabled:opacity-50 transition-colors';
   const btnSuccess = 'bg-[#00ff88] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#00e67a] disabled:opacity-50 transition-colors';
   const btnWarning = 'bg-[#fdcb6e] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#e8b94e] disabled:opacity-50 transition-colors';
-  const cardCls = 'bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4';
+  const cardCls = 'bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4';
 
   const overviewContent = (
     <div>
@@ -134,7 +134,7 @@ export default function EnginePhysicsWorldPanel() {
           { label: 'Total Collisions', value: stats.total_collisions || 0, color: '#ff6b6b' },
           { label: 'Gravity', value: stats.gravity || '-9.81', color: '#a29bfe' },
         ].map(s => (
-          <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
+          <div key={s.label} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
             <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
@@ -194,7 +194,7 @@ export default function EnginePhysicsWorldPanel() {
         {bodies.length > 0 ? (
           <div className="space-y-2">
             {bodies.map((b: any, i: number) => (
-              <div key={b.id || i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3">
+              <div key={b.id || i} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3">
                 <div className="flex items-center justify-between mb-2">
                   <div className="flex items-center gap-2">
                     <span className="text-sm text-white font-medium">{b.name || `Body ${i + 1}`}</span>
@@ -424,14 +424,14 @@ export default function EnginePhysicsWorldPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
       {message && (
         <div className={`mx-4 mt-2 p-2 rounded text-sm border ${
-          message === 'Success' ? 'bg-[#0f0f23] border-[#00ff88]/40 text-[#00ff88]' : 'bg-[#0f0f23] border-[#fdcb6e]/40 text-[#fdcb6e]'
+          message === 'Success' ? 'bg-[#0d0d0d] border-[#00ff88]/40 text-[#00ff88]' : 'bg-[#0d0d0d] border-[#fdcb6e]/40 text-[#fdcb6e]'
         }`}>{message}</div>
       )}
       <div className="flex-1 overflow-auto p-4">

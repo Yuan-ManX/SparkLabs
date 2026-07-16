@@ -294,7 +294,7 @@ const PersonalitySystemPanel: React.FC = () => {
           placeholder="Profile name..."
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4,
             width: 140, outline: 'none',
           }}
@@ -304,7 +304,7 @@ const PersonalitySystemPanel: React.FC = () => {
           onChange={e => setSelectedArchetype(e.target.value as Archetype)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           {Object.entries(ARCHETYPE_LABELS).map(([key, label]) => (
@@ -433,7 +433,7 @@ const PersonalitySystemPanel: React.FC = () => {
                 </div>
                 {suggestions.map((s, i) => (
                   <div key={i} style={{
-                    padding: '6px 8px', backgroundColor: '#141428', borderRadius: 4,
+                    padding: '6px 8px', backgroundColor: '#111', borderRadius: 4,
                     marginBottom: 4, fontSize: 10, color: '#aaa',
                   }}>
                     <span style={{ color: '#74b9ff', fontWeight: 600 }}>{s.profile_name}:</span> {s.suggestion}
@@ -464,7 +464,7 @@ const PersonalitySystemPanel: React.FC = () => {
                 </div>
                 <div style={{ fontSize: 10, color: '#666' }}>{trait.description}</div>
                 <div style={{
-                  height: 4, backgroundColor: '#141428', borderRadius: 2, marginTop: 6,
+                  height: 4, backgroundColor: '#111', borderRadius: 2, marginTop: 6,
                 }}>
                   <div style={{
                     height: '100%', width: `${trait.weight * 100}%`,
@@ -505,7 +505,7 @@ const PersonalitySystemPanel: React.FC = () => {
                     {blend.traits.map(t => (
                       <span key={t.name} style={{
                         fontSize: 9, padding: '2px 6px', borderRadius: 3,
-                        backgroundColor: '#141428', color: '#aaa',
+                        backgroundColor: '#111', color: '#aaa',
                       }}>
                         {t.name}: {(t.weight * 100).toFixed(0)}%
                       </span>
@@ -528,7 +528,7 @@ const PersonalitySystemPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -183,7 +183,7 @@ const LearningLoopPanel: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a] shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-[#0f0f2a] shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-sm font-bold">LL</div>
           <div>
@@ -198,7 +198,7 @@ const LearningLoopPanel: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#1a1a3e] shrink-0">
+      <div className="flex border-b border-[#1a1a1a] shrink-0">
         {(['session', 'skills', 'memory', 'history'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 text-[11px] font-medium transition-colors ${activeTab === tab ? 'text-green-400 border-b border-green-400 bg-[#0a2a1a]' : 'text-[#666] hover:text-[#ccc]'}`}>
@@ -245,10 +245,10 @@ const LearningLoopPanel: React.FC = () => {
                 </div>
                 <div className="flex gap-2">
                   <button onClick={recordAction} className="flex-1 py-1.5 rounded bg-green-700/50 text-green-300 text-xs hover:bg-green-700/70">Record Action</button>
-                  <button onClick={() => evaluateSession(true)} className="flex-1 py-1.5 rounded bg-blue-700/50 text-blue-300 text-xs hover:bg-blue-700/70">Success</button>
+                  <button onClick={() => evaluateSession(true)} className="flex-1 py-1.5 rounded bg-orange-600/50 text-orange-300 text-xs hover:bg-orange-700/70">Success</button>
                   <button onClick={() => evaluateSession(false)} className="flex-1 py-1.5 rounded bg-red-700/50 text-red-300 text-xs hover:bg-red-700/70">Fail</button>
                 </div>
-                <button onClick={consolidateSession} className="w-full py-1.5 rounded bg-purple-700/50 text-purple-300 text-xs hover:bg-purple-700/70">Consolidate & Generate Skill</button>
+                <button onClick={consolidateSession} className="w-full py-1.5 rounded bg-orange-700/50 text-orange-300 text-xs hover:bg-orange-700/70">Consolidate & Generate Skill</button>
               </div>
             )}
           </div>

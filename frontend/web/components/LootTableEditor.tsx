@@ -23,8 +23,8 @@ const RARITY_TIERS = ['common', 'uncommon', 'rare', 'epic', 'legendary'] as cons
 const RARITY_COLORS: Record<string, string> = {
   common: '#888',
   uncommon: '#22c55e',
-  rare: '#3b82f6',
-  epic: '#8b5cf6',
+  rare: '#f97316',
+  epic: '#f97316',
   legendary: '#fbbf24',
 };
 
@@ -135,7 +135,7 @@ const LootTableEditor: React.FC = () => {
           <select
             value={selectedTableId}
             onChange={e => handleSelectTable(e.target.value)}
-            className="bg-[#1a1a2e] border border-[#333] text-[#e0e0e0] text-[11px] rounded px-2 py-1 outline-none"
+            className="bg-[#1a1a1a] border border-[#333] text-[#e0e0e0] text-[11px] rounded px-2 py-1 outline-none"
           >
             <option value="">Select Loot Table</option>
             {lootTables.map(table => (
@@ -162,7 +162,7 @@ const LootTableEditor: React.FC = () => {
             className="px-2 py-0.5 rounded text-[10px] border cursor-pointer transition-colors"
             style={{
               borderColor: rarityFilter === tier ? (RARITY_COLORS[tier] || '#888') : '#333',
-              backgroundColor: rarityFilter === tier ? (RARITY_COLORS[tier] || '#888') + '20' : '#1a1a2e',
+              backgroundColor: rarityFilter === tier ? (RARITY_COLORS[tier] || '#888') + '20' : '#1a1a1a',
               color: rarityFilter === tier ? (RARITY_COLORS[tier] || '#888') : '#888',
             }}
           >
@@ -182,7 +182,7 @@ const LootTableEditor: React.FC = () => {
               {filteredItems.map(item => (
                 <div
                   key={item.item_id}
-                  className="bg-[#1a1a2e] rounded border border-[#2a2a2a] p-3"
+                  className="bg-[#1a1a1a] rounded border border-[#2a2a2a] p-3"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
@@ -281,7 +281,7 @@ const LootTableEditor: React.FC = () => {
               value={newItemName}
               onChange={e => setNewItemName(e.target.value)}
               placeholder="Item name"
-              className="w-full bg-[#1a1a2e] border border-[#333] text-[#e0e0e0] text-[11px] rounded px-2 py-1.5 mb-2 outline-none"
+              className="w-full bg-[#1a1a1a] border border-[#333] text-[#e0e0e0] text-[11px] rounded px-2 py-1.5 mb-2 outline-none"
               onKeyDown={e => e.key === 'Enter' && handleAddItem()}
             />
             <div className="flex items-center gap-2 mb-2">
@@ -289,7 +289,7 @@ const LootTableEditor: React.FC = () => {
               <select
                 value={newItemRarity}
                 onChange={e => setNewItemRarity(e.target.value)}
-                className="flex-1 bg-[#1a1a2e] border border-[#333] text-[#e0e0e0] text-[10px] rounded px-1 py-1 outline-none"
+                className="flex-1 bg-[#1a1a1a] border border-[#333] text-[#e0e0e0] text-[10px] rounded px-1 py-1 outline-none"
               >
                 {RARITY_TIERS.map(tier => (
                   <option key={tier} value={tier}>{tier}</option>
@@ -305,7 +305,7 @@ const LootTableEditor: React.FC = () => {
                 min={0}
                 max={100}
                 step={0.5}
-                className="w-20 bg-[#1a1a2e] border border-[#333] text-[#e0e0e0] text-[10px] rounded px-1.5 py-1 outline-none"
+                className="w-20 bg-[#1a1a1a] border border-[#333] text-[#e0e0e0] text-[10px] rounded px-1.5 py-1 outline-none"
               />
               <span className="text-[9px] text-[#888]">%</span>
             </div>
@@ -338,7 +338,7 @@ const LootTableEditor: React.FC = () => {
 
           <button
             onClick={handleSaveLootTable}
-            className="w-full py-2 bg-[#3b82f6] text-white rounded text-[11px] font-bold border-none cursor-pointer"
+            className="w-full py-2 bg-[#f97316] text-white rounded text-[11px] font-bold border-none cursor-pointer"
           >
             Save Loot Table
           </button>

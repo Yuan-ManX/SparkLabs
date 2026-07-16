@@ -119,7 +119,7 @@ export default function EngineWeatherSystemPanel() {
   const btnPrimary = 'bg-[#00d4ff] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#00b8e0] disabled:opacity-50 transition-colors';
   const btnSuccess = 'bg-[#00ff88] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#00e67a] disabled:opacity-50 transition-colors';
   const btnWarning = 'bg-[#fdcb6e] text-black px-4 py-2 rounded text-sm font-medium hover:bg-[#e8b94e] disabled:opacity-50 transition-colors';
-  const cardCls = 'bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4';
+  const cardCls = 'bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4';
 
   const getWeatherColor = (type: string): string => {
     const colors: Record<string, string> = {
@@ -150,7 +150,7 @@ export default function EngineWeatherSystemPanel() {
           { label: 'Current Season', value: stats.current_season || '--', color: '#fdcb6e' },
           { label: 'Weather Changes', value: stats.weather_changes || 0, color: '#a29bfe' },
         ].map(s => (
-          <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
+          <div key={s.label} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold capitalize" style={{ color: s.color }}>{s.value}</div>
             <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
@@ -415,10 +415,10 @@ export default function EngineWeatherSystemPanel() {
                   </div>
                   <div className="flex gap-2">
                     {entry.intensity && (
-                      <span className="px-2 py-0.5 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">{entry.intensity}</span>
+                      <span className="px-2 py-0.5 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-xs text-[#ccc] capitalize">{entry.intensity}</span>
                     )}
                     {entry.probability !== undefined && (
-                      <span className="px-2 py-0.5 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#00d4ff]">{Math.round(entry.probability * 100)}%</span>
+                      <span className="px-2 py-0.5 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-xs text-[#00d4ff]">{Math.round(entry.probability * 100)}%</span>
                     )}
                   </div>
                 </div>
@@ -442,7 +442,7 @@ export default function EngineWeatherSystemPanel() {
         </div>
       )}
       {result && !result.forecast && (
-        <pre className="text-xs text-[#999] p-3 bg-[#0f0f23] border border-[#2a2a4a] rounded overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
+        <pre className="text-xs text-[#999] p-3 bg-[#0d0d0d] border border-[#2a2a4a] rounded overflow-auto max-h-48">{JSON.stringify(result, null, 2)}</pre>
       )}
     </div>
   );
@@ -452,14 +452,14 @@ export default function EngineWeatherSystemPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a] flex-wrap">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-3 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
       {message && (
         <div className={`mx-4 mt-2 p-2 rounded text-sm border ${
-          message === 'Success' ? 'bg-[#0f0f23] border-[#00ff88]/40 text-[#00ff88]' : 'bg-[#0f0f23] border-[#fdcb6e]/40 text-[#fdcb6e]'
+          message === 'Success' ? 'bg-[#0d0d0d] border-[#00ff88]/40 text-[#00ff88]' : 'bg-[#0d0d0d] border-[#fdcb6e]/40 text-[#fdcb6e]'
         }`}>{message}</div>
       )}
       <div className="flex-1 overflow-auto p-4">

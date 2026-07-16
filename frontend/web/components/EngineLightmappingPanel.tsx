@@ -366,7 +366,7 @@ export default function EngineLightmappingPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -389,7 +389,7 @@ export default function EngineLightmappingPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -622,7 +622,7 @@ export default function EngineLightmappingPanel() {
                 <div style={{ borderLeft: '3px solid #fdcb6e', paddingLeft: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontWeight: 600, fontSize: 12, color: '#fdcb6e' }}>{lightResult.light_id}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#fdcb6e', fontWeight: 600 }}>{lightResult.light_type}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#fdcb6e', fontWeight: 600 }}>{lightResult.light_type}</span>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ width: 16, height: 16, borderRadius: 4, backgroundColor: `rgb(${lightResult.color[0]},${lightResult.color[1]},${lightResult.color[2]})`, border: '1px solid #333' }} />
@@ -754,14 +754,14 @@ export default function EngineLightmappingPanel() {
                 <div style={{ borderLeft: '3px solid #ff6b6b', paddingLeft: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <span style={{ fontWeight: 600, fontSize: 12, color: '#ff6b6b' }}>{bakeResult.bake_id}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: getBakeStatusColor(bakeResult.status), fontWeight: 600 }}>{bakeResult.status}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: getBakeStatusColor(bakeResult.status), fontWeight: 600 }}>{bakeResult.status}</span>
                   </div>
                   <div style={{ marginBottom: 6 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#888', marginBottom: 2 }}>
                       <span>Progress</span>
                       <span>{bakeResult.progress}%</span>
                     </div>
-                    <div style={{ height: 8, backgroundColor: '#141428', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ height: 8, backgroundColor: '#111', borderRadius: 4, overflow: 'hidden' }}>
                       <div style={{
                         width: `${bakeResult.progress}%`,
                         height: '100%',
@@ -805,14 +805,14 @@ export default function EngineLightmappingPanel() {
                 <div style={{ borderLeft: `3px solid ${getBakeStatusColor(bakeStatus.status)}`, paddingLeft: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <span style={{ fontWeight: 600, fontSize: 12, color: getBakeStatusColor(bakeStatus.status) }}>{bakeStatus.bake_id}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: getBakeStatusColor(bakeStatus.status), fontWeight: 600 }}>{bakeStatus.status}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: getBakeStatusColor(bakeStatus.status), fontWeight: 600 }}>{bakeStatus.status}</span>
                   </div>
                   <div style={{ marginBottom: 6 }}>
                     <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 9, color: '#888', marginBottom: 2 }}>
                       <span>Progress</span>
                       <span>{bakeStatus.progress}%</span>
                     </div>
-                    <div style={{ height: 8, backgroundColor: '#141428', borderRadius: 4, overflow: 'hidden' }}>
+                    <div style={{ height: 8, backgroundColor: '#111', borderRadius: 4, overflow: 'hidden' }}>
                       <div style={{
                         width: `${bakeStatus.progress}%`,
                         height: '100%',
@@ -879,7 +879,7 @@ export default function EngineLightmappingPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

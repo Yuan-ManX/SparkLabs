@@ -71,7 +71,7 @@ interface Tile {
 // Tile definitions
 const TILE_DEFINITIONS = [
   { type: 0, name: 'Eraser', color: 'transparent', description: 'Remove tiles' },
-  { type: 1, name: 'Solid', color: '#0f3460', description: 'Solid collidable tile' },
+  { type: 1, name: 'Solid', color: '#1e1e1e', description: 'Solid collidable tile' },
   { type: 2, name: 'Platform', color: '#16213e', description: 'Platform tile' },
   { type: 3, name: 'Grass', color: '#1a3a1a', description: 'Grass tile' },
   { type: 4, name: 'Lava', color: '#3a1a1a', description: 'Lava/danger tile' }
@@ -133,7 +133,7 @@ const GameEditor: React.FC = () => {
           y: 450,
           width: 300,
           height: 30,
-          color: '#0f3460',
+          color: '#1e1e1e',
           visible: true,
           components: [
             { type: 'Physics', config: { static: true } }
@@ -412,7 +412,7 @@ const GameEditor: React.FC = () => {
           type: selectedTileType, 
           x, 
           y, 
-          color: tileDef?.color || '#0f3460' 
+          color: tileDef?.color || '#1e1e1e' 
         };
         if (existing) {
           return prev.map(t => t.x === x && t.y === y ? newTile : t);
@@ -548,7 +548,7 @@ const GameEditor: React.FC = () => {
     <title>SparkLab Game</title>
     <style>
         body { margin: 0; padding: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: system-ui, -apple-system, sans-serif; }
-        canvas { border: 2px solid #0f3460; border-radius: 4px; box-shadow: 0 0 30px rgba(15, 52, 96, 0.3); }
+        canvas { border: 2px solid #1e1e1e; border-radius: 4px; box-shadow: 0 0 30px rgba(15, 52, 96, 0.3); }
     </style>
 </head>
 <body>
@@ -740,11 +740,11 @@ const GameEditor: React.FC = () => {
     <div className="flex flex-col h-full bg-[#0a0a0a] text-\[#eee\]">
       <header className="h-16 bg-[#0f0f0f] border-b border-[#1e1e1e] flex items-center justify-between px-6 shadow-lg">
         <div className="flex items-center gap-4">
-          <div className="p-2 bg-gradient-to-br from-purple-600 to-pink-600 rounded-xl shadow-lg">
+          <div className="p-2 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl shadow-lg">
             <PlayCircle className="w-7 h-7" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold bg-gradient-to-r from-purple-400 to-pink-400 bg-clip-text text-transparent">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-orange-400 to-red-500 bg-clip-text text-transparent">
               SparkLab Game Studio
             </h1>
             <p className="text-xs text-[#999]">AI-Native Game Development Platform</p>
@@ -762,7 +762,7 @@ const GameEditor: React.FC = () => {
           </button>
           <button
             onClick={exportGame}
-            className="flex items-center gap-2 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 rounded-xl font-semibold transition-all shadow-lg hover:scale-105 active:scale-95"
+            className="flex items-center gap-2 px-6 py-2.5 bg-orange-500 hover:bg-orange-600 rounded-xl font-semibold transition-all shadow-lg hover:scale-105 active:scale-95"
           >
             <Download className="w-5 h-5" />
             Export
@@ -785,7 +785,7 @@ const GameEditor: React.FC = () => {
                 key={s.id}
                 onClick={() => setCurrentScene(s.id)}
                 className={`w-full text-left px-5 py-3 rounded-xl transition-all mb-2 text-sm flex items-center gap-3 ${
-                  currentScene === s.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-[#ccc]'
+                  currentScene === s.id ? 'bg-orange-500 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-[#ccc]'
                 }`}
               >
                 <Box className="w-4 h-4" />
@@ -805,10 +805,10 @@ const GameEditor: React.FC = () => {
                   key={tileDef.type}
                   onClick={() => setSelectedTileType(tileDef.type)}
                   className={`aspect-square rounded-xl border-3 transition-all duration-200 flex items-center justify-center ${
-                    selectedTileType === tileDef.type ? 'border-purple-400 scale-110 shadow-xl' : 'border-[#2a2a2a] hover:border-[#333]'
+                    selectedTileType === tileDef.type ? 'border-orange-400 scale-110 shadow-xl' : 'border-[#2a2a2a] hover:border-[#333]'
                   }`}
                   style={{ 
-                    backgroundColor: tileDef.type === 0 ? '#0f172a' : tileDef.color,
+                    backgroundColor: tileDef.type === 0 ? '#0f0f0f' : tileDef.color,
                     borderStyle: tileDef.type === 0 ? 'dashed' : 'solid'
                   }}
                   title={`${tileDef.name}: ${tileDef.description}`}
@@ -818,7 +818,7 @@ const GameEditor: React.FC = () => {
               ))}
             </div>
             <div className="text-xs text-[#999] mb-3">
-              Selected: <span className="text-purple-400 font-semibold">{TILE_DEFINITIONS.find(t => t.type === selectedTileType)?.name}</span>
+              Selected: <span className="text-orange-400 font-semibold">{TILE_DEFINITIONS.find(t => t.type === selectedTileType)?.name}</span>
             </div>
             <button
               onClick={clearTilemap}
@@ -840,7 +840,7 @@ const GameEditor: React.FC = () => {
                   key={obj.id}
                   onClick={() => setSelectedObject(obj.id)}
                   className={`w-full text-left px-4 py-3 rounded-xl transition-all text-sm flex items-center gap-3 ${
-                    selectedObject === obj.id ? 'bg-purple-600 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-[#ccc]'
+                    selectedObject === obj.id ? 'bg-orange-500 text-white shadow-lg' : 'hover:bg-[#1a1a1a] text-[#ccc]'
                   }`}
                 >
                   <div
@@ -1040,7 +1040,7 @@ const GameEditor: React.FC = () => {
                             className={`p-2 rounded-xl border-2 flex flex-col items-center gap-1 transition-all text-xs ${
                               hasComponent
                                 ? 'border-[#1e1e1e] bg-[#0f0f0f] text-[#666] cursor-not-allowed'
-                                : 'border-[#2a2a2a] hover:border-purple-400 bg-[#1a1a1a] text-[#ddd] hover:scale-105'
+                                : 'border-[#2a2a2a] hover:border-orange-400 bg-[#1a1a1a] text-[#ddd] hover:scale-105'
                             }`}
                           >
                             <Icon className={`w-4 h-4 ${compType.color}`} />

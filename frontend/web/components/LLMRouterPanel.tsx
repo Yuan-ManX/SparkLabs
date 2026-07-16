@@ -140,7 +140,7 @@ const LLMRouterPanel: React.FC = () => {
             {MODEL_TYPES.map((mt) => (
               <div
                 key={mt.name}
-                className="flex flex-col items-center justify-center gap-1.5 p-2 rounded-md bg-[#0a0a0a] border border-[#1a1a1a] hover:border-orange-500/40 transition-colors cursor-default"
+                className="flex flex-col items-center justify-center gap-1.5 p-2 rounded-md bg-[#0a0a0a] border border-[#1e1e1e] hover:border-orange-500/40 transition-colors cursor-default"
               >
                 <i className={`fa-solid ${mt.icon} text-[16px] text-[#888]`} />
                 <div className="text-[10px] font-semibold text-[#ccc] text-center leading-tight">{mt.name}</div>
@@ -206,7 +206,7 @@ const LLMRouterPanel: React.FC = () => {
                   className={`flex items-start gap-2 p-2.5 rounded-md border text-left transition-all ${
                     isActive
                       ? 'border-orange-500/50 bg-orange-500/10'
-                      : 'border-[#1a1a1a] bg-[#0a0a0a] hover:border-[#2a2a2a] hover:bg-[#141414]'
+                      : 'border-[#1e1e1e] bg-[#0a0a0a] hover:border-[#2a2a2a] hover:bg-[#111]'
                   }`}
                 >
                   <i
@@ -240,7 +240,7 @@ const LLMRouterPanel: React.FC = () => {
             {TASK_ROUTES.map((route) => (
               <div
                 key={route.task}
-                className="flex items-center gap-2 p-2 rounded-md bg-[#0a0a0a] border border-[#1a1a1a] hover:border-[#2a2a2a] transition-colors"
+                className="flex items-center gap-2 p-2 rounded-md bg-[#0a0a0a] border border-[#1e1e1e] hover:border-[#2a2a2a] transition-colors"
               >
                 <i className={`fa-solid ${route.icon} text-[11px] text-[#666] w-4 text-center`} />
                 <span className="text-[11px] text-[#ccc] flex-1 truncate">{route.task}</span>

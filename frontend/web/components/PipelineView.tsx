@@ -200,7 +200,7 @@ const PipelineView: React.FC = () => {
                 className={`w-6 h-6 rounded-full flex items-center justify-center border ${
                   status === 'completed' ? 'border-green-500/60 bg-green-500/20' :
                   status === 'running' ? 'border-blue-500/60 bg-blue-500/20' :
-                  'border-[#2a2a2a] bg-[#141414]'
+                  'border-[#2a2a2a] bg-[#0d0d0d]'
                 }`}
               >
                 <i className={`fa-solid ${status === 'completed' ? 'fa-check' : status === 'running' ? 'fa-spinner fa-spin' : STAGE_ICONS[stage]} text-[7px]`} style={{ color: status === 'completed' ? '#4ade80' : status === 'running' ? '#3b82f6' : color }} />
@@ -218,7 +218,7 @@ const PipelineView: React.FC = () => {
     return (
       <div className="flex gap-2 mt-2">
         {scores.map((score, idx) => (
-          <div key={idx} className="flex-1 bg-[#141414] rounded-lg p-2 border border-[#1a1a1a]">
+          <div key={idx} className="flex-1 bg-[#0d0d0d] rounded-lg p-2 border border-[#1a1a1a]">
             <div className="text-[9px] text-[#888] mb-1">{score.dimension}</div>
             <div className="flex items-end gap-1">
               <span className={`text-[14px] font-bold ${score.passed ? 'text-green-400' : 'text-red-400'}`}>
@@ -243,7 +243,7 @@ const PipelineView: React.FC = () => {
 
   const renderRuns = () => (
     <div className="p-4 space-y-3">
-      <div className="bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+      <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-3">
         <div className="text-[10px] text-[#888] mb-2">Start Pipeline</div>
         <div className="flex gap-2 mb-2">
           <input
@@ -282,7 +282,7 @@ const PipelineView: React.FC = () => {
         const statusStyle = STATUS_STYLES[run.status] || STATUS_STYLES.pending;
 
         return (
-          <div key={run.id} className="bg-[#141414] border border-[#2a2a2a] rounded-lg overflow-hidden">
+          <div key={run.id} className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg overflow-hidden">
             <div
               className="p-3 cursor-pointer hover:bg-[#1a1a1a] transition-colors"
               onClick={() => setSelectedRun(isExpanded ? null : run)}
@@ -376,7 +376,7 @@ const PipelineView: React.FC = () => {
       {stages.map((stage, idx) => {
         const color = STAGE_COLORS[stage.stage] || '#666';
         return (
-          <div key={stage.stage} className="flex items-start gap-3 p-3 bg-[#141414] border border-[#2a2a2a] rounded-lg">
+          <div key={stage.stage} className="flex items-start gap-3 p-3 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg">
             <div className="flex flex-col items-center gap-1">
               <div className="w-8 h-8 rounded-lg flex items-center justify-center" style={{ backgroundColor: `${color}20`, border: `1px solid ${color}40` }}>
                 <span className="text-[12px] font-bold" style={{ color }}>{idx + 1}</span>
@@ -418,7 +418,7 @@ const PipelineView: React.FC = () => {
       <div className="p-4">
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2">
           {statCards.map(card => (
-            <div key={card.label} className="bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+            <div key={card.label} className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-3">
               <div className="flex items-center gap-2 mb-2">
                 <div className="w-6 h-6 rounded-full flex items-center justify-center" style={{ backgroundColor: `${card.color}20` }}>
                   <i className={`fa-solid ${card.icon} text-[9px]`} style={{ color: card.color }} />
@@ -430,7 +430,7 @@ const PipelineView: React.FC = () => {
           ))}
         </div>
 
-        <div className="mt-4 bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+        <div className="mt-4 bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-3">
           <div className="text-[10px] text-[#888] mb-2">Pipeline Flow</div>
           <div className="flex items-center gap-1 overflow-x-auto pb-2">
             {STAGE_ORDER.map((stage, idx) => {

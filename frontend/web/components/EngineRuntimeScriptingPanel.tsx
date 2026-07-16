@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
 // ── Types & Interfaces ──────────────────────────────────────────────
 
@@ -72,7 +73,7 @@ interface ScheduleResult {
 
 // ── Helpers ─────────────────────────────────────────────────────────
 
-const API_BASE = "http://localhost:8000/api/engine";
+const API_BASE = `${API_ROOT}/engine`;
 
 const uid = (): string =>
   `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
@@ -634,7 +635,7 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
   const inputStyle: React.CSSProperties = {
     padding: "6px 10px",
     fontSize: 11,
-    backgroundColor: "#141428",
+    backgroundColor: "#111",
     color: "#ccc",
     border: "1px solid #333",
     borderRadius: 4,
@@ -644,7 +645,7 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
   const selectStyle: React.CSSProperties = {
     padding: "6px 10px",
     fontSize: 11,
-    backgroundColor: "#141428",
+    backgroundColor: "#111",
     color: "#ccc",
     border: "1px solid #333",
     borderRadius: 4,
@@ -654,7 +655,7 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
   const textareaStyle: React.CSSProperties = {
     padding: "6px 10px",
     fontSize: 11,
-    backgroundColor: "#141428",
+    backgroundColor: "#111",
     color: "#ccc",
     border: "1px solid #333",
     borderRadius: 4,
@@ -1001,7 +1002,7 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
                         marginLeft: 8,
                         padding: "1px 6px",
                         borderRadius: 3,
-                        backgroundColor: "#141428",
+                        backgroundColor: "#111",
                         color: s.compiled ? "#6bcb77" : "#fdcb6e",
                       }}
                     >
@@ -1280,7 +1281,7 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
                         marginLeft: 8,
                         padding: "1px 6px",
                         borderRadius: 3,
-                        backgroundColor: "#141428",
+                        backgroundColor: "#111",
                         color: instanceStateColor(inst.state),
                         textTransform: "uppercase",
                       }}
@@ -1407,7 +1408,7 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
                     style={{
                       padding: "6px 8px",
                       marginTop: i > 0 ? 4 : 0,
-                      backgroundColor: "#141428",
+                      backgroundColor: "#111",
                       borderRadius: 4,
                       fontSize: 10,
                       color: "#aaa",
@@ -1573,7 +1574,7 @@ const EngineRuntimeScriptingPanel: React.FC = () => {
                   style={{
                     marginTop: 8,
                     padding: "6px 10px",
-                    backgroundColor: "#141428",
+                    backgroundColor: "#111",
                     borderRadius: 4,
                     fontSize: 11,
                     color: "#6bcb77",
@@ -1692,7 +1693,7 @@ const StatusCard: React.FC<{
   <div
     style={{
       padding: 10,
-      backgroundColor: "#141428",
+      backgroundColor: "#111",
       borderRadius: 6,
       border: "1px solid #2a2a3e",
       textAlign: "center",

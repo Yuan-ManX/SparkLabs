@@ -46,7 +46,7 @@ const getGameFiles = (templateId: string, gameName: string) => {
     <title>${gameName} - SparkLabs</title>
     <style>
         body { margin: 0; padding: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; }
-        canvas { border: 2px solid #0f3460; border-radius: 4px; }
+        canvas { border: 2px solid #1e1e1e; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -72,7 +72,7 @@ const player = {
 };
 
 const platforms = [
-    { x: 0, y: 550, width: 800, height: 50, color: '#0f3460' },
+    { x: 0, y: 550, width: 800, height: 50, color: '#1e1e1e' },
     { x: 200, y: 450, width: 150, height: 20, color: '#16213e' },
     { x: 450, y: 350, width: 150, height: 20, color: '#16213e' }
 ];
@@ -160,7 +160,7 @@ console.log('%cBuilt with SparkLabs', 'color: #f9c74f');`
     <title>${gameName} - SparkLabs</title>
     <style>
         body { margin: 0; padding: 0; background: #16213e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; }
-        canvas { border: 2px solid #0f3460; border-radius: 4px; }
+        canvas { border: 2px solid #1e1e1e; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -258,7 +258,7 @@ console.log('%cBuilt with SparkLabs', 'color: #f9c74f');`
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>${gameName} - SparkLabs</title>
     <style>
-        body { margin: 0; padding: 0; background: #0f3460; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; }
+        body { margin: 0; padding: 0; background: #1e1e1e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; }
         canvas { border: 2px solid #16213e; border-radius: 4px; }
     </style>
 </head>
@@ -325,7 +325,7 @@ console.log('%cBuilt with SparkLabs', 'color: #f9c74f');`
     <title>${gameName} - SparkLabs</title>
     <style>
         body { margin: 0; padding: 0; background: #1a1a2e; display: flex; justify-content: center; align-items: center; min-height: 100vh; font-family: 'Segoe UI', system-ui, sans-serif; }
-        canvas { border: 2px solid #0f3460; border-radius: 4px; }
+        canvas { border: 2px solid #1e1e1e; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -379,11 +379,11 @@ function drawGrid() {
     ctx.fillStyle = '#1a1a2e';
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
-    ctx.strokeStyle = '#0f3460';
+    ctx.strokeStyle = '#1e1e1e';
     ctx.lineWidth = 2;
     for (let i = -4; i <= 4; i++) {
         for (let j = -3; j <= 3; j++) {
-            ctx.fillStyle = (i + j) % 2 === 0 ? '#16213e' : '#0f3460';
+            ctx.fillStyle = (i + j) % 2 === 0 ? '#16213e' : '#1e1e1e';
             ctx.fillRect(300 + i * gridSize - gridSize/2 + 2, 250 + j * gridSize - gridSize/2 + 2, gridSize - 4, gridSize - 4);
         }
     }
@@ -513,7 +513,7 @@ const GameGenerator: React.FC = () => {
                 </button>
                 <button
                   onClick={downloadProject}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg transition-all hover:scale-105"
+                  className="flex items-center gap-2 px-4 py-2 bg-orange-600 hover:bg-orange-700 text-white rounded-lg transition-all hover:scale-105"
                 >
                   <Download className="w-4 h-4" />
                   Download
@@ -659,7 +659,7 @@ const GameGenerator: React.FC = () => {
                         </button>
                         <button
                           onClick={downloadProject}
-                          className="flex items-center justify-center gap-3 px-6 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-semibold text-lg transition-all hover:scale-105"
+                          className="flex items-center justify-center gap-3 px-6 py-4 bg-orange-600 hover:bg-orange-700 text-white rounded-lg font-semibold text-lg transition-all hover:scale-105"
                         >
                           <Download className="w-6 h-6" />
                           Download

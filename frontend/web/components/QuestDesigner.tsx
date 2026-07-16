@@ -165,7 +165,7 @@ const QuestDesigner: React.FC = () => {
               <input
                 value={quest.name}
                 onChange={e => updateQuest('name', e.target.value)}
-                className="bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[11px] text-[#ddd] w-40 focus:border-amber-500/50 focus:outline-none"
+                className="bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[11px] text-[#ddd] w-40 focus:border-amber-500/50 focus:outline-none"
               />
               <span className="text-[9px] text-[#888]">{quest.objectives.length} objectives</span>
             </div>
@@ -179,7 +179,7 @@ const QuestDesigner: React.FC = () => {
                     className={`px-2 py-1 rounded text-[8px] font-medium transition-all ${
                       i <= questPreviewState
                         ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                        : 'bg-[#141414] text-[#666] border border-[#2a2a2a]'
+                        : 'bg-[#111] text-[#666] border border-[#2a2a2a]'
                     }`}
                   >
                     {state}
@@ -209,7 +209,7 @@ const QuestDesigner: React.FC = () => {
                   value={quest?.description || ''}
                   onChange={e => updateQuest('description', e.target.value)}
                   rows={2}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-amber-500/50 focus:outline-none resize-none"
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-amber-500/50 focus:outline-none resize-none"
                 />
               </div>
               <div>
@@ -217,7 +217,7 @@ const QuestDesigner: React.FC = () => {
                 <input
                   type="text" value={quest?.giverNpc || ''}
                   onChange={e => updateQuest('giverNpc', e.target.value)}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
                 />
               </div>
               <div>
@@ -225,7 +225,7 @@ const QuestDesigner: React.FC = () => {
                 <input
                   type="text" value={quest?.turnInNpc || ''}
                   onChange={e => updateQuest('turnInNpc', e.target.value)}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
                 />
               </div>
             </div>
@@ -253,7 +253,7 @@ const QuestDesigner: React.FC = () => {
                         <input
                           type="text" value={obj.title}
                           onChange={e => updateObjective(obj.id, { title: e.target.value })}
-                          className="flex-1 bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[9px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
+                          className="flex-1 bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[9px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
                         />
                         {obj.optional && (
                           <span className="text-[7px] px-1 py-0.5 rounded bg-blue-500/10 text-blue-400">Optional</span>
@@ -288,7 +288,7 @@ const QuestDesigner: React.FC = () => {
                           <select
                             value={obj.type}
                             onChange={e => updateObjective(obj.id, { type: e.target.value })}
-                            className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1 py-0.5 text-[8px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
+                            className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1 py-0.5 text-[8px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
                           >
                             {OBJECTIVE_TYPES.map(t => (
                               <option key={t} value={t}>{t.charAt(0).toUpperCase() + t.slice(1)}</option>
@@ -300,7 +300,7 @@ const QuestDesigner: React.FC = () => {
                           <input
                             type="number" min="1" value={obj.targetCount}
                             onChange={e => updateObjective(obj.id, { targetCount: Number(e.target.value) })}
-                            className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1 py-0.5 text-[8px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
+                            className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1 py-0.5 text-[8px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
                           />
                         </div>
                         <div className="flex items-end">
@@ -317,14 +317,14 @@ const QuestDesigner: React.FC = () => {
                           <input
                             type="text" placeholder="Description" value={obj.description}
                             onChange={e => updateObjective(obj.id, { description: e.target.value })}
-                            className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[8px] text-[#ddd] placeholder-[#555] focus:border-amber-500/50 focus:outline-none"
+                            className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-0.5 text-[8px] text-[#ddd] placeholder-[#555] focus:border-amber-500/50 focus:outline-none"
                           />
                         </div>
                         <div className="col-span-3">
                           <select
                             value={obj.prerequisite}
                             onChange={e => updateObjective(obj.id, { prerequisite: e.target.value })}
-                            className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1 py-0.5 text-[8px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
+                            className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1 py-0.5 text-[8px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
                           >
                             <option value="">No prerequisite</option>
                             {quest.objectives.filter(o => o.id !== obj.id).map(o => (
@@ -371,7 +371,7 @@ const QuestDesigner: React.FC = () => {
                         const newReward = { ...quest!.reward, [key]: Number(e.target.value) };
                         updateQuest('reward', newReward);
                       }}
-                      className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
+                      className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
                     />
                   </div>
                 ))}
@@ -388,7 +388,7 @@ const QuestDesigner: React.FC = () => {
                       updateQuest('reward', newReward);
                     }}
                     placeholder="Comma-separated item names"
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-amber-500/50 focus:outline-none"
+                    className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-amber-500/50 focus:outline-none"
                   />
                 </div>
               </div>
@@ -404,7 +404,7 @@ const QuestDesigner: React.FC = () => {
                 <select
                   value={quest?.nextQuestId || ''}
                   onChange={e => updateQuest('nextQuestId', e.target.value)}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-amber-500/50 focus:outline-none"
                 >
                   <option value="">None</option>
                   {allQuests.filter(q => q.id !== selectedQuestId).map(q => (
@@ -416,7 +416,7 @@ const QuestDesigner: React.FC = () => {
 
             <div>
               <h3 className="text-[10px] font-semibold text-[#bbb] mb-2">Quest Summary</h3>
-              <div className="p-2 rounded bg-[#141414] border border-[#2a2a2a] space-y-1">
+              <div className="p-2 rounded bg-[#111] border border-[#2a2a2a] space-y-1">
                 <div className="text-[10px] font-medium text-[#ddd]">{quest?.name || 'Untitled'}</div>
                 <div className="text-[8px] text-[#888]">
                   {quest?.objectives.filter(o => !o.optional).length || 0} required, {quest?.objectives.filter(o => o.optional).length || 0} optional

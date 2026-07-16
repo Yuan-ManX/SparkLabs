@@ -494,7 +494,7 @@ export default function EnginePhysicsPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -513,7 +513,7 @@ export default function EnginePhysicsPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -764,7 +764,7 @@ export default function EnginePhysicsPanel() {
                 <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontWeight: 600, fontSize: 13 }}>{createdBody.body_id}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#00d4ff', fontWeight: 600 }}>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#00d4ff', fontWeight: 600 }}>
                       {createdBody.body_type}
                     </span>
                   </div>
@@ -1033,7 +1033,7 @@ export default function EnginePhysicsPanel() {
                 <div style={{ borderLeft: '3px solid #a29bfe', paddingLeft: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontWeight: 600, fontSize: 13 }}>{createdConstraint.constraint_id}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#a29bfe', fontWeight: 600 }}>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#a29bfe', fontWeight: 600 }}>
                       {createdConstraint.constraint_type}
                     </span>
                   </div>
@@ -1164,7 +1164,7 @@ export default function EnginePhysicsPanel() {
                 </div>
                 <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                   {aabbBodyIds.map(id => (
-                    <span key={id} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#00d4ff' }}>{id}</span>
+                    <span key={id} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#00d4ff' }}>{id}</span>
                   ))}
                 </div>
               </div>
@@ -1177,7 +1177,7 @@ export default function EnginePhysicsPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #1e1e1e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

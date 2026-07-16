@@ -32,16 +32,16 @@ interface NodeTemplate {
 const NODE_TEMPLATES: NodeTemplate[] = [
   { type: 'prompt', title: 'AI Prompt', color: '#f97316', category: 'Input', inputs: [], outputs: [{ name: 'output', type: 'text' }] },
   { type: 'scene_input', title: 'Scene Data', color: '#22c55e', category: 'Input', inputs: [], outputs: [{ name: 'scene', type: 'scene' }, { name: 'entities', type: 'list' }] },
-  { type: 'game_gen', title: 'Game Generator', color: '#8b5cf6', category: 'AI', inputs: [{ name: 'prompt', type: 'text' }, { name: 'config', type: 'config' }], outputs: [{ name: 'game', type: 'game' }] },
-  { type: 'world_gen', title: 'World Builder', color: '#8b5cf6', category: 'AI', inputs: [{ name: 'prompt', type: 'text' }, { name: 'terrain', type: 'config' }], outputs: [{ name: 'world', type: 'world' }] },
-  { type: 'asset_gen', title: 'Asset Generator', color: '#8b5cf6', category: 'AI', inputs: [{ name: 'prompt', type: 'text' }, { name: 'style', type: 'config' }], outputs: [{ name: 'asset', type: 'asset' }] },
-  { type: 'code_gen', title: 'Code Generator', color: '#8b5cf6', category: 'AI', inputs: [{ name: 'spec', type: 'text' }, { name: 'language', type: 'config' }], outputs: [{ name: 'code', type: 'code' }] },
-  { type: 'npc_gen', title: 'NPC Designer', color: '#8b5cf6', category: 'AI', inputs: [{ name: 'personality', type: 'text' }, { name: 'role', type: 'config' }], outputs: [{ name: 'npc', type: 'npc' }] },
-  { type: 'dialogue_gen', title: 'Dialogue Writer', color: '#8b5cf6', category: 'AI', inputs: [{ name: 'context', type: 'text' }, { name: 'characters', type: 'list' }], outputs: [{ name: 'dialogue', type: 'dialogue' }] },
+  { type: 'game_gen', title: 'Game Generator', color: '#f97316', category: 'AI', inputs: [{ name: 'prompt', type: 'text' }, { name: 'config', type: 'config' }], outputs: [{ name: 'game', type: 'game' }] },
+  { type: 'world_gen', title: 'World Builder', color: '#f97316', category: 'AI', inputs: [{ name: 'prompt', type: 'text' }, { name: 'terrain', type: 'config' }], outputs: [{ name: 'world', type: 'world' }] },
+  { type: 'asset_gen', title: 'Asset Generator', color: '#f97316', category: 'AI', inputs: [{ name: 'prompt', type: 'text' }, { name: 'style', type: 'config' }], outputs: [{ name: 'asset', type: 'asset' }] },
+  { type: 'code_gen', title: 'Code Generator', color: '#f97316', category: 'AI', inputs: [{ name: 'spec', type: 'text' }, { name: 'language', type: 'config' }], outputs: [{ name: 'code', type: 'code' }] },
+  { type: 'npc_gen', title: 'NPC Designer', color: '#f97316', category: 'AI', inputs: [{ name: 'personality', type: 'text' }, { name: 'role', type: 'config' }], outputs: [{ name: 'npc', type: 'npc' }] },
+  { type: 'dialogue_gen', title: 'Dialogue Writer', color: '#f97316', category: 'AI', inputs: [{ name: 'context', type: 'text' }, { name: 'characters', type: 'list' }], outputs: [{ name: 'dialogue', type: 'dialogue' }] },
   { type: 'validator', title: 'Validator', color: '#ef4444', category: 'QA', inputs: [{ name: 'target', type: 'any' }, { name: 'rules', type: 'config' }], outputs: [{ name: 'report', type: 'report' }] },
   { type: 'evaluator', title: 'Evaluator', color: '#ef4444', category: 'QA', inputs: [{ name: 'game', type: 'game' }, { name: 'benchmarks', type: 'config' }], outputs: [{ name: 'score', type: 'score' }] },
-  { type: 'merge', title: 'Merge', color: '#06b6d4', category: 'Logic', inputs: [{ name: 'input_a', type: 'any' }, { name: 'input_b', type: 'any' }], outputs: [{ name: 'output', type: 'any' }] },
-  { type: 'condition', title: 'Condition', color: '#06b6d4', category: 'Logic', inputs: [{ name: 'value', type: 'any' }, { name: 'condition', type: 'text' }], outputs: [{ name: 'true', type: 'any' }, { name: 'false', type: 'any' }] },
+  { type: 'merge', title: 'Merge', color: '#f97316', category: 'Logic', inputs: [{ name: 'input_a', type: 'any' }, { name: 'input_b', type: 'any' }], outputs: [{ name: 'output', type: 'any' }] },
+  { type: 'condition', title: 'Condition', color: '#f97316', category: 'Logic', inputs: [{ name: 'value', type: 'any' }, { name: 'condition', type: 'text' }], outputs: [{ name: 'true', type: 'any' }, { name: 'false', type: 'any' }] },
   { type: 'output', title: 'Game Output', color: '#f59e0b', category: 'Output', inputs: [{ name: 'game', type: 'game' }], outputs: [] },
   { type: 'preview', title: 'Preview', color: '#f59e0b', category: 'Output', inputs: [{ name: 'target', type: 'any' }], outputs: [] },
 ];
@@ -54,7 +54,7 @@ const INITIAL_NODES: GraphNode[] = [
     outputs: [{ id: 'n1_o1', name: 'output', type: 'text', connected: true }],
   },
   {
-    id: 'n2', type: 'game_gen', title: 'Game Generator', color: '#8b5cf6',
+    id: 'n2', type: 'game_gen', title: 'Game Generator', color: '#f97316',
     x: 340, y: 60,
     inputs: [{ id: 'n2_i1', name: 'prompt', type: 'text', connected: true }, { id: 'n2_i2', name: 'config', type: 'config' }],
     outputs: [{ id: 'n2_o1', name: 'game', type: 'game', connected: true }],
@@ -332,7 +332,7 @@ const NodeGraphEditor: React.FC = () => {
         <div className="sl-node-body">
           {node.inputs.map((port) => (
             <div key={port.id} className="sl-node-port" onClick={(e) => { e.stopPropagation(); handlePortClick(node.id, port.id, 'input'); }}>
-              <div className={`sl-node-port-dot ${port.connected ? 'connected' : ''}`} style={{ color: '#3b82f6' }} />
+              <div className={`sl-node-port-dot ${port.connected ? 'connected' : ''}`} style={{ color: '#f97316' }} />
               <span className="text-[#888]">{port.name}</span>
             </div>
           ))}
@@ -378,7 +378,7 @@ const NodeGraphEditor: React.FC = () => {
               x={node.x} y={node.y}
               width={200} height={60}
               rx={4}
-              fill={selectedNodeId === node.id ? `${node.color}33` : '#1e293b'}
+              fill={selectedNodeId === node.id ? `${node.color}33` : '#1a1a1a'}
               stroke={selectedNodeId === node.id ? node.color : '#334155'}
               strokeWidth={1 / scale}
             />

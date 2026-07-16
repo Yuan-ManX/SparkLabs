@@ -28,7 +28,7 @@ const BLEND_MODES = ['opaque', 'alpha_blend', 'additive', 'multiply', 'screen', 
 const VALUE_TYPES = ['float', 'int', 'color', 'vector2', 'vector3', 'vector4', 'texture', 'bool'];
 
 const DOMAIN_COLORS: Record<string, string> = {
-  surface: '#60a5fa', volume: '#a78bfa', decal: '#f472b6',
+  surface: '#60a5fa', volume: '#f97316', decal: '#f472b6',
   post_process: '#34d399', ui: '#fbbf24', terrain: '#10b981',
 };
 
@@ -289,7 +289,7 @@ const MaterialEditor: React.FC = () => {
 
   return (
     <div style={{ padding: 16, color: '#e0e0e0', fontFamily: 'monospace', height: '100%', overflow: 'auto' }}>
-      <h3 style={{ margin: '0 0 12px', color: '#a78bfa' }}>Material Editor</h3>
+      <h3 style={{ margin: '0 0 12px', color: '#f97316' }}>Material Editor</h3>
 
       {stats && (
         <div style={{ display: 'flex', gap: 12, marginBottom: 16, flexWrap: 'wrap' }}>
@@ -373,9 +373,9 @@ const MaterialEditor: React.FC = () => {
                 onClick={() => setBlendMode(bm)}
                 style={{
                   padding: '4px 10px', borderRadius: 6, fontSize: 11,
-                  border: blendMode === bm ? '2px solid #a78bfa' : '1px solid #333',
+                  border: blendMode === bm ? '2px solid #f97316' : '1px solid #333',
                   background: blendMode === bm ? '#2a1a3a' : '#111',
-                  color: blendMode === bm ? '#a78bfa' : '#aaa',
+                  color: blendMode === bm ? '#f97316' : '#aaa',
                   cursor: 'pointer',
                 }}
               >{bm.replace('_', ' ')}</button>
@@ -389,7 +389,7 @@ const MaterialEditor: React.FC = () => {
               type="checkbox"
               checked={isShared}
               onChange={e => setIsShared(e.target.checked)}
-              style={{ accentColor: '#a78bfa' }}
+              style={{ accentColor: '#f97316' }}
             />
             Shared Material
           </label>
@@ -399,17 +399,17 @@ const MaterialEditor: React.FC = () => {
           {selected ? (
             <>
               <button onClick={handleSave} style={{
-                padding: '6px 16px', borderRadius: 6, border: 'none', background: '#8b5cf6',
+                padding: '6px 16px', borderRadius: 6, border: 'none', background: '#f97316',
                 color: '#fff', cursor: 'pointer', fontSize: 12,
               }}>Save</button>
               <button onClick={handleClone} style={{
-                padding: '6px 16px', borderRadius: 6, border: '1px solid #a78bfa',
-                background: 'transparent', color: '#a78bfa', cursor: 'pointer', fontSize: 12,
+                padding: '6px 16px', borderRadius: 6, border: '1px solid #f97316',
+                background: 'transparent', color: '#f97316', cursor: 'pointer', fontSize: 12,
               }}>Clone</button>
             </>
           ) : (
             <button onClick={handleCreate} style={{
-              padding: '6px 16px', borderRadius: 6, border: 'none', background: '#8b5cf6',
+              padding: '6px 16px', borderRadius: 6, border: 'none', background: '#f97316',
               color: '#fff', cursor: 'pointer', fontSize: 12,
             }}>Create Material</button>
           )}
@@ -502,7 +502,7 @@ const MaterialEditor: React.FC = () => {
                 </div>
               )}
               <button onClick={handleAddProperty} style={{
-                padding: '5px 14px', borderRadius: 6, border: 'none', background: '#3b82f6',
+                padding: '5px 14px', borderRadius: 6, border: 'none', background: '#f97316',
                 color: '#fff', cursor: 'pointer', fontSize: 11,
               }}>Add Property</button>
             </div>
@@ -553,7 +553,7 @@ const MaterialEditor: React.FC = () => {
                 }}
               />
               <button onClick={handleAddTexture} style={{
-                padding: '5px 12px', borderRadius: 4, border: 'none', background: '#3b82f6',
+                padding: '5px 12px', borderRadius: 4, border: 'none', background: '#f97316',
                 color: '#fff', cursor: 'pointer', fontSize: 11,
               }}>Add</button>
             </div>
@@ -579,9 +579,9 @@ const MaterialEditor: React.FC = () => {
             <div style={{ fontSize: 12, fontWeight: 'bold', color: '#ccc', marginBottom: 8 }}>Preview</div>
             <div style={{
               width: '100%', height: 120, borderRadius: 8,
-              background: selected.domain === 'ui' ? '#1a1a3e' :
+              background: selected.domain === 'ui' ? '#1a1a1a' :
                 selected.domain === 'terrain' ? '#2d5a27' :
-                selected.domain === 'volume' ? '#1a1a3e' :
+                selected.domain === 'volume' ? '#1a1a1a' :
                 selected.domain === 'decal' ? '#3a1a2e' :
                 selected.domain === 'post_process' ? '#1a2a1a' : '#2a2a3a',
               border: `2px solid ${DOMAIN_COLORS[selected.domain] || '#333'}`,

@@ -128,11 +128,11 @@ const EngineScenePanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Scene Name</label>
-            <input type="text" value={sceneName} onChange={(e) => setSceneName(e.target.value)} placeholder="MainMenu" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={sceneName} onChange={(e) => setSceneName(e.target.value)} placeholder="MainMenu" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Scene Path</label>
-            <input type="text" value={scenePath} onChange={(e) => setScenePath(e.target.value)} placeholder="scenes/main_menu.scene" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={scenePath} onChange={(e) => setScenePath(e.target.value)} placeholder="scenes/main_menu.scene" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/register-scene', { name: sceneName, path: scenePath })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -149,11 +149,11 @@ const EngineScenePanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
-            <input type="text" value={loadSceneId} onChange={(e) => setLoadSceneId(e.target.value)} placeholder="MainMenu" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={loadSceneId} onChange={(e) => setLoadSceneId(e.target.value)} placeholder="MainMenu" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Transition Type</label>
-            <select value={transitionType} onChange={(e) => setTransitionType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={transitionType} onChange={(e) => setTransitionType(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="fade">Fade</option>
               <option value="slide">Slide</option>
               <option value="zoom">Zoom</option>
@@ -163,7 +163,7 @@ const EngineScenePanel: React.FC = () => {
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Duration (s)</label>
-            <input type="number" value={transitionDuration} onChange={(e) => setTransitionDuration(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={transitionDuration} onChange={(e) => setTransitionDuration(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/load-scene', { scene_id: loadSceneId, transition: { type: transitionType, duration: parseFloat(transitionDuration) } })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -181,11 +181,11 @@ const EngineScenePanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
-            <input type="text" value={transitionToSceneId} onChange={(e) => setTransitionToSceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={transitionToSceneId} onChange={(e) => setTransitionToSceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Type</label>
-            <select value={transitionToType} onChange={(e) => setTransitionToType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={transitionToType} onChange={(e) => setTransitionToType(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="fade">Fade</option>
               <option value="slide">Slide</option>
               <option value="zoom">Zoom</option>
@@ -194,7 +194,7 @@ const EngineScenePanel: React.FC = () => {
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Duration (s)</label>
-            <input type="number" value={transitionToDuration} onChange={(e) => setTransitionToDuration(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={transitionToDuration} onChange={(e) => setTransitionToDuration(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/transition-to', { target_scene: transitionToSceneId, type: transitionToType, duration: parseFloat(transitionToDuration) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -208,11 +208,11 @@ const EngineScenePanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Transition ID</label>
-            <input type="text" value={updateTransitionId} onChange={(e) => setUpdateTransitionId(e.target.value)} placeholder="trans_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={updateTransitionId} onChange={(e) => setUpdateTransitionId(e.target.value)} placeholder="trans_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Progress (0-1)</label>
-            <input type="number" value={updateProgress} onChange={(e) => setUpdateProgress(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={updateProgress} onChange={(e) => setUpdateProgress(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/update-transition', { transition_id: updateTransitionId, progress: parseFloat(updateProgress) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -225,7 +225,7 @@ const EngineScenePanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Cancel Transition</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Transition ID</label>
-          <input type="text" value={cancelTransitionId} onChange={(e) => setCancelTransitionId(e.target.value)} placeholder="trans_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={cancelTransitionId} onChange={(e) => setCancelTransitionId(e.target.value)} placeholder="trans_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/cancel-transition', { transition_id: cancelTransitionId })} className="mt-3 px-4 py-2 bg-red-700 text-white rounded text-sm font-medium hover:bg-red-600">
           Cancel Transition
@@ -253,7 +253,7 @@ const EngineScenePanel: React.FC = () => {
         {activeScenesData.length > 0 ? (
           <div className="space-y-2">
             {activeScenesData.map((s: any, i: number) => (
-              <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3 text-sm text-white flex justify-between items-center">
+              <div key={i} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded p-3 text-sm text-white flex justify-between items-center">
                 <span className="text-[#00d4ff]">{s.name || s.id}</span>
                 <span className={`text-xs px-2 py-0.5 rounded ${s.paused ? 'bg-yellow-900/50 text-yellow-300' : 'bg-green-900/50 text-green-300'}`}>
                   {s.paused ? 'Paused' : 'Running'}
@@ -271,7 +271,7 @@ const EngineScenePanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Pause Scene</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
-          <input type="text" value={pauseSceneId} onChange={(e) => setPauseSceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={pauseSceneId} onChange={(e) => setPauseSceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/pause-scene', { scene_id: pauseSceneId })} className="mt-3 px-4 py-2 bg-yellow-600 text-white rounded text-sm font-medium hover:bg-yellow-500">
           Pause
@@ -282,7 +282,7 @@ const EngineScenePanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Resume Scene</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
-          <input type="text" value={resumeSceneId} onChange={(e) => setResumeSceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={resumeSceneId} onChange={(e) => setResumeSceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/scene-transition/resume-scene', { scene_id: resumeSceneId })} className="mt-3 px-4 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-500">
           Resume
@@ -309,7 +309,7 @@ const EngineScenePanel: React.FC = () => {
         {descriptorsData.length > 0 ? (
           <div className="space-y-2">
             {descriptorsData.map((d: any, i: number) => (
-              <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3 text-sm text-white">
+              <div key={i} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded p-3 text-sm text-white">
                 <div className="flex justify-between">
                   <span className="text-[#00d4ff]">{d.name || d.id}</span>
                   <span className="text-[#999] text-xs">{d.path}</span>
@@ -330,7 +330,7 @@ const EngineScenePanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Query Scene State</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Scene ID</label>
-          <input type="text" value={querySceneId} onChange={(e) => setQuerySceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={querySceneId} onChange={(e) => setQuerySceneId(e.target.value)} placeholder="GameLevel" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button
           onClick={async () => {
@@ -343,7 +343,7 @@ const EngineScenePanel: React.FC = () => {
         </button>
         {sceneState && (
           <div className="mt-3">
-            <textarea readOnly value={JSON.stringify(sceneState, null, 2)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-32" />
+            <textarea readOnly value={JSON.stringify(sceneState, null, 2)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-32" />
           </div>
         )}
       </div>
@@ -364,7 +364,7 @@ const EngineScenePanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       {message && (
         <div className={`mx-4 mt-2 px-3 py-2 rounded text-sm ${message.type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-700' : 'bg-red-900/50 text-red-300 border border-red-700'}`}>
           {message.text}

@@ -787,7 +787,7 @@ const EngineProceduralAnimationPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a4a', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a4a', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83C\uDFAC'} Procedural Animation Engine</span>
         <span>{status ? `${status.skeletons_count} skeletons \u00B7 ${status.ik_chains} IK chains \u00B7 ${status.total_bones} bones` : 'Disconnected'}</span>
       </div>

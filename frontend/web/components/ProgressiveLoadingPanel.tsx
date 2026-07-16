@@ -521,7 +521,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                 <div>Concurrent: <span style={{ color: '#6bcb77' }}>{PRESETS.find(p => p.key === presetSelected)?.max_concurrent_loads}</span></div>
               </div>
               <button onClick={handleApplyPreset} disabled={loadingPreset} style={{
-                padding: '8px 16px', backgroundColor: loadingPreset ? '#3a3a5a' : '#2563eb',
+                padding: '8px 16px', backgroundColor: loadingPreset ? '#3a3a5a' : '#f97316',
                 color: '#fff', border: 'none', borderRadius: 4, cursor: loadingPreset ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600,
               }}>
@@ -541,7 +541,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Cam X</div>
                   <input value={camX} onChange={e => setCamX(e.target.value)} style={{
                     padding: '6px 8px', fontSize: 11, width: '100%', boxSizing: 'border-box',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -549,7 +549,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Cam Y</div>
                   <input value={camY} onChange={e => setCamY(e.target.value)} style={{
                     padding: '6px 8px', fontSize: 11, width: '100%', boxSizing: 'border-box',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -557,7 +557,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Cam Z</div>
                   <input value={camZ} onChange={e => setCamZ(e.target.value)} style={{
                     padding: '6px 8px', fontSize: 11, width: '100%', boxSizing: 'border-box',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -567,7 +567,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Dir X</div>
                   <input value={dirX} onChange={e => setDirX(e.target.value)} style={{
                     padding: '6px 8px', fontSize: 11, width: '100%', boxSizing: 'border-box',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -575,7 +575,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Dir Y</div>
                   <input value={dirY} onChange={e => setDirY(e.target.value)} style={{
                     padding: '6px 8px', fontSize: 11, width: '100%', boxSizing: 'border-box',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -583,13 +583,13 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Dir Z</div>
                   <input value={dirZ} onChange={e => setDirZ(e.target.value)} style={{
                     padding: '6px 8px', fontSize: 11, width: '100%', boxSizing: 'border-box',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
               </div>
               <button onClick={handlePrioritizeChunks} disabled={loadingPrioritize} style={{
-                padding: '8px 16px', backgroundColor: loadingPrioritize ? '#3a3a5a' : '#2563eb',
+                padding: '8px 16px', backgroundColor: loadingPrioritize ? '#3a3a5a' : '#f97316',
                 color: '#fff', border: 'none', borderRadius: 4, cursor: loadingPrioritize ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600,
               }}>
@@ -644,7 +644,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>X</div>
                   <input value={chunkX} onChange={e => setChunkX(e.target.value)} placeholder="0" style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -652,7 +652,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Y</div>
                   <input value={chunkY} onChange={e => setChunkY(e.target.value)} placeholder="0" style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -660,7 +660,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Z</div>
                   <input value={chunkZ} onChange={e => setChunkZ(e.target.value)} placeholder="0" style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -668,7 +668,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Priority</div>
                   <select value={chunkPriority} onChange={e => setChunkPriority(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 70,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     {[1, 2, 3, 4, 5].map(p => (
@@ -680,7 +680,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>LOD</div>
                   <select value={chunkLodLevel} onChange={e => setChunkLodLevel(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     {[0, 1, 2, 3].map(l => (
@@ -689,7 +689,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   </select>
                 </div>
                 <button onClick={handleCreateChunk} disabled={loadingCreate} style={{
-                  padding: '6px 14px', backgroundColor: loadingCreate ? '#3a5a3a' : '#2563eb',
+                  padding: '6px 14px', backgroundColor: loadingCreate ? '#3a5a3a' : '#f97316',
                   color: '#fff', border: 'none', borderRadius: 4, cursor: loadingCreate ? 'not-allowed' : 'pointer',
                   fontSize: 11, fontWeight: 600,
                 }}>
@@ -707,7 +707,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
               </div>
               <div style={{
                 display: 'flex', flexDirection: 'column', gap: 1,
-                backgroundColor: '#141428', padding: 2, borderRadius: 4,
+                backgroundColor: '#111', padding: 2, borderRadius: 4,
                 border: '1px solid #2a2a3e', maxWidth: 300, margin: '0 auto',
               }}>
                 {Array.from({ length: 5 }, (_, row) => (
@@ -760,7 +760,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                     <span style={{
                       fontSize: 10, padding: '2px 8px', borderRadius: 3,
-                      backgroundColor: '#141428', color: PRIORITY_COLORS[chunk.priority] || '#888',
+                      backgroundColor: '#111', color: PRIORITY_COLORS[chunk.priority] || '#888',
                       fontWeight: 600,
                     }}>P{chunk.priority}</span>
                     <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>
@@ -768,14 +768,14 @@ const ProgressiveLoadingPanel: React.FC = () => {
                     </span>
                     <span style={{
                       fontSize: 10, padding: '2px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#a29bfe',
+                      backgroundColor: '#111', color: '#a29bfe',
                     }}>LOD {chunk.lod_level}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 6 }}>
                     {chunk.status !== 'loaded' && (
                       <button onClick={() => handleLoadChunk(chunk.id)} disabled={loadingLoad[chunk.id]} style={{
                         padding: '4px 10px', fontSize: 10, fontWeight: 600,
-                        backgroundColor: loadingLoad[chunk.id] ? '#2a4a2a' : '#2563eb',
+                        backgroundColor: loadingLoad[chunk.id] ? '#2a4a2a' : '#f97316',
                         color: '#fff', border: 'none', borderRadius: 3,
                         cursor: loadingLoad[chunk.id] ? 'not-allowed' : 'pointer',
                       }}>
@@ -862,11 +862,11 @@ const ProgressiveLoadingPanel: React.FC = () => {
                     <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                       <span style={{
                         fontSize: 10, padding: '2px 8px', borderRadius: 3,
-                        backgroundColor: '#141428', color: '#888',
+                        backgroundColor: '#111', color: '#888',
                       }}>#{index + 1}</span>
                       <span style={{
                         fontSize: 10, padding: '2px 8px', borderRadius: 3,
-                        backgroundColor: '#141428', color: PRIORITY_COLORS[entry.priority] || '#888',
+                        backgroundColor: '#111', color: PRIORITY_COLORS[entry.priority] || '#888',
                         fontWeight: 600,
                       }}>P{entry.priority}</span>
                       <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>
@@ -875,7 +875,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                     </div>
                     <span style={{
                       fontSize: 10, padding: '2px 8px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#fdcb6e',
+                      backgroundColor: '#111', color: '#fdcb6e',
                     }}>{entry.status}</span>
                   </div>
                   <div style={{ display: 'flex', gap: 16, fontSize: 10, color: '#888' }}>
@@ -899,7 +899,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                 {'\uD83D\uDCA1'} Memory Usage
               </div>
               <div style={{
-                height: 32, backgroundColor: '#141428', borderRadius: 6,
+                height: 32, backgroundColor: '#111', borderRadius: 6,
                 overflow: 'hidden', border: '1px solid #333',
               }}>
                 <div style={{
@@ -910,7 +910,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                   paddingRight: memoryUsagePercent > 15 ? 8 : 0,
                 }}>
                   {memoryUsagePercent > 15 && (
-                    <span style={{ fontSize: 11, fontWeight: 700, color: '#141428' }}>
+                    <span style={{ fontSize: 11, fontWeight: 700, color: '#111' }}>
                       {memoryUsagePercent.toFixed(0)}%
                     </span>
                   )}
@@ -977,7 +977,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                 </div>
                 <button onClick={handleManageMemory} disabled={loadingMemory} style={{
                   padding: '6px 14px', fontSize: 11, fontWeight: 600,
-                  backgroundColor: loadingMemory ? '#3a3a5a' : '#2563eb',
+                  backgroundColor: loadingMemory ? '#3a3a5a' : '#f97316',
                   color: '#fff', border: 'none', borderRadius: 4,
                   cursor: loadingMemory ? 'not-allowed' : 'pointer',
                 }}>
@@ -993,7 +993,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
                 const chunk = chunks.find(c => c.id === candidate.chunk_id);
                 return (
                   <div key={candidate.chunk_id} style={{
-                    padding: 8, backgroundColor: '#141428', borderRadius: 4,
+                    padding: 8, backgroundColor: '#111', borderRadius: 4,
                     marginBottom: 6, display: 'flex', justifyContent: 'space-between',
                     alignItems: 'center', border: '1px solid #2a2a3e',
                   }}>
@@ -1066,7 +1066,7 @@ const ProgressiveLoadingPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

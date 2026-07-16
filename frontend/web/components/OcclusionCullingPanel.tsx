@@ -291,7 +291,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Entity ID</div>
                   <input value={occEntityId} onChange={e => setOccEntityId(e.target.value)} placeholder="e.g. wall_north" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -299,7 +299,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>X</div>
                   <input value={occX} onChange={e => setOccX(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 55,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -307,7 +307,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Y</div>
                   <input value={occY} onChange={e => setOccY(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 55,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -315,7 +315,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Z</div>
                   <input value={occZ} onChange={e => setOccZ(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 55,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -323,7 +323,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>W</div>
                   <input value={occWidth} onChange={e => setOccWidth(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 55,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -331,7 +331,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>H</div>
                   <input value={occHeight} onChange={e => setOccHeight(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 55,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -339,7 +339,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>D</div>
                   <input value={occDepth} onChange={e => setOccDepth(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 55,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -385,7 +385,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Camera ID</div>
                   <input value={camId} onChange={e => setCamId(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 110,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -394,17 +394,17 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ display: 'flex', gap: 4 }}>
                     <input value={camX} onChange={e => setCamX(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 50,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                     <input value={camY} onChange={e => setCamY(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 50,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                     <input value={camZ} onChange={e => setCamZ(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 50,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -413,7 +413,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>FOV</div>
                   <input value={camFov} onChange={e => setCamFov(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 55,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -460,7 +460,7 @@ const OcclusionCullingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Camera ID</div>
                   <input value={queryCamId} onChange={e => setQueryCamId(e.target.value)} placeholder="e.g. main-camera" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -520,7 +520,7 @@ const OcclusionCullingPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

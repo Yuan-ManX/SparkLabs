@@ -305,7 +305,7 @@ const EntityBlueprintPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={bpName} onChange={e => setBpName(e.target.value)} placeholder="e.g. Player" style={{
                     padding: '6px 10px', fontSize: 11, width: 180,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -340,7 +340,7 @@ const EntityBlueprintPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Parent BP</div>
                     <input value={bpParent} onChange={e => setBpParent(e.target.value)} placeholder="e.g. Character" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -394,7 +394,7 @@ const EntityBlueprintPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={compName} onChange={e => setCompName(e.target.value)} placeholder="e.g. HealthScript" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -402,7 +402,7 @@ const EntityBlueprintPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
                   <select value={compType} onChange={e => setCompType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="Transform">Transform</option>
@@ -416,7 +416,7 @@ const EntityBlueprintPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Blueprint</div>
                   <input value={compBlueprint} onChange={e => setCompBlueprint(e.target.value)} placeholder="e.g. Player" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -477,7 +477,7 @@ const EntityBlueprintPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={variantName} onChange={e => setVariantName(e.target.value)} placeholder="e.g. EliteEnemy" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -485,7 +485,7 @@ const EntityBlueprintPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Source BP</div>
                   <input value={variantBlueprint} onChange={e => setVariantBlueprint(e.target.value)} placeholder="e.g. Enemy" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -545,7 +545,7 @@ const EntityBlueprintPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

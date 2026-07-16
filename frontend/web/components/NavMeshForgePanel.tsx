@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
-const API_BASE = "http://localhost:8000/api/agent";
+const API_BASE = `${API_ROOT}/agent`;
 
 interface SubsystemStats {
   meshes: number;
@@ -127,9 +128,9 @@ export default function NavMeshForgePanel() {
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Create NavMesh</h4>
               <div style={{ display: "flex", gap: "0.5rem" }}>
                 <input type="text" placeholder="Mesh Name" value={meshName} onChange={(e) => setMeshName(e.target.value)}
-                  style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <input type="number" placeholder="Cell Size" value={cellSize} onChange={(e) => setCellSize(e.target.value)} min="0.1" max="5" step="0.1"
-                  style={{ width: "100px", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ width: "100px", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <button onClick={handleCreateMesh} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#e94560", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600 }}>Create</button>
               </div>
             </div>
@@ -138,17 +139,17 @@ export default function NavMeshForgePanel() {
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Add Region</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <input type="text" placeholder="Mesh ID" value={meshId} onChange={(e) => setMeshId(e.target.value)}
-                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                  style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="text" placeholder="Region Name" value={regionName} onChange={(e) => setRegionName(e.target.value)}
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <select value={areaType} onChange={(e) => setAreaType(e.target.value)}
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }}>
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }}>
                     <option value="walkable">Walkable</option><option value="swimable">Swimable</option>
                     <option value="climbable">Climbable</option><option value="flyable">Flyable</option>
                   </select>
                   <input type="number" placeholder="Cost" value={traversalCost} onChange={(e) => setTraversalCost(e.target.value)} min="0.1" max="100" step="0.1"
-                    style={{ width: "80px", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ width: "80px", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 </div>
                 <button onClick={handleAddRegion} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#e94560", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600, alignSelf: "flex-start" }}>Add Region</button>
               </div>
@@ -159,28 +160,28 @@ export default function NavMeshForgePanel() {
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="text" placeholder="Owner ID" value={obstacleOwner} onChange={(e) => setObstacleOwner(e.target.value)}
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <select value={obsShape} onChange={(e) => setObsShape(e.target.value)}
-                    style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }}>
+                    style={{ padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }}>
                     <option value="box">Box</option><option value="cylinder">Cylinder</option>
                     <option value="sphere">Sphere</option><option value="capsule">Capsule</option>
                   </select>
                 </div>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" placeholder="Pos X" value={obsPosX} onChange={(e) => setObsPosX(e.target.value)} step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Pos Y" value={obsPosY} onChange={(e) => setObsPosY(e.target.value)} step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Pos Z" value={obsPosZ} onChange={(e) => setObsPosZ(e.target.value)} step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 </div>
                 <div style={{ display: "flex", gap: "0.5rem" }}>
                   <input type="number" placeholder="Ext X" value={obsExtX} onChange={(e) => setObsExtX(e.target.value)} min="0.1" step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Ext Y" value={obsExtY} onChange={(e) => setObsExtY(e.target.value)} min="0.1" step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                   <input type="number" placeholder="Ext Z" value={obsExtZ} onChange={(e) => setObsExtZ(e.target.value)} min="0.1" step="0.1"
-                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0", fontSize: "0.8rem" }} />
+                    style={{ flex: "1", padding: "0.5rem", borderRadius: "0.375rem", border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0", fontSize: "0.8rem" }} />
                 </div>
                 <button onClick={handleAddObstacle} style={{ padding: "0.5rem 1rem", borderRadius: "0.375rem", border: "none", background: "#e94560", color: "#fff", cursor: "pointer", fontSize: "0.8rem", fontWeight: 600, alignSelf: "flex-start" }}>Add Obstacle</button>
               </div>

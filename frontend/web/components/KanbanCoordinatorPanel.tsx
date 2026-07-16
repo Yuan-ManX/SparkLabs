@@ -121,7 +121,7 @@ const KanbanCoordinatorPanel: React.FC = () => {
     { key: 'tasks', label: 'Tasks' },
   ];
 
-  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
+  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
 
   const priorityColor = (priority: string) => {
     switch (priority) {
@@ -174,7 +174,7 @@ const KanbanCoordinatorPanel: React.FC = () => {
                 <div style={{ fontWeight: 600, fontSize: 13, color: '#ccc', marginBottom: 8 }}>{board.name}</div>
                 <div style={{ display: 'flex', gap: 8 }}>
                   {Object.entries(board.column_counts).map(([col, count]) => (
-                    <div key={col} style={{ flex: 1, padding: '6px 8px', backgroundColor: '#141428', borderRadius: 4, border: '1px solid #2a2a3e', textAlign: 'center' }}>
+                    <div key={col} style={{ flex: 1, padding: '6px 8px', backgroundColor: '#111', borderRadius: 4, border: '1px solid #2a2a3e', textAlign: 'center' }}>
                       <div style={{ fontSize: 9, color: '#888', textTransform: 'uppercase', marginBottom: 2 }}>{col.replace('_', ' ')}</div>
                       <div style={{ fontSize: 16, fontWeight: 700, color: '#e0e0e0' }}>{count}</div>
                     </div>
@@ -223,7 +223,7 @@ const KanbanCoordinatorPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDCCB'} {boards.length} boards · {tasks.length} tasks</span>
         <span>Connected</span>
       </div>

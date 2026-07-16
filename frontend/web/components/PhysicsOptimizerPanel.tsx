@@ -192,7 +192,7 @@ const PhysicsOptimizerPanel: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-[#0f0f2a]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center text-sm font-bold">
             PO
@@ -218,7 +218,7 @@ const PhysicsOptimizerPanel: React.FC = () => {
         </div>
       )}
 
-      <div className="flex border-b border-[#1a1a3e]">
+      <div className="flex border-b border-[#1a1a1a]">
         {(['config', 'recommendations', 'stats'] as const).map((tab) => (
           <button
             key={tab}
@@ -282,7 +282,7 @@ const PhysicsOptimizerPanel: React.FC = () => {
               </button>
               <button
                 onClick={analyze}
-                className="flex-1 py-2 rounded-lg bg-blue-600 text-white text-xs font-medium hover:bg-blue-500 transition-all"
+                className="flex-1 py-2 rounded-lg bg-orange-600 text-white text-xs font-medium hover:bg-orange-500 transition-all"
               >
                 Analyze Performance
               </button>

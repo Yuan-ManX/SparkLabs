@@ -207,7 +207,7 @@ const EngineParticlePanel: React.FC = () => {
               value={emitterName}
               onChange={(e) => setEmitterName(e.target.value)}
               placeholder="my_emitter"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -215,7 +215,7 @@ const EngineParticlePanel: React.FC = () => {
             <select
               value={shape}
               onChange={(e) => setShape(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm"
             >
               <option value="point">Point</option>
               <option value="sphere">Sphere</option>
@@ -230,7 +230,7 @@ const EngineParticlePanel: React.FC = () => {
               type="number"
               value={emissionRate}
               onChange={(e) => setEmissionRate(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -239,7 +239,7 @@ const EngineParticlePanel: React.FC = () => {
               type="number"
               value={maxParticles}
               onChange={(e) => setMaxParticles(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -249,7 +249,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={lifetimeMin}
               onChange={(e) => setLifetimeMin(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -259,7 +259,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={lifetimeMax}
               onChange={(e) => setLifetimeMax(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -268,7 +268,7 @@ const EngineParticlePanel: React.FC = () => {
               type="number"
               value={speedMin}
               onChange={(e) => setSpeedMin(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -277,7 +277,7 @@ const EngineParticlePanel: React.FC = () => {
               type="number"
               value={speedMax}
               onChange={(e) => setSpeedMax(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -287,7 +287,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={sizeStart}
               onChange={(e) => setSizeStart(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -297,7 +297,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={sizeEnd}
               onChange={(e) => setSizeEnd(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -306,7 +306,7 @@ const EngineParticlePanel: React.FC = () => {
               type="color"
               value={colorStart}
               onChange={(e) => setColorStart(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 h-10 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 h-10 text-white text-sm"
             />
           </div>
           <div>
@@ -315,7 +315,7 @@ const EngineParticlePanel: React.FC = () => {
               type="color"
               value={colorEnd}
               onChange={(e) => setColorEnd(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 h-10 text-white text-sm"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 h-10 text-white text-sm"
             />
           </div>
           <div>
@@ -325,7 +325,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={gravity}
               onChange={(e) => setGravity(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -335,7 +335,7 @@ const EngineParticlePanel: React.FC = () => {
               value={emitterTexture}
               onChange={(e) => setEmitterTexture(e.target.value)}
               placeholder="particle_texture.png"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -349,7 +349,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={posX}
               onChange={(e) => setPosX(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -359,7 +359,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={posY}
               onChange={(e) => setPosY(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -369,7 +369,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={posZ}
               onChange={(e) => setPosZ(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -395,7 +395,7 @@ const EngineParticlePanel: React.FC = () => {
             step="0.001"
             value={deltaTime}
             onChange={(e) => setDeltaTime(e.target.value)}
-            className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+            className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
           />
         </div>
         <button
@@ -416,7 +416,7 @@ const EngineParticlePanel: React.FC = () => {
             <textarea
               readOnly
               value={JSON.stringify((data as any).particles.slice(0, 50), null, 2)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-40"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-40"
             />
           </div>
         </div>
@@ -436,7 +436,7 @@ const EngineParticlePanel: React.FC = () => {
               value={burstEmitterId}
               onChange={(e) => setBurstEmitterId(e.target.value)}
               placeholder="emitter_001"
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -445,7 +445,7 @@ const EngineParticlePanel: React.FC = () => {
               type="number"
               value={burstCount}
               onChange={(e) => setBurstCount(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -473,7 +473,7 @@ const EngineParticlePanel: React.FC = () => {
             value={controlEmitterId}
             onChange={(e) => setControlEmitterId(e.target.value)}
             placeholder="emitter_001"
-            className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none mb-2"
+            className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none mb-2"
           />
         </div>
         <div className="grid grid-cols-2 gap-2 mb-2">
@@ -484,7 +484,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={controlPosX}
               onChange={(e) => setControlPosX(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
           <div>
@@ -494,7 +494,7 @@ const EngineParticlePanel: React.FC = () => {
               step="0.1"
               value={controlPosY}
               onChange={(e) => setControlPosY(e.target.value)}
-              className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+              className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
             />
           </div>
         </div>
@@ -566,7 +566,7 @@ const EngineParticlePanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       {/* Message notification */}
       {message && (
         <div

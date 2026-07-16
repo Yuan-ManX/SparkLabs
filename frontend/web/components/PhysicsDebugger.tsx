@@ -138,11 +138,11 @@ const PhysicsDebugger: React.FC = () => {
             <div className="grid grid-cols-2 gap-2">
               {([
                 ['Show Colliders', showColliders, setShowColliders, 'fa-cube', '#22c55e'],
-                ['Show Velocities', showVelocities, setShowVelocities, 'fa-arrow-right', '#3b82f6'],
+                ['Show Velocities', showVelocities, setShowVelocities, 'fa-arrow-right', '#f97316'],
                 ['Show Contacts', showContacts, setShowContacts, 'fa-circle-dot', '#f97316'],
                 ['Show Center of Mass', showCenterMass, setShowCenterMass, 'fa-crosshairs', '#eab308'],
               ] as const).map(([label, value, setter, icon, color]) => (
-                <label key={label} className="flex items-center gap-2 px-2 py-1.5 rounded bg-[#141414] border border-[#2a2a2a] cursor-pointer">
+                <label key={label} className="flex items-center gap-2 px-2 py-1.5 rounded bg-[#111] border border-[#2a2a2a] cursor-pointer">
                   <input type="checkbox" checked={value} onChange={e => setter(e.target.checked)}
                     className="accent-yellow-500" />
                   <i className={`fa-solid ${icon} text-[9px]`} style={{ color }} />
@@ -162,9 +162,9 @@ const PhysicsDebugger: React.FC = () => {
                 { label: 'Active Bodies', value: stats.activeBodies, color: '#22c55e' },
                 { label: 'Sleeping', value: stats.sleepingBodies, color: '#888888' },
                 { label: 'Contacts', value: stats.contactPairs, color: '#f97316' },
-                { label: 'Step Time', value: `${stats.stepTimeMs}ms`, color: '#3b82f6' },
+                { label: 'Step Time', value: `${stats.stepTimeMs}ms`, color: '#f97316' },
               ]).map(({ label, value, color }) => (
-                <div key={label} className="p-2 rounded bg-[#141414] border border-[#2a2a2a] text-center">
+                <div key={label} className="p-2 rounded bg-[#111] border border-[#2a2a2a] text-center">
                   <div className="text-[9px] text-[#666]">{label}</div>
                   <div className="text-[13px] font-bold" style={{ color }}>{value}</div>
                 </div>
@@ -188,7 +188,7 @@ const PhysicsDebugger: React.FC = () => {
                   <input
                     type="number" value={value} step="0.1"
                     onChange={e => setter(Number(e.target.value))}
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-yellow-500/50 focus:outline-none"
+                    className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1.5 py-1 text-[10px] text-[#ddd] focus:border-yellow-500/50 focus:outline-none"
                   />
                 </div>
               ))}
@@ -229,7 +229,7 @@ const PhysicsDebugger: React.FC = () => {
                 <div key={label}>
                   <label className="text-[8px] text-[#666]">{label}</label>
                   <input type="number" value={value} onChange={e => setter(Number(e.target.value))}
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1 py-0.5 text-[9px] text-[#ddd] focus:border-yellow-500/50 focus:outline-none" />
+                    className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1 py-0.5 text-[9px] text-[#ddd] focus:border-yellow-500/50 focus:outline-none" />
                 </div>
               ))}
               {([
@@ -240,13 +240,13 @@ const PhysicsDebugger: React.FC = () => {
                 <div key={label}>
                   <label className="text-[8px] text-[#666]">{label}</label>
                   <input type="number" value={value} onChange={e => setter(Number(e.target.value))} step="0.1"
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1 py-0.5 text-[9px] text-[#ddd] focus:border-yellow-500/50 focus:outline-none" />
+                    className="w-full bg-[#111] border border-[#2a2a2a] rounded px-1 py-0.5 text-[9px] text-[#ddd] focus:border-yellow-500/50 focus:outline-none" />
                 </div>
               ))}
             </div>
             <button
               onClick={handleRaycast}
-              className="w-full px-3 py-1.5 bg-[#141414] border border-[#2a2a2a] text-[#ddd] rounded text-[10px] font-medium hover:border-yellow-500/30"
+              className="w-full px-3 py-1.5 bg-[#111] border border-[#2a2a2a] text-[#ddd] rounded text-[10px] font-medium hover:border-yellow-500/30"
             >
               <i className="fa-solid fa-arrow-pointer mr-1 text-[8px]" />
               Test Raycast
@@ -289,12 +289,12 @@ const PhysicsDebugger: React.FC = () => {
               {showVelocities && (
                 <>
                   <svg className="absolute inset-0" viewBox="0 0 100 100">
-                    <line x1="25" y1="33" x2="35" y2="30" stroke="#3b82f6" strokeWidth="0.5" markerEnd="url(#arrowBlue)" />
-                    <line x1="50" y1="66" x2="42" y2="60" stroke="#3b82f6" strokeWidth="0.5" markerEnd="url(#arrowBlue)" />
-                    <line x1="75" y1="50" x2="80" y2="42" stroke="#3b82f6" strokeWidth="0.5" markerEnd="url(#arrowBlue)" />
+                    <line x1="25" y1="33" x2="35" y2="30" stroke="#f97316" strokeWidth="0.5" markerEnd="url(#arrowBlue)" />
+                    <line x1="50" y1="66" x2="42" y2="60" stroke="#f97316" strokeWidth="0.5" markerEnd="url(#arrowBlue)" />
+                    <line x1="75" y1="50" x2="80" y2="42" stroke="#f97316" strokeWidth="0.5" markerEnd="url(#arrowBlue)" />
                     <defs>
                       <marker id="arrowBlue" viewBox="0 0 3 3" refX="1.5" refY="1.5" markerWidth="2" markerHeight="2" orient="auto">
-                        <polygon points="0,0 3,1.5 0,3" fill="#3b82f6" />
+                        <polygon points="0,0 3,1.5 0,3" fill="#f97316" />
                       </marker>
                     </defs>
                   </svg>

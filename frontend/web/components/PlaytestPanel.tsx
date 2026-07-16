@@ -107,7 +107,7 @@ const PlaytestPanel: React.FC = () => {
       {scenarios.map(sc => {
         const color = SCENARIO_COLORS[sc.scenario_type] || '#888';
         return (
-          <div key={sc.id} className="p-2.5 rounded-lg border border-[#2a2a2a] bg-[#141414]">
+          <div key={sc.id} className="p-2.5 rounded-lg border border-[#2a2a2a] bg-[#111]">
             <div className="flex items-center gap-2 mb-1">
               <div className="w-5 h-5 rounded flex items-center justify-center" style={{ backgroundColor: `${color}20` }}>
                 <i className="fa-solid fa-flask text-[8px]" style={{ color }} />
@@ -140,7 +140,7 @@ const PlaytestPanel: React.FC = () => {
           value={buildId}
           onChange={(e) => setBuildId(e.target.value)}
           placeholder="Build ID to test..."
-          className="flex-1 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-[11px] text-[#ddd] placeholder-[#555] focus:border-green-500/50 focus:outline-none"
+          className="flex-1 bg-[#111] border border-[#2a2a2a] rounded-lg px-3 py-2 text-[11px] text-[#ddd] placeholder-[#555] focus:border-green-500/50 focus:outline-none"
           onKeyDown={(e) => e.key === 'Enter' && handleRun()}
         />
         <button
@@ -156,7 +156,7 @@ const PlaytestPanel: React.FC = () => {
       {sessions.map(session => {
         const isExpanded = selectedSession?.id === session.id;
         return (
-          <div key={session.id} className="bg-[#141414] border border-[#2a2a2a] rounded-lg overflow-hidden">
+          <div key={session.id} className="bg-[#111] border border-[#2a2a2a] rounded-lg overflow-hidden">
             <div className="p-3 cursor-pointer hover:bg-[#1a1a1a] transition-colors" onClick={() => setSelectedSession(isExpanded ? null : session)}>
               <div className="flex items-center justify-between mb-1">
                 <div className="flex items-center gap-2">
@@ -180,7 +180,7 @@ const PlaytestPanel: React.FC = () => {
             {isExpanded && (session.reports || []).length > 0 && (
               <div className="px-3 pb-3 border-t border-[#1e1e1e] pt-2 space-y-2">
                 {(session.reports || []).map((report: Record<string, any>) => (
-                  <div key={report.id} className="p-2 rounded bg-[#0d0d0d] border border-[#1a1a1a]">
+                  <div key={report.id} className="p-2 rounded bg-[#0d0d0d] border border-[#1e1e1e]">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-[10px] text-[#ddd]">{report.scenario_name}</span>
                       <span className="text-[10px] font-bold text-green-400">{report.overall_score?.toFixed(0)}%</span>
@@ -248,7 +248,7 @@ const PlaytestPanel: React.FC = () => {
             { label: 'Scenarios', value: stats.total_scenarios, icon: 'fa-flask', color: '#3b82f6' },
             { label: 'Avg Score', value: `${(stats.avg_score || 0).toFixed(0)}%`, icon: 'fa-star', color: '#eab308' },
           ].map(card => (
-            <div key={card.label} className="bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+            <div key={card.label} className="bg-[#111] border border-[#2a2a2a] rounded-lg p-3">
               <div className="flex items-center gap-2 mb-1">
                 <div className="w-5 h-5 rounded-full flex items-center justify-center" style={{ backgroundColor: `${card.color}20` }}>
                   <i className={`fa-solid ${card.icon} text-[8px]`} style={{ color: card.color }} />
@@ -260,7 +260,7 @@ const PlaytestPanel: React.FC = () => {
           ))}
         </div>
         {stats.scenario_types && (
-          <div className="mt-3 bg-[#141414] border border-[#2a2a2a] rounded-lg p-3">
+          <div className="mt-3 bg-[#111] border border-[#2a2a2a] rounded-lg p-3">
             <div className="text-[10px] text-[#888] mb-2">Scenario Types</div>
             <div className="flex flex-wrap gap-2">
               {Object.entries(stats.scenario_types).map(([type, count]) => (

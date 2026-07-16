@@ -159,7 +159,7 @@ const ParticleEditor: React.FC = () => {
             <input
               value={editing.name}
               onChange={e => updateField('name', e.target.value)}
-              className="bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[11px] text-[#ddd] w-40 focus:border-orange-500/50 focus:outline-none"
+              className="bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[11px] text-[#ddd] w-40 focus:border-orange-500/50 focus:outline-none"
             />
             <div className="flex gap-1">
               <button
@@ -204,7 +204,7 @@ const ParticleEditor: React.FC = () => {
                 <input
                   type="number" min="1" max="10000" value={editing.maxParticles}
                   onChange={e => updateField('maxParticles', Number(e.target.value))}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-orange-500/50 focus:outline-none"
+                  className="w-full bg-[#111] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-orange-500/50 focus:outline-none"
                 />
               </div>
             </div>
@@ -219,7 +219,7 @@ const ParticleEditor: React.FC = () => {
                     className={`px-2 py-1 rounded text-[9px] capitalize transition-all ${
                       editing.shape === shape
                         ? 'bg-orange-500/20 text-orange-400 border border-orange-500/30'
-                        : 'bg-[#141414] text-[#888] border border-[#2a2a2a] hover:border-[#3a3a3a]'
+                        : 'bg-[#111] text-[#888] border border-[#2a2a2a] hover:border-[#3a3a3a]'
                     }`}
                   >
                     {shape}
@@ -307,7 +307,7 @@ const ParticleEditor: React.FC = () => {
                     className={`w-full text-left px-2 py-1.5 rounded text-[9px] flex items-center justify-between transition-all ${
                       enabled
                         ? 'bg-orange-500/15 border border-orange-500/30 text-orange-400'
-                        : 'bg-[#141414] border border-[#2a2a2a] text-[#888] hover:border-[#3a3a3a]'
+                        : 'bg-[#111] border border-[#2a2a2a] text-[#888] hover:border-[#3a3a3a]'
                     }`}
                   >
                     {labels[mod] || mod}
