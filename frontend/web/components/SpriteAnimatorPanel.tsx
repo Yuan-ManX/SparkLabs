@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
-const API_BASE = "http://localhost:8000/api/agent";
+const API_BASE = `${API_ROOT}/agent`;
 
 interface SubsystemStats {
   clips: number;
@@ -122,8 +123,8 @@ export default function SpriteAnimatorPanel() {
       ) : (
         <>
           <div style={{
-            background: "#16213e", borderRadius: "0.75rem", padding: "1rem",
-            marginBottom: "1rem", border: "1px solid #2a2a4a"
+            background: "#0f0f0f", borderRadius: "0.75rem", padding: "1rem",
+            marginBottom: "1rem", border: "1px solid #2a2a2a"
           }}>
             <h3 style={{ fontSize: "0.875rem", color: "#888", marginBottom: "0.75rem", textTransform: "uppercase" }}>
               Statistics
@@ -132,8 +133,8 @@ export default function SpriteAnimatorPanel() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(160px, 1fr))", gap: "0.75rem" }}>
                 {Object.entries(stats).map(([key, value]) => (
                   <div key={key} style={{
-                    background: "#1a1a2e", borderRadius: "0.5rem", padding: "0.75rem",
-                    border: "1px solid #2a2a4a"
+                    background: "#1a1a1a", borderRadius: "0.5rem", padding: "0.75rem",
+                    border: "1px solid #2a2a2a"
                   }}>
                     <div style={{ fontSize: "0.7rem", color: "#666", textTransform: "uppercase" }}>{key}</div>
                     <div style={{ fontSize: "1.2rem", fontWeight: 700, color: "#e94560" }}>
@@ -148,16 +149,16 @@ export default function SpriteAnimatorPanel() {
           </div>
 
           <div style={{
-            background: "#16213e", borderRadius: "0.75rem", padding: "1rem",
-            marginBottom: "1rem", border: "1px solid #2a2a4a"
+            background: "#0f0f0f", borderRadius: "0.75rem", padding: "1rem",
+            marginBottom: "1rem", border: "1px solid #2a2a2a"
           }}>
             <h3 style={{ fontSize: "0.875rem", color: "#888", marginBottom: "0.75rem", textTransform: "uppercase" }}>
               Actions
             </h3>
 
             <div style={{
-              background: "#1a1a2e", borderRadius: "0.5rem", padding: "0.75rem",
-              marginBottom: "0.75rem", border: "1px solid #2a2a4a"
+              background: "#1a1a1a", borderRadius: "0.5rem", padding: "0.75rem",
+              marginBottom: "0.75rem", border: "1px solid #2a2a2a"
             }}>
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Create Animation Clip</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -168,7 +169,7 @@ export default function SpriteAnimatorPanel() {
                   onChange={(e) => setClipName(e.target.value)}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a2a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 />
@@ -182,7 +183,7 @@ export default function SpriteAnimatorPanel() {
                     max="120"
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a2a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />
@@ -196,7 +197,7 @@ export default function SpriteAnimatorPanel() {
                     step="0.1"
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a2a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />
@@ -206,7 +207,7 @@ export default function SpriteAnimatorPanel() {
                   onChange={(e) => setLoopMode(e.target.value)}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a2a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 >
@@ -230,8 +231,8 @@ export default function SpriteAnimatorPanel() {
             </div>
 
             <div style={{
-              background: "#1a1a2e", borderRadius: "0.5rem", padding: "0.75rem",
-              border: "1px solid #2a2a4a"
+              background: "#1a1a1a", borderRadius: "0.5rem", padding: "0.75rem",
+              border: "1px solid #2a2a2a"
             }}>
               <h4 style={{ fontSize: "0.8rem", color: "#aaa", marginBottom: "0.5rem" }}>Play Animation</h4>
               <div style={{ display: "flex", flexDirection: "column", gap: "0.5rem" }}>
@@ -243,7 +244,7 @@ export default function SpriteAnimatorPanel() {
                     onChange={(e) => setEntityId(e.target.value)}
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a2a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />
@@ -254,7 +255,7 @@ export default function SpriteAnimatorPanel() {
                     onChange={(e) => setPlayClipId(e.target.value)}
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a2a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />

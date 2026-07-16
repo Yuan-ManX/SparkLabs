@@ -289,14 +289,14 @@ const SelfOptimizationPanel: React.FC = () => {
       )}
 
       <div style={{ padding: '10px 12px', display: 'flex', gap: 6, borderBottom: '1px solid #2a2a3e', flexWrap: 'wrap', alignItems: 'center' }}>
-        <input value={profileNameInput} onChange={e => setProfileNameInput(e.target.value)} placeholder="Profile name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
-        <input value={targetMetricInput} onChange={e => setTargetMetricInput(e.target.value)} placeholder="Target metric..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
-        <input value={strategyInput} onChange={e => setStrategyInput(e.target.value)} placeholder="Strategy..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
+        <input value={profileNameInput} onChange={e => setProfileNameInput(e.target.value)} placeholder="Profile name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+        <input value={targetMetricInput} onChange={e => setTargetMetricInput(e.target.value)} placeholder="Target metric..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
+        <input value={strategyInput} onChange={e => setStrategyInput(e.target.value)} placeholder="Strategy..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 100, outline: 'none' }} />
         <button onClick={handleCreateProfile} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
           {'\u2795'} Create Profile
         </button>
-        <input value={compareA} onChange={e => setCompareA(e.target.value)} placeholder="Profile A..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
-        <input value={compareB} onChange={e => setCompareB(e.target.value)} placeholder="Profile B..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
+        <input value={compareA} onChange={e => setCompareA(e.target.value)} placeholder="Profile A..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
+        <input value={compareB} onChange={e => setCompareB(e.target.value)} placeholder="Profile B..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
         <button onClick={handleCompareProfiles} style={{ padding: '6px 12px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
           {'\u2696\uFE0F'} Compare
         </button>
@@ -339,7 +339,7 @@ const SelfOptimizationPanel: React.FC = () => {
                     <span style={{ fontWeight: 600, fontSize: 13 }}>{profile.name}</span>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#a29bfe', fontWeight: 600,
+                      backgroundColor: '#111', color: '#a29bfe', fontWeight: 600,
                     }}>{profile.strategy}</span>
                   </div>
                   <span style={{ fontSize: 10, color: '#666' }}>
@@ -350,7 +350,7 @@ const SelfOptimizationPanel: React.FC = () => {
                   Target: {profile.target_metric}
                 </div>
                 <div style={{
-                  height: 4, backgroundColor: '#141428', borderRadius: 2, marginTop: 4,
+                  height: 4, backgroundColor: '#111', borderRadius: 2, marginTop: 4,
                 }}>
                   <div style={{
                     height: '100%', width: `${profile.current_value * 100}%`,
@@ -375,9 +375,9 @@ const SelfOptimizationPanel: React.FC = () => {
               <button onClick={handleRunCalibration} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83C\uDFAF'} Run Calibration
               </button>
-              <input value={metricNameInput} onChange={e => setMetricNameInput(e.target.value)} placeholder="Metric name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
-              <input value={metricValueInput} onChange={e => setMetricValueInput(e.target.value)} placeholder="Value..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 70, outline: 'none' }} />
-              <input value={sourceInput} onChange={e => setSourceInput(e.target.value)} placeholder="Source..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
+              <input value={metricNameInput} onChange={e => setMetricNameInput(e.target.value)} placeholder="Metric name..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 110, outline: 'none' }} />
+              <input value={metricValueInput} onChange={e => setMetricValueInput(e.target.value)} placeholder="Value..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 70, outline: 'none' }} />
+              <input value={sourceInput} onChange={e => setSourceInput(e.target.value)} placeholder="Source..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 90, outline: 'none' }} />
               <button onClick={handleRecordMetric} style={{ padding: '6px 12px', backgroundColor: '#3a2d3a', color: '#a29bfe', border: '1px solid #4a3d4a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\u2795'} Record Metric
               </button>
@@ -432,8 +432,8 @@ const SelfOptimizationPanel: React.FC = () => {
         {activeTab === 'variants' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
             <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap', alignItems: 'center' }}>
-              <input value={variantProfileId} onChange={e => setVariantProfileId(e.target.value)} placeholder="Profile ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
-              <input value={variantCount} onChange={e => setVariantCount(e.target.value)} placeholder="Count..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 60, outline: 'none' }} />
+              <input value={variantProfileId} onChange={e => setVariantProfileId(e.target.value)} placeholder="Profile ID..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 120, outline: 'none' }} />
+              <input value={variantCount} onChange={e => setVariantCount(e.target.value)} placeholder="Count..." style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, width: 60, outline: 'none' }} />
               <button onClick={handleGeneratePromptVariant} style={{ padding: '6px 12px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>
                 {'\uD83E\uDDEA'} Generate Variants
               </button>
@@ -482,7 +482,7 @@ const SelfOptimizationPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -195,7 +195,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
   const inputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 8px', fontSize: 12,
     backgroundColor: '#1a1a2e', color: '#e0e0e0',
-    border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box',
+    border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box',
   };
 
   const tabItems: { key: ActiveTab; label: string; icon: string }[] = [
@@ -224,7 +224,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
 
       <div style={{ display: 'flex', borderBottom: '1px solid #2a2a3e' }}>
         {tabItems.map(tab => (
-          <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{ flex: 1, padding: '8px 12px', fontSize: 12, fontWeight: 600, backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent', color: activeTab === tab.key ? '#e0e0e0' : '#888', border: 'none', borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent', cursor: 'pointer' }}>
+          <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{ flex: 1, padding: '8px 12px', fontSize: 12, fontWeight: 600, backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent', color: activeTab === tab.key ? '#e0e0e0' : '#888', border: 'none', borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent', cursor: 'pointer' }}>
             {tab.icon} {tab.label}
           </button>
         ))}
@@ -233,7 +233,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
       <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
         {activeTab === 'agent' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#74b9ff' }}>Create Agent</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                 <div>
@@ -285,7 +285,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
                   <input type="text" value={agentForm.groupId} onChange={e => setAgentForm(prev => ({ ...prev, groupId: e.target.value }))} placeholder="optional" style={inputStyle} />
                 </div>
               </div>
-              <button onClick={handleCreateAgent} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#0f3460', color: '#74b9ff', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
+              <button onClick={handleCreateAgent} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#74b9ff', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {loading ? 'Creating...' : '\uD83D\uDC64 Create Agent'}
               </button>
             </div>
@@ -320,7 +320,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
 
         {activeTab === 'group' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#6bcb77' }}>Create Group</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                 <div>
@@ -354,14 +354,14 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
                   <span style={{ fontSize: 10, color: '#888' }}>{groupForm.separation_weight.toFixed(2)}</span>
                 </div>
               </div>
-              <button onClick={handleCreateGroup} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#0f3460', color: '#6bcb77', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
+              <button onClick={handleCreateGroup} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#6bcb77', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {loading ? 'Creating...' : '\uD83D\uDC65 Create Group'}
               </button>
             </div>
 
             <div style={{ fontWeight: 600, fontSize: 13, marginBottom: -4, color: '#aaa' }}>Groups ({groups.length})</div>
             {groups.map(g => (
-              <div key={g.id} style={{ padding: 12, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+              <div key={g.id} style={{ padding: 12, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                   <span style={{ fontWeight: 600, fontSize: 13 }}>{g.name}</span>
                   <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 10, backgroundColor: '#1a1a2e', color: '#fdcb6e', fontWeight: 600, textTransform: 'uppercase' }}>{g.formation}</span>
@@ -387,7 +387,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
 
         {activeTab === 'simulation' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#fdcb6e' }}>Simulation Control</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 10 }}>
                 <div>
@@ -395,13 +395,13 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
                   <input type="number" value={deltaTime} onChange={e => setDeltaTime(parseFloat(e.target.value) || 0)} step="0.001" style={inputStyle} />
                 </div>
               </div>
-              <button onClick={handleUpdateSim} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#0f3460', color: '#fdcb6e', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
+              <button onClick={handleUpdateSim} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#fdcb6e', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {loading ? 'Updating...' : '\u25B6\uFE0F Update Simulation'}
               </button>
             </div>
 
             {simResult && (
-              <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+              <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, color: '#aaa' }}>Simulation Result</div>
                 <div style={{ marginBottom: 8 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Avg Computational Cost: </span>
@@ -433,7 +433,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
 
         {activeTab === 'flowfield' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#a29bfe' }}>Create Flow Field</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 10 }}>
                 <div>
@@ -449,14 +449,14 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
                   <input type="number" value={flowFieldForm.resH} onChange={e => setFlowFieldForm(prev => ({ ...prev, resH: parseInt(e.target.value, 10) || 0 }))} style={inputStyle} />
                 </div>
               </div>
-              <button onClick={handleCreateFlowField} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#0f3460', color: '#a29bfe', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
+              <button onClick={handleCreateFlowField} disabled={loading} style={{ padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#a29bfe', border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer', fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1 }}>
                 {loading ? 'Creating...' : '\uD83C\uDF2A\uFE0F Create Flow Field'}
               </button>
             </div>
 
             <div style={{ fontWeight: 600, fontSize: 13, marginBottom: -4, color: '#aaa' }}>Flow Fields ({flowFields.length})</div>
             {flowFields.map(f => (
-              <div key={f.id} style={{ padding: 12, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <div key={f.id} style={{ padding: 12, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                 <div>
                   <div style={{ fontWeight: 600, fontSize: 13 }}>{f.name}</div>
                   <div style={{ fontSize: 10, color: '#888' }}>Resolution: {f.resolution[0]}x{f.resolution[1]}</div>
@@ -469,7 +469,7 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
 
         {activeTab === 'status' && status && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
-            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+            <div style={{ padding: 14, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12, color: '#aaa' }}>Crowd Dynamics System Status</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
                 <div style={{ padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4 }}>
@@ -498,14 +498,14 @@ const EngineCrowdDynamicsPanel: React.FC = () => {
         )}
 
         {activeTab === 'status' && !status && (
-          <div style={{ textAlign: 'center', padding: 40, color: '#555', backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460' }}>
+          <div style={{ textAlign: 'center', padding: 40, color: '#555', backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e' }}>
             <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>{'\u2699\uFE0F'}</span>
             Loading system status...
           </div>
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDC65'} Crowd Dynamics Engine</span>
         <span>{status ? `${status.total_agents} agents · ${status.total_groups} groups · Frame ${status.frame_number}` : 'Disconnected'}</span>
       </div>

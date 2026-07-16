@@ -242,7 +242,7 @@ export default function WeatherSystemPanel() {
       {message && (
         <div style={{
           padding: '8px 12px',
-          background: '#1a1a2e',
+          background: '#1a1a1a',
           border: '1px solid #06b6d4',
           borderRadius: 6,
           marginBottom: 12,
@@ -273,7 +273,7 @@ export default function WeatherSystemPanel() {
               {weathers.map((w) => (
                 <div key={w.region_id} style={{
                   padding: '12px 16px',
-                  background: '#1a1a2e',
+                  background: '#1a1a1a',
                   borderRadius: 8,
                   border: `1px solid ${getWeatherColor(w.weather_type)}33`,
                   display: 'flex',
@@ -361,7 +361,7 @@ export default function WeatherSystemPanel() {
                 width: '100%',
                 maxWidth: 300,
                 accentColor: '#06b6d4',
-                background: '#0f0f23',
+                background: '#0d0d0d',
               }}
             />
           </div>
@@ -423,7 +423,7 @@ export default function WeatherSystemPanel() {
               {regions.map((region) => (
                 <div key={region.id} style={{
                   padding: '10px 14px',
-                  background: '#1a1a2e',
+                  background: '#1a1a1a',
                   borderRadius: 6,
                   fontSize: 12,
                   display: 'flex',
@@ -466,7 +466,7 @@ function StatCard({ label, value, accent }: { label: string; value: string; acce
   return (
     <div style={{
       padding: '14px 16px',
-      background: '#1a1a2e',
+      background: '#1a1a1a',
       borderRadius: 8,
       border: '1px solid #2a2a3e',
     }}>
@@ -478,7 +478,7 @@ function StatCard({ label, value, accent }: { label: string; value: string; acce
 
 const inputStyle: React.CSSProperties = {
   padding: '6px 10px',
-  background: '#0f0f23',
+  background: '#0d0d0d',
   border: '1px solid #333',
   borderRadius: 4,
   color: '#e0e0e0',
@@ -488,7 +488,7 @@ const inputStyle: React.CSSProperties = {
 
 const selectStyle: React.CSSProperties = {
   padding: '6px 10px',
-  background: '#0f0f23',
+  background: '#0d0d0d',
   border: '1px solid #333',
   borderRadius: 4,
   color: '#e0e0e0',

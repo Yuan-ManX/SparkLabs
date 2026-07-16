@@ -141,7 +141,7 @@ const VisualScriptRuntimePanel: React.FC = () => {
     { key: 'transpile', label: 'Transpile' },
   ];
 
-  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
+  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#1a1a2e', color: '#e0e0e0', fontFamily: 'system-ui, sans-serif', fontSize: 13 }}>
@@ -210,7 +210,7 @@ const VisualScriptRuntimePanel: React.FC = () => {
               <div key={graph.id} style={{ padding: 12, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: `3px solid ${graph.target_language === 'python' ? '#4fc3f7' : '#ffa726'}` }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: 600, fontSize: 13, color: '#ccc' }}>{graph.name}</span>
-                  <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>{graph.target_language}</span>
+                  <span style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>{graph.target_language}</span>
                 </div>
                 <div style={{ fontSize: 10, color: '#888', marginTop: 4 }}>{graph.nodes} nodes</div>
               </div>
@@ -219,7 +219,7 @@ const VisualScriptRuntimePanel: React.FC = () => {
             <div style={{ fontSize: 13, fontWeight: 600, color: '#aaa' }}>Nodes ({nodes.length})</div>
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 6 }}>
               {nodes.map(node => (
-                <div key={node.id} style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, border: '1px solid #2a2a3e', textAlign: 'center' }}>
+                <div key={node.id} style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, border: '1px solid #2a2a3e', textAlign: 'center' }}>
                   <div style={{ fontSize: 11, color: '#a29bfe', fontWeight: 600 }}>{node.type}</div>
                   <div style={{ fontSize: 9, color: '#666' }}>({node.x}, {node.y})</div>
                 </div>
@@ -244,14 +244,14 @@ const VisualScriptRuntimePanel: React.FC = () => {
             {transpiledCode && (
               <div style={{ padding: 12, backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #2a2a3e' }}>
                 <div style={{ fontSize: 12, fontWeight: 600, color: '#a29bfe', marginBottom: 8 }}>Transpiled Code</div>
-                <pre style={{ margin: 0, fontSize: 11, color: '#aaa', whiteSpace: 'pre-wrap', backgroundColor: '#0f0f23', padding: 12, borderRadius: 4, overflowX: 'auto', fontFamily: 'monospace' }}>{transpiledCode}</pre>
+                <pre style={{ margin: 0, fontSize: 11, color: '#aaa', whiteSpace: 'pre-wrap', backgroundColor: '#0d0d0d', padding: 12, borderRadius: 4, overflowX: 'auto', fontFamily: 'monospace' }}>{transpiledCode}</pre>
               </div>
             )}
           </div>
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDD78\uFE0F'} {graphs.length} graphs · {nodes.length} nodes</span>
         <span>Connected</span>
       </div>

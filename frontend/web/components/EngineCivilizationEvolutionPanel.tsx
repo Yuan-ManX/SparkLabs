@@ -521,7 +521,7 @@ export default function EngineCivilizationEvolutionPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -544,7 +544,7 @@ export default function EngineCivilizationEvolutionPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -776,7 +776,7 @@ export default function EngineCivilizationEvolutionPanel() {
                     <span style={{ fontWeight: 600, fontSize: 13 }}>{civilization.name}</span>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#0f3460', color: '#00d4ff', fontWeight: 600,
+                      backgroundColor: '#1e1e1e', color: '#00d4ff', fontWeight: 600,
                     }}>
                       {civilization.government_type}
                     </span>
@@ -895,7 +895,7 @@ export default function EngineCivilizationEvolutionPanel() {
                     <span style={{ fontWeight: 600, fontSize: 13 }}>{technology.tech_name}</span>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#0f3460', color: '#00d4ff', fontWeight: 600,
+                      backgroundColor: '#1e1e1e', color: '#00d4ff', fontWeight: 600,
                     }}>
                       {technology.era}
                     </span>
@@ -907,14 +907,14 @@ export default function EngineCivilizationEvolutionPanel() {
                   {technology.prerequisites.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                       {technology.prerequisites.map(p => (
-                        <span key={p} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#fdcb6e' }}>req: {p}</span>
+                        <span key={p} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#fdcb6e' }}>req: {p}</span>
                       ))}
                     </div>
                   )}
                   {technology.effects.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                       {technology.effects.map(e => (
-                        <span key={e} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#6bcb77' }}>{e}</span>
+                        <span key={e} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#6bcb77' }}>{e}</span>
                       ))}
                     </div>
                   )}
@@ -1061,7 +1061,7 @@ export default function EngineCivilizationEvolutionPanel() {
                   {cultureResult.current_values && Object.keys(cultureResult.current_values).length > 0 && (
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                       {Object.entries(cultureResult.current_values).map(([k, v]) => (
-                        <span key={k} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>
+                        <span key={k} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>
                           {k}: {typeof v === 'number' ? (v as number).toFixed(2) : String(v)}
                         </span>
                       ))}
@@ -1361,7 +1361,7 @@ export default function EngineCivilizationEvolutionPanel() {
                         <span style={{ fontSize: 9, color: '#888' }}>Tick {h.tick}</span>
                         <span style={{
                           fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                          backgroundColor: '#0f3460', color: '#00d4ff', fontWeight: 600,
+                          backgroundColor: '#1e1e1e', color: '#00d4ff', fontWeight: 600,
                         }}>
                           {h.event}
                         </span>
@@ -1384,7 +1384,7 @@ export default function EngineCivilizationEvolutionPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

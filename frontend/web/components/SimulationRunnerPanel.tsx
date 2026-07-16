@@ -277,7 +277,7 @@ const SimulationRunnerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={scenarioName} onChange={e => setScenarioName(e.target.value)} placeholder="e.g. Code Gen Test" style={{
                     padding: '6px 10px', fontSize: 11, width: 150,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -285,7 +285,7 @@ const SimulationRunnerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Mode</div>
                   <select value={scenarioMode} onChange={e => setScenarioMode(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="interactive">Interactive</option>
@@ -298,7 +298,7 @@ const SimulationRunnerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Description</div>
                   <input value={scenarioDesc} onChange={e => setScenarioDesc(e.target.value)} placeholder="Describe the scenario..." style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -347,7 +347,7 @@ const SimulationRunnerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Scenario ID</div>
                   <input value={runScenarioId} onChange={e => setRunScenarioId(e.target.value)} placeholder="Select scenario" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -355,7 +355,7 @@ const SimulationRunnerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Agent ID</div>
                   <input value={runAgentId} onChange={e => setRunAgentId(e.target.value)} placeholder="e.g. agent-001" style={{
                     padding: '6px 10px', fontSize: 11, width: 110,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -369,7 +369,7 @@ const SimulationRunnerPanel: React.FC = () => {
                 <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Input Data (JSON)</div>
                 <textarea value={runInputData} onChange={e => setRunInputData(e.target.value)} rows={2} style={{
                   padding: '6px 10px', fontSize: 11, width: '100%', resize: 'vertical',
-                  backgroundColor: '#141428', color: '#ccc',
+                  backgroundColor: '#111', color: '#ccc',
                   border: '1px solid #333', borderRadius: 4, outline: 'none',
                   fontFamily: 'monospace',
                 }} />
@@ -380,7 +380,7 @@ const SimulationRunnerPanel: React.FC = () => {
               <span style={{ fontSize: 10, color: '#888' }}>Filter by Scenario:</span>
               <input value={listScenarioId} onChange={e => setListScenarioId(e.target.value)} placeholder="Scenario ID" style={{
                 padding: '5px 8px', fontSize: 11, width: 120,
-                backgroundColor: '#141428', color: '#ccc',
+                backgroundColor: '#111', color: '#ccc',
                 border: '1px solid #333', borderRadius: 4, outline: 'none',
               }} />
               <button onClick={handleListRuns} style={{
@@ -437,7 +437,7 @@ const SimulationRunnerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Run ID</div>
                   <input value={evalRunId} onChange={e => setEvalRunId(e.target.value)} placeholder="e.g. run-1" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -469,7 +469,7 @@ const SimulationRunnerPanel: React.FC = () => {
                   <span style={{ fontSize: 10, color: '#666' }}>{formatTime(evaluation.evaluated_at)}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center', marginBottom: 10,
+                  padding: 10, backgroundColor: '#111', borderRadius: 4, textAlign: 'center', marginBottom: 10,
                 }}>
                   <span style={{ fontSize: 24, fontWeight: 700, color: '#fdcb6e' }}>
                     {(evaluation.score * 100).toFixed(0)}%
@@ -482,7 +482,7 @@ const SimulationRunnerPanel: React.FC = () => {
                       <span style={{ fontSize: 10, color: '#aaa' }}>{metric.name.replace(/_/g, ' ')}</span>
                       <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <div style={{
-                          width: 80, height: 4, backgroundColor: '#141428', borderRadius: 2, overflow: 'hidden',
+                          width: 80, height: 4, backgroundColor: '#111', borderRadius: 2, overflow: 'hidden',
                         }}>
                           <div style={{
                             width: `${metric.value * 100}%`, height: '100%',
@@ -503,7 +503,7 @@ const SimulationRunnerPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

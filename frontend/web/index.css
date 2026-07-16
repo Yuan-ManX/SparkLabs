@@ -83,8 +83,8 @@ body {
 .workflow-node {
   position: absolute;
   min-width: 180px;
-  background: #1e293b;
-  border: 1px solid #334155;
+  background: #161616;
+  border: 1px solid #2a2a2a;
   border-radius: 8px;
   cursor: grab;
   user-select: none;
@@ -92,13 +92,13 @@ body {
 }
 
 .workflow-node.selected {
-  border-color: #8b5cf6;
-  box-shadow: 0 0 0 2px rgba(139, 92, 246, 0.3);
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
 }
 
 .workflow-node-header {
   padding: 8px 12px;
-  border-bottom: 1px solid #334155;
+  border-bottom: 1px solid #2a2a2a;
   border-radius: 8px 8px 0 0;
   font-size: 12px;
   font-weight: 600;
@@ -113,14 +113,14 @@ body {
   width: 10px;
   height: 10px;
   border-radius: 50%;
-  border: 2px solid #475569;
-  background: #1e293b;
+  border: 2px solid #444;
+  background: #161616;
   cursor: crosshair;
 }
 
 .workflow-pin:hover {
-  border-color: #8b5cf6;
-  background: #2d1b69;
+  border-color: #f97316;
+  background: rgba(249, 115, 22, 0.15);
 }
 
 .sl-panel {

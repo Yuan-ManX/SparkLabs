@@ -995,11 +995,11 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
             {leftTab === 'world' && (
               <div className="sl-module">
                 <div className="sl-module-body">
-                  <div className="sl-module-card-header"><i className="fa-solid fa-globe text-[10px] text-sky-400" />World Hierarchy</div>
+                  <div className="sl-module-card-header"><i className="fa-solid fa-globe text-[10px] text-orange-500" />World Hierarchy</div>
                   <div className="space-y-1.5">
                     {['Main World', 'Underground Cavern', 'Sky Islands', 'Dungeon Level 1', 'Town Center', 'Forest Path'].map((name, i) => (
                       <div key={i} className="sl-module-list-item">
-                        <i className="fa-solid fa-cube text-[9px] text-sky-400 flex-shrink-0" />
+                        <i className="fa-solid fa-cube text-[9px] text-orange-500 flex-shrink-0" />
                         <span className="flex-1 truncate">{name}</span>
                         <i className="fa-solid fa-eye text-[8px] text-[#444]" />
                       </div>
@@ -1163,7 +1163,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
                 <div className="p-3 space-y-3">
                   <div className="sl-property-section">
                     <div className="sl-property-section-header">
-                      <i className="fa-solid fa-brain text-[10px] text-purple-500" />
+                      <i className="fa-solid fa-brain text-[10px] text-orange-500" />
                       <span>Generation Mode</span>
                     </div>
                     <div className="grid grid-cols-3 gap-1.5 px-2 py-2">
@@ -1276,7 +1276,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span>Entities: {entityCount}</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
-        <span className="text-sky-400">895 Modules</span>
+        <span className="text-orange-500">895 Modules</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />
         <span>WebGL 2.0</span>
         <div className="w-px h-3 bg-[#1e1e1e] mx-2" />

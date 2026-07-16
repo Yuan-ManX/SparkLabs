@@ -206,13 +206,13 @@ export default function EngineAssetPipelinePanel() {
           { label: 'Total Assets', value: stats.total_assets, color: '#6bcb77' },
           { label: 'Success Rate', value: `${Math.round(stats.generation_success_rate * 100)}%`, color: stats.generation_success_rate >= 0.8 ? '#6bcb77' : '#ff9f43' },
         ].map(s => (
-          <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
+          <div key={s.label} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
             <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
         ))}
       </div>
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Supported Asset Types</h3>
         <div className="flex flex-wrap gap-2">
           {ASSET_TYPES.map(type => (
@@ -228,7 +228,7 @@ export default function EngineAssetPipelinePanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Style Profiles</h2>
 
       {/* Create Style Profile Form */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-6">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-6">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Create Style Profile</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input
@@ -296,7 +296,7 @@ export default function EngineAssetPipelinePanel() {
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Profiles ({styleProfiles.length})</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {styleProfiles.map(p => (
-            <div key={p.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div key={p.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-sm font-medium text-white">{p.name}</h4>
                 <span className="px-2 py-0.5 bg-[#1a1a2e] border border-[#2a2a4a] rounded text-xs text-[#00d4ff] capitalize">{p.art_style?.replace(/_/g, ' ')}</span>
@@ -347,7 +347,7 @@ export default function EngineAssetPipelinePanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Generate Assets</h2>
 
       {/* Request Asset Form */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Request Asset</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <select
@@ -390,7 +390,7 @@ export default function EngineAssetPipelinePanel() {
       </div>
 
       {/* Generate Asset */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Generate Single Asset</h3>
         <div className="flex gap-3 items-end">
           <input
@@ -409,7 +409,7 @@ export default function EngineAssetPipelinePanel() {
       </div>
 
       {/* Batch Generate */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Batch Generate</h3>
         <div className="mb-3">
           <input
@@ -434,7 +434,7 @@ export default function EngineAssetPipelinePanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Assets</h2>
 
       {/* Filters */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#666] block mb-1">Asset Type</label>
@@ -464,7 +464,7 @@ export default function EngineAssetPipelinePanel() {
       {/* Assets Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {assets.map(a => (
-          <div key={a.id || a.asset_id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+          <div key={a.id || a.asset_id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
             <div className="flex items-start justify-between mb-2">
               <div>
                 <h4 className="text-sm font-medium text-white">{a.name}</h4>
@@ -507,12 +507,12 @@ export default function EngineAssetPipelinePanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
         {activeTab === 'overview' && overviewContent}
         {activeTab === 'styles' && stylesContent}

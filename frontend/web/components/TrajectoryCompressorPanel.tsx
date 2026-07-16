@@ -268,7 +268,7 @@ const TrajectoryCompressorPanel: React.FC = () => {
           onChange={e => setCompMode(e.target.value as CompressionMode)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="lossless">Lossless</option>
@@ -327,16 +327,16 @@ const TrajectoryCompressorPanel: React.FC = () => {
                   {'\u2705'} Compression Result
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 11 }}>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Turns: <span style={{ color: '#74b9ff', fontWeight: 600 }}>{compressResult.original_turns} → {compressResult.compressed_turns}</span>
                   </div>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Tokens: <span style={{ color: '#00b894', fontWeight: 600 }}>{compressResult.original_tokens.toLocaleString()} → {compressResult.compressed_tokens.toLocaleString()}</span>
                   </div>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Ratio: <span style={{ color: '#fdcb6e', fontWeight: 600 }}>{(compressResult.ratio * 100).toFixed(1)}%</span>
                   </div>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Mode: <span style={{
                       color: MODE_COLORS[compressResult.mode], fontWeight: 600,
                       textTransform: 'uppercase', fontSize: 10,
@@ -357,7 +357,7 @@ const TrajectoryCompressorPanel: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
                   <span style={{
                     fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                    backgroundColor: '#141428', color: '#aaa', fontWeight: 600,
+                    backgroundColor: '#111', color: '#aaa', fontWeight: 600,
                     textTransform: 'uppercase',
                   }}>{turn.role}</span>
                   <span style={{ fontSize: 10, color: '#666' }}>{turn.token_count} tokens</span>
@@ -379,7 +379,7 @@ const TrajectoryCompressorPanel: React.FC = () => {
                 onChange={e => setExportFormat(e.target.value)}
                 style={{
                   padding: '6px 10px', fontSize: 11,
-                  backgroundColor: '#141428', color: '#ccc',
+                  backgroundColor: '#111', color: '#ccc',
                   border: '1px solid #333', borderRadius: 4, outline: 'none',
                 }}>
                 <option value="jsonl">JSONL</option>
@@ -468,7 +468,7 @@ const TrajectoryCompressorPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -357,7 +357,7 @@ const SocialSimulationPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -421,7 +421,7 @@ const SocialSimulationPanel: React.FC = () => {
                     placeholder="Character name..."
                     style={{
                       padding: '6px 10px', fontSize: 11, width: 140,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}
                   />
@@ -433,7 +433,7 @@ const SocialSimulationPanel: React.FC = () => {
                     onChange={e => setCharFaction(e.target.value as Faction)}
                     style={{
                       padding: '6px 10px', fontSize: 11,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}>
                     {Object.entries(FACTION_LABELS).map(([key, label]) => (
@@ -449,7 +449,7 @@ const SocialSimulationPanel: React.FC = () => {
                     placeholder="Brief backstory..."
                     style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}
                   />
@@ -462,7 +462,7 @@ const SocialSimulationPanel: React.FC = () => {
                     placeholder="What do they want socially?"
                     style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}
                   />
@@ -520,7 +520,7 @@ const SocialSimulationPanel: React.FC = () => {
                         <span style={{ color: '#888', textTransform: 'capitalize' }}>{trait}</span>
                         <span style={{ color: getTraitColor(char[trait]) }}>{(char[trait] * 100).toFixed(0)}%</span>
                       </div>
-                      <div style={{ height: 3, backgroundColor: '#141428', borderRadius: 2 }}>
+                      <div style={{ height: 3, backgroundColor: '#111', borderRadius: 2 }}>
                         <div style={{
                           height: '100%', width: `${char[trait] * 100}%`,
                           backgroundColor: getTraitColor(char[trait]), borderRadius: 2,
@@ -561,7 +561,7 @@ const SocialSimulationPanel: React.FC = () => {
                     onChange={e => setRelNpcA(e.target.value)}
                     style={{
                       padding: '6px 10px', fontSize: 11, width: 170,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}>
                     <option value="">Select character...</option>
@@ -577,7 +577,7 @@ const SocialSimulationPanel: React.FC = () => {
                     onChange={e => setRelNpcB(e.target.value)}
                     style={{
                       padding: '6px 10px', fontSize: 11, width: 170,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}>
                     <option value="">Select character...</option>
@@ -644,7 +644,7 @@ const SocialSimulationPanel: React.FC = () => {
                             {(val * 100).toFixed(0)}%
                           </span>
                         </div>
-                        <div style={{ height: 3, backgroundColor: '#141428', borderRadius: 2 }}>
+                        <div style={{ height: 3, backgroundColor: '#111', borderRadius: 2 }}>
                           <div style={{
                             height: '100%', width: `${val * 100}%`,
                             backgroundColor: metric === 'tension' ? '#e17055' : '#6bcb77',
@@ -678,8 +678,8 @@ const SocialSimulationPanel: React.FC = () => {
                 disabled={loadingNetwork}
                 style={{
                   padding: '8px 16px',
-                  backgroundColor: loadingNetwork ? '#1a2a3a' : 'bg-blue-600',
-                  background: loadingNetwork ? '#1a2a3a' : '#2563eb',
+                  backgroundColor: loadingNetwork ? '#1a2a3a' : '#f97316',
+                  background: loadingNetwork ? '#1a2a3a' : '#f97316',
                   color: loadingNetwork ? '#666' : '#fff',
                   border: 'none', borderRadius: 4,
                   cursor: loadingNetwork ? 'not-allowed' : 'pointer',
@@ -713,37 +713,37 @@ const SocialSimulationPanel: React.FC = () => {
                     {'\uD83D\uDCCA'} Network Stats
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(140px, 1fr))', gap: 8 }}>
-                    <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                       <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Density</div>
                       <div style={{ fontSize: 16, fontWeight: 700, color: '#6bcb77' }}>
                         {(networkStats.network_density * 100).toFixed(0)}%
                       </div>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                       <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Avg Trust</div>
                       <div style={{ fontSize: 16, fontWeight: 700, color: '#74b9ff' }}>
                         {(networkStats.average_trust * 100).toFixed(0)}%
                       </div>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                       <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Avg Tension</div>
                       <div style={{ fontSize: 16, fontWeight: 700, color: '#ff6b6b' }}>
                         {(networkStats.average_tension * 100).toFixed(0)}%
                       </div>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                       <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Factions</div>
                       <div style={{ fontSize: 16, fontWeight: 700, color: '#fdcb6e' }}>
                         {networkStats.faction_count}
                       </div>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                       <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Characters</div>
                       <div style={{ fontSize: 16, fontWeight: 700, color: '#a29bfe' }}>
                         {networkStats.total_characters}
                       </div>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4 }}>
                       <div style={{ fontSize: 9, color: '#666', textTransform: 'uppercase' }}>Relationships</div>
                       <div style={{ fontSize: 16, fontWeight: 700, color: '#e17055' }}>
                         {networkStats.total_relationships}
@@ -763,7 +763,7 @@ const SocialSimulationPanel: React.FC = () => {
                     {(networkStats.factions || []).map(f => (
                       <div key={f.name} style={{
                         display: 'flex', alignItems: 'center', gap: 10,
-                        padding: 8, backgroundColor: '#141428', borderRadius: 4,
+                        padding: 8, backgroundColor: '#111', borderRadius: 4,
                       }}>
                         <span style={{ width: 120, fontSize: 11, fontWeight: 600, color: '#ccc' }}>{f.name}</span>
                         <span style={{ fontSize: 10, color: '#888', width: 80 }}>
@@ -794,7 +794,7 @@ const SocialSimulationPanel: React.FC = () => {
                   <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                     {(networkStats.conflict_hotspots || []).map((hotspot, i) => (
                       <div key={i} style={{
-                        padding: '6px 10px', backgroundColor: '#141428', borderRadius: 4,
+                        padding: '6px 10px', backgroundColor: '#111', borderRadius: 4,
                         fontSize: 10, color: '#ff6b6b', borderLeft: '3px solid #e17055',
                       }}>
                         {hotspot}
@@ -893,7 +893,7 @@ const SocialSimulationPanel: React.FC = () => {
                 </div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
                   <span style={{ fontSize: 9, color: '#666' }}>Impact:</span>
-                  <div style={{ flex: 1, height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                  <div style={{ flex: 1, height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                     <div style={{
                       height: '100%', width: `${evt.impact_score * 100}%`,
                       backgroundColor: evt.impact_score >= 0.7 ? '#ff6b6b' : evt.impact_score >= 0.4 ? '#fdcb6e' : '#6bcb77',
@@ -908,7 +908,7 @@ const SocialSimulationPanel: React.FC = () => {
                   {(evt.ripple_effects || []).map((effect, i) => (
                     <span key={i} style={{
                       fontSize: 9, padding: '2px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#a29bfe',
+                      backgroundColor: '#111', color: '#a29bfe',
                     }}>
                       {'\u2192'} {effect}
                     </span>
@@ -932,7 +932,7 @@ const SocialSimulationPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

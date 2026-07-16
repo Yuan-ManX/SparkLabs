@@ -270,8 +270,8 @@ export default function WaterSimulationPanel() {
               padding: '8px 16px',
               background: 'none',
               border: 'none',
-              borderBottom: activeTab === tab.id ? '2px solid #3b82f6' : '2px solid transparent',
-              color: activeTab === tab.id ? '#3b82f6' : '#888',
+              borderBottom: activeTab === tab.id ? '2px solid #f97316' : '2px solid transparent',
+              color: activeTab === tab.id ? '#f97316' : '#888',
               cursor: 'pointer',
               fontSize: 13,
               fontWeight: activeTab === tab.id ? 600 : 400,
@@ -286,11 +286,11 @@ export default function WaterSimulationPanel() {
         <div style={{
           padding: '8px 12px',
           background: '#1a1a2e',
-          border: '1px solid #3b82f6',
+          border: '1px solid #f97316',
           borderRadius: 6,
           marginBottom: 12,
           fontSize: 12,
-          color: '#93c5fd',
+          color: '#fdba74',
         }}>
           {message}
         </div>
@@ -301,9 +301,9 @@ export default function WaterSimulationPanel() {
         <div>
           {stats ? (
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: 12 }}>
-              <StatCard label="Water Bodies" value={String(stats.water_body_count)} accent="#3b82f6" />
-              <StatCard label="Buoyant Objects" value={String(stats.buoyant_object_count)} accent="#3b82f6" />
-              <StatCard label="Splash Particles" value={stats.active_splash_particles.toLocaleString()} accent="#3b82f6" />
+              <StatCard label="Water Bodies" value={String(stats.water_body_count)} accent="#f97316" />
+              <StatCard label="Buoyant Objects" value={String(stats.buoyant_object_count)} accent="#f97316" />
+              <StatCard label="Splash Particles" value={stats.active_splash_particles.toLocaleString()} accent="#f97316" />
             </div>
           ) : (
             <p style={{ color: '#888' }}>No statistics available</p>
@@ -330,7 +330,7 @@ export default function WaterSimulationPanel() {
                         background: getWaterTypeColor(body.type),
                         display: 'inline-block',
                       }} />
-                      <span style={{ color: '#3b82f6', fontFamily: 'monospace' }}>{body.name}</span>
+                      <span style={{ color: '#f97316', fontFamily: 'monospace' }}>{body.name}</span>
                       <span style={{
                         padding: '2px 8px',
                         background: '#2a2a3e',
@@ -391,7 +391,7 @@ export default function WaterSimulationPanel() {
                 style={{ ...inputStyle, width: 60 }} />
             </div>
           </div>
-          <button onClick={handleCreateWaterBody} style={buttonStyle('#3b82f6')}>
+          <button onClick={handleCreateWaterBody} style={buttonStyle('#f97316')}>
             Create Water Body
           </button>
 
@@ -414,7 +414,7 @@ export default function WaterSimulationPanel() {
                     marginBottom: 10,
                   }}>
                     <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                      <span style={{ color: '#3b82f6', fontFamily: 'monospace', fontWeight: 600 }}>
+                      <span style={{ color: '#f97316', fontFamily: 'monospace', fontWeight: 600 }}>
                         {body.name}
                       </span>
                       <span style={{ color: '#888' }}>{body.type}</span>
@@ -457,7 +457,7 @@ export default function WaterSimulationPanel() {
           }}>
             <div style={{ marginBottom: 12 }}>
               <label style={{ fontSize: 12, color: '#888', display: 'block', marginBottom: 4 }}>
-                Amplitude: <span style={{ color: '#3b82f6' }}>{waveAmplitude}%</span>
+                Amplitude: <span style={{ color: '#f97316' }}>{waveAmplitude}%</span>
               </label>
               <input
                 type="range"
@@ -465,12 +465,12 @@ export default function WaterSimulationPanel() {
                 max="100"
                 value={waveAmplitude}
                 onChange={(e) => setWaveAmplitude(parseInt(e.target.value))}
-                style={{ width: '100%', maxWidth: 300, accentColor: '#3b82f6' }}
+                style={{ width: '100%', maxWidth: 300, accentColor: '#f97316' }}
               />
             </div>
             <div style={{ marginBottom: 12 }}>
               <label style={{ fontSize: 12, color: '#888', display: 'block', marginBottom: 4 }}>
-                Frequency: <span style={{ color: '#3b82f6' }}>{(waveFrequency / 10).toFixed(1)}</span>
+                Frequency: <span style={{ color: '#f97316' }}>{(waveFrequency / 10).toFixed(1)}</span>
               </label>
               <input
                 type="range"
@@ -478,12 +478,12 @@ export default function WaterSimulationPanel() {
                 max="50"
                 value={waveFrequency}
                 onChange={(e) => setWaveFrequency(parseInt(e.target.value))}
-                style={{ width: '100%', maxWidth: 300, accentColor: '#3b82f6' }}
+                style={{ width: '100%', maxWidth: 300, accentColor: '#f97316' }}
               />
             </div>
             <div style={{ marginBottom: 12 }}>
               <label style={{ fontSize: 12, color: '#888', display: 'block', marginBottom: 4 }}>
-                Speed: <span style={{ color: '#3b82f6' }}>{waveSpeed.toFixed(1)}</span>
+                Speed: <span style={{ color: '#f97316' }}>{waveSpeed.toFixed(1)}</span>
               </label>
               <input
                 type="range"
@@ -492,7 +492,7 @@ export default function WaterSimulationPanel() {
                 step="0.1"
                 value={waveSpeed}
                 onChange={(e) => setWaveSpeed(parseFloat(e.target.value))}
-                style={{ width: '100%', maxWidth: 300, accentColor: '#3b82f6' }}
+                style={{ width: '100%', maxWidth: 300, accentColor: '#f97316' }}
               />
             </div>
             {waterBodies.length > 0 && (
@@ -501,7 +501,7 @@ export default function WaterSimulationPanel() {
                   <button
                     key={body.id}
                     onClick={() => handleUpdateWaveParams(body.id)}
-                    style={{ ...buttonStyle('#2563eb'), fontSize: 11 }}
+                    style={{ ...buttonStyle('#f97316'), fontSize: 11 }}
                   >
                     Apply to {body.name}
                   </button>
@@ -543,7 +543,7 @@ export default function WaterSimulationPanel() {
                 <option key={b.id} value={b.id}>{b.name}</option>
               ))}
             </select>
-            <button onClick={handleAddBuoyantObject} style={buttonStyle('#3b82f6')}>
+            <button onClick={handleAddBuoyantObject} style={buttonStyle('#f97316')}>
               Add Object
             </button>
           </div>
@@ -560,7 +560,7 @@ export default function WaterSimulationPanel() {
                   padding: '8px 12px', background: '#1a1a2e', borderRadius: 6, fontSize: 12,
                 }}>
                   <div style={{ display: 'flex', gap: 16, alignItems: 'center' }}>
-                    <span style={{ color: '#3b82f6', fontFamily: 'monospace' }}>{obj.name}</span>
+                    <span style={{ color: '#f97316', fontFamily: 'monospace' }}>{obj.name}</span>
                     <span style={{ color: '#888' }}>Size: {obj.size}</span>
                     <span style={{ color: '#888' }}>Mass: {obj.mass}</span>
                     <span style={{ color: '#666' }}>{obj.water_body_id}</span>
@@ -607,7 +607,7 @@ export default function WaterSimulationPanel() {
               <option value="spray">Spray</option>
             </select>
           </div>
-          <button onClick={handleGenerateSplash} style={buttonStyle('#3b82f6')}>
+          <button onClick={handleGenerateSplash} style={buttonStyle('#f97316')}>
             Generate Splash
           </button>
         </div>
@@ -634,7 +634,7 @@ function PropertyBadge({ label, value }: { label: string; value: string }) {
   return (
     <div style={{
       padding: '4px 10px',
-      background: '#0f0f23',
+      background: '#0d0d0d',
       borderRadius: 4,
       border: '1px solid #2a2a3e',
     }}>
@@ -646,7 +646,7 @@ function PropertyBadge({ label, value }: { label: string; value: string }) {
 
 const inputStyle: React.CSSProperties = {
   padding: '6px 10px',
-  background: '#0f0f23',
+  background: '#0d0d0d',
   border: '1px solid #333',
   borderRadius: 4,
   color: '#e0e0e0',
@@ -656,7 +656,7 @@ const inputStyle: React.CSSProperties = {
 
 const selectStyle: React.CSSProperties = {
   padding: '6px 10px',
-  background: '#0f0f23',
+  background: '#0d0d0d',
   border: '1px solid #333',
   borderRadius: 4,
   color: '#e0e0e0',

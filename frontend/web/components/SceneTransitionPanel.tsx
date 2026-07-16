@@ -316,7 +316,7 @@ const SceneTransitionPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={configName} onChange={e => setConfigName(e.target.value)} placeholder="e.g. CrossFade" style={{
                     padding: '6px 10px', fontSize: 11, width: 140,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -324,7 +324,7 @@ const SceneTransitionPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
                   <select value={configType} onChange={e => setConfigType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="FADE">Fade</option>
@@ -338,7 +338,7 @@ const SceneTransitionPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Duration (s)</div>
                   <input value={configDuration} onChange={e => setConfigDuration(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 80,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -360,7 +360,7 @@ const SceneTransitionPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Effect Name</div>
                   <input value={effectName} onChange={e => setEffectName(e.target.value)} placeholder="e.g. CrossFade" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -410,7 +410,7 @@ const SceneTransitionPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Config Name</div>
                   <input value={transitionConfig} onChange={e => setTransitionConfig(e.target.value)} placeholder="e.g. CrossFade" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -433,7 +433,7 @@ const SceneTransitionPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Progress (0-1)</div>
                     <input value={progressValue} onChange={e => setProgressValue(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -455,7 +455,7 @@ const SceneTransitionPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Config</div>
                     <input value={cancelTarget} onChange={e => setCancelTarget(e.target.value)} placeholder="e.g. CrossFade" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -507,7 +507,7 @@ const SceneTransitionPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={sequenceName} onChange={e => setSequenceName(e.target.value)} placeholder="e.g. IntroSequence" style={{
                     padding: '6px 10px', fontSize: 11, width: 200,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -529,7 +529,7 @@ const SceneTransitionPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Config Name</div>
                   <input value={stepConfig} onChange={e => setStepConfig(e.target.value)} placeholder="e.g. CrossFade" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -537,7 +537,7 @@ const SceneTransitionPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Delay (s)</div>
                   <input value={stepDelay} onChange={e => setStepDelay(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -591,7 +591,7 @@ const SceneTransitionPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

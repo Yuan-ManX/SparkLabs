@@ -50,7 +50,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   Generation: '#60a5fa',
   Build: '#a78bfa',
   QA: '#ef4444',
-  Engine: '#06b6d4',
+  Engine: '#f97316',
 };
 
 let nodeIdCounter = 0;

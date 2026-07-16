@@ -266,7 +266,7 @@ const WorldStreamerPanel: React.FC = () => {
               type="number"
               value={gridRadius}
               onChange={e => setGridRadius(e.target.value)}
-              style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+              style={{ width: 60, padding: '6px 8px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
             />
           </div>
           <div>
@@ -276,13 +276,13 @@ const WorldStreamerPanel: React.FC = () => {
                 type="number"
                 value={centerX}
                 onChange={e => setCenterX(e.target.value)}
-                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
               />
               <input
                 type="number"
                 value={centerY}
                 onChange={e => setCenterY(e.target.value)}
-                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
               />
             </div>
           </div>
@@ -308,13 +308,13 @@ const WorldStreamerPanel: React.FC = () => {
                 type="number"
                 value={singleChunkX}
                 onChange={e => setSingleChunkX(e.target.value)}
-                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
               />
               <input
                 type="number"
                 value={singleChunkY}
                 onChange={e => setSingleChunkY(e.target.value)}
-                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
               />
             </div>
           </div>
@@ -332,13 +332,13 @@ const WorldStreamerPanel: React.FC = () => {
                 type="number"
                 value={cameraX}
                 onChange={e => setCameraX(e.target.value)}
-                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
               />
               <input
                 type="number"
                 value={cameraY}
                 onChange={e => setCameraY(e.target.value)}
-                style={{ width: 60, padding: '6px 8px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+                style={{ width: 60, padding: '6px 8px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
               />
             </div>
           </div>
@@ -359,28 +359,28 @@ const WorldStreamerPanel: React.FC = () => {
             value={regionName}
             onChange={e => setRegionName(e.target.value)}
             placeholder="Region name..."
-            style={{ width: 140, padding: '6px 10px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+            style={{ width: 140, padding: '6px 10px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
           />
           <input
             type="number"
             value={regionCX}
             onChange={e => setRegionCX(e.target.value)}
             placeholder="Center X"
-            style={{ width: 70, padding: '6px 10px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+            style={{ width: 70, padding: '6px 10px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
           />
           <input
             type="number"
             value={regionCY}
             onChange={e => setRegionCY(e.target.value)}
             placeholder="Center Y"
-            style={{ width: 70, padding: '6px 10px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+            style={{ width: 70, padding: '6px 10px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
           />
           <input
             type="number"
             value={regionRadius}
             onChange={e => setRegionRadius(e.target.value)}
             placeholder="Radius"
-            style={{ width: 70, padding: '6px 10px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+            style={{ width: 70, padding: '6px 10px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 4, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
           />
           <button
             onClick={createRegion}
@@ -544,7 +544,7 @@ const WorldStreamerPanel: React.FC = () => {
                 {Object.entries(config.detail_distances).map(([level, dist]) => (
                   <span key={level} style={{
                     padding: '4px 10px', borderRadius: 4, fontSize: 11,
-                    background: '#0d0d1a', color: detailColors[level] || '#ccc',
+                    background: '#0d0d0d', color: detailColors[level] || '#ccc',
                   }}>
                     {level}: {dist as number}
                   </span>

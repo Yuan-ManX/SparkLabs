@@ -209,7 +209,7 @@ const SessionSnapshotPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -247,7 +247,7 @@ const SessionSnapshotPanel: React.FC = () => {
           placeholder="Session ID..."
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4,
             width: 150, outline: 'none',
           }}
@@ -387,7 +387,7 @@ const SessionSnapshotPanel: React.FC = () => {
                 placeholder="Snapshot A ID..."
                 style={{
                   flex: 1, padding: '8px 12px', fontSize: 11,
-                  backgroundColor: '#141428', color: '#ccc',
+                  backgroundColor: '#111', color: '#ccc',
                   border: '1px solid #333', borderRadius: 4, outline: 'none',
                 }}
               />
@@ -398,7 +398,7 @@ const SessionSnapshotPanel: React.FC = () => {
                 placeholder="Snapshot B ID..."
                 style={{
                   flex: 1, padding: '8px 12px', fontSize: 11,
-                  backgroundColor: '#141428', color: '#ccc',
+                  backgroundColor: '#111', color: '#ccc',
                   border: '1px solid #333', borderRadius: 4, outline: 'none',
                 }}
               />
@@ -418,10 +418,10 @@ const SessionSnapshotPanel: React.FC = () => {
                   {'\uD83D\uDD0D'} Comparison Result
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 11 }}>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Changed Keys: <span style={{ color: '#fdcb6e', fontWeight: 600 }}>{compareResult.changed_keys}</span>
                   </div>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, color: '#aaa' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, color: '#aaa' }}>
                     Unchanged Keys: <span style={{ color: '#6bcb77', fontWeight: 600 }}>{compareResult.unchanged_keys}</span>
                   </div>
                 </div>
@@ -444,7 +444,7 @@ const SessionSnapshotPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

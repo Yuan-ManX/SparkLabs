@@ -69,7 +69,7 @@ const ServerOrchestratorPanel: React.FC = () => {
           <button
             onClick={handleOptimize}
             disabled={loading}
-            className="text-[9px] px-2 py-1 bg-purple-600 hover:bg-purple-500 text-white rounded font-medium disabled:opacity-50"
+            className="text-[9px] px-2 py-1 bg-orange-500 hover:bg-orange-600 text-white rounded font-medium disabled:opacity-50"
           >
             Optimize
           </button>

@@ -127,7 +127,7 @@ const WeatherEditor: React.FC = () => {
 
       <div style={{ display: 'flex', gap: 8, marginBottom: 12 }}>
         <button onClick={handleSetWeather} style={{
-          padding: '8px 16px', borderRadius: 6, border: 'none', background: '#3b82f6',
+          padding: '8px 16px', borderRadius: 6, border: 'none', background: '#f97316',
           color: '#fff', cursor: 'pointer', fontSize: 12,
         }}>
           Apply Weather

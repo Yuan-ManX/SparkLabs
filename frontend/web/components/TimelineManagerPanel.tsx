@@ -450,13 +450,13 @@ const TimelineManagerPanel: React.FC = () => {
     header: { fontSize: 18, fontWeight: 'bold', marginBottom: 16, color: '#e94560' },
     tabs: { display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' },
     tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a4a', color: '#aab' },
-    tabActive: { background: '#0f3460', color: '#e94560', fontWeight: 'bold' },
+    tabActive: { background: '#1e1e1e', color: '#e94560', fontWeight: 'bold' },
     card: { background: '#16213e', borderRadius: 8, padding: 16, marginBottom: 12 },
     cardTitle: { fontSize: 14, fontWeight: 'bold', color: '#e94560', marginBottom: 8 },
     input: { background: '#1a1a3a', border: '1px solid #3a3a6a', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box' },
     select: { background: '#1a1a3a', border: '1px solid #3a3a6a', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13 },
     btn: { background: '#e94560', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 'bold' },
-    btnSecondary: { background: '#0f3460', color: '#aab', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
+    btnSecondary: { background: '#1e1e1e', color: '#aab', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
     btnDanger: { background: '#4a1a1a', color: '#e94560', border: '1px solid #e94560', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
     row: { display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' },
     grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: 12 },
@@ -574,7 +574,7 @@ const TimelineManagerPanel: React.FC = () => {
                 <span style={{ ...styles.badge, background: getStatusBadgeColor(timeline.status) }}>
                   {timeline.status}
                 </span>
-                <span style={{ ...styles.badge, background: '#0f3460' }}>
+                <span style={{ ...styles.badge, background: '#1e1e1e' }}>
                   {timeline.event_count} events
                 </span>
               </div>
@@ -657,7 +657,7 @@ const TimelineManagerPanel: React.FC = () => {
               <span style={{ fontWeight: 'bold', fontSize: 13, color: '#e0e0e0' }}>
                 {EVENT_TYPE_ICONS[evt.event_type]} {evt.title}
               </span>
-              <span style={{ ...styles.badge, background: EVENT_TYPE_COLORS[evt.event_type] || '#0f3460' }}>
+              <span style={{ ...styles.badge, background: EVENT_TYPE_COLORS[evt.event_type] || '#1e1e1e' }}>
                 {evt.event_type}
               </span>
             </div>

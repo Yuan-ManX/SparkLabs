@@ -182,7 +182,7 @@ const ValidationPanel: React.FC = () => {
                       {validationResult.id && (
                         <button
                           onClick={() => handleAutoFix(validationResult.id)}
-                          className="px-2 py-1 bg-blue-600/20 text-blue-400 rounded text-[10px] hover:bg-blue-600/30 transition-colors"
+                          className="px-2 py-1 bg-orange-600/20 text-orange-400 rounded text-[10px] hover:bg-orange-600/30 transition-colors"
                         >
                           Auto Fix
                         </button>

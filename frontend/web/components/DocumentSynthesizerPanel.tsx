@@ -255,7 +255,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={tmplName} onChange={e => setTmplName(e.target.value)} placeholder="e.g. Weekly Report" style={{
                     padding: '6px 10px', fontSize: 11, width: 150,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -263,7 +263,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Doc Type</div>
                   <select value={tmplDocType} onChange={e => setTmplDocType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="report">Report</option>
@@ -277,7 +277,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Format</div>
                   <select value={tmplFormat} onChange={e => setTmplFormat(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="markdown">Markdown</option>
@@ -333,7 +333,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Template ID</div>
                   <input value={synthTemplateId} onChange={e => setSynthTemplateId(e.target.value)} placeholder="Select template" style={{
                     padding: '6px 10px', fontSize: 11, width: 130,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -341,7 +341,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Title</div>
                   <input value={synthTitle} onChange={e => setSynthTitle(e.target.value)} placeholder="Document title..." style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -355,7 +355,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
                 <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Content Data (JSON)</div>
                 <textarea value={synthContentData} onChange={e => setSynthContentData(e.target.value)} rows={4} style={{
                   padding: '8px 10px', fontSize: 11, width: '100%', resize: 'vertical',
-                  backgroundColor: '#141428', color: '#ccc',
+                  backgroundColor: '#111', color: '#ccc',
                   border: '1px solid #333', borderRadius: 4, outline: 'none',
                   fontFamily: 'monospace',
                 }} />
@@ -372,7 +372,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Document ID</div>
                   <input value={renderDocId} onChange={e => setRenderDocId(e.target.value)} placeholder="e.g. doc-1" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -380,7 +380,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Format</div>
                   <select value={renderFormat} onChange={e => setRenderFormat(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="pdf">PDF</option>
@@ -464,7 +464,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
                     </div>
                     <div style={{ fontSize: 10, color: '#888' }}>Document ID: {rd.document_id}</div>
                     <div style={{
-                      padding: 8, backgroundColor: '#141428', borderRadius: 4, marginTop: 6,
+                      padding: 8, backgroundColor: '#111', borderRadius: 4, marginTop: 6,
                       fontSize: 10, color: '#aaa', fontStyle: 'italic',
                     }}>
                       {rd.rendered_content.substring(0, 100)}{rd.rendered_content.length > 100 ? '...' : ''}
@@ -488,7 +488,7 @@ const DocumentSynthesizerPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

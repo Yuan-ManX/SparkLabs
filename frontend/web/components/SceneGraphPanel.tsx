@@ -441,7 +441,7 @@ const SceneGraphPanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#1a1a2e] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <FolderTree className="w-[18px] h-[18px] text-[#00d4ff]" />
           <span className="font-bold text-[15px]">Scene Graph</span>
@@ -454,16 +454,16 @@ const SceneGraphPanel: React.FC = () => {
       {/* Message */}
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#16213e]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[#0f3460]/50">
+      <div className="flex border-b border-[#1e1e1e]/50">
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -493,12 +493,12 @@ const SceneGraphPanel: React.FC = () => {
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 placeholder="Search nodes by name or path..."
-                className="w-full bg-[#16213e] border border-[#0f3460]/50 rounded-lg pl-9 pr-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#00d4ff]/50 placeholder-[#555]"
+                className="w-full bg-[#16213e] border border-[#1e1e1e]/50 rounded-lg pl-9 pr-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#00d4ff]/50 placeholder-[#555]"
               />
             </div>
 
             {/* Node tree */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-2 max-h-[300px] overflow-auto">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-2 max-h-[300px] overflow-auto">
               {filteredNodes.map(node => renderNode(node))}
               {filteredNodes.length === 0 && (
                 <div className="flex flex-col items-center justify-center py-8 text-[#555]">
@@ -509,7 +509,7 @@ const SceneGraphPanel: React.FC = () => {
             </div>
 
             {/* Create node form */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Plus className="w-3.5 h-3.5 text-[#00d4ff]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Create Node</span>
@@ -520,12 +520,12 @@ const SceneGraphPanel: React.FC = () => {
                   value={newNodeName}
                   onChange={e => setNewNodeName(e.target.value)}
                   placeholder="Node name..."
-                  className="flex-1 bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#00d4ff]/50 placeholder-[#555]"
+                  className="flex-1 bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#00d4ff]/50 placeholder-[#555]"
                 />
                 <select
                   value={newNodeType}
                   onChange={e => setNewNodeType(e.target.value)}
-                  className="bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-2 py-1.5 text-[11px] text-[#ccc] outline-none"
+                  className="bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-2 py-1.5 text-[11px] text-[#ccc] outline-none"
                 >
                   <option value="empty">Empty</option>
                   <option value="group">Group</option>
@@ -546,20 +546,20 @@ const SceneGraphPanel: React.FC = () => {
 
             {/* Node actions */}
             {selectedNodeId && (
-              <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+              <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Node Actions</span>
                   <div className="flex gap-1">
                     <button
                       onClick={() => { setIsRenaming(true); setRenameValue(selectedNode?.name || ''); }}
-                      className="px-2 py-1 bg-[#1a1a2e] border border-[#0f3460]/50 text-[#fdcb6e] rounded text-[10px] hover:border-[#fdcb6e]/50 transition-all flex items-center gap-1"
+                      className="px-2 py-1 bg-[#1a1a2e] border border-[#1e1e1e]/50 text-[#fdcb6e] rounded text-[10px] hover:border-[#fdcb6e]/50 transition-all flex items-center gap-1"
                     >
                       <Edit3 className="w-3 h-3" />
                       Rename
                     </button>
                     <button
                       onClick={handleDeleteNode}
-                      className="px-2 py-1 bg-[#1a1a2e] border border-[#0f3460]/50 text-[#e94560] rounded text-[10px] hover:border-[#e94560]/50 transition-all flex items-center gap-1"
+                      className="px-2 py-1 bg-[#1a1a2e] border border-[#1e1e1e]/50 text-[#e94560] rounded text-[10px] hover:border-[#e94560]/50 transition-all flex items-center gap-1"
                     >
                       <Trash2 className="w-3 h-3" />
                       Delete
@@ -572,7 +572,7 @@ const SceneGraphPanel: React.FC = () => {
                       type="text"
                       value={renameValue}
                       onChange={e => setRenameValue(e.target.value)}
-                      className="flex-1 bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50"
+                      className="flex-1 bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50"
                     />
                     <button
                       onClick={handleRenameNode}
@@ -590,7 +590,7 @@ const SceneGraphPanel: React.FC = () => {
 
             {/* Transform editor */}
             {selectedNode && editTransform && (
-              <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+              <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Move3D className="w-3.5 h-3.5 text-[#00d4ff]" />
                   <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Transform</span>
@@ -608,7 +608,7 @@ const SceneGraphPanel: React.FC = () => {
                           value={editTransform[axis]}
                           onChange={e => handleTransformChange(axis, parseFloat(e.target.value) || 0)}
                           step={0.1}
-                          className="flex-1 bg-[#1a1a2e] border border-[#0f3460]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#00d4ff]/50"
+                          className="flex-1 bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#00d4ff]/50"
                         />
                       </div>
                     ))}
@@ -627,7 +627,7 @@ const SceneGraphPanel: React.FC = () => {
                           value={editTransform[axis]}
                           onChange={e => handleTransformChange(axis, parseFloat(e.target.value) || 0)}
                           step={0.1}
-                          className="flex-1 bg-[#1a1a2e] border border-[#0f3460]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#00d4ff]/50"
+                          className="flex-1 bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#00d4ff]/50"
                         />
                       </div>
                     ))}
@@ -646,7 +646,7 @@ const SceneGraphPanel: React.FC = () => {
                           value={editTransform[axis]}
                           onChange={e => handleTransformChange(axis, parseFloat(e.target.value) || 1)}
                           step={0.1}
-                          className="flex-1 bg-[#1a1a2e] border border-[#0f3460]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#00d4ff]/50"
+                          className="flex-1 bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded px-2 py-1 text-[10px] text-[#ccc] outline-none focus:border-[#00d4ff]/50"
                         />
                       </div>
                     ))}
@@ -668,7 +668,7 @@ const SceneGraphPanel: React.FC = () => {
                 value={prefabSearch}
                 onChange={e => setPrefabSearch(e.target.value)}
                 placeholder="Search prefabs..."
-                className="w-full bg-[#16213e] border border-[#0f3460]/50 rounded-lg pl-9 pr-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#00d4ff]/50 placeholder-[#555]"
+                className="w-full bg-[#16213e] border border-[#1e1e1e]/50 rounded-lg pl-9 pr-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#00d4ff]/50 placeholder-[#555]"
               />
             </div>
 
@@ -685,7 +685,7 @@ const SceneGraphPanel: React.FC = () => {
                     {categoryPrefabs.map(prefab => (
                       <div
                         key={prefab.id}
-                        className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-2 hover:border-[#0f3460]/60 transition-all cursor-pointer"
+                        className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-2 hover:border-[#1e1e1e]/60 transition-all cursor-pointer"
                       >
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
@@ -702,7 +702,7 @@ const SceneGraphPanel: React.FC = () => {
               );
             })}
             {filteredPrefabs.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Copy className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No prefabs found</span>
               </div>
@@ -714,7 +714,7 @@ const SceneGraphPanel: React.FC = () => {
         {activeTab === 'serialize' && (
           <div className="flex flex-col gap-3">
             {/* Export */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Download className="w-3.5 h-3.5 text-[#6bcb77]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Export Scene</span>
@@ -731,14 +731,14 @@ const SceneGraphPanel: React.FC = () => {
                 Export to JSON
               </button>
               {serializedJSON && (
-                <div className="mt-2 bg-[#1a1a2e] rounded-md p-3 text-[10px] text-[#ccc] max-h-[150px] overflow-auto font-mono border border-[#0f3460]/30">
+                <div className="mt-2 bg-[#1a1a2e] rounded-md p-3 text-[10px] text-[#ccc] max-h-[150px] overflow-auto font-mono border border-[#1e1e1e]/30">
                   {serializedJSON.slice(0, 500)}{serializedJSON.length > 500 ? '...' : ''}
                 </div>
               )}
             </div>
 
             {/* Import */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Upload className="w-3.5 h-3.5 text-[#fdcb6e]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Import Scene</span>
@@ -751,7 +751,7 @@ const SceneGraphPanel: React.FC = () => {
                 onChange={e => setImportJSON(e.target.value)}
                 placeholder='[{"id": "...", "name": "...", ...}]'
                 rows={4}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-2 text-[11px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50 resize-none font-mono placeholder-[#555] mb-2"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-2 text-[11px] text-[#ccc] outline-none focus:border-[#fdcb6e]/50 resize-none font-mono placeholder-[#555] mb-2"
               />
               <button
                 onClick={handleImport}
@@ -767,7 +767,7 @@ const SceneGraphPanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <FolderTree className="w-3 h-3" />
           {nodes.length} nodes · {prefabs.length} prefabs

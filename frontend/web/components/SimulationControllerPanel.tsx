@@ -325,18 +325,18 @@ const SimulationControllerPanel: React.FC = () => {
   };
 
   const styles: Record<string, React.CSSProperties> = {
-    container: { background: '#1a1a2e', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
+    container: { background: '#1a1a1a', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
     header: { fontSize: 18, fontWeight: 'bold', marginBottom: 16, color: '#e94560' },
     tabs: { display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' },
-    tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a4a', color: '#aab' },
+    tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a2a', color: '#aab' },
     tabActive: { background: '#3a3a6a', color: '#e94560', fontWeight: 'bold' },
-    card: { background: '#16213e', borderRadius: 8, padding: 16, marginBottom: 12 },
+    card: { background: '#0f0f0f', borderRadius: 8, padding: 16, marginBottom: 12 },
     cardTitle: { fontSize: 14, fontWeight: 'bold', color: '#d0d0e0', marginBottom: 8 },
-    input: { background: '#0d0d1a', border: '1px solid #333', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box' },
-    select: { background: '#0d0d1a', border: '1px solid #333', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13 },
+    input: { background: '#0d0d0d', border: '1px solid #333', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box' },
+    select: { background: '#0d0d0d', border: '1px solid #333', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13 },
     btn: { background: '#e94560', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 'bold' },
     btnSecondary: { background: '#2a2a5a', color: '#aab', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
-    btnAccent: { background: '#0f3460', color: '#e94560', border: '1px solid #e94560', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 'bold' },
+    btnAccent: { background: '#1e1e1e', color: '#e94560', border: '1px solid #e94560', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 'bold' },
     row: { display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' },
     grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 },
     label: { fontSize: 12, color: '#888', marginBottom: 4 },
@@ -345,12 +345,12 @@ const SimulationControllerPanel: React.FC = () => {
     msgSuccess: { background: '#1a4a1a', color: '#4caf50', padding: '8px 16px', borderRadius: 6, marginBottom: 12 },
     msgError: { background: '#4a1a1a', color: '#f44336', padding: '8px 16px', borderRadius: 6, marginBottom: 12 },
     msgInfo: { background: '#1a2a4a', color: '#7c9aff', padding: '8px 16px', borderRadius: 6, marginBottom: 12 },
-    textarea: { background: '#0d0d1a', border: '1px solid #333', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box', resize: 'vertical' },
+    textarea: { background: '#0d0d0d', border: '1px solid #333', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box', resize: 'vertical' },
     empty: { color: '#888', fontSize: 13, fontStyle: 'italic' },
     timeline: { borderLeft: '2px solid #e94560', paddingLeft: 16, marginLeft: 8 },
     timelineItem: { marginBottom: 12, position: 'relative' },
     timelineDot: { position: 'absolute', left: -25, top: 4, width: 10, height: 10, borderRadius: '50%', background: '#e94560' },
-    statCard: { background: '#0f3460', borderRadius: 6, padding: 12, textAlign: 'center', minWidth: 100 },
+    statCard: { background: '#1e1e1e', borderRadius: 6, padding: 12, textAlign: 'center', minWidth: 100 },
   };
 
   const getAgentStateColor = (state: string) => {
@@ -383,7 +383,7 @@ const SimulationControllerPanel: React.FC = () => {
 
   const renderStats = () => (
     <div>
-      <div style={{ ...styles.card, background: '#16213e' }}>
+      <div style={{ ...styles.card, background: '#0f0f0f' }}>
         <div style={styles.cardTitle}>Simulation Controller Statistics</div>
         <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 13 }}>
           <div style={styles.statCard}>
@@ -436,7 +436,7 @@ const SimulationControllerPanel: React.FC = () => {
             {AGENT_TYPES.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
           <input style={{ ...styles.input, flex: 1 }} placeholder="World ID" value={spawnWorldId} onChange={e => setSpawnWorldId(e.target.value)} />
-          <button style={{ ...styles.btn, background: '#0f3460', border: '1px solid #e94560' }} onClick={handleSpawnPopulation}>Spawn Population</button>
+          <button style={{ ...styles.btn, background: '#1e1e1e', border: '1px solid #e94560' }} onClick={handleSpawnPopulation}>Spawn Population</button>
         </div>
       </div>
 
@@ -448,7 +448,7 @@ const SimulationControllerPanel: React.FC = () => {
         {agents.length === 0 && <div style={styles.empty}>No agents created yet. Create one or spawn a population above.</div>}
         <div style={styles.grid}>
           {agents.map(agent => (
-            <div key={agent.id} style={{ ...styles.card, background: '#1a1a2e', borderLeft: `4px solid ${getAgentTypeColor(agent.type)}` }}>
+            <div key={agent.id} style={{ ...styles.card, background: '#1a1a1a', borderLeft: `4px solid ${getAgentTypeColor(agent.type)}` }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
                 <span style={{ fontWeight: 'bold', fontSize: 13, color: '#e0e0e0' }}>{agent.name}</span>
                 <span style={{ ...styles.badge, background: getAgentStateColor(agent.state) }}>{agent.state}</span>
@@ -497,7 +497,7 @@ const SimulationControllerPanel: React.FC = () => {
         {worldSnapshot ? (
           <div style={{ marginTop: 12 }}>
             <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 12 }}>
-              <span style={{ ...styles.badge, background: '#0f3460' }}>Tick: {worldSnapshot.tick}</span>
+              <span style={{ ...styles.badge, background: '#1e1e1e' }}>Tick: {worldSnapshot.tick}</span>
               <span style={{ ...styles.badge, background: '#2a4a1a' }}>{worldSnapshot.agent_count} agents</span>
               <span style={{ ...styles.badge, background: '#4a2a1a' }}>{worldSnapshot.event_count} events</span>
               <span style={{ ...styles.badge, background: '#2a2a5a' }}>{new Date(worldSnapshot.timestamp).toLocaleTimeString()}</span>
@@ -515,7 +515,7 @@ const SimulationControllerPanel: React.FC = () => {
             {worldSnapshot.state && Object.keys(worldSnapshot.state).length > 0 && (
               <div>
                 <div style={{ ...styles.label, marginBottom: 4 }}>World State</div>
-                <pre style={{ fontSize: 11, color: '#aaa', background: '#0d0d1a', padding: 8, borderRadius: 4, overflow: 'auto', maxHeight: 200, margin: 0 }}>
+                <pre style={{ fontSize: 11, color: '#aaa', background: '#0d0d0d', padding: 8, borderRadius: 4, overflow: 'auto', maxHeight: 200, margin: 0 }}>
                   {JSON.stringify(worldSnapshot.state, null, 2)}
                 </pre>
               </div>
@@ -572,7 +572,7 @@ const SimulationControllerPanel: React.FC = () => {
                   {result.removed_agents > 0 && <span style={{ ...styles.badge, background: '#4a2a2a' }}>-{result.removed_agents} removed</span>}
                 </div>
                 {result.world_state && Object.keys(result.world_state).length > 0 && (
-                  <pre style={{ fontSize: 10, color: '#666', background: '#0d0d1a', padding: 6, borderRadius: 4, overflow: 'auto', maxHeight: 80, margin: 0 }}>
+                  <pre style={{ fontSize: 10, color: '#666', background: '#0d0d0d', padding: 6, borderRadius: 4, overflow: 'auto', maxHeight: 80, margin: 0 }}>
                     {JSON.stringify(result.world_state, null, 2)}
                   </pre>
                 )}

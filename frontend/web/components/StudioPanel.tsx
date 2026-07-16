@@ -185,7 +185,7 @@ const StudioPanel: React.FC = () => {
           isSelected
             ? 'border-orange-500/60 bg-orange-500/10'
             : agent.is_available
-            ? 'border-[#2a2a2a] bg-[#141414] hover:border-[#3a3a3a]'
+            ? 'border-[#2a2a2a] bg-[#111] hover:border-[#3a3a3a]'
             : 'border-[#2a2a2a] bg-[#0f0f0f] hover:border-[#3a3a3a]'
         }`}
       >
@@ -285,13 +285,13 @@ const StudioPanel: React.FC = () => {
           value={newTaskTitle}
           onChange={(e) => setNewTaskTitle(e.target.value)}
           placeholder="New task title..."
-          className="flex-1 bg-[#141414] border border-[#2a2a2a] rounded-lg px-3 py-2 text-[11px] text-[#ddd] placeholder-[#555] focus:border-orange-500/50 focus:outline-none"
+          className="flex-1 bg-[#111] border border-[#2a2a2a] rounded-lg px-3 py-2 text-[11px] text-[#ddd] placeholder-[#555] focus:border-orange-500/50 focus:outline-none"
           onKeyDown={(e) => e.key === 'Enter' && handleAssignTask()}
         />
         <select
           value={newTaskDept}
           onChange={(e) => setNewTaskDept(e.target.value)}
-          className="bg-[#141414] border border-[#2a2a2a] rounded-lg px-2 py-2 text-[11px] text-[#ddd] focus:border-orange-500/50 focus:outline-none"
+          className="bg-[#111] border border-[#2a2a2a] rounded-lg px-2 py-2 text-[11px] text-[#ddd] focus:border-orange-500/50 focus:outline-none"
         >
           {Object.keys(DEPARTMENT_COLORS).map(dept => (
             <option key={dept} value={dept}>{dept}</option>
@@ -317,7 +317,7 @@ const StudioPanel: React.FC = () => {
               className={`p-3 rounded-lg border ${
                 isCompleted ? 'border-green-500/30 bg-green-500/5' :
                 isActive ? 'border-yellow-500/30 bg-yellow-500/5' :
-                'border-[#2a2a2a] bg-[#141414]'
+                'border-[#2a2a2a] bg-[#111]'
               }`}
             >
               <div className="flex items-start justify-between gap-2">
@@ -378,7 +378,7 @@ const StudioPanel: React.FC = () => {
                           eventType === 'task_delegated' ? '#8b5cf6' : '#888';
 
         return (
-          <div key={idx} className="flex items-start gap-2 p-2 rounded bg-[#141414] border border-[#1a1a1a]">
+          <div key={idx} className="flex items-start gap-2 p-2 rounded bg-[#111] border border-[#1e1e1e]">
             <div className="w-5 h-5 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5" style={{ backgroundColor: `${eventColor}20` }}>
               <i className={`fa-solid ${eventIcon} text-[8px]`} style={{ color: eventColor }} />
             </div>

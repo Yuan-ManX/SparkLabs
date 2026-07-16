@@ -429,18 +429,18 @@ const SkillGeneratorPanel: React.FC = () => {
   };
 
   const styles: Record<string, React.CSSProperties> = {
-    container: { background: '#1a1a2e', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
+    container: { background: '#1a1a1a', color: '#e0e0e0', padding: 20, borderRadius: 8, fontFamily: 'monospace' },
     header: { fontSize: 18, fontWeight: 'bold', marginBottom: 16, color: '#e94560' },
     tabs: { display: 'flex', gap: 4, marginBottom: 16, flexWrap: 'wrap' },
-    tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a4a', color: '#aab' },
-    tabActive: { background: '#0f3460', color: '#e94560', fontWeight: 'bold' },
-    card: { background: '#16213e', borderRadius: 8, padding: 16, marginBottom: 12 },
+    tab: { padding: '8px 16px', borderRadius: '6px 6px 0 0', border: 'none', cursor: 'pointer', fontSize: 13, background: '#2a2a2a', color: '#aab' },
+    tabActive: { background: '#1e1e1e', color: '#e94560', fontWeight: 'bold' },
+    card: { background: '#0f0f0f', borderRadius: 8, padding: 16, marginBottom: 12 },
     cardTitle: { fontSize: 14, fontWeight: 'bold', color: '#e94560', marginBottom: 8 },
     input: { background: '#1a1a3a', border: '1px solid #3a3a6a', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', boxSizing: 'border-box' as const },
     select: { background: '#1a1a3a', border: '1px solid #3a3a6a', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13 },
     textarea: { background: '#1a1a3a', border: '1px solid #3a3a6a', color: '#e0e0e0', padding: '8px 12px', borderRadius: 6, fontSize: 13, width: '100%', resize: 'vertical' as const, minHeight: 60, boxSizing: 'border-box' as const, fontFamily: 'monospace' },
     btn: { background: '#e94560', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13, fontWeight: 'bold' },
-    btnSecondary: { background: '#0f3460', color: '#aab', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
+    btnSecondary: { background: '#1e1e1e', color: '#aab', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontSize: 13 },
     row: { display: 'flex', gap: 8, alignItems: 'center', marginBottom: 8, flexWrap: 'wrap' },
     grid: { display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(260px, 1fr))', gap: 12 },
     label: { fontSize: 12, color: '#889', marginBottom: 4 },
@@ -451,15 +451,15 @@ const SkillGeneratorPanel: React.FC = () => {
     msgInfo: { background: '#1a2a4a', color: '#7c9aff', padding: '8px 16px', borderRadius: 6, marginBottom: 12 },
     treeContainer: { background: '#1a1a3a', borderRadius: 8, padding: 16, marginTop: 8 },
     treeNode: { padding: '6px 12px', borderRadius: 6, marginBottom: 4, fontSize: 12 },
-    statBar: { height: 6, borderRadius: 3, background: '#2a2a4a', overflow: 'hidden', marginTop: 4 },
+    statBar: { height: 6, borderRadius: 3, background: '#2a2a2a', overflow: 'hidden', marginTop: 4 },
     statFill: { height: '100%', borderRadius: 3, background: '#e94560', transition: 'width 0.3s ease' },
-    divider: { border: 'none', borderTop: '1px solid #2a2a4a', margin: '12px 0' },
+    divider: { border: 'none', borderTop: '1px solid #2a2a2a', margin: '12px 0' },
   };
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      combat: '#e94560', magic: '#7c3aed', defense: '#3b82f6', support: '#10b981',
-      utility: '#f59e0b', movement: '#06b6d4', summon: '#ec4899', stealth: '#6b7280',
+      combat: '#e94560', magic: '#7c3aed', defense: '#f97316', support: '#10b981',
+      utility: '#f59e0b', movement: '#f97316', summon: '#ec4899', stealth: '#6b7280',
       healing: '#22c55e', elemental: '#f97316',
     };
     return colors[category] || '#607d8b';
@@ -473,7 +473,7 @@ const SkillGeneratorPanel: React.FC = () => {
   };
 
   const renderStats = () => (
-    <div style={{ ...styles.card, background: '#16213e' }}>
+    <div style={{ ...styles.card, background: '#0f0f0f' }}>
       <div style={styles.cardTitle}>Skill Generator Statistics</div>
       <div style={{ display: 'flex', gap: 16, flexWrap: 'wrap', fontSize: 13 }}>
         <div style={{ textAlign: 'center', minWidth: 100 }}>
@@ -524,7 +524,7 @@ const SkillGeneratorPanel: React.FC = () => {
           <div style={styles.cardTitle}>Generated: {generatedSkill.name}</div>
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 12 }}>
             <span style={{ ...styles.badge, background: getCategoryColor(generatedSkill.category) }}>{generatedSkill.category}</span>
-            <span style={{ ...styles.badge, background: '#0f3460' }}>Lv.{generatedSkill.level}</span>
+            <span style={{ ...styles.badge, background: '#1e1e1e' }}>Lv.{generatedSkill.level}</span>
             <span style={{ ...styles.badge, background: '#2a3a1a' }}>DMG: {generatedSkill.damage}</span>
             <span style={{ ...styles.badge, background: '#3a2a1a' }}>CD: {generatedSkill.cooldown}s</span>
             <span style={{ ...styles.badge, background: '#2a1a4a' }}>MP: {generatedSkill.mana_cost}</span>
@@ -575,14 +575,14 @@ const SkillGeneratorPanel: React.FC = () => {
               <div style={{ ...styles.cardTitle, fontSize: 13 }}>{skill.name}</div>
               <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
                 <span style={{ ...styles.badge, background: getCategoryColor(skill.category), fontSize: 10 }}>{skill.category}</span>
-                <span style={{ ...styles.badge, background: '#0f3460', fontSize: 10 }}>Lv.{skill.level}</span>
+                <span style={{ ...styles.badge, background: '#1e1e1e', fontSize: 10 }}>Lv.{skill.level}</span>
               </div>
               <div style={{ fontSize: 12, color: '#889' }}>
                 <div>DMG: {skill.damage} | CD: {skill.cooldown}s | MP: {skill.mana_cost}</div>
                 {skill.effects.length > 0 && (
                   <div style={{ display: 'flex', gap: 3, flexWrap: 'wrap', marginTop: 4 }}>
                     {skill.effects.map(e => (
-                      <span key={e} style={{ ...styles.badge, background: '#0f3460', fontSize: 9 }}>{e}</span>
+                      <span key={e} style={{ ...styles.badge, background: '#1e1e1e', fontSize: 9 }}>{e}</span>
                     ))}
                   </div>
                 )}
@@ -678,7 +678,7 @@ const SkillGeneratorPanel: React.FC = () => {
               <div key={cs.id} style={{ ...styles.card, background: '#1a1a3a', borderLeft: '4px solid #e94560' }}>
                 <div style={{ ...styles.cardTitle, fontSize: 13 }}>{cs.name}</div>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginBottom: 8 }}>
-                  <span style={{ ...styles.badge, background: '#0f3460', fontSize: 10 }}>Power: {cs.power_level}</span>
+                  <span style={{ ...styles.badge, background: '#1e1e1e', fontSize: 10 }}>Power: {cs.power_level}</span>
                   <span style={{ ...styles.badge, background: '#2a4a1a', fontSize: 10 }}>Synergy: {cs.synergy_score}%</span>
                 </div>
                 <div style={{ fontSize: 11, color: '#889', marginBottom: 6 }}>
@@ -727,7 +727,7 @@ const SkillGeneratorPanel: React.FC = () => {
         <div key={node.id} style={{ marginLeft: depth * 20 }}>
           <div style={{
             ...styles.treeNode,
-            background: depth === 0 ? '#0f3460' : '#1a1a3a',
+            background: depth === 0 ? '#1e1e1e' : '#1a1a3a',
             borderLeft: `3px solid ${getCategoryColor(SKILL_CATEGORIES[depth % SKILL_CATEGORIES.length])}`,
             marginTop: depth > 0 ? 4 : 0,
           }}>
@@ -735,7 +735,7 @@ const SkillGeneratorPanel: React.FC = () => {
               <span style={{ fontWeight: depth === 0 ? 'bold' : 'normal', color: depth === 0 ? '#e94560' : '#e0e0e0', fontSize: depth === 0 ? 13 : 12 }}>
                 {depth === 0 ? '⭐ ' : depth === 1 ? '▶ ' : '• '}{node.name}
               </span>
-              <span style={{ ...styles.badge, background: '#0f3460', fontSize: 9 }}>
+              <span style={{ ...styles.badge, background: '#1e1e1e', fontSize: 9 }}>
                 Lv.{node.level_required}
               </span>
             </div>
@@ -781,7 +781,7 @@ const SkillGeneratorPanel: React.FC = () => {
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
             <div style={styles.cardTitle}>{tree.name}</div>
             <div style={{ display: 'flex', gap: 6 }}>
-              <span style={{ ...styles.badge, background: '#0f3460', fontSize: 10 }}>Root: {tree.root_skill}</span>
+              <span style={{ ...styles.badge, background: '#1e1e1e', fontSize: 10 }}>Root: {tree.root_skill}</span>
               <span style={{ ...styles.badge, background: '#2a3a5a', fontSize: 10 }}>{tree.nodes.length} nodes</span>
             </div>
           </div>
@@ -791,7 +791,7 @@ const SkillGeneratorPanel: React.FC = () => {
           <hr style={styles.divider} />
           <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {tree.nodes.map(node => (
-              <span key={node.id} style={{ ...styles.badge, background: '#0f3460', fontSize: 9 }}>
+              <span key={node.id} style={{ ...styles.badge, background: '#1e1e1e', fontSize: 9 }}>
                 {node.name} (Lv.{node.level_required})
               </span>
             ))}

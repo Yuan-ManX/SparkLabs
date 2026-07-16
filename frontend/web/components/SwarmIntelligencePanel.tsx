@@ -409,7 +409,7 @@ const SwarmIntelligencePanel: React.FC = () => {
   return (
     <div className="flex flex-col h-full bg-[#1a1a2e] text-[#e0e0e0] font-sans text-[13px]">
       {/* Header */}
-      <div className="px-4 py-3 border-b border-[#0f3460]/50 flex items-center justify-between">
+      <div className="px-4 py-3 border-b border-[#1e1e1e]/50 flex items-center justify-between">
         <div className="flex items-center gap-2.5">
           <Network className="w-[18px] h-[18px] text-[#a29bfe]" />
           <span className="font-bold text-[15px]">Swarm Intelligence</span>
@@ -422,16 +422,16 @@ const SwarmIntelligencePanel: React.FC = () => {
       {/* Message */}
       {message && (
         <div className={`px-4 py-2 text-[12px] border-b ${
-          message.type === 'success' ? 'bg-[#0f3460]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
+          message.type === 'success' ? 'bg-[#1e1e1e]/30 border-[#00d4ff]/30 text-[#00d4ff]' :
           message.type === 'error' ? 'bg-[#e94560]/10 border-[#e94560]/30 text-[#e94560]' :
-          'bg-[#16213e]/50 border-[#0f3460]/30 text-[#74b9ff]'
+          'bg-[#16213e]/50 border-[#1e1e1e]/30 text-[#74b9ff]'
         }`}>
           {message.text}
         </div>
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-[#0f3460]/50 overflow-x-auto">
+      <div className="flex border-b border-[#1e1e1e]/50 overflow-x-auto">
         {tabItems.map(tab => (
           <button
             key={tab.key}
@@ -454,7 +454,7 @@ const SwarmIntelligencePanel: React.FC = () => {
         {activeTab === 'agents' && (
           <div className="flex flex-col gap-3">
             {/* Registration form */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <UserPlus className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Register Agent</span>
@@ -466,12 +466,12 @@ const SwarmIntelligencePanel: React.FC = () => {
                     value={agentName}
                     onChange={e => setAgentName(e.target.value)}
                     placeholder="Agent name..."
-                    className="flex-1 bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555]"
+                    className="flex-1 bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555]"
                   />
                   <select
                     value={agentDisposition}
                     onChange={e => setAgentDisposition(e.target.value)}
-                    className="bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none"
+                    className="bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none"
                   >
                     <option value="cooperative">Cooperative</option>
                     <option value="competitive">Competitive</option>
@@ -485,7 +485,7 @@ const SwarmIntelligencePanel: React.FC = () => {
                   value={agentCapabilities}
                   onChange={e => setAgentCapabilities(e.target.value)}
                   placeholder="Capabilities (comma-separated): pathfinding, combat, dialogue..."
-                  className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555]"
+                  className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555]"
                 />
                 <button
                   onClick={handleRegisterAgent}
@@ -503,7 +503,7 @@ const SwarmIntelligencePanel: React.FC = () => {
               {agents.map(agent => (
                 <div
                   key={agent.id}
-                  className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3 border-l-[3px]"
+                  className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3 border-l-[3px]"
                   style={{ borderLeftColor: agent.status === 'available' ? '#6bcb77' : agent.status === 'busy' ? '#fdcb6e' : '#e94560' }}
                 >
                   <div className="flex items-center justify-between mb-1">
@@ -519,7 +519,7 @@ const SwarmIntelligencePanel: React.FC = () => {
                   <div className="text-[10px] text-[#888] mb-1">Disposition: {agent.disposition}</div>
                   <div className="flex flex-wrap gap-1">
                     {agent.capabilities.map(cap => (
-                      <span key={cap} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] text-[#00d4ff] rounded border border-[#0f3460]/20">
+                      <span key={cap} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] text-[#00d4ff] rounded border border-[#1e1e1e]/20">
                         {cap}
                       </span>
                     ))}
@@ -529,14 +529,14 @@ const SwarmIntelligencePanel: React.FC = () => {
             </div>
 
             {/* Network visualization (simplified) */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <GitBranch className="w-3.5 h-3.5 text-[#00d4ff]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Network Connections</span>
               </div>
               <div className="flex flex-col gap-1">
                 {agentConnections.map((conn, i) => (
-                  <div key={i} className="flex items-center gap-2 text-[10px] bg-[#1a1a2e] rounded px-3 py-1.5 border border-[#0f3460]/20">
+                  <div key={i} className="flex items-center gap-2 text-[10px] bg-[#1a1a2e] rounded px-3 py-1.5 border border-[#1e1e1e]/20">
                     <span className="text-[#a29bfe]">{conn.from}</span>
                     <span className="text-[#555]">↔</span>
                     <span className="text-[#00d4ff]">{conn.to}</span>
@@ -556,7 +556,7 @@ const SwarmIntelligencePanel: React.FC = () => {
         {activeTab === 'consensus' && (
           <div className="flex flex-col gap-3">
             {/* New proposal form */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Vote className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">New Proposal</span>
@@ -566,14 +566,14 @@ const SwarmIntelligencePanel: React.FC = () => {
                 value={proposalTitle}
                 onChange={e => setProposalTitle(e.target.value)}
                 placeholder="Proposal title..."
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
               />
               <textarea
                 value={proposalDesc}
                 onChange={e => setProposalDesc(e.target.value)}
                 placeholder="Proposal description..."
                 rows={2}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555] mb-2"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555] mb-2"
               />
               <button
                 onClick={handleRunConsensus}
@@ -589,7 +589,7 @@ const SwarmIntelligencePanel: React.FC = () => {
             {proposals.map(proposal => {
               const total = proposal.votes_for + proposal.votes_against + proposal.votes_abstain || 1;
               return (
-                <div key={proposal.id} className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3">
+                <div key={proposal.id} className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3">
                   <div className="flex items-center justify-between mb-1">
                     <span className="text-[12px] font-semibold text-[#ccc]">{proposal.title}</span>
                     <span className={`text-[9px] font-semibold uppercase px-2 py-0.5 rounded ${
@@ -622,7 +622,7 @@ const SwarmIntelligencePanel: React.FC = () => {
               );
             })}
             {proposals.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Vote className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No consensus proposals yet</span>
               </div>
@@ -634,7 +634,7 @@ const SwarmIntelligencePanel: React.FC = () => {
         {activeTab === 'tasks' && (
           <div className="flex flex-col gap-3">
             {/* Task distribution form */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Send className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Distribute Task</span>
@@ -644,25 +644,25 @@ const SwarmIntelligencePanel: React.FC = () => {
                 value={taskName}
                 onChange={e => setTaskName(e.target.value)}
                 placeholder="Task name..."
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
               />
               <textarea
                 value={taskDesc}
                 onChange={e => setTaskDesc(e.target.value)}
                 placeholder="Task description..."
                 rows={2}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555] mb-2"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555] mb-2"
               />
               <input
                 type="text"
                 value={taskCapabilities}
                 onChange={e => setTaskCapabilities(e.target.value)}
                 placeholder="Required capabilities (comma-separated)..."
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
               />
               {/* Capability matching preview */}
               {taskCapabilities.trim() && (
-                <div className="mb-2 p-2 bg-[#1a1a2e] rounded-md border border-[#0f3460]/20">
+                <div className="mb-2 p-2 bg-[#1a1a2e] rounded-md border border-[#1e1e1e]/20">
                   <div className="text-[9px] text-[#666] mb-1">Matching Agents:</div>
                   <div className="flex flex-wrap gap-1">
                     {agents.filter(a => {
@@ -694,7 +694,7 @@ const SwarmIntelligencePanel: React.FC = () => {
 
             {/* Task list */}
             {tasks.map(task => (
-              <div key={task.id} className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3">
+              <div key={task.id} className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[12px] font-semibold text-[#ccc]">{task.task_name}</span>
                   <span className={`text-[9px] font-semibold uppercase px-2 py-0.5 rounded ${
@@ -708,7 +708,7 @@ const SwarmIntelligencePanel: React.FC = () => {
                 <div className="text-[10px] text-[#888] mb-1">{task.description}</div>
                 <div className="flex flex-wrap gap-1 mb-1">
                   {task.required_capabilities.map(cap => (
-                    <span key={cap} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] text-[#00d4ff] rounded border border-[#0f3460]/20">
+                    <span key={cap} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] text-[#00d4ff] rounded border border-[#1e1e1e]/20">
                       {cap}
                     </span>
                   ))}
@@ -719,7 +719,7 @@ const SwarmIntelligencePanel: React.FC = () => {
               </div>
             ))}
             {tasks.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <Send className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No tasks distributed yet</span>
               </div>
@@ -738,7 +738,7 @@ const SwarmIntelligencePanel: React.FC = () => {
                 value={knowledgeSearch}
                 onChange={e => setKnowledgeSearch(e.target.value)}
                 placeholder="Search knowledge pool..."
-                className="w-full bg-[#16213e] border border-[#0f3460]/50 rounded-lg pl-9 pr-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555]"
+                className="w-full bg-[#16213e] border border-[#1e1e1e]/50 rounded-lg pl-9 pr-3 py-2 text-[12px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555]"
               />
             </div>
 
@@ -751,7 +751,7 @@ const SwarmIntelligencePanel: React.FC = () => {
                   className={`flex items-center gap-1 px-2 py-0.5 rounded text-[9px] font-semibold transition-all ${
                     knowledgeSearch === tag
                       ? 'bg-[#a29bfe]/20 border border-[#a29bfe]/50 text-[#a29bfe]'
-                      : 'bg-[#16213e] border border-[#0f3460]/30 text-[#888] hover:border-[#0f3460]/60'
+                      : 'bg-[#16213e] border border-[#1e1e1e]/30 text-[#888] hover:border-[#1e1e1e]/60'
                   }`}
                 >
                   <Tag className="w-3 h-3" />
@@ -761,7 +761,7 @@ const SwarmIntelligencePanel: React.FC = () => {
             </div>
 
             {/* Contribute knowledge form */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <BookOpen className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Contribute Knowledge</span>
@@ -771,21 +771,21 @@ const SwarmIntelligencePanel: React.FC = () => {
                 value={knowledgeTitle}
                 onChange={e => setKnowledgeTitle(e.target.value)}
                 placeholder="Knowledge title..."
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
               />
               <textarea
                 value={knowledgeContent}
                 onChange={e => setKnowledgeContent(e.target.value)}
                 placeholder="Knowledge content..."
                 rows={2}
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555] mb-2"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 resize-none placeholder-[#555] mb-2"
               />
               <input
                 type="text"
                 value={knowledgeTags}
                 onChange={e => setKnowledgeTags(e.target.value)}
                 placeholder="Tags (comma-separated)..."
-                className="w-full bg-[#1a1a2e] border border-[#0f3460]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
+                className="w-full bg-[#1a1a2e] border border-[#1e1e1e]/50 rounded-md px-3 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-[#a29bfe]/50 placeholder-[#555] mb-2"
               />
               <button
                 onClick={handleContributeKnowledge}
@@ -799,7 +799,7 @@ const SwarmIntelligencePanel: React.FC = () => {
 
             {/* Knowledge entries */}
             {filteredKnowledge.map(entry => (
-              <div key={entry.id} className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3">
+              <div key={entry.id} className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-[12px] font-semibold text-[#ccc]">{entry.title}</span>
                   <span className="text-[9px] text-[#555]">
@@ -809,7 +809,7 @@ const SwarmIntelligencePanel: React.FC = () => {
                 <div className="text-[10px] text-[#888] mb-1 line-clamp-2">{entry.content}</div>
                 <div className="flex flex-wrap gap-1 mb-1">
                   {entry.tags.map(tag => (
-                    <span key={tag} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] text-[#00d4ff] rounded border border-[#0f3460]/20">
+                    <span key={tag} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] text-[#00d4ff] rounded border border-[#1e1e1e]/20">
                       {tag}
                     </span>
                   ))}
@@ -820,7 +820,7 @@ const SwarmIntelligencePanel: React.FC = () => {
               </div>
             ))}
             {filteredKnowledge.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <BookOpen className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No knowledge entries found</span>
               </div>
@@ -835,7 +835,7 @@ const SwarmIntelligencePanel: React.FC = () => {
             {emergenceEvents.map(event => (
               <div
                 key={event.id}
-                className="bg-[#16213e] rounded-lg border border-[#0f3460]/30 p-3"
+                className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/30 p-3"
                 style={{
                   borderLeftWidth: '3px',
                   borderLeftColor: event.significance === 'high' ? '#e94560' : event.significance === 'medium' ? '#fdcb6e' : '#00d4ff',
@@ -861,7 +861,7 @@ const SwarmIntelligencePanel: React.FC = () => {
                 <div className="text-[10px] text-[#888] mb-1">{event.description}</div>
                 <div className="flex gap-1 mb-1">
                   {event.agents_involved.map(agent => (
-                    <span key={agent} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] text-[#a29bfe] rounded border border-[#0f3460]/20">
+                    <span key={agent} className="text-[9px] px-1.5 py-0.5 bg-[#1a1a2e] text-[#a29bfe] rounded border border-[#1e1e1e]/20">
                       {agent}
                     </span>
                   ))}
@@ -870,14 +870,14 @@ const SwarmIntelligencePanel: React.FC = () => {
               </div>
             ))}
             {emergenceEvents.length === 0 && (
-              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#0f3460]/30">
+              <div className="flex flex-col items-center justify-center py-10 text-[#555] bg-[#16213e] rounded-lg border border-[#1e1e1e]/30">
                 <AlertTriangle className="w-10 h-10 mb-2 opacity-20" />
                 <span className="text-[12px]">No emergent behaviors detected</span>
               </div>
             )}
 
             {/* Activity log */}
-            <div className="bg-[#16213e] rounded-lg border border-[#0f3460]/50 p-3">
+            <div className="bg-[#16213e] rounded-lg border border-[#1e1e1e]/50 p-3">
               <div className="flex items-center gap-2 mb-2">
                 <Activity className="w-3.5 h-3.5 text-[#a29bfe]" />
                 <span className="text-[11px] font-semibold text-[#aaa] uppercase tracking-wider">Activity Log</span>
@@ -885,7 +885,7 @@ const SwarmIntelligencePanel: React.FC = () => {
               </div>
               <div className="flex flex-col gap-1 max-h-[200px] overflow-auto">
                 {activityLog.map(entry => (
-                  <div key={entry.id} className="flex items-center gap-2 text-[9px] bg-[#1a1a2e] rounded px-2 py-1 border border-[#0f3460]/20">
+                  <div key={entry.id} className="flex items-center gap-2 text-[9px] bg-[#1a1a2e] rounded px-2 py-1 border border-[#1e1e1e]/20">
                     <span className="text-[#555]">{entry.timestamp}</span>
                     <span className="text-[#a29bfe] font-semibold">{entry.event}</span>
                     <span className="text-[#888]">{entry.agent_id}</span>
@@ -902,7 +902,7 @@ const SwarmIntelligencePanel: React.FC = () => {
       </div>
 
       {/* Footer */}
-      <div className="px-3 py-1.5 border-t border-[#0f3460]/50 bg-[#141428] flex items-center justify-between text-[10px] text-[#666]">
+      <div className="px-3 py-1.5 border-t border-[#1e1e1e]/50 bg-[#111] flex items-center justify-between text-[10px] text-[#666]">
         <span className="flex items-center gap-1">
           <Network className="w-3 h-3" />
           {agents.length} agents · {proposals.length} proposals · {knowledgeEntries.length} knowledge

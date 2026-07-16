@@ -269,7 +269,7 @@ const ReputationPanel: React.FC = () => {
                     {selectedFaction.history.slice(0, 20).map(entry => (
                       <div
                         key={entry.entry_id}
-                        className="flex items-center gap-2 py-1 border-b border-[#1a1a1a] text-[10px]"
+                        className="flex items-center gap-2 py-1 border-b border-[#1e1e1e] text-[10px]"
                       >
                         <span
                           className="w-14 text-right font-bold"

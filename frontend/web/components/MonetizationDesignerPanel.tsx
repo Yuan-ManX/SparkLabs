@@ -463,17 +463,17 @@ const MonetizationDesignerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Genre</div>
-                  <select value={designGenre} onChange={e => setDesignGenre(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={designGenre} onChange={e => setDesignGenre(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {GENRE_OPTIONS.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Model Type</div>
-                  <select value={designModelType} onChange={e => setDesignModelType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={designModelType} onChange={e => setDesignModelType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {MODEL_TYPE_OPTIONS.map(m => <option key={m} value={m}>{m.replace(/_/g, ' ')}</option>)}
                   </select>
                 </div>
-                <button onClick={handleDesignRevenueModel} disabled={loadingRevenue} style={{ padding: '6px 14px', backgroundColor: loadingRevenue ? '#3d3d5a' : '#2563eb', color: '#fff', border: 'none', borderRadius: 4, cursor: loadingRevenue ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loadingRevenue ? 0.7 : 1 }}>
+                <button onClick={handleDesignRevenueModel} disabled={loadingRevenue} style={{ padding: '6px 14px', backgroundColor: loadingRevenue ? '#3d3d5a' : '#f97316', color: '#fff', border: 'none', borderRadius: 4, cursor: loadingRevenue ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loadingRevenue ? 0.7 : 1 }}>
                   {loadingRevenue ? 'Designing...' : 'Design Model'}
                 </button>
               </div>
@@ -494,8 +494,8 @@ const MonetizationDesignerPanel: React.FC = () => {
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                   <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{m.name}</span>
                   <div style={{ display: 'flex', gap: 4 }}>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe', textTransform: 'uppercase' }}>{m.genre}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#6bcb77', textTransform: 'uppercase' }}>{m.model_type.replace(/_/g, ' ')}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe', textTransform: 'uppercase' }}>{m.genre}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#6bcb77', textTransform: 'uppercase' }}>{m.model_type.replace(/_/g, ' ')}</span>
                   </div>
                 </div>
                 <div style={{ display: 'flex', gap: 12, marginTop: 6, flexWrap: 'wrap' }}>
@@ -522,7 +522,7 @@ const MonetizationDesignerPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Pricing Tiers</div>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                       {m.pricing_tiers.map((t, i) => (
-                        <div key={i} style={{ padding: '6px 10px', backgroundColor: '#141428', borderRadius: 4, border: '1px solid #333', minWidth: 120 }}>
+                        <div key={i} style={{ padding: '6px 10px', backgroundColor: '#111', borderRadius: 4, border: '1px solid #333', minWidth: 120 }}>
                           <div style={{ fontSize: 10, fontWeight: 600, color: '#ccc' }}>{t.name}</div>
                           <div style={{ fontSize: 11, fontWeight: 700, color: '#fdcb6e' }}>{t.price === 0 ? 'Free' : formatCurrency(t.price)}</div>
                           <div style={{ fontSize: 9, color: '#888' }}>{t.target_segment}</div>
@@ -537,7 +537,7 @@ const MonetizationDesignerPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Revenue Streams</div>
                     <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                       {m.revenue_streams.map((rs, i) => (
-                        <div key={i} style={{ padding: '4px 8px', backgroundColor: '#141428', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 6 }}>
+                        <div key={i} style={{ padding: '4px 8px', backgroundColor: '#111', borderRadius: 3, display: 'flex', alignItems: 'center', gap: 6 }}>
                           <span style={{ fontSize: 9, color: '#ccc' }}>{rs.name}</span>
                           <span style={{ fontSize: 9, fontWeight: 600, color: '#6bcb77' }}>{rs.percentage}%</span>
                         </div>
@@ -559,15 +559,15 @@ const MonetizationDesignerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Base Price (USD)</div>
-                  <input value={pricingBasePrice} onChange={e => setPricingBasePrice(e.target.value)} type="number" step="0.01" min="0.99" placeholder="4.99" style={{ padding: '6px 10px', fontSize: 11, width: 100, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={pricingBasePrice} onChange={e => setPricingBasePrice(e.target.value)} type="number" step="0.01" min="0.99" placeholder="4.99" style={{ padding: '6px 10px', fontSize: 11, width: 100, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Genre</div>
-                  <select value={pricingGenre} onChange={e => setPricingGenre(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={pricingGenre} onChange={e => setPricingGenre(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {GENRE_OPTIONS.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                 </div>
-                <button onClick={handleConfigurePricing} disabled={loadingPricing} style={{ padding: '6px 14px', backgroundColor: loadingPricing ? '#3d3d5a' : '#2563eb', color: '#fff', border: 'none', borderRadius: 4, cursor: loadingPricing ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loadingPricing ? 0.7 : 1 }}>
+                <button onClick={handleConfigurePricing} disabled={loadingPricing} style={{ padding: '6px 14px', backgroundColor: loadingPricing ? '#3d3d5a' : '#f97316', color: '#fff', border: 'none', borderRadius: 4, cursor: loadingPricing ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loadingPricing ? 0.7 : 1 }}>
                   {loadingPricing ? 'Configuring...' : 'Configure Pricing'}
                 </button>
               </div>
@@ -577,7 +577,7 @@ const MonetizationDesignerPanel: React.FC = () => {
             <div style={{ overflow: 'auto' }}>
               <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: 11 }}>
                 <thead>
-                  <tr style={{ backgroundColor: '#141428' }}>
+                  <tr style={{ backgroundColor: '#111' }}>
                     <th style={{ padding: '6px 8px', textAlign: 'left', color: '#888', fontWeight: 600, borderBottom: '1px solid #333' }}>Region</th>
                     <th style={{ padding: '6px 8px', textAlign: 'right', color: '#888', fontWeight: 600, borderBottom: '1px solid #333' }}>Tier 1</th>
                     <th style={{ padding: '6px 8px', textAlign: 'right', color: '#888', fontWeight: 600, borderBottom: '1px solid #333' }}>Tier 2</th>
@@ -626,7 +626,7 @@ const MonetizationDesignerPanel: React.FC = () => {
                     <div style={{ fontSize: 9, color: '#888', marginTop: 2 }}>{bc.description}</div>
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', marginTop: 4 }}>
                       {bc.items.map((item, i) => (
-                        <span key={i} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, backgroundColor: '#141428', color: '#aaa' }}>{item}</span>
+                        <span key={i} style={{ fontSize: 9, padding: '1px 5px', borderRadius: 3, backgroundColor: '#111', color: '#aaa' }}>{item}</span>
                       ))}
                     </div>
                   </div>
@@ -643,17 +643,17 @@ const MonetizationDesignerPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Genre</div>
-                  <select value={iapGenre} onChange={e => setIapGenre(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={iapGenre} onChange={e => setIapGenre(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {GENRE_OPTIONS.map(g => <option key={g} value={g}>{g}</option>)}
                   </select>
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Model Type</div>
-                  <select value={iapModelType} onChange={e => setIapModelType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={iapModelType} onChange={e => setIapModelType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {MODEL_TYPE_OPTIONS.map(m => <option key={m} value={m}>{m.replace(/_/g, ' ')}</option>)}
                   </select>
                 </div>
-                <button onClick={handleDesignIapCatalog} disabled={loadingIap} style={{ padding: '6px 14px', backgroundColor: loadingIap ? '#3d3d5a' : '#2563eb', color: '#fff', border: 'none', borderRadius: 4, cursor: loadingIap ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loadingIap ? 0.7 : 1 }}>
+                <button onClick={handleDesignIapCatalog} disabled={loadingIap} style={{ padding: '6px 14px', backgroundColor: loadingIap ? '#3d3d5a' : '#f97316', color: '#fff', border: 'none', borderRadius: 4, cursor: loadingIap ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, opacity: loadingIap ? 0.7 : 1 }}>
                   {loadingIap ? 'Designing...' : 'Design Catalog'}
                 </button>
               </div>
@@ -668,8 +668,8 @@ const MonetizationDesignerPanel: React.FC = () => {
                     <div>
                       <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{item.name}</span>
                       <div style={{ display: 'flex', gap: 4, marginTop: 2 }}>
-                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#74b9ff', textTransform: 'uppercase' }}>{item.category.replace(/_/g, ' ')}</span>
-                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe', textTransform: 'uppercase' }}>{item.rarity}</span>
+                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#74b9ff', textTransform: 'uppercase' }}>{item.category.replace(/_/g, ' ')}</span>
+                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe', textTransform: 'uppercase' }}>{item.rarity}</span>
                         {item.is_consumable && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#2d3a2d', color: '#6bcb77' }}>Consumable</span>}
                       </div>
                     </div>
@@ -694,8 +694,8 @@ const MonetizationDesignerPanel: React.FC = () => {
                 <div style={{ flex: 1, minWidth: 250 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Model ID</div>
                   <div style={{ display: 'flex', gap: 8 }}>
-                    <input value={auditModelId} onChange={e => setAuditModelId(e.target.value)} placeholder="Paste a revenue model ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
-                    <button onClick={handleAuditFairness} disabled={loadingAudit} style={{ padding: '6px 14px', backgroundColor: loadingAudit ? '#3d3d5a' : '#2563eb', color: '#fff', border: 'none', borderRadius: 4, cursor: loadingAudit ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', opacity: loadingAudit ? 0.7 : 1 }}>
+                    <input value={auditModelId} onChange={e => setAuditModelId(e.target.value)} placeholder="Paste a revenue model ID..." style={{ padding: '6px 10px', fontSize: 11, flex: 1, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                    <button onClick={handleAuditFairness} disabled={loadingAudit} style={{ padding: '6px 14px', backgroundColor: loadingAudit ? '#3d3d5a' : '#f97316', color: '#fff', border: 'none', borderRadius: 4, cursor: loadingAudit ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600, whiteSpace: 'nowrap', opacity: loadingAudit ? 0.7 : 1 }}>
                       {loadingAudit ? 'Auditing...' : 'Run Audit'}
                     </button>
                   </div>
@@ -719,7 +719,7 @@ const MonetizationDesignerPanel: React.FC = () => {
                   <div>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Fairness Score</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ flex: 1, height: 6, backgroundColor: '#141428', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ flex: 1, height: 6, backgroundColor: '#111', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ width: `${a.fairness_score * 100}%`, height: '100%', backgroundColor: scoreColor(a.fairness_score), borderRadius: 3 }} />
                       </div>
                       <span style={{ fontSize: 10, fontWeight: 600, color: scoreColor(a.fairness_score) }}>{(a.fairness_score * 100).toFixed(0)}%</span>
@@ -728,7 +728,7 @@ const MonetizationDesignerPanel: React.FC = () => {
                   <div>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Player Sentiment</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ flex: 1, height: 6, backgroundColor: '#141428', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ flex: 1, height: 6, backgroundColor: '#111', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ width: `${a.player_sentiment * 100}%`, height: '100%', backgroundColor: scoreColor(a.player_sentiment), borderRadius: 3 }} />
                       </div>
                       <span style={{ fontSize: 10, fontWeight: 600, color: scoreColor(a.player_sentiment) }}>{(a.player_sentiment * 100).toFixed(0)}%</span>
@@ -737,7 +737,7 @@ const MonetizationDesignerPanel: React.FC = () => {
                   <div>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Compliance Rating</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ flex: 1, height: 6, backgroundColor: '#141428', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ flex: 1, height: 6, backgroundColor: '#111', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ width: `${a.compliance_rating * 100}%`, height: '100%', backgroundColor: scoreColor(a.compliance_rating), borderRadius: 3 }} />
                       </div>
                       <span style={{ fontSize: 10, fontWeight: 600, color: scoreColor(a.compliance_rating) }}>{(a.compliance_rating * 100).toFixed(0)}%</span>
@@ -746,7 +746,7 @@ const MonetizationDesignerPanel: React.FC = () => {
                   <div>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Pay-to-Win Score</div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                      <div style={{ flex: 1, height: 6, backgroundColor: '#141428', borderRadius: 3, overflow: 'hidden' }}>
+                      <div style={{ flex: 1, height: 6, backgroundColor: '#111', borderRadius: 3, overflow: 'hidden' }}>
                         <div style={{ width: `${a.pay_to_win_score * 100}%`, height: '100%', backgroundColor: scoreColor(1 - a.pay_to_win_score), borderRadius: 3 }} />
                       </div>
                       <span style={{ fontSize: 10, fontWeight: 600, color: scoreColor(1 - a.pay_to_win_score) }}>{(a.pay_to_win_score * 100).toFixed(0)}%</span>
@@ -770,7 +770,7 @@ const MonetizationDesignerPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Risk Flags ({a.risk_flags.length})</div>
                     <div style={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
                       {a.risk_flags.map(rf => (
-                        <div key={rf.id} style={{ padding: '6px 8px', backgroundColor: '#141428', borderRadius: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
+                        <div key={rf.id} style={{ padding: '6px 8px', backgroundColor: '#111', borderRadius: 4, display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{ fontSize: 9, padding: '2px 6px', borderRadius: 3, backgroundColor: severityColor(rf.severity) + '33', color: severityColor(rf.severity), fontWeight: 600, textTransform: 'uppercase' }}>{rf.severity}</span>
                           <span style={{ fontSize: 9, color: '#aaa', textTransform: 'uppercase' }}>{rf.category.replace(/_/g, ' ')}</span>
                           <span style={{ fontSize: 10, color: '#ccc', flex: 1 }}>{rf.description}</span>
@@ -799,7 +799,7 @@ const MonetizationDesignerPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDCB0'} {revenueModels.length} models · {iapItems.length} items · {auditResults.length} audits</span>
         <span>Connected</span>
       </div>

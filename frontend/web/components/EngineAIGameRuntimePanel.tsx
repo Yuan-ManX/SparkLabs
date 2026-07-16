@@ -63,18 +63,18 @@ export default function EngineAIGameRuntimePanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
         {activeTab === 'overview' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">AI Game Runtime</h2>
             <div className="grid grid-cols-2 gap-4">
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Agents</h3><p className="text-2xl">{stats.total_agents ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Hooks</h3><p className="text-2xl">{stats.total_hooks ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Actions</h3><p className="text-2xl">{stats.total_actions ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Pending Actions</h3><p className="text-2xl">{stats.pending_actions ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Agents</h3><p className="text-2xl">{stats.total_agents ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Hooks</h3><p className="text-2xl">{stats.total_hooks ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Actions</h3><p className="text-2xl">{stats.total_actions ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Pending Actions</h3><p className="text-2xl">{stats.pending_actions ?? 0}</p></div>
             </div>
           </div>
         )}
@@ -83,7 +83,7 @@ export default function EngineAIGameRuntimePanel() {
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Agents</h2>
 
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <h3 className="text-sm font-medium text-[#00d4ff]">Register Agent</h3>
               <div>
                 <label className="text-xs text-[#999] mb-1 block">Agent Name</label>
@@ -115,7 +115,7 @@ export default function EngineAIGameRuntimePanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <h3 className="text-sm font-medium text-[#00d4ff]">Submit Action</h3>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -150,12 +150,12 @@ export default function EngineAIGameRuntimePanel() {
             <div>
               <div className="flex items-center justify-between mb-2">
                 <h3 className="text-sm font-medium text-[#00d4ff]">Registered Agents ({agents.length})</h3>
-                <button onClick={fetchAgents} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
+                <button onClick={fetchAgents} className="px-3 py-1 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
               </div>
               {agents.length > 0 ? (
                 <div className="space-y-2">
                   {agents.map((a: any, i: number) => (
-                    <div key={a.id || i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a] flex items-center justify-between">
+                    <div key={a.id || i} className="bg-[#0d0d0d] p-3 rounded border border-[#2a2a4a] flex items-center justify-between">
                       <div>
                         <span className="text-white text-sm font-medium">{a.name || a.id}</span>
                         <span className="text-xs bg-[#1a1a2e] text-[#ccc] px-2 py-0.5 rounded ml-2">{a.agent_type || a.type}</span>
@@ -174,7 +174,7 @@ export default function EngineAIGameRuntimePanel() {
         {activeTab === 'hooks' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Add Hook</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
                 <label className="text-xs text-[#999] mb-1 block">Hook Name</label>
                 <input type="text" value={hookName} onChange={e => setHookName(e.target.value)} placeholder="patrol_behavior" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -211,13 +211,13 @@ export default function EngineAIGameRuntimePanel() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#00d4ff]">Pending Actions</h2>
-              <button onClick={fetchPendingActions} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
+              <button onClick={fetchPendingActions} className="px-3 py-1 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
             </div>
 
             {pendingActions.length > 0 ? (
               <div className="space-y-2">
                 {pendingActions.map((a: any, i: number) => (
-                  <div key={a.id || i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a]">
+                  <div key={a.id || i} className="bg-[#0d0d0d] p-3 rounded border border-[#2a2a4a]">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-white text-sm font-medium">{a.action || a.type || `Action #${i + 1}`}</span>
                       <span className="text-xs bg-yellow-900 text-yellow-300 px-2 py-0.5 rounded">pending</span>
@@ -233,7 +233,7 @@ export default function EngineAIGameRuntimePanel() {
               <div className="text-[#999] text-sm">No pending actions</div>
             )}
 
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3 mt-4">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3 mt-4">
               <h3 className="text-sm font-medium text-[#00d4ff]">Execute Hooks</h3>
               <div>
                 <label className="text-xs text-[#999] mb-1 block">Agent ID</label>

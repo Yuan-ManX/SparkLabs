@@ -301,7 +301,7 @@ const ShadowCastingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={lightName} onChange={e => setLightName(e.target.value)} placeholder="e.g. Sun" style={{
                     padding: '6px 10px', fontSize: 11, width: 100,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -309,7 +309,7 @@ const ShadowCastingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
                   <select value={lightType} onChange={e => setLightType(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="POINT">Point</option>
@@ -321,7 +321,7 @@ const ShadowCastingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>X</div>
                   <input value={lightX} onChange={e => setLightX(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -329,7 +329,7 @@ const ShadowCastingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Y</div>
                   <input value={lightY} onChange={e => setLightY(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 60,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -337,7 +337,7 @@ const ShadowCastingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Intensity</div>
                   <input value={lightIntensity} onChange={e => setLightIntensity(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: 70,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -360,7 +360,7 @@ const ShadowCastingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>X</div>
                     <input value={lightX} onChange={e => setLightX(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 60,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -368,7 +368,7 @@ const ShadowCastingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Y</div>
                     <input value={lightY} onChange={e => setLightY(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 60,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -390,7 +390,7 @@ const ShadowCastingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>R</div>
                     <input value={ambientR} onChange={e => setAmbientR(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 50,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -398,7 +398,7 @@ const ShadowCastingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>G</div>
                     <input value={ambientG} onChange={e => setAmbientG(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 50,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -406,7 +406,7 @@ const ShadowCastingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>B</div>
                     <input value={ambientB} onChange={e => setAmbientB(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: 50,
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -427,7 +427,7 @@ const ShadowCastingPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end' }}>
                 <select value={shadowQuality} onChange={e => setShadowQuality(e.target.value)} style={{
                   padding: '6px 10px', fontSize: 11,
-                  backgroundColor: '#141428', color: '#ccc',
+                  backgroundColor: '#111', color: '#ccc',
                   border: '1px solid #333', borderRadius: 4, outline: 'none',
                 }}>
                   <option value="LOW">Low</option>
@@ -482,7 +482,7 @@ const ShadowCastingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
                   <input value={occluderName} onChange={e => setOccluderName(e.target.value)} placeholder="e.g. Wall" style={{
                     padding: '6px 10px', fontSize: 11, width: 120,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -490,7 +490,7 @@ const ShadowCastingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Vertices (JSON array)</div>
                   <input value={occluderVertices} onChange={e => setOccluderVertices(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                     fontFamily: 'monospace',
                   }} />
@@ -580,7 +580,7 @@ const ShadowCastingPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -350,7 +350,7 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
         {showModeMenu && (
           <div className="absolute top-full left-0 mt-1 bg-[#0d0d0d] border border-[#222] rounded-lg z-50 w-[420px] shadow-2xl">
             {/* Search bar */}
-            <div className="p-2.5 border-b border-[#1a1a1a]">
+            <div className="p-2.5 border-b border-[#1e1e1e]">
               <div className="relative">
                 <i className="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-[10px] text-[#444]" />
                 <input
@@ -411,7 +411,7 @@ const EditorToolbar: React.FC<EditorToolbarProps> = ({
                             className={`flex items-center gap-2 px-2 py-1.5 rounded text-[10px] transition-colors text-left ${
                               activeMode === item.id
                                 ? 'bg-orange-500/10 text-orange-500 border border-orange-500/20'
-                                : 'text-[#888] hover:bg-[#141414] border border-transparent'
+                                : 'text-[#888] hover:bg-[#111] border border-transparent'
                             }`}
                           >
                             <i className={`fa-solid ${item.icon} text-[9px] ${activeMode === item.id ? 'text-orange-500' : 'text-[#555]'} flex-shrink-0 w-3 text-center`} />

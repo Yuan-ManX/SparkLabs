@@ -229,7 +229,7 @@ const ResourceSerializerPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -266,7 +266,7 @@ const ResourceSerializerPanel: React.FC = () => {
           onChange={e => setNewResourceType(e.target.value)}
           style={{
             padding: '6px 10px', fontSize: 11,
-            backgroundColor: '#141428', color: '#ccc',
+            backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}>
           <option value="Texture2D">Texture2D</option>
@@ -372,7 +372,7 @@ const ResourceSerializerPanel: React.FC = () => {
                 placeholder="Bundle name..."
                 style={{
                   padding: '6px 10px', fontSize: 11,
-                  backgroundColor: '#141428', color: '#ccc',
+                  backgroundColor: '#111', color: '#ccc',
                   border: '1px solid #333', borderRadius: 4, outline: 'none',
                   flex: 1,
                 }}
@@ -433,7 +433,7 @@ const ResourceSerializerPanel: React.FC = () => {
                     <span style={{ color: '#a29bfe', fontWeight: 600, fontFamily: 'monospace' }}>{dep.target}</span>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#fdcb6e', fontWeight: 600,
+                      backgroundColor: '#111', color: '#fdcb6e', fontWeight: 600,
                       marginLeft: 'auto',
                     }}>{dep.relation}</span>
                   </div>
@@ -454,7 +454,7 @@ const ResourceSerializerPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

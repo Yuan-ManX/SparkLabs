@@ -185,7 +185,7 @@ export default function EngineLiveFeedbackPanel() {
           { label: 'Fixes Applied', value: stats.fixes_applied, color: '#6bcb77' },
           { label: 'Open Issues', value: stats.total_feedback_items - stats.fixes_applied, color: '#ff6b6b' },
         ].map(s => (
-          <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
+          <div key={s.label} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
             <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
@@ -193,7 +193,7 @@ export default function EngineLiveFeedbackPanel() {
       </div>
 
       {Object.keys(stats.feedback_by_category).length > 0 && (
-        <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+        <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
           <h3 className="text-sm font-medium text-[#ccc] mb-3">Feedback by Category</h3>
           <div className="space-y-2">
             {Object.entries(stats.feedback_by_category).map(([category, count]) => (
@@ -220,7 +220,7 @@ export default function EngineLiveFeedbackPanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Run Analysis</h2>
 
       {/* Entity Analysis */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Entity Analysis</h3>
         <div className="grid grid-cols-1 gap-3 mb-3">
           <input
@@ -246,7 +246,7 @@ export default function EngineLiveFeedbackPanel() {
       </div>
 
       {/* Scene Analysis */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Scene Analysis</h3>
         <div className="mb-3">
           <textarea
@@ -266,7 +266,7 @@ export default function EngineLiveFeedbackPanel() {
       </div>
 
       {/* Project Analysis */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Project Analysis</h3>
         <div className="mb-3">
           <textarea
@@ -286,7 +286,7 @@ export default function EngineLiveFeedbackPanel() {
       </div>
 
       {/* Runtime Analysis */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Runtime Analysis</h3>
         <div className="mb-3">
           <textarea
@@ -307,7 +307,7 @@ export default function EngineLiveFeedbackPanel() {
 
       {/* Analysis Result */}
       {analysisResult && (
-        <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mt-4">
+        <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mt-4">
           <h3 className="text-sm font-medium text-[#ccc] mb-3">Analysis Result</h3>
           <div className="flex gap-4 mb-3">
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-center">
@@ -332,7 +332,7 @@ export default function EngineLiveFeedbackPanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Feedback Results</h2>
 
       {/* Filters */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
           <div>
             <label className="text-xs text-[#666] block mb-1">Category</label>
@@ -379,7 +379,7 @@ export default function EngineLiveFeedbackPanel() {
       {/* Feedback List */}
       <div className="space-y-3">
         {feedback.map(item => (
-          <div key={item.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+          <div key={item.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
             <div className="flex items-start justify-between mb-2">
               <div className="flex items-center gap-2">
                 <span className="text-sm font-medium text-white">{item.title}</span>
@@ -419,7 +419,7 @@ export default function EngineLiveFeedbackPanel() {
     <div>
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Apply Fixes</h2>
 
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-6">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-6">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Apply Fix by Feedback ID</h3>
         <div className="flex gap-3 items-end">
           <input
@@ -443,7 +443,7 @@ export default function EngineLiveFeedbackPanel() {
           <h3 className="text-sm font-medium text-[#ccc] mb-3">Unfixed Items ({feedback.filter(f => !f.fixed).length})</h3>
           <div className="space-y-2">
             {feedback.filter(f => !f.fixed).map(item => (
-              <div key={item.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3 flex items-center justify-between">
+              <div key={item.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3 flex items-center justify-between">
                 <div>
                   <span className="text-sm text-white">{item.title}</span>
                   <span className="text-xs text-[#666] ml-2">ID: {item.id}</span>
@@ -467,12 +467,12 @@ export default function EngineLiveFeedbackPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
         {activeTab === 'overview' && overviewContent}
         {activeTab === 'analyze' && analyzeContent}

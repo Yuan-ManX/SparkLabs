@@ -529,7 +529,7 @@ const VisualScriptingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Graph Name</div>
                   <input value={graphName} onChange={e => setGraphName(e.target.value)} placeholder="e.g. MainGameLoop" style={{
                     padding: '6px 10px', fontSize: 11, width: 160,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -537,7 +537,7 @@ const VisualScriptingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Execution Mode</div>
                   <select value={executionMode} onChange={e => setExecutionMode(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     {EXECUTION_MODES.map(mode => (
@@ -618,7 +618,7 @@ const VisualScriptingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Graph</div>
                   <select value={selectedGraphId} onChange={e => { setSelectedGraphId(e.target.value); if (e.target.value) fetchNodes(e.target.value); }} style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="">-- Select Graph --</option>
@@ -632,7 +632,7 @@ const VisualScriptingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Category</div>
                     <select value={nodeCategory} onChange={e => setNodeCategory(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}>
                       {NODE_CATEGORIES.map(cat => (
@@ -644,7 +644,7 @@ const VisualScriptingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Node Name</div>
                     <input value={nodeName} onChange={e => setNodeName(e.target.value)} placeholder="e.g. Move Character" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -654,7 +654,7 @@ const VisualScriptingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Position X</div>
                     <input value={nodePosX} onChange={e => setNodePosX(e.target.value)} placeholder="100" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -662,7 +662,7 @@ const VisualScriptingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Position Y</div>
                     <input value={nodePosY} onChange={e => setNodePosY(e.target.value)} placeholder="100" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -688,7 +688,7 @@ const VisualScriptingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Source Port ID</div>
                     <input value={sourcePortId} onChange={e => setSourcePortId(e.target.value)} placeholder="e.g. exec_out" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -696,7 +696,7 @@ const VisualScriptingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target Port ID</div>
                     <input value={targetPortId} onChange={e => setTargetPortId(e.target.value)} placeholder="e.g. exec_in" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -706,7 +706,7 @@ const VisualScriptingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Connection Type</div>
                     <select value={connectionType} onChange={e => setConnectionType(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}>
                       <option value="data">Data</option>
@@ -791,7 +791,7 @@ const VisualScriptingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Graph</div>
                   <select value={varGraphId} onChange={e => { setVarGraphId(e.target.value); if (e.target.value) fetchVariables(e.target.value); }} style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="">-- Select Graph --</option>
@@ -805,7 +805,7 @@ const VisualScriptingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Variable Name</div>
                     <input value={varName} onChange={e => setVarName(e.target.value)} placeholder="e.g. PlayerHealth" style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }} />
                   </div>
@@ -813,7 +813,7 @@ const VisualScriptingPanel: React.FC = () => {
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Data Type</div>
                     <select value={varDataType} onChange={e => setVarDataType(e.target.value)} style={{
                       padding: '6px 10px', fontSize: 11, width: '100%',
-                      backgroundColor: '#141428', color: '#ccc',
+                      backgroundColor: '#111', color: '#ccc',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}>
                       {DATA_TYPES.map(dt => (
@@ -826,7 +826,7 @@ const VisualScriptingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Initial Value</div>
                   <input value={varInitialValue} onChange={e => setVarInitialValue(e.target.value)} placeholder="e.g. 100" style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }} />
                 </div>
@@ -888,7 +888,7 @@ const VisualScriptingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Graph</div>
                   <select value={execGraphId} onChange={e => setExecGraphId(e.target.value)} style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}>
                     <option value="">-- Select Graph --</option>
@@ -901,7 +901,7 @@ const VisualScriptingPanel: React.FC = () => {
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Initial Variables (JSON)</div>
                   <textarea value={initialVarsJson} onChange={e => setInitialVarsJson(e.target.value)} placeholder='{"varName": value, ...}' rows={3} style={{
                     padding: '6px 10px', fontSize: 11, width: '100%',
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                     resize: 'vertical',
                   }} />
@@ -946,7 +946,7 @@ const VisualScriptingPanel: React.FC = () => {
                     {result.trace.map((entry, idx) => (
                       <div key={idx} style={{
                         display: 'flex', gap: 8, fontSize: 10, padding: '3px 6px',
-                        backgroundColor: '#141428', borderRadius: 3,
+                        backgroundColor: '#111', borderRadius: 3,
                         borderLeft: `2px solid ${entry.result.includes('success') || entry.result === 'true' ? '#6bcb77' : entry.result.includes('fail') || entry.result === 'false' ? '#ff6b6b' : '#74b9ff'}`,
                       }}>
                         <span style={{ color: '#666', minWidth: 20 }}>#{entry.step}</span>

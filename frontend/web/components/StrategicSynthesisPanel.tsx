@@ -190,9 +190,9 @@ const StrategicSynthesisPanel: React.FC = () => {
   return (
     <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-[#0f0f2a]">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-blue-600 flex items-center justify-center text-sm font-bold">
+          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-orange-500 to-orange-600 flex items-center justify-center text-sm font-bold">
             SS
           </div>
           <div>
@@ -218,7 +218,7 @@ const StrategicSynthesisPanel: React.FC = () => {
       )}
 
       {/* Tab Navigation */}
-      <div className="flex border-b border-[#1a1a3e]">
+      <div className="flex border-b border-[#1a1a1a]">
         {(['synthesize', 'results', 'stats'] as const).map((tab) => (
           <button
             key={tab}
@@ -309,9 +309,9 @@ const StrategicSynthesisPanel: React.FC = () => {
                   <p className="text-xs text-[#999] mb-2">{result.final_conclusion}</p>
                   <div className="flex items-center gap-2 mb-2">
                     <span className="text-[10px] text-[#666]">Confidence:</span>
-                    <div className="flex-1 h-1.5 bg-[#1a1a3e] rounded-full">
+                    <div className="flex-1 h-1.5 bg-[#1a1a1a] rounded-full">
                       <div
-                        className="h-full bg-gradient-to-r from-purple-500 to-blue-500 rounded-full"
+                        className="h-full bg-gradient-to-r from-orange-500 to-orange-400 rounded-full"
                         style={{ width: `${(result.confidence_score * 100).toFixed(0)}%` }}
                       />
                     </div>

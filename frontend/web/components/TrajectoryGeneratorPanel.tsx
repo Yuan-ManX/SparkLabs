@@ -121,7 +121,7 @@ const TrajectoryGeneratorPanel: React.FC = () => {
     { key: 'turns', label: 'Turns' },
   ];
 
-  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
+  const inputStyle: React.CSSProperties = { padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' };
 
   const roleColor = (role: string): string => {
     switch (role) {
@@ -134,7 +134,7 @@ const TrajectoryGeneratorPanel: React.FC = () => {
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#1a1a2e', color: '#e0e0e0', fontFamily: 'system-ui, sans-serif', fontSize: 13 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#1a1a1a', color: '#e0e0e0', fontFamily: 'system-ui, sans-serif', fontSize: 13 }}>
       <div style={{ padding: '12px 16px', borderBottom: '1px solid #2a2a3e', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 18 }}>{'\uD83D\uDEE4\uFE0F'}</span>
@@ -208,7 +208,7 @@ const TrajectoryGeneratorPanel: React.FC = () => {
             <div style={{ fontSize: 13, fontWeight: 600, color: '#aaa' }}>Turns ({turns.length})</div>
             {turns.map(turn => (
               <div key={turn.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: `3px solid ${roleColor(turn.role)}` }}>
-                <div style={{ fontSize: 9, padding: '1px 8px', borderRadius: 3, backgroundColor: '#141428', color: roleColor(turn.role), display: 'inline-block', marginBottom: 6, fontWeight: 600, textTransform: 'uppercase' }}>{turn.role}</div>
+                <div style={{ fontSize: 9, padding: '1px 8px', borderRadius: 3, backgroundColor: '#111', color: roleColor(turn.role), display: 'inline-block', marginBottom: 6, fontWeight: 600, textTransform: 'uppercase' }}>{turn.role}</div>
                 <div style={{ fontSize: 11, color: '#aaa', whiteSpace: 'pre-wrap' }}>{turn.content}</div>
               </div>
             ))}
@@ -216,7 +216,7 @@ const TrajectoryGeneratorPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83D\uDEE4\uFE0F'} {sessions.length} sessions · {turns.length} turns</span>
         <span>Connected</span>
       </div>

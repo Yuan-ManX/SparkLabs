@@ -271,7 +271,7 @@ const SkillsHubPanel: React.FC = () => {
             placeholder="Search skills..."
             style={{
               padding: '6px 10px', fontSize: 11,
-              backgroundColor: '#141428', color: '#ccc',
+              backgroundColor: '#111', color: '#ccc',
               border: '1px solid #333', borderRadius: '4px 0 0 4px',
               width: 180, outline: 'none',
             }}
@@ -362,7 +362,7 @@ const SkillsHubPanel: React.FC = () => {
                 <div style={{ marginTop: 4 }}>
                   <span style={{
                     fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                    backgroundColor: '#141428', color: '#888',
+                    backgroundColor: '#111', color: '#888',
                   }}>{skill.category}</span>
                 </div>
               </div>
@@ -435,15 +435,15 @@ const SkillsHubPanel: React.FC = () => {
                     {selectedSkill.description}
                   </div>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, fontSize: 11 }}>
-                    <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 4 }}>
+                    <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 4 }}>
                       <div style={{ color: '#888' }}>Version</div>
                       <div style={{ color: '#74b9ff', fontWeight: 600 }}>v{selectedSkill.version}</div>
                     </div>
-                    <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 4 }}>
+                    <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 4 }}>
                       <div style={{ color: '#888' }}>Rating</div>
                       <div style={{ color: '#fdcb6e', fontWeight: 600 }}>{renderStars(selectedSkill.rating)} {selectedSkill.rating}</div>
                     </div>
-                    <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 4 }}>
+                    <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 4 }}>
                       <div style={{ color: '#888' }}>Size</div>
                       <div style={{ color: '#6bcb77', fontWeight: 600 }}>{formatBytes(selectedSkill.size_bytes)}</div>
                     </div>
@@ -487,7 +487,7 @@ const SkillsHubPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -80,14 +80,14 @@ export default function EngineAnalyticsPipelinePanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
       </div>
 
       {message && (
-        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0f0f23] border-[#00ff88] text-[#00ff88]">{message}</div>
+        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0d0d0d] border-[#00ff88] text-[#00ff88]">{message}</div>
       )}
 
       <div className="flex-1 overflow-auto p-4">
@@ -103,13 +103,13 @@ export default function EngineAnalyticsPipelinePanel() {
                 { label: 'Total Reports', value: stats.total_reports, color: 'text-amber-300' },
                 { label: 'Alerts Triggered', value: stats.alerts_triggered, color: 'text-red-400' },
               ].map(s => (
-                <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={s.label} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}</p>
                 </div>
               ))}
             </div>
-            <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+            <pre className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
           </div>
         )}
 
@@ -118,7 +118,7 @@ export default function EngineAnalyticsPipelinePanel() {
           <div className="space-y-6">
             <div>
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Track Event</h2>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
                 <div className="grid grid-cols-2 gap-3">
                   <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-[#00d4ff]" value={tMetricType} onChange={e => setTMetricType(e.target.value)}>
                     {METRIC_TYPES.map(m => <option key={m} value={m}>{m.replace(/_/g,' ')}</option>)}
@@ -148,7 +148,7 @@ export default function EngineAnalyticsPipelinePanel() {
 
             <div>
               <h2 className="text-lg font-bold text-[#00ff88] mb-3">Track Batch Events</h2>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
                 <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-500 outline-none focus:border-[#00ff88] resize-none" rows={5} placeholder='[{"metric_type": "fps", "value": 60, "player_id": "p1"}, ...]' value={tbEvents} onChange={e => setTbEvents(e.target.value)} />
                 <button
                   className="w-full px-4 py-2 bg-[#00ff88] text-black rounded text-sm font-medium hover:bg-[#00cc6a] transition-colors disabled:opacity-50"
@@ -169,7 +169,7 @@ export default function EngineAnalyticsPipelinePanel() {
         {activeTab === 'query' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-amber-300">Query Metrics</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-amber-400" value={qMetricType} onChange={e => setQMetricType(e.target.value)}>
                 {METRIC_TYPES.map(m => <option key={m} value={m}>{m.replace(/_/g,' ')}</option>)}
               </select>
@@ -205,7 +205,7 @@ export default function EngineAnalyticsPipelinePanel() {
             </div>
 
             {result && activeTab === 'query' && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-amber-500 space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-amber-500 space-y-3">
                 <h3 className="text-sm font-bold text-amber-300">Query Results</h3>
                 {result.value !== undefined && (
                   <div className="text-center">
@@ -239,7 +239,7 @@ export default function EngineAnalyticsPipelinePanel() {
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#00d4ff]">Realtime Dashboard</h2>
               <button
-                className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#999] hover:text-white hover:border-[#00d4ff] transition-colors"
+                className="px-3 py-1 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-xs text-[#999] hover:text-white hover:border-[#00d4ff] transition-colors"
                 onClick={fetchDashboard}>
                 Refresh
               </button>
@@ -258,7 +258,7 @@ export default function EngineAnalyticsPipelinePanel() {
                   const displayVal = typeof val === 'number' ? val.toLocaleString() : String(val);
 
                   return (
-                    <div key={metricKey} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
+                    <div key={metricKey} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                           <span className={`w-2 h-2 rounded-full ${status === 'critical' ? 'bg-red-400' : status === 'warning' ? 'bg-amber-400' : 'bg-[#00ff88]'}`} />
@@ -279,7 +279,7 @@ export default function EngineAnalyticsPipelinePanel() {
                 })}
               </div>
             ) : (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <p className="text-sm text-[#666] text-center py-8">No dashboard data available</p>
               </div>
             )}
@@ -290,7 +290,7 @@ export default function EngineAnalyticsPipelinePanel() {
         {activeTab === 'anomalies' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-red-400">Detect Anomalies</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-red-400" value={aMetricType} onChange={e => setAMetricType(e.target.value)}>
                 {METRIC_TYPES.map(m => <option key={m} value={m}>{m.replace(/_/g,' ')}</option>)}
               </select>
@@ -319,7 +319,7 @@ export default function EngineAnalyticsPipelinePanel() {
                 <h3 className="text-md font-bold text-red-400">Detected Anomalies</h3>
                 {result.anomalies && Array.isArray(result.anomalies) && result.anomalies.length > 0 ? (
                   result.anomalies.map((anomaly: any, i: number) => (
-                    <div key={i} className="bg-[#0f0f23] p-4 rounded border border-red-500/30 hover:border-red-500/60 transition-colors">
+                    <div key={i} className="bg-[#0d0d0d] p-4 rounded border border-red-500/30 hover:border-red-500/60 transition-colors">
                       <div className="flex items-center justify-between mb-2">
                         <h4 className="text-sm font-semibold text-white">{anomaly.metric_type || aMetricType.replace(/_/g,' ')}</h4>
                         <span className="text-[10px] px-2 py-0.5 bg-red-500/20 text-red-400 rounded border border-red-500/30">
@@ -353,7 +353,7 @@ export default function EngineAnalyticsPipelinePanel() {
                     </div>
                   ))
                 ) : (
-                  <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                  <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                     <p className="text-sm text-[#666] text-center py-4">No anomalies detected</p>
                   </div>
                 )}

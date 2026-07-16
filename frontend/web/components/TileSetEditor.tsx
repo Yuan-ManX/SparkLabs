@@ -653,7 +653,7 @@ const TileSetEditor: React.FC = () => {
                       padding: '5px 12px',
                       borderRadius: 6,
                       border: 'none',
-                      background: '#8b5cf6',
+                      background: '#f97316',
                       color: '#fff',
                       fontSize: 11,
                       fontWeight: 'bold',

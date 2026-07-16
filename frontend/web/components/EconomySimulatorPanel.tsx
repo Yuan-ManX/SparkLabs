@@ -243,7 +243,7 @@ export default function EconomySimulatorPanel() {
       {message && (
         <div style={{
           padding: '8px 12px',
-          background: '#1a1a2e',
+          background: '#1a1a1a',
           border: '1px solid #f59e0b',
           borderRadius: 6,
           marginBottom: 12,
@@ -275,7 +275,7 @@ export default function EconomySimulatorPanel() {
               <h3 style={{ margin: '20px 0 12px', fontSize: 14, color: '#ccc' }}>Current Snapshot</h3>
               <div style={{
                 padding: '12px 16px',
-                background: '#1a1a2e',
+                background: '#1a1a1a',
                 borderRadius: 8,
                 border: '1px solid #2a2a3e',
                 display: 'flex',
@@ -345,7 +345,7 @@ export default function EconomySimulatorPanel() {
               {marketItems.map((item) => (
                 <div key={item.id} style={{
                   padding: '10px 14px',
-                  background: '#1a1a2e',
+                  background: '#1a1a1a',
                   borderRadius: 6,
                   fontSize: 12,
                   display: 'flex',
@@ -392,7 +392,7 @@ export default function EconomySimulatorPanel() {
               {currencies.map((currency) => (
                 <div key={currency.code} style={{
                   padding: '10px 14px',
-                  background: '#1a1a2e',
+                  background: '#1a1a1a',
                   borderRadius: 6,
                   fontSize: 12,
                   display: 'flex',
@@ -429,7 +429,7 @@ export default function EconomySimulatorPanel() {
               {imbalances.map((imb) => (
                 <div key={imb.id} style={{
                   padding: '10px 14px',
-                  background: '#1a1a2e',
+                  background: '#1a1a1a',
                   borderRadius: 6,
                   fontSize: 12,
                   display: 'flex',
@@ -471,7 +471,7 @@ function StatCard({ label, value, accent }: { label: string; value: string; acce
   return (
     <div style={{
       padding: '14px 16px',
-      background: '#1a1a2e',
+      background: '#1a1a1a',
       borderRadius: 8,
       border: '1px solid #2a2a3e',
     }}>
@@ -483,7 +483,7 @@ function StatCard({ label, value, accent }: { label: string; value: string; acce
 
 const inputStyle: React.CSSProperties = {
   padding: '6px 10px',
-  background: '#0f0f23',
+  background: '#0d0d0d',
   border: '1px solid #333',
   borderRadius: 4,
   color: '#e0e0e0',
@@ -493,7 +493,7 @@ const inputStyle: React.CSSProperties = {
 
 const selectStyle: React.CSSProperties = {
   padding: '6px 10px',
-  background: '#0f0f23',
+  background: '#0d0d0d',
   border: '1px solid #333',
   borderRadius: 4,
   color: '#e0e0e0',

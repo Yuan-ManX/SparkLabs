@@ -379,7 +379,7 @@ const UnifiedRuntimePanel: React.FC = () => {
           <div className="space-y-3">
             <button
               onClick={handleAddScene}
-              className="px-4 py-2 bg-purple-500/20 text-purple-400 rounded-lg hover:bg-purple-500/30 transition-colors text-sm"
+              className="px-4 py-2 bg-orange-500/20 text-orange-400 rounded-lg hover:bg-orange-500/30 transition-colors text-sm"
             >
               + Add Scene
             </button>

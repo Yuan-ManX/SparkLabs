@@ -77,7 +77,7 @@ const StoryEditor: React.FC = () => {
               <option value="resolution">Resolution</option>
               <option value="branch">Branch</option>
             </select>
-            <button onClick={addNode} className="w-full px-3 py-2 bg-blue-600 hover:bg-blue-700 rounded text-sm font-medium flex items-center justify-center gap-2">
+            <button onClick={addNode} className="w-full px-3 py-2 bg-orange-600 hover:bg-orange-700 rounded text-sm font-medium flex items-center justify-center gap-2">
               <Plus className="w-4 h-4" />
               Add Node
             </button>

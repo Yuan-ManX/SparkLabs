@@ -481,7 +481,7 @@ export default function EngineEcosystemDynamicsPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -494,7 +494,7 @@ export default function EngineEcosystemDynamicsPanel() {
   };
 
   const cardStyle: React.CSSProperties = {
-    padding: 14, backgroundColor: '#16213e', borderRadius: 6,
+    padding: 14, backgroundColor: '#0f0f0f', borderRadius: 6,
     border: '1px solid #2a2a3e',
   };
 
@@ -504,7 +504,7 @@ export default function EngineEcosystemDynamicsPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -515,7 +515,7 @@ export default function EngineEcosystemDynamicsPanel() {
 
   const disabledBtnStyle = (color: string): React.CSSProperties => ({
     ...primaryBtnStyle(color),
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a1a',
     color: '#555',
     cursor: 'not-allowed',
   });
@@ -523,7 +523,7 @@ export default function EngineEcosystemDynamicsPanel() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'monospace', fontSize: 13, padding: '20px',
     }}>
       {/* Header */}
@@ -551,7 +551,7 @@ export default function EngineEcosystemDynamicsPanel() {
           padding: '8px 16px', fontSize: 12,
           backgroundColor: message.type === 'success' ? '#1a3a1a' : message.type === 'error' ? '#3a1a1a' : '#1a2a3a',
           borderBottom: `1px solid ${message.type === 'success' ? '#2d5a2d' : message.type === 'error' ? '#5a2d2d' : '#2a3a4a'}`,
-          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#00d4ff',
+          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#f97316',
         }}>
           {message.text}
         </div>
@@ -565,10 +565,10 @@ export default function EngineEcosystemDynamicsPanel() {
             onClick={() => setActiveTab(tab.key)}
             style={{
               padding: '8px 12px', fontSize: 11, fontWeight: 600,
-              backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
+              backgroundColor: activeTab === tab.key ? '#0f0f0f' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #00d4ff' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #f97316' : '2px solid transparent',
               cursor: 'pointer',
             }}
           >
@@ -589,35 +589,35 @@ export default function EngineEcosystemDynamicsPanel() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Total Species</span>
-                  <span style={{ fontSize: 18, fontWeight: 700, color: '#00d4ff' }}>{stats?.total_species ?? 0}</span>
+                  <span style={{ fontSize: 18, fontWeight: 700, color: '#f97316' }}>{stats?.total_species ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Total Regions</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#6bcb77' }}>{stats?.total_regions ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Snapshots</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#fdcb6e' }}>{stats?.total_snapshots ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Migrations</span>
                   <span style={{ fontSize: 18, fontWeight: 700, color: '#ff6b6b' }}>{stats?.total_migrations ?? 0}</span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                  padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                   display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                 }}>
                   <span style={{ fontSize: 10, color: '#888' }}>Simulations</span>
@@ -632,7 +632,7 @@ export default function EngineEcosystemDynamicsPanel() {
         {activeTab === 'register-species' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={cardStyle}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#f97316' }}>
                 {'\uD83E\uDD96'} Register New Species
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -745,7 +745,7 @@ export default function EngineEcosystemDynamicsPanel() {
               <button
                 onClick={handleRegisterSpecies}
                 disabled={speciesLoading}
-                style={speciesLoading ? disabledBtnStyle('#00d4ff') : primaryBtnStyle('#00d4ff')}
+                style={speciesLoading ? disabledBtnStyle('#f97316') : primaryBtnStyle('#f97316')}
               >
                 {speciesLoading ? 'Registering...' : '\uD83E\uDD96 Register Species'}
               </button>
@@ -756,12 +756,12 @@ export default function EngineEcosystemDynamicsPanel() {
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>
                   Registered Species
                 </div>
-                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10 }}>
+                <div style={{ borderLeft: '3px solid #f97316', paddingLeft: 10 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
                     <span style={{ fontWeight: 600, fontSize: 13 }}>{speciesProfile.name}</span>
                     <span style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#0f3460', color: '#00d4ff', fontWeight: 600,
+                      backgroundColor: '#1e1e1e', color: '#f97316', fontWeight: 600,
                     }}>
                       {speciesProfile.species_type}
                     </span>
@@ -771,13 +771,13 @@ export default function EngineEcosystemDynamicsPanel() {
                     <span>Capacity: <span style={{ color: '#fdcb6e' }}>{speciesProfile.carrying_capacity}</span></span>
                     <span>Metabolism: <span style={{ color: '#ff6b6b' }}>{speciesProfile.metabolic_rate}</span></span>
                     <span>Repro Age: <span style={{ color: '#a29bfe' }}>{speciesProfile.reproduction_age}</span></span>
-                    <span>Lifespan: <span style={{ color: '#00d4ff' }}>{speciesProfile.lifespan}</span></span>
+                    <span>Lifespan: <span style={{ color: '#f97316' }}>{speciesProfile.lifespan}</span></span>
                     <span>ID: <span style={{ color: '#888' }}>{speciesProfile.species_id}</span></span>
                   </div>
                   {speciesProfile.preferred_biomes.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                       {speciesProfile.preferred_biomes.map(b => (
-                        <span key={b} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#6bcb77' }}>{b}</span>
+                        <span key={b} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#6bcb77' }}>{b}</span>
                       ))}
                     </div>
                   )}
@@ -880,12 +880,12 @@ export default function EngineEcosystemDynamicsPanel() {
                   <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666', flexWrap: 'wrap' }}>
                     <span>ID: <span style={{ color: '#888' }}>{region.region_id}</span></span>
                     <span>Size: <span style={{ color: '#fdcb6e' }}>{region.size}</span></span>
-                    <span>Species: <span style={{ color: '#00d4ff' }}>{region.initial_species_ids.length}</span></span>
+                    <span>Species: <span style={{ color: '#f97316' }}>{region.initial_species_ids.length}</span></span>
                   </div>
                   {region.initial_species_ids.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                       {region.initial_species_ids.map((s, i) => (
-                        <span key={s} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>
+                        <span key={s} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>
                           {s} (pop: {region.initial_populations[i] ?? '?'})
                         </span>
                       ))}
@@ -952,7 +952,7 @@ export default function EngineEcosystemDynamicsPanel() {
                 <div style={{ borderLeft: '3px solid #fdcb6e', paddingLeft: 10 }}>
                   <div style={{ display: 'flex', gap: 8, fontSize: 10, color: '#ccc', flexWrap: 'wrap' }}>
                     <span>Region: <span style={{ color: '#6bcb77' }}>{snapshot.region_id}</span></span>
-                    <span>Species: <span style={{ color: '#00d4ff' }}>{snapshot.species_id}</span></span>
+                    <span>Species: <span style={{ color: '#f97316' }}>{snapshot.species_id}</span></span>
                     <span>Population: <span style={{ color: '#fdcb6e' }}>{snapshot.population}</span></span>
                     <span>Tick: <span style={{ color: '#a29bfe' }}>{snapshot.tick}</span></span>
                     <span>Season: <span style={{ color: '#ff6b6b' }}>{snapshot.season}</span></span>
@@ -1051,7 +1051,7 @@ export default function EngineEcosystemDynamicsPanel() {
                   <div style={{ fontSize: 9, color: '#888', marginBottom: 2 }}>Populations:</div>
                   <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                     {Object.entries(simulateReport.population_data).map(([k, v]) => (
-                      <span key={k} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#141428', color: '#00d4ff' }}>
+                      <span key={k} style={{ fontSize: 9, padding: '2px 8px', borderRadius: 3, backgroundColor: '#111', color: '#f97316' }}>
                         {k}: {v}
                       </span>
                     ))}
@@ -1068,7 +1068,7 @@ export default function EngineEcosystemDynamicsPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {simulateReports.map((r, i) => (
                     <div key={i} style={{
-                      padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                      padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                       border: '1px solid #2a2a3e', borderLeft: '3px solid #a29bfe',
                     }}>
                       <div style={{ display: 'flex', gap: 8, fontSize: 10, color: '#ccc', marginBottom: 4, flexWrap: 'wrap' }}>
@@ -1084,7 +1084,7 @@ export default function EngineEcosystemDynamicsPanel() {
                       )}
                       <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
                         {Object.entries(r.population_data).map(([k, v]) => (
-                          <span key={k} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#00d4ff' }}>
+                          <span key={k} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#f97316' }}>
                             {k}: {v}
                           </span>
                         ))}
@@ -1126,19 +1126,19 @@ export default function EngineEcosystemDynamicsPanel() {
               {biodiversity && (
                 <div style={{ borderLeft: '3px solid #6bcb77', paddingLeft: 10 }}>
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8 }}>
-                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4 }}>
                       <span style={{ fontSize: 9, color: '#888', display: 'block' }}>Shannon Index</span>
-                      <span style={{ fontSize: 16, fontWeight: 700, color: '#00d4ff' }}>{biodiversity.shannon_index.toFixed(2)}</span>
+                      <span style={{ fontSize: 16, fontWeight: 700, color: '#f97316' }}>{biodiversity.shannon_index.toFixed(2)}</span>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4 }}>
                       <span style={{ fontSize: 9, color: '#888', display: 'block' }}>Species Richness</span>
                       <span style={{ fontSize: 16, fontWeight: 700, color: '#6bcb77' }}>{biodiversity.species_richness}</span>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4 }}>
                       <span style={{ fontSize: 9, color: '#888', display: 'block' }}>Evenness</span>
                       <span style={{ fontSize: 16, fontWeight: 700, color: '#fdcb6e' }}>{biodiversity.evenness.toFixed(2)}</span>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4 }}>
+                    <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4 }}>
                       <span style={{ fontSize: 9, color: '#888', display: 'block' }}>Trophic Levels</span>
                       <span style={{ fontSize: 16, fontWeight: 700, color: '#ff6b6b' }}>{biodiversity.trophic_levels}</span>
                     </div>
@@ -1200,7 +1200,7 @@ export default function EngineEcosystemDynamicsPanel() {
                       <div style={{ fontSize: 10, color: '#6bcb77', fontWeight: 600, marginBottom: 4 }}>Symbiosis</div>
                       {interactions.symbiosis.map((s, i) => (
                         <div key={i} style={{ fontSize: 10, color: '#ccc', paddingLeft: 8, marginBottom: 2 }}>
-                          {s.species_a} {'↔'} {s.species_b} <span style={{ color: '#00d4ff' }}>({s.type})</span>
+                          {s.species_a} {'↔'} {s.species_b} <span style={{ color: '#f97316' }}>({s.type})</span>
                         </div>
                       ))}
                     </div>
@@ -1280,7 +1280,7 @@ export default function EngineEcosystemDynamicsPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

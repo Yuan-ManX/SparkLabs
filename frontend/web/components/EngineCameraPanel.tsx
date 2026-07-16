@@ -151,31 +151,31 @@ const EngineCameraPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Camera Name</label>
-            <input type="text" value={cameraName} onChange={(e) => setCameraName(e.target.value)} placeholder="main_camera" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={cameraName} onChange={(e) => setCameraName(e.target.value)} placeholder="main_camera" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Position X</label>
-            <input type="number" value={camPosX} onChange={(e) => setCamPosX(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={camPosX} onChange={(e) => setCamPosX(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Position Y</label>
-            <input type="number" value={camPosY} onChange={(e) => setCamPosY(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={camPosY} onChange={(e) => setCamPosY(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Zoom</label>
-            <input type="number" value={camZoom} onChange={(e) => setCamZoom(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={camZoom} onChange={(e) => setCamZoom(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Rotation (deg)</label>
-            <input type="number" value={camRotation} onChange={(e) => setCamRotation(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={camRotation} onChange={(e) => setCamRotation(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Viewport Width</label>
-            <input type="number" value={viewportW} onChange={(e) => setViewportW(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={viewportW} onChange={(e) => setViewportW(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Viewport Height</label>
-            <input type="number" value={viewportH} onChange={(e) => setViewportH(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={viewportH} onChange={(e) => setViewportH(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -197,7 +197,7 @@ const EngineCameraPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div>
           <label className="text-xs text-[#999] mb-1 block">Camera ID</label>
-          <input type="text" value={controlCameraId} onChange={(e) => setControlCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={controlCameraId} onChange={(e) => setControlCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
       </div>
 
@@ -207,11 +207,11 @@ const EngineCameraPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">X</label>
-            <input type="number" value={ctrlPosX} onChange={(e) => setCtrlPosX(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={ctrlPosX} onChange={(e) => setCtrlPosX(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Y</label>
-            <input type="number" value={ctrlPosY} onChange={(e) => setCtrlPosY(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={ctrlPosY} onChange={(e) => setCtrlPosY(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/engine/camera-system/set-position', { camera_id: controlCameraId, position: [parseFloat(ctrlPosX), parseFloat(ctrlPosY)] })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -224,7 +224,7 @@ const EngineCameraPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Set Zoom</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Zoom Level</label>
-          <input type="number" value={ctrlZoom} onChange={(e) => setCtrlZoom(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="number" value={ctrlZoom} onChange={(e) => setCtrlZoom(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/camera-system/set-zoom', { camera_id: controlCameraId, zoom: parseFloat(ctrlZoom) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
           Set Zoom
@@ -236,7 +236,7 @@ const EngineCameraPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Set Rotation</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Rotation (degrees)</label>
-          <input type="number" value={ctrlRotation} onChange={(e) => setCtrlRotation(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="number" value={ctrlRotation} onChange={(e) => setCtrlRotation(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/camera-system/set-rotation', { camera_id: controlCameraId, rotation: parseFloat(ctrlRotation) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
           Set Rotation
@@ -253,23 +253,23 @@ const EngineCameraPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Camera ID</label>
-            <input type="text" value={followCameraId} onChange={(e) => setFollowCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={followCameraId} onChange={(e) => setFollowCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Target ID</label>
-            <input type="text" value={followTargetId} onChange={(e) => setFollowTargetId(e.target.value)} placeholder="player" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={followTargetId} onChange={(e) => setFollowTargetId(e.target.value)} placeholder="player" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Offset X</label>
-            <input type="number" value={followOffsetX} onChange={(e) => setFollowOffsetX(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={followOffsetX} onChange={(e) => setFollowOffsetX(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Offset Y</label>
-            <input type="number" value={followOffsetY} onChange={(e) => setFollowOffsetY(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={followOffsetY} onChange={(e) => setFollowOffsetY(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Smoothness (0-1)</label>
-            <input type="number" value={followSmoothness} onChange={(e) => setFollowSmoothness(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={followSmoothness} onChange={(e) => setFollowSmoothness(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/engine/camera-system/set-follow', { camera_id: followCameraId, target_id: followTargetId, offset: [parseFloat(followOffsetX), parseFloat(followOffsetY)], smoothness: parseFloat(followSmoothness) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -282,7 +282,7 @@ const EngineCameraPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Update Follow</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Delta Time</label>
-          <input type="number" value={followDeltaTime} onChange={(e) => setFollowDeltaTime(e.target.value)} step="0.001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="number" value={followDeltaTime} onChange={(e) => setFollowDeltaTime(e.target.value)} step="0.001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/engine/camera-system/update-follow', { camera_id: followCameraId, delta_time: parseFloat(followDeltaTime) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
           Update Follow
@@ -298,20 +298,20 @@ const EngineCameraPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Start Shake</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Camera ID</label>
-          <input type="text" value={shakeCameraId} onChange={(e) => setShakeCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={shakeCameraId} onChange={(e) => setShakeCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <div className="grid grid-cols-3 gap-3 mt-2">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Intensity</label>
-            <input type="number" value={shakeIntensity} onChange={(e) => setShakeIntensity(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={shakeIntensity} onChange={(e) => setShakeIntensity(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Duration (s)</label>
-            <input type="number" value={shakeDuration} onChange={(e) => setShakeDuration(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={shakeDuration} onChange={(e) => setShakeDuration(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Frequency</label>
-            <input type="number" value={shakeFrequency} onChange={(e) => setShakeFrequency(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={shakeFrequency} onChange={(e) => setShakeFrequency(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/engine/camera-system/start-shake', { camera_id: shakeCameraId, intensity: parseFloat(shakeIntensity), duration: parseFloat(shakeDuration), frequency: parseFloat(shakeFrequency) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -335,24 +335,24 @@ const EngineCameraPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Set Bounds</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Camera ID</label>
-          <input type="text" value={boundsCameraId} onChange={(e) => setBoundsCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={boundsCameraId} onChange={(e) => setBoundsCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <div className="grid grid-cols-2 gap-3 mt-2">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Min X</label>
-            <input type="number" value={boundsMinX} onChange={(e) => setBoundsMinX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={boundsMinX} onChange={(e) => setBoundsMinX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Min Y</label>
-            <input type="number" value={boundsMinY} onChange={(e) => setBoundsMinY(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={boundsMinY} onChange={(e) => setBoundsMinY(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Max X</label>
-            <input type="number" value={boundsMaxX} onChange={(e) => setBoundsMaxX(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={boundsMaxX} onChange={(e) => setBoundsMaxX(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Max Y</label>
-            <input type="number" value={boundsMaxY} onChange={(e) => setBoundsMaxY(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={boundsMaxY} onChange={(e) => setBoundsMaxY(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/engine/camera-system/set-bounds', { camera_id: boundsCameraId, min_x: parseFloat(boundsMinX), min_y: parseFloat(boundsMinY), max_x: parseFloat(boundsMaxX), max_y: parseFloat(boundsMaxY) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -367,7 +367,7 @@ const EngineCameraPanel: React.FC = () => {
       <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div>
           <label className="text-xs text-[#999] mb-1 block">Camera ID</label>
-          <input type="text" value={convertCameraId} onChange={(e) => setConvertCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={convertCameraId} onChange={(e) => setConvertCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
       </div>
 
@@ -377,11 +377,11 @@ const EngineCameraPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">World X</label>
-            <input type="number" value={convertWorldX} onChange={(e) => setConvertWorldX(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={convertWorldX} onChange={(e) => setConvertWorldX(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">World Y</label>
-            <input type="number" value={convertWorldY} onChange={(e) => setConvertWorldY(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={convertWorldY} onChange={(e) => setConvertWorldY(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={async () => { const r = await handleSubmit('/engine/camera-system/world-to-screen', { camera_id: convertCameraId, world_x: parseFloat(convertWorldX), world_y: parseFloat(convertWorldY) }); if (r) setConvertResult(JSON.stringify(r, null, 2)); }} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -395,11 +395,11 @@ const EngineCameraPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Screen X</label>
-            <input type="number" value={convertScreenX} onChange={(e) => setConvertScreenX(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={convertScreenX} onChange={(e) => setConvertScreenX(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Screen Y</label>
-            <input type="number" value={convertScreenY} onChange={(e) => setConvertScreenY(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={convertScreenY} onChange={(e) => setConvertScreenY(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={async () => { const r = await handleSubmit('/engine/camera-system/screen-to-world', { camera_id: convertCameraId, screen_x: parseFloat(convertScreenX), screen_y: parseFloat(convertScreenY) }); if (r) setConvertResult(JSON.stringify(r, null, 2)); }} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -410,7 +410,7 @@ const EngineCameraPanel: React.FC = () => {
       {convertResult && (
         <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mt-3">
           <div className="text-sm font-medium text-[#00d4ff] mb-2">Result</div>
-          <textarea readOnly value={convertResult} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-24" />
+          <textarea readOnly value={convertResult} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-24" />
         </div>
       )}
     </div>
@@ -422,12 +422,12 @@ const EngineCameraPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Add Effect</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Camera ID</label>
-          <input type="text" value={effectCameraId} onChange={(e) => setEffectCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={effectCameraId} onChange={(e) => setEffectCameraId(e.target.value)} placeholder="main_camera" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <div className="grid grid-cols-2 gap-3 mt-2">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Effect Type</label>
-            <select value={effectType} onChange={(e) => setEffectType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={effectType} onChange={(e) => setEffectType(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="vignette">Vignette</option>
               <option value="chromatic_aberration">Chromatic Aberration</option>
               <option value="bloom">Bloom</option>
@@ -438,7 +438,7 @@ const EngineCameraPanel: React.FC = () => {
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Intensity (0-1)</label>
-            <input type="number" value={effectIntensity} onChange={(e) => setEffectIntensity(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={effectIntensity} onChange={(e) => setEffectIntensity(e.target.value)} step="0.01" min="0" max="1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/engine/camera-system/add-effect', { camera_id: effectCameraId, effect_type: effectType, intensity: parseFloat(effectIntensity) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -476,7 +476,7 @@ const EngineCameraPanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       {message && (
         <div className={`mx-4 mt-2 px-3 py-2 rounded text-sm ${message.type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-700' : 'bg-red-900/50 text-red-300 border border-red-700'}`}>
           {message.text}

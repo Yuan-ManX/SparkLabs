@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
 type TabId = "entities" | "components" | "blueprints" | "systems";
 
@@ -53,7 +54,7 @@ interface SystemResult {
 
 const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
 
-const API_BASE = "http://localhost:8000/api/agent/ecs";
+const API_BASE = `${API_ROOT}/agent/ecs`;
 
 const COMPONENT_CATEGORIES = [
   "Transform", "Render", "Physics", "AI", "Audio", "UI", "Input", "Network", "Animation", "Lifecycle", "Custom"
@@ -472,7 +473,7 @@ const ECSPanel: React.FC = () => {
     card: { background: "#16213e", borderRadius: 8, padding: 16, marginBottom: 12, border: "1px solid #2a2a4a" },
     cardTitle: { fontSize: 14, fontWeight: "bold", color: "#d0d0e0", marginBottom: 8 },
     input: {
-      background: "#0d0d1a",
+      background: "#0d0d0d",
       border: "1px solid #333",
       color: "#e0e0e0",
       padding: "8px 12px",
@@ -482,7 +483,7 @@ const ECSPanel: React.FC = () => {
       boxSizing: "border-box",
     },
     select: {
-      background: "#0d0d1a",
+      background: "#0d0d0d",
       border: "1px solid #333",
       color: "#e0e0e0",
       padding: "8px 12px",
@@ -535,7 +536,7 @@ const ECSPanel: React.FC = () => {
       marginBottom: 12,
     },
     textarea: {
-      background: "#0d0d1a",
+      background: "#0d0d0d",
       border: "1px solid #333",
       color: "#e0e0e0",
       padding: "8px 12px",
@@ -780,7 +781,7 @@ const ECSPanel: React.FC = () => {
                   fontSize: 11,
                   color: "#aaa",
                   margin: 0,
-                  background: "#0d0d1a",
+                  background: "#0d0d0d",
                   padding: 8,
                   borderRadius: 4,
                   overflow: "auto",
@@ -913,7 +914,7 @@ const ECSPanel: React.FC = () => {
                   fontSize: 11,
                   color: "#aaa",
                   margin: 0,
-                  background: "#0d0d1a",
+                  background: "#0d0d0d",
                   padding: 8,
                   borderRadius: 4,
                   overflow: "auto",
@@ -1072,7 +1073,7 @@ const ECSPanel: React.FC = () => {
                       fontSize: 11,
                       color: "#aaa",
                       margin: 0,
-                      background: "#0d0d1a",
+                      background: "#0d0d0d",
                       padding: 8,
                       borderRadius: 4,
                       overflow: "auto",

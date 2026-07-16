@@ -165,14 +165,14 @@ const StateMachineEditor: React.FC = () => {
       <div className="w-48 border-r border-[#1e1e1e] flex flex-col">
         <div className="px-3 py-3 border-b border-[#1e1e1e]">
           <div className="flex items-center gap-2 mb-2">
-            <div className="w-6 h-6 bg-gradient-to-br from-purple-500 to-violet-600 rounded flex items-center justify-center">
+            <div className="w-6 h-6 bg-gradient-to-br from-orange-500 to-orange-600 rounded flex items-center justify-center">
               <i className="fa-solid fa-diagram-project text-white text-[9px]" />
             </div>
             <span className="text-[11px] font-bold text-[#e0e0e0]">Machines</span>
           </div>
           <button
             onClick={handleCreateMachine}
-            className="w-full px-2 py-1.5 bg-gradient-to-r from-purple-500 to-violet-600 text-white rounded text-[10px] font-semibold hover:opacity-90"
+            className="w-full px-2 py-1.5 bg-gradient-to-r from-orange-500 to-orange-600 text-white rounded text-[10px] font-semibold hover:opacity-90"
           >
             <i className="fa-solid fa-plus mr-1 text-[8px]" />
             New Machine
@@ -185,7 +185,7 @@ const StateMachineEditor: React.FC = () => {
               onClick={() => { setSelectedMachineId(m.id); setSelectedStateId(null); setValidationResult([]); }}
               className={`px-2 py-1.5 rounded cursor-pointer transition-all ${
                 m.id === selectedMachineId
-                  ? 'bg-purple-500/15 border border-purple-500/30'
+                  ? 'bg-orange-500/15 border border-orange-500/30'
                   : 'hover:bg-[#1a1a1a] border border-transparent'
               }`}
             >
@@ -203,7 +203,7 @@ const StateMachineEditor: React.FC = () => {
               <input
                 value={machine.name}
                 onChange={e => setMachines(prev => prev.map(m => m.id === selectedMachineId ? { ...m, name: e.target.value } : m))}
-                className="bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[11px] text-[#ddd] w-36 focus:border-purple-500/50 focus:outline-none"
+                className="bg-[#0d0d0d] border border-[#2a2a2a] rounded px-2 py-1 text-[11px] text-[#ddd] w-36 focus:border-orange-500/50 focus:outline-none"
               />
               <span className="text-[9px] text-[#888]">
                 {states.length} states · {transitions.length} transitions
@@ -220,7 +220,7 @@ const StateMachineEditor: React.FC = () => {
             </button>
             <button
               onClick={handleSave}
-              className="px-3 py-1 rounded text-[10px] font-medium bg-blue-500/15 text-blue-400 border border-blue-500/30"
+              className="px-3 py-1 rounded text-[10px] font-medium bg-orange-500/15 text-orange-400 border border-orange-500/30"
             >
               <i className="fa-solid fa-floppy-disk mr-1 text-[8px]" />
               Save
@@ -232,7 +232,7 @@ const StateMachineEditor: React.FC = () => {
           <div className="flex-1 p-4 overflow-y-auto space-y-4">
             <div>
               <h3 className="text-[10px] font-semibold text-[#bbb] mb-2 flex items-center gap-1">
-                <i className="fa-solid fa-plus-circle text-[9px] text-purple-400" />
+                <i className="fa-solid fa-plus-circle text-[9px] text-orange-400" />
                 Add State
               </h3>
               <div className="grid grid-cols-2 gap-2">
@@ -240,28 +240,28 @@ const StateMachineEditor: React.FC = () => {
                   <input
                     type="text" placeholder="State name" value={newStateName}
                     onChange={e => setNewStateName(e.target.value)}
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-purple-500/50 focus:outline-none"
+                    className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-orange-500/50 focus:outline-none"
                   />
                 </div>
                 <div>
                   <input type="text" placeholder="Entry action" value={newStateEntry}
                     onChange={e => setNewStateEntry(e.target.value)}
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-purple-500/50 focus:outline-none" />
+                    className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-orange-500/50 focus:outline-none" />
                 </div>
                 <div>
                   <input type="text" placeholder="Exit action" value={newStateExit}
                     onChange={e => setNewStateExit(e.target.value)}
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-purple-500/50 focus:outline-none" />
+                    className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-orange-500/50 focus:outline-none" />
                 </div>
                 <div className="col-span-2">
                   <input type="text" placeholder="Update action" value={newStateUpdate}
                     onChange={e => setNewStateUpdate(e.target.value)}
-                    className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-purple-500/50 focus:outline-none" />
+                    className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] placeholder-[#555] focus:border-orange-500/50 focus:outline-none" />
                 </div>
               </div>
               <button
                 onClick={handleAddState}
-                className="mt-2 px-3 py-1 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded text-[9px] font-medium"
+                className="mt-2 px-3 py-1 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded text-[9px] font-medium"
               >
                 <i className="fa-solid fa-plus mr-1 text-[7px]" /> Add State
               </button>
@@ -278,12 +278,12 @@ const StateMachineEditor: React.FC = () => {
                         state.id === machine?.initialState ? 'border-l-2 border-l-green-500' : ''
                       } ${
                         selectedStateId === state.id
-                          ? 'bg-purple-500/10 border border-purple-500/30'
-                          : 'bg-[#141414] border border-[#2a2a2a] hover:border-[#3a3a3a]'
+                          ? 'bg-orange-500/10 border border-orange-500/30'
+                          : 'bg-[#0d0d0d] border border-[#2a2a2a] hover:border-[#3a3a3a]'
                       }`}
                     >
-                      <div className="w-3 h-3 rounded-full bg-purple-500/30 mr-2 flex items-center justify-center">
-                        <div className="w-1.5 h-1.5 rounded-full bg-purple-400" />
+                      <div className="w-3 h-3 rounded-full bg-orange-500/30 mr-2 flex items-center justify-center">
+                        <div className="w-1.5 h-1.5 rounded-full bg-orange-400" />
                       </div>
                       <span className="text-[10px] text-[#ddd] flex-1">{state.name}</span>
                       {state.id === machine?.initialState && (
@@ -308,7 +308,7 @@ const StateMachineEditor: React.FC = () => {
                 <select
                   value={machine.initialState}
                   onChange={e => setMachines(prev => prev.map(m => m.id === selectedMachineId ? { ...m, initialState: e.target.value } : m))}
-                  className="bg-[#141414] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-purple-500/50 focus:outline-none"
+                  className="bg-[#0d0d0d] border border-[#2a2a2a] rounded px-2 py-1 text-[10px] text-[#ddd] focus:border-orange-500/50 focus:outline-none"
                 >
                   <option value="">-- Select --</option>
                   {states.map(s => (
@@ -328,24 +328,24 @@ const StateMachineEditor: React.FC = () => {
               <div className="space-y-1.5">
                 <div className="grid grid-cols-2 gap-1">
                   <select value={transFrom} onChange={e => setTransFrom(e.target.value)}
-                    className="bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[9px] text-[#ddd] focus:border-purple-500/50 focus:outline-none">
+                    className="bg-[#0d0d0d] border border-[#2a2a2a] rounded px-1.5 py-1 text-[9px] text-[#ddd] focus:border-orange-500/50 focus:outline-none">
                     <option value="">From</option>
                     {states.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                   <select value={transTo} onChange={e => setTransTo(e.target.value)}
-                    className="bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[9px] text-[#ddd] focus:border-purple-500/50 focus:outline-none">
+                    className="bg-[#0d0d0d] border border-[#2a2a2a] rounded px-1.5 py-1 text-[9px] text-[#ddd] focus:border-orange-500/50 focus:outline-none">
                     <option value="">To</option>
                     {states.map(s => <option key={s.id} value={s.id}>{s.name}</option>)}
                   </select>
                 </div>
                 <input type="text" placeholder="Condition" value={transCondition}
                   onChange={e => setTransCondition(e.target.value)}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[9px] text-[#ddd] placeholder-[#555] focus:border-purple-500/50 focus:outline-none" />
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-1.5 py-1 text-[9px] text-[#ddd] placeholder-[#555] focus:border-orange-500/50 focus:outline-none" />
                 <input type="text" placeholder="Trigger event" value={transTrigger}
                   onChange={e => setTransTrigger(e.target.value)}
-                  className="w-full bg-[#141414] border border-[#2a2a2a] rounded px-1.5 py-1 text-[9px] text-[#ddd] placeholder-[#555] focus:border-purple-500/50 focus:outline-none" />
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a2a] rounded px-1.5 py-1 text-[9px] text-[#ddd] placeholder-[#555] focus:border-orange-500/50 focus:outline-none" />
                 <button onClick={handleAddTransition}
-                  className="w-full px-2 py-1 bg-purple-500/20 text-purple-400 border border-purple-500/30 rounded text-[9px] font-medium">
+                  className="w-full px-2 py-1 bg-orange-500/20 text-orange-400 border border-orange-500/30 rounded text-[9px] font-medium">
                   <i className="fa-solid fa-plus mr-1 text-[7px]" /> Add Transition
                 </button>
               </div>
@@ -367,7 +367,7 @@ const StateMachineEditor: React.FC = () => {
                     const fromName = states.find(s => s.id === t.fromState)?.name || t.fromState;
                     const toName = states.find(s => s.id === t.toState)?.name || t.toState;
                     return (
-                      <div key={t.id} className="grid grid-cols-[1fr_auto_1fr_16px] gap-1 items-center px-1 py-1 rounded bg-[#141414] border border-[#2a2a2a] text-[8px]">
+                      <div key={t.id} className="grid grid-cols-[1fr_auto_1fr_16px] gap-1 items-center px-1 py-1 rounded bg-[#0d0d0d] border border-[#2a2a2a] text-[8px]">
                         <span className="text-[#ddd] truncate">{fromName} → {toName}</span>
                         <span className="text-[#888]">{t.condition || '-'}</span>
                         <span className="text-[#888] truncate">{t.triggerEvent || '-'}</span>

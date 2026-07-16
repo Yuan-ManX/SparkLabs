@@ -118,14 +118,14 @@ const SkillTreeDesigner: React.FC = () => {
           }}
         />
         <button onClick={handleCreateCharacter} style={{
-          padding: '6px 14px', borderRadius: 6, border: 'none', background: '#8b5cf6',
+          padding: '6px 14px', borderRadius: 6, border: 'none', background: '#f97316',
           color: '#fff', cursor: 'pointer', fontSize: 12,
         }}>
           Create
         </button>
         <button onClick={loadAvailable} style={{
-          padding: '6px 14px', borderRadius: 6, border: '1px solid #8b5cf6',
-          background: 'transparent', color: '#8b5cf6', cursor: 'pointer', fontSize: 12,
+          padding: '6px 14px', borderRadius: 6, border: '1px solid #f97316',
+          background: 'transparent', color: '#f97316', cursor: 'pointer', fontSize: 12,
         }}>
           Load
         </button>
@@ -178,7 +178,7 @@ const SkillTreeDesigner: React.FC = () => {
                 <span style={{ fontSize: 11, color: '#fbbf24' }}>{node.cost}pts</span>
                 <button onClick={() => handleUnlock(node.node_id)} style={{
                   padding: '3px 10px', borderRadius: 4, border: 'none',
-                  background: '#8b5cf6', color: '#fff', cursor: 'pointer', fontSize: 11,
+                  background: '#f97316', color: '#fff', cursor: 'pointer', fontSize: 11,
                 }}>
                   Unlock
                 </button>

@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
-const API_BASE = "http://localhost:8000/api/engine";
+const API_BASE = `${API_ROOT}/engine`;
 
 interface PlatformInfo {
   os_type: string;
@@ -727,7 +728,7 @@ function StatCard({ label, value }: { label: string; value: string }) {
 
 const inputStyle: React.CSSProperties = {
   padding: "6px 10px",
-  background: "#0f0f23",
+  background: "#0d0d0d",
   border: "1px solid #333",
   borderRadius: 4,
   color: "#e0e0e0",
@@ -737,7 +738,7 @@ const inputStyle: React.CSSProperties = {
 
 const selectStyle: React.CSSProperties = {
   padding: "6px 10px",
-  background: "#0f0f23",
+  background: "#0d0d0d",
   border: "1px solid #333",
   borderRadius: 4,
   color: "#e0e0e0",

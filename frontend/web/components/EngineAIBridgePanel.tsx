@@ -90,12 +90,12 @@ export default function EngineAIBridgePanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
 
         {/* Overview Tab */}
@@ -104,7 +104,7 @@ export default function EngineAIBridgePanel() {
             <h2 className="text-lg font-bold text-[#00d4ff]">AI Bridge Stats</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {Object.entries(stats).map(([key, value]) => (
-                <div key={key} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={key} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-[#00d4ff] text-xs capitalize">{key.replace(/_/g, ' ')}</h3>
                   <p className="text-2xl font-bold mt-1">
                     {typeof value === 'number' ? value.toLocaleString() : String(value)}
@@ -121,7 +121,7 @@ export default function EngineAIBridgePanel() {
         {/* Commands Tab */}
         {activeTab === 'commands' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Send Command</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
@@ -149,7 +149,7 @@ export default function EngineAIBridgePanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">Command History</h2>
                 <button onClick={fetchCommandHistory}
@@ -184,7 +184,7 @@ export default function EngineAIBridgePanel() {
         {/* Events Tab */}
         {activeTab === 'events' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Send Event</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -217,7 +217,7 @@ export default function EngineAIBridgePanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">Event History</h2>
                 <button onClick={fetchEventHistory}
@@ -231,7 +231,7 @@ export default function EngineAIBridgePanel() {
                     <div key={e.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{e.name || e.event}</span>
-                        <span className="text-xs bg-[#0f0f23] text-[#ccc] px-2 py-0.5 rounded">{e.source || 'unknown'}</span>
+                        <span className="text-xs bg-[#0d0d0d] text-[#ccc] px-2 py-0.5 rounded">{e.source || 'unknown'}</span>
                       </div>
                       {e.payload && <div className="mt-1 text-xs text-[#999] font-mono">{JSON.stringify(e.payload)}</div>}
                       {e.timestamp && <div className="mt-1 text-xs text-[#666]">{e.timestamp}</div>}
@@ -248,7 +248,7 @@ export default function EngineAIBridgePanel() {
         {/* State Tab */}
         {activeTab === 'state' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Sync Entity</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -285,7 +285,7 @@ export default function EngineAIBridgePanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">Synced State</h2>
                 <button onClick={fetchSyncedState}
@@ -323,7 +323,7 @@ export default function EngineAIBridgePanel() {
         {/* Metrics Tab */}
         {activeTab === 'metrics' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Record Metric</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -362,7 +362,7 @@ export default function EngineAIBridgePanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Metric Summary</h2>
               {Object.keys(metricSummary).length > 0 ? (
                 <div className="grid grid-cols-2 gap-4">
@@ -380,7 +380,7 @@ export default function EngineAIBridgePanel() {
               )}
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-lg font-bold text-[#00d4ff]">Metrics ({metrics.length})</h2>
                 <button onClick={fetchMetrics}

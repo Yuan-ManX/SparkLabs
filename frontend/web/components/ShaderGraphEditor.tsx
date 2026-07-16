@@ -647,7 +647,7 @@ const ShaderGraphEditor: React.FC = () => {
                             width: 10,
                             height: 10,
                             borderRadius: '50%',
-                            background: connectingFrom?.portId === input.id ? '#f97316' : '#3b82f6',
+                            background: connectingFrom?.portId === input.id ? '#f97316' : '#f97316',
                             border: `2px solid ${connectingFrom?.portId === input.id ? '#f97316' : '#1e3a5f'}`,
                             cursor: 'crosshair',
                             flexShrink: 0,
@@ -713,7 +713,7 @@ const ShaderGraphEditor: React.FC = () => {
       <div
         style={{
           width: 200,
-          background: '#1a1a2e',
+          background: '#1a1a1a',
           borderRight: '1px solid #2d2d3f',
           display: 'flex',
           flexDirection: 'column',
@@ -810,7 +810,7 @@ const ShaderGraphEditor: React.FC = () => {
       <div
         style={{
           width: 220,
-          background: '#1a1a2e',
+          background: '#1a1a1a',
           borderLeft: '1px solid #2d2d3f',
           display: 'flex',
           flexDirection: 'column',
@@ -951,7 +951,7 @@ const ShaderGraphEditor: React.FC = () => {
                       width: 8,
                       height: 8,
                       borderRadius: '50%',
-                      background: isConnected ? '#3b82f6' : '#333',
+                      background: isConnected ? '#f97316' : '#333',
                       flexShrink: 0,
                     }}
                   />
@@ -1022,7 +1022,7 @@ const ShaderGraphEditor: React.FC = () => {
           left: 0,
           right: 0,
           height: 260,
-          background: '#0d0d1a',
+          background: '#0d0d0d',
           borderTop: '1px solid #2d2d3f',
           display: 'flex',
           flexDirection: 'column',

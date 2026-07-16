@@ -374,7 +374,7 @@ const TileMapRuntimePanel: React.FC = () => {
 
   const inputStyle: React.CSSProperties = {
     padding: '6px 10px', fontSize: 11,
-    backgroundColor: '#0d0d1a', color: '#ccc',
+    backgroundColor: '#0d0d0d', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, outline: 'none',
     fontFamily: 'system-ui, sans-serif',
   };
@@ -714,7 +714,7 @@ const TileMapRuntimePanel: React.FC = () => {
                 <span style={{ fontWeight: 600, fontSize: 14, color: '#ccc' }}>{ts.name}</span>
                 <span style={{
                   fontSize: 9, padding: '2px 8px', borderRadius: 3,
-                  backgroundColor: '#141428', color: '#a29bfe', fontWeight: 600,
+                  backgroundColor: '#111', color: '#a29bfe', fontWeight: 600,
                   fontFamily: 'monospace',
                 }}>
                   {ts.image_key}
@@ -780,7 +780,7 @@ const TileMapRuntimePanel: React.FC = () => {
                   style={{
                     padding: '6px 12px', fontSize: 11, fontWeight: 600, borderRadius: 4,
                     border: '1px solid #333', cursor: 'pointer',
-                    backgroundColor: brushType === bt ? '#2d3a5a' : '#141428',
+                    backgroundColor: brushType === bt ? '#2d3a5a' : '#111',
                     color: brushType === bt ? '#74b9ff' : '#888',
                   }}
                 >
@@ -887,7 +887,7 @@ const TileMapRuntimePanel: React.FC = () => {
     return (
       <div style={{
         display: 'flex', flexDirection: 'column', height: '100%',
-        backgroundColor: '#1a1a2e', color: '#e0e0e0',
+        backgroundColor: '#1a1a1a', color: '#e0e0e0',
         fontFamily: 'system-ui, sans-serif', fontSize: 13,
         alignItems: 'center', justifyContent: 'center',
       }}>
@@ -899,7 +899,7 @@ const TileMapRuntimePanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -956,7 +956,7 @@ const TileMapRuntimePanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

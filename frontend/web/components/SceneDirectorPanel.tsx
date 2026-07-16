@@ -204,7 +204,7 @@ const SceneDirectorPanel: React.FC = () => {
                 value={title}
                 onChange={e => setTitle(e.target.value)}
                 placeholder="Scene title..."
-                style={{ width: '100%', padding: '8px 12px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13 }}
+                style={{ width: '100%', padding: '8px 12px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13 }}
               />
             </div>
             <div>
@@ -212,7 +212,7 @@ const SceneDirectorPanel: React.FC = () => {
               <select
                 value={mood}
                 onChange={e => setMood(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13 }}
+                style={{ width: '100%', padding: '8px 12px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13 }}
               >
                 {Object.keys(moodColors).map(m => (
                   <option key={m} value={m}>{m}</option>
@@ -227,7 +227,7 @@ const SceneDirectorPanel: React.FC = () => {
                 onChange={e => setDuration(e.target.value)}
                 step="0.5"
                 min="1"
-                style={{ width: '100%', padding: '8px 12px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13 }}
+                style={{ width: '100%', padding: '8px 12px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13 }}
               />
             </div>
             <div>
@@ -235,7 +235,7 @@ const SceneDirectorPanel: React.FC = () => {
               <select
                 value={compositionType}
                 onChange={e => setCompositionType(e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13 }}
+                style={{ width: '100%', padding: '8px 12px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13 }}
               >
                 <option value="dialogue">Dialogue</option>
                 <option value="action">Action</option>
@@ -252,7 +252,7 @@ const SceneDirectorPanel: React.FC = () => {
               onChange={e => setDescription(e.target.value)}
               placeholder="Describe the scene..."
               rows={3}
-              style={{ width: '100%', padding: '8px 12px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13, resize: 'vertical' }}
+              style={{ width: '100%', padding: '8px 12px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 13, resize: 'vertical' }}
             />
           </div>
           <button
@@ -348,7 +348,7 @@ const SceneDirectorPanel: React.FC = () => {
               onChange={e => setTickDelta(e.target.value)}
               step="0.1"
               min="0.1"
-              style={{ width: 80, padding: '6px 10px', background: '#0d0d1a', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
+              style={{ width: 80, padding: '6px 10px', background: '#0d0d0d', border: '1px solid #333', borderRadius: 6, color: '#eee', fontFamily: 'monospace', fontSize: 12 }}
             />
             <span style={{ color: '#888', fontSize: 12 }}>s delta</span>
             <button
@@ -407,7 +407,7 @@ const SceneDirectorPanel: React.FC = () => {
                 {directives.map((d: any, i: number) => (
                   <span key={i} style={{
                     padding: '4px 10px', borderRadius: 4, fontSize: 11,
-                    background: '#0d0d1a', color: '#ccc',
+                    background: '#0d0d0d', color: '#ccc',
                   }}>
                     {d.style} ({d.duration}s)
                   </span>

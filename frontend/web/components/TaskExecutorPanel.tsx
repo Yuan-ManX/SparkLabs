@@ -164,7 +164,7 @@ const TaskExecutorPanel: React.FC = () => {
                     <span className={`text-[10px] px-1.5 py-0.5 rounded ${
                       h.status === 'completed' ? 'bg-green-500/20 text-green-500' :
                       h.status === 'failed' ? 'bg-red-500/20 text-red-500' :
-                      h.status === 'running' ? 'bg-blue-500/20 text-blue-500' :
+                      h.status === 'running' ? 'bg-orange-500/20 text-orange-500' :
                       'bg-\[#f5f5f5\]0/20 text-[#999]'
                     }`}>
                       {String(h.status)}

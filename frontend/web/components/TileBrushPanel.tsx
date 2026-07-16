@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { API_BASE as API_ROOT } from "../utils/api";
 
-const API_BASE = "http://localhost:8000/api/agent";
+const API_BASE = `${API_ROOT}/agent`;
 
 interface SubsystemStats {
   tilemaps: number;
@@ -170,7 +171,7 @@ export default function TileBrushPanel() {
                   onChange={(e) => setTilemapId(e.target.value)}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 />
@@ -183,7 +184,7 @@ export default function TileBrushPanel() {
                     min="0"
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />
@@ -195,7 +196,7 @@ export default function TileBrushPanel() {
                     min="0"
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />
@@ -208,7 +209,7 @@ export default function TileBrushPanel() {
                     onChange={(e) => setTilesetId(e.target.value)}
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />
@@ -220,7 +221,7 @@ export default function TileBrushPanel() {
                     min="0"
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   />
@@ -252,7 +253,7 @@ export default function TileBrushPanel() {
                   onChange={(e) => setAutoBorderId(e.target.value)}
                   style={{
                     padding: "0.5rem", borderRadius: "0.375rem",
-                    border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                    border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                     fontSize: "0.8rem"
                   }}
                 />
@@ -262,7 +263,7 @@ export default function TileBrushPanel() {
                     onChange={(e) => setNeighborMode(e.target.value)}
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   >
@@ -276,7 +277,7 @@ export default function TileBrushPanel() {
                     onChange={(e) => setTerrainSet(e.target.value)}
                     style={{
                       flex: "1", padding: "0.5rem", borderRadius: "0.375rem",
-                      border: "1px solid #2a2a4a", background: "#0d0d1a", color: "#e0e0e0",
+                      border: "1px solid #2a2a4a", background: "#0d0d0d", color: "#e0e0e0",
                       fontSize: "0.8rem"
                     }}
                   >
