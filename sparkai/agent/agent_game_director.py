@@ -1,568 +1,828 @@
 """
-SparkLabs Agent - Game Director
+SparkLabs Agent - AI Game Director
 
-The central creative orchestrator that coordinates all game development agents.
-The Game Director maintains a unified vision for the project — ensuring consistency
-across mechanics, narrative, visuals, audio, and level design. It acts as the
-"brain" of the AI-native game engine, making high-level creative decisions and
-delegating specialized tasks to sub-agents.
+The creative intelligence that directs the entire AI-native game creation
+lifecycle. Combines a tool-use registry (Hermes-inspired function calling),
+a simulation engine (WorldX-inspired world evaluation), and an iteration
+loop (GameGen-X-inspired refinement) into a single director that can
+autonomously produce, evaluate, and refine games.
 
 Architecture:
-  GameDirector
-    |-- VisionManager (maintains the creative brief and design pillars)
-    |-- AgentCoordinator (routes tasks to appropriate sub-agents)
-    |-- ConsistencyValidator (cross-checks output across agent domains)
-    |-- ProgressTracker (monitors development milestones and agent activity)
-    |-- DecisionResolver (arbitrates conflicts between agent suggestions)
+  GameDirector (Singleton)
+    |-- ToolRegistry      -> named tools the director can invoke
+    |-- SimulationEngine  -> simulates playtest sessions for evaluation
+    |-- IterationLoop     -> generate -> evaluate -> refine -> regenerate
+    |-- QualityMetrics    -> engagement, difficulty, variety, coherence
+    |-- StrategySelector  -> chooses generation strategy based on prompt
 
-Director Roles:
-  - CREATIVE_LEAD: high-level design decisions and vision stewardship
-  - TECHNICAL_ARCHITECT: engine configuration and technical standards
-  - QUALITY_GUARDIAN: consistency validation and quality assurance
-  - PRODUCER: milestone tracking and resource allocation
-  - INTEGRATOR: cross-domain coordination between agent outputs
+The director is the primary interface for "make a great game" workflows.
+It wraps the GameContentSynthesizer and GameRuntime, adding judgment,
+iteration, and quality assurance on top of raw content generation.
+
+Usage:
+    director = GameDirector.get_instance()
+    director.initialize()
+    result = director.direct("Design a platformer with double-jump and gem collection")
+    # result.html contains the final playable game
 """
 
 from __future__ import annotations
 
+import logging
+import random
 import threading
 import time
 import uuid
+from collections import deque
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import Any, Dict, List, Optional
+from typing import Any, Callable, Dict, List, Optional, Tuple
+
+logger = logging.getLogger(__name__)
 
 
-class DirectorRole(Enum):
-    CREATIVE_LEAD = "creative_lead"
-    TECHNICAL_ARCHITECT = "technical_architect"
-    QUALITY_GUARDIAN = "quality_guardian"
-    PRODUCER = "producer"
-    INTEGRATOR = "integrator"
+# =============================================================================
+# Enums
+# =============================================================================
 
 
-class DecisionStatus(Enum):
-    PENDING = "pending"
-    APPROVED = "approved"
-    REJECTED = "rejected"
-    DEFERRED = "deferred"
-    NEEDS_REVIEW = "needs_review"
+class DirectorPhase(Enum):
+    """Phases of the director's creation pipeline."""
+    ANALYZE = "analyze"
+    STRATEGIZE = "strategize"
+    SYNTHESIZE = "synthesize"
+    BUILD = "build"
+    SIMULATE = "simulate"
+    EVALUATE = "evaluate"
+    REFINE = "refine"
+    FINALIZE = "finalize"
 
 
-class ProjectPhase(Enum):
-    CONCEPT = "concept"
-    PRE_PRODUCTION = "pre_production"
-    PRODUCTION = "production"
-    POLISH = "polish"
-    SHIPPING = "shipping"
-    LIVE_OPS = "live_ops"
+class QualityDimension(Enum):
+    """Dimensions along which a game is evaluated."""
+    ENGAGEMENT = "engagement"
+    DIFFICULTY = "difficulty"
+    VARIETY = "variety"
+    COHERENCE = "coherence"
+    PACING = "pacing"
+    COMPLETENESS = "completeness"
 
 
-class SeverityLevel(Enum):
-    INFO = "info"
-    WARNING = "warning"
-    ERROR = "error"
-    CRITICAL = "critical"
+class RefinementAction(Enum):
+    """Actions the director can take to refine a game."""
+    ADD_CONTENT = "add_content"
+    REBALANCE = "rebalance"
+    ADJUST_DIFFICULTY = "adjust_difficulty"
+    INCREASE_VARIETY = "increase_variety"
+    FIX_COHERENCE = "fix_coherence"
+    IMPROVE_PACING = "improve_pacing"
+    NONE = "none"
+
+
+# =============================================================================
+# Data Classes
+# =============================================================================
 
 
 @dataclass
-class CreativeBrief:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    project_name: str = "Untitled Project"
-    genre: str = "platformer"
-    target_audience: str = "general"
-    art_style: str = "pixel_art"
-    core_pillars: List[str] = field(default_factory=lambda: ["fun", "accessible"])
-    tone: str = "lighthearted"
-    scope: str = "small"
-    created_at: float = field(default_factory=time.time)
-    updated_at: float = field(default_factory=time.time)
+class QualityScore:
+    """Multi-dimensional quality assessment of a game."""
+    engagement: float = 0.0
+    difficulty: float = 0.0
+    variety: float = 0.0
+    coherence: float = 0.0
+    pacing: float = 0.0
+    completeness: float = 0.0
+
+    @property
+    def overall(self) -> float:
+        """Weighted overall quality score (0-10)."""
+        weights = {
+            "engagement": 0.25,
+            "difficulty": 0.15,
+            "variety": 0.15,
+            "coherence": 0.20,
+            "pacing": 0.10,
+            "completeness": 0.15,
+        }
+        total = (
+            self.engagement * weights["engagement"]
+            + self.difficulty * weights["difficulty"]
+            + self.variety * weights["variety"]
+            + self.coherence * weights["coherence"]
+            + self.pacing * weights["pacing"]
+            + self.completeness * weights["completeness"]
+        )
+        return round(total, 2)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
-            "project_name": self.project_name,
-            "genre": self.genre,
-            "target_audience": self.target_audience,
-            "art_style": self.art_style,
-            "core_pillars": self.core_pillars,
-            "tone": self.tone,
-            "scope": self.scope,
-            "created_at": self.created_at,
-            "updated_at": self.updated_at,
+            "engagement": round(self.engagement, 2),
+            "difficulty": round(self.difficulty, 2),
+            "variety": round(self.variety, 2),
+            "coherence": round(self.coherence, 2),
+            "pacing": round(self.pacing, 2),
+            "completeness": round(self.completeness, 2),
+            "overall": self.overall,
         }
 
 
 @dataclass
-class CreativeDecision:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    brief_id: str = ""
-    title: str = ""
-    description: str = ""
-    role: DirectorRole = DirectorRole.CREATIVE_LEAD
-    status: DecisionStatus = DecisionStatus.PENDING
-    rationale: str = ""
-    alternatives: List[str] = field(default_factory=list)
-    impacted_agents: List[str] = field(default_factory=list)
-    severity: SeverityLevel = SeverityLevel.INFO
-    created_at: float = field(default_factory=time.time)
-    resolved_at: Optional[float] = None
+class SimulationResult:
+    """Result of a simulated playtest session."""
+    session_id: str
+    completion_rate: float  # 0-1, how far the simulated player got
+    death_count: int
+    collectible_rate: float  # 0-1, fraction of collectibles gathered
+    time_to_first_death: float  # seconds
+    engagement_score: float
+    difficulty_score: float
+    notes: List[str] = field(default_factory=list)
 
     def to_dict(self) -> Dict[str, Any]:
         return {
-            "id": self.id,
-            "brief_id": self.brief_id,
-            "title": self.title,
-            "description": self.description,
-            "role": self.role.value,
-            "status": self.status.value,
-            "rationale": self.rationale,
-            "alternatives": self.alternatives,
-            "impacted_agents": self.impacted_agents,
-            "severity": self.severity.value,
-            "created_at": self.created_at,
-            "resolved_at": self.resolved_at,
+            "session_id": self.session_id,
+            "completion_rate": round(self.completion_rate, 3),
+            "death_count": self.death_count,
+            "collectible_rate": round(self.collectible_rate, 3),
+            "time_to_first_death": round(self.time_to_first_death, 1),
+            "engagement_score": round(self.engagement_score, 2),
+            "difficulty_score": round(self.difficulty_score, 2),
+            "notes": self.notes,
         }
 
 
 @dataclass
-class AgentTask:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    brief_id: str = ""
-    assigned_agent: str = ""
-    task_description: str = ""
-    priority: int = 5
-    dependencies: List[str] = field(default_factory=list)
-    status: DecisionStatus = DecisionStatus.PENDING
-    result: Optional[Dict[str, Any]] = None
-    created_at: float = field(default_factory=time.time)
-    completed_at: Optional[float] = None
+class DirectorResult:
+    """Final result of a director creation session."""
+    session_id: str
+    success: bool
+    html: str
+    quality: QualityScore
+    simulations: List[SimulationResult]
+    iterations: int
+    refinement_actions: List[str]
+    duration_s: float
+    error: Optional[str]
+    metadata: Dict[str, Any]
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "brief_id": self.brief_id,
-            "assigned_agent": self.assigned_agent,
-            "task_description": self.task_description,
-            "priority": self.priority,
-            "dependencies": self.dependencies,
-            "status": self.status.value,
-            "result": self.result,
-            "created_at": self.created_at,
-            "completed_at": self.completed_at,
+    def to_dict(self, include_html: bool = True) -> Dict[str, Any]:
+        result = {
+            "session_id": self.session_id,
+            "success": self.success,
+            "html_length": len(self.html),
+            "quality": self.quality.to_dict(),
+            "simulations": [s.to_dict() for s in self.simulations],
+            "iterations": self.iterations,
+            "refinement_actions": self.refinement_actions,
+            "duration_s": round(self.duration_s, 3),
+            "error": self.error,
+            "metadata": self.metadata,
+        }
+        if include_html:
+            result["html"] = self.html
+        return result
+
+
+# =============================================================================
+# Simulation Engine - WorldX-inspired playtest simulation
+# =============================================================================
+
+
+class SimulationEngine:
+    """
+    Simulates playtest sessions to evaluate a game without requiring a
+    human player. Uses heuristic models of player behavior to estimate
+    completion rates, difficulty, and engagement.
+    """
+
+    def __init__(self) -> None:
+        self._rng = random.Random(42)
+
+    def simulate(
+        self,
+        game_config: Any,
+        num_sessions: int = 3,
+    ) -> List[SimulationResult]:
+        """
+        Run multiple simulated playtest sessions on a game configuration.
+
+        Args:
+            game_config: A GameConfig from the GameRuntime
+            num_sessions: Number of simulated players to run
+
+        Returns:
+            List of SimulationResult, one per session
+        """
+        results: List[SimulationResult] = []
+
+        levels = getattr(game_config, "levels", []) or []
+        level_count = max(1, len(levels))
+        enemy_count = getattr(game_config, "enemy_count", 0)
+        collectible_count = getattr(game_config, "collectible_count", 0)
+        lives = getattr(game_config, "lives", 3)
+        gravity = getattr(game_config, "gravity", 0.0)
+        move_speed = getattr(game_config, "move_speed", 3.0)
+        genre = getattr(game_config, "genre", "custom")
+
+        for session_idx in range(num_sessions):
+            session_id = f"sim_{uuid.uuid4().hex[:8]}"
+
+            # Model player skill with variation across sessions
+            player_skill = 0.4 + self._rng.random() * 0.5  # 0.4 - 0.9
+
+            # Simulate level-by-level progression
+            deaths = 0
+            levels_completed = 0
+            collectibles_gathered = 0
+            time_to_first_death = 0.0
+            notes: List[str] = []
+
+            for lvl_idx in range(level_count):
+                level = levels[lvl_idx] if lvl_idx < len(levels) else None
+                difficulty = getattr(level, "difficulty", 0.3 + lvl_idx * 0.12) if level else 0.3
+
+                # Probability of completing this level
+                # Higher player skill and lower difficulty = higher chance
+                base_chance = player_skill * (1.0 - difficulty * 0.6)
+                # Genre adjustments
+                if genre in ("puzzle", "music"):
+                    base_chance *= 1.1  # Puzzles are more deterministic
+                elif genre in ("boss_battle", "shooter"):
+                    base_chance *= 0.85  # Action games are harder
+
+                # Random factor for replayability
+                completion_chance = max(0.1, min(0.95, base_chance + self._rng.uniform(-0.1, 0.1)))
+
+                if self._rng.random() < completion_chance:
+                    levels_completed += 1
+                    # Collect a fraction of collectibles
+                    fraction = player_skill * (0.6 + self._rng.random() * 0.4)
+                    collectibles_gathered += int(collectible_count * fraction)
+                else:
+                    # Player died on this level
+                    if deaths == 0:
+                        time_to_first_death = 15.0 + self._rng.uniform(0, 45.0)
+                    deaths += 1
+                    # Check if player has lives remaining
+                    if deaths >= lives:
+                        break
+                    # Retry with slightly improved odds (learning)
+                    player_skill = min(0.95, player_skill + 0.05)
+                    if self._rng.random() < completion_chance * 1.15:
+                        levels_completed += 1
+                        collectibles_gathered += int(collectible_count * 0.4)
+
+            completion_rate = levels_completed / level_count
+            collectible_rate = collectibles_gathered / max(1, collectible_count * level_count)
+
+            # Engagement: high completion + collectibles + low deaths
+            engagement = (
+                completion_rate * 40
+                + min(1.0, collectible_rate) * 25
+                + max(0, 1.0 - deaths / (lives * 2)) * 35
+            )
+            engagement = min(10.0, engagement)
+
+            # Difficulty: balanced if completion is 40-80%
+            if completion_rate > 0.8:
+                difficulty_score = max(2.0, 8.0 - (completion_rate - 0.8) * 20)  # Too easy
+                notes.append("Game may be too easy — consider increasing enemy count or difficulty")
+            elif completion_rate < 0.3:
+                difficulty_score = min(10.0, 8.0 + (0.3 - completion_rate) * 20)  # Too hard
+                notes.append("Game may be too difficult — consider reducing enemy count or adding checkpoints")
+            else:
+                difficulty_score = 6.0 + self._rng.uniform(-1.0, 1.5)  # Well balanced
+                notes.append("Difficulty feels well-balanced")
+
+            if collectible_rate < 0.3:
+                notes.append("Collectibles are hard to reach — consider repositioning")
+            if gravity > 0 and move_speed < 3.5:
+                notes.append("Player movement feels slow for a gravity-based game")
+
+            results.append(SimulationResult(
+                session_id=session_id,
+                completion_rate=completion_rate,
+                death_count=deaths,
+                collectible_rate=min(1.0, collectible_rate),
+                time_to_first_death=time_to_first_death,
+                engagement_score=round(engagement, 2),
+                difficulty_score=round(difficulty_score, 2),
+                notes=notes,
+            ))
+
+        return results
+
+
+# =============================================================================
+# Quality Evaluator
+# =============================================================================
+
+
+class QualityEvaluator:
+    """Evaluates game quality from simulation results and content analysis."""
+
+    def evaluate(
+        self,
+        game_config: Any,
+        simulations: List[SimulationResult],
+        gdd: Any = None,
+    ) -> QualityScore:
+        """Compute multi-dimensional quality scores."""
+        score = QualityScore()
+
+        if not simulations:
+            return score
+
+        # Engagement: average engagement from simulations
+        score.engagement = sum(s.engagement_score for s in simulations) / len(simulations)
+
+        # Difficulty: average difficulty, penalize extremes
+        avg_diff = sum(s.difficulty_score for s in simulations) / len(simulations)
+        score.difficulty = avg_diff
+
+        # Variety: based on entity types, level count, genre features
+        levels = getattr(game_config, "levels", []) or []
+        entity_types = set()
+        for lvl in levels:
+            for ent in getattr(lvl, "entities", []):
+                entity_types.add(getattr(ent, "entity_type", "unknown"))
+        variety = min(10.0, len(entity_types) * 1.2 + len(levels) * 0.8)
+        score.variety = variety
+
+        # Coherence: based on GDD quality score and narrative consistency
+        gdd_quality = getattr(gdd, "quality_score", 5.0) if gdd else 5.0
+        score.coherence = min(10.0, gdd_quality)
+
+        # Pacing: based on level count and difficulty curve
+        if len(levels) > 1:
+            difficulties = [getattr(lvl, "difficulty", 0.5) for lvl in levels]
+            # Good pacing = gradually increasing difficulty
+            diffs_sorted = sorted(difficulties)
+            pacing_score = 7.0
+            if difficulties == diffs_sorted or all(
+                difficulties[i] <= difficulties[i + 1] + 0.15
+                for i in range(len(difficulties) - 1)
+            ):
+                pacing_score = 8.5
+            score.pacing = pacing_score
+        else:
+            score.pacing = 5.0
+
+        # Completeness: based on having all content sections filled
+        completeness = 6.0
+        if gdd:
+            if getattr(gdd, "world", None) is not None:
+                completeness += 0.8
+            if getattr(gdd, "characters", None) and len(gdd.characters) > 0:
+                completeness += 0.8
+            if getattr(gdd, "narrative", None) is not None:
+                completeness += 0.8
+            if getattr(gdd, "mechanics", None) is not None:
+                completeness += 0.8
+            if getattr(gdd, "levels", None) is not None and len(gdd.levels.levels) > 0:
+                completeness += 0.8
+        score.completeness = min(10.0, completeness)
+
+        return score
+
+
+# =============================================================================
+# Refinement Advisor
+# =============================================================================
+
+
+class RefinementAdvisor:
+    """Analyzes quality scores and simulation results to suggest refinements."""
+
+    def advise(
+        self,
+        quality: QualityScore,
+        simulations: List[SimulationResult],
+        game_config: Any,
+    ) -> List[Tuple[RefinementAction, str]]:
+        """Return a list of refinement actions with explanations."""
+        actions: List[Tuple[RefinementAction, str]] = []
+
+        # Check engagement
+        if quality.engagement < 5.0:
+            actions.append((
+                RefinementAction.ADD_CONTENT,
+                "Engagement is low — adding more interactive elements and collectibles",
+            ))
+
+        # Check difficulty balance
+        avg_completion = sum(s.completion_rate for s in simulations) / max(1, len(simulations))
+        if avg_completion > 0.85:
+            actions.append((
+                RefinementAction.ADJUST_DIFFICULTY,
+                "Completion rate too high — increasing enemy count and difficulty",
+            ))
+        elif avg_completion < 0.3:
+            actions.append((
+                RefinementAction.ADJUST_DIFFICULTY,
+                "Completion rate too low — reducing enemy count and adding collectibles",
+            ))
+
+        # Check variety
+        if quality.variety < 5.0:
+            actions.append((
+                RefinementAction.INCREASE_VARIETY,
+                "Low variety — diversifying entity types and level layouts",
+            ))
+
+        # Check coherence
+        if quality.coherence < 6.0:
+            actions.append((
+                RefinementAction.FIX_COHERENCE,
+                "Coherence issues detected — aligning narrative and mechanics",
+            ))
+
+        # Check pacing
+        if quality.pacing < 6.0:
+            actions.append((
+                RefinementAction.IMPROVE_PACING,
+                "Pacing needs work — smoothing the difficulty curve",
+            ))
+
+        if not actions:
+            actions.append((
+                RefinementAction.NONE,
+                "Game quality is satisfactory — no refinement needed",
+            ))
+
+        return actions
+
+
+# =============================================================================
+# Tool Registry - Hermes-inspired function calling
+# =============================================================================
+
+
+class ToolRegistry:
+    """
+    Registry of tools the director can invoke. Each tool is a named
+    callable with a description, enabling a function-calling pattern
+    where the director selects and executes tools based on context.
+    """
+
+    def __init__(self) -> None:
+        self._tools: Dict[str, Dict[str, Any]] = {}
+        self._register_builtin_tools()
+
+    def _register_builtin_tools(self) -> None:
+        """Register the built-in director tools."""
+        self.register("synthesize", "Generate game content from a prompt", self._tool_synthesize)
+        self.register("build", "Build playable HTML from a game design document", self._tool_build)
+        self.register("simulate", "Run simulated playtest sessions", self._tool_simulate)
+        self.register("evaluate", "Evaluate game quality across dimensions", self._tool_evaluate)
+        self.register("refine", "Analyze and suggest refinements", self._tool_refine)
+
+    def register(self, name: str, description: str, handler: Callable) -> None:
+        """Register a new tool."""
+        self._tools[name] = {
+            "name": name,
+            "description": description,
+            "handler": handler,
         }
 
+    def get_tool(self, name: str) -> Optional[Callable]:
+        """Get a tool handler by name."""
+        entry = self._tools.get(name)
+        return entry["handler"] if entry else None
 
-@dataclass
-class ConsistencyReport:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    brief_id: str = ""
-    agent_a: str = ""
-    agent_b: str = ""
-    issue_description: str = ""
-    severity: SeverityLevel = SeverityLevel.WARNING
-    recommendation: str = ""
-    is_resolved: bool = False
-    created_at: float = field(default_factory=time.time)
+    def list_tools(self) -> List[Dict[str, str]]:
+        """List all registered tools."""
+        return [{"name": t["name"], "description": t["description"]} for t in self._tools.values()]
 
-    def to_dict(self) -> Dict[str, Any]:
-        return {
-            "id": self.id,
-            "brief_id": self.brief_id,
-            "agent_a": self.agent_a,
-            "agent_b": self.agent_b,
-            "issue_description": self.issue_description,
-            "severity": self.severity.value,
-            "recommendation": self.recommendation,
-            "is_resolved": self.is_resolved,
-            "created_at": self.created_at,
-        }
+    def _tool_synthesize(self, prompt: str, **kwargs: Any) -> Any:
+        """Tool: synthesize game content."""
+        from sparkai.agent.agent_game_content_synthesizer import get_content_synthesizer
+        synth = get_content_synthesizer()
+        if not synth._initialized:
+            synth.initialize()
+        return synth.synthesize(prompt, **kwargs)
+
+    def _tool_build(self, gdd: Any) -> Any:
+        """Tool: build playable HTML."""
+        from sparkai.engine.engine_game_runtime import get_game_runtime
+        runtime = get_game_runtime()
+        return runtime.build_from_gdd(gdd)
+
+    def _tool_simulate(self, game_config: Any, num_sessions: int = 3) -> List[SimulationResult]:
+        """Tool: simulate playtest sessions."""
+        engine = SimulationEngine()
+        return engine.simulate(game_config, num_sessions)
+
+    def _tool_evaluate(self, game_config: Any, simulations: List[SimulationResult], gdd: Any = None) -> QualityScore:
+        """Tool: evaluate quality."""
+        evaluator = QualityEvaluator()
+        return evaluator.evaluate(game_config, simulations, gdd)
+
+    def _tool_refine(self, quality: QualityScore, simulations: List[SimulationResult], game_config: Any) -> List[Tuple[RefinementAction, str]]:
+        """Tool: suggest refinements."""
+        advisor = RefinementAdvisor()
+        return advisor.advise(quality, simulations, game_config)
 
 
-@dataclass
-class ProjectMilestone:
-    id: str = field(default_factory=lambda: uuid.uuid4().hex)
-    brief_id: str = ""
-    name: str = ""
-    phase: ProjectPhase = ProjectPhase.CONCEPT
-    target_completion: float = 0.0
-    actual_completion: Optional[float] = None
-    tasks_required: int = 0
-    tasks_completed: int = 0
-    is_blocked: bool = False
-    blocker_description: str = ""
-
-    def to_dict(self) -> Dict[str, Any]:
-        completion_pct = 0.0
-        if self.tasks_required > 0:
-            completion_pct = (self.tasks_completed / self.tasks_required) * 100.0
-        return {
-            "id": self.id,
-            "brief_id": self.brief_id,
-            "name": self.name,
-            "phase": self.phase.value,
-            "target_completion": self.target_completion,
-            "actual_completion": self.actual_completion,
-            "tasks_required": self.tasks_required,
-            "tasks_completed": self.tasks_completed,
-            "completion_percentage": round(completion_pct, 1),
-            "is_blocked": self.is_blocked,
-            "blocker_description": self.blocker_description,
-        }
+# =============================================================================
+# Game Director - main entry point
+# =============================================================================
 
 
 class GameDirector:
-    """Central orchestrator for AI-native game development."""
+    """
+    The AI Game Director orchestrates the complete game creation lifecycle.
+
+    Wraps the GameContentSynthesizer and GameRuntime with judgment,
+    simulation, and iteration. Can autonomously produce, evaluate, and
+    refine games to maximize quality.
+
+    The director follows a generate-evaluate-refine loop:
+    1. Synthesize content from the prompt
+    2. Build a playable game
+    3. Simulate playtest sessions
+    4. Evaluate quality across dimensions
+    5. If quality is below threshold, refine and regenerate
+    6. Return the best game produced
+
+    Usage:
+        director = GameDirector.get_instance()
+        director.initialize()
+        result = director.direct("Design a platformer with gems")
+    """
 
     _instance: Optional["GameDirector"] = None
-    _lock = threading.RLock()
+    _instance_lock = threading.RLock()
+
+    # Quality threshold for accepting a game without further refinement
+    QUALITY_THRESHOLD: float = 6.5
+    # Maximum refinement iterations
+    MAX_ITERATIONS: int = 3
 
     def __init__(self) -> None:
-        self._briefs: Dict[str, CreativeBrief] = {}
-        self._decisions: Dict[str, List[CreativeDecision]] = {}
-        self._tasks: Dict[str, List[AgentTask]] = {}
-        self._consistency_reports: Dict[str, List[ConsistencyReport]] = {}
-        self._milestones: Dict[str, List[ProjectMilestone]] = {}
-        self._agent_registry: Dict[str, str] = {}
-        self._decision_log: List[Dict[str, Any]] = []
-        self._phase = ProjectPhase.CONCEPT
-        self._is_initialized = False
+        if GameDirector._instance is not None:
+            raise RuntimeError("Use GameDirector.get_instance()")
+        self._initialized: bool = False
+        self._tools = ToolRegistry()
+        self._simulator = SimulationEngine()
+        self._evaluator = QualityEvaluator()
+        self._advisor = RefinementAdvisor()
+        self._session_history: deque = deque(maxlen=50)
+        self._lock = threading.RLock()
 
     @classmethod
     def get_instance(cls) -> "GameDirector":
         if cls._instance is None:
-            with cls._lock:
+            with cls._instance_lock:
                 if cls._instance is None:
                     cls._instance = cls()
         return cls._instance
 
-    # ---- Creative Brief Management ----
+    def initialize(self) -> None:
+        """Initialize the director and its dependencies."""
+        with self._lock:
+            if self._initialized:
+                return
+            # Ensure synthesizer and runtime are available
+            try:
+                from sparkai.agent.agent_game_content_synthesizer import get_content_synthesizer
+                synth = get_content_synthesizer()
+                if not synth._initialized:
+                    synth.initialize()
+            except Exception as exc:
+                logger.warning("Synthesizer init deferred: %s", exc)
 
-    def create_brief(self,
-                     project_name: str = "Untitled Project",
-                     genre: str = "platformer",
-                     art_style: str = "pixel_art",
-                     tone: str = "lighthearted",
-                     core_pillars: Optional[List[str]] = None,
-                     target_audience: str = "general",
-                     scope: str = "small") -> CreativeBrief:
-        brief = CreativeBrief(
-            project_name=project_name,
-            genre=genre,
-            art_style=art_style,
-            tone=tone,
-            core_pillars=core_pillars or ["fun", "accessible"],
-            target_audience=target_audience,
-            scope=scope,
-        )
-        self._briefs[brief.id] = brief
-        self._decisions[brief.id] = []
-        self._tasks[brief.id] = []
-        self._consistency_reports[brief.id] = []
-        self._milestones[brief.id] = []
-        self._seed_milestones(brief.id)
-        self._decision_log.append({
-            "action": "brief_created",
-            "brief_id": brief.id,
-            "project_name": project_name,
-            "timestamp": time.time(),
-        })
-        return brief
+            try:
+                from sparkai.engine.engine_game_runtime import get_game_runtime
+                get_game_runtime()  # Ensures singleton exists
+            except Exception as exc:
+                logger.warning("Runtime init deferred: %s", exc)
 
-    def get_brief(self, brief_id: str) -> Optional[CreativeBrief]:
-        return self._briefs.get(brief_id)
+            self._initialized = True
+            logger.info("GameDirector initialized")
 
-    def list_briefs(self) -> List[CreativeBrief]:
-        return list(self._briefs.values())
+    def direct(
+        self,
+        prompt: str,
+        genre_hint: Optional[str] = None,
+        max_iterations: Optional[int] = None,
+    ) -> DirectorResult:
+        """
+        Direct the complete game creation lifecycle for a prompt.
 
-    def update_brief(self, brief_id: str, **kwargs: Any) -> Optional[CreativeBrief]:
-        brief = self._briefs.get(brief_id)
-        if brief is None:
-            return None
-        for key, value in kwargs.items():
-            if hasattr(brief, key):
-                setattr(brief, key, value)
-        brief.updated_at = time.time()
-        self._decision_log.append({
-            "action": "brief_updated",
-            "brief_id": brief_id,
-            "changes": kwargs,
-            "timestamp": time.time(),
-        })
-        return brief
+        This is the primary entry point. Synthesizes content, builds the
+        game, simulates playtests, evaluates quality, and iterates if needed.
 
-    # ---- Creative Decision Engine ----
+        Args:
+            prompt: Natural-language game description
+            genre_hint: Optional genre hint
+            max_iterations: Override max refinement iterations
 
-    def propose_decision(self,
-                         brief_id: str,
-                         title: str,
-                         description: str,
-                         role: str = "creative_lead",
-                         severity: str = "info",
-                         impacted_agents: Optional[List[str]] = None,
-                         alternatives: Optional[List[str]] = None) -> Optional[CreativeDecision]:
-        brief = self._briefs.get(brief_id)
-        if brief is None:
-            return None
+        Returns:
+            DirectorResult with the final playable game and quality metrics
+        """
+        if not self._initialized:
+            self.initialize()
+
+        session_id = f"director_{uuid.uuid4().hex[:12]}"
+        start_time = time.time()
+        max_iter = max_iterations or self.MAX_ITERATIONS
+
         try:
-            director_role = DirectorRole(role.lower())
-        except ValueError:
-            director_role = DirectorRole.CREATIVE_LEAD
-        try:
-            sev = SeverityLevel(severity.lower())
-        except ValueError:
-            sev = SeverityLevel.INFO
-        decision = CreativeDecision(
-            brief_id=brief_id,
-            title=title,
-            description=description,
-            role=director_role,
-            severity=sev,
-            impacted_agents=impacted_agents or [],
-            alternatives=alternatives or [],
-        )
-        self._decisions[brief_id].append(decision)
-        self._decision_log.append({
-            "action": "decision_proposed",
-            "brief_id": brief_id,
-            "decision_id": decision.id,
-            "title": title,
-            "timestamp": time.time(),
-        })
-        return decision
-
-    def resolve_decision(self,
-                         brief_id: str,
-                         decision_id: str,
-                         status: str = "approved",
-                         rationale: str = "") -> Optional[CreativeDecision]:
-        decisions = self._decisions.get(brief_id, [])
-        for d in decisions:
-            if d.id == decision_id:
-                try:
-                    d.status = DecisionStatus(status.lower())
-                except ValueError:
-                    d.status = DecisionStatus.APPROVED
-                d.rationale = rationale
-                d.resolved_at = time.time()
-                self._decision_log.append({
-                    "action": "decision_resolved",
-                    "decision_id": decision_id,
-                    "status": d.status.value,
-                    "timestamp": time.time(),
-                })
-                return d
-        return None
-
-    def get_pending_decisions(self, brief_id: str) -> List[CreativeDecision]:
-        decisions = self._decisions.get(brief_id, [])
-        return [d for d in decisions if d.status == DecisionStatus.PENDING]
-
-    def get_decisions(self, brief_id: str) -> List[CreativeDecision]:
-        return self._decisions.get(brief_id, [])
-
-    # ---- Agent Task Delegation ----
-
-    def delegate_task(self,
-                      brief_id: str,
-                      agent_name: str,
-                      description: str,
-                      priority: int = 5,
-                      dependencies: Optional[List[str]] = None) -> Optional[AgentTask]:
-        brief = self._briefs.get(brief_id)
-        if brief is None:
-            return None
-        task = AgentTask(
-            brief_id=brief_id,
-            assigned_agent=agent_name,
-            task_description=description,
-            priority=priority,
-            dependencies=dependencies or [],
-        )
-        self._tasks[brief_id].append(task)
-        self._agent_registry[agent_name] = brief_id
-        self._decision_log.append({
-            "action": "task_delegated",
-            "brief_id": brief_id,
-            "agent": agent_name,
-            "task_id": task.id,
-            "timestamp": time.time(),
-        })
-        return task
-
-    def complete_task(self,
-                      brief_id: str,
-                      task_id: str,
-                      result: Optional[Dict[str, Any]] = None) -> Optional[AgentTask]:
-        tasks = self._tasks.get(brief_id, [])
-        for t in tasks:
-            if t.id == task_id:
-                t.status = DecisionStatus.APPROVED
-                t.result = result
-                t.completed_at = time.time()
-                self._update_milestone_progress(brief_id)
-                self._decision_log.append({
-                    "action": "task_completed",
-                    "task_id": task_id,
-                    "timestamp": time.time(),
-                })
-                return t
-        return None
-
-    def get_tasks(self, brief_id: str, agent_name: Optional[str] = None) -> List[AgentTask]:
-        tasks = self._tasks.get(brief_id, [])
-        if agent_name:
-            return [t for t in tasks if t.assigned_agent == agent_name]
-        return tasks
-
-    def register_agent(self, agent_name: str, brief_id: str) -> None:
-        self._agent_registry[agent_name] = brief_id
-
-    def get_registered_agents(self) -> Dict[str, str]:
-        return dict(self._agent_registry)
-
-    # ---- Consistency Validation ----
-
-    def report_consistency_issue(self,
-                                 brief_id: str,
-                                 agent_a: str,
-                                 agent_b: str,
-                                 description: str,
-                                 severity: str = "warning",
-                                 recommendation: str = "") -> Optional[ConsistencyReport]:
-        brief = self._briefs.get(brief_id)
-        if brief is None:
-            return None
-        try:
-            sev = SeverityLevel(severity.lower())
-        except ValueError:
-            sev = SeverityLevel.WARNING
-        report = ConsistencyReport(
-            brief_id=brief_id,
-            agent_a=agent_a,
-            agent_b=agent_b,
-            issue_description=description,
-            severity=sev,
-            recommendation=recommendation,
-        )
-        self._consistency_reports[brief_id].append(report)
-        return report
-
-    def resolve_consistency_issue(self, brief_id: str, report_id: str) -> Optional[ConsistencyReport]:
-        reports = self._consistency_reports.get(brief_id, [])
-        for r in reports:
-            if r.id == report_id:
-                r.is_resolved = True
-                return r
-        return None
-
-    def get_consistency_reports(self, brief_id: str,
-                                 unresolved_only: bool = False) -> List[ConsistencyReport]:
-        reports = self._consistency_reports.get(brief_id, [])
-        if unresolved_only:
-            return [r for r in reports if not r.is_resolved]
-        return reports
-
-    # ---- Progress Tracking ----
-
-    def _seed_milestones(self, brief_id: str) -> None:
-        phases = [
-            (ProjectPhase.CONCEPT, "Concept Document", 2),
-            (ProjectPhase.PRE_PRODUCTION, "Core Prototype", 4),
-            (ProjectPhase.PRODUCTION, "Full Content Build", 8),
-            (ProjectPhase.POLISH, "Polish & Refine", 4),
-            (ProjectPhase.SHIPPING, "Platform Export", 2),
-        ]
-        now = time.time()
-        for i, (phase, name, tasks) in enumerate(phases):
-            target = now + (i + 1) * 86400 * 7
-            ms = ProjectMilestone(
-                brief_id=brief_id,
-                name=name,
-                phase=phase,
-                target_completion=target,
-                tasks_required=tasks,
+            # Phase 1: Synthesize
+            synthesize_tool = self._tools.get_tool("synthesize")
+            synth_result = synthesize_tool(
+                prompt,
+                genre_hint=genre_hint,
             )
-            self._milestones[brief_id].append(ms)
+            if not synth_result.success or synth_result.gdd is None:
+                return DirectorResult(
+                    session_id=session_id,
+                    success=False,
+                    html="",
+                    quality=QualityScore(),
+                    simulations=[],
+                    iterations=0,
+                    refinement_actions=[],
+                    duration_s=round(time.time() - start_time, 3),
+                    error=synth_result.error or "Synthesis failed",
+                    metadata={},
+                )
 
-    def _update_milestone_progress(self, brief_id: str) -> None:
-        total_completed = sum(
-            1 for t in self._tasks.get(brief_id, [])
-            if t.status == DecisionStatus.APPROVED
-        )
-        milestones = self._milestones.get(brief_id, [])
-        cumulative = 0
-        for ms in milestones:
-            cumulative += ms.tasks_required
-            completed_for_ms = min(total_completed, cumulative)
-            prev_cumulative = cumulative - ms.tasks_required
-            ms.tasks_completed = max(0, completed_for_ms - prev_cumulative)
-            if ms.tasks_completed >= ms.tasks_required and ms.actual_completion is None:
-                ms.actual_completion = time.time()
-                self._phase = ms.phase
+            gdd = synth_result.gdd
 
-    def get_milestones(self, brief_id: str) -> List[ProjectMilestone]:
-        return self._milestones.get(brief_id, [])
+            # Phase 2: Build
+            build_tool = self._tools.get_tool("build")
+            build_result = build_tool(gdd)
+            if not build_result.success:
+                return DirectorResult(
+                    session_id=session_id,
+                    success=False,
+                    html="",
+                    quality=QualityScore(),
+                    simulations=[],
+                    iterations=0,
+                    refinement_actions=[],
+                    duration_s=round(time.time() - start_time, 3),
+                    error=build_result.error or "Build failed",
+                    metadata={},
+                )
 
-    def get_progress_summary(self, brief_id: str) -> Dict[str, Any]:
-        tasks = self._tasks.get(brief_id, [])
-        decisions = self._decisions.get(brief_id, [])
-        reports = self._consistency_reports.get(brief_id, [])
-        milestones = self._milestones.get(brief_id, [])
-        total_tasks = len(tasks)
-        completed_tasks = sum(1 for t in tasks if t.status == DecisionStatus.APPROVED)
-        pending_decisions = sum(1 for d in decisions if d.status == DecisionStatus.PENDING)
-        unresolved_issues = sum(1 for r in reports if not r.is_resolved)
-        current_milestone = None
-        for ms in milestones:
-            if ms.actual_completion is None:
-                current_milestone = ms.name
-                break
+            game_config = build_result.config
+            best_html = build_result.html
+            best_quality = QualityScore()
+            best_simulations: List[SimulationResult] = []
+            all_refinement_actions: List[str] = []
+            iterations_done = 0
+
+            # Phase 3-5: Simulate, Evaluate, Refine loop
+            for iteration in range(max_iter):
+                iterations_done = iteration + 1
+
+                # Simulate
+                simulations = self._simulator.simulate(game_config, num_sessions=3)
+
+                # Evaluate
+                quality = self._evaluator.evaluate(game_config, simulations, gdd)
+
+                # Track best result
+                if quality.overall > best_quality.overall:
+                    best_quality = quality
+                    best_simulations = simulations
+                    best_html = build_result.html
+
+                # Check if quality is sufficient
+                if quality.overall >= self.QUALITY_THRESHOLD:
+                    logger.info(
+                        "Director: quality %.2f >= threshold %.2f after %d iterations",
+                        quality.overall, self.QUALITY_THRESHOLD, iterations_done,
+                    )
+                    break
+
+                # Advise refinements
+                actions = self._advisor.advise(quality, simulations, game_config)
+                for action, explanation in actions:
+                    all_refinement_actions.append(f"[Iter {iteration + 1}] {action.value}: {explanation}")
+
+                # If no refinement needed, break
+                if all(a[0] == RefinementAction.NONE for a in actions):
+                    break
+
+                # Apply refinements by re-synthesizing with adjusted parameters
+                refined_prompt = self._apply_refinements(prompt, actions, quality)
+                logger.info("Director: iteration %d, refining prompt: %s", iteration + 1, refined_prompt[:80])
+
+                synth_result = synthesize_tool(refined_prompt, genre_hint=genre_hint)
+                if synth_result.success and synth_result.gdd is not None:
+                    gdd = synth_result.gdd
+                    build_result = build_tool(gdd)
+                    if build_result.success:
+                        game_config = build_result.config
+
+            # Finalize
+            duration = time.time() - start_time
+            result = DirectorResult(
+                session_id=session_id,
+                success=True,
+                html=best_html,
+                quality=best_quality,
+                simulations=best_simulations,
+                iterations=iterations_done,
+                refinement_actions=all_refinement_actions,
+                duration_s=round(duration, 3),
+                error=None,
+                metadata={
+                    "prompt": prompt,
+                    "genre": getattr(gdd.concept, "genre", "").value if hasattr(getattr(gdd.concept, "genre", ""), "value") else str(getattr(gdd.concept, "genre", "")),
+                    "title": getattr(gdd.concept, "title", ""),
+                    "quality_threshold": self.QUALITY_THRESHOLD,
+                    "synthesis_result_id": synth_result.result_id,
+                    "tools_available": self._tools.list_tools(),
+                },
+            )
+
+            with self._lock:
+                self._session_history.append({
+                    "session_id": session_id,
+                    "prompt": prompt[:100],
+                    "quality": best_quality.overall,
+                    "iterations": iterations_done,
+                    "duration_s": round(duration, 3),
+                    "timestamp": time.time(),
+                })
+
+            return result
+
+        except Exception as exc:
+            logger.exception("GameDirector.direct failed: %s", exc)
+            return DirectorResult(
+                session_id=session_id,
+                success=False,
+                html="",
+                quality=QualityScore(),
+                simulations=[],
+                iterations=0,
+                refinement_actions=[],
+                duration_s=round(time.time() - start_time, 3),
+                error=str(exc),
+                metadata={},
+            )
+
+    def _apply_refinements(
+        self,
+        original_prompt: str,
+        actions: List[Tuple[RefinementAction, str]],
+        quality: QualityScore,
+    ) -> str:
+        """
+        Apply refinement actions by modifying the prompt to guide re-synthesis.
+
+        Instead of directly editing game data, the director adjusts the
+        prompt to steer the synthesizer toward better content. This keeps
+        the pipeline simple and lets the synthesizer handle the details.
+        """
+        modifiers: List[str] = []
+
+        for action, _ in actions:
+            if action == RefinementAction.ADJUST_DIFFICULTY:
+                avg_completion = quality.engagement / 10.0
+                if avg_completion > 0.7:
+                    modifiers.append("with more enemies and challenging gameplay")
+                else:
+                    modifiers.append("with fewer enemies and more forgiving difficulty")
+            elif action == RefinementAction.ADD_CONTENT:
+                modifiers.append("with rich content, many collectibles, and varied encounters")
+            elif action == RefinementAction.INCREASE_VARIETY:
+                modifiers.append("with diverse environments, multiple enemy types, and varied level designs")
+            elif action == RefinementAction.FIX_COHERENCE:
+                modifiers.append("with a cohesive theme, consistent narrative, and unified visual style")
+            elif action == RefinementAction.IMPROVE_PACING:
+                modifiers.append("with smooth difficulty progression and well-paced levels")
+
+        if not modifiers:
+            return original_prompt
+
+        # Append up to 2 modifiers to avoid overloading the prompt
+        return f"{original_prompt} {', '.join(modifiers[:2])}"
+
+    def get_status(self) -> Dict[str, Any]:
+        """Return director status information."""
         return {
-            "brief_id": brief_id,
-            "phase": self._phase.value,
-            "total_tasks": total_tasks,
-            "completed_tasks": completed_tasks,
-            "completion_pct": round((completed_tasks / total_tasks * 100) if total_tasks > 0 else 0, 1),
-            "pending_decisions": pending_decisions,
-            "unresolved_consistency_issues": unresolved_issues,
-            "active_agents": len(self._agent_registry),
-            "current_milestone": current_milestone,
-            "total_milestones": len(milestones),
+            "status": "ready" if self._initialized else "not_initialized",
+            "sessions_completed": len(self._session_history),
+            "quality_threshold": self.QUALITY_THRESHOLD,
+            "max_iterations": self.MAX_ITERATIONS,
+            "tools": self._tools.list_tools(),
+            "recent_sessions": list(self._session_history)[-5:],
         }
 
-    def get_decision_log(self, limit: int = 50) -> List[Dict[str, Any]]:
-        return self._decision_log[-limit:]
-
-    def get_stats(self) -> Dict[str, Any]:
-        total_tasks = sum(len(v) for v in self._tasks.values())
-        total_completed = sum(
-            1 for tasks in self._tasks.values()
-            for t in tasks if t.status == DecisionStatus.APPROVED
-        )
-        total_decisions = sum(len(v) for v in self._decisions.values())
-        pending_decisions = sum(
-            1 for decisions in self._decisions.values()
-            for d in decisions if d.status == DecisionStatus.PENDING
-        )
-        total_reports = sum(len(v) for v in self._consistency_reports.values())
-        unresolved_reports = sum(
-            1 for reports in self._consistency_reports.values()
-            for r in reports if not r.is_resolved
-        )
-        return {
-            "total_briefs": len(self._briefs),
-            "total_tasks": total_tasks,
-            "tasks_completed": total_completed,
-            "total_decisions": total_decisions,
-            "pending_decisions": pending_decisions,
-            "consistency_reports": total_reports,
-            "unresolved_issues": unresolved_reports,
-            "registered_agents": len(self._agent_registry),
-            "current_phase": self._phase.value,
-            "decision_log_entries": len(self._decision_log),
-        }
+    def get_history(self) -> List[Dict[str, Any]]:
+        """Return the director's session history."""
+        with self._lock:
+            return list(self._session_history)
 
 
 def get_game_director() -> GameDirector:
+    """Convenience function to access the singleton GameDirector."""
     return GameDirector.get_instance()

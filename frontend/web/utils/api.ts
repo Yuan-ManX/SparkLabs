@@ -2,8 +2,8 @@
  * SparkLabs Editor - API Client
  */
 
-export const API_BASE = 'http://localhost:8000/api';
-export const WS_BASE = 'ws://localhost:8000/ws';
+export const API_BASE = '/api';
+export const WS_BASE = `ws://${window.location.host}/ws`;
 
 class ApiClient {
   private baseUrl: string;
@@ -431,6 +431,17 @@ export const llmRouterApi = {
   stats: () => api.get('/llm-router/stats'),
   classify: (prompt: string) =>
     api.post('/llm-router/classify', { prompt }),
+  execute: (data: { task_type?: string; prompt: string; system_prompt?: string; model_id?: string; provider_id?: string; temperature?: number; max_tokens?: number; images?: string[]; use_cache?: boolean }) =>
+    api.post('/llm-router/execute', data),
+  generateImage: (data: { prompt: string; provider_id?: string; model_id?: string; width?: number; height?: number; n?: number }) =>
+    api.post('/llm-router/generate/image', data),
+  generateAudio: (data: { text: string; provider_id?: string; model_id?: string; voice?: string }) =>
+    api.post('/llm-router/generate/audio', data),
+  generateVideo: (data: { prompt: string; provider_id?: string; model_id?: string; duration?: number }) =>
+    api.post('/llm-router/generate/video', data),
+  generate3D: (data: { prompt: string; provider_id?: string; model_id?: string }) =>
+    api.post('/llm-router/generate/3d', data),
+  clearCache: () => api.post('/llm-router/cache/clear'),
 };
 
 export const executorApi = {
@@ -16230,7 +16241,7 @@ export class CollisionApi {
 }
 export const collisionApi = new CollisionApi(api);
 
-// Combined accessor for all Round 52 subsystems
+// Combined accessor for integrated subsystems
 export const round52Api = {
   tool_use: toolUseApi,
   knowledge: knowledgeApi,
@@ -16238,4 +16249,47 @@ export const round52Api = {
   scene_graph: sceneGraphApi,
   event_logic: eventLogicApi,
   collision: collisionApi,
+};
+
+// Game Synthesizer API - AI-native game content synthesis and runtime
+export const gameSynthesizerApi = {
+  status: () => api.get('/agent/game-synthesizer/status'),
+  genres: () => api.get('/agent/game-synthesizer/genres'),
+  history: () => api.get('/agent/game-synthesizer/history'),
+  synthesize: (prompt: string, genreHint?: string, characterCount?: number, levelCountHint?: number) =>
+    api.post('/agent/game-synthesizer/synthesize', {
+      prompt,
+      genre_hint: genreHint,
+      character_count: characterCount || 12,
+      level_count_hint: levelCountHint,
+    }),
+  generate: (prompt: string, genreHint?: string, characterCount?: number, levelCountHint?: number, returnHtml: boolean = true) =>
+    api.post('/agent/game-synthesizer/generate', {
+      prompt,
+      genre_hint: genreHint,
+      character_count: characterCount || 12,
+      level_count_hint: levelCountHint,
+      return_html: returnHtml,
+    }),
+  build: (resultId: string, returnHtml: boolean = true) =>
+    api.post('/agent/game-synthesizer/build', {
+      result_id: resultId,
+      return_html: returnHtml,
+    }),
+  getResult: (resultId: string) => api.get(`/agent/game-synthesizer/result/${resultId}`),
+};
+
+// AI Game Director — orchestrates synthesis, build, playtest, evaluation, and refinement
+export const gameDirectorApi = {
+  status: () => api.get('/agent/game-director/status'),
+  capabilities: () => api.get('/agent/game-director/capabilities'),
+  history: () => api.get('/agent/game-director/history'),
+  direct: (prompt: string, genreHint?: string, maxIterations?: number, returnHtml: boolean = true) =>
+    api.post('/agent/game-director/direct', {
+      prompt,
+      genre_hint: genreHint,
+      max_iterations: maxIterations,
+      return_html: returnHtml,
+    }),
+  getResult: (sessionId: string) => api.get(`/agent/game-director/result/${sessionId}`),
 };
