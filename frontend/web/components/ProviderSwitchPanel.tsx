@@ -107,7 +107,7 @@ const ProviderSwitchPanel: React.FC = () => {
       await fetch(`${apiBase}/provider-switch/register-provider`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ name: 'NewProvider', provider_type: 'custom', base_url: 'http://localhost:8080' }),
+        body: JSON.stringify({ name: 'NewProvider', provider_type: 'custom', base_url: 'https://api.custom-provider.com' }),
       });
       showMessage('Provider registered successfully', 'success');
       fetchStats();
@@ -116,7 +116,7 @@ const ProviderSwitchPanel: React.FC = () => {
         id: uid(),
         name: 'Custom Provider',
         provider_type: 'custom',
-        base_url: 'http://localhost:8080',
+        base_url: 'https://api.custom-provider.com',
         status: 'CONNECTED',
         model_count: 0,
       };

@@ -25,7 +25,7 @@ Server Lifecycle:
 Usage:
     bridge = MCPBridge()
     await bridge.connect_stdio("image_generator", ["python", "-m", "mcp_server"])
-    await bridge.connect_http("asset_api", "http://localhost:9000/sse")
+    await bridge.connect_http("asset_api", "http://asset-service/sse")
     tools = bridge.list_available_tools()
     result = await bridge.invoke("image_generator", "generate_sprite", {...})
 """

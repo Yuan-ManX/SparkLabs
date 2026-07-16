@@ -4,7 +4,7 @@ SparkLabs Agent - World Synthesizer
 AI-driven procedural world generation system that synthesizes complete game
 worlds from high-level descriptions. Combines terrain generation, ecosystem
 simulation, structure placement, and narrative seeding to create coherent,
-playable game environments. Inspired by WorldX's world simulation capabilities.
+playable game environments with integrated world simulation capabilities.
 
 Architecture:
   AgentWorldSynthesizer (Singleton)

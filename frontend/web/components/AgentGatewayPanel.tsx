@@ -119,12 +119,12 @@ const AgentGatewayPanel: React.FC = () => {
   const apiBase = API_ROOT + '/agent';
 
   const defaultEndpoints: GatewayEndpoint[] = [
-    { id: uid(), name: 'Game Director API', url: 'ws://localhost:9001/director', protocol: 'ws', status: 'connected', messages_routed: 45231, last_activity: '3s ago', uptime: '4h 22m' },
-    { id: uid(), name: 'Balance Engine', url: 'http://localhost:9002/balance', protocol: 'http', status: 'connected', messages_routed: 12890, last_activity: '12s ago', uptime: '3h 15m' },
-    { id: uid(), name: 'Narrative Service', url: 'grpc://localhost:9003/narrative', protocol: 'grpc', status: 'connecting', messages_routed: 7845, last_activity: '45s ago', uptime: '2h 08m' },
-    { id: uid(), name: 'Player Analytics', url: 'mqtt://localhost:9004/analytics', protocol: 'mqtt', status: 'connected', messages_routed: 32100, last_activity: '5s ago', uptime: '4h 50m' },
-    { id: uid(), name: 'Dev Assistant Hub', url: 'ws://localhost:9005/dev', protocol: 'ws', status: 'error', messages_routed: 340, last_activity: '5m ago', uptime: '10m' },
-    { id: uid(), name: 'Playtest Simulator', url: 'http://localhost:9006/playtest', protocol: 'http', status: 'disconnected', messages_routed: 5600, last_activity: '1h ago', uptime: '0m' },
+    { id: uid(), name: 'Game Director API', url: 'ws://director-service/director', protocol: 'ws', status: 'connected', messages_routed: 45231, last_activity: '3s ago', uptime: '4h 22m' },
+    { id: uid(), name: 'Balance Engine', url: 'http://balance-service/balance', protocol: 'http', status: 'connected', messages_routed: 12890, last_activity: '12s ago', uptime: '3h 15m' },
+    { id: uid(), name: 'Narrative Service', url: 'grpc://narrative-service/narrative', protocol: 'grpc', status: 'connecting', messages_routed: 7845, last_activity: '45s ago', uptime: '2h 08m' },
+    { id: uid(), name: 'Player Analytics', url: 'mqtt://analytics-service/analytics', protocol: 'mqtt', status: 'connected', messages_routed: 32100, last_activity: '5s ago', uptime: '4h 50m' },
+    { id: uid(), name: 'Dev Assistant Hub', url: 'ws://dev-service/dev', protocol: 'ws', status: 'error', messages_routed: 340, last_activity: '5m ago', uptime: '10m' },
+    { id: uid(), name: 'Playtest Simulator', url: 'http://playtest-service/playtest', protocol: 'http', status: 'disconnected', messages_routed: 5600, last_activity: '1h ago', uptime: '0m' },
   ];
 
   const defaultConnections: ActiveConnection[] = [
@@ -247,7 +247,7 @@ const AgentGatewayPanel: React.FC = () => {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           prompt: `Register endpoint: New Endpoint ${endpoints.length + 1}`,
-          context: { url: `http://localhost:${9000 + endpoints.length + 1}/service`, protocol: 'http' },
+          context: { url: `http://service-${endpoints.length + 1}/service`, protocol: 'http' },
           mode: 'auto_route',
         }),
       });
@@ -257,7 +257,7 @@ const AgentGatewayPanel: React.FC = () => {
       const newEndpoint: GatewayEndpoint = {
         id: uid(),
         name: `New Endpoint ${endpoints.length + 1}`,
-        url: `http://localhost:${9000 + endpoints.length + 1}/service`,
+        url: `http://service-${endpoints.length + 1}/service`,
         protocol: 'http',
         status: 'connecting',
         messages_routed: 0,

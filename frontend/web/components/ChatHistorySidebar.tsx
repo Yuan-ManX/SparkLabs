@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useEditorStore, type ChatSession } from '../store/editorStore';
 
-// Group sessions by relative date for display, ChatGPT-style.
+// Group sessions by relative date for display.
 function getDateGroup(timestamp: number): string {
   const now = new Date();
   const date = new Date(timestamp);

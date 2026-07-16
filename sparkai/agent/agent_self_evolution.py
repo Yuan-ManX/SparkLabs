@@ -143,7 +143,7 @@ class EvolutionCycle:
 class SelfEvolutionEngine:
     """Autonomous self-improvement engine for AI game agents.
 
-    Implements a continuous evolution cycle inspired by genetic algorithm
+    Implements a continuous evolution cycle using genetic algorithm
     principles and Pareto optimization to refine agent behaviors over time.
 
     Usage:

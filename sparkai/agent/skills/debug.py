@@ -124,7 +124,7 @@ class DebugProtocol:
                 error_type="network",
                 root_cause="WebSocket server not running or wrong port",
                 solution="Start the WebSocket server and verify the port",
-                verification_command="curl http://localhost:8000/api/health",
+                verification_command="curl /api/health",
                 category="network",
             ),
             DebugEntry(

@@ -1,7 +1,7 @@
 """
 SparkLabs Engine - Behavior Composer
 
-A behavior composition system inspired by GDevelop's behavior system that allows
+A behavior composition system that allows
 attaching composable, reusable behavior components to game objects. Behaviors can
 be mixed and matched on game objects, providing a flexible architecture for
 building complex game entity logic without deep inheritance hierarchies.

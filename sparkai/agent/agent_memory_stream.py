@@ -1,7 +1,7 @@
 """
-SparkLabs Agent - genagents-style Memory Stream and Reflection System
+SparkLabs Agent - Memory Stream and Reflection System
 
-This module implements a generative-agents (\"genagents\") style memory stream
+This module implements a generative memory stream
 for AI agents operating inside the SparkLabs AI-native game engine. The design
 follows the influential Park et al. memory stream model, adapted for game
 agents that must remember observations, reflect on experience, and retrieve
@@ -434,7 +434,7 @@ class MemoryStreamSnapshot:
 # ---------------------------------------------------------------------------
 
 class MemoryStreamEngine:
-    """genagents-style memory stream and reflection engine for AI game agents.
+    """Memory stream and reflection engine for AI game agents.
 
     The engine records observations with importance scores, retrieves memories
     using a combined importance / recency / relevance scoring formula, and

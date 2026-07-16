@@ -2,11 +2,11 @@
 SparkLabs AI-Native Game Engine - Agent Daily Routine System
 ============================================================
 
-Genagents-style daily routine and schedule management for AI agents in the
+Daily routine and schedule management for AI agents in the
 SparkLabs AI-native game engine.
 
 This module equips each agent with a structured yet flexible daily routine.
-Inspired by the genagents paradigm, an agent's day is modeled as an hourly
+An agent's day is modeled as an hourly
 schedule composed of discrete *activity blocks*. Agents generate a schedule
 at the start of their day, execute activities in sequence, react to
 unexpected events that disrupt the plan, and replan the remainder of the

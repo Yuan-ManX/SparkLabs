@@ -2,7 +2,7 @@
 SparkLabs AI-Native Game Engine - Agent Emotion Contagion System
 ================================================================
 
-Genagents-style emotion contagion engine for AI agents in the SparkLabs
+Emotion contagion engine for AI agents in the SparkLabs
 AI-native game engine.
 
 This module models how emotions and moods spread through a population of

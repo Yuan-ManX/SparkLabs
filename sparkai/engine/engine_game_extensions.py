@@ -19,8 +19,8 @@ Design goals:
     palette) so each game gets a fitting sensory layer.
 
 Pattern integration (original SparkLabs design):
-  - Procedural asset generation (Godot-style audio streams)
-  - Particle emitter graph (Phaser-style particle emitters)
+  - Procedural asset generation (procedural audio streams)
+  - Particle emitter graph (multi-emitter particle system)
   - Component-based entity composition (ECS roots)
   - Fixed-timestep deterministic updates for replayability
 """

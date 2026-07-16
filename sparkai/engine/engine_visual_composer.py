@@ -3,8 +3,7 @@ SparkLabs Engine - Visual Scene Composition Engine
 
 A drag-and-drop visual scene building system for the SparkLabs AI-native
 game engine. Enables layer management, object placement, property editing,
-and real-time preview — inspired by GDevelop's visual editor and Godot's
-node-based scene composition.
+and real-time preview with node-based scene composition.
 
 The engine provides a unified visual composition workflow:
   - LayerManager: Z-ordered layer management for organizing scene objects

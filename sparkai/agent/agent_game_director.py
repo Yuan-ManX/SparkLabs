@@ -2,9 +2,9 @@
 SparkLabs Agent - AI Game Director
 
 The creative intelligence that directs the entire AI-native game creation
-lifecycle. Combines a tool-use registry (Hermes-inspired function calling),
-a simulation engine (WorldX-inspired world evaluation), and an iteration
-loop (GameGen-X-inspired refinement) into a single director that can
+lifecycle. Combines a tool-use registry with function calling,
+a simulation engine for world evaluation, and an iteration
+loop for iterative refinement into a single director that can
 autonomously produce, evaluate, and refine games.
 
 Architecture:
@@ -185,7 +185,7 @@ class DirectorResult:
 
 
 # =============================================================================
-# Simulation Engine - WorldX-inspired playtest simulation
+# Simulation Engine - Playtest simulation
 # =============================================================================
 
 
@@ -455,7 +455,7 @@ class RefinementAdvisor:
 
 
 # =============================================================================
-# Tool Registry - Hermes-inspired function calling
+# Tool Registry - Function calling
 # =============================================================================
 
 

@@ -1,7 +1,7 @@
 """
 SparkLabs Agent - Experience Memory Engine
 
-Hermes-style experience memory system with trajectory compression for
+Experience memory system with trajectory compression for
 AI-native game agents. Stores agent experiences, compresses them for
 efficient retrieval, and provides context-aware memory recall. Supports
 importance-based retention, memory consolidation, episodic/semantic
@@ -137,7 +137,7 @@ class ExperienceEntry:
 
 class ExperienceMemoryEngine:
     """
-    Hermes-style experience memory system with trajectory compression.
+    Experience memory system with trajectory compression.
 
     Stores agent experiences with metadata tagging, compresses similar
     experiences for efficient retrieval, and provides context-aware

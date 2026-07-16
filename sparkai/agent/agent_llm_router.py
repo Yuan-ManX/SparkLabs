@@ -3645,7 +3645,7 @@ class LLMRouter:
                 ),
             )
 
-        # Midjourney-style provider (third-party API)
+        # Third-party image generation provider
         self.register_provider(
             provider_id="midjourney",
             name="Midjourney API",

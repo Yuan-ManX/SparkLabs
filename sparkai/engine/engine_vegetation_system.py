@@ -2,8 +2,7 @@
 SparkLabs Engine - Vegetation & Foliage Placement System
 
 Procedural vegetation distribution system that manages the placement,
-density, and rendering of foliage across game terrain. Inspired by
-SpeedTree and Unity's vegetation pipeline, but integrated with the
+density, and rendering of foliage across game terrain, integrated with the
 AI-native SparkLabs engine.
 
 Core capabilities:

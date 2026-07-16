@@ -2,8 +2,8 @@
 SparkLabs Engine - Game Playground
 
 A Sandbox Game Runtime for the SparkLabs AI-native game engine. It enables
-instant preview and testing of game mechanics in a sandboxed environment —
-inspired by GDevelop's instant preview and Godot's play-in-editor feature.
+instant preview and testing of game mechanics in a sandboxed environment
+for rapid iteration and testing.
 
 Architecture:
   EngineGamePlayground (Singleton)

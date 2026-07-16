@@ -4,8 +4,8 @@ SparkLabs Engine - Server Registry
 Central registry that manages all engine subsystems as independent
 servers. Each server represents a core engine subsystem (rendering,
 physics, audio, etc.) that can be started, stopped, paused, resumed,
-and monitored independently. Inspired by the server architecture
-pattern used in Godot Engine.
+and monitored independently using the server architecture
+pattern for modular engine subsystems.
 
 Architecture:
   ServerRegistry (Singleton)

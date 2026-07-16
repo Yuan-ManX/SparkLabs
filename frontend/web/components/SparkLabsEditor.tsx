@@ -925,7 +925,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       />
 
       <div ref={containerRef} className="flex overflow-hidden">
-        {/* Chat History Sidebar — far left, ChatGPT-style, collapsed by default */}
+        {/* Chat History Sidebar — far left, collapsed by default */}
         <ChatHistorySidebar />
 
         {/* AI Agent Chat Panel */}
