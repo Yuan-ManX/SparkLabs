@@ -1,4 +1,4 @@
-import { runtimeApi, engineApi, agentApi, sessionsApi, loopApi } from '../utils/api';
+import { runtimeApi, engineApi, agentApi, sessionsApi, loopApi, gameSynthesizerApi, gameDirectorApi } from '../utils/api';
 import { useEditorStore, type SceneNode } from '../store/editorStore';
 import { generateGameHtml } from '../components/GameRunner';
 
@@ -223,6 +223,123 @@ export function generateGameFromPrompt(prompt: string): { html: string; nodes: S
   return { html, nodes };
 }
 
+// Map a backend GameDesignDocument to scene nodes for the editor panel.
+// Each entity type is color-coded so the Scene tree matches the game world.
+function gddToSceneNodes(gdd: any): SceneNode[] {
+  const nodes: SceneNode[] = [];
+  let idx = 0;
+  const ts = Date.now();
+  const make = (name: string, icon: string, iconColor: string, parentId: string): SceneNode => ({
+    id: `synth_${idx++}_${ts}_${Math.random().toString(36).slice(2, 6)}`,
+    name,
+    icon,
+    iconColor,
+    type: 'entity',
+    visible: true,
+    locked: false,
+    parentId,
+    children: [],
+  });
+
+  const concept = gdd?.concept || {};
+  const genre = (concept.genre || 'exploration').toLowerCase();
+
+  // Player
+  nodes.push(make('Player Hero', 'fa-person', '#f97316', 'actors'));
+
+  // World entities
+  const world = gdd?.world || {};
+  (world.biomes || []).slice(0, 4).forEach((b: any, i: number) => {
+    nodes.push(make(`Biome ${b.name || i + 1}`, 'fa-mountain', '#4ade80', 'root'));
+  });
+  (world.structures || []).slice(0, 4).forEach((s: any, i: number) => {
+    nodes.push(make(`Structure ${s.name || i + 1}`, 'fa-building', '#94a3b8', 'root'));
+  });
+
+  // Characters -> NPCs
+  (gdd?.characters || []).slice(0, 6).forEach((c: any) => {
+    nodes.push(make(`NPC ${c.name || 'Villager'}`, 'fa-robot', '#c084fc', 'actors'));
+  });
+
+  // Narrative -> quest items
+  const narrative = gdd?.narrative || {};
+  (narrative.main_quest_chain || []).slice(0, 3).forEach((q: any) => {
+    nodes.push(make(`Quest ${q.title || q.name || 'Item'}`, 'fa-scroll', '#fbbf24', 'root'));
+  });
+
+  // Mechanics-based entities
+  if (/(platformer|survival|boss_battle|sandbox)/.test(genre)) {
+    for (let i = 0; i < 3; i++) {
+      nodes.push(make(`Enemy ${i + 1}`, 'fa-skull', '#ef4444', 'actors'));
+    }
+    for (let i = 0; i < 4; i++) {
+      nodes.push(make(`Item Gem ${i + 1}`, 'fa-gem', '#fbbf24', 'root'));
+    }
+  } else if (/(shooter|dungeon_crawler|rpg)/.test(genre)) {
+    for (let i = 0; i < 4; i++) {
+      nodes.push(make(`Enemy ${i + 1}`, 'fa-skull', '#ef4444', 'actors'));
+    }
+    for (let i = 0; i < 3; i++) {
+      nodes.push(make(`Item Treasure ${i + 1}`, 'fa-gem', '#fbbf24', 'root'));
+    }
+  } else if (/(puzzle|music)/.test(genre)) {
+    for (let i = 0; i < 6; i++) {
+      nodes.push(make(`Puzzle Crystal ${i + 1}`, 'fa-gem', '#a855f7', 'root'));
+    }
+  } else {
+    for (let i = 0; i < 2; i++) {
+      nodes.push(make(`Enemy ${i + 1}`, 'fa-skull', '#ef4444', 'actors'));
+    }
+    for (let i = 0; i < 4; i++) {
+      nodes.push(make(`Item Treasure ${i + 1}`, 'fa-gem', '#fbbf24', 'root'));
+    }
+  }
+
+  return nodes;
+}
+
+// Try to generate a game via the backend GameContentSynthesizer + GameRuntime.
+// Falls back to client-side generation if the backend is unavailable or fails.
+async function generateGameViaBackend(prompt: string): Promise<{ html: string; nodes: SceneNode[]; gdd?: any } | null> {
+  try {
+    const result = await gameSynthesizerApi.generate(prompt, undefined, undefined, undefined, true) as any;
+    if (result?.status !== 'success' || !result?.data?.html) {
+      return null;
+    }
+    const gdd = result.data.gdd || {};
+    const nodes = gddToSceneNodes(gdd);
+    return { html: result.data.html, nodes, gdd };
+  } catch {
+    return null;
+  }
+}
+
+// Try to generate a game via the AI Game Director, which runs the full
+// pipeline: synthesize -> build -> simulate -> evaluate -> refine.
+// Returns quality metrics and playtest simulations alongside the HTML.
+// Falls back to null if the director is unavailable or fails.
+async function generateGameViaDirector(prompt: string): Promise<{ html: string; nodes: SceneNode[]; quality?: any; simulations?: any[]; iterations?: number } | null> {
+  try {
+    const result = await gameDirectorApi.direct(prompt, undefined, undefined, true) as any;
+    if (result?.status !== 'success' || !result?.data?.html) {
+      return null;
+    }
+    const data = result.data;
+    // The director returns quality metrics but not a GDD directly;
+    // build scene nodes from the prompt concept detection.
+    const nodes = generateGameSceneNodes(prompt);
+    return {
+      html: data.html,
+      nodes,
+      quality: data.quality,
+      simulations: data.simulations,
+      iterations: data.iterations,
+    };
+  } catch {
+    return null;
+  }
+}
+
 
 export async function processAIPrompt(prompt: string): Promise<boolean> {
   const store = useEditorStore.getState();
@@ -289,10 +406,39 @@ export async function processAIPrompt(prompt: string): Promise<boolean> {
       addLog('info', '[AI] Agent loop skipped (backend unavailable)');
     }
 
-    // Generate a complete, playable game from the prompt. Scene nodes are
-    // tailored to the detected genre so the GameRunner picks the right mode
-    // (platformer / top-down / puzzle) and spawns the matching entities.
-    const { html, nodes } = generateGameFromPrompt(prompt);
+    // Generate a complete, playable game. Try the AI Game Director first
+    // (full pipeline: synthesize -> build -> simulate -> evaluate -> refine),
+    // then the backend synthesizer, then client-side generation as fallback.
+    updateAIGenerationPhase('world', 88);
+    let html: string;
+    let nodes: SceneNode[];
+    let backendUsed = false;
+
+    const directorResult = await generateGameViaDirector(prompt);
+    if (directorResult) {
+      html = directorResult.html;
+      nodes = directorResult.nodes;
+      backendUsed = true;
+      const q = directorResult.quality;
+      addLog('success', `[AI] Game Director produced game (quality: ${q?.overall ?? 'N/A'}/10, iterations: ${directorResult.iterations ?? 0})`);
+      if (q) {
+        addLog('info', `[AI] Quality breakdown — engagement: ${q.engagement}, difficulty: ${q.difficulty}, variety: ${q.variety}, coherence: ${q.coherence}`);
+      }
+    } else {
+      const backendResult = await generateGameViaBackend(prompt);
+      if (backendResult) {
+        html = backendResult.html;
+        nodes = backendResult.nodes;
+        backendUsed = true;
+        addLog('success', `[AI] Backend synthesizer produced game (${backendResult.gdd?.concept?.genre || 'unknown'} genre)`);
+      } else {
+        addLog('info', '[AI] Backend unavailable — using local generation');
+        const local = generateGameFromPrompt(prompt);
+        html = local.html;
+        nodes = local.nodes;
+      }
+    }
+
     const editorStore = useEditorStore.getState();
     const { setSceneNodes, setGameHtml, selectEntity } = editorStore;
 
@@ -322,7 +468,7 @@ export async function processAIPrompt(prompt: string): Promise<boolean> {
 
     const concept = detectGameConcept(prompt);
     completeAIGeneration({ prompt, entitiesCreated: nodes.length, concept, gameGenerated: true });
-    addLog('success', `[AI] Game generated — concept: ${concept}, ${nodes.length} entities`);
+    addLog('success', `[AI] Game generated — concept: ${concept}, ${nodes.length} entities${backendUsed ? ' (AI-synthesized)' : ''}`);
     addLog('success', `[AI] Ready to play. Open the Game viewport and press Run.`);
     addLog('info', `[AI] Prompt processed: "${prompt.substring(0, 50)}${prompt.length > 50 ? '...' : ''}"`);
 
