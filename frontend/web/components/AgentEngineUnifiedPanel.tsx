@@ -70,7 +70,7 @@ const SectionCard: React.FC<{ title: string; children: React.ReactNode }> = ({ t
 );
 
 const JSONView: React.FC<{ data: any }> = ({ data }) => (
-  <pre className="bg-[#0d0d1a] border border-[#2a2a3e] rounded p-3 text-xs text-[#ccc] font-mono overflow-auto max-h-64 whitespace-pre-wrap">
+  <pre className="bg-[#0d0d0d] border border-[#2a2a3e] rounded p-3 text-xs text-[#ccc] font-mono overflow-auto max-h-64 whitespace-pre-wrap">
     {formatJSON(data)}
   </pre>
 );
@@ -82,7 +82,7 @@ const TextInput: React.FC<{
   <div>
     <label className="text-xs text-[#999] mb-1 block">{label}</label>
     <input type={type} value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder}
-      className="w-full bg-[#0d0d1a] border border-[#2a2a3e] rounded px-3 py-2 text-white text-sm focus:border-[#7c6ff7] focus:outline-none" />
+      className="w-full bg-[#0d0d0d] border border-[#2a2a3e] rounded px-3 py-2 text-white text-sm focus:border-[#7c6ff7] focus:outline-none" />
   </div>
 );
 
@@ -93,7 +93,7 @@ const TextArea: React.FC<{
   <div>
     <label className="text-xs text-[#999] mb-1 block">{label}</label>
     <textarea value={value} onChange={e => onChange(e.target.value)} placeholder={placeholder} rows={rows}
-      className="w-full bg-[#0d0d1a] border border-[#2a2a3e] rounded px-3 py-2 text-white text-sm focus:border-[#7c6ff7] focus:outline-none" />
+      className="w-full bg-[#0d0d0d] border border-[#2a2a3e] rounded px-3 py-2 text-white text-sm focus:border-[#7c6ff7] focus:outline-none" />
   </div>
 );
 
@@ -199,7 +199,7 @@ export default function AgentEngineUnifiedPanel() {
           ? <div className="text-[#666] text-sm">No actions registered.</div>
           : <div className="flex flex-wrap gap-2">
             {asActions.map((a: any, i: number) => (
-              <span key={i} className="px-2 py-1 rounded text-xs border bg-[#0d0d1a] border-[#2a2a3e] text-[#ccc]">
+              <span key={i} className="px-2 py-1 rounded text-xs border bg-[#0d0d0d] border-[#2a2a3e] text-[#ccc]">
                 {a.name || a.action_name || a}
               </span>
             ))}
@@ -838,7 +838,7 @@ export default function AgentEngineUnifiedPanel() {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
+    <div className="h-full flex flex-col bg-[#1a1a1a] text-white">
       {/* Tab Bar */}
       <div className="flex gap-1 p-3 border-b border-[#2a2a3e] flex-wrap">
         {tabs.map(tab => (

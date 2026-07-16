@@ -65,20 +65,20 @@ export default function AgentGameStateIntelligencePanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
         {activeTab === 'overview' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Game State Intelligence</h2>
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Snapshots</h3><p className="text-2xl">{stats.total_snapshots ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Insights</h3><p className="text-2xl">{stats.total_insights ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Analyses Performed</h3><p className="text-2xl">{stats.analyses_performed ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Snapshots</h3><p className="text-2xl">{stats.total_snapshots ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Insights</h3><p className="text-2xl">{stats.total_insights ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Analyses Performed</h3><p className="text-2xl">{stats.analyses_performed ?? 0}</p></div>
             </div>
             {stats.insights_by_domain && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">Insights by Domain</h3>
                 <div className="space-y-1">
                   {Object.entries(stats.insights_by_domain as Record<string, number>).map(([k, v]) => (
@@ -88,7 +88,7 @@ export default function AgentGameStateIntelligencePanel() {
               </div>
             )}
             {stats.insights_by_severity && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">Insights by Severity</h3>
                 <div className="space-y-1">
                   {Object.entries(stats.insights_by_severity as Record<string, number>).map(([k, v]) => (
@@ -103,7 +103,7 @@ export default function AgentGameStateIntelligencePanel() {
         {activeTab === 'capture' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Capture Game State</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
                 <label className="text-xs text-[#999] mb-1 block">Entities (JSON)</label>
                 <textarea value={capEntities} onChange={e => setCapEntities(e.target.value)} placeholder='[{"id": "player1", "type": "player", "health": 100}]' rows={3} className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono" />
@@ -139,7 +139,7 @@ export default function AgentGameStateIntelligencePanel() {
         {activeTab === 'analyze' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Analyze Snapshot</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
                 <label className="text-xs text-[#999] mb-1 block">Snapshot ID</label>
                 <input type="text" value={analyzeSnapshotId} onChange={e => setAnalyzeSnapshotId(e.target.value)} placeholder="snap_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -175,10 +175,10 @@ export default function AgentGameStateIntelligencePanel() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#00d4ff]">Insights</h2>
-              <button onClick={fetchInsights} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
+              <button onClick={fetchInsights} className="px-3 py-1 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
             </div>
 
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
               <div className="flex gap-2 flex-wrap mb-3">
                 <select value={insightDomain} onChange={e => setInsightDomain(e.target.value)} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
                   <option value="">All Domains</option>
@@ -196,7 +196,7 @@ export default function AgentGameStateIntelligencePanel() {
             {insights.length > 0 ? (
               <div className="space-y-2">
                 {insights.map((ins: any, i: number) => (
-                  <div key={ins.id || i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a]">
+                  <div key={ins.id || i} className="bg-[#0d0d0d] p-3 rounded border border-[#2a2a4a]">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-white text-sm font-medium">{ins.title || ins.id || `Insight #${i + 1}`}</span>
                       <div className="flex gap-1">

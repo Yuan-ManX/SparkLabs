@@ -154,7 +154,7 @@ const AgentWorldArchitectPanel: React.FC = () => {
               <button
                 onClick={handleGenerateCharacters}
                 disabled={loading}
-                className="flex-1 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[9px] rounded font-medium disabled:opacity-50"
+                className="flex-1 py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-[9px] rounded font-medium disabled:opacity-50"
               >
                 Generate Characters
               </button>

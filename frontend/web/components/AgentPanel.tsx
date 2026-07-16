@@ -533,7 +533,7 @@ const AgentPanel: React.FC = () => {
             key={agent.id}
             onClick={() => setSelectedAgentId(agent.id)}
             className={`flex items-center justify-between p-2 rounded border cursor-pointer transition-colors ${
-              selectedAgentId === agent.id ? 'border-blue-500 bg-blue-500/10' : 'border-[#333] bg-[#1a1a1a] hover:bg-[#222]'
+              selectedAgentId === agent.id ? 'border-orange-500 bg-orange-500/10' : 'border-[#333] bg-[#1a1a1a] hover:bg-[#222]'
             }`}
           >
             <div className="flex items-center gap-2">
@@ -613,7 +613,7 @@ const AgentPanel: React.FC = () => {
     <div className="p-3 space-y-3 overflow-y-auto h-full">
       <div className="flex items-center justify-between">
         <h4 className="text-[10px] font-bold text-[#888] uppercase tracking-wider">Network Topology</h4>
-        <button onClick={handleRegisterMeshNode} className="text-[9px] px-2 py-1 bg-blue-600 hover:bg-blue-500 text-white rounded">
+        <button onClick={handleRegisterMeshNode} className="text-[9px] px-2 py-1 bg-orange-600 hover:bg-orange-500 text-white rounded">
           + Register Node
         </button>
       </div>
@@ -924,7 +924,7 @@ const AgentPanel: React.FC = () => {
             onClick={() => setActiveTab(tab.id)}
             className={`flex items-center gap-1 px-3 py-2 text-[10px] whitespace-nowrap transition-colors border-b-2 ${
               activeTab === tab.id
-                ? 'text-blue-400 border-blue-500 bg-blue-500/5'
+                ? 'text-orange-400 border-orange-500 bg-orange-500/5'
                 : 'text-[#666] border-transparent hover:text-[#999] hover:bg-[#151515]'
             }`}
           >
@@ -946,11 +946,11 @@ const AgentPanel: React.FC = () => {
             onChange={(e) => setInputValue(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSendMessage()}
             placeholder="Type / for commands..."
-            className="flex-1 bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-blue-500"
+            className="flex-1 bg-[#1a1a1a] border border-[#333] rounded px-2 py-1.5 text-[11px] text-[#ccc] outline-none focus:border-orange-500"
           />
           <button
             onClick={handleSendMessage}
-            className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] rounded"
+            className="px-3 py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-[10px] rounded"
           >
             Send
           </button>

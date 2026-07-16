@@ -416,7 +416,7 @@ const AgentLearningLoopPanel: React.FC = () => {
                 <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
                   {evolution.slice(0, 4).map(ev => (
                     <div key={ev.skill_name} style={{
-                      padding: '6px 10px', backgroundColor: '#141428', borderRadius: 4,
+                      padding: '6px 10px', backgroundColor: '#111', borderRadius: 4,
                       fontSize: 10, display: 'flex', alignItems: 'center', gap: 6,
                     }}>
                       <span style={{ color: '#ccc' }}>{ev.skill_name}</span>
@@ -448,7 +448,7 @@ const AgentLearningLoopPanel: React.FC = () => {
                   </div>
                   <span style={{
                     fontSize: 9, padding: '2px 6px', borderRadius: 3,
-                    backgroundColor: '#141428', color: '#aaa',
+                    backgroundColor: '#111', color: '#aaa',
                   }}>{SKILL_CATEGORY_LABELS[skill.category]}</span>
                 </div>
                 <div style={{ display: 'flex', gap: 16, fontSize: 10, color: '#666' }}>
@@ -486,7 +486,7 @@ const AgentLearningLoopPanel: React.FC = () => {
                   {mem.tags.map(tag => (
                     <span key={tag} style={{
                       fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#888',
+                      backgroundColor: '#111', color: '#888',
                     }}>#{tag}</span>
                   ))}
                 </div>
@@ -525,7 +525,7 @@ const AgentLearningLoopPanel: React.FC = () => {
                   Focus: {session.focus_skill}
                 </div>
                 <div style={{
-                  height: 4, backgroundColor: '#141428', borderRadius: 2, marginBottom: 6,
+                  height: 4, backgroundColor: '#111', borderRadius: 2, marginBottom: 6,
                 }}>
                   <div style={{
                     height: '100%', width: `${session.progress}%`,
@@ -596,7 +596,7 @@ const AgentLearningLoopPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

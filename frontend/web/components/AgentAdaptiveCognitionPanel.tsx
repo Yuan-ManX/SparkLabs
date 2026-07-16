@@ -71,26 +71,26 @@ export default function AgentAdaptiveCognitionPanel() {
   const tabs = ['overview', 'strategies', 'experiences', 'state'];
 
   return (
-    <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
-      <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
+    <div className="h-full flex flex-col bg-[#1a1a1a] text-white">
+      <div className="flex gap-1 p-3 border-b border-[#2a2a2a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#f97316] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a2a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a2a] rounded text-sm text-[#f97316]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-[#00d4ff]">Adaptive Cognition System</h2>
+            <h2 className="text-lg font-bold text-[#f97316]">Adaptive Cognition System</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {Object.entries(stats).map(([key, value]) => (
-                <div key={key} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-[#00d4ff] text-xs capitalize">{key.replace(/_/g, ' ')}</h3>
+                <div key={key} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a2a]">
+                  <h3 className="text-[#f97316] text-xs capitalize">{key.replace(/_/g, ' ')}</h3>
                   <p className="text-2xl font-bold mt-1">
                     {typeof value === 'number' ? value.toLocaleString() : String(value)}
                   </p>
@@ -106,18 +106,18 @@ export default function AgentAdaptiveCognitionPanel() {
         {/* Strategies Tab */}
         {activeTab === 'strategies' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Register Strategy</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Register Strategy</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Strategy Name</label>
                   <input type="text" value={strategyName} onChange={e => setStrategyName(e.target.value)}
-                    placeholder="exploration_strategy" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                    placeholder="exploration_strategy" className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none" />
                 </div>
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Strategy Type</label>
                   <select value={strategyType} onChange={e => setStrategyType(e.target.value)}
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none">
                     <option value="learning">Learning</option>
                     <option value="exploration">Exploration</option>
                     <option value="exploitation">Exploitation</option>
@@ -129,7 +129,7 @@ export default function AgentAdaptiveCognitionPanel() {
                   <label className="text-xs text-[#999] mb-1 block">Configuration (JSON)</label>
                   <textarea value={strategyConfig} onChange={e => setStrategyConfig(e.target.value)}
                     rows={3} placeholder='{"learning_rate": 0.01, "epsilon": 0.1}'
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#f97316] focus:outline-none" />
                 </div>
               </div>
               <button onClick={async () => {
@@ -142,20 +142,20 @@ export default function AgentAdaptiveCognitionPanel() {
                 setStrategyConfig('{}');
                 fetchStrategies();
               }} disabled={loading}
-                className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
+                className="mt-3 px-4 py-2 bg-[#f97316] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
                 Register Strategy
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Strategies ({strategies.length})</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Strategies ({strategies.length})</h2>
               {strategies.length > 0 ? (
                 <div className="space-y-2">
                   {strategies.map((s, i) => (
-                    <div key={s.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
+                    <div key={s.id || i} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{s.name || s.id}</span>
-                        <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded">{s.type || 'unknown'}</span>
+                        <span className="text-xs bg-[#0d0d0d] text-[#f97316] px-2 py-0.5 rounded">{s.type || 'unknown'}</span>
                       </div>
                       {s.config && <div className="mt-1 text-xs text-[#999] font-mono">{JSON.stringify(s.config)}</div>}
                     </div>
@@ -171,28 +171,28 @@ export default function AgentAdaptiveCognitionPanel() {
         {/* Experiences Tab */}
         {activeTab === 'experiences' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Record Experience</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Record Experience</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div className="col-span-2">
                   <label className="text-xs text-[#999] mb-1 block">Context</label>
                   <input type="text" value={expContext} onChange={e => setExpContext(e.target.value)}
-                    placeholder="e.g. combat_scenario_1" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                    placeholder="e.g. combat_scenario_1" className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none" />
                 </div>
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Action</label>
                   <input type="text" value={expAction} onChange={e => setExpAction(e.target.value)}
-                    placeholder="e.g. attack_heavy" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                    placeholder="e.g. attack_heavy" className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none" />
                 </div>
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Reward</label>
                   <input type="number" value={expReward} onChange={e => setExpReward(e.target.value)}
-                    step="0.01" placeholder="0.0" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                    step="0.01" placeholder="0.0" className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
                   <label className="text-xs text-[#999] mb-1 block">Outcome</label>
                   <input type="text" value={expOutcome} onChange={e => setExpOutcome(e.target.value)}
-                    placeholder="e.g. enemy_defeated" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                    placeholder="e.g. enemy_defeated" className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none" />
                 </div>
               </div>
               <button onClick={async () => {
@@ -204,17 +204,17 @@ export default function AgentAdaptiveCognitionPanel() {
                 setExpContext(''); setExpAction(''); setExpOutcome(''); setExpReward('0');
                 fetchExperiences();
               }} disabled={loading}
-                className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
+                className="mt-3 px-4 py-2 bg-[#f97316] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
                 Record Experience
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Experiences ({experiences.length})</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Experiences ({experiences.length})</h2>
               {experiences.length > 0 ? (
                 <div className="space-y-2">
                   {experiences.map((e, i) => (
-                    <div key={e.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
+                    <div key={e.id || i} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{e.context || e.action}</span>
                         <span className={`text-xs font-mono px-2 py-0.5 rounded ${(e.reward || 0) > 0 ? 'bg-green-900 text-green-300' : 'bg-red-900 text-red-300'}`}>
@@ -238,12 +238,12 @@ export default function AgentAdaptiveCognitionPanel() {
         {/* State Tab */}
         {activeTab === 'state' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Cognitive State</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Cognitive State</h2>
               {Object.keys(cognitiveState).length > 0 ? (
                 <div className="space-y-3">
                   {Object.entries(cognitiveState).filter(([k]) => k !== 'params' && k !== 'state').map(([key, value]) => (
-                    <div key={key} className="flex justify-between bg-[#1a1a2e] rounded px-3 py-2">
+                    <div key={key} className="flex justify-between bg-[#1a1a1a] rounded px-3 py-2">
                       <span className="text-[#999] text-xs capitalize">{key.replace(/_/g, ' ')}</span>
                       <span className="text-white text-xs font-mono">{String(value)}</span>
                     </div>
@@ -254,29 +254,29 @@ export default function AgentAdaptiveCognitionPanel() {
               )}
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Update State Parameters</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Update State Parameters</h2>
               {Object.keys(stateUpdate).length > 0 ? (
                 <div className="space-y-4">
                   {Object.entries(stateUpdate).map(([key, value]) => (
                     <div key={key}>
                       <div className="flex justify-between mb-1">
                         <label className="text-xs text-[#999] capitalize">{key.replace(/_/g, ' ')}</label>
-                        <span className="text-xs text-[#00d4ff] font-mono">
+                        <span className="text-xs text-[#f97316] font-mono">
                           {typeof value === 'number' ? value.toFixed(2) : String(value)}
                         </span>
                       </div>
                       <input type="range" min="0" max="100" step="1"
                         value={typeof value === 'number' ? Math.round(value * 100) : 50}
                         onChange={e => setStateUpdate(prev => ({ ...prev, [key]: parseInt(e.target.value) / 100 }))}
-                        className="w-full accent-[#00d4ff]" />
+                        className="w-full accent-[#f97316]" />
                     </div>
                   ))}
                   <button onClick={async () => {
                     await handleSubmit(`${API_BASE}/adaptive-cognition/update-state`, stateUpdate);
                     fetchCognitiveState();
                   }} disabled={loading}
-                    className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
+                    className="mt-3 px-4 py-2 bg-[#f97316] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
                     Update State
                   </button>
                 </div>

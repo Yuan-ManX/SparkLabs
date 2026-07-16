@@ -72,21 +72,21 @@ export default function AgentSkillAccumulatorPanel() {
 
   const inputCls = 'w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]';
   const selectCls = 'w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-[#00d4ff]';
-  const cardCls = 'bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]';
+  const cardCls = 'bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]';
 
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
 
       {message && (
-        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0f0f23] border-[#00ff88] text-[#00ff88]">{message}</div>
+        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0d0d0d] border-[#00ff88] text-[#00ff88]">{message}</div>
       )}
 
       <div className="flex-1 overflow-auto p-4">
@@ -102,7 +102,7 @@ export default function AgentSkillAccumulatorPanel() {
                 { label: 'Compositions', value: stats.total_compositions, color: 'text-amber-300' },
                 { label: 'Success Rate', value: stats.success_rate != null ? `${(stats.success_rate * 100).toFixed(1)}%` : 'N/A', color: 'text-pink-300' },
               ].map(s => (
-                <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={s.label} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}</p>
                 </div>

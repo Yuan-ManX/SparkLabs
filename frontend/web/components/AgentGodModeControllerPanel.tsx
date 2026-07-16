@@ -189,7 +189,7 @@ const AgentGodModeControllerPanel: React.FC = () => {
           <button
             onClick={handleEditMemory}
             disabled={loading || !agentId.trim() || !memoryContent.trim()}
-            className="w-full py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-[10px] rounded font-medium disabled:opacity-50"
+            className="w-full py-1.5 bg-orange-600 hover:bg-orange-500 text-white text-[10px] rounded font-medium disabled:opacity-50"
           >
             Edit Memory
           </button>

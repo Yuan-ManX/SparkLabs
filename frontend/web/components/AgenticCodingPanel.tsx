@@ -185,7 +185,7 @@ const AgenticCodingPanel: React.FC = () => {
   ];
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#1a1a2e', color: '#e0e0e0', fontFamily: 'system-ui, sans-serif', fontSize: 13 }}>
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#1a1a1a', color: '#e0e0e0', fontFamily: 'system-ui, sans-serif', fontSize: 13 }}>
       <div style={{ padding: '12px 16px', borderBottom: '1px solid #2a2a3e', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
           <span style={{ fontSize: 18 }}>{'\uD83E\uDD16'}</span>
@@ -218,15 +218,15 @@ const AgenticCodingPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Name</div>
-                  <input value={sessionName} onChange={e => setSessionName(e.target.value)} placeholder="e.g. Auth Module" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sessionName} onChange={e => setSessionName(e.target.value)} placeholder="e.g. Auth Module" style={{ padding: '6px 10px', fontSize: 11, width: 130, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Task</div>
-                  <input value={sessionTask} onChange={e => setSessionTask(e.target.value)} placeholder="e.g. Implement authentication" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sessionTask} onChange={e => setSessionTask(e.target.value)} placeholder="e.g. Implement authentication" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Language</div>
-                  <select value={sessionLanguage} onChange={e => setSessionLanguage(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={sessionLanguage} onChange={e => setSessionLanguage(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     <option value="typescript">TypeScript</option>
                     <option value="python">Python</option>
                     <option value="rust">Rust</option>
@@ -238,7 +238,7 @@ const AgenticCodingPanel: React.FC = () => {
                 </div>
                 <div style={{ flex: 1, minWidth: 150 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Context</div>
-                  <input value={sessionContext} onChange={e => setSessionContext(e.target.value)} placeholder="Additional context..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={sessionContext} onChange={e => setSessionContext(e.target.value)} placeholder="Additional context..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCreateSession} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Create</button>
               </div>
@@ -265,11 +265,11 @@ const AgenticCodingPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={codeSessionId} onChange={e => setCodeSessionId(e.target.value)} placeholder="Select session" style={{ padding: '6px 10px', fontSize: 11, width: 200, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={codeSessionId} onChange={e => setCodeSessionId(e.target.value)} placeholder="Select session" style={{ padding: '6px 10px', fontSize: 11, width: 200, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Specification</div>
-                  <input value={codeSpec} onChange={e => setCodeSpec(e.target.value)} placeholder="Describe what code to generate..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={codeSpec} onChange={e => setCodeSpec(e.target.value)} placeholder="Describe what code to generate..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleGenerateCode} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Generate</button>
               </div>
@@ -295,11 +295,11 @@ const AgenticCodingPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={testSessionId} onChange={e => setTestSessionId(e.target.value)} placeholder="Session" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={testSessionId} onChange={e => setTestSessionId(e.target.value)} placeholder="Session" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Artifact ID</div>
-                  <input value={testArtifactId} onChange={e => setTestArtifactId(e.target.value)} placeholder="Artifact" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={testArtifactId} onChange={e => setTestArtifactId(e.target.value)} placeholder="Artifact" style={{ padding: '6px 10px', fontSize: 11, width: 180, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCompileTest} style={{ padding: '6px 14px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Compile &amp; Test</button>
               </div>
@@ -310,15 +310,15 @@ const AgenticCodingPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={testSessionId} onChange={e => setTestSessionId(e.target.value)} placeholder="Session" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={testSessionId} onChange={e => setTestSessionId(e.target.value)} placeholder="Session" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Artifact ID</div>
-                  <input value={testArtifactId} onChange={e => setTestArtifactId(e.target.value)} placeholder="Artifact" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={testArtifactId} onChange={e => setTestArtifactId(e.target.value)} placeholder="Artifact" style={{ padding: '6px 10px', fontSize: 11, width: 150, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Error Log</div>
-                  <input value={testErrorLog} onChange={e => setTestErrorLog(e.target.value)} placeholder="Paste error log..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={testErrorLog} onChange={e => setTestErrorLog(e.target.value)} placeholder="Paste error log..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleAutoFix} style={{ padding: '6px 14px', backgroundColor: '#3a2d4a', color: '#a29bfe', border: '1px solid #4a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Auto Fix</button>
               </div>
@@ -329,12 +329,12 @@ const AgenticCodingPanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={summarySessionId} onChange={e => setSummarySessionId(e.target.value)} placeholder="Enter session ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={summarySessionId} onChange={e => setSummarySessionId(e.target.value)} placeholder="Enter session ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleGetSummary} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Get Summary</button>
               </div>
               {sessionSummary && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#141428', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
+                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
                   <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(sessionSummary, null, 2)}</pre>
                 </div>
               )}
@@ -343,7 +343,7 @@ const AgenticCodingPanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83E\uDD16'} {sessions.length} sessions · {artifacts.length} artifacts</span>
         <span>Connected</span>
       </div>

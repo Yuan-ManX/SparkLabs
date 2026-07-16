@@ -239,7 +239,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       {/* Header */}
       <div className="flex items-center justify-between px-4 py-3 border-b border-[#2a2a4a]">
         <div className="flex items-center gap-2">
@@ -350,7 +350,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
                   value={functionName}
                   onChange={(e) => setFunctionName(e.target.value)}
                   placeholder="e.g. generate_dialogue"
-                  className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
                 />
               </div>
 
@@ -361,7 +361,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
                   onChange={(e) => setParameters(e.target.value)}
                   rows={4}
                   placeholder='{"key": "value"}'
-                  className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono resize-y"
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono resize-y"
                 />
               </div>
 
@@ -370,7 +370,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
                 <select
                   value={policy}
                   onChange={(e) => setPolicy(e.target.value)}
-                  className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
                 >
                   <option value="safe">Safe</option>
                   <option value="standard">Standard</option>
@@ -385,7 +385,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
                   onChange={(e) => setMetadata(e.target.value)}
                   rows={2}
                   placeholder='{"source": "editor"}'
-                  className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono resize-y"
+                  className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none font-mono resize-y"
                 />
               </div>
 
@@ -413,7 +413,7 @@ const AgentFunctionDispatcherPanel: React.FC = () => {
                   </div>
                 )}
                 {dispatchResult.result !== undefined && (
-                  <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-[#ccc] font-mono whitespace-pre-wrap overflow-auto max-h-40">
+                  <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-[#ccc] font-mono whitespace-pre-wrap overflow-auto max-h-40">
                     {typeof dispatchResult.result === 'string' ? dispatchResult.result : JSON.stringify(dispatchResult.result, null, 2)}
                   </div>
                 )}

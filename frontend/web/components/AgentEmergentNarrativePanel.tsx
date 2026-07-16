@@ -339,15 +339,15 @@ const AgentEmergentNarrativePanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
-                  <input value={eventType} onChange={e => setEventType(e.target.value)} placeholder="e.g. betrayal" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={eventType} onChange={e => setEventType(e.target.value)} placeholder="e.g. betrayal" style={{ padding: '6px 10px', fontSize: 11, width: 120, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Description</div>
-                  <input value={eventDesc} onChange={e => setEventDesc(e.target.value)} placeholder="What happened?" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={eventDesc} onChange={e => setEventDesc(e.target.value)} placeholder="What happened?" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Agents (comma-sep)</div>
-                  <input value={eventInvolved} onChange={e => setEventInvolved(e.target.value)} placeholder="agent_1, agent_2" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={eventInvolved} onChange={e => setEventInvolved(e.target.value)} placeholder="agent_1, agent_2" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleRecordEvent} disabled={loadingEvent} style={{ padding: '6px 14px', backgroundColor: loadingEvent ? '#1a2a3a' : '#2d3a4a', color: loadingEvent ? '#666' : '#fdcb6e', border: '1px solid #3d4a5a', borderRadius: 4, cursor: loadingEvent ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600 }}>
                   {loadingEvent ? 'Recording...' : '\u2795 Record'}
@@ -366,14 +366,14 @@ const AgentEmergentNarrativePanel: React.FC = () => {
                 </div>
                 <div style={{ fontSize: 11, color: '#ccc', marginBottom: 4 }}>{evt.description}</div>
                 <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap', alignItems: 'center' }}>
-                  {evt.location && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#888' }}>{'\uD83D\uDCCD'} {evt.location}</span>}
+                  {evt.location && <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#888' }}>{'\uD83D\uDCCD'} {evt.location}</span>}
                   {evt.involved_agents.length > 0 && <span style={{ fontSize: 9, color: '#666' }}>Involved: {evt.involved_agents.join(', ')}</span>}
                   <span style={{ fontSize: 9, color: '#666' }}>Weight: <span style={{ color: '#a29bfe', fontWeight: 600 }}>{(evt.emotional_weight * 100).toFixed(0)}%</span></span>
                 </div>
                 {evt.themes.length > 0 && (
                   <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                     {evt.themes.map(t => (
-                      <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#e17055' }}>#{t}</span>
+                      <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#e17055' }}>#{t}</span>
                     ))}
                   </div>
                 )}
@@ -389,17 +389,17 @@ const AgentEmergentNarrativePanel: React.FC = () => {
               <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Title</div>
-                  <input value={arcTitle} onChange={e => setArcTitle(e.target.value)} placeholder="Arc title..." style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={arcTitle} onChange={e => setArcTitle(e.target.value)} placeholder="Arc title..." style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <div>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Type</div>
-                  <select value={arcType} onChange={e => setArcType(e.target.value as StoryArcType)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
+                  <select value={arcType} onChange={e => setArcType(e.target.value as StoryArcType)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
                     {Object.entries(ARC_TYPE_LABELS).map(([key, label]) => (<option key={key} value={key}>{label}</option>))}
                   </select>
                 </div>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Description</div>
-                  <input value={arcDesc} onChange={e => setArcDesc(e.target.value)} placeholder="Brief description..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#141428', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+                  <input value={arcDesc} onChange={e => setArcDesc(e.target.value)} placeholder="Brief description..." style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
                 </div>
                 <button onClick={handleCreateArc} disabled={loadingArc} style={{ padding: '6px 14px', backgroundColor: loadingArc ? '#1a2a3a' : '#2d3a5a', color: loadingArc ? '#666' : '#6bcb77', border: '1px solid #3d4a6a', borderRadius: 4, cursor: loadingArc ? 'not-allowed' : 'pointer', fontSize: 11, fontWeight: 600 }}>
                   {loadingArc ? 'Creating...' : '\u2795 Create'}
@@ -418,7 +418,7 @@ const AgentEmergentNarrativePanel: React.FC = () => {
                   <span style={{ fontSize: 9, color: '#666' }}>{arc.created_at}</span>
                 </div>
                 <div style={{ fontSize: 10, color: '#888', marginBottom: 6 }}>{arc.description}</div>
-                <div style={{ height: 4, backgroundColor: '#141428', borderRadius: 2, marginBottom: 6 }}>
+                <div style={{ height: 4, backgroundColor: '#111', borderRadius: 2, marginBottom: 6 }}>
                   <div style={{ height: '100%', width: `${arc.progress}%`, backgroundColor: ARC_PHASE_COLORS[arc.phase], borderRadius: 2 }} />
                 </div>
                 <div style={{ display: 'flex', gap: 12, fontSize: 9, color: '#666' }}>
@@ -430,7 +430,7 @@ const AgentEmergentNarrativePanel: React.FC = () => {
                 {arc.themes.length > 0 && (
                   <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                     {arc.themes.map(t => (
-                      <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#e17055' }}>#{t}</span>
+                      <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#e17055' }}>#{t}</span>
                     ))}
                   </div>
                 )}
@@ -450,7 +450,7 @@ const AgentEmergentNarrativePanel: React.FC = () => {
                 <div style={{ fontSize: 10, color: '#888', marginBottom: 6 }}>{theme.description}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 9, color: '#666' }}>Weight:</span>
-                  <div style={{ flex: 1, height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                  <div style={{ flex: 1, height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                     <div style={{ height: '100%', width: `${theme.weight * 100}%`, backgroundColor: theme.weight >= 0.7 ? '#6bcb77' : theme.weight >= 0.4 ? '#fdcb6e' : '#ff6b6b', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontSize: 9, fontWeight: 600, color: theme.weight >= 0.7 ? '#6bcb77' : theme.weight >= 0.4 ? '#fdcb6e' : '#ff6b6b' }}>{(theme.weight * 100).toFixed(0)}%</span>
@@ -474,7 +474,7 @@ const AgentEmergentNarrativePanel: React.FC = () => {
                 <div style={{ fontSize: 10, color: '#aaa', marginBottom: 6 }}>{conflict.description}</div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                   <span style={{ fontSize: 9, color: '#666' }}>Intensity:</span>
-                  <div style={{ flex: 1, height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                  <div style={{ flex: 1, height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                     <div style={{ height: '100%', width: `${conflict.intensity * 100}%`, backgroundColor: conflict.intensity >= 0.7 ? '#ff6b6b' : conflict.intensity >= 0.4 ? '#fdcb6e' : '#6bcb77', borderRadius: 2 }} />
                   </div>
                   <span style={{ fontSize: 9, fontWeight: 600, color: conflict.intensity >= 0.7 ? '#ff6b6b' : '#fdcb6e' }}>{(conflict.intensity * 100).toFixed(0)}%</span>
@@ -482,7 +482,7 @@ const AgentEmergentNarrativePanel: React.FC = () => {
                 {conflict.involved_agents.length > 0 && (
                   <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                     {conflict.involved_agents.map(a => (
-                      <span key={a} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>{a}</span>
+                      <span key={a} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>{a}</span>
                     ))}
                   </div>
                 )}
@@ -492,7 +492,7 @@ const AgentEmergentNarrativePanel: React.FC = () => {
         )}
       </div>
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#141428', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
+      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
         <span>{'\uD83C\uDF0C'} {stats ? `${stats.total_events} events · ${stats.total_arcs} arcs` : 'Connected'}</span>
         <span>{stats ? `${stats.completed_arcs}/${stats.total_arcs} completed` : ''}</span>
       </div>

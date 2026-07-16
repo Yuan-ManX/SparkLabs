@@ -154,7 +154,7 @@ export default function AgentGameEngineBridgePanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -177,7 +177,7 @@ export default function AgentGameEngineBridgePanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -426,7 +426,7 @@ export default function AgentGameEngineBridgePanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

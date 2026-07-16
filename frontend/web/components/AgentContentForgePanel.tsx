@@ -75,26 +75,26 @@ export default function AgentContentForgePanel() {
   const tabs = ['overview', 'generate', 'assets', 'templates'];
 
   return (
-    <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
-      <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
+    <div className="h-full flex flex-col bg-[#1a1a1a] text-white">
+      <div className="flex gap-1 p-3 border-b border-[#2a2a2a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#f97316] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a2a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a2a] rounded text-sm text-[#f97316]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
 
         {/* Overview Tab */}
         {activeTab === 'overview' && (
           <div className="space-y-4">
-            <h2 className="text-lg font-bold text-[#00d4ff]">Content Forge Stats</h2>
+            <h2 className="text-lg font-bold text-[#f97316]">Content Forge Stats</h2>
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
               {Object.entries(stats).filter(([k]) => k !== 'by_type' && k !== 'by_status').map(([key, value]) => (
-                <div key={key} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
-                  <h3 className="text-[#00d4ff] text-xs capitalize">{key.replace(/_/g, ' ')}</h3>
+                <div key={key} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a2a]">
+                  <h3 className="text-[#f97316] text-xs capitalize">{key.replace(/_/g, ' ')}</h3>
                   <p className="text-2xl font-bold mt-1">
                     {typeof value === 'number' ? value.toLocaleString() : String(value)}
                   </p>
@@ -103,11 +103,11 @@ export default function AgentContentForgePanel() {
             </div>
 
             {stats.by_type && (
-              <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-                <h3 className="text-[#00d4ff] text-sm font-medium mb-3">By Type</h3>
+              <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+                <h3 className="text-[#f97316] text-sm font-medium mb-3">By Type</h3>
                 <div className="space-y-2">
                   {Object.entries(stats.by_type).map(([key, value]) => (
-                    <div key={key} className="flex justify-between bg-[#1a1a2e] rounded px-3 py-2">
+                    <div key={key} className="flex justify-between bg-[#1a1a1a] rounded px-3 py-2">
                       <span className="text-[#999] text-xs capitalize">{key}</span>
                       <span className="text-white text-xs font-mono">{String(value)}</span>
                     </div>
@@ -117,11 +117,11 @@ export default function AgentContentForgePanel() {
             )}
 
             {stats.by_status && (
-              <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-                <h3 className="text-[#00d4ff] text-sm font-medium mb-3">By Status</h3>
+              <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+                <h3 className="text-[#f97316] text-sm font-medium mb-3">By Status</h3>
                 <div className="space-y-2">
                   {Object.entries(stats.by_status).map(([key, value]) => (
-                    <div key={key} className="flex justify-between bg-[#1a1a2e] rounded px-3 py-2">
+                    <div key={key} className="flex justify-between bg-[#1a1a1a] rounded px-3 py-2">
                       <span className="text-[#999] text-xs capitalize">{key}</span>
                       <span className="text-white text-xs font-mono">{String(value)}</span>
                     </div>
@@ -135,39 +135,39 @@ export default function AgentContentForgePanel() {
         {/* Generate Tab */}
         {activeTab === 'generate' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Generate Content</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Generate Content</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Content Type</label>
                   <select value={genContentType} onChange={e => setGenContentType(e.target.value)}
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none">
                     {contentTypes.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Style</label>
                   <select value={genStyle} onChange={e => setGenStyle(e.target.value)}
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none">
                     {styles.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Quality</label>
                   <select value={genQuality} onChange={e => setGenQuality(e.target.value)}
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none">
                     {qualities.map(q => <option key={q} value={q}>{q}</option>)}
                   </select>
                 </div>
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Batch Size</label>
                   <input type="number" value={genBatchSize} onChange={e => setGenBatchSize(e.target.value)}
-                    min="1" max="100" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                    min="1" max="100" className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none" />
                 </div>
                 <div className="col-span-2">
                   <label className="text-xs text-[#999] mb-1 block">Tags (comma-separated)</label>
                   <input type="text" value={genTags} onChange={e => setGenTags(e.target.value)}
-                    placeholder="fantasy, combat, npc" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                    placeholder="fantasy, combat, npc" className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none" />
                 </div>
               </div>
               <button onClick={async () => {
@@ -180,7 +180,7 @@ export default function AgentContentForgePanel() {
                 });
                 if (result) fetchAssets();
               }} disabled={loading}
-                className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
+                className="mt-3 px-4 py-2 bg-[#f97316] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
                 {loading ? 'Generating...' : 'Generate Content'}
               </button>
             </div>
@@ -190,13 +190,13 @@ export default function AgentContentForgePanel() {
         {/* Assets Tab */}
         {activeTab === 'assets' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Filters</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Filters</h2>
               <div className="grid grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Type</label>
                   <select value={assetFilterType} onChange={e => setAssetFilterType(e.target.value)}
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none">
                     <option value="">All Types</option>
                     {contentTypes.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
@@ -204,7 +204,7 @@ export default function AgentContentForgePanel() {
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Status</label>
                   <select value={assetFilterStatus} onChange={e => setAssetFilterStatus(e.target.value)}
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none">
                     <option value="">All Statuses</option>
                     {statuses.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
@@ -212,28 +212,28 @@ export default function AgentContentForgePanel() {
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Style</label>
                   <select value={assetFilterStyle} onChange={e => setAssetFilterStyle(e.target.value)}
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none">
                     <option value="">All Styles</option>
                     {styles.map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
               </div>
               <button onClick={() => fetchAssets({ type: assetFilterType, status: assetFilterStatus, style: assetFilterStyle })}
-                className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
+                className="mt-3 px-4 py-2 bg-[#f97316] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
                 Apply Filters
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Assets ({assets.length})</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Assets ({assets.length})</h2>
               {assets.length > 0 ? (
                 <div className="space-y-2">
                   {assets.map((a, i) => (
-                    <div key={a.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
+                    <div key={a.id || i} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{a.name || a.id || `Asset ${i + 1}`}</span>
                         <div className="flex gap-1">
-                          <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded">{a.content_type || a.type || 'unknown'}</span>
+                          <span className="text-xs bg-[#0d0d0d] text-[#f97316] px-2 py-0.5 rounded">{a.content_type || a.type || 'unknown'}</span>
                           <span className={`text-xs px-2 py-0.5 rounded ${
                             (a.status || '') === 'approved' ? 'bg-green-900 text-green-300' :
                             (a.status || '') === 'published' ? 'bg-blue-900 text-blue-300' :
@@ -247,19 +247,19 @@ export default function AgentContentForgePanel() {
                       </div>
                       <div className="flex gap-2 mt-2">
                         <button onClick={() => setSelectedAsset(selectedAsset?.id === a.id ? null : a)}
-                          className="text-xs px-3 py-1 bg-[#0f0f23] text-[#ccc] rounded hover:bg-[#2a2a4a]">
+                          className="text-xs px-3 py-1 bg-[#0d0d0d] text-[#ccc] rounded hover:bg-[#2a2a2a]">
                           {selectedAsset?.id === a.id ? 'Hide Details' : 'View Details'}
                         </button>
                         <button onClick={async () => {
                           await handleSubmit(`${API_BASE}/content-forge/assets/${a.id}/assess-quality`, {});
                           fetchAssets();
                         }}
-                          className="text-xs px-3 py-1 bg-[#0f0f23] text-[#00d4ff] rounded hover:bg-[#2a2a4a]">
+                          className="text-xs px-3 py-1 bg-[#0d0d0d] text-[#f97316] rounded hover:bg-[#2a2a2a]">
                           Assess Quality
                         </button>
                       </div>
                       {selectedAsset?.id === a.id && (
-                        <div className="mt-2 bg-[#0f0f23] rounded p-3">
+                        <div className="mt-2 bg-[#0d0d0d] rounded p-3">
                           <pre className="text-xs text-[#ccc] font-mono whitespace-pre-wrap overflow-auto max-h-48">
                             {JSON.stringify(a, null, 2)}
                           </pre>
@@ -278,18 +278,18 @@ export default function AgentContentForgePanel() {
         {/* Templates Tab */}
         {activeTab === 'templates' && (
           <div className="space-y-4">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Add Template</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Add Template</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Template Name</label>
                   <input type="text" value={tplName} onChange={e => setTplName(e.target.value)}
-                    placeholder="dialogue_template_1" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+                    placeholder="dialogue_template_1" className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none" />
                 </div>
                 <div>
                   <label className="text-xs text-[#999] mb-1 block">Content Type</label>
                   <select value={tplContentType} onChange={e => setTplContentType(e.target.value)}
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm focus:border-[#f97316] focus:outline-none">
                     {contentTypes.map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </div>
@@ -297,7 +297,7 @@ export default function AgentContentForgePanel() {
                   <label className="text-xs text-[#999] mb-1 block">Template Structure (JSON)</label>
                   <textarea value={tplStructure} onChange={e => setTplStructure(e.target.value)}
                     rows={4} placeholder='{"fields": ["name", "description", "dialog"]}'
-                    className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
+                    className="w-full bg-[#1a1a1a] border border-[#2a2a2a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#f97316] focus:outline-none" />
                 </div>
               </div>
               <button onClick={async () => {
@@ -310,23 +310,23 @@ export default function AgentContentForgePanel() {
                 setTplName(''); setTplStructure('{}');
                 fetchTemplates();
               }} disabled={loading}
-                className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
+                className="mt-3 px-4 py-2 bg-[#f97316] text-black rounded text-sm font-medium hover:bg-[#00b8e6] disabled:opacity-50">
                 Add Template
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
-              <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Templates ({templates.length})</h2>
+            <div className="bg-[#0d0d0d] border border-[#2a2a2a] rounded-lg p-4">
+              <h2 className="text-lg font-bold text-[#f97316] mb-3">Templates ({templates.length})</h2>
               {templates.length > 0 ? (
                 <div className="space-y-2">
                   {templates.map((t, i) => (
-                    <div key={t.id || i} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-3">
+                    <div key={t.id || i} className="bg-[#1a1a1a] border border-[#2a2a2a] rounded-lg p-3">
                       <div className="flex items-center justify-between">
                         <span className="text-white text-sm font-medium">{t.name}</span>
-                        <span className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded">{t.content_type || 'unknown'}</span>
+                        <span className="text-xs bg-[#0d0d0d] text-[#f97316] px-2 py-0.5 rounded">{t.content_type || 'unknown'}</span>
                       </div>
                       {t.structure && (
-                        <div className="mt-1 bg-[#0f0f23] rounded p-2">
+                        <div className="mt-1 bg-[#0d0d0d] rounded p-2">
                           <pre className="text-xs text-[#ccc] font-mono whitespace-pre-wrap">
                             {JSON.stringify(t.structure, null, 2)}
                           </pre>

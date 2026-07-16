@@ -356,7 +356,7 @@ export default function AgentPlayerModelerPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -379,7 +379,7 @@ export default function AgentPlayerModelerPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -523,7 +523,7 @@ export default function AgentPlayerModelerPanel() {
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                         <span style={{ fontWeight: 600, fontSize: 12, color: '#fdcb6e' }}>{p.name || p.player_id}</span>
-                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{p.experience_level}</span>
+                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{p.experience_level}</span>
                       </div>
                       <div style={{ fontSize: 9, color: '#666' }}>
                         Age: {p.age_group}
@@ -642,7 +642,7 @@ export default function AgentPlayerModelerPanel() {
                   {classification.traits && (
                     <div style={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
                       {classification.traits.map((t, j) => (
-                        <span key={j} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{t}</span>
+                        <span key={j} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{t}</span>
                       ))}
                     </div>
                   )}
@@ -678,7 +678,7 @@ export default function AgentPlayerModelerPanel() {
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <span style={{ fontSize: 10, color: '#888' }}>Skill Level:</span>
                     <span style={{ fontSize: 16, fontWeight: 700, color: '#a29bfe' }}>{skillEstimate.skill_level}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{skillEstimate.category}</span>
+                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{skillEstimate.category}</span>
                   </div>
                   {skillEstimate.strengths && skillEstimate.strengths.length > 0 && (
                     <div style={{ marginBottom: 6 }}>
@@ -825,7 +825,7 @@ export default function AgentPlayerModelerPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

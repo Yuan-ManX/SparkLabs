@@ -412,7 +412,7 @@ export default function AgentAutonomousTesterPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -435,7 +435,7 @@ export default function AgentAutonomousTesterPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -592,7 +592,7 @@ export default function AgentAutonomousTesterPanel() {
                       {s.target_areas && s.target_areas.length > 0 && (
                         <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                           {s.target_areas.map((a, j) => (
-                            <span key={j} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{a}</span>
+                            <span key={j} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{a}</span>
                           ))}
                         </div>
                       )}
@@ -659,7 +659,7 @@ export default function AgentAutonomousTesterPanel() {
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                         <span style={{ fontWeight: 600, fontSize: 12, color: '#00d4ff' }}>{tc.name}</span>
-                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{tc.status}</span>
+                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{tc.status}</span>
                       </div>
                       <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>{tc.description?.slice(0, 100)}</div>
                       <div style={{ fontSize: 9, color: '#666' }}>
@@ -851,7 +851,7 @@ export default function AgentAutonomousTesterPanel() {
                         <span style={{ fontWeight: 600, fontSize: 12, color: '#6bcb77' }}>{bug.title}</span>
                         <span style={{
                           fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                          backgroundColor: '#0f3460', color: getSeverityColor(bug.severity),
+                          backgroundColor: '#1e1e1e', color: getSeverityColor(bug.severity),
                         }}>{bug.severity}</span>
                       </div>
                       <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>{bug.description?.slice(0, 100)}</div>
@@ -916,15 +916,15 @@ export default function AgentAutonomousTesterPanel() {
                     <div style={{ fontWeight: 600, fontSize: 12, color: '#a29bfe', marginBottom: 6 }}>{report.report_type} Report</div>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 8 }}>{report.summary}</div>
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, fontSize: 9 }}>
-                      <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 3, textAlign: 'center' }}>
+                      <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 3, textAlign: 'center' }}>
                         <div style={{ color: '#666' }}>Total Tests</div>
                         <div style={{ color: '#00d4ff', fontWeight: 600 }}>{report.total_tests}</div>
                       </div>
-                      <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 3, textAlign: 'center' }}>
+                      <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 3, textAlign: 'center' }}>
                         <div style={{ color: '#666' }}>Passed</div>
                         <div style={{ color: '#6bcb77', fontWeight: 600 }}>{report.passed}</div>
                       </div>
-                      <div style={{ padding: 6, backgroundColor: '#141428', borderRadius: 3, textAlign: 'center' }}>
+                      <div style={{ padding: 6, backgroundColor: '#111', borderRadius: 3, textAlign: 'center' }}>
                         <div style={{ color: '#666' }}>Failed</div>
                         <div style={{ color: '#ff6b6b', fontWeight: 600 }}>{report.failed}</div>
                       </div>
@@ -983,7 +983,7 @@ export default function AgentAutonomousTesterPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

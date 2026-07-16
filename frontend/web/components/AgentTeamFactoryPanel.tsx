@@ -252,7 +252,7 @@ export default function AgentTeamFactoryPanel() {
   return (
     <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a] shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-[#0f0f2a] shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-sm font-bold">TF</div>
           <div>
@@ -262,7 +262,7 @@ export default function AgentTeamFactoryPanel() {
         </div>
         <div className="flex items-center gap-2">
           <button onClick={initializeFactory} disabled={loading}
-            className="px-2 py-1 text-[10px] bg-purple-700/50 text-purple-300 rounded hover:bg-purple-700/70">
+            className="px-2 py-1 text-[10px] bg-orange-700/50 text-orange-300 rounded hover:bg-orange-700/70">
             Init
           </button>
           <span className="text-[10px] text-[#666]">{blueprints.length} teams</span>
@@ -270,7 +270,7 @@ export default function AgentTeamFactoryPanel() {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-[#1a1a3e] shrink-0">
+      <div className="flex border-b border-[#1a1a1a] shrink-0">
         {(['create', 'manage', 'tasks', 'stats'] as const).map(tab => (
           <button key={tab} onClick={() => setActiveTab(tab)}
             className={`px-4 py-2 text-[11px] font-medium transition-colors ${activeTab === tab ? 'text-purple-400 border-b border-purple-400 bg-[#1a0a2e]' : 'text-[#666] hover:text-[#ccc]'}`}>
@@ -317,7 +317,7 @@ export default function AgentTeamFactoryPanel() {
                   </select>
                 </div>
                 <button onClick={createTeam} disabled={loading}
-                  className="w-full py-2 rounded-lg bg-gradient-to-r from-purple-600 to-pink-600 text-white text-sm font-medium hover:from-purple-500 hover:to-pink-500 transition-all disabled:opacity-50">
+                  className="w-full py-2 rounded-lg bg-gradient-to-r from-orange-500 to-red-600 text-white text-sm font-medium hover:from-orange-600 hover:to-red-700 transition-all disabled:opacity-50">
                   {loading ? 'Creating...' : 'Create Team Blueprint'}
                 </button>
               </div>
@@ -358,7 +358,7 @@ export default function AgentTeamFactoryPanel() {
                   </div>
                   <div className="flex gap-2 flex-wrap">
                     {bp.agents.map(a => (
-                      <span key={a.agent_id} className={`text-[9px] px-1.5 py-0.5 rounded border ${ROLE_COLORS[a.role] || 'bg-[#0a0a0a]/50 text-[#999] border-[#1a1a1a]'}`}>
+                      <span key={a.agent_id} className={`text-[9px] px-1.5 py-0.5 rounded border ${ROLE_COLORS[a.role] || 'bg-[#0a0a0a]/50 text-[#999] border-[#1e1e1e]'}`}>
                         {a.name}
                       </span>
                     ))}
@@ -418,7 +418,7 @@ export default function AgentTeamFactoryPanel() {
                     placeholder='Context (JSON, optional)'
                     className={inputCls} />
                   <button onClick={dispatchTask} disabled={loading}
-                    className="w-full py-1.5 rounded bg-purple-700/50 text-purple-300 text-xs hover:bg-purple-700/70">
+                    className="w-full py-1.5 rounded bg-orange-700/50 text-orange-300 text-xs hover:bg-orange-700/70">
                     Dispatch Task
                   </button>
                 </div>

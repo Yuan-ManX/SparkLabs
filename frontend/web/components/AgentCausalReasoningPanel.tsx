@@ -266,7 +266,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
           <span style={{ color: '#aaa' }}>{label}</span>
           <span style={{ color: '#ccc', fontWeight: 600 }}>{unit === '%' ? `${clampedPct.toFixed(1)}${unit}` : `${value}${unit}`}</span>
         </div>
-        <div style={{ height: 6, backgroundColor: '#141428', borderRadius: 3 }}>
+        <div style={{ height: 6, backgroundColor: '#111', borderRadius: 3 }}>
           <div style={{
             height: '100%', width: `${clampedPct}%`,
             backgroundColor: barColor, borderRadius: 3,
@@ -329,7 +329,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
             backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
             color: activeTab === tab.key ? '#e0e0e0' : '#888',
             border: 'none',
-            borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent',
+            borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent',
             cursor: 'pointer',
           }}>
             {tab.icon} {tab.label}
@@ -344,7 +344,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#74b9ff' }}>
                 Discover Causal Graph
@@ -355,7 +355,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
                   <input type="text" value={discoveryForm.domain}
                     onChange={e => setDiscoveryForm(prev => ({ ...prev, domain: e.target.value }))}
                     placeholder="e.g. healthcare"
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
@@ -363,14 +363,14 @@ const AgentCausalReasoningPanel: React.FC = () => {
                   <input type="text" value={discoveryForm.variables}
                     onChange={e => setDiscoveryForm(prev => ({ ...prev, variables: e.target.value }))}
                     placeholder="e.g. Age, Income, Health"
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
                   <label style={{ fontSize: 10, color: '#888', display: 'block', marginBottom: 3 }}>Algorithm</label>
                   <select value={discoveryForm.algorithm}
                     onChange={e => setDiscoveryForm(prev => ({ ...prev, algorithm: e.target.value }))}
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   >
                     <option value="pc">PC</option>
                     <option value="ges">GES</option>
@@ -385,12 +385,12 @@ const AgentCausalReasoningPanel: React.FC = () => {
                     onChange={e => setDiscoveryForm(prev => ({ ...prev, observations: e.target.value }))}
                     placeholder='[{"var1": 1, "var2": 2}, ...]'
                     rows={3}
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box', resize: 'vertical', fontFamily: 'monospace' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box', resize: 'vertical', fontFamily: 'monospace' }}
                   />
                 </div>
               </div>
               <button onClick={handleDiscover} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#74b9ff',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#74b9ff',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -401,7 +401,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
             {graphResult && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, color: '#aaa' }}>
                   Graph Result: {graphResult.domain} ({graphResult.algorithm.toUpperCase()})
@@ -444,7 +444,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#fdcb6e' }}>
                 Simulate Intervention
@@ -455,7 +455,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
                   <input type="text" value={interventionForm.domain}
                     onChange={e => setInterventionForm(prev => ({ ...prev, domain: e.target.value }))}
                     placeholder="e.g. healthcare"
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
@@ -463,7 +463,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
                   <input type="text" value={interventionForm.variable}
                     onChange={e => setInterventionForm(prev => ({ ...prev, variable: e.target.value }))}
                     placeholder="e.g. Treatment"
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
@@ -471,7 +471,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
                   <input type="text" value={interventionForm.newValue}
                     onChange={e => setInterventionForm(prev => ({ ...prev, newValue: e.target.value }))}
                     placeholder="e.g. 1.0"
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
@@ -479,12 +479,12 @@ const AgentCausalReasoningPanel: React.FC = () => {
                   <input type="text" value={interventionForm.target}
                     onChange={e => setInterventionForm(prev => ({ ...prev, target: e.target.value }))}
                     placeholder="e.g. Outcome"
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   />
                 </div>
               </div>
               <button onClick={handleIntervention} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#fdcb6e',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#fdcb6e',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -495,7 +495,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
             {interventionResult && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, color: '#aaa' }}>
                   Intervention: {interventionResult.variable} = {interventionResult.new_value}
@@ -529,7 +529,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#a29bfe' }}>
                 Evaluate Counterfactual
@@ -540,7 +540,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
                   <input type="text" value={counterfactualForm.domain}
                     onChange={e => setCounterfactualForm(prev => ({ ...prev, domain: e.target.value }))}
                     placeholder="e.g. healthcare"
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   />
                 </div>
                 <div>
@@ -549,7 +549,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
                     onChange={e => setCounterfactualForm(prev => ({ ...prev, factual: e.target.value }))}
                     placeholder='{"treatment": 0, "age": 45}'
                     rows={2}
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box', resize: 'vertical', fontFamily: 'monospace' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box', resize: 'vertical', fontFamily: 'monospace' }}
                   />
                 </div>
                 <div>
@@ -558,7 +558,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
                     onChange={e => setCounterfactualForm(prev => ({ ...prev, hypothetical: e.target.value }))}
                     placeholder='{"treatment": 1, "age": 45}'
                     rows={2}
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box', resize: 'vertical', fontFamily: 'monospace' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box', resize: 'vertical', fontFamily: 'monospace' }}
                   />
                 </div>
                 <div>
@@ -566,12 +566,12 @@ const AgentCausalReasoningPanel: React.FC = () => {
                   <input type="text" value={counterfactualForm.query}
                     onChange={e => setCounterfactualForm(prev => ({ ...prev, query: e.target.value }))}
                     placeholder="e.g. What if treatment was applied?"
-                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #0f3460', borderRadius: 4, boxSizing: 'border-box' }}
+                    style={{ width: '100%', padding: '6px 8px', fontSize: 12, backgroundColor: '#1a1a2e', color: '#e0e0e0', border: '1px solid #1e1e1e', borderRadius: 4, boxSizing: 'border-box' }}
                   />
                 </div>
               </div>
               <button onClick={handleCounterfactual} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#a29bfe',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#a29bfe',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -582,7 +582,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
             {counterfactualResult && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 8, color: '#aaa' }}>Counterfactual Result</div>
                 <div style={{ marginBottom: 8 }}>
@@ -615,7 +615,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12, color: '#aaa' }}>Causal Reasoning System Status</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10, marginBottom: 14 }}>
@@ -656,7 +656,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
         {activeTab === 'status' && !status && (
           <div style={{
             textAlign: 'center', padding: 40, color: '#555',
-            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460',
+            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e',
           }}>
             <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>{'\u2699\uFE0F'}</span>
             Loading system status...
@@ -667,7 +667,7 @@ const AgentCausalReasoningPanel: React.FC = () => {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

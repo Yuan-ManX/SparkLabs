@@ -122,7 +122,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3 mb-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Project ID (optional)</label>
-            <input type="text" value={projectId} onChange={(e) => setProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={projectId} onChange={(e) => setProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={fetchData} className="px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -153,11 +153,11 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Project Name</label>
-            <input type="text" value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="My Epic RPG" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={projectName} onChange={(e) => setProjectName(e.target.value)} placeholder="My Epic RPG" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Genre</label>
-            <select value={projectGenre} onChange={(e) => setProjectGenre(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={projectGenre} onChange={(e) => setProjectGenre(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="adventure">Adventure</option>
               <option value="rpg">RPG</option>
               <option value="action">Action</option>
@@ -172,7 +172,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Target Audience</label>
-            <select value={projectAudience} onChange={(e) => setProjectAudience(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={projectAudience} onChange={(e) => setProjectAudience(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="casual">Casual</option>
               <option value="core">Core</option>
               <option value="hardcore">Hardcore</option>
@@ -182,7 +182,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Visual Style</label>
-            <select value={projectStyle} onChange={(e) => setProjectStyle(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={projectStyle} onChange={(e) => setProjectStyle(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="stylized">Stylized</option>
               <option value="pixel_art">Pixel Art</option>
               <option value="low_poly">Low Poly</option>
@@ -193,7 +193,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Emotional Tone</label>
-            <select value={projectTone} onChange={(e) => setProjectTone(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={projectTone} onChange={(e) => setProjectTone(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="hopeful">Hopeful</option>
               <option value="mysterious">Mysterious</option>
               <option value="tense">Tense</option>
@@ -218,11 +218,11 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Project ID</label>
-            <input type="text" value={ideaProjectId} onChange={(e) => setIdeaProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={ideaProjectId} onChange={(e) => setIdeaProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Category</label>
-            <select value={ideaCategory} onChange={(e) => setIdeaCategory(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={ideaCategory} onChange={(e) => setIdeaCategory(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="mechanic">Mechanic</option>
               <option value="story">Story</option>
               <option value="art">Art</option>
@@ -232,11 +232,11 @@ const AgentCreativeDirectorPanel: React.FC = () => {
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Idea Title</label>
-            <input type="text" value={ideaTitle} onChange={(e) => setIdeaTitle(e.target.value)} placeholder="Double Jump Mechanic" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={ideaTitle} onChange={(e) => setIdeaTitle(e.target.value)} placeholder="Double Jump Mechanic" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Description</label>
-            <textarea value={ideaDescription} onChange={(e) => setIdeaDescription(e.target.value)} rows={3} placeholder="Describe the idea in detail..." className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <textarea value={ideaDescription} onChange={(e) => setIdeaDescription(e.target.value)} rows={3} placeholder="Describe the idea in detail..." className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/agent/creative-director/create-idea', { project_id: ideaProjectId, title: ideaTitle, description: ideaDescription, category: ideaCategory })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -250,11 +250,11 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Idea ID</label>
-            <input type="text" value={iterateIdeaId} onChange={(e) => setIterateIdeaId(e.target.value)} placeholder="idea_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={iterateIdeaId} onChange={(e) => setIterateIdeaId(e.target.value)} placeholder="idea_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Feedback</label>
-            <input type="text" value={iterateFeedback} onChange={(e) => setIterateFeedback(e.target.value)} placeholder="Make it more complex" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={iterateFeedback} onChange={(e) => setIterateFeedback(e.target.value)} placeholder="Make it more complex" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/agent/creative-director/iterate-idea', { idea_id: iterateIdeaId, feedback: iterateFeedback })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -267,7 +267,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Approve Idea</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Idea ID</label>
-          <input type="text" value={approveIdeaId} onChange={(e) => setApproveIdeaId(e.target.value)} placeholder="idea_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={approveIdeaId} onChange={(e) => setApproveIdeaId(e.target.value)} placeholder="idea_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/agent/creative-director/approve-idea', { idea_id: approveIdeaId })} className="mt-3 px-4 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-500">
           Approve Idea
@@ -280,11 +280,11 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Idea ID</label>
-            <input type="text" value={feedbackIdeaId} onChange={(e) => setFeedbackIdeaId(e.target.value)} placeholder="idea_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={feedbackIdeaId} onChange={(e) => setFeedbackIdeaId(e.target.value)} placeholder="idea_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Feedback</label>
-            <input type="text" value={feedbackText} onChange={(e) => setFeedbackText(e.target.value)} placeholder="Needs more polish" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={feedbackText} onChange={(e) => setFeedbackText(e.target.value)} placeholder="Needs more polish" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/agent/creative-director/add-feedback', { idea_id: feedbackIdeaId, feedback: feedbackText })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -301,7 +301,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Create Session</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Project ID</label>
-          <input type="text" value={sessionProjectId} onChange={(e) => setSessionProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={sessionProjectId} onChange={(e) => setSessionProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/agent/creative-director/create-session', { project_id: sessionProjectId })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
           Create Session
@@ -313,7 +313,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">End Session</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-          <input type="text" value={sessionId} onChange={(e) => setSessionId(e.target.value)} placeholder="sess_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={sessionId} onChange={(e) => setSessionId(e.target.value)} placeholder="sess_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/agent/creative-director/end-session', { session_id: sessionId })} className="mt-3 px-4 py-2 bg-red-700 text-white rounded text-sm font-medium hover:bg-red-600">
           End Session
@@ -330,15 +330,15 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Project ID</label>
-            <input type="text" value={promptProjectId} onChange={(e) => setPromptProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={promptProjectId} onChange={(e) => setPromptProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Count</label>
-            <input type="number" value={promptCount} onChange={(e) => setPromptCount(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={promptCount} onChange={(e) => setPromptCount(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Theme (optional)</label>
-            <input type="text" value={promptTheme} onChange={(e) => setPromptTheme(e.target.value)} placeholder="combat mechanics" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={promptTheme} onChange={(e) => setPromptTheme(e.target.value)} placeholder="combat mechanics" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -357,7 +357,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Generate From Prompt</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Project ID</label>
-          <input type="text" value={promptProjectId} onChange={(e) => setPromptProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={promptProjectId} onChange={(e) => setPromptProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <div className="mt-2">
           <label className="text-xs text-[#999] mb-1 block">Prompt</label>
@@ -366,7 +366,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
             onChange={(e) => setPromptTheme(e.target.value)}
             rows={2}
             placeholder="Design a stealth system for a top-down game"
-            className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
+            className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none"
           />
         </div>
         <button
@@ -384,7 +384,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
       {generatedPrompts && (
         <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mt-3">
           <div className="text-sm font-medium text-[#00d4ff] mb-2">Generated Results</div>
-          <textarea readOnly value={JSON.stringify(generatedPrompts, null, 2)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-40" />
+          <textarea readOnly value={JSON.stringify(generatedPrompts, null, 2)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-40" />
         </div>
       )}
     </div>
@@ -397,11 +397,11 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Project ID</label>
-            <input type="text" value={comboProjectId} onChange={(e) => setComboProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={comboProjectId} onChange={(e) => setComboProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Count</label>
-            <input type="number" value={comboCount} onChange={(e) => setComboCount(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={comboCount} onChange={(e) => setComboCount(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -418,7 +418,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
       {generatedCombos && (
         <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mt-3">
           <div className="text-sm font-medium text-[#00d4ff] mb-2">Generated Combos</div>
-          <textarea readOnly value={JSON.stringify(generatedCombos, null, 2)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-40" />
+          <textarea readOnly value={JSON.stringify(generatedCombos, null, 2)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-40" />
         </div>
       )}
     </div>
@@ -431,11 +431,11 @@ const AgentCreativeDirectorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Project ID</label>
-            <input type="text" value={exportProjectId} onChange={(e) => setExportProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={exportProjectId} onChange={(e) => setExportProjectId(e.target.value)} placeholder="proj_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Format</label>
-            <select value={exportFormat} onChange={(e) => setExportFormat(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={exportFormat} onChange={(e) => setExportFormat(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="markdown">Markdown</option>
               <option value="json">JSON</option>
               <option value="pdf">PDF</option>
@@ -457,7 +457,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
       {exportResult && (
         <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mt-3">
           <div className="text-sm font-medium text-[#00d4ff] mb-2">Export Result</div>
-          <textarea readOnly value={exportResult} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-48" />
+          <textarea readOnly value={exportResult} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-48" />
         </div>
       )}
     </div>
@@ -477,7 +477,7 @@ const AgentCreativeDirectorPanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       {message && (
         <div className={`mx-4 mt-2 px-3 py-2 rounded text-sm ${message.type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-700' : 'bg-red-900/50 text-red-300 border border-red-700'}`}>
           {message.text}

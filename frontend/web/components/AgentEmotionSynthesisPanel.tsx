@@ -108,7 +108,7 @@ const AgentEmotionSynthesisPanel: React.FC = () => {
               <span className="text-[10px] text-[#888] w-6">{intensity}</span>
             </div>
             <button onClick={triggerEvent}
-              className="w-full bg-purple-600 hover:bg-purple-700 text-white text-[11px] py-1.5 rounded transition-colors">
+              className="w-full bg-orange-500 hover:bg-orange-600 text-white text-[11px] py-1.5 rounded transition-colors">
               Trigger Event
             </button>
           </div>

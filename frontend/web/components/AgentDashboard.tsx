@@ -267,7 +267,7 @@ const AgentDashboard: React.FC = () => {
               {agent.current_task && (
                 <div style={{
                   marginTop: 6, padding: '4px 8px',
-                  backgroundColor: '#141428', borderRadius: 4,
+                  backgroundColor: '#111', borderRadius: 4,
                   fontSize: 10, color: '#aaa',
                 }}>
                   <i className="fa-solid fa-spinner fa-spin" style={{ marginRight: 4, fontSize: 8 }} />
@@ -350,7 +350,7 @@ const AgentDashboard: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

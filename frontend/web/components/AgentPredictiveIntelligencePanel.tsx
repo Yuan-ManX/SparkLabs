@@ -403,7 +403,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: '#ccc' }}>
                 {'\uD83D\uDCC8'} Analyze Trend
@@ -417,7 +417,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                     onChange={e => setTrendDomain(e.target.value)}
                     style={{
                       padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                      border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: 200,
+                      border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: 200,
                     }}
                   />
                 </div>
@@ -431,7 +431,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                     max={365}
                     style={{
                       padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                      border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: 100,
+                      border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: 100,
                     }}
                   />
                 </div>
@@ -519,7 +519,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: '#ccc' }}>
                 {'\uD83D\uDD2E'} Generate Forecast
@@ -533,7 +533,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                     onChange={e => setForecastDomain(e.target.value)}
                     style={{
                       padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                      border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: 180,
+                      border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: 180,
                     }}
                   />
                 </div>
@@ -544,7 +544,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                     onChange={e => setForecastHorizon(e.target.value as Horizon)}
                     style={{
                       padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                      border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: 160,
+                      border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: 160,
                     }}
                   >
                     <option value="SHORT_TERM">Short Term</option>
@@ -562,7 +562,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                     max={365}
                     style={{
                       padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                      border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: 100,
+                      border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: 100,
                     }}
                   />
                 </div>
@@ -580,7 +580,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
               <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
                 <div style={{
                   padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                  border: '1px solid #0f3460',
+                  border: '1px solid #1e1e1e',
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
                     <span style={{ fontWeight: 600, fontSize: 14 }}>{forecastResult.domain}</span>
@@ -622,7 +622,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                             flex: 1, textAlign: 'center', padding: '6px 4px',
                             backgroundColor: '#1a1a2e', borderRadius: 4,
                             fontSize: 12, fontWeight: 600, color: '#74b9ff',
-                            border: '1px solid #0f3460',
+                            border: '1px solid #1e1e1e',
                           }}>
                           {val.toFixed(2)}
                         </div>
@@ -644,7 +644,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: '#ccc' }}>
                 {'\uD83D\uDD2C'} What-If Simulation
@@ -659,7 +659,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setCfQuery(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -671,7 +671,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setCfBaseState(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -685,7 +685,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setCfModification(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -697,7 +697,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setCfDomain(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -709,7 +709,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setCfImpactedDomains(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -728,7 +728,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
             {cfResult && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: '#ccc' }}>
                   Results: {cfResult.query}
@@ -785,7 +785,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
             {/* Record Data Point */}
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: '#ccc' }}>
                 {'\uD83D\uDCCB'} Record Data Point
@@ -800,7 +800,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setRecordDomain(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -813,7 +813,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       step="0.01"
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -828,7 +828,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       max={1}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -842,7 +842,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setRecordTags(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -854,7 +854,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setRecordMetadata(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -897,7 +897,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
             {/* Risk Assessment */}
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 10, color: '#ccc' }}>
                 {'\u26A0\uFE0F'} Assess Risk
@@ -912,7 +912,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setRiskDomain(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -924,7 +924,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                       onChange={e => setRiskThresholds(e.target.value)}
                       style={{
                         padding: '6px 10px', backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4, fontSize: 12, width: '100%',
+                        border: '1px solid #1e1e1e', borderRadius: 4, fontSize: 12, width: '100%',
                       }}
                     />
                   </div>
@@ -942,7 +942,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
               {riskResult && (
                 <div style={{
                   marginTop: 10, padding: 10, backgroundColor: '#12122e', borderRadius: 4,
-                  border: '1px solid #0f3460',
+                  border: '1px solid #1e1e1e',
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
                     <span style={{ fontWeight: 600, fontSize: 13, color: '#ccc' }}>{riskResult.domain}</span>
@@ -1008,7 +1008,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
             ) : status ? (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontSize: 13, fontWeight: 600, marginBottom: 14, color: '#ccc' }}>
                   {'\u2699\uFE0F'} System Status Overview
@@ -1016,7 +1016,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
                   <div style={{
                     padding: 12, backgroundColor: '#12122e', borderRadius: 6,
-                    border: '1px solid #0f3460', textAlign: 'center',
+                    border: '1px solid #1e1e1e', textAlign: 'center',
                   }}>
                     <div style={{ fontSize: 24, fontWeight: 700, color: '#74b9ff' }}>
                       {status.total_forecasts}
@@ -1025,7 +1025,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                   </div>
                   <div style={{
                     padding: 12, backgroundColor: '#12122e', borderRadius: 6,
-                    border: '1px solid #0f3460', textAlign: 'center',
+                    border: '1px solid #1e1e1e', textAlign: 'center',
                   }}>
                     <div style={{ fontSize: 24, fontWeight: 700, color: '#a29bfe' }}>
                       {status.total_counterfactuals}
@@ -1034,7 +1034,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                   </div>
                   <div style={{
                     padding: 12, backgroundColor: '#12122e', borderRadius: 6,
-                    border: '1px solid #0f3460', textAlign: 'center',
+                    border: '1px solid #1e1e1e', textAlign: 'center',
                   }}>
                     <div style={{ fontSize: 24, fontWeight: 700, color: '#6bcb77' }}>
                       {status.total_datapoints.toLocaleString()}
@@ -1043,7 +1043,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
                   </div>
                   <div style={{
                     padding: 12, backgroundColor: '#12122e', borderRadius: 6,
-                    border: '1px solid #0f3460', textAlign: 'center',
+                    border: '1px solid #1e1e1e', textAlign: 'center',
                   }}>
                     <div style={{ fontSize: 24, fontWeight: 700, color: '#fdcb6e' }}>
                       {status.total_trend_analyses}
@@ -1065,7 +1065,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
             ) : (
               <div style={{
                 textAlign: 'center', padding: 40, color: '#555',
-                backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460',
+                backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e',
               }}>
                 <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>{'\u2699\uFE0F'}</span>
                 System status unavailable
@@ -1078,7 +1078,7 @@ const AgentPredictiveIntelligencePanel: React.FC = () => {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

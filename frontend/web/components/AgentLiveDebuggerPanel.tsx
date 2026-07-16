@@ -159,11 +159,11 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Session Name</label>
-            <input type="text" value={sessionName} onChange={(e) => setSessionName(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={sessionName} onChange={(e) => setSessionName(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Target (optional)</label>
-            <input type="text" value={sessionId} onChange={(e) => setSessionId(e.target.value)} placeholder="game_instance_1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={sessionId} onChange={(e) => setSessionId(e.target.value)} placeholder="game_instance_1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -177,7 +177,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         </button>
         {startSessionData && (
           <div className="mt-3">
-            <textarea readOnly value={JSON.stringify(startSessionData, null, 2)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-20" />
+            <textarea readOnly value={JSON.stringify(startSessionData, null, 2)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-20" />
           </div>
         )}
       </div>
@@ -187,7 +187,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">End Debug Session</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-          <input type="text" value={sessionId} onChange={(e) => setSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={sessionId} onChange={(e) => setSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/agent/live-debugger/end-session', { session_id: sessionId })} className="mt-3 px-4 py-2 bg-red-700 text-white rounded text-sm font-medium hover:bg-red-600">
           End Session
@@ -204,11 +204,11 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-            <input type="text" value={logSessionId} onChange={(e) => setLogSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={logSessionId} onChange={(e) => setLogSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Level</label>
-            <select value={logLevel} onChange={(e) => setLogLevel(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={logLevel} onChange={(e) => setLogLevel(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="debug">Debug</option>
               <option value="info">Info</option>
               <option value="warning">Warning</option>
@@ -218,12 +218,12 @@ const AgentLiveDebuggerPanel: React.FC = () => {
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Source</label>
-            <input type="text" value={logSource} onChange={(e) => setLogSource(e.target.value)} placeholder="game_engine" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={logSource} onChange={(e) => setLogSource(e.target.value)} placeholder="game_engine" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div></div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Message</label>
-            <textarea value={logMessage} onChange={(e) => setLogMessage(e.target.value)} rows={2} placeholder="Log message content..." className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
+            <textarea value={logMessage} onChange={(e) => setLogMessage(e.target.value)} rows={2} placeholder="Log message content..." className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/agent/live-debugger/log-entry', { session_id: logSessionId, level: logLevel, message: logMessage, source: logSource })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -237,7 +237,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="grid grid-cols-3 gap-2 mb-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Filter Level</label>
-            <select value={logFilterLevel} onChange={(e) => setLogFilterLevel(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={logFilterLevel} onChange={(e) => setLogFilterLevel(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="">All Levels</option>
               <option value="debug">Debug</option>
               <option value="info">Info</option>
@@ -248,7 +248,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Filter Source</label>
-            <input type="text" value={logFilterSource} onChange={(e) => setLogFilterSource(e.target.value)} placeholder="source name" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={logFilterSource} onChange={(e) => setLogFilterSource(e.target.value)} placeholder="source name" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="flex items-end">
             <button
@@ -270,7 +270,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         {logEntries.length > 0 ? (
           <div className="space-y-1 max-h-60 overflow-auto">
             {logEntries.map((entry: any, i: number) => (
-              <div key={i} className={`text-xs p-2 rounded font-mono ${entry.level === 'error' || entry.level === 'critical' ? 'bg-red-900/30 text-red-300 border border-red-800' : entry.level === 'warning' ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-800' : 'bg-[#0f0f23] text-[#ccc] border border-[#2a2a4a]'}`}>
+              <div key={i} className={`text-xs p-2 rounded font-mono ${entry.level === 'error' || entry.level === 'critical' ? 'bg-red-900/30 text-red-300 border border-red-800' : entry.level === 'warning' ? 'bg-yellow-900/30 text-yellow-300 border border-yellow-800' : 'bg-[#0d0d0d] text-[#ccc] border border-[#2a2a4a]'}`}>
                 <span className="text-[#666]">[{entry.timestamp || '-'}]</span>{' '}
                 <span className="text-[#00d4ff]">[{entry.level?.toUpperCase()}]</span>{' '}
                 {entry.source && <span className="text-[#999]">[{entry.source}]</span>}{' '}
@@ -293,19 +293,19 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-            <input type="text" value={bpSessionId} onChange={(e) => setBpSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={bpSessionId} onChange={(e) => setBpSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">File</label>
-            <input type="text" value={bpFile} onChange={(e) => setBpFile(e.target.value)} placeholder="player_controller.lua" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={bpFile} onChange={(e) => setBpFile(e.target.value)} placeholder="player_controller.lua" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Line</label>
-            <input type="number" value={bpLine} onChange={(e) => setBpLine(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={bpLine} onChange={(e) => setBpLine(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Condition (optional)</label>
-            <input type="text" value={bpCondition} onChange={(e) => setBpCondition(e.target.value)} placeholder="x > 100" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={bpCondition} onChange={(e) => setBpCondition(e.target.value)} placeholder="x > 100" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/agent/live-debugger/add-breakpoint', { session_id: bpSessionId, file: bpFile, line: parseInt(bpLine, 10), condition: bpCondition || undefined })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -319,7 +319,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Breakpoint ID</label>
-            <input type="text" value={bpToggleId} onChange={(e) => setBpToggleId(e.target.value)} placeholder="bp_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={bpToggleId} onChange={(e) => setBpToggleId(e.target.value)} placeholder="bp_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Enabled</label>
@@ -340,11 +340,11 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">File</label>
-            <input type="text" value={bpHitFile} onChange={(e) => setBpHitFile(e.target.value)} placeholder="player_controller.lua" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={bpHitFile} onChange={(e) => setBpHitFile(e.target.value)} placeholder="player_controller.lua" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Line</label>
-            <input type="number" value={bpHitLine} onChange={(e) => setBpHitLine(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={bpHitLine} onChange={(e) => setBpHitLine(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/agent/live-debugger/breakpoint-hit', { session_id: bpSessionId, file: bpHitFile, line: parseInt(bpHitLine, 10) })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -367,7 +367,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         {activeBreakpoints.length > 0 ? (
           <div className="space-y-1">
             {activeBreakpoints.map((bp: any, i: number) => (
-              <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-2 text-xs font-mono text-white flex justify-between">
+              <div key={i} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded p-2 text-xs font-mono text-white flex justify-between">
                 <span>{bp.file}:{bp.line}</span>
                 <span className={bp.enabled ? 'text-green-400' : 'text-[#666]'}>{bp.enabled ? '● active' : '○ disabled'}</span>
               </div>
@@ -388,11 +388,11 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-            <input type="text" value={snapSessionId} onChange={(e) => setSnapSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={snapSessionId} onChange={(e) => setSnapSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Label</label>
-            <input type="text" value={snapLabel} onChange={(e) => setSnapLabel(e.target.value)} placeholder="pre_bug" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={snapLabel} onChange={(e) => setSnapLabel(e.target.value)} placeholder="pre_bug" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/agent/live-debugger/take-snapshot', { session_id: snapSessionId, label: snapLabel })} className="mt-3 px-4 py-2 bg-[#00d4ff] text-black rounded text-sm font-medium hover:bg-[#00b8e6]">
@@ -415,7 +415,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         {snapshots.length > 0 ? (
           <div className="space-y-2">
             {snapshots.map((snap: any, i: number) => (
-              <div key={i} className="bg-[#0f0f23] border border-[#2a2a4a] rounded p-3">
+              <div key={i} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded p-3">
                 <div className="flex justify-between">
                   <span className="text-[#00d4ff] text-sm">{snap.label || `Snapshot ${i + 1}`}</span>
                   <span className="text-[#999] text-xs">{snap.timestamp || '-'}</span>
@@ -441,11 +441,11 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-            <input type="text" value={errorSessionId} onChange={(e) => setErrorSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={errorSessionId} onChange={(e) => setErrorSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Error Type</label>
-            <select value={errorType} onChange={(e) => setErrorType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
+            <select value={errorType} onChange={(e) => setErrorType(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm">
               <option value="runtime">Runtime</option>
               <option value="syntax">Syntax</option>
               <option value="logic">Logic</option>
@@ -456,19 +456,19 @@ const AgentLiveDebuggerPanel: React.FC = () => {
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">File</label>
-            <input type="text" value={errorFile} onChange={(e) => setErrorFile(e.target.value)} placeholder="main.lua" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={errorFile} onChange={(e) => setErrorFile(e.target.value)} placeholder="main.lua" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Line</label>
-            <input type="number" value={errorLine} onChange={(e) => setErrorLine(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={errorLine} onChange={(e) => setErrorLine(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Error Message</label>
-            <input type="text" value={errorMessage} onChange={(e) => setErrorMessage(e.target.value)} placeholder="Null reference at line 42" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={errorMessage} onChange={(e) => setErrorMessage(e.target.value)} placeholder="Null reference at line 42" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Stack Trace</label>
-            <textarea value={errorStack} onChange={(e) => setErrorStack(e.target.value)} rows={3} placeholder="at function update (main.lua:42)..." className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
+            <textarea value={errorStack} onChange={(e) => setErrorStack(e.target.value)} rows={3} placeholder="at function update (main.lua:42)..." className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button onClick={() => handleSubmit('/agent/live-debugger/report-error', { session_id: errorSessionId, error_type: errorType, message: errorMessage, stack: errorStack, file: errorFile, line: parseInt(errorLine, 10) })} className="mt-3 px-4 py-2 bg-red-600 text-white rounded text-sm font-medium hover:bg-red-500">
@@ -509,7 +509,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Suggest Fix</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Error ID</label>
-          <input type="text" value={suggestErrorId} onChange={(e) => setSuggestErrorId(e.target.value)} placeholder="err_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={suggestErrorId} onChange={(e) => setSuggestErrorId(e.target.value)} placeholder="err_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button
           onClick={async () => {
@@ -521,7 +521,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
           Get Suggestion
         </button>
         {fixSuggestion && (
-          <textarea readOnly value={fixSuggestion} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-24 mt-2" />
+          <textarea readOnly value={fixSuggestion} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-24 mt-2" />
         )}
       </div>
 
@@ -530,7 +530,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Apply Fix</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Error ID</label>
-          <input type="text" value={fixErrorId} onChange={(e) => setFixErrorId(e.target.value)} placeholder="err_001" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={fixErrorId} onChange={(e) => setFixErrorId(e.target.value)} placeholder="err_001" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button onClick={() => handleSubmit('/agent/live-debugger/apply-fix', { error_id: fixErrorId })} className="mt-3 px-4 py-2 bg-green-600 text-white rounded text-sm font-medium hover:bg-green-500">
           Apply Fix
@@ -545,7 +545,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Generate Debug Report</div>
         <div>
           <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-          <input type="text" value={reportSessionId} onChange={(e) => setReportSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+          <input type="text" value={reportSessionId} onChange={(e) => setReportSessionId(e.target.value)} placeholder="debug_session_01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
         </div>
         <button
           onClick={async () => {
@@ -561,7 +561,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
       {reportData && (
         <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4 mt-3">
           <div className="text-sm font-medium text-[#00d4ff] mb-2">Debug Report</div>
-          <textarea readOnly value={JSON.stringify(reportData, null, 2)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-64" />
+          <textarea readOnly value={JSON.stringify(reportData, null, 2)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono h-64" />
         </div>
       )}
     </div>
@@ -581,7 +581,7 @@ const AgentLiveDebuggerPanel: React.FC = () => {
   };
 
   return (
-    <div className="h-full flex flex-col bg-[#0f0f23]">
+    <div className="h-full flex flex-col bg-[#0d0d0d]">
       {message && (
         <div className={`mx-4 mt-2 px-3 py-2 rounded text-sm ${message.type === 'success' ? 'bg-green-900/50 text-green-300 border border-green-700' : 'bg-red-900/50 text-red-300 border border-red-700'}`}>
           {message.text}

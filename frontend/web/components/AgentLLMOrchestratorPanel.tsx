@@ -399,7 +399,7 @@ export default function AgentLLMOrchestratorPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -441,7 +441,7 @@ export default function AgentLLMOrchestratorPanel() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       {/* Header */}
@@ -485,7 +485,7 @@ export default function AgentLLMOrchestratorPanel() {
               backgroundColor: activeTab === tab.key ? '#22223a' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #00d4ff' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #f97316' : '2px solid transparent',
               cursor: 'pointer', whiteSpace: 'nowrap',
             }}
           >
@@ -509,12 +509,12 @@ export default function AgentLLMOrchestratorPanel() {
                   { label: 'Providers', value: stats?.providers, color: '#74b9ff' },
                   { label: 'Templates', value: stats?.templates_count, color: '#fdcb6e' },
                   { label: 'Cache Size', value: stats?.cache_size, color: '#a29bfe' },
-                  { label: 'Total Requests', value: stats?.total_requests, color: '#00d4ff' },
+                  { label: 'Total Requests', value: stats?.total_requests, color: '#f97316' },
                   { label: 'Total Tokens', value: stats?.total_tokens, color: '#fd79a8' },
                   { label: 'Total Cost', value: stats?.total_cost != null ? `$${(stats.total_cost).toFixed(4)}` : '$0', color: '#6bcb77' },
                 ].map(item => (
                   <div key={item.label} style={{
-                    padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                    padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                   }}>
                     <span style={{ fontSize: 10, color: '#888' }}>{item.label}</span>
@@ -645,7 +645,7 @@ export default function AgentLLMOrchestratorPanel() {
               ) : (
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {templates.map((t: any, i: number) => (
-                    <div key={i} style={{ borderLeft: '3px solid #fdcb6e', paddingLeft: 10, backgroundColor: '#1a1a2e', padding: 8, borderRadius: 4 }}>
+                    <div key={i} style={{ borderLeft: '3px solid #fdcb6e', paddingLeft: 10, backgroundColor: '#1a1a1a', padding: 8, borderRadius: 4 }}>
                       <div style={{ fontWeight: 600, fontSize: 12, color: '#fdcb6e', marginBottom: 2 }}>{t.name}</div>
                       <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666', flexWrap: 'wrap' }}>
                         <span>Temp: <span style={{ color: '#e17055' }}>{t.temperature}</span></span>
@@ -708,7 +708,7 @@ export default function AgentLLMOrchestratorPanel() {
               <div style={cardStyle}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Generation Result</div>
                 <div style={{ borderLeft: '3px solid #a29bfe', paddingLeft: 10 }}>
-                  <div style={{ fontSize: 12, color: '#ccc', marginBottom: 8, whiteSpace: 'pre-wrap', backgroundColor: '#1a1a2e', padding: 8, borderRadius: 4 }}>
+                  <div style={{ fontSize: 12, color: '#ccc', marginBottom: 8, whiteSpace: 'pre-wrap', backgroundColor: '#1a1a1a', padding: 8, borderRadius: 4 }}>
                     {generateResult.content}
                   </div>
                   <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666', flexWrap: 'wrap' }}>
@@ -748,7 +748,7 @@ export default function AgentLLMOrchestratorPanel() {
               <div style={cardStyle}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Reasoning Result</div>
                 <div style={{ borderLeft: '3px solid #fd79a8', paddingLeft: 10 }}>
-                  <div style={{ fontSize: 12, color: '#ccc', marginBottom: 8, whiteSpace: 'pre-wrap', backgroundColor: '#1a1a2e', padding: 8, borderRadius: 4 }}>
+                  <div style={{ fontSize: 12, color: '#ccc', marginBottom: 8, whiteSpace: 'pre-wrap', backgroundColor: '#1a1a1a', padding: 8, borderRadius: 4 }}>
                     {reasonResult.content}
                   </div>
                   <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666', flexWrap: 'wrap' }}>
@@ -765,7 +765,7 @@ export default function AgentLLMOrchestratorPanel() {
         {activeTab === 'dialogue' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={cardStyle}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#f97316' }}>
                 {'\uD83D\uDCAC'} Generate Dialogue
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -790,15 +790,15 @@ export default function AgentLLMOrchestratorPanel() {
                   </select>
                 </div>
               </div>
-              <button onClick={handleGenerateDialogue} disabled={dialogueLoading} style={dialogueLoading ? disabledBtnStyle('#00d4ff') : primaryBtnStyle('#00d4ff')}>
+              <button onClick={handleGenerateDialogue} disabled={dialogueLoading} style={dialogueLoading ? disabledBtnStyle('#f97316') : primaryBtnStyle('#f97316')}>
                 {dialogueLoading ? 'Generating...' : '\uD83D\uDCAC Generate Dialogue'}
               </button>
             </div>
             {dialogueResult && (
               <div style={cardStyle}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Dialogue Result</div>
-                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10 }}>
-                  <div style={{ fontSize: 12, color: '#ccc', whiteSpace: 'pre-wrap', backgroundColor: '#1a1a2e', padding: 8, borderRadius: 4 }}>
+                <div style={{ borderLeft: '3px solid #f97316', paddingLeft: 10 }}>
+                  <div style={{ fontSize: 12, color: '#ccc', whiteSpace: 'pre-wrap', backgroundColor: '#1a1a1a', padding: 8, borderRadius: 4 }}>
                     {dialogueResult.content}
                   </div>
                 </div>
@@ -837,7 +837,7 @@ export default function AgentLLMOrchestratorPanel() {
               <div style={cardStyle}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Evaluation Result</div>
                 <div style={{ borderLeft: '3px solid #6bcb77', paddingLeft: 10 }}>
-                  <div style={{ fontSize: 12, color: '#ccc', whiteSpace: 'pre-wrap', backgroundColor: '#1a1a2e', padding: 8, borderRadius: 4 }}>
+                  <div style={{ fontSize: 12, color: '#ccc', whiteSpace: 'pre-wrap', backgroundColor: '#1a1a1a', padding: 8, borderRadius: 4 }}>
                     {evaluateResult.content}
                   </div>
                 </div>
@@ -873,7 +873,7 @@ export default function AgentLLMOrchestratorPanel() {
               <div style={cardStyle}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Analysis Result</div>
                 <div style={{ borderLeft: '3px solid #e17055', paddingLeft: 10 }}>
-                  <div style={{ fontSize: 12, color: '#ccc', whiteSpace: 'pre-wrap', backgroundColor: '#1a1a2e', padding: 8, borderRadius: 4 }}>
+                  <div style={{ fontSize: 12, color: '#ccc', whiteSpace: 'pre-wrap', backgroundColor: '#1a1a1a', padding: 8, borderRadius: 4 }}>
                     {analyzeStateResult.content}
                   </div>
                 </div>
@@ -887,7 +887,7 @@ export default function AgentLLMOrchestratorPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

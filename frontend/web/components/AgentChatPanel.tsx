@@ -348,7 +348,7 @@ const AgentChatPanel: React.FC = () => {
                   <button
                     key={action.id}
                     onClick={() => handleQuickAction(action.prompt)}
-                    className="text-left text-[9px] text-[#777] px-2 py-1.5 rounded bg-[#0f0f0f] border border-[#1a1a1a] hover:border-orange-900/40 hover:text-orange-400 transition-all flex items-center gap-1.5"
+                    className="text-left text-[9px] text-[#777] px-2 py-1.5 rounded bg-[#0f0f0f] border border-[#1e1e1e] hover:border-orange-900/40 hover:text-orange-400 transition-all flex items-center gap-1.5"
                   >
                     <i className={`fa-solid ${action.icon} text-[8px] text-[#444]`} />
                     {action.label}

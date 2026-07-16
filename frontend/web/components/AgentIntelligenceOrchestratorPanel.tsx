@@ -50,22 +50,22 @@ export default function AgentIntelligenceOrchestratorPanel() {
   return (
     <div className="h-full flex flex-col bg-[#1a1a2e] text-white">
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
-        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
+        {tabs.map(t => <button key={t} onClick={() => setActiveTab(t)} className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>{t.charAt(0).toUpperCase()+t.slice(1)}</button>)}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
         {activeTab === 'overview' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Intelligence Orchestrator</h2>
             <div className="grid grid-cols-3 gap-4">
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Pipelines</h3><p className="text-2xl">{stats.total_pipelines ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Active Pipelines</h3><p className="text-2xl">{stats.active_pipelines ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Completed Pipelines</h3><p className="text-2xl">{stats.completed_pipelines ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Stages</h3><p className="text-2xl">{stats.total_stages ?? 0}</p></div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Executions</h3><p className="text-2xl">{stats.total_executions ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Pipelines</h3><p className="text-2xl">{stats.total_pipelines ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Active Pipelines</h3><p className="text-2xl">{stats.active_pipelines ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Completed Pipelines</h3><p className="text-2xl">{stats.completed_pipelines ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Total Stages</h3><p className="text-2xl">{stats.total_stages ?? 0}</p></div>
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]"><h3 className="text-[#00d4ff] text-sm">Executions</h3><p className="text-2xl">{stats.total_executions ?? 0}</p></div>
             </div>
             {Object.keys(stats).length > 0 && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">All Stats</h3>
                 <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
               </div>
@@ -76,7 +76,7 @@ export default function AgentIntelligenceOrchestratorPanel() {
         {activeTab === 'create' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Create Pipeline</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
                 <label className="text-xs text-[#999] mb-1 block">Pipeline Name</label>
                 <input type="text" value={pipeName} onChange={e => setPipeName(e.target.value)} placeholder="Combat Analysis Pipeline" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -113,17 +113,17 @@ export default function AgentIntelligenceOrchestratorPanel() {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold text-[#00d4ff]">Pipelines</h2>
-              <button onClick={fetchPipelines} className="px-3 py-1 bg-[#0f0f23] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
+              <button onClick={fetchPipelines} className="px-3 py-1 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-xs text-[#ccc] hover:bg-[#2a2a4a]">Refresh</button>
             </div>
 
             {pipelines.length > 0 ? (
               <div className="space-y-2">
                 {pipelines.map((p: any, i: number) => (
-                  <div key={p.id || i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a]">
+                  <div key={p.id || i} className="bg-[#0d0d0d] p-3 rounded border border-[#2a2a4a]">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-white text-sm font-medium">{p.name || p.id}</span>
                       <div className="flex gap-1">
-                        <span className={`text-xs px-2 py-0.5 rounded ${p.status === 'completed' ? 'bg-green-900 text-green-300' : p.status === 'running' ? 'bg-blue-900 text-blue-300' : 'bg-[#1a1a1a] text-[#ccc]'}`}>{p.status || 'pending'}</span>
+                        <span className={`text-xs px-2 py-0.5 rounded ${p.status === 'completed' ? 'bg-green-900 text-green-300' : p.status === 'running' ? 'bg-orange-500/15 text-orange-400' : 'bg-[#1a1a1a] text-[#ccc]'}`}>{p.status || 'pending'}</span>
                       </div>
                     </div>
                     <div className="flex items-center gap-4 text-xs text-[#999]">
@@ -141,7 +141,7 @@ export default function AgentIntelligenceOrchestratorPanel() {
             )}
 
             {selectedPipeline && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] mt-4">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] mt-4">
                 <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Pipeline Details: {selectedPipeline.name || selectedPipeline.id}</h3>
                 <pre className="text-xs text-[#ccc] overflow-auto mb-3">{JSON.stringify(selectedPipeline, null, 2)}</pre>
                 <button onClick={() => setSelectedPipeline(null)} className="px-3 py-1 bg-[#2a2a4a] text-[#ccc] rounded text-xs hover:bg-[#3a3a5a]">Close</button>
@@ -153,7 +153,7 @@ export default function AgentIntelligenceOrchestratorPanel() {
         {activeTab === 'execute' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Execute Stage</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div>
                 <label className="text-xs text-[#999] mb-1 block">Pipeline ID</label>
                 <input type="text" value={execPipelineId} onChange={e => setExecPipelineId(e.target.value)} placeholder="pipe_abc123" className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
@@ -177,7 +177,7 @@ export default function AgentIntelligenceOrchestratorPanel() {
             </div>
 
             {execResult && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm font-medium mb-2">Execution Result</h3>
                 <pre className="text-xs text-[#ccc] overflow-auto max-h-64">{JSON.stringify(execResult, null, 2)}</pre>
               </div>

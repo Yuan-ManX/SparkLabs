@@ -72,14 +72,14 @@ export default function AgentQuestGeneratorPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
       </div>
 
       {message && (
-        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0f0f23] border-[#00ff88] text-[#00ff88]">{message}</div>
+        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0d0d0d] border-[#00ff88] text-[#00ff88]">{message}</div>
       )}
 
       <div className="flex-1 overflow-auto p-4">
@@ -95,14 +95,14 @@ export default function AgentQuestGeneratorPanel() {
                 { label: 'By Type', value: stats.quests_by_type ? Object.keys(stats.quests_by_type).length : 0, color: 'text-amber-300', suffix: ' types' },
                 { label: 'By Difficulty', value: stats.quests_by_difficulty ? Object.keys(stats.quests_by_difficulty).length : 0, color: 'text-pink-300', suffix: ' levels' },
               ].map(s => (
-                <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={s.label} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}{s.suffix||''}</p>
                 </div>
               ))}
             </div>
             {stats.quests_by_type && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-sm font-bold text-[#ccc] mb-2">Quests by Type</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(stats.quests_by_type).map(([k,v]) => (
@@ -118,7 +118,7 @@ export default function AgentQuestGeneratorPanel() {
         {activeTab === 'create' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Create Quest</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="Quest Title" value={qTitle} onChange={e => setQTitle(e.target.value)} />
               <div className="grid grid-cols-2 gap-3">
                 <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-[#00d4ff]" value={qType} onChange={e => setQType(e.target.value)}>
@@ -143,7 +143,7 @@ export default function AgentQuestGeneratorPanel() {
             </div>
 
             {result && activeTab === 'create' && result.quest_id && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#00ff88] space-y-1">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#00ff88] space-y-1">
                 <h4 className="text-sm font-bold text-[#00ff88]">Created: {result.title}</h4>
                 <div className="flex gap-2"><span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#ccc]">{result.quest_type}</span><span className={`text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${difficultyColor(result.difficulty)}`}>{result.difficulty}</span></div>
               </div>
@@ -155,7 +155,7 @@ export default function AgentQuestGeneratorPanel() {
         {activeTab === 'random' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00ff88]">Generate Random Quest</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-[#00ff88]" value={rDifficulty} onChange={e => setRDifficulty(e.target.value)}>
                   {DIFFICULTIES.map(d => <option key={d} value={d}>{d}</option>)}
@@ -171,7 +171,7 @@ export default function AgentQuestGeneratorPanel() {
             </div>
 
             {result && activeTab === 'random' && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#00ff88] space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#00ff88] space-y-3">
                 <h3 className="text-md font-bold text-white">{result.title||'Random Quest'}</h3>
                 <div className="flex gap-2">
                   <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#ccc]">{result.quest_type}</span>
@@ -203,7 +203,7 @@ export default function AgentQuestGeneratorPanel() {
         {activeTab === 'chains' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-amber-300">Generate Quest Chain</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-400" placeholder="Chain Name" value={cName} onChange={e => setCName(e.target.value)} />
               <div className="grid grid-cols-2 gap-3">
                 <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-amber-400" value={cType} onChange={e => setCType(e.target.value)}>
@@ -231,7 +231,7 @@ export default function AgentQuestGeneratorPanel() {
               <div className="space-y-3">
                 <h3 className="text-md font-bold text-amber-300">{result.name||'Quest Chain'}</h3>
                 {(Array.isArray(result.quests) ? result.quests : []).map((quest: any, i: number) => (
-                  <div key={i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a] hover:border-amber-500/30 transition-colors">
+                  <div key={i} className="bg-[#0d0d0d] p-3 rounded border border-[#2a2a4a] hover:border-amber-500/30 transition-colors">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-semibold text-white">{i+1}. {quest.title||'Quest'}</h4>
                       <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${difficultyColor(quest.difficulty)}`}>{quest.difficulty}</span>
@@ -249,7 +249,7 @@ export default function AgentQuestGeneratorPanel() {
         {activeTab === 'validate' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-pink-300">Validate Quest</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-pink-400" placeholder="Quest ID" value={vQuestId} onChange={e => setVQuestId(e.target.value)} />
               <button
                 className="w-full px-4 py-2 bg-pink-500 text-white rounded text-sm font-medium hover:bg-pink-600 transition-colors disabled:opacity-50"
@@ -260,7 +260,7 @@ export default function AgentQuestGeneratorPanel() {
             </div>
 
             {result && activeTab === 'validate' && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-2">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-2">
                 <div className="flex items-center gap-2">
                   <h3 className="text-sm font-bold text-white">Validation Result</h3>
                   <span className={`text-xs px-2 py-0.5 rounded ${result.valid ? 'bg-[#00ff88]/20 text-[#00ff88]' : 'bg-red-500/20 text-red-300'}`}>

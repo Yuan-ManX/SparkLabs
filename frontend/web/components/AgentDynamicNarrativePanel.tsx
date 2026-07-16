@@ -372,7 +372,7 @@ const AgentDynamicNarrativePanel: React.FC = () => {
           <span style={{ color: '#aaa' }}>{label}</span>
           <span style={{ color: '#ccc', fontWeight: 600 }}>{unit === '%' ? `${clampedPct.toFixed(1)}${unit}` : `${value}${unit}`}</span>
         </div>
-        <div style={{ height: 6, backgroundColor: '#141428', borderRadius: 3 }}>
+        <div style={{ height: 6, backgroundColor: '#111', borderRadius: 3 }}>
           <div style={{
             height: '100%', width: `${clampedPct}%`,
             backgroundColor: barColor, borderRadius: 3,
@@ -407,7 +407,7 @@ const AgentDynamicNarrativePanel: React.FC = () => {
   };
 
   const primaryBtnStyle = (accentColor: string): React.CSSProperties => ({
-    padding: '8px 18px', backgroundColor: '#0f3460', color: accentColor,
+    padding: '8px 18px', backgroundColor: '#1e1e1e', color: accentColor,
     border: '1px solid #1a5276', borderRadius: 4,
     cursor: loading ? 'not-allowed' : 'pointer',
     fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
@@ -458,7 +458,7 @@ const AgentDynamicNarrativePanel: React.FC = () => {
             backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
             color: activeTab === tab.key ? '#e0e0e0' : '#888',
             border: 'none',
-            borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent',
+            borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent',
             cursor: 'pointer',
           }}>
             {tab.icon} {tab.label}
@@ -636,7 +636,7 @@ const AgentDynamicNarrativePanel: React.FC = () => {
                         <span style={{ fontWeight: 600, fontSize: 12, color: '#e0e0e0' }}>{node.title}</span>
                         <span style={{
                           fontSize: 10, fontWeight: 600, padding: '2px 6px',
-                          borderRadius: 3, backgroundColor: '#0f3460',
+                          borderRadius: 3, backgroundColor: '#1e1e1e',
                           color: '#a29bfe',
                         }}>
                           {node.adaptation_type}
@@ -920,7 +920,7 @@ const AgentDynamicNarrativePanel: React.FC = () => {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a4a',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

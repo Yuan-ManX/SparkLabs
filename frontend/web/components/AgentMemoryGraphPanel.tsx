@@ -379,7 +379,7 @@ const AgentMemoryGraphPanel: React.FC = () => {
               onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
               style={{
                 padding: '4px 8px', fontSize: 11,
-                backgroundColor: '#141428', color: '#e0e0e0',
+                backgroundColor: '#111', color: '#e0e0e0',
                 border: '1px solid #333', borderRadius: 4,
                 width: 180, outline: 'none',
               }}
@@ -464,7 +464,7 @@ const AgentMemoryGraphPanel: React.FC = () => {
                     {node.metadata_tags.map(tag => (
                       <span key={tag} style={{
                         fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                        backgroundColor: '#141428', color: '#888',
+                        backgroundColor: '#111', color: '#888',
                       }}>#{tag}</span>
                     ))}
                   </div>
@@ -525,7 +525,7 @@ const AgentMemoryGraphPanel: React.FC = () => {
                     </span>
                   </div>
                   <div style={{
-                    padding: '6px 8px', backgroundColor: '#141428', borderRadius: 3,
+                    padding: '6px 8px', backgroundColor: '#111', borderRadius: 3,
                     fontSize: 11, color: '#aaa', marginBottom: 4,
                   }}>
                     {result.snippet}
@@ -534,7 +534,7 @@ const AgentMemoryGraphPanel: React.FC = () => {
                     {result.node.metadata_tags.map(tag => (
                       <span key={tag} style={{
                         fontSize: 9, padding: '1px 6px', borderRadius: 3,
-                        backgroundColor: '#141428', color: '#888',
+                        backgroundColor: '#111', color: '#888',
                       }}>#{tag}</span>
                     ))}
                   </div>
@@ -571,7 +571,7 @@ const AgentMemoryGraphPanel: React.FC = () => {
                   {ctx.nodes_in_context.map(nodeId => (
                     <span key={nodeId} style={{
                       fontSize: 9, padding: '2px 8px', borderRadius: 3,
-                      backgroundColor: '#141428', color: '#aaa',
+                      backgroundColor: '#111', color: '#aaa',
                       fontFamily: 'monospace',
                     }}>
                       {nodeId.slice(0, 12)}...
@@ -602,28 +602,28 @@ const AgentMemoryGraphPanel: React.FC = () => {
                 <div style={{ display: 'flex', gap: 16, marginBottom: 8 }}>
                   <div style={{
                     textAlign: 'center', padding: '8px 14px',
-                    backgroundColor: '#141428', borderRadius: 4,
+                    backgroundColor: '#111', borderRadius: 4,
                   }}>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#6c5ce7' }}>{exportData.node_count}</div>
                     <div style={{ fontSize: 10, color: '#888' }}>Nodes</div>
                   </div>
                   <div style={{
                     textAlign: 'center', padding: '8px 14px',
-                    backgroundColor: '#141428', borderRadius: 4,
+                    backgroundColor: '#111', borderRadius: 4,
                   }}>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#a29bfe' }}>{exportData.edge_count}</div>
                     <div style={{ fontSize: 10, color: '#888' }}>Edges</div>
                   </div>
                   <div style={{
                     textAlign: 'center', padding: '8px 14px',
-                    backgroundColor: '#141428', borderRadius: 4,
+                    backgroundColor: '#111', borderRadius: 4,
                   }}>
                     <div style={{ fontSize: 14, fontWeight: 700, color: '#fdcb6e', textTransform: 'uppercase' }}>{exportData.format}</div>
                     <div style={{ fontSize: 10, color: '#888' }}>Format</div>
                   </div>
                 </div>
                 <div style={{
-                  padding: '8px 10px', backgroundColor: '#141428', borderRadius: 4,
+                  padding: '8px 10px', backgroundColor: '#111', borderRadius: 4,
                   fontFamily: 'monospace', fontSize: 10, color: '#aaa',
                   maxHeight: 200, overflow: 'auto', whiteSpace: 'pre-wrap',
                 }}>
@@ -637,7 +637,7 @@ const AgentMemoryGraphPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

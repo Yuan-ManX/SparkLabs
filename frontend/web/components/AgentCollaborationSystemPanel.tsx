@@ -154,13 +154,13 @@ export default function AgentCollaborationSystemPanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Collaboration System Overview</h2>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
         {statCards.map(s => (
-          <div key={s.label} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 text-center">
+          <div key={s.label} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 text-center">
             <div className="text-2xl font-bold" style={{ color: s.color }}>{s.value}</div>
             <div className="text-xs text-[#999] mt-1">{s.label}</div>
           </div>
         ))}
       </div>
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Collaboration Modes</h3>
         <div className="grid grid-cols-2 md:grid-cols-3 gap-2">
           {COLLAB_MODES.map(mode => (
@@ -178,7 +178,7 @@ export default function AgentCollaborationSystemPanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Sessions</h2>
 
       {/* Create Session Form */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-6">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-6">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Create Session</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input
@@ -206,7 +206,7 @@ export default function AgentCollaborationSystemPanel() {
       </div>
 
       {/* Register Agent Form */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-6">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-6">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Register Agent</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input
@@ -259,7 +259,7 @@ export default function AgentCollaborationSystemPanel() {
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Active Sessions ({sessions.length})</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
           {sessions.map(s => (
-            <div key={s.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div key={s.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <span className="text-sm font-medium text-white">{s.name}</span>
                 <span className={`px-2 py-0.5 rounded text-xs font-medium capitalize ${
@@ -286,7 +286,7 @@ export default function AgentCollaborationSystemPanel() {
       <h2 className="text-lg font-semibold mb-4 text-[#00d4ff]">Task Management</h2>
 
       {/* Assign Task Form */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-6">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-6">
         <h3 className="text-sm font-medium text-[#ccc] mb-3">Assign Task</h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
           <input
@@ -341,7 +341,7 @@ export default function AgentCollaborationSystemPanel() {
           <h3 className="text-sm font-medium text-[#ccc] mb-3">Assigned Tasks ({tasks.length})</h3>
           <div className="space-y-3">
             {tasks.map(t => (
-              <div key={t.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+              <div key={t.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-sm font-medium text-white">{t.task_title}</span>
                   <span className={`px-2 py-0.5 rounded text-xs font-medium ${
@@ -370,12 +370,12 @@ export default function AgentCollaborationSystemPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
         {activeTab === 'overview' && overviewContent}
         {activeTab === 'sessions' && sessionsContent}

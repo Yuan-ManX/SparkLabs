@@ -77,14 +77,14 @@ export default function AgentTutorialDesignerPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
       </div>
 
       {message && (
-        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0f0f23] border-[#00ff88] text-[#00ff88]">{message}</div>
+        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0d0d0d] border-[#00ff88] text-[#00ff88]">{message}</div>
       )}
 
       <div className="flex-1 overflow-auto p-4">
@@ -100,14 +100,14 @@ export default function AgentTutorialDesignerPanel() {
                 { label: 'Topics Covered', value: stats.modules_by_topic ? Object.keys(stats.modules_by_topic).length : 0, color: 'text-amber-300', suffix: ' topics' },
                 { label: 'Skill Tiers', value: stats.modules_by_skill ? Object.keys(stats.modules_by_skill).length : 0, color: 'text-pink-300', suffix: ' levels' },
               ].map(s => (
-                <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={s.label} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}{s.suffix||''}</p>
                 </div>
               ))}
             </div>
             {stats.modules_by_topic && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-sm font-bold text-[#ccc] mb-2">Modules by Topic</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {Object.entries(stats.modules_by_topic).map(([k,v]) => (
@@ -123,7 +123,7 @@ export default function AgentTutorialDesignerPanel() {
         {activeTab === 'modules' && (
           <div className="space-y-6">
             <h2 className="text-lg font-bold text-[#00d4ff]">Create Tutorial Module</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="Module Title" value={mTitle} onChange={e => setMTitle(e.target.value)} />
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="Topic (e.g., Combat Basics)" value={mTopic} onChange={e => setMTopic(e.target.value)} />
               <div className="grid grid-cols-3 gap-3">
@@ -154,7 +154,7 @@ export default function AgentTutorialDesignerPanel() {
             <h3 className="text-md font-bold text-[#ccc]">Module Library</h3>
             <div className="grid gap-3">
               {moduleList.map((mod: any) => (
-                <div key={mod.module_id || mod.id} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
+                <div key={mod.module_id || mod.id} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-semibold text-white">{mod.title}</h4>
                     <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[mod.skill_level] || 'text-[#999]'}`}>{mod.skill_level}</span>
@@ -176,7 +176,7 @@ export default function AgentTutorialDesignerPanel() {
         {activeTab === 'adaptive' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00ff88]">Generate Adaptive Tutorial</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00ff88]" placeholder="Player ID" value={aPlayerId} onChange={e => setAPlayerId(e.target.value)} />
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00ff88]" placeholder="Topic" value={aTopic} onChange={e => setATopic(e.target.value)} />
               <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-500 outline-none focus:border-[#00ff88] resize-none" rows={3} placeholder="Game Context JSON" value={aGameContext} onChange={e => setAGameContext(e.target.value)} />
@@ -193,7 +193,7 @@ export default function AgentTutorialDesignerPanel() {
             </div>
 
             {result && activeTab === 'adaptive' && (result.module_id || result.steps) && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#00ff88] space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#00ff88] space-y-3">
                 <h3 className="text-md font-bold text-[#00ff88]">{result.title||'Adaptive Module'}</h3>
                 <div className="flex gap-2">
                   <span className="text-xs px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] text-[#ccc]">{result.tutorial_type}</span>
@@ -223,7 +223,7 @@ export default function AgentTutorialDesignerPanel() {
         {activeTab === 'assess' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-amber-300">Assess Player Skill</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-amber-400" placeholder="Player ID" value={asPlayerId} onChange={e => setAsPlayerId(e.target.value)} />
               <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-500 outline-none focus:border-amber-400 resize-none" rows={4} placeholder="Game Data JSON (e.g. {&quot;playtime&quot;: 120, &quot;levels_completed&quot;: 5})" value={asGameData} onChange={e => setAsGameData(e.target.value)} />
               <button
@@ -239,7 +239,7 @@ export default function AgentTutorialDesignerPanel() {
             </div>
 
             {result && activeTab === 'assess' && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-amber-500 space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-amber-500 space-y-3">
                 <h3 className="text-md font-bold text-amber-300">Skill Assessment</h3>
                 <div className="flex items-center gap-3">
                   <span className="text-sm text-[#ccc]">{result.player_id}</span>
@@ -270,7 +270,7 @@ export default function AgentTutorialDesignerPanel() {
         {activeTab === 'recommend' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-pink-300">Recommend Tutorials</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-pink-400" placeholder="Player ID" value={rPlayerId} onChange={e => setRPlayerId(e.target.value)} />
               <div className="grid grid-cols-2 gap-3">
                 <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-pink-400" value={rSkillLevel} onChange={e => setRSkillLevel(e.target.value)}>
@@ -290,7 +290,7 @@ export default function AgentTutorialDesignerPanel() {
               <div className="space-y-3">
                 <h3 className="text-md font-bold text-pink-300">Recommended Modules</h3>
                 {Array.isArray(result.recommendations || result.modules) ? (result.recommendations || result.modules).map((mod: any, i: number) => (
-                  <div key={i} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a] hover:border-pink-500/30 transition-colors">
+                  <div key={i} className="bg-[#0d0d0d] p-3 rounded border border-[#2a2a4a] hover:border-pink-500/30 transition-colors">
                     <div className="flex items-center justify-between">
                       <h4 className="text-sm font-semibold text-white">{mod.title}</h4>
                       <span className={`text-[10px] px-2 py-0.5 bg-[#1a1a2e] rounded border border-[#2a2a4a] ${skillLevelColors[mod.skill_level] || 'text-[#999]'}`}>{mod.skill_level}</span>

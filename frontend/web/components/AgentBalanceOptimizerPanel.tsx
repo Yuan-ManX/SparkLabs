@@ -238,7 +238,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
           ].map(({ key, label, icon }) => (
             <div key={key} className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
-                <span className="text-[#00d4ff] text-xs font-bold bg-[#0f0f23] px-2 py-0.5 rounded">{icon}</span>
+                <span className="text-[#00d4ff] text-xs font-bold bg-[#0d0d0d] px-2 py-0.5 rounded">{icon}</span>
                 <span className="text-[#999] text-xs">{label}</span>
               </div>
               <div className="text-white text-2xl font-bold">{data[key] ?? 0}</div>
@@ -266,47 +266,47 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Name</label>
-            <input type="text" value={pName} onChange={(e) => setPName(e.target.value)} placeholder="player_damage" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={pName} onChange={(e) => setPName(e.target.value)} placeholder="player_damage" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Parameter Type</label>
-            <select value={pType} onChange={(e) => setPType(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={pType} onChange={(e) => setPType(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {PARAM_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Domain</label>
-            <select value={pDomain} onChange={(e) => setPDomain(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={pDomain} onChange={(e) => setPDomain(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Current Value</label>
-            <input type="number" value={pValue} onChange={(e) => setPValue(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={pValue} onChange={(e) => setPValue(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Min Value</label>
-            <input type="number" value={pMin} onChange={(e) => setPMin(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={pMin} onChange={(e) => setPMin(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Max Value</label>
-            <input type="number" value={pMax} onChange={(e) => setPMax(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={pMax} onChange={(e) => setPMax(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Step</label>
-            <input type="number" value={pStep} onChange={(e) => setPStep(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={pStep} onChange={(e) => setPStep(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Weight</label>
-            <input type="number" value={pWeight} onChange={(e) => setPWeight(e.target.value)} step="0.1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={pWeight} onChange={(e) => setPWeight(e.target.value)} step="0.1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Enumeration Options (comma-separated, for enum type)</label>
-            <input type="text" value={pEnumOptions} onChange={(e) => setPEnumOptions(e.target.value)} placeholder="easy, normal, hard, expert" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={pEnumOptions} onChange={(e) => setPEnumOptions(e.target.value)} placeholder="easy, normal, hard, expert" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Description</label>
-            <textarea value={pDesc} onChange={(e) => setPDesc(e.target.value)} placeholder="Base damage modifier for player attacks" rows={2} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <textarea value={pDesc} onChange={(e) => setPDesc(e.target.value)} placeholder="Base damage modifier for player attacks" rows={2} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -339,11 +339,11 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         <div className="flex items-center justify-between mb-3">
           <div className="text-sm font-medium text-[#00d4ff]">Parameters ({filteredParams.length})</div>
           <div className="flex gap-2">
-            <select value={paramFilterDomain} onChange={(e) => setParamFilterDomain(e.target.value)} className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
+            <select value={paramFilterDomain} onChange={(e) => setParamFilterDomain(e.target.value)} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
               <option value="">All Domains</option>
               {DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
-            <select value={paramFilterType} onChange={(e) => setParamFilterType(e.target.value)} className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
+            <select value={paramFilterType} onChange={(e) => setParamFilterType(e.target.value)} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
               <option value="">All Types</option>
               {PARAM_TYPES.map((t) => <option key={t} value={t}>{t}</option>)}
             </select>
@@ -352,7 +352,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         {filteredParams.length > 0 ? (
           <div className="space-y-2">
             {filteredParams.map((p) => (
-              <div key={p.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3">
+              <div key={p.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-white text-sm font-medium">{p.name}</span>
                   <div className="flex gap-1">
@@ -383,32 +383,32 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Target Name</label>
-            <input type="text" value={tName} onChange={(e) => setTName(e.target.value)} placeholder="win_rate_50" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={tName} onChange={(e) => setTName(e.target.value)} placeholder="win_rate_50" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Domain</label>
-            <select value={tDomain} onChange={(e) => setTDomain(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={tDomain} onChange={(e) => setTDomain(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Goal</label>
-            <select value={tGoal} onChange={(e) => setTGoal(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={tGoal} onChange={(e) => setTGoal(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {GOALS.map((g) => <option key={g} value={g}>{g}</option>)}
             </select>
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Target Value</label>
-            <input type="number" value={tValue} onChange={(e) => setTValue(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tValue} onChange={(e) => setTValue(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Tolerance</label>
-            <input type="number" value={tTolerance} onChange={(e) => setTTolerance(e.target.value)} step="0.01" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={tTolerance} onChange={(e) => setTTolerance(e.target.value)} step="0.01" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div></div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Description</label>
-            <textarea value={tDesc} onChange={(e) => setTDesc(e.target.value)} placeholder="Target win rate for balanced gameplay" rows={2} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <textarea value={tDesc} onChange={(e) => setTDesc(e.target.value)} placeholder="Target win rate for balanced gameplay" rows={2} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -442,17 +442,17 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Session Name</label>
-            <input type="text" value={sName} onChange={(e) => setSName(e.target.value)} placeholder="combat_balance_v1" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={sName} onChange={(e) => setSName(e.target.value)} placeholder="combat_balance_v1" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Domain</label>
-            <select value={sDomain} onChange={(e) => setSDomain(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={sDomain} onChange={(e) => setSDomain(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Parameter IDs (multi-select)</label>
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-2 max-h-32 overflow-auto">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-2 max-h-32 overflow-auto">
               {parameters.length > 0 ? parameters.map((p) => (
                 <label key={p.id} className="flex items-center gap-2 px-2 py-1 hover:bg-[#1a1a2e] rounded cursor-pointer">
                   <input
@@ -471,11 +471,11 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Target IDs</label>
-            <input type="text" value={sTargetIds.join(', ')} onChange={(e) => setSTargetIds(e.target.value.split(',').map((s) => s.trim()).filter(Boolean))} placeholder="target_1, target_2" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={sTargetIds.join(', ')} onChange={(e) => setSTargetIds(e.target.value.split(',').map((s) => s.trim()).filter(Boolean))} placeholder="target_1, target_2" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Max Iterations</label>
-            <input type="number" value={sMaxIter} onChange={(e) => setSMaxIter(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="number" value={sMaxIter} onChange={(e) => setSMaxIter(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -507,7 +507,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         {sessions.length > 0 ? (
           <div className="space-y-2">
             {sessions.map((s) => (
-              <div key={s.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3">
+              <div key={s.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3">
                 <div className="flex items-center justify-between mb-1">
                   <span className="text-white text-sm font-medium">{s.name}</span>
                   <div className="flex gap-1">
@@ -538,7 +538,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-            <input type="text" value={optSessionId} onChange={(e) => setOptSessionId(e.target.value)} placeholder="session_abc123" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={optSessionId} onChange={(e) => setOptSessionId(e.target.value)} placeholder="session_abc123" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -623,7 +623,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-            <input type="text" value={reportSessionId} onChange={(e) => setReportSessionId(e.target.value)} placeholder="session_abc123" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={reportSessionId} onChange={(e) => setReportSessionId(e.target.value)} placeholder="session_abc123" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -645,7 +645,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         <div className="space-y-3">
           <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
             <div className="text-sm font-medium text-[#00d4ff] mb-3">Improvement: {reportData.improvement_pct}%</div>
-            <div className="bg-[#0f0f23] rounded-full h-2 mb-4">
+            <div className="bg-[#0d0d0d] rounded-full h-2 mb-4">
               <div
                 className="h-2 rounded-full bg-green-500"
                 style={{ width: `${Math.min(100, Math.max(0, reportData.improvement_pct))}%` }}
@@ -722,7 +722,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
               <div className="text-sm font-medium text-yellow-400 mb-2">Recommendations</div>
               {reportData.recommendations.map((r, i) => (
-                <div key={i} className="text-yellow-300 text-xs bg-[#0f0f23] rounded px-3 py-2 mb-1 border-l-2 border-yellow-500">{r}</div>
+                <div key={i} className="text-yellow-300 text-xs bg-[#0d0d0d] rounded px-3 py-2 mb-1 border-l-2 border-yellow-500">{r}</div>
               ))}
             </div>
           )}
@@ -738,7 +738,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Session ID</label>
-            <input type="text" value={sensSessionId} onChange={(e) => setSensSessionId(e.target.value)} placeholder="session_abc123" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={sensSessionId} onChange={(e) => setSensSessionId(e.target.value)} placeholder="session_abc123" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -767,7 +767,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
               return (
                 <div key={name} className="flex items-center gap-3">
                   <span className="text-white text-xs w-36 truncate">{name}</span>
-                  <div className="flex-1 bg-[#0f0f23] rounded-full h-5 relative overflow-hidden">
+                  <div className="flex-1 bg-[#0d0d0d] rounded-full h-5 relative overflow-hidden">
                     <div
                       className="h-full rounded-full transition-all"
                       style={{ width: `${pct}%`, backgroundColor: color }}
@@ -781,7 +781,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
           {Object.entries(sensResult).filter(([k]) => k !== 'params').length > 0 && (
             <div className="mt-4 space-y-1">
               {Object.entries(sensResult).filter(([k]) => k !== 'params').map(([key, value]) => (
-                <div key={key} className="flex justify-between bg-[#0f0f23] rounded px-3 py-1.5">
+                <div key={key} className="flex justify-between bg-[#0d0d0d] rounded px-3 py-1.5">
                   <span className="text-[#999] text-xs">{key.replace(/_/g, ' ')}</span>
                   <span className="text-white text-xs font-mono">{String(value)}</span>
                 </div>
@@ -800,7 +800,7 @@ const AgentBalanceOptimizerPanel: React.FC = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}
           >
             {tab.label}
           </button>

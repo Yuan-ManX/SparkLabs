@@ -81,12 +81,12 @@ export default function AgentDynamicDifficultyPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
-      {message && <div className="mx-4 mt-2 p-2 bg-[#0f0f23] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
+      {message && <div className="mx-4 mt-2 p-2 bg-[#0d0d0d] border border-[#2a2a4a] rounded text-sm text-[#00d4ff]">{message}</div>}
       <div className="flex-1 overflow-auto p-4">
 
         {/* Overview Tab */}
@@ -94,25 +94,25 @@ export default function AgentDynamicDifficultyPanel() {
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Dynamic Difficulty System</h2>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-xs">Total Profiles</h3>
                 <p className="text-2xl font-bold mt-1">{stats.total_profiles ?? 0}</p>
               </div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-xs">Total Adjustments</h3>
                 <p className="text-2xl font-bold mt-1">{stats.total_adjustments ?? 0}</p>
               </div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-xs">Players Struggling</h3>
                 <p className="text-2xl font-bold mt-1 text-[#ff6b6b]">{stats.players_struggling ?? 0}</p>
               </div>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-xs">Players Bored</h3>
                 <p className="text-2xl font-bold mt-1 text-[#ffd93d]">{stats.players_bored ?? 0}</p>
               </div>
             </div>
             {Object.keys(stats).length > 0 && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                 <h3 className="text-[#00d4ff] text-sm mb-2">All Stats</h3>
                 <pre className="text-xs text-[#ccc] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
               </div>
@@ -123,7 +123,7 @@ export default function AgentDynamicDifficultyPanel() {
         {/* Profiles Tab */}
         {activeTab === 'profiles' && (
           <div className="space-y-6">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Difficulty Profile</h2>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -163,7 +163,7 @@ export default function AgentDynamicDifficultyPanel() {
               </button>
             </div>
 
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Update Player Metrics</h2>
               <div className="grid grid-cols-3 gap-3">
                 {metricFields.map(({ key, label }) => (
@@ -196,7 +196,7 @@ export default function AgentDynamicDifficultyPanel() {
         {/* Adjust Tab */}
         {activeTab === 'adjust' && (
           <div className="space-y-6">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Adjust Difficulty</h2>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
@@ -217,7 +217,7 @@ export default function AgentDynamicDifficultyPanel() {
             </div>
 
             {result && (result.adjustments || result.parameter_changes) && (
-              <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+              <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
                 <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Adjustment Results</h2>
                 {result.player_state && (
                   <div className="mb-3 flex items-center gap-2">
@@ -249,7 +249,7 @@ export default function AgentDynamicDifficultyPanel() {
         {/* History Tab */}
         {activeTab === 'history' && (
           <div className="space-y-6">
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Get Player Profile & History</h2>
               <div className="flex gap-3 items-end">
                 <div className="flex-1">
@@ -270,7 +270,7 @@ export default function AgentDynamicDifficultyPanel() {
             </div>
 
             {result && (
-              <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+              <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
                 <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Profile & History</h2>
                 {result.difficulty_history && (
                   <div className="mb-4">

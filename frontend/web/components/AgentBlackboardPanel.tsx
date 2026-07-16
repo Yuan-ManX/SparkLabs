@@ -353,7 +353,7 @@ export default function AgentBlackboardPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -366,7 +366,7 @@ export default function AgentBlackboardPanel() {
   };
 
   const cardStyle: React.CSSProperties = {
-    padding: 14, backgroundColor: '#16213e', borderRadius: 6,
+    padding: 14, backgroundColor: '#0f0f0f', borderRadius: 6,
     border: '1px solid #2a2a3e',
   };
 
@@ -376,7 +376,7 @@ export default function AgentBlackboardPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -387,7 +387,7 @@ export default function AgentBlackboardPanel() {
 
   const disabledBtnStyle = (color: string): React.CSSProperties => ({
     ...primaryBtnStyle(color),
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a1a',
     color: '#555',
     cursor: 'not-allowed',
   });
@@ -395,7 +395,7 @@ export default function AgentBlackboardPanel() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       {/* Header */}
@@ -422,7 +422,7 @@ export default function AgentBlackboardPanel() {
           padding: '8px 16px', fontSize: 12,
           backgroundColor: message.type === 'success' ? '#1a3a1a' : message.type === 'error' ? '#3a1a1a' : '#1a2a3a',
           borderBottom: `1px solid ${message.type === 'success' ? '#2d5a2d' : message.type === 'error' ? '#5a2d2d' : '#2a3a4a'}`,
-          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#00d4ff',
+          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#f97316',
         }}>
           {message.text}
         </div>
@@ -436,10 +436,10 @@ export default function AgentBlackboardPanel() {
             onClick={() => setActiveTab(tab.key)}
             style={{
               flex: '0 0 auto', padding: '8px 12px', fontSize: 11, fontWeight: 600,
-              backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
+              backgroundColor: activeTab === tab.key ? '#0f0f0f' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #00d4ff' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #f97316' : '2px solid transparent',
               cursor: 'pointer', whiteSpace: 'nowrap',
             }}
           >
@@ -523,11 +523,11 @@ export default function AgentBlackboardPanel() {
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Written Entry</div>
                 <div style={{ borderLeft: '3px solid #fdcb6e', paddingLeft: 10 }}>
                   <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4, color: '#fdcb6e' }}>{writeResult.key}</div>
-                  <div style={{ fontSize: 11, color: '#ccc', marginBottom: 6, backgroundColor: '#1a1a2e', padding: 6, borderRadius: 4 }}>
+                  <div style={{ fontSize: 11, color: '#ccc', marginBottom: 6, backgroundColor: '#1a1a1a', padding: 6, borderRadius: 4 }}>
                     {typeof writeResult.value === 'object' ? JSON.stringify(writeResult.value) : String(writeResult.value)}
                   </div>
                   <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666', flexWrap: 'wrap' }}>
-                    <span>Type: <span style={{ color: '#00d4ff' }}>{writeResult.entry_type}</span></span>
+                    <span>Type: <span style={{ color: '#f97316' }}>{writeResult.entry_type}</span></span>
                     <span>Confidence: <span style={{ color: '#6bcb77' }}>{writeResult.confidence}</span></span>
                     <span>Priority: <span style={{ color: '#fdcb6e' }}>{writeResult.priority}</span></span>
                     <span>TTL: <span style={{ color: '#a29bfe' }}>{writeResult.ttl}s</span></span>
@@ -535,7 +535,7 @@ export default function AgentBlackboardPanel() {
                   {writeResult.tags && writeResult.tags.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                       {writeResult.tags.map((t: string, i: number) => (
-                        <span key={i} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{t}</span>
+                        <span key={i} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{t}</span>
                       ))}
                     </div>
                   )}
@@ -549,7 +549,7 @@ export default function AgentBlackboardPanel() {
         {activeTab === 'read' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
             <div style={cardStyle}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#f97316' }}>
                 {'\uD83D\uDD0D'} Query Entries
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -591,7 +591,7 @@ export default function AgentBlackboardPanel() {
                 </div>
               </div>
               <button onClick={handleRead} disabled={readLoading}
-                style={readLoading ? disabledBtnStyle('#00d4ff') : primaryBtnStyle('#00d4ff')}>
+                style={readLoading ? disabledBtnStyle('#f97316') : primaryBtnStyle('#f97316')}>
                 {readLoading ? 'Searching...' : '\uD83D\uDD0D Search'}
               </button>
             </div>
@@ -604,14 +604,14 @@ export default function AgentBlackboardPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {readResults.map((entry, i) => (
                     <div key={i} style={{
-                      padding: 10, backgroundColor: '#1a1a2e', borderRadius: 4,
-                      border: '1px solid #2a2a3e', borderLeft: '3px solid #00d4ff',
+                      padding: 10, backgroundColor: '#1a1a1a', borderRadius: 4,
+                      border: '1px solid #2a2a3e', borderLeft: '3px solid #f97316',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
-                        <span style={{ fontWeight: 600, fontSize: 12, color: '#00d4ff' }}>{entry.key}</span>
-                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{entry.entry_type}</span>
+                        <span style={{ fontWeight: 600, fontSize: 12, color: '#f97316' }}>{entry.key}</span>
+                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{entry.entry_type}</span>
                       </div>
-                      <div style={{ fontSize: 11, color: '#ccc', marginBottom: 4, backgroundColor: '#141428', padding: 4, borderRadius: 3 }}>
+                      <div style={{ fontSize: 11, color: '#ccc', marginBottom: 4, backgroundColor: '#111', padding: 4, borderRadius: 3 }}>
                         {typeof entry.value === 'object' ? JSON.stringify(entry.value).slice(0, 200) : String(entry.value).slice(0, 200)}
                       </div>
                       <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666', flexWrap: 'wrap' }}>
@@ -623,7 +623,7 @@ export default function AgentBlackboardPanel() {
                       {entry.tags && entry.tags.length > 0 && (
                         <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                           {entry.tags.map((t, j) => (
-                            <span key={j} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{t}</span>
+                            <span key={j} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{t}</span>
                           ))}
                         </div>
                       )}
@@ -645,7 +645,7 @@ export default function AgentBlackboardPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 6, marginTop: 10 }}>
                   {allEntries.map((entry, i) => (
                     <div key={i} style={{
-                      padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4,
+                      padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4,
                       border: '1px solid #2a2a3e', borderLeft: '3px solid #a29bfe',
                       fontSize: 11, color: '#ccc',
                     }}>
@@ -719,7 +719,7 @@ export default function AgentBlackboardPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {subscriptions.map((sub, i) => (
                     <div key={i} style={{
-                      padding: 10, backgroundColor: '#1a1a2e', borderRadius: 4,
+                      padding: 10, backgroundColor: '#1a1a1a', borderRadius: 4,
                       border: '1px solid #2a2a3e', borderLeft: '3px solid #6bcb77',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -764,18 +764,18 @@ export default function AgentBlackboardPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {snapshot.map((entry, i) => (
                     <div key={i} style={{
-                      padding: 10, backgroundColor: '#1a1a2e', borderRadius: 4,
+                      padding: 10, backgroundColor: '#1a1a1a', borderRadius: 4,
                       border: '1px solid #2a2a3e', borderLeft: '3px solid #a29bfe',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                         <span style={{ fontWeight: 600, fontSize: 12, color: '#a29bfe' }}>{entry.key}</span>
-                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{entry.entry_type}</span>
+                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{entry.entry_type}</span>
                       </div>
-                      <div style={{ fontSize: 11, color: '#ccc', marginBottom: 4, backgroundColor: '#141428', padding: 4, borderRadius: 3 }}>
+                      <div style={{ fontSize: 11, color: '#ccc', marginBottom: 4, backgroundColor: '#111', padding: 4, borderRadius: 3 }}>
                         {typeof entry.value === 'object' ? JSON.stringify(entry.value).slice(0, 300) : String(entry.value).slice(0, 300)}
                       </div>
                       <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666', flexWrap: 'wrap' }}>
-                        <span>Source: <span style={{ color: '#00d4ff' }}>{entry.source_agent_id}</span></span>
+                        <span>Source: <span style={{ color: '#f97316' }}>{entry.source_agent_id}</span></span>
                         <span>Conf: <span style={{ color: '#6bcb77' }}>{entry.confidence}</span></span>
                         <span>Pri: <span style={{ color: '#fdcb6e' }}>{entry.priority}</span></span>
                         <span>Updated: <span style={{ color: '#888' }}>{entry.updated_at}</span></span>
@@ -803,7 +803,7 @@ export default function AgentBlackboardPanel() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                 {[
-                  { label: 'Total Entries', value: stats?.total_entries, color: '#00d4ff' },
+                  { label: 'Total Entries', value: stats?.total_entries, color: '#f97316' },
                   { label: 'Active Entries', value: stats?.active_entries, color: '#6bcb77' },
                   { label: 'Subscriptions', value: stats?.total_subscriptions, color: '#a29bfe' },
                   { label: 'Total Reads', value: stats?.total_reads, color: '#fdcb6e' },
@@ -811,7 +811,7 @@ export default function AgentBlackboardPanel() {
                   { label: 'Avg Confidence', value: stats?.avg_confidence != null ? (stats.avg_confidence).toFixed(2) : '0.00', color: '#e17055' },
                 ].map(item => (
                   <div key={item.label} style={{
-                    padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                    padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                   }}>
                     <span style={{ fontSize: 10, color: '#888' }}>{item.label}</span>
@@ -827,7 +827,7 @@ export default function AgentBlackboardPanel() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 10, color: '#888' }}>
                 <div>Status: <span style={{ color: '#6bcb77' }}>Connected</span></div>
-                <div>Auto-refresh: <span style={{ color: '#00d4ff' }}>15s</span></div>
+                <div>Auto-refresh: <span style={{ color: '#f97316' }}>15s</span></div>
                 <div>API Base: <span style={{ color: '#a29bfe' }}>{API_BASE}/blackboard</span></div>
                 <div>Version: <span style={{ color: '#fdcb6e' }}>1.0.0</span></div>
               </div>
@@ -840,7 +840,7 @@ export default function AgentBlackboardPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

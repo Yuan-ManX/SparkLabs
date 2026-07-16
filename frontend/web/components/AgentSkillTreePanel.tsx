@@ -82,7 +82,7 @@ export default function AgentSkillTreePanel() {
 
   const inputCls = 'w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]';
   const selectCls = 'w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-[#00d4ff]';
-  const cardCls = 'bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]';
+  const cardCls = 'bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]';
 
   const tierColor = (t: string) => {
     switch (t) {
@@ -101,14 +101,14 @@ export default function AgentSkillTreePanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase() + t.slice(1)}
           </button>
         ))}
       </div>
 
       {message && (
-        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0f0f23] border-[#00ff88] text-[#00ff88]">{message}</div>
+        <div className="mx-4 mt-2 p-2 rounded text-sm border bg-[#0d0d0d] border-[#00ff88] text-[#00ff88]">{message}</div>
       )}
 
       <div className="flex-1 overflow-auto p-4">
@@ -124,7 +124,7 @@ export default function AgentSkillTreePanel() {
                 { label: 'Total Optimizations', value: stats.total_optimizations, color: 'text-amber-300' },
                 { label: 'Classes', value: stats.trees_by_class ? Object.keys(stats.trees_by_class).length : 0, color: 'text-pink-300', suffix: ' classes' },
               ].map(s => (
-                <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={s.label} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value ?? 0}{s.suffix || ''}</p>
                 </div>
@@ -273,7 +273,7 @@ export default function AgentSkillTreePanel() {
                               <div key={i} className="bg-[#1a1a2e] p-2 rounded border border-[#2a2a4a]">
                                 <div className="flex justify-between items-center">
                                   <span className="text-sm text-white">{node.name}</span>
-                                  <span className="text-[10px] px-2 py-0.5 bg-[#0f0f23] rounded border border-[#2a2a4a] text-[#999] capitalize">{node.category}</span>
+                                  <span className="text-[10px] px-2 py-0.5 bg-[#0d0d0d] rounded border border-[#2a2a4a] text-[#999] capitalize">{node.category}</span>
                                 </div>
                                 <div className="flex gap-2 mt-1">
                                   <span className="text-[10px] text-[#666] capitalize">{node.skill_type}</span>

@@ -393,7 +393,7 @@ export default function AgentTimelineBrancherPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -443,7 +443,7 @@ export default function AgentTimelineBrancherPanel() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       {/* Header */}
@@ -487,7 +487,7 @@ export default function AgentTimelineBrancherPanel() {
               backgroundColor: activeTab === tab.key ? '#22223a' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #00d4ff' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #f97316' : '2px solid transparent',
               cursor: 'pointer', whiteSpace: 'nowrap',
             }}
           >
@@ -515,7 +515,7 @@ export default function AgentTimelineBrancherPanel() {
                   { label: 'Total Merges', value: stats?.total_merges, color: '#e17055' },
                 ].map(item => (
                   <div key={item.label} style={{
-                    padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                    padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                   }}>
                     <span style={{ fontSize: 10, color: '#888' }}>{item.label}</span>
@@ -599,7 +599,7 @@ export default function AgentTimelineBrancherPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {timelines.map(tl => (
                     <div key={tl.timeline_id} style={{
-                      padding: 12, backgroundColor: '#1a1a2e', borderRadius: 6,
+                      padding: 12, backgroundColor: '#1a1a1a', borderRadius: 6,
                       border: '1px solid #2a2a3e',
                       borderLeft: `3px solid ${tl.is_active ? '#6bcb77' : '#888'}`,
                     }}>
@@ -763,7 +763,7 @@ export default function AgentTimelineBrancherPanel() {
 
             {/* Save State */}
             <div style={cardStyle}>
-              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#00d4ff' }}>
+              <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#f97316' }}>
                 {'\uD83D\uDCBE'} Save Timeline State
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginBottom: 10 }}>
@@ -782,14 +782,14 @@ export default function AgentTimelineBrancherPanel() {
                   <textarea style={darkTextareaStyle} placeholder="State data (JSON or text)..." rows={3} value={stateForm.state} onChange={e => setStateForm(prev => ({ ...prev, state: e.target.value }))} />
                 </div>
               </div>
-              <button onClick={handleSaveState} disabled={stateLoading} style={stateLoading ? disabledBtnStyle('#00d4ff') : primaryBtnStyle('#00d4ff')}>
+              <button onClick={handleSaveState} disabled={stateLoading} style={stateLoading ? disabledBtnStyle('#f97316') : primaryBtnStyle('#f97316')}>
                 {stateLoading ? 'Saving...' : '\uD83D\uDCBE Save State'}
               </button>
             </div>
             {stateResult && (
               <div style={cardStyle}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>State Saved</div>
-                <div style={{ borderLeft: '3px solid #00d4ff', paddingLeft: 10 }}>
+                <div style={{ borderLeft: '3px solid #f97316', paddingLeft: 10 }}>
                   <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4 }}>{stateResult.label || 'Unlabeled State'}</div>
                   <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666', flexWrap: 'wrap' }}>
                     <span>Timeline: <span style={{ color: '#74b9ff' }}>{stateResult.timeline_id}</span></span>
@@ -825,7 +825,7 @@ export default function AgentTimelineBrancherPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {eventsList.map(ev => (
                     <div key={ev.event_id} style={{
-                      padding: 12, backgroundColor: '#1a1a2e', borderRadius: 6,
+                      padding: 12, backgroundColor: '#1a1a1a', borderRadius: 6,
                       border: '1px solid #2a2a3e',
                       borderLeft: `3px solid ${SIGNIFICANCE_COLORS[ev.significance] || '#888'}`,
                     }}>
@@ -890,15 +890,15 @@ export default function AgentTimelineBrancherPanel() {
                     </div>
                   )}
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 8, marginBottom: 6 }}>
-                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4, textAlign: 'center' }}>
+                    <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4, textAlign: 'center' }}>
                       <span style={{ fontSize: 9, color: '#888', display: 'block' }}>Shared</span>
                       <span style={{ fontSize: 14, fontWeight: 700, color: '#6bcb77' }}>{compareResult.shared_events ?? 0}</span>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4, textAlign: 'center' }}>
+                    <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4, textAlign: 'center' }}>
                       <span style={{ fontSize: 9, color: '#888', display: 'block' }}>Unique A</span>
                       <span style={{ fontSize: 14, fontWeight: 700, color: '#74b9ff' }}>{compareResult.unique_events_a ?? 0}</span>
                     </div>
-                    <div style={{ padding: 8, backgroundColor: '#1a1a2e', borderRadius: 4, textAlign: 'center' }}>
+                    <div style={{ padding: 8, backgroundColor: '#1a1a1a', borderRadius: 4, textAlign: 'center' }}>
                       <span style={{ fontSize: 9, color: '#888', display: 'block' }}>Unique B</span>
                       <span style={{ fontSize: 14, fontWeight: 700, color: '#e17055' }}>{compareResult.unique_events_b ?? 0}</span>
                     </div>
@@ -989,7 +989,7 @@ export default function AgentTimelineBrancherPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

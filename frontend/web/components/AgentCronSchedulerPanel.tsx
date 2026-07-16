@@ -277,7 +277,7 @@ const AgentCronSchedulerPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -458,7 +458,7 @@ const AgentCronSchedulerPanel: React.FC = () => {
                 )}
                 {entry.output_log && (
                   <div style={{
-                    padding: '4px 8px', backgroundColor: '#141428', borderRadius: 3,
+                    padding: '4px 8px', backgroundColor: '#111', borderRadius: 3,
                     fontSize: 10, color: '#aaa', fontFamily: 'monospace',
                   }}>
                     {entry.output_log}
@@ -519,7 +519,7 @@ const AgentCronSchedulerPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

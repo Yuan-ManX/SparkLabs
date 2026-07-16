@@ -342,7 +342,7 @@ export default function AgentBeliefReputationPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -355,7 +355,7 @@ export default function AgentBeliefReputationPanel() {
   };
 
   const cardStyle: React.CSSProperties = {
-    padding: 14, backgroundColor: '#16213e', borderRadius: 6,
+    padding: 14, backgroundColor: '#0f0f0f', borderRadius: 6,
     border: '1px solid #2a2a3e',
   };
 
@@ -365,7 +365,7 @@ export default function AgentBeliefReputationPanel() {
 
   const primaryBtnStyle = (color: string): React.CSSProperties => ({
     padding: '6px 14px',
-    backgroundColor: '#0f3460',
+    backgroundColor: '#1e1e1e',
     color,
     border: '1px solid #1a4a7a',
     borderRadius: 4,
@@ -376,7 +376,7 @@ export default function AgentBeliefReputationPanel() {
 
   const disabledBtnStyle = (color: string): React.CSSProperties => ({
     ...primaryBtnStyle(color),
-    backgroundColor: '#1a1a2e',
+    backgroundColor: '#1a1a1a',
     color: '#555',
     cursor: 'not-allowed',
   });
@@ -390,7 +390,7 @@ export default function AgentBeliefReputationPanel() {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       {/* Header */}
@@ -417,7 +417,7 @@ export default function AgentBeliefReputationPanel() {
           padding: '8px 16px', fontSize: 12,
           backgroundColor: message.type === 'success' ? '#1a3a1a' : message.type === 'error' ? '#3a1a1a' : '#1a2a3a',
           borderBottom: `1px solid ${message.type === 'success' ? '#2d5a2d' : message.type === 'error' ? '#5a2d2d' : '#2a3a4a'}`,
-          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#00d4ff',
+          color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#f97316',
         }}>
           {message.text}
         </div>
@@ -431,10 +431,10 @@ export default function AgentBeliefReputationPanel() {
             onClick={() => setActiveTab(tab.key)}
             style={{
               flex: '0 0 auto', padding: '8px 12px', fontSize: 11, fontWeight: 600,
-              backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
+              backgroundColor: activeTab === tab.key ? '#0f0f0f' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #00d4ff' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #f97316' : '2px solid transparent',
               cursor: 'pointer', whiteSpace: 'nowrap',
             }}
           >
@@ -504,7 +504,7 @@ export default function AgentBeliefReputationPanel() {
                   <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 4, color: '#a29bfe' }}>{beliefResult.subject}</div>
                   <div style={{ fontSize: 11, color: '#ccc', marginBottom: 4 }}>{beliefResult.content}</div>
                   <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666', flexWrap: 'wrap' }}>
-                    <span>Agent: <span style={{ color: '#00d4ff' }}>{beliefResult.agent_id}</span></span>
+                    <span>Agent: <span style={{ color: '#f97316' }}>{beliefResult.agent_id}</span></span>
                     <span>Conf: <span style={{ color: '#6bcb77' }}>{beliefResult.confidence}</span></span>
                     <span>Category: <span style={{ color: '#fdcb6e' }}>{beliefResult.category}</span></span>
                   </div>
@@ -522,16 +522,16 @@ export default function AgentBeliefReputationPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {beliefs.map((b, i) => (
                     <div key={i} style={{
-                      padding: 10, backgroundColor: '#1a1a2e', borderRadius: 4,
+                      padding: 10, backgroundColor: '#1a1a1a', borderRadius: 4,
                       border: '1px solid #2a2a3e', borderLeft: '3px solid #a29bfe',
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                         <span style={{ fontWeight: 600, fontSize: 12, color: '#a29bfe' }}>{b.subject}</span>
-                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#0f3460', color: '#888' }}>{b.category}</span>
+                        <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1e1e1e', color: '#888' }}>{b.category}</span>
                       </div>
                       <div style={{ fontSize: 11, color: '#ccc', marginBottom: 4 }}>{b.content.slice(0, 150)}</div>
                       <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666' }}>
-                        <span>Agent: <span style={{ color: '#00d4ff' }}>{b.agent_id}</span></span>
+                        <span>Agent: <span style={{ color: '#f97316' }}>{b.agent_id}</span></span>
                         <span>Conf: <span style={{ color: '#6bcb77' }}>{b.confidence}</span></span>
                       </div>
                     </div>
@@ -622,7 +622,7 @@ export default function AgentBeliefReputationPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
                   {events.map((ev, i) => (
                     <div key={i} style={{
-                      padding: 10, backgroundColor: '#1a1a2e', borderRadius: 4,
+                      padding: 10, backgroundColor: '#1a1a1a', borderRadius: 4,
                       border: '1px solid #2a2a3e', borderLeft: `3px solid ${ev.impact >= 0 ? '#6bcb77' : '#ff6b6b'}`,
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -678,7 +678,7 @@ export default function AgentBeliefReputationPanel() {
                       <div key={item.label} style={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                         <span style={{ fontSize: 9, color: '#888' }}>{item.label}</span>
                         <div style={{ display: 'flex', alignItems: 'center', gap: 6 }}>
-                          <div style={{ flex: 1, height: 6, backgroundColor: '#141428', borderRadius: 3, overflow: 'hidden' }}>
+                          <div style={{ flex: 1, height: 6, backgroundColor: '#111', borderRadius: 3, overflow: 'hidden' }}>
                             <div style={{ width: `${(item.value || 0) * 100}%`, height: '100%', backgroundColor: getScoreColor(item.value || 0), borderRadius: 3 }} />
                           </div>
                           <span style={{ fontSize: 10, fontWeight: 600, color: getScoreColor(item.value || 0) }}>
@@ -689,7 +689,7 @@ export default function AgentBeliefReputationPanel() {
                     ))}
                   </div>
                   <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666' }}>
-                    <span>Events: <span style={{ color: '#00d4ff' }}>{reputationResult.event_count}</span></span>
+                    <span>Events: <span style={{ color: '#f97316' }}>{reputationResult.event_count}</span></span>
                     <span>Updated: <span style={{ color: '#888' }}>{reputationResult.last_updated}</span></span>
                   </div>
                 </div>
@@ -708,7 +708,7 @@ export default function AgentBeliefReputationPanel() {
                 <div style={{ display: 'flex', flexDirection: 'column', gap: 8, marginTop: 10 }}>
                   {reputations.map((rep, i) => (
                     <div key={i} style={{
-                      padding: 10, backgroundColor: '#1a1a2e', borderRadius: 4,
+                      padding: 10, backgroundColor: '#1a1a1a', borderRadius: 4,
                       border: '1px solid #2a2a3e', borderLeft: `3px solid ${getScoreColor(rep.overall_score)}`,
                     }}>
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
@@ -766,7 +766,7 @@ export default function AgentBeliefReputationPanel() {
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8 }}>
                     <span style={{ fontSize: 10, color: '#888' }}>Trust Score:</span>
-                    <div style={{ flex: 1, height: 10, backgroundColor: '#141428', borderRadius: 5, overflow: 'hidden' }}>
+                    <div style={{ flex: 1, height: 10, backgroundColor: '#111', borderRadius: 5, overflow: 'hidden' }}>
                       <div style={{
                         width: `${(trustResult.trust_score || 0) * 100}%`,
                         height: '100%',
@@ -779,7 +779,7 @@ export default function AgentBeliefReputationPanel() {
                     </span>
                   </div>
                   <div style={{ display: 'flex', gap: 8, fontSize: 9, color: '#666' }}>
-                    <span>Interactions: <span style={{ color: '#00d4ff' }}>{trustResult.interactions}</span></span>
+                    <span>Interactions: <span style={{ color: '#f97316' }}>{trustResult.interactions}</span></span>
                     <span>Last: <span style={{ color: '#888' }}>{trustResult.last_interaction}</span></span>
                   </div>
                 </div>
@@ -806,7 +806,7 @@ export default function AgentBeliefReputationPanel() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10 }}>
                 {[
-                  { label: 'Total Beliefs', value: stats?.total_beliefs, color: '#00d4ff' },
+                  { label: 'Total Beliefs', value: stats?.total_beliefs, color: '#f97316' },
                   { label: 'Total Events', value: stats?.total_events, color: '#6bcb77' },
                   { label: 'Total Agents', value: stats?.total_agents, color: '#a29bfe' },
                   { label: 'Trust Relations', value: stats?.total_trust_relationships, color: '#fdcb6e' },
@@ -814,7 +814,7 @@ export default function AgentBeliefReputationPanel() {
                   { label: 'Avg Reputation', value: stats?.avg_reputation != null ? (stats.avg_reputation * 100).toFixed(0) + '%' : '0%', color: '#e17055' },
                 ].map(item => (
                   <div key={item.label} style={{
-                    padding: 10, backgroundColor: '#1a1a2e', borderRadius: 6,
+                    padding: 10, backgroundColor: '#1a1a1a', borderRadius: 6,
                     display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4,
                   }}>
                     <span style={{ fontSize: 10, color: '#888' }}>{item.label}</span>
@@ -830,7 +830,7 @@ export default function AgentBeliefReputationPanel() {
               </div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, fontSize: 10, color: '#888' }}>
                 <div>Status: <span style={{ color: '#6bcb77' }}>Connected</span></div>
-                <div>Auto-refresh: <span style={{ color: '#00d4ff' }}>15s</span></div>
+                <div>Auto-refresh: <span style={{ color: '#f97316' }}>15s</span></div>
                 <div>API Base: <span style={{ color: '#a29bfe' }}>{API_BASE}/belief-reputation</span></div>
                 <div>Version: <span style={{ color: '#fdcb6e' }}>1.0.0</span></div>
               </div>
@@ -843,7 +843,7 @@ export default function AgentBeliefReputationPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

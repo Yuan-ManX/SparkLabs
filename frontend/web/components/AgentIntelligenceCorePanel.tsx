@@ -455,7 +455,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
               backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
               color: activeTab === tab.key ? '#e0e0e0' : '#888',
               border: 'none',
-              borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent',
+              borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent',
               cursor: 'pointer',
               transition: 'all 0.15s',
             }}
@@ -507,7 +507,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                     <span style={{ fontSize: 10, color: '#888' }}>System Load</span>
                     <span style={{ fontSize: 10, color: '#aaa' }}>{pctStr(coreStatus.load)}</span>
                   </div>
-                  <div style={{ height: 6, backgroundColor: '#141428', borderRadius: 3, overflow: 'hidden' }}>
+                  <div style={{ height: 6, backgroundColor: '#111', borderRadius: 3, overflow: 'hidden' }}>
                     <div style={{
                       height: '100%', width: pctStr(coreStatus.load),
                       backgroundColor: coreStatus.load > 0.8 ? '#ff6b6b' : coreStatus.load > 0.5 ? '#fdcb6e' : '#6bcb77',
@@ -554,7 +554,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                           {Object.entries(ss.metrics).map(([k, v]) => (
                             <span key={k} style={{
                               fontSize: 9, padding: '1px 6px',
-                              backgroundColor: '#141428', borderRadius: 3,
+                              backgroundColor: '#111', borderRadius: 3,
                               color: '#aaa',
                             }}>
                               {k}: {typeof v === 'number' ? v.toFixed(2) : v}
@@ -591,7 +591,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                   rows={2}
                   style={{
                     width: '100%', padding: '8px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4,
                     outline: 'none', resize: 'vertical',
                     fontFamily: 'system-ui, sans-serif',
@@ -608,7 +608,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                   rows={3}
                   style={{
                     width: '100%', padding: '8px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4,
                     outline: 'none', resize: 'vertical',
                     fontFamily: 'system-ui, sans-serif',
@@ -621,7 +621,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                 disabled={reasoningLoading || !reasoningGoal.trim()}
                 style={{
                   width: '100%', padding: '8px 14px',
-                  backgroundColor: reasoningLoading ? '#2a3a5a' : '#0f3460',
+                  backgroundColor: reasoningLoading ? '#2a3a5a' : '#1e1e1e',
                   color: '#74b9ff',
                   border: '1px solid #1a4a7a',
                   borderRadius: 4, cursor: reasoningLoading ? 'not-allowed' : 'pointer',
@@ -655,8 +655,8 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                   {reasoningResult.plan.map((step, i) => (
                     <div key={i} style={{
                       display: 'flex', gap: 8, alignItems: 'flex-start',
-                      padding: '6px 8px', backgroundColor: '#141428', borderRadius: 4,
-                      borderLeft: '3px solid #0f3460',
+                      padding: '6px 8px', backgroundColor: '#111', borderRadius: 4,
+                      borderLeft: '3px solid #1e1e1e',
                     }}>
                       <span style={{
                         fontSize: 10, fontWeight: 700, color: '#74b9ff',
@@ -697,7 +697,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                   rows={4}
                   style={{
                     width: '100%', padding: '8px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4,
                     outline: 'none', resize: 'vertical',
                     fontFamily: 'system-ui, sans-serif',
@@ -710,7 +710,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                 disabled={perceptionLoading || !perceptionContext.trim()}
                 style={{
                   width: '100%', padding: '8px 14px',
-                  backgroundColor: perceptionLoading ? '#2a3a5a' : '#0f3460',
+                  backgroundColor: perceptionLoading ? '#2a3a5a' : '#1e1e1e',
                   color: '#74b9ff',
                   border: '1px solid #1a4a7a',
                   borderRadius: 4, cursor: perceptionLoading ? 'not-allowed' : 'pointer',
@@ -732,11 +732,11 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                   {'\uD83D\uDCCA'} Perception Results
                 </div>
                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 8, marginBottom: 8 }}>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 18, fontWeight: 700, color: '#74b9ff' }}>{perceptionResult.entities_detected}</div>
                     <div style={{ fontSize: 9, color: '#888' }}>Entities Detected</div>
                   </div>
-                  <div style={{ padding: 8, backgroundColor: '#141428', borderRadius: 4, textAlign: 'center' }}>
+                  <div style={{ padding: 8, backgroundColor: '#111', borderRadius: 4, textAlign: 'center' }}>
                     <div style={{ fontSize: 18, fontWeight: 700, color: '#fdcb6e' }}>{perceptionResult.events_identified}</div>
                     <div style={{ fontSize: 9, color: '#888' }}>Events Identified</div>
                   </div>
@@ -821,7 +821,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                   rows={2}
                   style={{
                     width: '100%', padding: '8px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4,
                     outline: 'none', resize: 'vertical',
                     fontFamily: 'system-ui, sans-serif',
@@ -834,7 +834,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                 disabled={learningLoading}
                 style={{
                   width: '100%', padding: '8px 14px',
-                  backgroundColor: learningLoading ? '#2a3a5a' : '#0f3460',
+                  backgroundColor: learningLoading ? '#2a3a5a' : '#1e1e1e',
                   color: '#a29bfe',
                   border: '1px solid #1a4a7a',
                   borderRadius: 4, cursor: learningLoading ? 'not-allowed' : 'pointer',
@@ -897,7 +897,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                   rows={3}
                   style={{
                     width: '100%', padding: '8px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4,
                     outline: 'none', resize: 'vertical',
                     fontFamily: 'system-ui, sans-serif',
@@ -912,7 +912,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                   onChange={e => setSynthesisDomain(e.target.value)}
                   style={{
                     width: '100%', padding: '7px 10px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#ccc',
+                    backgroundColor: '#111', color: '#ccc',
                     border: '1px solid #333', borderRadius: 4,
                     outline: 'none', cursor: 'pointer',
                   }}
@@ -927,7 +927,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                 disabled={synthesisLoading || !synthesisBrief.trim()}
                 style={{
                   width: '100%', padding: '8px 14px',
-                  backgroundColor: synthesisLoading ? '#2a3a5a' : '#0f3460',
+                  backgroundColor: synthesisLoading ? '#2a3a5a' : '#1e1e1e',
                   color: '#e056a0',
                   border: '1px solid #1a4a7a',
                   borderRadius: 4, cursor: synthesisLoading ? 'not-allowed' : 'pointer',
@@ -963,7 +963,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                   </span>
                 </div>
                 <div style={{
-                  padding: 10, backgroundColor: '#141428', borderRadius: 4,
+                  padding: 10, backgroundColor: '#111', borderRadius: 4,
                   fontSize: 10, color: '#ccc', lineHeight: 1.6,
                   whiteSpace: 'pre-wrap', marginBottom: 8,
                   border: '1px solid #2a2a3e',
@@ -1002,7 +1002,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                 {/* Overall score */}
                 <div style={{
                   padding: 16, backgroundColor: '#16213e', borderRadius: 8,
-                  border: '2px solid #0f3460', textAlign: 'center',
+                  border: '2px solid #1e1e1e', textAlign: 'center',
                 }}>
                   <div style={{ fontSize: 10, color: '#888', marginBottom: 4 }}>Overall Intelligence Score</div>
                   <div style={{
@@ -1057,7 +1057,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
                     {report.recommendations.map((r, i) => (
                       <div key={i} style={{
                         fontSize: 10, color: '#ccc', padding: '6px 8px',
-                        backgroundColor: '#141428', borderRadius: 4, marginBottom: 4,
+                        backgroundColor: '#111', borderRadius: 4, marginBottom: 4,
                         borderLeft: '3px solid #fdcb6e',
                       }}>
                         <span style={{ color: '#fdcb6e', fontWeight: 700, marginRight: 6 }}>{i + 1}.</span>
@@ -1080,7 +1080,7 @@ const AgentIntelligenceCorePanel: React.FC = () => {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

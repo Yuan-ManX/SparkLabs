@@ -457,7 +457,7 @@ const AdaptiveContentPanel: React.FC = () => {
           onChange={e => setPlayerId(e.target.value)}
           placeholder="Player ID..."
           style={{
-            padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc',
+            padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, width: 140, outline: 'none',
           }}
         />
@@ -465,7 +465,7 @@ const AdaptiveContentPanel: React.FC = () => {
           value={contentType}
           onChange={e => setContentType(e.target.value)}
           style={{
-            padding: '6px 10px', fontSize: 11, backgroundColor: '#141428', color: '#ccc',
+            padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc',
             border: '1px solid #333', borderRadius: 4, outline: 'none',
           }}
         >
@@ -497,8 +497,8 @@ const AdaptiveContentPanel: React.FC = () => {
                 onClick={handleAnalyzeProfile}
                 disabled={profileLoading}
                 style={{
-                  padding: '6px 12px', backgroundColor: '#2563eb', color: '#fff',
-                  border: '1px solid #3b82f6', borderRadius: 4, cursor: profileLoading ? 'not-allowed' : 'pointer',
+                  padding: '6px 12px', backgroundColor: '#f97316', color: '#fff',
+                  border: '1px solid #f97316', borderRadius: 4, cursor: profileLoading ? 'not-allowed' : 'pointer',
                   fontSize: 11, fontWeight: 600, opacity: profileLoading ? 0.5 : 1,
                 }}
               >
@@ -528,7 +528,7 @@ const AdaptiveContentPanel: React.FC = () => {
                       <span style={{ fontWeight: 600, fontSize: 14 }}>{profile.player_id}</span>
                       <span style={{
                         fontSize: 9, padding: '2px 8px', borderRadius: 3, marginLeft: 8,
-                        backgroundColor: '#141428', color: '#a29bfe', fontWeight: 600,
+                        backgroundColor: '#111', color: '#a29bfe', fontWeight: 600,
                       }}>{profile.archetype}</span>
                     </div>
                     <span style={{ fontSize: 10, color: '#666' }}>{formatTime(profile.analyzed_at)}</span>
@@ -536,7 +536,7 @@ const AdaptiveContentPanel: React.FC = () => {
 
                   <div style={{ marginBottom: 8 }}>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Archetype Confidence</div>
-                    <div style={{ height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                    <div style={{ height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                       <div style={{
                         height: '100%', width: `${profile.archetype_confidence * 100}%`,
                         backgroundColor: '#6c5ce7', borderRadius: 2,
@@ -547,7 +547,7 @@ const AdaptiveContentPanel: React.FC = () => {
 
                   <div style={{ marginBottom: 8 }}>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Engagement Score</div>
-                    <div style={{ height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                    <div style={{ height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                       <div style={{
                         height: '100%', width: `${profile.engagement_score * 100}%`,
                         backgroundColor: profile.engagement_score >= 0.7 ? '#6bcb77' : profile.engagement_score >= 0.5 ? '#fdcb6e' : '#ff6b6b',
@@ -616,7 +616,7 @@ const AdaptiveContentPanel: React.FC = () => {
                     {Object.entries(profile.completion_rates).map(([key, val]: [string, any]) => (
                       <div key={key} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                         <span style={{ fontSize: 10, color: '#888', width: 80, textTransform: 'capitalize' }}>{key.replace(/_/g, ' ')}</span>
-                        <div style={{ flex: 1, height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                        <div style={{ flex: 1, height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                           <div style={{
                             height: '100%', width: `${val * 100}%`,
                             backgroundColor: val >= 0.6 ? '#6bcb77' : val >= 0.4 ? '#fdcb6e' : '#ff6b6b',
@@ -639,7 +639,7 @@ const AdaptiveContentPanel: React.FC = () => {
                       {Object.entries(profile.skill_areas).map(([skill, val]: [string, any]) => (
                         <div key={skill} style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
                           <span style={{ fontSize: 10, color: '#888', width: 80, textTransform: 'capitalize' }}>{skill}</span>
-                          <div style={{ flex: 1, height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                          <div style={{ flex: 1, height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                             <div style={{
                               height: '100%', width: `${val * 100}%`,
                               backgroundColor: '#6c5ce7', borderRadius: 2,
@@ -670,8 +670,8 @@ const AdaptiveContentPanel: React.FC = () => {
                 onClick={handleComputeDifficulty}
                 disabled={difficultyLoading}
                 style={{
-                  padding: '6px 12px', backgroundColor: '#2563eb', color: '#fff',
-                  border: '1px solid #3b82f6', borderRadius: 4, cursor: difficultyLoading ? 'not-allowed' : 'pointer',
+                  padding: '6px 12px', backgroundColor: '#f97316', color: '#fff',
+                  border: '1px solid #f97316', borderRadius: 4, cursor: difficultyLoading ? 'not-allowed' : 'pointer',
                   fontSize: 11, fontWeight: 600, opacity: difficultyLoading ? 0.5 : 1,
                 }}
               >
@@ -711,7 +711,7 @@ const AdaptiveContentPanel: React.FC = () => {
 
                   <div style={{ marginBottom: 8 }}>
                     <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Skill Estimation</div>
-                    <div style={{ height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                    <div style={{ height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                       <div style={{
                         height: '100%', width: `${difficulty.skill_estimation * 100}%`,
                         backgroundColor: '#6c5ce7', borderRadius: 2,
@@ -731,7 +731,7 @@ const AdaptiveContentPanel: React.FC = () => {
                     <span style={{ color: '#888' }}>{'\u2192'}</span>
                     <span style={{ color: '#888' }}>{difficulty.tier_progression.next_tier}</span>
                   </div>
-                  <div style={{ height: 4, backgroundColor: '#141428', borderRadius: 2, marginBottom: 4 }}>
+                  <div style={{ height: 4, backgroundColor: '#111', borderRadius: 2, marginBottom: 4 }}>
                     <div style={{
                       height: '100%', width: `${difficulty.tier_progression.progress_to_next * 100}%`,
                       backgroundColor: '#fdcb6e', borderRadius: 2,
@@ -792,8 +792,8 @@ const AdaptiveContentPanel: React.FC = () => {
                 onClick={handleSelectContent}
                 disabled={contentLoading}
                 style={{
-                  padding: '6px 12px', backgroundColor: '#2563eb', color: '#fff',
-                  border: '1px solid #3b82f6', borderRadius: 4, cursor: contentLoading ? 'not-allowed' : 'pointer',
+                  padding: '6px 12px', backgroundColor: '#f97316', color: '#fff',
+                  border: '1px solid #f97316', borderRadius: 4, cursor: contentLoading ? 'not-allowed' : 'pointer',
                   fontSize: 11, fontWeight: 600, opacity: contentLoading ? 0.5 : 1,
                 }}
               >
@@ -812,7 +812,7 @@ const AdaptiveContentPanel: React.FC = () => {
                       <span style={{ fontWeight: 600, fontSize: 14, textTransform: 'capitalize' }}>{contentSelection.content_type}</span>
                       <span style={{
                         fontSize: 9, padding: '2px 8px', borderRadius: 3,
-                        backgroundColor: '#141428', color: '#fdcb6e', fontWeight: 600,
+                        backgroundColor: '#111', color: '#fdcb6e', fontWeight: 600,
                       }}>{contentSelection.difficulty_tier}</span>
                     </div>
                     <span style={{ fontSize: 10, color: '#666' }}>{formatTime(contentSelection.selected_at)}</span>
@@ -909,8 +909,8 @@ const AdaptiveContentPanel: React.FC = () => {
                 onClick={handleBalanceEconomy}
                 disabled={economyLoading}
                 style={{
-                  padding: '6px 12px', backgroundColor: '#2563eb', color: '#fff',
-                  border: '1px solid #3b82f6', borderRadius: 4, cursor: economyLoading ? 'not-allowed' : 'pointer',
+                  padding: '6px 12px', backgroundColor: '#f97316', color: '#fff',
+                  border: '1px solid #f97316', borderRadius: 4, cursor: economyLoading ? 'not-allowed' : 'pointer',
                   fontSize: 11, fontWeight: 600, opacity: economyLoading ? 0.5 : 1,
                 }}
               >
@@ -949,7 +949,7 @@ const AdaptiveContentPanel: React.FC = () => {
                       <div style={{ fontSize: 16, fontWeight: 700, color: economy.supply_demand_ratio >= 0.9 ? '#6bcb77' : '#fdcb6e' }}>
                         {economy.supply_demand_ratio.toFixed(2)}
                       </div>
-                      <div style={{ height: 3, backgroundColor: '#141428', borderRadius: 2, marginTop: 4 }}>
+                      <div style={{ height: 3, backgroundColor: '#111', borderRadius: 2, marginTop: 4 }}>
                         <div style={{ height: '100%', width: `${economy.supply_demand_ratio * 100}%`, backgroundColor: '#6bcb77', borderRadius: 2 }} />
                       </div>
                     </div>
@@ -964,7 +964,7 @@ const AdaptiveContentPanel: React.FC = () => {
                       <div style={{ fontSize: 16, fontWeight: 700, color: economy.affordability_index >= 0.7 ? '#6bcb77' : '#fdcb6e' }}>
                         {formatPercent(economy.affordability_index)}
                       </div>
-                      <div style={{ height: 3, backgroundColor: '#141428', borderRadius: 2, marginTop: 4 }}>
+                      <div style={{ height: 3, backgroundColor: '#111', borderRadius: 2, marginTop: 4 }}>
                         <div style={{ height: '100%', width: `${economy.affordability_index * 100}%`, backgroundColor: '#6c5ce7', borderRadius: 2 }} />
                       </div>
                     </div>
@@ -988,7 +988,7 @@ const AdaptiveContentPanel: React.FC = () => {
                         <span style={{ color: '#888' }}>Top 10% Share</span>
                         <span style={{ color: '#aaa' }}>{formatPercent(economy.wealth_distribution.top_decile_share)}</span>
                       </div>
-                      <div style={{ height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                      <div style={{ height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                         <div style={{ height: '100%', width: `${economy.wealth_distribution.top_decile_share * 100}%`, backgroundColor: '#ff6b6b', borderRadius: 2 }} />
                       </div>
                     </div>
@@ -997,7 +997,7 @@ const AdaptiveContentPanel: React.FC = () => {
                         <span style={{ color: '#888' }}>Bottom 25% Share</span>
                         <span style={{ color: '#aaa' }}>{formatPercent(economy.wealth_distribution.bottom_quartile_share)}</span>
                       </div>
-                      <div style={{ height: 4, backgroundColor: '#141428', borderRadius: 2 }}>
+                      <div style={{ height: 4, backgroundColor: '#111', borderRadius: 2 }}>
                         <div style={{ height: '100%', width: `${economy.wealth_distribution.bottom_quartile_share * 100}%`, backgroundColor: '#6bcb77', borderRadius: 2 }} />
                       </div>
                     </div>
@@ -1035,7 +1035,7 @@ const AdaptiveContentPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

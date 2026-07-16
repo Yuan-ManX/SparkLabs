@@ -165,7 +165,7 @@ export default function AgentEngineOrchestratorPanel() {
       <div>
         <div className="grid grid-cols-3 gap-3 mb-4">
           {cards.map(({ key, label, icon }) => (
-            <div key={key} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div key={key} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center gap-2 mb-1">
                 <i className={`fa-solid ${icon} text-[#00d4ff] text-xs`} />
                 <span className="text-[#999] text-xs">{label}</span>
@@ -178,7 +178,7 @@ export default function AgentEngineOrchestratorPanel() {
         </div>
 
         {Object.keys(byType).length > 0 && (
-          <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-3">
+          <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-3">
             <div className="text-sm font-medium text-[#00d4ff] mb-2">Workflows by Type</div>
             <div className="flex flex-wrap gap-2">
               {Object.entries(byType).map(([type, count]) => (
@@ -191,7 +191,7 @@ export default function AgentEngineOrchestratorPanel() {
         )}
 
         {Object.keys(byStatus).length > 0 && (
-          <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+          <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
             <div className="text-sm font-medium text-[#00d4ff] mb-2">Workflows by Status</div>
             <div className="flex flex-wrap gap-2">
               {Object.entries(byStatus).map(([status, count]) => (
@@ -212,7 +212,7 @@ export default function AgentEngineOrchestratorPanel() {
   const renderProjectsTab = () => (
     <div>
       {/* Create Project Form */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <div className="text-sm font-medium text-[#00d4ff] mb-3">Create New Project</div>
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
@@ -260,7 +260,7 @@ export default function AgentEngineOrchestratorPanel() {
       ) : (
         <div className="grid grid-cols-1 gap-3">
           {projects.map((p: any) => (
-            <div key={p.project_id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div key={p.project_id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-start justify-between mb-2">
                 <div>
                   <div className="text-white font-medium text-sm">{p.name}</div>
@@ -313,7 +313,7 @@ export default function AgentEngineOrchestratorPanel() {
     return (
       <div>
         {/* Create Game Form */}
-        <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+        <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
           <div className="text-sm font-medium text-[#00d4ff] mb-1">Create Game from Description</div>
           <div className="text-xs text-[#666] mb-3">
             Describe your game idea and let the AI orchestration pipeline generate a complete project with all workflow stages.
@@ -357,7 +357,7 @@ export default function AgentEngineOrchestratorPanel() {
         {createdGame && (
           <div className="space-y-4">
             {/* Project Card */}
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="text-white font-medium">{createdGame.name}</div>
@@ -400,7 +400,7 @@ export default function AgentEngineOrchestratorPanel() {
               });
 
               return (
-                <div key={wfId} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+                <div key={wfId} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
                   <div className="flex items-center justify-between mb-3">
                     <div>
                       <span className="text-sm text-white font-medium">{wf.name}</span>
@@ -447,7 +447,7 @@ export default function AgentEngineOrchestratorPanel() {
   const renderWorkflowsTab = () => (
     <div>
       {/* Project Selector */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Select Project</div>
         <div className="flex gap-2">
           <input type="text" value={wfProjectId} onChange={e => setWfProjectId(e.target.value)}
@@ -475,7 +475,7 @@ export default function AgentEngineOrchestratorPanel() {
           <div className="text-sm font-medium text-[#999] mb-2">{workflows.length} Workflow{workflows.length !== 1 ? 's' : ''}</div>
           <div className="grid grid-cols-1 gap-3">
             {workflows.map((w: any) => (
-              <div key={w.workflow_id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+              <div key={w.workflow_id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
                 <div className="flex items-start justify-between mb-2">
                   <div>
                     <div className="text-white text-sm font-medium">{w.name}</div>
@@ -526,7 +526,7 @@ export default function AgentEngineOrchestratorPanel() {
       )}
 
       {/* Add Feature */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-3">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-3">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Add Feature</div>
         <div className="grid grid-cols-1 gap-3">
           <div>
@@ -550,7 +550,7 @@ export default function AgentEngineOrchestratorPanel() {
       </div>
 
       {/* Tune Balance */}
-      <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+      <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
         <div className="text-sm font-medium text-[#00d4ff] mb-2">Tune Balance</div>
         <div className="grid grid-cols-2 gap-3">
           <div>
@@ -600,7 +600,7 @@ export default function AgentEngineOrchestratorPanel() {
     return (
       <div>
         {/* Execute Controls */}
-        <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+        <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
           <div className="text-sm font-medium text-[#00d4ff] mb-2">Execute Pipeline Workflow</div>
           <div className="flex gap-2">
             <input type="text" value={pipelineWorkflowId} onChange={e => setPipelineWorkflowId(e.target.value)}
@@ -617,7 +617,7 @@ export default function AgentEngineOrchestratorPanel() {
         {pipelineResult && (
           <>
             {/* Pipeline Overview */}
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
               <div className="flex items-center justify-between mb-3">
                 <div>
                   <div className="text-white text-sm font-medium">{pipelineResult.name}</div>
@@ -651,7 +651,7 @@ export default function AgentEngineOrchestratorPanel() {
                   </div>
                   <div className="grid grid-cols-1 gap-2">
                     {stageTasks.map((task: any) => (
-                      <div key={task.task_id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3 flex items-center justify-between">
+                      <div key={task.task_id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3 flex items-center justify-between">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2">
                             <span className="text-white text-xs font-medium truncate">{task.name}</span>
@@ -705,7 +705,7 @@ export default function AgentEngineOrchestratorPanel() {
     return (
       <div>
         {/* Metrics Query */}
-        <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+        <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
           <div className="text-sm font-medium text-[#00d4ff] mb-2">Pipeline Metrics</div>
           <div className="flex gap-2">
             <input type="text" value={metricsWorkflowId} onChange={e => setMetricsWorkflowId(e.target.value)}
@@ -720,7 +720,7 @@ export default function AgentEngineOrchestratorPanel() {
         {metrics && (
           <>
             {/* Progress Bar */}
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4 mb-4">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4 mb-4">
               <div className="text-sm font-medium text-[#ccc] mb-3">Task Completion</div>
               <div className="flex items-center gap-3 mb-2">
                 <div className="flex-1 h-3 bg-[#1a1a2e] rounded-full overflow-hidden">
@@ -743,25 +743,25 @@ export default function AgentEngineOrchestratorPanel() {
 
             {/* Metrics Cards */}
             <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+              <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
                 <div className="text-xs text-[#666] mb-1">Avg Task Duration</div>
                 <div className="text-xl font-bold text-[#00d4ff] font-mono">
                   {metrics.avg_task_duration_ms?.toLocaleString() ?? '-'}<span className="text-xs text-[#666] ml-1">ms</span>
                 </div>
               </div>
-              <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+              <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
                 <div className="text-xs text-[#666] mb-1">Total Duration</div>
                 <div className="text-xl font-bold text-[#00d4ff] font-mono">
                   {metrics.total_duration_ms?.toLocaleString() ?? '-'}<span className="text-xs text-[#666] ml-1">ms</span>
                 </div>
               </div>
-              <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+              <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
                 <div className="text-xs text-[#666] mb-1">Agent Calls</div>
                 <div className="text-xl font-bold text-purple-400 font-mono">
                   {metrics.agent_calls?.toLocaleString() ?? '-'}
                 </div>
               </div>
-              <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-4">
+              <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-4">
                 <div className="text-xs text-[#666] mb-1">Engine Calls</div>
                 <div className="text-xl font-bold text-emerald-400 font-mono">
                   {metrics.engine_calls?.toLocaleString() ?? '-'}
@@ -771,7 +771,7 @@ export default function AgentEngineOrchestratorPanel() {
 
             {/* Errors */}
             {metrics.errors && metrics.errors.length > 0 && (
-              <div className="bg-[#0f0f23] border border-red-500/30 rounded-lg p-4">
+              <div className="bg-[#0d0d0d] border border-red-500/30 rounded-lg p-4">
                 <div className="flex items-center gap-2 mb-2">
                   <i className="fa-solid fa-triangle-exclamation text-red-500 text-sm" />
                   <span className="text-sm font-medium text-red-400">Errors ({metrics.errors.length})</span>
@@ -809,7 +809,7 @@ export default function AgentEngineOrchestratorPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a] flex-wrap">
         {tabs.map(tab => (
           <button key={tab.id} onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5 ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium flex items-center gap-1.5 ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             <i className={`fa-solid ${tab.icon} text-xs`} />
             {tab.label}
           </button>

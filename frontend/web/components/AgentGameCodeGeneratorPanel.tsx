@@ -211,7 +211,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
               <div className="text-sm font-medium text-[#00d4ff] mb-3">By Language</div>
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(data.by_language).map(([lang, count]) => (
-                  <div key={lang} className="flex justify-between items-center bg-[#0f0f23] rounded px-3 py-2">
+                  <div key={lang} className="flex justify-between items-center bg-[#0d0d0d] rounded px-3 py-2">
                     <span className="text-[#ccc] text-xs capitalize">{lang}</span>
                     <span className="text-white text-xs font-mono">{count}</span>
                   </div>
@@ -225,7 +225,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
               <div className="text-sm font-medium text-[#00d4ff] mb-3">By Domain</div>
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(data.by_domain).map(([domain, count]) => (
-                  <div key={domain} className="flex justify-between items-center bg-[#0f0f23] rounded px-3 py-2">
+                  <div key={domain} className="flex justify-between items-center bg-[#0d0d0d] rounded px-3 py-2">
                     <span className="text-[#ccc] text-xs capitalize">{domain}</span>
                     <span className="text-white text-xs font-mono">{count}</span>
                   </div>
@@ -239,7 +239,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
               <div className="text-sm font-medium text-[#00d4ff] mb-3">By Status</div>
               <div className="grid grid-cols-2 gap-2">
                 {Object.entries(data.by_status).map(([status, count]) => (
-                  <div key={status} className="flex justify-between items-center bg-[#0f0f23] rounded px-3 py-2">
+                  <div key={status} className="flex justify-between items-center bg-[#0d0d0d] rounded px-3 py-2">
                     <span className="text-[#ccc] text-xs capitalize">{status}</span>
                     <span className="text-white text-xs font-mono">{count}</span>
                   </div>
@@ -261,31 +261,31 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Name</label>
-            <input type="text" value={newTemplateName} onChange={(e) => setNewTemplateName(e.target.value)} placeholder="player_controller" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={newTemplateName} onChange={(e) => setNewTemplateName(e.target.value)} placeholder="player_controller" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Language</label>
-            <select value={newTemplateLanguage} onChange={(e) => setNewTemplateLanguage(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={newTemplateLanguage} onChange={(e) => setNewTemplateLanguage(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
             </select>
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Domain</label>
-            <select value={newTemplateDomain} onChange={(e) => setNewTemplateDomain(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={newTemplateDomain} onChange={(e) => setNewTemplateDomain(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Parameters (comma-separated)</label>
-            <input type="text" value={newTemplateParams} onChange={(e) => setNewTemplateParams(e.target.value)} placeholder="speed, jump_height, gravity" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={newTemplateParams} onChange={(e) => setNewTemplateParams(e.target.value)} placeholder="speed, jump_height, gravity" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Template Code</label>
-            <textarea value={newTemplateCode} onChange={(e) => setNewTemplateCode(e.target.value)} placeholder="def {{name}}({{params}}):&#10;    pass" rows={5} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
+            <textarea value={newTemplateCode} onChange={(e) => setNewTemplateCode(e.target.value)} placeholder="def {{name}}({{params}}):&#10;    pass" rows={5} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm font-mono focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Description</label>
-            <textarea value={newTemplateDesc} onChange={(e) => setNewTemplateDesc(e.target.value)} placeholder="A reusable player controller template..." rows={2} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <textarea value={newTemplateDesc} onChange={(e) => setNewTemplateDesc(e.target.value)} placeholder="A reusable player controller template..." rows={2} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -316,11 +316,11 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
         <div className="flex items-center justify-between mb-3">
           <div className="text-sm font-medium text-[#00d4ff]">Templates ({filteredTemplates.length})</div>
           <div className="flex gap-2">
-            <select value={templateFilterDomain} onChange={(e) => setTemplateFilterDomain(e.target.value)} className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
+            <select value={templateFilterDomain} onChange={(e) => setTemplateFilterDomain(e.target.value)} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
               <option value="">All Domains</option>
               {DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
-            <select value={templateFilterLanguage} onChange={(e) => setTemplateFilterLanguage(e.target.value)} className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
+            <select value={templateFilterLanguage} onChange={(e) => setTemplateFilterLanguage(e.target.value)} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
               <option value="">All Languages</option>
               {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
             </select>
@@ -329,7 +329,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
         {filteredTemplates.length > 0 ? (
           <div className="space-y-2">
             {filteredTemplates.map((t) => (
-              <div key={t.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3">
+              <div key={t.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3">
                 <div className="flex items-center justify-between">
                   <span className="text-white text-sm font-medium">{t.name}</span>
                   <div className="flex gap-1">
@@ -355,17 +355,17 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Description</label>
-            <textarea value={genDescription} onChange={(e) => setGenDescription(e.target.value)} placeholder="Describe the code you want to generate...&#10;e.g., A 2D platformer player controller with double jump and wall slide" rows={4} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <textarea value={genDescription} onChange={(e) => setGenDescription(e.target.value)} placeholder="Describe the code you want to generate...&#10;e.g., A 2D platformer player controller with double jump and wall slide" rows={4} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Target Language</label>
-            <select value={genLanguage} onChange={(e) => setGenLanguage(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={genLanguage} onChange={(e) => setGenLanguage(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
             </select>
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Target Domain</label>
-            <select value={genDomain} onChange={(e) => setGenDomain(e.target.value)} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
+            <select value={genDomain} onChange={(e) => setGenDomain(e.target.value)} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none">
               {DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
           </div>
@@ -376,7 +376,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
                 <button
                   key={m}
                   onClick={() => setGenMode(m)}
-                  className={`px-4 py-2 rounded text-sm font-medium ${genMode === m ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] border border-[#2a2a4a]'}`}
+                  className={`px-4 py-2 rounded text-sm font-medium ${genMode === m ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] border border-[#2a2a4a]'}`}
                 >
                   {m.charAt(0).toUpperCase() + m.slice(1)}
                 </button>
@@ -408,20 +408,20 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
         <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
           <div className="text-sm font-medium text-[#00d4ff] mb-3">Generated Result</div>
           <div className="grid grid-cols-2 gap-2 mb-3">
-            <div className="bg-[#0f0f23] rounded px-3 py-2">
+            <div className="bg-[#0d0d0d] rounded px-3 py-2">
               <span className="text-[#999] text-xs">Language</span>
               <div className="text-white text-xs mt-0.5 capitalize">{genResult.language || genLanguage}</div>
             </div>
-            <div className="bg-[#0f0f23] rounded px-3 py-2">
+            <div className="bg-[#0d0d0d] rounded px-3 py-2">
               <span className="text-[#999] text-xs">Domain</span>
               <div className="text-white text-xs mt-0.5 capitalize">{genResult.domain || genDomain}</div>
             </div>
-            <div className="bg-[#0f0f23] rounded px-3 py-2">
+            <div className="bg-[#0d0d0d] rounded px-3 py-2">
               <span className="text-[#999] text-xs">Status</span>
               <div className="text-white text-xs mt-0.5 capitalize">{genResult.status || 'generated'}</div>
             </div>
             {genResult.metadata && (
-              <div className="bg-[#0f0f23] rounded px-3 py-2">
+              <div className="bg-[#0d0d0d] rounded px-3 py-2">
                 <span className="text-[#999] text-xs">Metadata</span>
                 <div className="text-white text-xs mt-0.5 font-mono">{JSON.stringify(genResult.metadata)}</div>
               </div>
@@ -431,11 +431,11 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
             <div className="mb-3">
               <span className="text-xs text-[#999]">Dependencies: </span>
               {genResult.dependencies.map((d: string, i: number) => (
-                <span key={i} className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded mr-1">{d}</span>
+                <span key={i} className="text-xs bg-[#0d0d0d] text-[#00d4ff] px-2 py-0.5 rounded mr-1">{d}</span>
               ))}
             </div>
           )}
-          <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg overflow-hidden">
+          <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg overflow-hidden">
             <div className="flex overflow-x-auto">
               <pre className="text-green-400 text-xs font-mono p-4 whitespace-pre-wrap w-full">
                 {(genResult.code || genResult.name || '// Generated code will appear here')
@@ -461,12 +461,12 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Code ID</label>
-            <input type="text" value={reviewCodeId} onChange={(e) => setReviewCodeId(e.target.value)} placeholder="gen_abc123" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={reviewCodeId} onChange={(e) => setReviewCodeId(e.target.value)} placeholder="gen_abc123" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div></div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Review Criteria (optional)</label>
-            <textarea value={reviewCriteria} onChange={(e) => setReviewCriteria(e.target.value)} placeholder="Check for: performance issues, security vulnerabilities, code style, edge cases..." rows={3} className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <textarea value={reviewCriteria} onChange={(e) => setReviewCriteria(e.target.value)} placeholder="Check for: performance issues, security vulnerabilities, code style, edge cases..." rows={3} className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
         </div>
         <button
@@ -492,7 +492,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
             <div className="flex items-center gap-3">
               <div className="text-3xl font-bold text-white">{reviewResult.quality_score}</div>
               <div className="text-[#999] text-sm">/ 100</div>
-              <div className="flex-1 bg-[#0f0f23] rounded-full h-2">
+              <div className="flex-1 bg-[#0d0d0d] rounded-full h-2">
                 <div
                   className="h-2 rounded-full"
                   style={{
@@ -508,7 +508,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
               <div className="text-sm font-medium text-[#ccc] mb-2">Comments</div>
               {reviewResult.reviewer_comments.map((c: string, i: number) => (
-                <div key={i} className="text-[#999] text-xs bg-[#0f0f23] rounded px-3 py-2 mb-1">{c}</div>
+                <div key={i} className="text-[#999] text-xs bg-[#0d0d0d] rounded px-3 py-2 mb-1">{c}</div>
               ))}
             </div>
           )}
@@ -517,7 +517,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
               <div className="text-sm font-medium text-red-400 mb-2">Issues Found ({reviewResult.issues_found.length})</div>
               {reviewResult.issues_found.map((issue: string, i: number) => (
-                <div key={i} className="text-red-300 text-xs bg-[#0f0f23] rounded px-3 py-2 mb-1 border-l-2 border-red-500">{issue}</div>
+                <div key={i} className="text-red-300 text-xs bg-[#0d0d0d] rounded px-3 py-2 mb-1 border-l-2 border-red-500">{issue}</div>
               ))}
             </div>
           )}
@@ -526,7 +526,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
             <div className="bg-[#1a1a2e] border border-[#2a2a4a] rounded-lg p-4">
               <div className="text-sm font-medium text-green-400 mb-2">Suggestions</div>
               {reviewResult.suggestions.map((s: string, i: number) => (
-                <div key={i} className="text-green-300 text-xs bg-[#0f0f23] rounded px-3 py-2 mb-1 border-l-2 border-green-500">{s}</div>
+                <div key={i} className="text-green-300 text-xs bg-[#0d0d0d] rounded px-3 py-2 mb-1 border-l-2 border-green-500">{s}</div>
               ))}
             </div>
           )}
@@ -542,15 +542,15 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
         <div className="grid grid-cols-2 gap-3">
           <div>
             <label className="text-xs text-[#999] mb-1 block">Bundle Name</label>
-            <input type="text" value={bundleName} onChange={(e) => setBundleName(e.target.value)} placeholder="my_game_bundle" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={bundleName} onChange={(e) => setBundleName(e.target.value)} placeholder="my_game_bundle" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div>
             <label className="text-xs text-[#999] mb-1 block">Entry Point</label>
-            <input type="text" value={bundleEntryPoint} onChange={(e) => setBundleEntryPoint(e.target.value)} placeholder="main.py" className="w-full bg-[#0f0f23] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
+            <input type="text" value={bundleEntryPoint} onChange={(e) => setBundleEntryPoint(e.target.value)} placeholder="main.py" className="w-full bg-[#0d0d0d] border border-[#2a2a4a] rounded px-3 py-2 text-white text-sm focus:border-[#00d4ff] focus:outline-none" />
           </div>
           <div className="col-span-2">
             <label className="text-xs text-[#999] mb-1 block">Select Codes to Bundle</label>
-            <div className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-2 max-h-48 overflow-auto">
+            <div className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-2 max-h-48 overflow-auto">
               {generatedCodes.length > 0 ? generatedCodes.map((g) => (
                 <label key={g.id} className="flex items-center gap-2 px-2 py-1.5 hover:bg-[#1a1a2e] rounded cursor-pointer">
                   <input
@@ -595,7 +595,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
           <div className="text-sm font-medium text-[#00d4ff] mb-3">Bundle Info</div>
           <div className="grid grid-cols-2 gap-3">
             {Object.entries(bundleResult).map(([key, value]) => (
-              <div key={key} className="bg-[#0f0f23] rounded px-3 py-2">
+              <div key={key} className="bg-[#0d0d0d] rounded px-3 py-2">
                 <span className="text-[#999] text-xs">{key.replace(/_/g, ' ')}</span>
                 <div className="text-white text-xs font-mono mt-0.5">
                   {typeof value === 'number' ? value.toLocaleString() : String(value)}
@@ -614,11 +614,11 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
         <div className="flex items-center justify-between mb-3">
           <div className="text-sm font-medium text-[#00d4ff]">Generated Code ({filteredGenerated.length})</div>
           <div className="flex gap-2">
-            <select value={genFilterDomain} onChange={(e) => setGenFilterDomain(e.target.value)} className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
+            <select value={genFilterDomain} onChange={(e) => setGenFilterDomain(e.target.value)} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
               <option value="">All Domains</option>
               {DOMAINS.map((d) => <option key={d} value={d}>{d}</option>)}
             </select>
-            <select value={genFilterLanguage} onChange={(e) => setGenFilterLanguage(e.target.value)} className="bg-[#0f0f23] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
+            <select value={genFilterLanguage} onChange={(e) => setGenFilterLanguage(e.target.value)} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded px-2 py-1 text-white text-xs">
               <option value="">All Languages</option>
               {LANGUAGES.map((l) => <option key={l} value={l}>{l}</option>)}
             </select>
@@ -627,7 +627,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
         {filteredGenerated.length > 0 ? (
           <div className="space-y-2">
             {filteredGenerated.map((g) => (
-              <div key={g.id} className="bg-[#0f0f23] border border-[#2a2a4a] rounded-lg p-3">
+              <div key={g.id} className="bg-[#0d0d0d] border border-[#2a2a4a] rounded-lg p-3">
                 <div className="flex items-center justify-between">
                   <button
                     onClick={async () => {
@@ -658,7 +658,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
                     {viewCodeDetail.description && (
                       <div className="text-[#999] text-xs mb-2">{viewCodeDetail.description}</div>
                     )}
-                    <div className="bg-[#0f0f23] rounded overflow-hidden">
+                    <div className="bg-[#0d0d0d] rounded overflow-hidden">
                       <pre className="text-green-400 text-xs font-mono p-3 whitespace-pre-wrap">
                         {(viewCodeDetail.code || '// Code content not available')
                           .split('\n')
@@ -674,7 +674,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
                       <div className="mt-2">
                         <span className="text-xs text-[#999]">Dependencies: </span>
                         {viewCodeDetail.dependencies.map((d: string, i: number) => (
-                          <span key={i} className="text-xs bg-[#0f0f23] text-[#00d4ff] px-2 py-0.5 rounded mr-1">{d}</span>
+                          <span key={i} className="text-xs bg-[#0d0d0d] text-[#00d4ff] px-2 py-0.5 rounded mr-1">{d}</span>
                         ))}
                       </div>
                     )}
@@ -697,7 +697,7 @@ const AgentGameCodeGeneratorPanel: React.FC = () => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}
+            className={`px-4 py-2 rounded text-sm font-medium ${activeTab === tab.id ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}
           >
             {tab.label}
           </button>

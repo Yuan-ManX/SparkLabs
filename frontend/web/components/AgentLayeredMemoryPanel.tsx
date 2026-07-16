@@ -329,7 +329,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
             onChange={e => setStoreContent(e.target.value)}
             style={{
               padding: '8px 10px', fontSize: 12,
-              backgroundColor: '#141428', color: '#e0e0e0',
+              backgroundColor: '#111', color: '#e0e0e0',
               border: '1px solid #333', borderRadius: 4,
               resize: 'vertical', minHeight: 60, outline: 'none',
               fontFamily: 'system-ui, sans-serif',
@@ -341,7 +341,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
               onChange={e => setStoreCategory(e.target.value)}
               style={{
                 padding: '6px 8px', fontSize: 11,
-                backgroundColor: '#141428', color: '#e0e0e0',
+                backgroundColor: '#111', color: '#e0e0e0',
                 border: '1px solid #333', borderRadius: 4, outline: 'none',
               }}
             >
@@ -352,7 +352,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
               onChange={e => setStorePriority(e.target.value)}
               style={{
                 padding: '6px 8px', fontSize: 11,
-                backgroundColor: '#141428', color: '#e0e0e0',
+                backgroundColor: '#111', color: '#e0e0e0',
                 border: '1px solid #333', borderRadius: 4, outline: 'none',
               }}
             >
@@ -363,7 +363,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
               onChange={e => setStoreSource(e.target.value)}
               style={{
                 padding: '6px 8px', fontSize: 11,
-                backgroundColor: '#141428', color: '#e0e0e0',
+                backgroundColor: '#111', color: '#e0e0e0',
                 border: '1px solid #333', borderRadius: 4, outline: 'none',
               }}
             >
@@ -377,7 +377,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
             onChange={e => setStoreMetadata(e.target.value)}
             style={{
               padding: '6px 8px', fontSize: 11,
-              backgroundColor: '#141428', color: '#e0e0e0',
+              backgroundColor: '#111', color: '#e0e0e0',
               border: '1px solid #333', borderRadius: 4, outline: 'none',
             }}
           />
@@ -503,28 +503,28 @@ const AgentLayeredMemoryPanel: React.FC = () => {
               }}>
                 <div style={{
                   textAlign: 'center', padding: '8px 10px',
-                  backgroundColor: '#141428', borderRadius: 4,
+                  backgroundColor: '#111', borderRadius: 4,
                 }}>
                   <div style={{ fontSize: 20, fontWeight: 700, color: '#6c5ce7' }}>{stats.total_core_memories}</div>
                   <div style={{ fontSize: 10, color: '#888' }}>Core Memories</div>
                 </div>
                 <div style={{
                   textAlign: 'center', padding: '8px 10px',
-                  backgroundColor: '#141428', borderRadius: 4,
+                  backgroundColor: '#111', borderRadius: 4,
                 }}>
                   <div style={{ fontSize: 20, fontWeight: 700, color: '#00b894' }}>{stats.total_session_memories}</div>
                   <div style={{ fontSize: 10, color: '#888' }}>Session Memories</div>
                 </div>
                 <div style={{
                   textAlign: 'center', padding: '8px 10px',
-                  backgroundColor: '#141428', borderRadius: 4,
+                  backgroundColor: '#111', borderRadius: 4,
                 }}>
                   <div style={{ fontSize: 20, fontWeight: 700, color: '#a29bfe' }}>{stats.total_memories}</div>
                   <div style={{ fontSize: 10, color: '#888' }}>Total Memories</div>
                 </div>
                 <div style={{
                   textAlign: 'center', padding: '8px 10px',
-                  backgroundColor: '#141428', borderRadius: 4,
+                  backgroundColor: '#111', borderRadius: 4,
                 }}>
                   <div style={{ fontSize: 20, fontWeight: 700, color: '#fdcb6e' }}>{stats.consolidation_count}</div>
                   <div style={{ fontSize: 10, color: '#888' }}>Consolidations</div>
@@ -625,7 +625,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
                     onKeyDown={e => e.key === 'Enter' && handleSearch()}
                     style={{
                       flex: 1, padding: '8px 10px', fontSize: 12,
-                      backgroundColor: '#141428', color: '#e0e0e0',
+                      backgroundColor: '#111', color: '#e0e0e0',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}
                   />
@@ -645,7 +645,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
                     onChange={e => setSearchLayers(e.target.value)}
                     style={{
                       width: 180, padding: '6px 8px', fontSize: 11,
-                      backgroundColor: '#141428', color: '#e0e0e0',
+                      backgroundColor: '#111', color: '#e0e0e0',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}
                   />
@@ -658,7 +658,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
                     max="100"
                     style={{
                       width: 80, padding: '6px 8px', fontSize: 11,
-                      backgroundColor: '#141428', color: '#e0e0e0',
+                      backgroundColor: '#111', color: '#e0e0e0',
                       border: '1px solid #333', borderRadius: 4, outline: 'none',
                     }}
                   />
@@ -699,7 +699,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
                     </span>
                   </div>
                   <div style={{
-                    padding: '6px 8px', backgroundColor: '#141428', borderRadius: 3,
+                    padding: '6px 8px', backgroundColor: '#111', borderRadius: 3,
                     fontSize: 11, color: '#aaa', marginBottom: 4,
                   }}>
                     {result.snippet}
@@ -758,28 +758,28 @@ const AgentLayeredMemoryPanel: React.FC = () => {
                 <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 8 }}>
                   <div style={{
                     textAlign: 'center', padding: '8px 10px',
-                    backgroundColor: '#141428', borderRadius: 4,
+                    backgroundColor: '#111', borderRadius: 4,
                   }}>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#fdcb6e' }}>{consolidateResult.consolidated_from}</div>
                     <div style={{ fontSize: 10, color: '#888' }}>From (session)</div>
                   </div>
                   <div style={{
                     textAlign: 'center', padding: '8px 10px',
-                    backgroundColor: '#141428', borderRadius: 4,
+                    backgroundColor: '#111', borderRadius: 4,
                   }}>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#6c5ce7' }}>{consolidateResult.consolidated_to}</div>
                     <div style={{ fontSize: 10, color: '#888' }}>To (core)</div>
                   </div>
                   <div style={{
                     textAlign: 'center', padding: '8px 10px',
-                    backgroundColor: '#141428', borderRadius: 4,
+                    backgroundColor: '#111', borderRadius: 4,
                   }}>
                     <div style={{ fontSize: 16, fontWeight: 700, color: '#ff6b6b' }}>{consolidateResult.removed}</div>
                     <div style={{ fontSize: 10, color: '#888' }}>Removed</div>
                   </div>
                   <div style={{
                     textAlign: 'center', padding: '8px 10px',
-                    backgroundColor: '#141428', borderRadius: 4,
+                    backgroundColor: '#111', borderRadius: 4,
                   }}>
                     <div style={{ fontSize: 11, fontWeight: 600, color: '#aaa' }}>
                       {new Date(consolidateResult.timestamp).toLocaleTimeString()}
@@ -821,7 +821,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
                   max="10000"
                   style={{
                     width: 100, padding: '6px 8px', fontSize: 11,
-                    backgroundColor: '#141428', color: '#e0e0e0',
+                    backgroundColor: '#111', color: '#e0e0e0',
                     border: '1px solid #333', borderRadius: 4, outline: 'none',
                   }}
                 />
@@ -856,7 +856,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
                     Context Text ({contextResult.entries.length} entries)
                   </div>
                   <div style={{
-                    padding: '8px 10px', backgroundColor: '#141428', borderRadius: 4,
+                    padding: '8px 10px', backgroundColor: '#111', borderRadius: 4,
                     fontFamily: 'monospace', fontSize: 11, color: '#ccc',
                     maxHeight: 150, overflow: 'auto', whiteSpace: 'pre-wrap',
                     lineHeight: 1.5,
@@ -915,7 +915,7 @@ const AgentLayeredMemoryPanel: React.FC = () => {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

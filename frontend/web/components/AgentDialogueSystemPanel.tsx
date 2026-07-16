@@ -86,14 +86,14 @@ export default function AgentDialogueSystemPanel() {
       <div className="flex gap-1 p-3 border-b border-[#2a2a4a]">
         {tabs.map(t => (
           <button key={t} onClick={() => setActiveTab(t)}
-            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0f0f23] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
+            className={`px-4 py-2 rounded text-sm font-medium transition-colors ${activeTab === t ? 'bg-[#00d4ff] text-black' : 'bg-[#0d0d0d] text-[#ccc] hover:bg-[#2a2a4a]'}`}>
             {t.charAt(0).toUpperCase()+t.slice(1)}
           </button>
         ))}
       </div>
 
       {message && (
-        <div className={`mx-4 mt-2 p-2 rounded text-sm border ${loading ? 'bg-[#0f0f23] border-[#00d4ff] text-[#00d4ff]' : 'bg-[#0f0f23] border-[#00ff88] text-[#00ff88]'}`}>
+        <div className={`mx-4 mt-2 p-2 rounded text-sm border ${loading ? 'bg-[#0d0d0d] border-[#00d4ff] text-[#00d4ff]' : 'bg-[#0d0d0d] border-[#00ff88] text-[#00ff88]'}`}>
           {message}
         </div>
       )}
@@ -111,13 +111,13 @@ export default function AgentDialogueSystemPanel() {
                 { label: 'Total Sessions', value: stats.total_sessions, color: 'text-amber-300' },
                 { label: 'Active Conversations', value: stats.active_conversations, color: 'text-pink-300' },
               ].map(s => (
-                <div key={s.label} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a]">
+                <div key={s.label} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a]">
                   <h3 className="text-xs text-[#999]">{s.label}</h3>
                   <p className={`text-2xl font-bold ${s.color}`}>{s.value||0}</p>
                 </div>
               ))}
             </div>
-            <pre className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
+            <pre className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] text-xs text-[#999] overflow-auto">{JSON.stringify(stats, null, 2)}</pre>
           </div>
         )}
 
@@ -125,7 +125,7 @@ export default function AgentDialogueSystemPanel() {
         {activeTab === 'npcs' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Create NPC</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <div className="grid grid-cols-2 gap-3">
                 <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="NPC Name" value={npcName} onChange={e => setNpcName(e.target.value)} />
                 <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="Role (e.g., Merchant)" value={npcRole} onChange={e => setNpcRole(e.target.value)} />
@@ -152,7 +152,7 @@ export default function AgentDialogueSystemPanel() {
             <h3 className="text-md font-bold text-[#ccc] mt-6">NPC List</h3>
             <div className="grid gap-3">
               {npcList.map((npc: any) => (
-                <div key={npc.npc_id || npc.id} className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
+                <div key={npc.npc_id || npc.id} className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] hover:border-[#00d4ff] transition-colors">
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="text-sm font-semibold text-white">{npc.name}</h4>
                     <span className={`text-[10px] px-2 py-0.5 rounded border ${styleColors[npc.style] || 'bg-\[#f5f5f5\]0/20 text-[#ccc] border-\[#f5f5f5\]0/30'}`}>{npc.style}</span>
@@ -172,7 +172,7 @@ export default function AgentDialogueSystemPanel() {
           <div className="space-y-6">
             <div>
               <h2 className="text-lg font-bold text-[#00d4ff] mb-3">Create Dialogue Tree</h2>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
                 <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="NPC ID" value={treeNpcId} onChange={e => setTreeNpcId(e.target.value)} />
                 <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="Tree Title" value={treeTitle} onChange={e => setTreeTitle(e.target.value)} />
                 <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-500 outline-none focus:border-[#00d4ff] resize-none" rows={4} placeholder="Context JSON (e.g. {&quot;location&quot;: &quot;tavern&quot;})" value={treeContext} onChange={e => setTreeContext(e.target.value)} />
@@ -191,7 +191,7 @@ export default function AgentDialogueSystemPanel() {
 
             <div>
               <h2 className="text-lg font-bold text-[#00ff88] mb-3">Generate Dialogue</h2>
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
                 <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00ff88]" placeholder="NPC ID" value={genNpcId} onChange={e => setGenNpcId(e.target.value)} />
                 <textarea className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white font-mono placeholder-gray-500 outline-none focus:border-[#00ff88] resize-none" rows={3} placeholder="Context JSON" value={genContext} onChange={e => setGenContext(e.target.value)} />
                 <select className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white outline-none focus:border-[#00ff88]" value={genTone} onChange={e => setGenTone(e.target.value)}>
@@ -211,7 +211,7 @@ export default function AgentDialogueSystemPanel() {
             </div>
 
             {result?.dialogue && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#00ff88]">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#00ff88]">
                 <h3 className="text-sm font-bold text-[#00ff88] mb-2">Generated Dialogue</h3>
                 <pre className="text-xs text-[#ccc] whitespace-pre-wrap font-sans">{typeof result.dialogue === 'string' ? result.dialogue : JSON.stringify(result.dialogue, null, 2)}</pre>
               </div>
@@ -220,7 +220,7 @@ export default function AgentDialogueSystemPanel() {
             <h3 className="text-md font-bold text-[#ccc] mt-4">Dialogue Trees</h3>
             <div className="grid gap-3">
               {treeList.map((tree: any) => (
-                <div key={tree.tree_id || tree.id} className="bg-[#0f0f23] p-3 rounded border border-[#2a2a4a]">
+                <div key={tree.tree_id || tree.id} className="bg-[#0d0d0d] p-3 rounded border border-[#2a2a4a]">
                   <h4 className="text-sm font-semibold text-white">{tree.title}</h4>
                   <p className="text-xs text-[#666]">NPC: {tree.npc_id} | Nodes: {tree.node_count||0}</p>
                 </div>
@@ -234,7 +234,7 @@ export default function AgentDialogueSystemPanel() {
         {activeTab === 'conversation' && (
           <div className="space-y-4">
             <h2 className="text-lg font-bold text-[#00d4ff]">Start Conversation</h2>
-            <div className="bg-[#0f0f23] p-4 rounded border border-[#2a2a4a] space-y-3">
+            <div className="bg-[#0d0d0d] p-4 rounded border border-[#2a2a4a] space-y-3">
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="Player ID" value={convPlayerId} onChange={e => setConvPlayerId(e.target.value)} />
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="NPC ID" value={convNpcId} onChange={e => setConvNpcId(e.target.value)} />
               <input className="w-full bg-[#1a1a2e] border border-[#2a2a4a] rounded px-3 py-2 text-sm text-white placeholder-gray-500 outline-none focus:border-[#00d4ff]" placeholder="Tree ID" value={convTreeId} onChange={e => setConvTreeId(e.target.value)} />
@@ -247,7 +247,7 @@ export default function AgentDialogueSystemPanel() {
             </div>
 
             {result && activeTab === 'conversation' && (
-              <div className="bg-[#0f0f23] p-4 rounded border border-[#00d4ff] space-y-2">
+              <div className="bg-[#0d0d0d] p-4 rounded border border-[#00d4ff] space-y-2">
                 <h3 className="text-sm font-bold text-[#00d4ff]">Session Details</h3>
                 <div className="grid grid-cols-2 gap-3 text-xs">
                   <div><span className="text-[#666]">Session ID:</span> <span className="text-[#ccc]">{result.session_id}</span></div>

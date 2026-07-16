@@ -426,7 +426,7 @@ export default function AgentEmergentStorytellerPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -738,14 +738,14 @@ export default function AgentEmergentStorytellerPanel() {
                   {createdBeat.involved_entities.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                       {createdBeat.involved_entities.map(e => (
-                        <span key={e} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#a29bfe' }}>{e}</span>
+                        <span key={e} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#a29bfe' }}>{e}</span>
                       ))}
                     </div>
                   )}
                   {createdBeat.themes.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                       {createdBeat.themes.map(t => (
-                        <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#e17055' }}>#{t}</span>
+                        <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#e17055' }}>#{t}</span>
                       ))}
                     </div>
                   )}
@@ -888,7 +888,7 @@ export default function AgentEmergentStorytellerPanel() {
                   {createdArc.themes.length > 0 && (
                     <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                       {createdArc.themes.map(t => (
-                        <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#e17055' }}>#{t}</span>
+                        <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#e17055' }}>#{t}</span>
                       ))}
                     </div>
                   )}
@@ -1037,7 +1037,7 @@ export default function AgentEmergentStorytellerPanel() {
                       {arc.themes.length > 0 && (
                         <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                           {arc.themes.map(t => (
-                            <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#141428', color: '#e17055' }}>#{t}</span>
+                            <span key={t} style={{ fontSize: 8, padding: '1px 6px', borderRadius: 3, backgroundColor: '#111', color: '#e17055' }}>#{t}</span>
                           ))}
                         </div>
                       )}
@@ -1149,7 +1149,7 @@ export default function AgentEmergentStorytellerPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

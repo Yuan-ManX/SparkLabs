@@ -341,7 +341,7 @@ export default function AgentExperienceMemoryPanel() {
 
   const darkInputStyle: React.CSSProperties = {
     width: '100%', padding: '6px 10px', fontSize: 12,
-    backgroundColor: '#141428', color: '#ccc',
+    backgroundColor: '#111', color: '#ccc',
     border: '1px solid #333', borderRadius: 4, boxSizing: 'border-box', outline: 'none',
   };
 
@@ -592,7 +592,7 @@ export default function AgentExperienceMemoryPanel() {
                       {mem.tags && mem.tags.length > 0 && (
                         <div style={{ display: 'flex', gap: 4, marginTop: 4, flexWrap: 'wrap' }}>
                           {mem.tags.map((tag: string, j: number) => (
-                            <span key={j} style={{ fontSize: 9, padding: '1px 6px', backgroundColor: '#0f3460', borderRadius: 3, color: '#888' }}>{tag}</span>
+                            <span key={j} style={{ fontSize: 9, padding: '1px 6px', backgroundColor: '#1e1e1e', borderRadius: 3, color: '#888' }}>{tag}</span>
                           ))}
                         </div>
                       )}
@@ -793,7 +793,7 @@ export default function AgentExperienceMemoryPanel() {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -153,7 +153,7 @@ const AdaptiveRenderingPanel: React.FC = () => {
 
   return (
     <div className="h-full flex flex-col bg-[#0a0a1a] text-\[#ddd\] overflow-hidden">
-      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a3e] bg-[#0f0f2a]">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1a1a1a] bg-[#0f0f2a]">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-green-500 to-teal-600 flex items-center justify-center text-sm font-bold">
             AR
@@ -186,7 +186,7 @@ const AdaptiveRenderingPanel: React.FC = () => {
         </div>
       )}
 
-      <div className="flex border-b border-[#1a1a3e]">
+      <div className="flex border-b border-[#1a1a1a]">
         {(['config', 'stats', 'presets'] as const).map((tab) => (
           <button
             key={tab}

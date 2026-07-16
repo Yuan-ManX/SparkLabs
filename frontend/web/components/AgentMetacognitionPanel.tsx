@@ -369,7 +369,7 @@ const AgentMetacognitionPanel: React.FC = () => {
           <span style={{ color: '#aaa' }}>{label}</span>
           <span style={{ color: '#ccc', fontWeight: 600 }}>{unit === '%' ? `${clampedPct.toFixed(1)}${unit}` : `${value}${unit}`}</span>
         </div>
-        <div style={{ height: 6, backgroundColor: '#141428', borderRadius: 3 }}>
+        <div style={{ height: 6, backgroundColor: '#111', borderRadius: 3 }}>
           <div style={{
             height: '100%', width: `${clampedPct}%`,
             backgroundColor: barColor, borderRadius: 3,
@@ -454,7 +454,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             backgroundColor: activeTab === tab.key ? '#16213e' : 'transparent',
             color: activeTab === tab.key ? '#e0e0e0' : '#888',
             border: 'none',
-            borderBottom: activeTab === tab.key ? '2px solid #0f3460' : '2px solid transparent',
+            borderBottom: activeTab === tab.key ? '2px solid #1e1e1e' : '2px solid transparent',
             cursor: 'pointer',
           }}>
             {tab.icon} {tab.label}
@@ -470,7 +470,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {/* Assess Form */}
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#74b9ff' }}>
                 Assess New Confidence
@@ -486,7 +486,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                     style={{
                       width: '100%', padding: '6px 8px', fontSize: 12,
                       backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                      border: '1px solid #0f3460', borderRadius: 4,
+                      border: '1px solid #1e1e1e', borderRadius: 4,
                       boxSizing: 'border-box',
                     }}
                   />
@@ -538,7 +538,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleAssessConfidence} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#74b9ff',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#74b9ff',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -555,7 +555,7 @@ const AgentMetacognitionPanel: React.FC = () => {
               return (
                 <div key={profile.id} style={{
                   padding: 12, backgroundColor: '#16213e', borderRadius: 8,
-                  border: '1px solid #0f3460',
+                  border: '1px solid #1e1e1e',
                   borderLeft: `3px solid ${scoreColor}`,
                 }}>
                   <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
@@ -605,7 +605,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {profiles.length === 0 && (
               <div style={{
                 textAlign: 'center', padding: 40, color: '#555',
-                backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460',
+                backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e',
               }}>
                 <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>{'\uD83C\uDFAF'}</span>
                 No confidence profiles assessed yet
@@ -621,7 +621,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {cognitiveSnapshot && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 12 }}>
                   <div style={{ fontWeight: 600, fontSize: 13, color: '#aaa' }}>Current Cognitive State</div>
@@ -660,7 +660,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {/* Update Cognitive Load Form */}
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#a29bfe' }}>
                 Update Cognitive Load
@@ -675,7 +675,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                     style={{
                       width: '100%', padding: '6px 8px', fontSize: 12,
                       backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                      border: '1px solid #0f3460', borderRadius: 4,
+                      border: '1px solid #1e1e1e', borderRadius: 4,
                       boxSizing: 'border-box',
                     }}
                   />
@@ -689,7 +689,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                     style={{
                       width: '100%', padding: '6px 8px', fontSize: 12,
                       backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                      border: '1px solid #0f3460', borderRadius: 4,
+                      border: '1px solid #1e1e1e', borderRadius: 4,
                       boxSizing: 'border-box',
                     }}
                   />
@@ -714,7 +714,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleUpdateCognitiveLoad} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#a29bfe',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#a29bfe',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -730,7 +730,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {/* Log Outcome Form */}
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#6bcb77' }}>
                 Log Outcome
@@ -747,7 +747,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                       style={{
                         width: '100%', padding: '6px 8px', fontSize: 12,
                         backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4,
+                        border: '1px solid #1e1e1e', borderRadius: 4,
                         boxSizing: 'border-box',
                       }}
                     />
@@ -762,7 +762,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                       style={{
                         width: '100%', padding: '6px 8px', fontSize: 12,
                         backgroundColor: '#1a1a2e', color: '#e0e0e0',
-                        border: '1px solid #0f3460', borderRadius: 4,
+                        border: '1px solid #1e1e1e', borderRadius: 4,
                         boxSizing: 'border-box',
                       }}
                     />
@@ -776,7 +776,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                       padding: '6px 16px', fontSize: 12, fontWeight: 600,
                       backgroundColor: outcomeForm.was_correct ? '#1a3a1a' : '#1a1a2e',
                       color: outcomeForm.was_correct ? '#6bcb77' : '#555',
-                      border: `1px solid ${outcomeForm.was_correct ? '#2d5a2d' : '#0f3460'}`,
+                      border: `1px solid ${outcomeForm.was_correct ? '#2d5a2d' : '#1e1e1e'}`,
                       borderRadius: 4, cursor: 'pointer',
                     }}
                   >
@@ -788,7 +788,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                       padding: '6px 16px', fontSize: 12, fontWeight: 600,
                       backgroundColor: !outcomeForm.was_correct ? '#3a1a1a' : '#1a1a2e',
                       color: !outcomeForm.was_correct ? '#ff6b6b' : '#555',
-                      border: `1px solid ${!outcomeForm.was_correct ? '#5a2d2d' : '#0f3460'}`,
+                      border: `1px solid ${!outcomeForm.was_correct ? '#5a2d2d' : '#1e1e1e'}`,
                       borderRadius: 4, cursor: 'pointer',
                     }}
                   >
@@ -797,7 +797,7 @@ const AgentMetacognitionPanel: React.FC = () => {
                 </div>
               </div>
               <button onClick={handleLogOutcome} disabled={loading} style={{
-                padding: '8px 18px', backgroundColor: '#0f3460', color: '#6bcb77',
+                padding: '8px 18px', backgroundColor: '#1e1e1e', color: '#6bcb77',
                 border: '1px solid #1a5276', borderRadius: 4, cursor: loading ? 'not-allowed' : 'pointer',
                 fontSize: 12, fontWeight: 600, opacity: loading ? 0.6 : 1,
               }}>
@@ -812,7 +812,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {outcomeHistory.map(entry => (
               <div key={entry.id} style={{
                 padding: 12, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
                 borderLeft: `3px solid ${entry.was_correct ? '#6bcb77' : '#ff6b6b'}`,
                 display: 'flex', justifyContent: 'space-between', alignItems: 'center',
               }}>
@@ -837,7 +837,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {outcomeHistory.length === 0 && (
               <div style={{
                 textAlign: 'center', padding: 40, color: '#555',
-                backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460',
+                backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e',
               }}>
                 <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>{'\uD83D\uDCCB'}</span>
                 No outcomes logged yet
@@ -852,7 +852,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {/* Overall Status Card */}
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 12, color: '#aaa' }}>Overall Metacognition Status</div>
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10 }}>
@@ -901,7 +901,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {/* Subsystem Health */}
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Subsystem Health</div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: 8 }}>
@@ -942,7 +942,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {metacognitionStatus.calibration_curve && metacognitionStatus.calibration_curve.length > 0 && (
               <div style={{
                 padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-                border: '1px solid #0f3460',
+                border: '1px solid #1e1e1e',
               }}>
                 <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Calibration Curve</div>
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8, height: 120, paddingBottom: 20 }}>
@@ -977,7 +977,7 @@ const AgentMetacognitionPanel: React.FC = () => {
             {/* Resource Summary */}
             <div style={{
               padding: 14, backgroundColor: '#16213e', borderRadius: 8,
-              border: '1px solid #0f3460',
+              border: '1px solid #1e1e1e',
             }}>
               <div style={{ fontWeight: 600, fontSize: 13, marginBottom: 10, color: '#aaa' }}>Resource Overview</div>
               {renderProgressBar('Memory Pressure', metacognitionStatus.memory_pressure)}
@@ -989,7 +989,7 @@ const AgentMetacognitionPanel: React.FC = () => {
         {activeTab === 'status' && !metacognitionStatus && (
           <div style={{
             textAlign: 'center', padding: 40, color: '#555',
-            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #0f3460',
+            backgroundColor: '#16213e', borderRadius: 8, border: '1px solid #1e1e1e',
           }}>
             <span style={{ fontSize: 40, opacity: 0.3, display: 'block', marginBottom: 10 }}>{'\u2699\uFE0F'}</span>
             Loading system status...
@@ -1000,7 +1000,7 @@ const AgentMetacognitionPanel: React.FC = () => {
       {/* Footer */}
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>

@@ -264,7 +264,7 @@ const AgentContextCompressorPanel: React.FC = () => {
   return (
     <div style={{
       display: 'flex', flexDirection: 'column', height: '100%',
-      backgroundColor: '#1a1a2e', color: '#e0e0e0',
+      backgroundColor: '#1a1a1a', color: '#e0e0e0',
       fontFamily: 'system-ui, sans-serif', fontSize: 13,
     }}>
       <div style={{
@@ -391,7 +391,7 @@ const AgentContextCompressorPanel: React.FC = () => {
                     <span style={{ color: '#aaa' }}>Used: {budget.used_tokens.toLocaleString()}</span>
                     <span style={{ color: '#888' }}>Available: {budget.available_tokens.toLocaleString()}</span>
                   </div>
-                  <div style={{ height: 8, backgroundColor: '#141428', borderRadius: 4, overflow: 'hidden', marginBottom: 6 }}>
+                  <div style={{ height: 8, backgroundColor: '#111', borderRadius: 4, overflow: 'hidden', marginBottom: 6 }}>
                     <div style={{
                       height: '100%', width: `${budgetPct}%`,
                       backgroundColor: budgetPct > 80 ? '#ff6b6b' : budgetPct > 50 ? '#fdcb6e' : '#6bcb77',
@@ -491,7 +491,7 @@ const AgentContextCompressorPanel: React.FC = () => {
 
       <div style={{
         padding: '6px 12px', borderTop: '1px solid #2a2a3e',
-        backgroundColor: '#141428', display: 'flex',
+        backgroundColor: '#111', display: 'flex',
         alignItems: 'center', justifyContent: 'space-between',
         fontSize: 10, color: '#666',
       }}>
