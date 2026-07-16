@@ -7,6 +7,14 @@ across a diverse catalog of model providers spanning text LLMs, multimodal
 models, image/video/audio/3D generation, embeddings, and open-source models
 served via Ollama.
 
+The catalog covers major hosted LLMs (OpenAI, Anthropic, Google, Meta,
+Mistral, Cohere, DeepSeek, Qwen, xAI, Perplexity, AI21), fast-inference
+platforms (Groq, Cerebras, Fireworks, Together, NVIDIA NIM, DeepInfra),
+cloud gateways (Amazon Bedrock, Azure OpenAI, OpenRouter), regional model
+providers (Zhipu, Moonshot, MiniMax, Doubao, ERNIE, StepFun, Lambda), and
+specialized speech and media providers (Replicate, AssemblyAI, Deepgram,
+PlayHT, Cartesia) for speech-to-text and text-to-speech pipelines.
+
 Architecture:
   LLMRouter (singleton)
     |-- ProviderRegistry   (register/unregister model providers)
@@ -1381,23 +1389,68 @@ class LLMRouter:
     ) -> ModelResponse:
         """Dispatch a request to the real provider endpoint.
 
-        This is a thin integration layer. In production it would delegate to
-        the provider's SDK; here it raises NotImplementedError when no SDK
-        adapter is wired so the caller can fall back to simulation.
+        Uses the provider_dispatcher module to make actual API calls.
+        Falls back to simulation when the dispatcher cannot fulfill the request.
         """
         key_entry = self._get_api_key_for_provider(provider_id)
         if key_entry is None or not key_entry.key_value:
-            raise RuntimeError(
-                f"No API key configured for provider {provider_id}; "
-                "enable simulation mode or configure a key"
+            if provider_id not in ("ollama",):
+                # Fall back to simulation when no API key is configured
+                # so that multimodal endpoints always return a usable response
+                return self._simulate_response(
+                    request, provider_id, model_id, fallback_used
+                )
+            key_value = ""
+        else:
+            key_value = key_entry.key_value
+            key_entry.use_count += 1
+            key_entry.last_used = time.time()
+
+        # Resolve base URL for the provider
+        base_url = self._get_base_url_for_provider(provider_id)
+
+        # Determine task type string
+        task_type_str = request.task_type.value if hasattr(request.task_type, 'value') else str(request.task_type)
+
+        try:
+            from sparkai.agent.provider_dispatcher import dispatch as _dispatch
+            result = _dispatch(
+                provider_id=provider_id,
+                model_id=model_id,
+                api_key=key_value,
+                base_url=base_url,
+                prompt=request.prompt,
+                task_type=task_type_str,
+                images=getattr(request, 'images', None),
+                system_prompt=getattr(request, 'system_prompt', None),
+                temperature=getattr(request, 'temperature', 0.7),
+                max_tokens=getattr(request, 'max_tokens', 2048),
             )
-        # Mark key usage
-        key_entry.use_count += 1
-        key_entry.last_used = time.time()
-        # When a real SDK adapter is available, dispatch here. For now we
-        # fall through to a simulated response so the router is usable
-        # end-to-end during development.
-        return self._simulate_response(request, provider_id, model_id, fallback_used)
+        except Exception as exc:
+            logger.warning("Dispatcher error for %s/%s: %s", provider_id, model_id, exc)
+            return self._simulate_response(request, provider_id, model_id, fallback_used)
+
+        if not result.get("success", False):
+            logger.warning("Dispatch failed for %s/%s: %s", provider_id, model_id, result.get("error"))
+            raise RuntimeError(result.get("error", "Unknown dispatch error"))
+
+        # Convert dict to ModelResponse
+        response = ModelResponse(
+            request_id=result.get("request_id", request.request_id),
+            provider_id=provider_id,
+            model_id=model_id,
+            content=result.get("content", ""),
+            content_urls=result.get("content_urls", []),
+            latency_ms=result.get("latency_ms", 0.0),
+            fallback_used=fallback_used,
+            error=None,
+            simulated=False,
+            metadata={
+                "content_type": result.get("content_type", "text"),
+                "usage": result.get("usage", {}),
+            },
+        )
+        return response
 
     # ------------------------------------------------------------------
     # Simulation
@@ -1439,11 +1492,31 @@ class LLMRouter:
         )
         cap = self._models.get(model_id, (None, None))[1]
         cost = self._compute_cost(cap, input_tokens, output_tokens, request) if cap else 0.0
+
+        # Extract content URLs for multimodal task types so the frontend
+        # can display simulated images, audio, video, and 3D results.
+        content_urls: List[str] = []
+        if request.task_type in (
+            TaskType.ASSET_IMAGE,
+            TaskType.ASSET_VIDEO,
+            TaskType.ASSET_3D,
+            TaskType.ASSET_AUDIO,
+            TaskType.MUSIC_GEN,
+            TaskType.VOICE_ACTING,
+        ):
+            for line in content.split("\n"):
+                stripped = line.strip()
+                if stripped.startswith("url:"):
+                    url = stripped[4:].strip()
+                    if url:
+                        content_urls.append(url)
+
         return ModelResponse(
             request_id=request.request_id,
             provider_id=provider_id,
             model_id=model_id,
             content=content,
+            content_urls=content_urls,
             input_tokens=input_tokens,
             output_tokens=output_tokens,
             latency_ms=round(latency, 2),
@@ -1554,6 +1627,22 @@ class LLMRouter:
             logger.info("API key stored for provider %s", provider_id)
             return entry.key_id
 
+    def set_provider_base_url(self, provider_id: str, base_url: str) -> bool:
+        """Update the base URL for a provider. Returns True on success."""
+        with self._lock:
+            provider = self._providers.get(provider_id)
+            if provider is None:
+                logger.warning(
+                    "Cannot set base URL for unknown provider %s", provider_id
+                )
+                return False
+            if provider.endpoints:
+                provider.endpoints[0].url = base_url
+            else:
+                provider.endpoints.append(ModelEndpoint(url=base_url))
+            logger.info("Base URL updated for provider %s: %s", provider_id, base_url)
+            return True
+
     def get_api_key_status(self, provider_id: str) -> Dict[str, Any]:
         """Return masked status of the API key for a provider."""
         with self._lock:
@@ -1591,6 +1680,82 @@ class LLMRouter:
             if entry.provider_id == provider_id:
                 return entry
         return None
+
+    def _get_base_url_for_provider(self, provider_id: str) -> str:
+        """Return the configured base URL for a provider, or a sensible default."""
+        with self._lock:
+            provider = self._providers.get(provider_id)
+            if provider and provider.endpoints and provider.endpoints[0].url:
+                return provider.endpoints[0].url
+        # Fallback defaults for well-known providers
+        defaults = {
+            "openai": "https://api.openai.com/v1",
+            "anthropic": "https://api.anthropic.com/v1",
+            "google": "https://generativelanguage.googleapis.com/v1beta",
+            "huggingface": "https://api-inference.huggingface.co",
+            "ollama": "http://localhost:11434",
+            "together": "https://api.together.xyz/v1",
+            "groq": "https://api.groq.com/openai/v1",
+            "stability": "https://api.stability.ai/v1",
+            "elevenlabs": "https://api.elevenlabs.io/v1",
+            "replicate": "https://api.replicate.com/v1",
+            "mistral": "https://api.mistral.ai/v1",
+            "cohere": "https://api.cohere.ai/v1",
+            "deepseek": "https://api.deepseek.com/v1",
+            "qwen": "https://dashscope.aliyuncs.com/api/v1",
+            "fireworks": "https://api.fireworks.ai/inference/v1",
+            "xai": "https://api.x.ai/v1",
+            "perplexity": "https://api.perplexity.ai",
+            "ai21": "https://api.ai21.com/studio/v1",
+            "fal": "https://fal.run",
+            "deepinfra": "https://api.deepinfra.com/v1/openai",
+            "nvidia": "https://integrate.api.nvidia.com/v1",
+            "cerebras": "https://api.cerebras.ai/v1",
+            "bedrock": "https://bedrock-runtime.us-east-1.amazonaws.com",
+            "azure": "https://{resource}.openai.azure.com",
+            "openrouter": "https://openrouter.ai/api/v1",
+            "zhipu": "https://open.bigmodel.cn/api/paas/v4",
+            "moonshot": "https://api.moonshot.cn/v1",
+            "minimax": "https://api.minimax.chat/v1",
+            "doubao": "https://ark.cn-beijing.volces.com/api/v3",
+            "ernie": "https://qianfan.baidubce.com/v2",
+            "stepfun": "https://api.stepfun.com/v1",
+            "lambda": "https://api.lambdalabs.com/v1",
+            "assemblyai": "https://api.assemblyai.com/v2",
+            "deepgram": "https://api.deepgram.com/v1",
+            "playht": "https://api.play.ht/api/v2",
+            "cartesia": "https://api.cartesia.ai/v1",
+            "rodin": "https://api.rodin.ai/v1",
+            "sloyd": "https://api.sloyd.ai/v1",
+            "polycam": "https://api.polycam.ai/v1",
+            "animatediff": "https://api.animatediff.com/v1",
+            "deforum": "https://api.deforum.com/v1",
+            "genmo": "https://api.genmo.ai/v1",
+            "stable-audio": "https://api.stability.ai/v2/audio",
+            "mubert": "https://api.mubert.com/v3",
+            "audioldm": "http://localhost:5002",
+            "voyage": "https://api.voyageai.com/v1",
+            "nomic": "https://api.nomic.ai/v1",
+            "jina": "https://api.jina.ai/v1",
+            "mixedbread": "https://api.mixedbread.ai/v1",
+            "haiper": "https://api.haiper.ai/v1",
+            "domika": "https://api.domika.ai/v1",
+            "yi": "https://api.01.ai/v1",
+            "baichuan": "https://api.baichuan-ai.com/v1",
+            "siliconflow": "https://api.siliconflow.cn/v1",
+            "modelscope": "https://api.modelscope.cn/v1",
+            "predibase": "https://api.predibase.com/v1",
+            "octoai": "https://api.octoai.cloud/v1",
+            "leonardo": "https://cloud.leonardo.ai/api/rest/v1",
+            "morph": "https://api.morphstudio.com/v1",
+            "viggle": "https://api.viggle.ai/v1",
+            "did": "https://api.d-id.com/v1",
+            "heygen": "https://api.heygen.com/v1",
+            "synthesia": "https://api.synthesia.io/v2",
+            "tabnine": "https://api.tabnine.com/v1",
+            "codeium": "https://api.codeium.com/v1",
+        }
+        return defaults.get(provider_id, "https://api.example.com/v1")
 
     def _has_any_api_key(self) -> bool:
         """Return True if at least one provider has a real API key set."""
@@ -2034,6 +2199,45 @@ class LLMRouter:
         self._seed_deepseek()
         self._seed_qwen()
         self._seed_ollama()
+        self._seed_huggingface()
+        self._seed_together()
+        self._seed_groq()
+        self._seed_fireworks()
+        self._seed_xai()
+        self._seed_perplexity()
+        self._seed_ai21()
+        self._seed_fal()
+        self._seed_deepinfra()
+        self._seed_nvidia()
+        self._seed_cerebras()
+        self._seed_bedrock()
+        self._seed_azure()
+        self._seed_openrouter()
+        self._seed_zhipu()
+        self._seed_moonshot()
+        self._seed_minimax()
+        self._seed_doubao()
+        self._seed_ernie()
+        self._seed_stepfun()
+        self._seed_lambda()
+        self._seed_replicate_models()
+        self._seed_assemblyai()
+        self._seed_deepgram()
+        self._seed_playht()
+        self._seed_cartesia()
+        self._seed_yi()
+        self._seed_baichuan()
+        self._seed_siliconflow()
+        self._seed_modelscope()
+        self._seed_predibase()
+        self._seed_octoai()
+        self._seed_leonardo()
+        self._seed_morph()
+        self._seed_viggle()
+        self._seed_did()
+        self._seed_heygen()
+        self._seed_synthesia()
+        self._seed_code_providers()
 
         # --- Generation providers -----------------------------------------
         self._seed_image_providers()
@@ -2041,6 +2245,10 @@ class LLMRouter:
         self._seed_audio_providers()
         self._seed_3d_providers()
         self._seed_animation_providers()
+        self._seed_more_3d_providers()
+        self._seed_more_animation_providers()
+        self._seed_more_audio_providers()
+        self._seed_more_video_providers()
         self._seed_embedding_providers()
 
         # --- Task-to-model mappings ---------------------------------------
@@ -2067,10 +2275,17 @@ class LLMRouter:
         )
         models = [
             ("gpt-4o", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 128_000, 16_384, 0.03, 0.06, 0.95, "low", True, True, True),
+            ("gpt-4o-mini", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 128_000, 16_384, 0.00015, 0.0006, 0.88, "very_low", True, True, True),
+            ("gpt-4.1", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 1_000_000, 32_768, 0.005, 0.015, 0.96, "low", True, True, True),
+            ("gpt-4.1-mini", [ModelType.TEXT, ModelType.VISION], 1_000_000, 32_768, 0.0004, 0.0016, 0.9, "very_low", True, True, True),
             ("gpt-4-turbo", [ModelType.TEXT, ModelType.VISION], 128_000, 4_096, 0.01, 0.03, 0.9, "low", True, True, True),
             ("o1", [ModelType.TEXT, ModelType.REASONING], 200_000, 100_000, 0.015, 0.06, 0.97, "high", False, False, False),
+            ("o1-mini", [ModelType.TEXT, ModelType.REASONING], 128_000, 65_536, 0.0011, 0.0044, 0.92, "medium", False, False, False),
             ("o3", [ModelType.TEXT, ModelType.REASONING], 200_000, 100_000, 0.015, 0.06, 0.98, "high", False, False, False),
+            ("o3-mini", [ModelType.TEXT, ModelType.REASONING], 200_000, 100_000, 0.0011, 0.0044, 0.95, "medium", True, True, False),
             ("dall-e-3", [ModelType.IMAGE_GEN], 4_000, 1, 0.04, 0.0, 0.85, "medium", False, False, False),
+            ("tts-1", [ModelType.TTS], 4_096, 4_096, 0.015, 0.0, 0.85, "very_low", False, False, False),
+            ("tts-1-hd", [ModelType.TTS], 4_096, 4_096, 0.03, 0.0, 0.9, "low", False, False, False),
             ("text-embedding-3-large", [ModelType.EMBEDDING], 8_191, 8_191, 0.00013, 0.0, 0.92, "low", False, False, False),
             ("text-embedding-3-small", [ModelType.EMBEDDING], 8_191, 8_191, 0.00002, 0.0, 0.85, "low", False, False, False),
             ("whisper-1", [ModelType.STT], 0, 0, 0.006, 0.0, 0.9, "medium", False, False, False),
@@ -2107,6 +2322,9 @@ class LLMRouter:
         )
         models = [
             ("claude-3-5-sonnet", [ModelType.TEXT, ModelType.VISION], 200_000, 8_192, 0.003, 0.015, 0.95, "low", True, True, True),
+            ("claude-3-5-sonnet-20241022", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 200_000, 8_192, 0.003, 0.015, 0.96, "low", True, True, True),
+            ("claude-3-5-haiku", [ModelType.TEXT, ModelType.VISION], 200_000, 8_192, 0.0008, 0.004, 0.89, "very_low", True, True, True),
+            ("claude-3-7-sonnet", [ModelType.TEXT, ModelType.VISION, ModelType.REASONING], 200_000, 16_384, 0.003, 0.015, 0.97, "low", True, True, True),
             ("claude-3-opus", [ModelType.TEXT, ModelType.REASONING], 200_000, 4_096, 0.015, 0.075, 0.94, "medium", True, True, False),
             ("claude-3-haiku", [ModelType.TEXT], 200_000, 4_096, 0.00025, 0.00125, 0.85, "low", True, True, False),
         ]
@@ -2141,8 +2359,13 @@ class LLMRouter:
             rate_limit_tpm=1_000_000,
         )
         models = [
+            ("gemini-2.5-pro", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL, ModelType.REASONING], 2_000_000, 8_192, 0.00125, 0.005, 0.96, "medium", True, True, True),
+            ("gemini-2.0-flash", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 1_000_000, 8_192, 0.000075, 0.0003, 0.9, "low", True, True, True),
+            ("gemini-2.0-flash-lite", [ModelType.TEXT, ModelType.VISION], 1_000_000, 8_192, 0.0000375, 0.00015, 0.82, "very_low", True, True, True),
             ("gemini-1.5-pro", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 2_000_000, 8_192, 0.00125, 0.005, 0.93, "medium", True, True, True),
-            ("gemini-2.0-flash", [ModelType.TEXT, ModelType.VISION], 1_000_000, 8_192, 0.000075, 0.0003, 0.88, "low", True, True, True),
+            ("gemini-1.5-flash", [ModelType.TEXT, ModelType.VISION], 1_000_000, 8_192, 0.0000375, 0.00015, 0.85, "very_low", True, True, True),
+            ("imagen-3", [ModelType.IMAGE_GEN], 0, 0, 0.04, 0.0, 0.9, "medium", False, False, False),
+            ("text-embedding-004", [ModelType.EMBEDDING], 2_048, 2_048, 0.000025, 0.0, 0.88, "low", False, False, False),
         ]
         for m in models:
             mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
@@ -2213,6 +2436,12 @@ class LLMRouter:
         models = [
             ("mistral-large-2", [ModelType.TEXT, ModelType.REASONING], 128_000, 4_096, 0.002, 0.006, 0.9, "low", True, True, False),
             ("codestral", [ModelType.TEXT, ModelType.CODE], 32_000, 4_096, 0.001, 0.003, 0.88, "low", True, True, False),
+            ("mistral-large-2411", [ModelType.TEXT], 128_000, 8_192, 0.002, 0.006, 0.92, "low", True, True, False),
+            ("pixtral-12b-2409", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 128_000, 8_192, 0.00015, 0.0006, 0.85, "low", True, True, True),
+            ("codestral-2501", [ModelType.TEXT, ModelType.CODE], 256_000, 8_192, 0.0003, 0.0009, 0.89, "low", True, True, False),
+            ("open-mixtral-8x22b", [ModelType.TEXT], 64_000, 4_096, 0.002, 0.006, 0.86, "medium", True, True, False),
+            ("mistral-nemo", [ModelType.TEXT], 128_000, 4_096, 0.0001, 0.0003, 0.8, "low", True, True, False),
+            ("ministral-8b", [ModelType.TEXT], 128_000, 4_096, 0.0001, 0.0003, 0.78, "very_low", True, True, False),
         ]
         for m in models:
             mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
@@ -2247,6 +2476,11 @@ class LLMRouter:
         models = [
             ("command-r-plus", [ModelType.TEXT], 128_000, 4_096, 0.0025, 0.01, 0.88, "medium", True, True, False),
             ("embed-v3", [ModelType.EMBEDDING], 512, 512, 0.0001, 0.0, 0.9, "low", False, False, False),
+            ("command-r-plus-08-2024", [ModelType.TEXT], 128_000, 4_096, 0.0025, 0.01, 0.9, "medium", True, True, False),
+            ("command-r-08-2024", [ModelType.TEXT], 128_000, 4_096, 0.00015, 0.0006, 0.85, "low", True, True, False),
+            ("command-r7b-12-2024", [ModelType.TEXT], 128_000, 4_096, 0.0000375, 0.00015, 0.78, "very_low", True, True, False),
+            ("embed-v4.0", [ModelType.EMBEDDING], 128_000, 128_000, 0.0001, 0.0, 0.92, "low", False, False, False),
+            ("aya-expanse-32b", [ModelType.TEXT, ModelType.MULTIMODAL], 128_000, 4_096, 0.00015, 0.0006, 0.84, "low", True, True, False),
         ]
         for m in models:
             mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
@@ -2281,6 +2515,8 @@ class LLMRouter:
         models = [
             ("deepseek-v3", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.00027, 0.0011, 0.9, "low", True, True, False),
             ("deepseek-r1", [ModelType.TEXT, ModelType.REASONING], 128_000, 32_000, 0.00055, 0.0022, 0.93, "medium", True, False, False),
+            ("deepseek-r1-distill-qwen-32b", [ModelType.TEXT, ModelType.REASONING], 128_000, 4_096, 0.00014, 0.00028, 0.88, "medium", True, False, False),
+            ("deepseek-coder-v2", [ModelType.TEXT, ModelType.CODE], 128_000, 4_096, 0.00014, 0.00028, 0.87, "low", True, True, False),
         ]
         for m in models:
             mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
@@ -2316,6 +2552,11 @@ class LLMRouter:
             ("qwen-2.5-max", [ModelType.TEXT], 128_000, 8_192, 0.002, 0.006, 0.9, "low", True, True, False),
             ("qwq", [ModelType.TEXT, ModelType.REASONING], 32_000, 4_096, 0.0015, 0.005, 0.91, "medium", True, False, False),
             ("qwen-vl-max", [ModelType.TEXT, ModelType.VISION], 32_000, 4_096, 0.002, 0.006, 0.88, "medium", True, False, True),
+            ("qwen-max", [ModelType.TEXT], 32_000, 8_192, 0.002, 0.006, 0.9, "low", True, True, False),
+            ("qwen3-235b-a22b", [ModelType.TEXT], 128_000, 8_192, 0.001, 0.003, 0.9, "medium", True, True, False),
+            ("qwen3-32b", [ModelType.TEXT], 128_000, 8_192, 0.0003, 0.0006, 0.85, "low", True, True, False),
+            ("qwen-coder-plus", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.0007, 0.002, 0.88, "low", True, True, False),
+            ("qwen2.5-omni-7b", [ModelType.MULTIMODAL], 32_000, 4_096, 0.0003, 0.0006, 0.8, "low", True, True, False),
         ]
         for m in models:
             mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
@@ -2371,6 +2612,1004 @@ class LLMRouter:
                     cost_per_1k_input=ci,
                     cost_per_1k_output=co,
                     tags=["ollama", "local", mid],
+                ),
+            )
+
+    def _seed_huggingface(self) -> None:
+        """Seed HuggingFace Inference API — open-source model hub."""
+        self.register_provider(
+            provider_id="huggingface",
+            name="Hugging Face",
+            vendor="Hugging Face",
+            endpoints=[ModelEndpoint(url="https://api-inference.huggingface.co", region="global")],
+            api_key_env="HF_API_KEY",
+            rate_limit_rpm=300,
+            rate_limit_tpm=1_000_000,
+        )
+        models = [
+            ("meta-llama/Llama-3.1-70B-Instruct", [ModelType.TEXT], 128_000, 4_096, 0.0, 0.0, 0.88, "medium", True, False, False),
+            ("meta-llama/Llama-3.1-8B-Instruct", [ModelType.TEXT], 128_000, 4_096, 0.0, 0.0, 0.78, "low", True, False, False),
+            ("mistralai/Mistral-7B-Instruct-v0.3", [ModelType.TEXT], 32_000, 4_096, 0.0, 0.0, 0.78, "low", True, False, False),
+            ("mistralai/Mixtral-8x7B-Instruct-v0.1", [ModelType.TEXT], 32_000, 4_096, 0.0, 0.0, 0.85, "medium", True, False, False),
+            ("Qwen/Qwen2.5-72B-Instruct", [ModelType.TEXT], 128_000, 8_192, 0.0, 0.0, 0.87, "medium", True, False, False),
+            ("Qwen/Qwen2.5-Coder-32B-Instruct", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.0, 0.0, 0.85, "medium", True, False, False),
+            ("google/gemma-2-9b-it", [ModelType.TEXT], 8_000, 4_096, 0.0, 0.0, 0.78, "low", True, False, False),
+            ("stabilityai/stable-diffusion-xl-base-1.0", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.85, "high", False, False, False),
+            ("black-forest-labs/FLUX.1-dev", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.9, "high", False, False, False),
+            ("black-forest-labs/FLUX.1-schnell", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.85, "medium", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "huggingface",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["huggingface", "open-source", mid.split("/")[-1]],
+                ),
+            )
+
+    def _seed_together(self) -> None:
+        """Seed Together AI — open-source model serving at scale."""
+        self.register_provider(
+            provider_id="together",
+            name="Together AI",
+            vendor="Together AI",
+            endpoints=[ModelEndpoint(url="https://api.together.xyz/v1", region="us")],
+            api_key_env="TOGETHER_API_KEY",
+            rate_limit_rpm=600,
+            rate_limit_tpm=1_000_000,
+        )
+        models = [
+            ("meta-llama/Llama-3.3-70B-Instruct-Turbo", [ModelType.TEXT], 128_000, 8_192, 0.0009, 0.0009, 0.89, "low", True, True, False),
+            ("meta-llama/Llama-3.3-70B-Instruct", [ModelType.TEXT], 128_000, 4_096, 0.0006, 0.0006, 0.87, "medium", True, True, False),
+            ("meta-llama/Llama-Vision-Free", [ModelType.TEXT, ModelType.VISION], 8_000, 4_096, 0.0, 0.0, 0.8, "medium", True, False, True),
+            ("Qwen/Qwen2.5-72B-Instruct-Turbo", [ModelType.TEXT], 128_000, 8_192, 0.0008, 0.0008, 0.88, "low", True, True, False),
+            ("Qwen/Qwen2.5-Coder-32B-Instruct", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.0005, 0.0005, 0.85, "low", True, False, False),
+            ("deepseek-ai/DeepSeek-V3", [ModelType.TEXT, ModelType.REASONING], 64_000, 8_192, 0.0007, 0.0007, 0.9, "low", True, True, False),
+            ("stabilityai/stable-diffusion-xl-base-1.0", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.85, "medium", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "together",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["together", "open-source", mid.split("/")[-1]],
+                ),
+            )
+
+    def _seed_groq(self) -> None:
+        """Seed Groq — ultra-fast LLM inference."""
+        self.register_provider(
+            provider_id="groq",
+            name="Groq",
+            vendor="Groq",
+            endpoints=[ModelEndpoint(url="https://api.groq.com/openai/v1", region="us")],
+            api_key_env="GROQ_API_KEY",
+            rate_limit_rpm=1200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("llama-3.3-70b-versatile", [ModelType.TEXT], 128_000, 8_192, 0.0006, 0.0006, 0.88, "ultra", True, True, False),
+            ("llama-3.1-8b-instant", [ModelType.TEXT], 128_000, 8_192, 0.0001, 0.0001, 0.78, "ultra", True, True, False),
+            ("llama-3.1-70b-versatile", [ModelType.TEXT], 128_000, 8_192, 0.0006, 0.0006, 0.87, "ultra", True, True, False),
+            ("mixtral-8x7b-32768", [ModelType.TEXT], 32_768, 4_096, 0.0003, 0.0003, 0.84, "ultra", True, False, False),
+            ("gemma2-9b-it", [ModelType.TEXT], 8_192, 4_096, 0.0002, 0.0002, 0.78, "ultra", True, False, False),
+            ("llama-3.2-90b-vision-preview", [ModelType.TEXT, ModelType.VISION], 128_000, 4_096, 0.0007, 0.0007, 0.85, "ultra", True, False, True),
+            ("llama-3.2-11b-vision-preview", [ModelType.TEXT, ModelType.VISION], 128_000, 4_096, 0.0002, 0.0002, 0.78, "ultra", True, False, True),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "groq",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["groq", "fast", mid],
+                ),
+            )
+
+    def _seed_fireworks(self) -> None:
+        """Seed Fireworks AI — open-source model serving."""
+        self.register_provider(
+            provider_id="fireworks",
+            name="Fireworks AI",
+            vendor="Fireworks AI",
+            endpoints=[ModelEndpoint(url="https://api.fireworks.ai/inference/v1", region="us")],
+            api_key_env="FIREWORKS_API_KEY",
+            rate_limit_rpm=600,
+            rate_limit_tpm=1_000_000,
+        )
+        models = [
+            ("accounts/fireworks/models/llama-v3p3-70b-instruct", [ModelType.TEXT], 128_000, 8_192, 0.0009, 0.0009, 0.88, "low", True, True, False),
+            ("accounts/fireworks/models/qwen2p5-72b-instruct", [ModelType.TEXT], 128_000, 8_192, 0.0009, 0.0009, 0.87, "low", True, True, False),
+            ("accounts/fireworks/models/qwen2p5-coder-32b-instruct", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.0005, 0.0005, 0.85, "low", True, False, False),
+            ("accounts/fireworks/models/deepseek-v3", [ModelType.TEXT, ModelType.REASONING], 64_000, 8_192, 0.0008, 0.0008, 0.9, "low", True, True, False),
+            ("accounts/fireworks/models/stable-diffusion-xl-1024-v1-0", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.85, "medium", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "fireworks",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["fireworks", "open-source", mid.split("/")[-1]],
+                ),
+            )
+
+    def _seed_xai(self) -> None:
+        """Seed xAI — Grok series with vision support."""
+        self.register_provider(
+            provider_id="xai",
+            name="xAI",
+            vendor="xAI",
+            endpoints=[ModelEndpoint(url="https://api.x.ai/v1", region="us")],
+            api_key_env="XAI_API_KEY",
+            rate_limit_rpm=60,
+            rate_limit_tpm=200_000,
+        )
+        models = [
+            ("grok-2", [ModelType.TEXT, ModelType.REASONING], 131_072, 4_096, 0.002, 0.01, 0.9, "medium", True, True, False),
+            ("grok-2-vision", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 131_072, 4_096, 0.002, 0.01, 0.89, "medium", True, True, True),
+            ("grok-2-mini", [ModelType.TEXT], 131_072, 4_096, 0.001, 0.004, 0.82, "low", True, True, False),
+            ("grok-beta", [ModelType.TEXT, ModelType.REASONING], 131_072, 4_096, 0.005, 0.015, 0.88, "medium", True, False, False),
+            ("grok-3", [ModelType.TEXT], 131_072, 8_192, 0.005, 0.015, 0.93, "medium", True, True, False),
+            ("grok-3-mini", [ModelType.TEXT, ModelType.REASONING], 131_072, 8_192, 0.0003, 0.001, 0.88, "low", True, True, False),
+            ("grok-3-vision", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 131_072, 8_192, 0.005, 0.015, 0.92, "medium", True, True, True),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "xai",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["xai", "grok", mid],
+                ),
+            )
+
+    def _seed_perplexity(self) -> None:
+        """Seed Perplexity — online LLMs with web search capability."""
+        self.register_provider(
+            provider_id="perplexity",
+            name="Perplexity",
+            vendor="Perplexity AI",
+            endpoints=[ModelEndpoint(url="https://api.perplexity.ai", region="us")],
+            api_key_env="PERPLEXITY_API_KEY",
+            rate_limit_rpm=50,
+            rate_limit_tpm=100_000,
+        )
+        models = [
+            ("llama-3.1-sonar-large-128k-online", [ModelType.TEXT], 127_072, 8_192, 0.001, 0.001, 0.85, "medium", True, False, False),
+            ("llama-3.1-sonar-small-128k-online", [ModelType.TEXT], 127_072, 8_192, 0.0002, 0.0002, 0.78, "low", True, False, False),
+            ("llama-3.1-sonar-huge-128k-online", [ModelType.TEXT, ModelType.REASONING], 127_072, 8_192, 0.005, 0.005, 0.88, "medium", True, False, False),
+            ("sonar-reasoning-pro", [ModelType.TEXT, ModelType.REASONING], 127_072, 8_192, 0.002, 0.008, 0.9, "medium", True, False, False),
+            ("sonar-reasoning", [ModelType.TEXT, ModelType.REASONING], 127_072, 8_192, 0.001, 0.005, 0.87, "low", True, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "perplexity",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["perplexity", "online", "web-search", mid.split("-")[-1]],
+                ),
+            )
+
+    def _seed_ai21(self) -> None:
+        """Seed AI21 Labs — Jamba series with ultra-long context."""
+        self.register_provider(
+            provider_id="ai21",
+            name="AI21 Labs",
+            vendor="AI21 Labs",
+            endpoints=[ModelEndpoint(url="https://api.ai21.com/studio/v1", region="us")],
+            api_key_env="AI21_API_KEY",
+            rate_limit_rpm=50,
+            rate_limit_tpm=100_000,
+        )
+        models = [
+            ("jamba-1.5-large", [ModelType.TEXT], 256_000, 4_096, 0.002, 0.008, 0.86, "medium", True, True, False),
+            ("jamba-1.5-mini", [ModelType.TEXT], 256_000, 4_096, 0.0003, 0.0006, 0.78, "low", True, True, False),
+            ("jamba-instruct", [ModelType.TEXT], 256_000, 4_096, 0.0005, 0.0007, 0.8, "low", True, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "ai21",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["ai21", "jamba", "long-context", mid.split("-")[-1]],
+                ),
+            )
+
+    def _seed_fal(self) -> None:
+        """Seed Fal.ai — fast image and video generation."""
+        self.register_provider(
+            provider_id="fal",
+            name="Fal.ai",
+            vendor="Fal AI",
+            endpoints=[ModelEndpoint(url="https://fal.run", region="us")],
+            api_key_env="FAL_KEY",
+            rate_limit_rpm=100,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("fal-ai/flux/dev", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.92, "low", False, False, False),
+            ("fal-ai/flux/pro", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.95, "low", False, False, False),
+            ("fal-ai/flux/schnell", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.85, "very_low", False, False, False),
+            ("fal-ai/aura-sr", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.88, "low", False, False, False),
+            ("fal-ai/kling-video", [ModelType.VIDEO_GEN], 0, 0, 0.0, 0.0, 0.87, "high", False, False, False),
+            ("fal-ai/luma-dream-machine", [ModelType.VIDEO_GEN], 0, 0, 0.0, 0.0, 0.86, "high", False, False, False),
+            ("fal-ai/minimax/video-01", [ModelType.VIDEO_GEN], 0, 0, 0.0, 0.0, 0.84, "high", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "fal",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_image=0.04 if ModelType.IMAGE_GEN in types else 0.0,
+                    cost_per_second_video=0.5 if ModelType.VIDEO_GEN in types else 0.0,
+                    tags=["fal", "fast", "generation", mid.split("/")[-1]],
+                ),
+            )
+
+    def _seed_deepinfra(self) -> None:
+        """Seed DeepInfra — open-source model hosting platform."""
+        self.register_provider(
+            provider_id="deepinfra",
+            name="DeepInfra",
+            vendor="DeepInfra",
+            endpoints=[ModelEndpoint(url="https://api.deepinfra.com/v1/openai", region="us")],
+            api_key_env="DEEPINFRA_API_KEY",
+            rate_limit_rpm=300,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("meta-llama/Meta-Llama-3.1-405B-Instruct", [ModelType.TEXT], 128_000, 4_096, 0.0008, 0.0008, 0.92, "medium", True, True, False),
+            ("meta-llama/Meta-Llama-3.1-70B-Instruct", [ModelType.TEXT], 128_000, 4_096, 0.0006, 0.0006, 0.88, "low", True, True, False),
+            ("meta-llama/Meta-Llama-3.1-8B-Instruct", [ModelType.TEXT], 128_000, 4_096, 0.0001, 0.0001, 0.75, "very_low", True, True, False),
+            ("mistralai/Mistral-7B-Instruct-v0.3", [ModelType.TEXT], 32_000, 4_096, 0.0001, 0.0001, 0.76, "very_low", True, False, False),
+            ("Qwen/Qwen2.5-72B-Instruct", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.0006, 0.0006, 0.89, "low", True, True, False),
+            ("Qwen/Qwen2.5-Coder-32B-Instruct", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.0003, 0.0003, 0.86, "low", True, False, False),
+            ("deepseek-ai/DeepSeek-V3", [ModelType.TEXT, ModelType.REASONING], 64_000, 8_192, 0.0003, 0.0003, 0.91, "low", True, True, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "deepinfra",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["deepinfra", "open-source", mid.split("/")[-1]],
+                ),
+            )
+
+    def _seed_nvidia(self) -> None:
+        """Seed NVIDIA NIM — GPU-accelerated inference for open models."""
+        self.register_provider(
+            provider_id="nvidia",
+            name="NVIDIA NIM",
+            vendor="NVIDIA",
+            endpoints=[ModelEndpoint(url="https://integrate.api.nvidia.com/v1", region="us")],
+            api_key_env="NVIDIA_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("meta/llama-3.1-405b-instruct", [ModelType.TEXT], 128_000, 4_096, 0.0008, 0.0008, 0.92, "low", True, True, False),
+            ("meta/llama-3.1-70b-instruct", [ModelType.TEXT], 128_000, 4_096, 0.0006, 0.0006, 0.88, "very_low", True, True, False),
+            ("nvidia/llama-3.1-nemotron-70b-instruct", [ModelType.TEXT, ModelType.REASONING], 128_000, 4_096, 0.0006, 0.0006, 0.89, "very_low", True, True, False),
+            ("mistralai/mistral-large-2-instruct", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.002, 0.006, 0.9, "low", True, True, False),
+            ("qwen/qwen2.5-coder-32b-instruct", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.0003, 0.0003, 0.86, "very_low", True, False, False),
+            ("google/gemma-2-27b", [ModelType.TEXT], 8_000, 4_096, 0.0002, 0.0002, 0.82, "very_low", True, False, False),
+            ("stabilityai/stable-diffusion-xl", [ModelType.IMAGE_GEN], 0, 0, 0.0, 0.0, 0.85, "medium", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "nvidia",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["nvidia", "nim", "gpu", mid.split("/")[-1]],
+                ),
+            )
+
+    def _seed_cerebras(self) -> None:
+        """Seed Cerebras — ultra-fast inference with custom wafer-scale hardware."""
+        self.register_provider(
+            provider_id="cerebras",
+            name="Cerebras",
+            vendor="Cerebras Systems",
+            endpoints=[ModelEndpoint(url="https://api.cerebras.ai/v1", region="us")],
+            api_key_env="CEREBRAS_API_KEY",
+            rate_limit_rpm=300,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("llama-3.3-70b", [ModelType.TEXT], 128_000, 8_192, 0.0006, 0.0006, 0.89, "ultra_low", True, True, False),
+            ("llama-3.1-8b", [ModelType.TEXT], 128_000, 8_192, 0.0001, 0.0001, 0.76, "ultra_low", True, True, False),
+            ("qwen-2.5-coder-32b", [ModelType.TEXT, ModelType.CODE], 128_000, 8_192, 0.0003, 0.0003, 0.86, "ultra_low", True, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "cerebras",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["cerebras", "fast-inference", mid],
+                ),
+            )
+
+    def _seed_bedrock(self) -> None:
+        """Seed Amazon Bedrock — AWS managed access to foundation models."""
+        self.register_provider(
+            provider_id="bedrock",
+            name="Amazon Bedrock",
+            vendor="AWS",
+            endpoints=[ModelEndpoint(url="https://bedrock-runtime.us-east-1.amazonaws.com", region="us")],
+            api_key_env="AWS_ACCESS_KEY_ID",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("bedrock-claude-3-5-sonnet", [ModelType.TEXT, ModelType.VISION], 200_000, 8_192, 0.003, 0.015, 0.95, "low", True, True, True),
+            ("bedrock-claude-3-haiku", [ModelType.TEXT], 200_000, 4_096, 0.00025, 0.00125, 0.85, "low", True, True, False),
+            ("bedrock-llama3-1-405b", [ModelType.TEXT], 128_000, 4_096, 0.005, 0.015, 0.9, "medium", True, True, False),
+            ("bedrock-llama3-1-70b", [ModelType.TEXT], 128_000, 4_096, 0.001, 0.003, 0.85, "low", True, True, False),
+            ("amazon-nova-pro", [ModelType.TEXT, ModelType.MULTIMODAL], 300_000, 8_192, 0.008, 0.024, 0.9, "medium", True, True, False),
+            ("amazon-nova-lite", [ModelType.TEXT, ModelType.MULTIMODAL], 300_000, 8_192, 0.0006, 0.0024, 0.82, "low", True, True, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "bedrock",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["bedrock", "aws", mid],
+                ),
+            )
+
+    def _seed_azure(self) -> None:
+        """Seed Azure OpenAI — enterprise OpenAI models hosted on Microsoft Azure."""
+        self.register_provider(
+            provider_id="azure",
+            name="Azure OpenAI",
+            vendor="Microsoft",
+            endpoints=[ModelEndpoint(url="https://{resource}.openai.azure.com", region="us")],
+            api_key_env="AZURE_OPENAI_API_KEY",
+            rate_limit_rpm=300,
+            rate_limit_tpm=800_000,
+        )
+        models = [
+            ("azure-gpt-4o", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 128_000, 16_384, 0.03, 0.06, 0.95, "low", True, True, True),
+            ("azure-gpt-4o-mini", [ModelType.TEXT, ModelType.VISION], 128_000, 16_384, 0.00015, 0.0006, 0.88, "very_low", True, True, True),
+            ("azure-gpt-4-turbo", [ModelType.TEXT, ModelType.VISION], 128_000, 4_096, 0.01, 0.03, 0.9, "low", True, True, True),
+            ("azure-o3-mini", [ModelType.TEXT, ModelType.REASONING], 200_000, 100_000, 0.0011, 0.0044, 0.95, "medium", True, True, False),
+            ("azure-dall-e-3", [ModelType.IMAGE_GEN], 4_000, 1, 0.04, 0.0, 0.85, "medium", False, False, False),
+            ("azure-whisper-1", [ModelType.STT], 0, 0, 0.006, 0.0, 0.9, "medium", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "azure",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["azure", "microsoft", mid],
+                ),
+            )
+
+    def _seed_openrouter(self) -> None:
+        """Seed OpenRouter — unified gateway to many third-party model providers."""
+        self.register_provider(
+            provider_id="openrouter",
+            name="OpenRouter",
+            vendor="OpenRouter",
+            endpoints=[ModelEndpoint(url="https://openrouter.ai/api/v1", region="us")],
+            api_key_env="OPENROUTER_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("anthropic/claude-3.5-sonnet", [ModelType.TEXT, ModelType.VISION], 200_000, 8_192, 0.003, 0.015, 0.95, "low", True, True, True),
+            ("openai/gpt-4o", [ModelType.TEXT, ModelType.VISION], 128_000, 16_384, 0.03, 0.06, 0.95, "low", True, True, True),
+            ("google/gemini-pro-1.5", [ModelType.TEXT, ModelType.VISION], 2_000_000, 8_192, 0.00125, 0.005, 0.93, "medium", True, True, True),
+            ("meta-llama/llama-3.1-405b-instruct", [ModelType.TEXT], 128_000, 4_096, 0.005, 0.015, 0.9, "medium", True, True, False),
+            ("mistralai/mistral-large", [ModelType.TEXT], 128_000, 4_096, 0.002, 0.006, 0.9, "low", True, True, False),
+            ("qwen/qwen-2.5-72b-instruct", [ModelType.TEXT], 128_000, 8_192, 0.0003, 0.0006, 0.85, "low", True, True, False),
+            ("deepseek/deepseek-r1", [ModelType.TEXT, ModelType.REASONING], 128_000, 32_000, 0.00055, 0.0022, 0.93, "medium", True, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "openrouter",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["openrouter", "gateway", mid],
+                ),
+            )
+
+    def _seed_zhipu(self) -> None:
+        """Seed Zhipu AI — GLM series foundation models from Zhipu."""
+        self.register_provider(
+            provider_id="zhipu",
+            name="Zhipu AI",
+            vendor="Zhipu",
+            endpoints=[ModelEndpoint(url="https://open.bigmodel.cn/api/paas/v4", region="asia")],
+            api_key_env="ZHIPUAI_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("glm-4-plus", [ModelType.TEXT, ModelType.VISION], 128_000, 4_096, 0.007, 0.021, 0.9, "low", True, True, True),
+            ("glm-4-air", [ModelType.TEXT], 128_000, 4_096, 0.001, 0.001, 0.82, "low", True, True, False),
+            ("glm-4-flash", [ModelType.TEXT], 128_000, 4_096, 0.0, 0.0, 0.78, "ultra_low", True, True, False),
+            ("glm-4v", [ModelType.TEXT, ModelType.VISION, ModelType.MULTIMODAL], 128_000, 4_096, 0.01, 0.03, 0.87, "medium", True, True, True),
+            ("glm-4-long", [ModelType.TEXT], 1_000_000, 4_096, 0.001, 0.001, 0.8, "medium", True, True, False),
+            ("cogview-3", [ModelType.IMAGE_GEN], 4_000, 1, 0.05, 0.0, 0.82, "medium", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "zhipu",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["zhipu", "glm", mid],
+                ),
+            )
+
+    def _seed_moonshot(self) -> None:
+        """Seed Moonshot AI — Kimi long-context models from Moonshot."""
+        self.register_provider(
+            provider_id="moonshot",
+            name="Moonshot AI",
+            vendor="Moonshot",
+            endpoints=[ModelEndpoint(url="https://api.moonshot.cn/v1", region="asia")],
+            api_key_env="MOONSHOT_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("moonshot-v1-8k", [ModelType.TEXT], 8_000, 4_096, 0.001, 0.002, 0.8, "low", True, True, False),
+            ("moonshot-v1-32k", [ModelType.TEXT], 32_000, 4_096, 0.002, 0.005, 0.82, "low", True, True, False),
+            ("moonshot-v1-128k", [ModelType.TEXT], 128_000, 4_096, 0.005, 0.012, 0.85, "medium", True, True, False),
+            ("moonshot-v1-auto", [ModelType.TEXT], 128_000, 4_096, 0.003, 0.008, 0.85, "medium", True, True, False),
+            ("kimi-latest", [ModelType.TEXT, ModelType.VISION], 128_000, 4_096, 0.005, 0.012, 0.88, "low", True, True, True),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "moonshot",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["moonshot", "kimi", mid],
+                ),
+            )
+
+    def _seed_minimax(self) -> None:
+        """Seed MiniMax — abab series models with long context windows."""
+        self.register_provider(
+            provider_id="minimax",
+            name="MiniMax",
+            vendor="MiniMax",
+            endpoints=[ModelEndpoint(url="https://api.minimax.chat/v1", region="asia")],
+            api_key_env="MINIMAX_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("abab6.5s-chat", [ModelType.TEXT], 245_000, 4_096, 0.001, 0.002, 0.82, "low", True, True, False),
+            ("abab6.5-chat", [ModelType.TEXT], 245_000, 4_096, 0.002, 0.005, 0.85, "medium", True, True, False),
+            ("abab6-chat", [ModelType.TEXT], 16_000, 4_096, 0.003, 0.007, 0.83, "medium", True, True, False),
+            ("minimax-text-01", [ModelType.TEXT], 1_000_000, 4_096, 0.002, 0.005, 0.87, "medium", True, True, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "minimax",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["minimax", "abab", mid],
+                ),
+            )
+
+    def _seed_doubao(self) -> None:
+        """Seed ByteDance Doubao — Volcano Engine hosted foundation models."""
+        self.register_provider(
+            provider_id="doubao",
+            name="ByteDance Doubao",
+            vendor="ByteDance",
+            endpoints=[ModelEndpoint(url="https://ark.cn-beijing.volces.com/api/v3", region="asia")],
+            api_key_env="ARK_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("doubao-pro-4k", [ModelType.TEXT], 4_000, 4_096, 0.0003, 0.0006, 0.8, "low", True, True, False),
+            ("doubao-pro-32k", [ModelType.TEXT], 32_000, 4_096, 0.001, 0.002, 0.83, "low", True, True, False),
+            ("doubao-pro-128k", [ModelType.TEXT], 128_000, 4_096, 0.003, 0.006, 0.85, "medium", True, True, False),
+            ("doubao-lite-4k", [ModelType.TEXT], 4_000, 4_096, 0.0001, 0.0002, 0.75, "ultra_low", True, False, False),
+            ("doubao-vision-pro", [ModelType.TEXT, ModelType.VISION], 32_000, 4_096, 0.002, 0.005, 0.84, "medium", True, True, True),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "doubao",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["doubao", "bytedance", mid],
+                ),
+            )
+
+    def _seed_ernie(self) -> None:
+        """Seed Baidu ERNIE — Qianfan platform hosted ERNIE models."""
+        self.register_provider(
+            provider_id="ernie",
+            name="Baidu ERNIE",
+            vendor="Baidu",
+            endpoints=[ModelEndpoint(url="https://qianfan.baidubce.com/v2", region="asia")],
+            api_key_env="ERNIE_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("ernie-4.0-turbo-8k", [ModelType.TEXT], 8_000, 4_096, 0.003, 0.009, 0.85, "low", True, True, False),
+            ("ernie-4.0-turbo-128k", [ModelType.TEXT], 128_000, 4_096, 0.005, 0.014, 0.86, "medium", True, True, False),
+            ("ernie-speed-128k", [ModelType.TEXT], 128_000, 4_096, 0.0005, 0.001, 0.78, "low", True, True, False),
+            ("ernie-lite-8k", [ModelType.TEXT], 8_000, 4_096, 0.0001, 0.0002, 0.72, "ultra_low", True, False, False),
+            ("ernie-v4", [ModelType.TEXT, ModelType.VISION], 8_000, 4_096, 0.004, 0.012, 0.84, "low", True, True, True),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "ernie",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["ernie", "baidu", mid],
+                ),
+            )
+
+    def _seed_stepfun(self) -> None:
+        """Seed StepFun — step series models from StepFun."""
+        self.register_provider(
+            provider_id="stepfun",
+            name="StepFun",
+            vendor="StepFun",
+            endpoints=[ModelEndpoint(url="https://api.stepfun.com/v1", region="asia")],
+            api_key_env="STEPFUN_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("step-1-8k", [ModelType.TEXT], 8_000, 4_096, 0.001, 0.002, 0.78, "low", True, True, False),
+            ("step-1-32k", [ModelType.TEXT], 32_000, 4_096, 0.002, 0.005, 0.82, "low", True, True, False),
+            ("step-1-128k", [ModelType.TEXT], 128_000, 4_096, 0.005, 0.012, 0.85, "medium", True, True, False),
+            ("step-1v-8k", [ModelType.TEXT, ModelType.VISION], 8_000, 4_096, 0.002, 0.004, 0.8, "low", True, True, True),
+            ("step-2-16k", [ModelType.TEXT], 16_000, 4_096, 0.003, 0.007, 0.87, "medium", True, True, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "stepfun",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["stepfun", "step", mid],
+                ),
+            )
+
+    def _seed_lambda(self) -> None:
+        """Seed Lambda Inference — open models served on Lambda Labs GPU cloud."""
+        self.register_provider(
+            provider_id="lambda",
+            name="Lambda Inference",
+            vendor="Lambda Labs",
+            endpoints=[ModelEndpoint(url="https://api.lambdalabs.com/v1", region="us")],
+            api_key_env="LAMBDA_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("hermes-3-405b", [ModelType.TEXT], 128_000, 4_096, 0.005, 0.015, 0.89, "medium", True, True, False),
+            ("hermes-3-70b", [ModelType.TEXT], 128_000, 4_096, 0.001, 0.003, 0.84, "low", True, True, False),
+            ("llama-3.1-405b-instruct", [ModelType.TEXT], 128_000, 4_096, 0.005, 0.015, 0.9, "medium", True, True, False),
+            ("llama-3.1-70b-instruct", [ModelType.TEXT], 128_000, 4_096, 0.001, 0.003, 0.85, "low", True, True, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "lambda",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["lambda", "lambdalabs", mid],
+                ),
+            )
+
+    def _seed_replicate_models(self) -> None:
+        """Seed Replicate — hosted open models for text, image, and audio tasks."""
+        self.register_provider(
+            provider_id="replicate",
+            name="Replicate",
+            vendor="Replicate",
+            endpoints=[ModelEndpoint(url="https://api.replicate.com/v1", region="us")],
+            api_key_env="REPLICATE_API_KEY",
+            rate_limit_rpm=150,
+            rate_limit_tpm=300_000,
+        )
+        models = [
+            ("replicate-llama-3.1-405b", [ModelType.TEXT], 128_000, 4_096, 0.005, 0.015, 0.9, "medium", True, True, False),
+            ("replicate-flux-schnell", [ModelType.IMAGE_GEN], 2_000, 1, 0.003, 0.0, 0.86, "low", False, False, False),
+            ("replicate-flux-dev", [ModelType.IMAGE_GEN], 2_000, 1, 0.004, 0.0, 0.9, "medium", False, False, False),
+            ("replicate-sdxl", [ModelType.IMAGE_GEN], 2_000, 1, 0.003, 0.0, 0.85, "low", False, False, False),
+            ("replicate-whisper", [ModelType.STT], 0, 0, 0.006, 0.0, 0.85, "medium", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "replicate",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["replicate", mid.split("/")[0]],
+                ),
+            )
+
+    def _seed_assemblyai(self) -> None:
+        """Seed AssemblyAI — speech-to-text models with optional text generation."""
+        self.register_provider(
+            provider_id="assemblyai",
+            name="AssemblyAI",
+            vendor="AssemblyAI",
+            endpoints=[ModelEndpoint(url="https://api.assemblyai.com/v2", region="us")],
+            api_key_env="ASSEMBLYAI_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("best-turbo", [ModelType.STT], 0, 0, 0.00047, 0.0, 0.88, "low", False, False, False),
+            ("best", [ModelType.STT], 0, 0, 0.00079, 0.0, 0.92, "medium", False, False, False),
+            ("nano", [ModelType.STT], 0, 0, 0.0002, 0.0, 0.8, "ultra_low", False, False, False),
+            ("slam-1", [ModelType.TEXT], 4_000, 4_096, 0.001, 0.002, 0.8, "low", True, True, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "assemblyai",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["assemblyai", "stt", mid],
+                ),
+            )
+
+    def _seed_deepgram(self) -> None:
+        """Seed Deepgram — speech-to-text and text-to-speech models."""
+        self.register_provider(
+            provider_id="deepgram",
+            name="Deepgram",
+            vendor="Deepgram",
+            endpoints=[ModelEndpoint(url="https://api.deepgram.com/v1", region="us")],
+            api_key_env="DEEPGRAM_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("nova-2", [ModelType.STT], 0, 0, 0.0043, 0.0, 0.9, "low", False, False, False),
+            ("nova-2-general", [ModelType.STT], 0, 0, 0.0043, 0.0, 0.88, "low", False, False, False),
+            ("aura", [ModelType.TTS], 4_096, 4_096, 0.015, 0.0, 0.85, "low", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "deepgram",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["deepgram", mid],
+                ),
+            )
+
+    def _seed_playht(self) -> None:
+        """Seed PlayHT — text-to-speech voice generation models."""
+        self.register_provider(
+            provider_id="playht",
+            name="PlayHT",
+            vendor="PlayHT",
+            endpoints=[ModelEndpoint(url="https://api.play.ht/api/v2", region="us")],
+            api_key_env="PLAYHT_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("play-3.0-mini", [ModelType.TTS], 4_096, 4_096, 0.005, 0.0, 0.8, "low", False, False, False),
+            ("play-3.0", [ModelType.TTS], 4_096, 4_096, 0.01, 0.0, 0.87, "low", False, False, False),
+            ("play-ht2", [ModelType.TTS], 4_096, 4_096, 0.015, 0.0, 0.85, "medium", False, False, False),
+            ("play-ht1", [ModelType.TTS], 4_096, 4_096, 0.02, 0.0, 0.82, "medium", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "playht",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["playht", "tts", mid],
+                ),
+            )
+
+    def _seed_cartesia(self) -> None:
+        """Seed Cartesia — low-latency text-to-speech with the Sonic models."""
+        self.register_provider(
+            provider_id="cartesia",
+            name="Cartesia",
+            vendor="Cartesia",
+            endpoints=[ModelEndpoint(url="https://api.cartesia.ai/v1", region="us")],
+            api_key_env="CARTESIA_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("sonic", [ModelType.TTS], 4_096, 4_096, 0.005, 0.0, 0.86, "very_low", False, False, False),
+            ("sonic-2", [ModelType.TTS], 4_096, 4_096, 0.008, 0.0, 0.9, "low", False, False, False),
+            ("sonic-turbo", [ModelType.TTS], 4_096, 4_096, 0.006, 0.0, 0.85, "ultra_low", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "cartesia",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["cartesia", "sonic", mid],
                 ),
             )
 
@@ -2678,12 +3917,823 @@ class LLMRouter:
             ),
         )
 
+    def _seed_yi(self) -> None:
+        """Seed 01.AI — Yi series of bilingual foundation models."""
+        self.register_provider(
+            provider_id="yi",
+            name="01.AI",
+            vendor="01.AI",
+            endpoints=[ModelEndpoint(url="https://api.01.ai/v1", region="asia")],
+            api_key_env="YI_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("yi-large", [ModelType.TEXT], 32_000, 4_096, 0.003, 0.006, 0.88, "medium", True, True, False),
+            ("yi-medium", [ModelType.TEXT], 16_000, 4_096, 0.001, 0.002, 0.82, "low", True, True, False),
+            ("yi-small", [ModelType.TEXT], 4_000, 4_096, 0.0003, 0.0006, 0.75, "very_low", True, False, False),
+            ("yi-vision", [ModelType.TEXT, ModelType.VISION], 16_000, 4_096, 0.002, 0.004, 0.84, "medium", True, False, True),
+            ("yi-large-turbo", [ModelType.TEXT], 32_000, 4_096, 0.002, 0.004, 0.85, "low", True, True, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "yi",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["yi", mid],
+                ),
+            )
+
+    def _seed_baichuan(self) -> None:
+        """Seed Baichuan — Chinese-language LLM series with strong reasoning."""
+        self.register_provider(
+            provider_id="baichuan",
+            name="Baichuan",
+            vendor="Baichuan",
+            endpoints=[ModelEndpoint(url="https://api.baichuan-ai.com/v1", region="asia")],
+            api_key_env="BAICHUAN_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("baichuan4", [ModelType.TEXT], 32_000, 4_096, 0.004, 0.008, 0.89, "medium", True, True, False),
+            ("baichuan3-turbo", [ModelType.TEXT], 32_000, 4_096, 0.001, 0.002, 0.82, "low", True, False, False),
+            ("baichuan2-53b", [ModelType.TEXT], 4_000, 4_096, 0.0006, 0.0006, 0.78, "very_low", True, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "baichuan",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["baichuan", mid],
+                ),
+            )
+
+    def _seed_siliconflow(self) -> None:
+        """Seed SiliconFlow — aggregated open-model inference platform."""
+        self.register_provider(
+            provider_id="siliconflow",
+            name="SiliconFlow",
+            vendor="SiliconFlow",
+            endpoints=[ModelEndpoint(url="https://api.siliconflow.cn/v1", region="asia")],
+            api_key_env="SILICONFLOW_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("qwen/qwen2.5-72b-instruct", [ModelType.TEXT], 128_000, 8_192, 0.0006, 0.0006, 0.89, "low", True, True, False),
+            ("deepseek-ai/DeepSeek-V3", [ModelType.TEXT], 64_000, 8_192, 0.0003, 0.0003, 0.91, "low", True, True, False),
+            ("meta-llama/Meta-Llama-3.1-405B-Instruct", [ModelType.TEXT], 128_000, 8_192, 0.0008, 0.0008, 0.92, "medium", True, True, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "siliconflow",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["siliconflow", "open-source", mid.split("/")[-1]],
+                ),
+            )
+        # Image generation model on SiliconFlow
+        self.register_model(
+            "siliconflow",
+            ModelCapability(
+                model_id="black-forest-labs/FLUX.1-schnell",
+                model_types=[ModelType.IMAGE_GEN],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.88,
+                latency_tier="medium",
+                cost_per_1k_input=0.003,
+                cost_per_1k_output=0.0,
+                cost_per_image=0.04,
+                tags=["image", "siliconflow", "FLUX.1-schnell"],
+            ),
+        )
+
+    def _seed_modelscope(self) -> None:
+        """Seed ModelScope — Alibaba open-model hub with multimodal options."""
+        self.register_provider(
+            provider_id="modelscope",
+            name="ModelScope",
+            vendor="Alibaba",
+            endpoints=[ModelEndpoint(url="https://api.modelscope.cn/v1", region="asia")],
+            api_key_env="MODELSCOPE_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("qwen-72b-chat", [ModelType.TEXT], 32_000, 4_096, 0.0006, 0.0006, 0.88, "low", True, True, False),
+            ("chatglm3-6b", [ModelType.TEXT], 32_000, 4_096, 0.0001, 0.0001, 0.76, "very_low", True, False, False),
+            ("sensevoice", [ModelType.STT], 0, 0, 0.006, 0.0, 0.88, "medium", False, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "modelscope",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["modelscope", mid],
+                ),
+            )
+        # Image generation model on ModelScope
+        self.register_model(
+            "modelscope",
+            ModelCapability(
+                model_id="stable-diffusion-xl",
+                model_types=[ModelType.IMAGE_GEN],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.85,
+                latency_tier="medium",
+                cost_per_1k_input=0.003,
+                cost_per_1k_output=0.0,
+                cost_per_image=0.04,
+                tags=["image", "modelscope", "sdxl"],
+            ),
+        )
+
+    def _seed_predibase(self) -> None:
+        """Seed Predibase — fine-tuned open-model serving platform."""
+        self.register_provider(
+            provider_id="predibase",
+            name="Predibase",
+            vendor="Predibase",
+            endpoints=[ModelEndpoint(url="https://api.predibase.com/v1", region="us")],
+            api_key_env="PREDIBASE_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("llama-3.1-8b-instruct-tuned", [ModelType.TEXT], 128_000, 4_096, 0.0001, 0.0001, 0.76, "low", True, True, False),
+            ("llama-3.1-70b-instruct-tuned", [ModelType.TEXT], 128_000, 4_096, 0.0006, 0.0006, 0.88, "low", True, True, False),
+            ("mistral-7b-instruct-tuned", [ModelType.TEXT], 32_000, 4_096, 0.0001, 0.0001, 0.76, "very_low", True, False, False),
+            ("qwen2.5-coder-7b-tuned", [ModelType.TEXT, ModelType.CODE], 128_000, 4_096, 0.0002, 0.0002, 0.82, "low", True, False, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "predibase",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["predibase", "fine-tuned", mid],
+                ),
+            )
+
+    def _seed_octoai(self) -> None:
+        """Seed OctoAI — managed inference for open-source models."""
+        self.register_provider(
+            provider_id="octoai",
+            name="OctoAI",
+            vendor="OctoAI",
+            endpoints=[ModelEndpoint(url="https://api.octoai.cloud/v1", region="us")],
+            api_key_env="OCTOAI_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        models = [
+            ("llama-3.1-405b-instruct", [ModelType.TEXT], 128_000, 4_096, 0.0008, 0.0008, 0.92, "medium", True, True, False),
+            ("llama-3.1-70b-instruct", [ModelType.TEXT], 128_000, 4_096, 0.0006, 0.0006, 0.88, "low", True, True, False),
+            ("llama-3.1-8b-instruct", [ModelType.TEXT], 128_000, 4_096, 0.0001, 0.0001, 0.76, "very_low", True, True, False),
+            ("hermes-2-pro-llama-3-8b", [ModelType.TEXT], 8_000, 4_096, 0.0001, 0.0001, 0.78, "very_low", True, True, False),
+        ]
+        for m in models:
+            mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
+            self.register_model(
+                "octoai",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=types,
+                    max_context_tokens=ctx,
+                    max_output_tokens=out,
+                    supports_streaming=stream,
+                    supports_function_calling=fn,
+                    supports_vision=vision,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["octoai", "open-source", mid],
+                ),
+            )
+
+    def _seed_leonardo(self) -> None:
+        """Seed Leonardo AI — creative image generation models."""
+        self.register_provider(
+            provider_id="leonardo",
+            name="Leonardo AI",
+            vendor="Leonardo",
+            endpoints=[ModelEndpoint(url="https://cloud.leonardo.ai/api/rest/v1", region="us")],
+            api_key_env="LEONARDO_API_KEY",
+            rate_limit_rpm=150,
+            rate_limit_tpm=0,
+        )
+        for mid, q, cost in [
+            ("leonardo-phoenix", 0.9, 0.05),
+            ("leonardo-lightning", 0.82, 0.03),
+            ("leonardo-diffusion", 0.85, 0.04),
+            ("leonardo-kino", 0.88, 0.045),
+        ]:
+            self.register_model(
+                "leonardo",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.IMAGE_GEN],
+                    max_context_tokens=2_000,
+                    max_output_tokens=1,
+                    quality_score=q,
+                    latency_tier="medium",
+                    cost_per_1k_input=0.003,
+                    cost_per_1k_output=0.0,
+                    cost_per_image=cost,
+                    tags=["image", "leonardo", mid],
+                ),
+            )
+
+    def _seed_morph(self) -> None:
+        """Seed Morph Studio — text-to-video generation platform."""
+        self.register_provider(
+            provider_id="morph",
+            name="Morph Studio",
+            vendor="Morph",
+            endpoints=[ModelEndpoint(url="https://api.morphstudio.com/v1", region="us")],
+            api_key_env="MORPH_API_KEY",
+            rate_limit_rpm=30,
+            rate_limit_tpm=0,
+        )
+        self.register_model(
+            "morph",
+            ModelCapability(
+                model_id="morph-video-gen",
+                model_types=[ModelType.VIDEO_GEN],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.85,
+                latency_tier="medium",
+                cost_per_1k_input=0.0,
+                cost_per_1k_output=0.0,
+                cost_per_second_video=0.1,
+                tags=["video", "morph", "morph-video-gen"],
+            ),
+        )
+
+    def _seed_viggle(self) -> None:
+        """Seed Viggle — character animation generation platform."""
+        self.register_provider(
+            provider_id="viggle",
+            name="Viggle",
+            vendor="Viggle",
+            endpoints=[ModelEndpoint(url="https://api.viggle.ai/v1", region="us")],
+            api_key_env="VIGGLE_API_KEY",
+            rate_limit_rpm=50,
+            rate_limit_tpm=0,
+        )
+        self.register_model(
+            "viggle",
+            ModelCapability(
+                model_id="viggle-animate",
+                model_types=[ModelType.ANIMATION],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.84,
+                latency_tier="medium",
+                cost_per_1k_input=0.005,
+                cost_per_1k_output=0.0,
+                tags=["animation", "viggle", "viggle-animate"],
+            ),
+        )
+
+    def _seed_did(self) -> None:
+        """Seed D-ID — talking-avatar animation generation platform."""
+        self.register_provider(
+            provider_id="did",
+            name="D-ID",
+            vendor="D-ID",
+            endpoints=[ModelEndpoint(url="https://api.d-id.com/v1", region="us")],
+            api_key_env="DID_API_KEY",
+            rate_limit_rpm=50,
+            rate_limit_tpm=0,
+        )
+        for mid, q in [
+            ("talks", 0.85),
+            ("animations", 0.82),
+        ]:
+            self.register_model(
+                "did",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.ANIMATION],
+                    max_context_tokens=2_000,
+                    max_output_tokens=1,
+                    quality_score=q,
+                    latency_tier="medium",
+                    cost_per_1k_input=0.005,
+                    cost_per_1k_output=0.0,
+                    tags=["animation", "did", mid],
+                ),
+            )
+
+    def _seed_heygen(self) -> None:
+        """Seed HeyGen — avatar video and animation generation platform."""
+        self.register_provider(
+            provider_id="heygen",
+            name="HeyGen",
+            vendor="HeyGen",
+            endpoints=[ModelEndpoint(url="https://api.heygen.com/v1", region="us")],
+            api_key_env="HEYGEN_API_KEY",
+            rate_limit_rpm=50,
+            rate_limit_tpm=0,
+        )
+        # Avatar video generation model
+        self.register_model(
+            "heygen",
+            ModelCapability(
+                model_id="heygen-v2",
+                model_types=[ModelType.VIDEO_GEN],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.87,
+                latency_tier="medium",
+                cost_per_1k_input=0.0,
+                cost_per_1k_output=0.0,
+                cost_per_second_video=0.12,
+                tags=["video", "heygen", "heygen-v2"],
+            ),
+        )
+        # Avatar animation model
+        self.register_model(
+            "heygen",
+            ModelCapability(
+                model_id="heygen-avatar",
+                model_types=[ModelType.ANIMATION],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.86,
+                latency_tier="medium",
+                cost_per_1k_input=0.005,
+                cost_per_1k_output=0.0,
+                tags=["animation", "heygen", "heygen-avatar"],
+            ),
+        )
+
+    def _seed_synthesia(self) -> None:
+        """Seed Synthesia — avatar video and animation generation platform."""
+        self.register_provider(
+            provider_id="synthesia",
+            name="Synthesia",
+            vendor="Synthesia",
+            endpoints=[ModelEndpoint(url="https://api.synthesia.io/v2", region="us")],
+            api_key_env="SYNTHESIA_API_KEY",
+            rate_limit_rpm=50,
+            rate_limit_tpm=0,
+        )
+        # Avatar video generation model
+        self.register_model(
+            "synthesia",
+            ModelCapability(
+                model_id="synthesia-v2",
+                model_types=[ModelType.VIDEO_GEN],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.86,
+                latency_tier="medium",
+                cost_per_1k_input=0.0,
+                cost_per_1k_output=0.0,
+                cost_per_second_video=0.15,
+                tags=["video", "synthesia", "synthesia-v2"],
+            ),
+        )
+        # Avatar animation model
+        self.register_model(
+            "synthesia",
+            ModelCapability(
+                model_id="synthesia-avatar",
+                model_types=[ModelType.ANIMATION],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.85,
+                latency_tier="medium",
+                cost_per_1k_input=0.005,
+                cost_per_1k_output=0.0,
+                tags=["animation", "synthesia", "synthesia-avatar"],
+            ),
+        )
+
+    def _seed_code_providers(self) -> None:
+        """Seed code-specialized providers for developer tooling."""
+        # Tabnine
+        self.register_provider(
+            provider_id="tabnine",
+            name="Tabnine",
+            vendor="Tabnine",
+            endpoints=[ModelEndpoint(url="https://api.tabnine.com/v1", region="us")],
+            api_key_env="TABNINE_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        for mid, ctx, ci, co, q in [
+            ("tabnine-protg", 16_000, 0.001, 0.002, 0.8),
+            ("tabnine-starcoder2", 16_000, 0.0003, 0.0003, 0.83),
+        ]:
+            self.register_model(
+                "tabnine",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.TEXT, ModelType.CODE],
+                    max_context_tokens=ctx,
+                    max_output_tokens=4_096,
+                    supports_streaming=True,
+                    supports_function_calling=False,
+                    supports_vision=False,
+                    quality_score=q,
+                    latency_tier="low",
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["tabnine", "code", mid],
+                ),
+            )
+
+        # Codeium
+        self.register_provider(
+            provider_id="codeium",
+            name="Codeium",
+            vendor="Codeium",
+            endpoints=[ModelEndpoint(url="https://api.codeium.com/v1", region="us")],
+            api_key_env="CODEIUM_API_KEY",
+            rate_limit_rpm=200,
+            rate_limit_tpm=500_000,
+        )
+        for mid, ctx, ci, co, q in [
+            ("codeium-windsurf", 128_000, 0.0006, 0.0006, 0.86),
+            ("codeium-starcoder", 16_000, 0.0002, 0.0002, 0.82),
+        ]:
+            self.register_model(
+                "codeium",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.TEXT, ModelType.CODE],
+                    max_context_tokens=ctx,
+                    max_output_tokens=4_096,
+                    supports_streaming=True,
+                    supports_function_calling=False,
+                    supports_vision=False,
+                    quality_score=q,
+                    latency_tier="low",
+                    cost_per_1k_input=ci,
+                    cost_per_1k_output=co,
+                    tags=["codeium", "code", mid],
+                ),
+            )
+
+    def _seed_more_3d_providers(self) -> None:
+        providers_3d = [
+            ("rodin", "Rodin AI", "Rodin", "https://api.rodin.ai/v1", "RODIN_API_KEY", "rodin-gen-1", 0.88, "medium"),
+            ("sloyd", "Sloyd", "Sloyd", "https://api.sloyd.ai/v1", "SLODY_API_KEY", "sloyd-gen", 0.82, "low"),
+            ("polycam", "Polycam", "Polycam", "https://api.polycam.ai/v1", "POLYCAM_API_KEY", "polycam-gen", 0.85, "medium"),
+        ]
+        for pid, name, vendor, url, key_env, mid, q, tier in providers_3d:
+            self.register_provider(
+                provider_id=pid,
+                name=name,
+                vendor=vendor,
+                endpoints=[ModelEndpoint(url=url, region="us")],
+                api_key_env=key_env,
+                rate_limit_rpm=30,
+                rate_limit_tpm=0,
+            )
+            self.register_model(
+                pid,
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.GEN_3D],
+                    max_context_tokens=2_000,
+                    max_output_tokens=1,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=0.01,
+                    cost_per_1k_output=0.0,
+                    tags=["3d", mid],
+                ),
+            )
+
+    def _seed_more_animation_providers(self) -> None:
+        providers_anim = [
+            ("animatediff", "AnimateDiff", "AnimateDiff", "https://api.animatediff.com/v1", "ANIMATEDIFF_API_KEY", "animatediff-v2", 0.83, "medium"),
+            ("deforum", "Deforum", "Deforum", "https://api.deforum.com/v1", "DEFORUM_API_KEY", "deforum-gen", 0.8, "medium"),
+            ("genmo", "Genmo", "Genmo", "https://api.genmo.ai/v1", "GENMO_API_KEY", "genmo-mochi-1", 0.87, "high"),
+        ]
+        for pid, name, vendor, url, key_env, mid, q, tier in providers_anim:
+            self.register_provider(
+                provider_id=pid,
+                name=name,
+                vendor=vendor,
+                endpoints=[ModelEndpoint(url=url, region="us")],
+                api_key_env=key_env,
+                rate_limit_rpm=50,
+                rate_limit_tpm=0,
+            )
+            self.register_model(
+                pid,
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.ANIMATION],
+                    max_context_tokens=2_000,
+                    max_output_tokens=1,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=0.01,
+                    cost_per_1k_output=0.0,
+                    tags=["animation", mid],
+                ),
+            )
+
+    def _seed_more_audio_providers(self) -> None:
+        # Stable Audio (Stability)
+        self.register_provider(
+            provider_id="stable-audio",
+            name="Stable Audio",
+            vendor="Stability",
+            endpoints=[ModelEndpoint(url="https://api.stability.ai/v2/audio", region="us")],
+            api_key_env="STABILITY_API_KEY",
+            rate_limit_rpm=150,
+            rate_limit_tpm=0,
+        )
+        self.register_model(
+            "stable-audio",
+            ModelCapability(
+                model_id="stable-audio-2.0",
+                model_types=[ModelType.AUDIO_GEN],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.88,
+                latency_tier="medium",
+                cost_per_1k_input=0.01,
+                cost_per_1k_output=0.0,
+                tags=["music", "stable-audio"],
+            ),
+        )
+
+        # Mubert
+        self.register_provider(
+            provider_id="mubert",
+            name="Mubert",
+            vendor="Mubert",
+            endpoints=[ModelEndpoint(url="https://api.mubert.com/v3", region="us")],
+            api_key_env="MUBERT_API_KEY",
+            rate_limit_rpm=50,
+            rate_limit_tpm=0,
+        )
+        self.register_model(
+            "mubert",
+            ModelCapability(
+                model_id="mubert-gen",
+                model_types=[ModelType.AUDIO_GEN],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.82,
+                latency_tier="low",
+                cost_per_1k_input=0.01,
+                cost_per_1k_output=0.0,
+                tags=["music", "mubert"],
+            ),
+        )
+
+        # AudioLDM (local)
+        self.register_provider(
+            provider_id="audioldm",
+            name="AudioLDM",
+            vendor="AudioLDM",
+            endpoints=[ModelEndpoint(url="http://localhost:5002", region="local")],
+            rate_limit_rpm=100,
+            rate_limit_tpm=0,
+        )
+        self.register_model(
+            "audioldm",
+            ModelCapability(
+                model_id="audioldm-2",
+                model_types=[ModelType.AUDIO_GEN],
+                max_context_tokens=2_000,
+                max_output_tokens=1,
+                quality_score=0.78,
+                latency_tier="medium",
+                cost_per_1k_input=0.0,
+                cost_per_1k_output=0.0,
+                tags=["music", "local", "audioldm"],
+            ),
+        )
+
+        # Additional model under the existing audiocraft provider
+        self.register_model(
+            "audiocraft",
+            ModelCapability(
+                model_id="musicgen-large",
+                model_types=[ModelType.AUDIO_GEN],
+                max_context_tokens=512,
+                max_output_tokens=1,
+                quality_score=0.82,
+                latency_tier="medium",
+                cost_per_1k_input=0.0,
+                cost_per_1k_output=0.0,
+                tags=["music", "local", "audiocraft"],
+            ),
+        )
+
+    def _seed_more_video_providers(self) -> None:
+        providers_video = [
+            ("haiper", "Haiper", "Haiper", "https://api.haiper.ai/v1", "HAIPER_API_KEY", "haiper-2", 0.84, "medium", 0.1),
+            ("domika", "Domika", "Domika", "https://api.domika.ai/v1", "DOMIKA_API_KEY", "domika-gen", 0.82, "medium", 0.08),
+        ]
+        for pid, name, vendor, url, key_env, mid, q, tier, cost in providers_video:
+            self.register_provider(
+                provider_id=pid,
+                name=name,
+                vendor=vendor,
+                endpoints=[ModelEndpoint(url=url, region="us")],
+                api_key_env=key_env,
+                rate_limit_rpm=30,
+                rate_limit_tpm=0,
+            )
+            self.register_model(
+                pid,
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.VIDEO_GEN],
+                    max_context_tokens=2_000,
+                    max_output_tokens=1,
+                    quality_score=q,
+                    latency_tier=tier,
+                    cost_per_1k_input=0.0,
+                    cost_per_1k_output=0.0,
+                    cost_per_second_video=cost,
+                    tags=["video", mid],
+                ),
+            )
+
     def _seed_embedding_providers(self) -> None:
-        # OpenAI embeddings already registered above; add Cohere reference.
-        # text-embedding-3-large/small and Cohere embed-v3 are registered in
-        # their respective provider seeders. This method is a placeholder for
-        # future embedding-specific providers.
-        pass
+        # Voyage AI
+        self.register_provider(
+            provider_id="voyage",
+            name="Voyage AI",
+            vendor="Voyage",
+            endpoints=[ModelEndpoint(url="https://api.voyageai.com/v1", region="us")],
+            api_key_env="VOYAGE_API_KEY",
+            rate_limit_rpm=300,
+            rate_limit_tpm=500_000,
+        )
+        for mid, ctx, q in [
+            ("voyage-3", 32_768, 0.92),
+            ("voyage-3-lite", 32_768, 0.85),
+            ("voyage-code-2", 16_384, 0.9),
+        ]:
+            self.register_model(
+                "voyage",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.EMBEDDING],
+                    max_context_tokens=ctx,
+                    max_output_tokens=ctx,
+                    quality_score=q,
+                    latency_tier="low",
+                    cost_per_1k_input=0.0001,
+                    cost_per_1k_output=0.0,
+                    tags=["embedding", mid],
+                ),
+            )
+
+        # Nomic
+        self.register_provider(
+            provider_id="nomic",
+            name="Nomic",
+            vendor="Nomic",
+            endpoints=[ModelEndpoint(url="https://api.nomic.ai/v1", region="us")],
+            api_key_env="NOMIC_API_KEY",
+            rate_limit_rpm=300,
+            rate_limit_tpm=500_000,
+        )
+        for mid, ctx, q in [
+            ("nomic-embed-text-v1", 8_192, 0.86),
+            ("nomic-embed-vision-v1", 4_096, 0.84),
+        ]:
+            self.register_model(
+                "nomic",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.EMBEDDING],
+                    max_context_tokens=ctx,
+                    max_output_tokens=ctx,
+                    quality_score=q,
+                    latency_tier="low",
+                    cost_per_1k_input=0.0001,
+                    cost_per_1k_output=0.0,
+                    tags=["embedding", mid],
+                ),
+            )
+
+        # Jina AI
+        self.register_provider(
+            provider_id="jina",
+            name="Jina AI",
+            vendor="Jina",
+            endpoints=[ModelEndpoint(url="https://api.jina.ai/v1", region="us")],
+            api_key_env="JINA_API_KEY",
+            rate_limit_rpm=300,
+            rate_limit_tpm=500_000,
+        )
+        for mid, ctx, q in [
+            ("jina-embeddings-v3", 8_192, 0.89),
+            ("jina-embeddings-v2-base", 8_192, 0.85),
+        ]:
+            self.register_model(
+                "jina",
+                ModelCapability(
+                    model_id=mid,
+                    model_types=[ModelType.EMBEDDING],
+                    max_context_tokens=ctx,
+                    max_output_tokens=ctx,
+                    quality_score=q,
+                    latency_tier="low",
+                    cost_per_1k_input=0.0001,
+                    cost_per_1k_output=0.0,
+                    tags=["embedding", mid],
+                ),
+            )
+
+        # Mixedbread
+        self.register_provider(
+            provider_id="mixedbread",
+            name="Mixedbread",
+            vendor="Mixedbread",
+            endpoints=[ModelEndpoint(url="https://api.mixedbread.ai/v1", region="us")],
+            api_key_env="MIXEDBREAD_API_KEY",
+            rate_limit_rpm=300,
+            rate_limit_tpm=500_000,
+        )
+        self.register_model(
+            "mixedbread",
+            ModelCapability(
+                model_id="mxbai-embed-large-v1",
+                model_types=[ModelType.EMBEDDING],
+                max_context_tokens=512,
+                max_output_tokens=512,
+                quality_score=0.88,
+                latency_tier="low",
+                cost_per_1k_input=0.0001,
+                cost_per_1k_output=0.0,
+                tags=["embedding", "mxbai-embed-large-v1"],
+            ),
+        )
 
     def _seed_task_mappings(self) -> None:
         """Pre-configure task-to-model mappings for game development."""
@@ -2694,7 +4744,7 @@ class LLMRouter:
             TaskType.CODE_GEN: "claude-3-5-sonnet",
             TaskType.ASSET_IMAGE: "flux-1",
             TaskType.ASSET_VIDEO: "runway-gen3",
-            TaskType.ASSET_3D: "luma-3d-gen",
+            TaskType.ASSET_3D: "rodin-gen-1",
             TaskType.ASSET_AUDIO: "musicgen-small",
             TaskType.MUSIC_GEN: "suno-v3.5",
             TaskType.VOICE_ACTING: "eleven-multilingual-v2",
@@ -2709,6 +4759,10 @@ class LLMRouter:
             if model_id in self._models:
                 self._task_model_map[task_type] = model_id
 
+        # Fallback for ASSET_3D when the primary model is unavailable.
+        if TaskType.ASSET_3D not in self._task_model_map and "luma-3d-gen" in self._models:
+            self._task_model_map[TaskType.ASSET_3D] = "luma-3d-gen"
+
     def _seed_fallback_chains(self) -> None:
         """Pre-set fallback chains for the primary text providers."""
         self._fallback_chains["openai"] = ["gpt-4o", "gpt-4-turbo", "claude-3-5-sonnet", "gemini-2.0-flash", "llama-3.1-70b"]
@@ -2718,6 +4772,12 @@ class LLMRouter:
         self._fallback_chains["deepseek"] = ["deepseek-v3", "deepseek-r1", "qwen-2.5-max"]
         self._fallback_chains["qwen"] = ["qwen-2.5-max", "qwq", "deepseek-v3"]
         self._fallback_chains["ollama"] = ["llama3", "qwen2", "mistral", "gemma2"]
+        self._fallback_chains["bedrock"] = ["bedrock-claude-3-5-sonnet", "bedrock-llama3-1-405b", "amazon-nova-pro"]
+        self._fallback_chains["azure"] = ["azure-gpt-4o", "azure-gpt-4o-mini", "azure-gpt-4-turbo"]
+        self._fallback_chains["openrouter"] = ["anthropic/claude-3.5-sonnet", "openai/gpt-4o", "google/gemini-pro-1.5"]
+        self._fallback_chains["zhipu"] = ["glm-4-plus", "glm-4-flash", "glm-4-air"]
+        self._fallback_chains["moonshot"] = ["moonshot-v1-128k", "moonshot-v1-32k", "kimi-latest"]
+        self._fallback_chains["mistral"] = ["mistral-large-2411", "mistral-large", "mistral-medium"]
 
 
 # ============================================================================

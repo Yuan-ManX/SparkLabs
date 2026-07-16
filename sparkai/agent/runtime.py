@@ -1977,6 +1977,9 @@ class AgentRuntime:
         llm_config: Optional[LLMConfig] = None,
     ) -> SparkAgent:
         """Create and register a new agent in the runtime."""
+        # Guard against uninitialized orchestrator (auto-init on first use)
+        if self._orchestrator is None:
+            self._orchestrator = AgentOrchestrator()
         if len(self._agents) >= self.config.max_agents:
             raise ValueError(f"Maximum agent count reached ({self.config.max_agents})")
 
@@ -2078,6 +2081,15 @@ class AgentRuntime:
         """
         self._operation_count += 1
         start_time = time.time()
+
+        # Ensure runtime subsystems are initialized before processing.
+        # This prevents NoneType errors when create_agent is called before
+        # initialize() (e.g., on first prompt from the editor).
+        if self._orchestrator is None:
+            try:
+                await self.initialize()
+            except Exception as init_exc:
+                logger.warning("Runtime auto-init failed: %s", init_exc)
 
         if prompt.startswith("/"):
             return await self._process_command(prompt, session_id)
