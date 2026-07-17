@@ -15,6 +15,7 @@ from backend.routes import (
     agent_core_systems, agent_engine_unified, agent_orchestrator,
     agent_game_forge, agent_engine_unified_v2, agent_ai_native_orchestrator,
     agent_engine_integration, agent_game_synthesizer, agent_game_director,
+    agent_game_conductor, agent_game_studio, agent_event_sheet,
 )
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
@@ -68,6 +69,9 @@ app.include_router(agent_ai_native_orchestrator.router, prefix="/api/agent", tag
 app.include_router(agent_engine_integration.router, prefix="/api", tags=["Agent & Engine Integration"])
 app.include_router(agent_game_synthesizer.router, prefix="/api/agent", tags=["Game Synthesizer"])
 app.include_router(agent_game_director.router, prefix="/api/agent", tags=["Game Director"])
+app.include_router(agent_game_conductor.router, prefix="/api/agent", tags=["Game Conductor"])
+app.include_router(agent_game_studio.router, prefix="/api/agent", tags=["Game Studio"])
+app.include_router(agent_event_sheet.router, prefix="/api/agent", tags=["Event Sheet Synthesizer"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
