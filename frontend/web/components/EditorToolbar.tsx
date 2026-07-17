@@ -43,6 +43,8 @@ export const modeGroups: ModeGroup[] = [
     cat: 'agent',
     items: [
       { id: 'agent-studio', label: 'Agent Studio', icon: 'fa-brain' },
+      { id: 'conductor-intelligence', label: 'Conductor', icon: 'fa-wand-magic-sparkles' },
+      { id: 'ai-game-studio', label: 'Game Studio', icon: 'fa-users-gear' },
       { id: 'agent-cognition', label: 'Cognition', icon: 'fa-lightbulb' },
       { id: 'agent-memory', label: 'Memory', icon: 'fa-database' },
       { id: 'agent-reasoning', label: 'Reasoning', icon: 'fa-diagram-project' },
