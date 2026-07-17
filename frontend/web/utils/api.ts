@@ -16293,3 +16293,44 @@ export const gameDirectorApi = {
     }),
   getResult: (sessionId: string) => api.get(`/agent/game-director/result/${sessionId}`),
 };
+
+// AI Game Conductor — unifies Director, IntelligenceEngine, and DesignReasoner
+export const gameConductorApi = {
+  status: () => api.get('/agent/game-conductor/status'),
+  capabilities: () => api.get('/agent/game-conductor/capabilities'),
+  history: () => api.get('/agent/game-conductor/history'),
+  conduct: (prompt: string, genreHint?: string, maxIterations?: number, returnHtml: boolean = true) =>
+    api.post('/agent/game-conductor/conduct', {
+      prompt,
+      genre_hint: genreHint,
+      max_iterations: maxIterations,
+      return_html: returnHtml,
+    }),
+  getResult: (sessionId: string) => api.get(`/agent/game-conductor/result/${sessionId}`),
+};
+
+// AI Game Studio — multi-agent collaboration (Designer, Programmer, Artist, Tester, Composer)
+export const gameStudioApi = {
+  status: () => api.get('/agent/game-studio/status'),
+  agents: () => api.get('/agent/game-studio/agents'),
+  history: () => api.get('/agent/game-studio/history'),
+  collaborate: (prompt: string, rounds?: number) =>
+    api.post('/agent/game-studio/collaborate', {
+      prompt,
+      rounds: rounds ?? 3,
+    }),
+  getResult: (sessionId: string) => api.get(`/agent/game-studio/result/${sessionId}`),
+};
+
+// Event Sheet Synthesizer — natural-language to executable event-sheet logic
+export const eventSheetApi = {
+  status: () => api.get('/agent/event-sheet/status'),
+  synthesize: (prompt: string, sheetName?: string, linkedScene?: string) =>
+    api.post('/agent/event-sheet/synthesize', {
+      prompt,
+      sheet_name: sheetName,
+      linked_scene: linkedScene,
+    }),
+  history: () => api.get('/agent/event-sheet/history'),
+  runtime: () => api.get('/agent/event-sheet/runtime'),
+};
