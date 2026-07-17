@@ -1,4 +1,4 @@
-import { runtimeApi, engineApi, agentApi, sessionsApi, loopApi, gameSynthesizerApi, gameDirectorApi } from '../utils/api';
+import { runtimeApi, engineApi, agentApi, sessionsApi, loopApi, gameSynthesizerApi, gameDirectorApi, gameConductorApi } from '../utils/api';
 import { useEditorStore, type SceneNode } from '../store/editorStore';
 import { generateGameHtml } from '../components/GameRunner';
 
@@ -340,6 +340,31 @@ async function generateGameViaDirector(prompt: string): Promise<{ html: string; 
   }
 }
 
+// Try to generate a game via the AI Game Conductor, the top-level orchestrator
+// that unifies the GameDirector, GameIntelligenceEngine, and GameDesignReasoner.
+// Returns a playable game plus a rich intelligence report (design patterns,
+// balance, difficulty curve, player experience, suggestions). Falls back to null
+// if the conductor is unavailable or fails.
+async function generateGameViaConductor(prompt: string): Promise<{ html: string; nodes: SceneNode[]; intelligence?: any; quality?: any; iterations?: number } | null> {
+  try {
+    const result = await gameConductorApi.conduct(prompt, undefined, undefined, true) as any;
+    if (result?.status !== 'success' || !result?.data?.html) {
+      return null;
+    }
+    const data = result.data;
+    const nodes = generateGameSceneNodes(prompt);
+    return {
+      html: data.html,
+      nodes,
+      intelligence: data.intelligence,
+      quality: data.quality,
+      iterations: data.iterations,
+    };
+  } catch {
+    return null;
+  }
+}
+
 
 export async function processAIPrompt(prompt: string): Promise<boolean> {
   const store = useEditorStore.getState();
@@ -406,36 +431,55 @@ export async function processAIPrompt(prompt: string): Promise<boolean> {
       addLog('info', '[AI] Agent loop skipped (backend unavailable)');
     }
 
-    // Generate a complete, playable game. Try the AI Game Director first
-    // (full pipeline: synthesize -> build -> simulate -> evaluate -> refine),
-    // then the backend synthesizer, then client-side generation as fallback.
+    // Generate a complete, playable game. Try the AI Game Conductor first
+    // (top-level orchestrator: director + intelligence + reasoner), then the
+    // Game Director, then the backend synthesizer, then client-side fallback.
     updateAIGenerationPhase('world', 88);
     let html: string;
     let nodes: SceneNode[];
     let backendUsed = false;
 
-    const directorResult = await generateGameViaDirector(prompt);
-    if (directorResult) {
-      html = directorResult.html;
-      nodes = directorResult.nodes;
+    const conductorResult = await generateGameViaConductor(prompt);
+    if (conductorResult) {
+      html = conductorResult.html;
+      nodes = conductorResult.nodes;
       backendUsed = true;
-      const q = directorResult.quality;
-      addLog('success', `[AI] Game Director produced game (quality: ${q?.overall ?? 'N/A'}/10, iterations: ${directorResult.iterations ?? 0})`);
-      if (q) {
-        addLog('info', `[AI] Quality breakdown — engagement: ${q.engagement}, difficulty: ${q.difficulty}, variety: ${q.variety}, coherence: ${q.coherence}`);
+      const intel = conductorResult.intelligence;
+      const q = conductorResult.quality;
+      addLog('success', `[AI] Game Conductor produced game (quality: ${q?.overall ?? 'N/A'}/10, iterations: ${conductorResult.iterations ?? 0})`);
+      if (intel) {
+        addLog('info', `[AI] Intelligence — innovation: ${intel.innovation_score ?? 'N/A'}, coherence: ${intel.coherence_score ?? 'N/A'}`);
+        if (Array.isArray(intel.design_patterns) && intel.design_patterns.length) {
+          addLog('info', `[AI] Design patterns: ${intel.design_patterns.slice(0, 4).join(', ')}`);
+        }
+        if (Array.isArray(intel.suggestions) && intel.suggestions.length) {
+          addLog('info', `[AI] Top suggestion: ${intel.suggestions[0]?.title || intel.suggestions[0]}`);
+        }
       }
     } else {
-      const backendResult = await generateGameViaBackend(prompt);
-      if (backendResult) {
-        html = backendResult.html;
-        nodes = backendResult.nodes;
+      const directorResult = await generateGameViaDirector(prompt);
+      if (directorResult) {
+        html = directorResult.html;
+        nodes = directorResult.nodes;
         backendUsed = true;
-        addLog('success', `[AI] Backend synthesizer produced game (${backendResult.gdd?.concept?.genre || 'unknown'} genre)`);
+        const q = directorResult.quality;
+        addLog('success', `[AI] Game Director produced game (quality: ${q?.overall ?? 'N/A'}/10, iterations: ${directorResult.iterations ?? 0})`);
+        if (q) {
+          addLog('info', `[AI] Quality breakdown — engagement: ${q.engagement}, difficulty: ${q.difficulty}, variety: ${q.variety}, coherence: ${q.coherence}`);
+        }
       } else {
-        addLog('info', '[AI] Backend unavailable — using local generation');
-        const local = generateGameFromPrompt(prompt);
-        html = local.html;
-        nodes = local.nodes;
+        const backendResult = await generateGameViaBackend(prompt);
+        if (backendResult) {
+          html = backendResult.html;
+          nodes = backendResult.nodes;
+          backendUsed = true;
+          addLog('success', `[AI] Backend synthesizer produced game (${backendResult.gdd?.concept?.genre || 'unknown'} genre)`);
+        } else {
+          addLog('info', '[AI] Backend unavailable — using local generation');
+          const local = generateGameFromPrompt(prompt);
+          html = local.html;
+          nodes = local.nodes;
+        }
       }
     }
 
