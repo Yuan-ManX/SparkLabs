@@ -274,6 +274,8 @@ import ConcurrencyManagerPanel from './ConcurrencyManagerPanel';
 import DelegationBrokerPanel from './DelegationBrokerPanel';
 import CognitiveSynthesisPanel from './CognitiveSynthesisPanel';
 import GameIntelligencePanel from './GameIntelligencePanel';
+import ConductorIntelligencePanel from './ConductorIntelligencePanel';
+import GameStudioPanel from './GameStudioPanel';
 import AutonomousCreatorPanel from './AutonomousCreatorPanel';
 import InteractionLoopPanel from './InteractionLoopPanel';
 import UnifiedOrchestrationPanel from './UnifiedOrchestrationPanel';
@@ -822,6 +824,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'ai-system': return <AISystemPanel />;
       case 'cognitive-synthesis': return <CognitiveSynthesisPanel />;
       case 'game-intelligence': return <GameIntelligencePanel />;
+      case 'conductor-intelligence': return <ConductorIntelligencePanel />;
+      case 'ai-game-studio': return <GameStudioPanel />;
       case 'autonomous-creator': return <AutonomousCreatorPanel />;
       case 'interaction-loop': return <InteractionLoopPanel />;
       case 'unified-orchestration': return <UnifiedOrchestrationPanel />;
