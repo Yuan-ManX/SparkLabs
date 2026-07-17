@@ -116,7 +116,7 @@ npm run dev
 
 <div align="center">
 
-![SparkLabs-Mini-Game](./assets/Mini-Game.mov)
+<video src="./assets/Mini-Game.mov" controls width="640"></video>
 
 **Mini-Game — Boss Battle Arena**
 
