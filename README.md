@@ -116,13 +116,14 @@ npm run dev
 
 <div align="center">
 
-<video src="./assets/Mini-Game.mov" controls width="80%"></video>
+![SparkLabs-Mini-Game](./assets/Mini-Game.mov)
 
 **Mini-Game — Boss Battle Arena**
 
+</div>
+
 A complete playable game generated end-to-end by the AI agent pipeline. One prompt enters the 11-stage conductor pipeline — **Generate → Mutate → Critique → Heal → Evolve → Compose → Analyze → Tournament → Fusion → Polish → Publish** — and emerges as a shipping-ready game with physics, enemies, collectibles, achievements, adaptive polish, and a deployment manifest. No hand-coded level data, no manual asset wiring — the agents handle design, assembly, balancing, and packaging autonomously.
 
-</div>
 
 
 ## Use Cases
