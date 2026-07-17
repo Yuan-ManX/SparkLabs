@@ -41,6 +41,8 @@ from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
 from sparkai.engine.engine_game_extensions import FxInjector, ExtensionConfig
+from sparkai.engine.engine_game_features import FeatureInjector, FeatureConfig
+from sparkai.engine.engine_game_polish import PolishInjector, PolishConfig
 
 logger = logging.getLogger(__name__)
 
@@ -678,6 +680,8 @@ class HtmlAssembler:
 
     def __init__(self) -> None:
         self._fx = FxInjector(ExtensionConfig())
+        self._features = FeatureInjector(FeatureConfig())
+        self._polish = PolishInjector(PolishConfig())
 
     def assemble(self, config: GameConfig) -> str:
         """Produce a complete, self-contained HTML game document."""
@@ -686,6 +690,12 @@ class HtmlAssembler:
         quest = self._escape(config.quest_summary)
         fx_header = self._fx.build_header_js()
         fx_loop = self._fx.build_loop_patch_js()
+        feature_header = self._features.build_header_js()
+        feature_loop = self._features.build_loop_patch_js()
+        feature_init = self._features.build_init_call_js()
+        polish_header = self._polish.build_header_js()
+        polish_loop = self._polish.build_loop_patch_js()
+        polish_init = self._polish.build_init_call_js()
         ending = self._escape(config.ending_text)
 
         return f"""<!DOCTYPE html>
@@ -823,6 +833,10 @@ class HtmlAssembler:
   var dialogueActive = false;
 {fx_header}
 {fx_loop}
+{feature_header}
+{feature_loop}
+{polish_header}
+{polish_loop}
 
   // Input
   window.addEventListener('keydown', function(e) {{
@@ -835,6 +849,16 @@ class HtmlAssembler:
     }} else if (e.key === 'Escape' && state === 'paused') {{
       state = 'playing';
       hideOverlay();
+    }} else if (e.key.toLowerCase() === 'm' && typeof toggleAudio === 'function') {{
+      toggleAudio();
+    }} else if (e.key.toLowerCase() === 'r' && state === 'paused' && typeof restartGame === 'function') {{
+      restartGame();
+    }} else if (e.key === 'Tab' && state === 'playing' && typeof toggleSettings === 'function') {{
+      e.preventDefault();
+      toggleSettings();
+    }} else if (e.key === 'Tab' && state === 'paused' && typeof toggleSettings === 'function') {{
+      e.preventDefault();
+      toggleSettings();
     }}
   }});
   window.addEventListener('keyup', function(e) {{ keys[e.key.toLowerCase()] = false; }});
@@ -878,6 +902,8 @@ class HtmlAssembler:
     if (typeof resumeAudio === 'function') resumeAudio();
     score = 0; lives = CONFIG.lives; levelIdx = 0;
     loadLevel(0);
+    {feature_init}
+    {polish_init}
     state = 'playing';
     hideOverlay();
   }}
@@ -893,6 +919,9 @@ class HtmlAssembler:
     entities = [];
     particles = [];
     camera = {{ x: 0, y: 0 }};
+    if (typeof generateTilemapForLevel === 'function') generateTilemapForLevel(idx);
+    if (typeof levelStartTime !== 'undefined') levelStartTime = Date.now();
+    if (typeof deathlessLevel !== 'undefined') deathlessLevel = true;
     for (var i = 0; i < currentLevel.entities.length; i++) {{
       var e = currentLevel.entities[i];
       var ent = {{
@@ -928,7 +957,12 @@ class HtmlAssembler:
 
   function nextLevel() {{
     score += 100;
-    loadLevel(levelIdx + 1);
+    var nextIdx = levelIdx + 1;
+    if (typeof showTransition === 'function' && nextIdx < LEVELS.length) {{
+      var lvlName = (LEVELS[nextIdx] && LEVELS[nextIdx].name) ? LEVELS[nextIdx].name : ('LEVEL ' + (nextIdx + 1));
+      showTransition(lvlName);
+    }}
+    loadLevel(nextIdx);
     state = 'playing';
   }}
 
@@ -937,6 +971,10 @@ class HtmlAssembler:
     lives--;
     updateLives();
     if (typeof sfxDamage === 'function') sfxDamage();
+    if (typeof triggerShake === 'function') triggerShake(8);
+    if (typeof deathlessLevel !== 'undefined') deathlessLevel = false;
+    if (typeof deathlessRun !== 'undefined') deathlessRun = false;
+    if (typeof resetCombo === 'function') resetCombo();
     if (typeof spawnBurst === 'function') spawnBurst(player.x + player.w/2, player.y + player.h/2, '#ef4444', 12, 4);
     if (lives <= 0) {{
       state = 'lost';
@@ -1086,10 +1124,19 @@ class HtmlAssembler:
           if (e.health <= 0) {{
             if (typeof spawnBurst === 'function') spawnBurst(e.x + e.w/2, e.y + e.h/2, e.color, 14, 4);
             else spawnParticles(e.x + e.w/2, e.y + e.h/2, e.color, 12);
-            score += e.isBoss ? 500 : 50;
+            var enemyPoints = e.isBoss ? 500 : 50;
+            if (typeof addCombo === 'function') {{
+              addCombo();
+              enemyPoints = applyScore(enemyPoints);
+              if (typeof spawnScorePopup === 'function') spawnScorePopup(e.x + e.w/2, e.y, '+' + enemyPoints, '#f97316');
+            }} else {{
+              score += enemyPoints;
+            }}
             updateScore();
             player.vy = -CONFIG.jumpStrength * 0.7;
             if (typeof sfxStomp === 'function') sfxStomp();
+            if (typeof triggerShake === 'function') triggerShake(5);
+            if (typeof totalEnemiesDefeated !== 'undefined') totalEnemiesDefeated++;
           }} else {{
             e.alive = true;
           }}
@@ -1116,11 +1163,20 @@ class HtmlAssembler:
       if (!e.alive || e.type !== 'collectible') continue;
       if (rectOverlap(player, e)) {{
         e.alive = false;
-        score += e.value || 10;
+        var collectPoints = e.value || 10;
+        if (typeof addCombo === 'function') {{
+          addCombo();
+          collectPoints = applyScore(collectPoints);
+          if (typeof spawnScorePopup === 'function') spawnScorePopup(e.x + e.w/2, e.y, '+' + collectPoints, '#fbbf24');
+          if (typeof spawnBurst === 'function') spawnBurst(e.x + e.w/2, e.y + e.h/2, e.color, 8, 3);
+        }} else {{
+          score += collectPoints;
+        }}
         updateScore();
         if (typeof spawnSparkles === 'function') spawnSparkles(e.x + e.w/2, e.y + e.h/2, e.color, 6);
         else spawnParticles(e.x + e.w/2, e.y + e.h/2, e.color, 8);
         if (typeof sfxCollect === 'function') sfxCollect();
+        if (typeof totalCollectiblesGathered !== 'undefined') totalCollectiblesGathered++;
       }}
     }}
 
@@ -1148,6 +1204,20 @@ class HtmlAssembler:
         if (typeof spawnBurst === 'function') spawnBurst(e.x + e.w/2, e.y + e.h/2, e.color, 24, 6);
         else spawnParticles(e.x + e.w/2, e.y + e.h/2, e.color, 24);
         if (typeof sfxGoal === 'function') sfxGoal();
+        if (typeof triggerShake === 'function') triggerShake(10);
+        if (typeof saveProgress === 'function') saveProgress();
+        if (typeof deathlessLevel !== 'undefined' && deathlessLevel) {{
+          if (typeof unlockAchievement === 'function') unlockAchievement('survivor');
+        }}
+        if (typeof levelStartTime !== 'undefined' && (Date.now() - levelStartTime) < 30000) {{
+          if (typeof unlockAchievement === 'function') unlockAchievement('speed_runner');
+        }}
+        if (levelIdx + 1 >= LEVELS.length) {{
+          if (typeof unlockAchievement === 'function') unlockAchievement('champion');
+          if (typeof deathlessRun !== 'undefined' && deathlessRun) {{
+            if (typeof unlockAchievement === 'function') unlockAchievement('untouchable');
+          }}
+        }}
         var nextName = (levelIdx + 1 < LEVELS.length) ? LEVELS[levelIdx + 1].name : 'Victory';
         showOverlay('LEVEL CLEAR', 'Next: ' + nextName, '');
         setTimeout(function() {{ nextLevel(); }}, 1800);
@@ -1163,6 +1233,10 @@ class HtmlAssembler:
 
     // Update extension systems (particles, projectiles, powerups, etc.)
     if (typeof updateExtensions === 'function') updateExtensions();
+    // Update feature systems (save, achievements, shake, camera)
+    if (typeof updateFeatureSystems === 'function') updateFeatureSystems();
+    // Update polish systems (combo, particles, tutorial, transitions)
+    if (typeof updatePolishSystems === 'function') updatePolishSystems();
   }}
 
   function rectOverlap(a, b) {{
@@ -1299,6 +1373,12 @@ class HtmlAssembler:
     // Extension rendering (particles, projectiles, powerups, etc.)
     // Rendered in screen space — extension functions subtract camera themselves.
     if (typeof renderExtensions === 'function') renderExtensions();
+    // Feature rendering (tilemap, minimap, overlays) in screen space
+    if (typeof renderFeatureSystems === 'function') renderFeatureSystems();
+    // Polish rendering (combo, score popups, tutorial, transitions) in screen space
+    if (typeof renderPolishSystems === 'function') renderPolishSystems();
+    // Polish overlay (settings panel) on top of everything
+    if (typeof renderPolishOverlay === 'function') renderPolishOverlay();
 
     // Quest text at bottom
     if (CONFIG.quest && state === 'playing') {{
