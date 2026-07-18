@@ -831,6 +831,9 @@ class HtmlAssembler:
   var touchLeft = false, touchRight = false, touchUp = false;
   var camera = {{ x: 0, y: 0 }};
   var dialogueActive = false;
+
+  // Expose game state for AI Event Sheet runtime evaluation
+  window.gameState = {{ score: 0, lives: CONFIG.lives, level: 1, state: 'intro', health: CONFIG.lives, enemies: 0, combo: 0, multiplier: 1 }};
 {fx_header}
 {fx_loop}
 {feature_header}
@@ -906,6 +909,42 @@ class HtmlAssembler:
     {polish_init}
     state = 'playing';
     hideOverlay();
+  }}
+
+  // Action helpers for AI Event Sheet runtime
+  function spawnEntity(typeName) {{
+    if (!player || !currentLevel) return;
+    var sx = player.x + (Math.random() - 0.5) * 200;
+    var sy = player.y - 80;
+    var ent = {{ x: sx, y: sy, w: 24, h: 24, vx: 0, vy: 0, type: 'enemy', color: CONFIG.enemyColor, facing: -1, onGround: false, hp: 1, points: 100, animPhase: Math.random() * 6.28 }};
+    if (typeName && typeName.indexOf('collect') >= 0) {{
+      ent.type = 'collectible'; ent.color = CONFIG.collectibleColor; ent.points = 50;
+    }} else if (typeName && typeName.indexOf('potion') >= 0) {{
+      ent.type = 'collectible'; ent.color = '#22c55e'; ent.points = 0; ent.heals = true;
+    }}
+    entities.push(ent);
+  }}
+
+  function playSound(name) {{
+    try {{
+      var ctx = window._slAudioCtx || (window._slAudioCtx = new (window.AudioContext || window.webkitAudioContext)());
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value = (name && name.indexOf('warn') >= 0) ? 220 : 440;
+      osc.type = 'square';
+      gain.gain.setValueAtTime(0.15, ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + 0.3);
+      osc.start(ctx.currentTime);
+      osc.stop(ctx.currentTime + 0.3);
+    }} catch(e) {{}}
+  }}
+
+  function moveEntity(target, destination) {{
+    if (!player || !target) return;
+    if (target === 'player' || target.indexOf('player') >= 0) {{
+      if (destination === 'start') {{ player.x = 50; player.y = 100; }}
+    }}
   }}
 
   function loadLevel(idx) {{
@@ -1021,6 +1060,16 @@ class HtmlAssembler:
   function update() {{
     if (state !== 'playing' || !player) return;
     if (dialogueActive) return;
+
+    // Sync game state for AI Event Sheet runtime
+    window.gameState.score = score;
+    window.gameState.lives = lives;
+    window.gameState.level = levelIdx + 1;
+    window.gameState.state = state;
+    window.gameState.health = lives;
+    window.gameState.enemies = entities.filter(function(e) {{ return e.type === 'enemy'; }}).length;
+    if (typeof combo !== 'undefined') window.gameState.combo = combo;
+    if (typeof multiplier !== 'undefined') window.gameState.multiplier = multiplier;
 
     // Player input
     var left = keys['arrowleft'] || keys['a'] || touchLeft;
