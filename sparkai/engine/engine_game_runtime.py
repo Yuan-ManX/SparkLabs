@@ -43,6 +43,7 @@ from typing import Any, Dict, List, Optional, Tuple
 from sparkai.engine.engine_game_extensions import FxInjector, ExtensionConfig
 from sparkai.engine.engine_game_features import FeatureInjector, FeatureConfig
 from sparkai.engine.engine_game_polish import PolishInjector, PolishConfig
+from sparkai.engine.engine_game_assets import GenreAssetProfile, get_dom_overlay_html
 
 logger = logging.getLogger(__name__)
 
@@ -249,6 +250,22 @@ class ConceptCompiler:
             "structure_color": "#94a3b8", "npc_color": "#c084fc",
             "collectibles": 8, "enemies": 2, "npcs": 2, "lives": 5,
         },
+        "parkour": {
+            "gravity": 0.65, "jump_strength": 12.5, "move_speed": 6.0,
+            "enemy_speed": 0.0, "background": "#0a0e1a", "accent": "#00e5ff",
+            "player_color": "#00e5ff", "enemy_color": "#ef4444",
+            "collectible_color": "#ff00ff", "terrain_color": "#1e3a5f",
+            "structure_color": "#00e5ff", "npc_color": "#c084fc",
+            "collectibles": 6, "enemies": 0, "npcs": 0, "lives": 3,
+        },
+        "tank_battle": {
+            "gravity": 0.0, "jump_strength": 0.0, "move_speed": 2.5,
+            "enemy_speed": 1.2, "background": "#000000", "accent": "#fbbf24",
+            "player_color": "#fbbf24", "enemy_color": "#94a3b8",
+            "collectible_color": "#22c55e", "terrain_color": "#8b4513",
+            "structure_color": "#64748b", "npc_color": "#c084fc",
+            "collectibles": 0, "enemies": 4, "npcs": 0, "lives": 3,
+        },
         "custom": {
             "gravity": 0.4, "jump_strength": 9.0, "move_speed": 3.6,
             "enemy_speed": 1.2, "background": "#1a1a2e", "accent": "#f97316",
@@ -394,6 +411,25 @@ class ConceptCompiler:
                     width=120.0, height=18.0,
                     color=tuning["terrain_color"],
                 ))
+            # Vertical walls for wall-slide/wall-jump (parkour & platformer)
+            # Tall thin terrain lets the player slide along the side and kick off.
+            # Walls sit on the ground and are short enough to reach by jumping.
+            if genre in ("parkour", "platformer"):
+                wall_count = 3 + level_idx
+                wall_h = 150.0  # reachable: jump peak ~120px above ground
+                for i in range(wall_count):
+                    # Space walls between platforms, offset from platform centers
+                    wx = 240 + i * ((world_w - 400) / max(1, wall_count)) + rng.randint(-30, 30)
+                    wy = float(world_h - 40 - wall_h)  # bottom rests on ground
+                    entities.append(GameEntitySpec(
+                        entity_id=f"wall_{i}",
+                        name=f"Wall {i + 1}",
+                        entity_type="terrain",
+                        x=float(wx), y=wy,
+                        width=28.0, height=wall_h,
+                        color=tuning["terrain_color"],
+                        properties={"static": True, "wall": True},
+                    ))
             # Ground
             entities.append(GameEntitySpec(
                 entity_id="ground",
@@ -678,10 +714,37 @@ class ConceptCompiler:
 class HtmlAssembler:
     """Assembles the final playable HTML document from a GameConfig."""
 
+    # Genre to visual rendering style mapping. Each style controls how the
+    # player, enemies, and collectibles are drawn on the canvas, giving each
+    # game type a distinct visual identity.
+    GENRE_STYLE_MAP: Dict[str, str] = {
+        "platformer": "humanoid",
+        "boss_battle": "humanoid",
+        "survival": "humanoid",
+        "sandbox": "humanoid",
+        "exploration": "humanoid",
+        "shooter": "ship",
+        "parkour": "ship",
+        "racing": "ship",
+        "puzzle": "orb",
+        "music": "orb",
+        "rpg": "humanoid",
+        "dungeon_crawler": "humanoid",
+        "top_down_adventure": "isometric",
+        "narrative": "humanoid",
+        "strategy": "isometric",
+        "tank_battle": "tank",
+        "custom": "humanoid",
+    }
+
     def __init__(self) -> None:
         self._fx = FxInjector(ExtensionConfig())
         self._features = FeatureInjector(FeatureConfig())
         self._polish = PolishInjector(PolishConfig())
+
+    def _get_genre_style(self, genre: str) -> str:
+        """Return the visual rendering style for a given genre."""
+        return self.GENRE_STYLE_MAP.get(genre, "humanoid")
 
     def assemble(self, config: GameConfig) -> str:
         """Produce a complete, self-contained HTML game document."""
@@ -697,6 +760,14 @@ class HtmlAssembler:
         polish_loop = self._polish.build_loop_patch_js()
         polish_init = self._polish.build_init_call_js()
         ending = self._escape(config.ending_text)
+
+        # Per-genre asset profile (audio + visual + effects overrides)
+        asset_profile = GenreAssetProfile(config.genre, config)
+        genre_css = asset_profile.build_css()
+        genre_audio_js = asset_profile.build_audio_overrides()
+        genre_effects_js = asset_profile.build_effect_overrides()
+        genre_post_process_js = asset_profile.build_post_process_js()
+        genre_dom_overlay = get_dom_overlay_html(config.genre)
 
         return f"""<!DOCTYPE html>
 <html lang="en">
@@ -755,10 +826,12 @@ class HtmlAssembler:
   }}
   @media (pointer: coarse) {{ #mobile-controls {{ display: flex; }} }}
   .touch-zone {{ flex: 1; pointer-events: auto; }}
+{genre_css}
 </style>
 </head>
 <body>
 <canvas id="gameCanvas"></canvas>
+{genre_dom_overlay}
 <div id="hud">
   <div class="hud-block">
     <span class="label">SCORE</span><span id="scoreVal">0</span>
@@ -793,6 +866,7 @@ class HtmlAssembler:
 
   var CONFIG = {json.dumps({
     "title": config.title, "genre": config.genre, "theme": config.theme,
+    "genreStyle": self._get_genre_style(config.genre),
     "width": config.width, "height": config.height,
     "gravity": config.gravity, "jumpStrength": config.jump_strength,
     "moveSpeed": config.move_speed, "enemySpeed": config.enemy_speed,
@@ -802,6 +876,9 @@ class HtmlAssembler:
     "structureColor": config.structure_color, "npcColor": config.npc_color,
     "intro": intro, "quest": quest, "ending": ending,
     "mechanics": config.mechanics, "innovations": config.innovation_angles,
+    "canDoubleJump": config.genre in ("platformer", "boss_battle", "sandbox", "survival"),
+    "canWallJump": config.genre in ("parkour", "platformer"),
+    "bossPhases": config.genre in ("boss_battle", "shooter"),
   })};
   var LEVELS = {levels_json};
 
@@ -828,9 +905,22 @@ class HtmlAssembler:
   var entities = [];
   var particles = [];
   var keys = {{}};
-  var touchLeft = false, touchRight = false, touchUp = false;
+  var keysJustPressed = {{}}; // edge-detected: true for one frame after keydown
+  var touchLeft = false, touchRight = false, touchUp = false, touchUpJustPressed = false;
   var camera = {{ x: 0, y: 0 }};
   var dialogueActive = false;
+  var lastCheckpoint = null; // Respawn position set by checkpoint triggers
+  // Game-feel timers (frames @ 60 FPS)
+  var coyoteTimer = 0;      // grace period after leaving ledge to still jump
+  var jumpBufferTimer = 0;  // jump pressed shortly before landing executes on land
+  var hitStopTimer = 0;     // freeze update logic for heavy impacts
+  var COYOTE_FRAMES = 6;
+  var JUMP_BUFFER_FRAMES = 6;
+  // Genre-specific mechanic state
+  var jumpsRemaining = 0;   // double-jump counter (reset on landing)
+  var maxJumps = CONFIG.canDoubleJump ? 2 : 1;
+  var isWallSliding = false; // true when touching wall while falling
+  var wallJumpLock = 0;     // frames to lock horizontal input after wall-jump
 
   // Expose game state for AI Event Sheet runtime evaluation
   window.gameState = {{ score: 0, lives: CONFIG.lives, level: 1, state: 'intro', health: CONFIG.lives, enemies: 0, combo: 0, multiplier: 1 }};
@@ -841,9 +931,107 @@ class HtmlAssembler:
 {polish_header}
 {polish_loop}
 
-  // Input
+  // ===== Per-Genre Asset Profile Overrides =====
+  // Audio overrides: redefine sfx* functions with genre-specific sound palettes.
+  // Runs AFTER base AudioSynth definitions so reassignment cleanly replaces defaults.
+{genre_audio_js}
+  // Effect overrides: redefine particle spawn functions per genre identity.
+{genre_effects_js}
+  // Post-process: per-frame canvas filter applied after scene render.
+{genre_post_process_js}
+
+  // Enemy projectile system (used by boss phase attacks)
+  var enemyProjectiles = [];
+  function fireEnemyProjectile(sx, sy, tx, ty) {{
+    var dx = tx - sx, dy = ty - sy;
+    var dist = Math.sqrt(dx*dx + dy*dy) || 1;
+    var speed = 4.5;
+    enemyProjectiles.push({{ x: sx, y: sy, vx: dx/dist * speed, vy: dy/dist * speed, life: 120, w: 8, h: 8, color: '#ff4444' }});
+  }}
+  function updateEnemyProjectiles() {{
+    for (var i = enemyProjectiles.length - 1; i >= 0; i--) {{
+      var p = enemyProjectiles[i];
+      p.x += p.vx; p.y += p.vy; p.life--;
+      if (p.life <= 0) {{ enemyProjectiles.splice(i, 1); continue; }}
+      // Hit player
+      if (typeof player !== 'undefined' && player && p.x < player.x + player.w && p.x + p.w > player.x && p.y < player.y + player.h && p.y + p.h > player.y) {{
+        enemyProjectiles.splice(i, 1);
+        if (typeof damagePlayer === 'function') damagePlayer();
+      }}
+    }}
+  }}
+  function renderEnemyProjectiles() {{
+    for (var i = 0; i < enemyProjectiles.length; i++) {{
+      var p = enemyProjectiles[i];
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.w/2, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = 'rgba(255,80,80,0.4)';
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.w, 0, Math.PI * 2);
+      ctx.fill();
+    }}
+  }}
+
+  // Tank battle: 4-directional shooting and destructible walls
+  if (CONFIG.genre === 'tank_battle') {{
+    // Override projectile firing to shoot in tankDir (4 directions)
+    var _origFireProjectile = (typeof fireProjectile === 'function') ? fireProjectile : null;
+    fireProjectile = function() {{
+      if (projectileCooldown > 0) return;
+      var dx = 0, dy = 0;
+      var dir = player.tankDir || 'up';
+      if (dir === 'up') {{ dy = -1; }}
+      else if (dir === 'down') {{ dy = 1; }}
+      else if (dir === 'left') {{ dx = -1; }}
+      else {{ dx = 1; }}
+      projectiles.push({{
+        x: player.x + player.w/2, y: player.y + player.h/2,
+        vx: dx * 8, vy: dy * 8,
+        w: 6, h: 6, life: 80, color: CONFIG.playerColor
+      }});
+      projectileCooldown = 20;
+      if (typeof sfxShoot === 'function') sfxShoot();
+      // Cannon smoke puff at muzzle (genre-specific effect)
+      if (typeof spawnCannonSmoke === 'function') {{
+        spawnCannonSmoke(player.x + player.w/2 + dx * 12, player.y + player.h/2 + dy * 12, dir);
+      }}
+    }};
+    // Check projectile hits on destructible walls (brick terrain)
+    function checkProjectileWallHits() {{
+      for (var i = projectiles.length - 1; i >= 0; i--) {{
+        var p = projectiles[i];
+        for (var j = 0; j < entities.length; j++) {{
+          var w = entities[j];
+          if (!w.alive || w.type !== 'terrain') continue;
+          if (p.x < w.x + w.w && p.x + p.w > w.x && p.y < w.y + w.h && p.y + p.h > w.y) {{
+            // Hit destructible wall
+            w.wallHp = (w.wallHp !== undefined) ? w.wallHp - 1 : 0;
+            if (w.wallHp <= 0) {{
+              w.alive = false;
+              if (typeof spawnBurst === 'function') spawnBurst(w.x + w.w/2, w.y + w.h/2, w.color, 8, 3);
+              else spawnParticles(w.x + w.w/2, w.y + w.h/2, w.color, 6);
+            }}
+            projectiles.splice(i, 1);
+            break;
+          }}
+        }}
+      }}
+    }}
+  }}
+
+  // Input - edge detection tracks justPressed for one frame
+  var JUMP_KEYS = ['arrowup', 'w', ' '];
+  function isJumpKey(k) {{ return JUMP_KEYS.indexOf(k) >= 0; }}
   window.addEventListener('keydown', function(e) {{
-    keys[e.key.toLowerCase()] = true;
+    var k = e.key.toLowerCase();
+    if (!keys[k]) keysJustPressed[k] = true; // only flag on fresh press (not auto-repeat)
+    keys[k] = true;
+    // Feed jump buffer when jump key is freshly pressed during play
+    if (state === 'playing' && isJumpKey(k)) {{
+      jumpBufferTimer = JUMP_BUFFER_FRAMES;
+    }}
     if (state === 'intro' || state === 'won' || state === 'lost') {{
       startGame();
     }} else if (e.key === 'Escape' && state === 'playing') {{
@@ -852,9 +1040,9 @@ class HtmlAssembler:
     }} else if (e.key === 'Escape' && state === 'paused') {{
       state = 'playing';
       hideOverlay();
-    }} else if (e.key.toLowerCase() === 'm' && typeof toggleAudio === 'function') {{
+    }} else if (k === 'm' && typeof toggleAudio === 'function') {{
       toggleAudio();
-    }} else if (e.key.toLowerCase() === 'r' && state === 'paused' && typeof restartGame === 'function') {{
+    }} else if (k === 'r' && state === 'paused' && typeof restartGame === 'function') {{
       restartGame();
     }} else if (e.key === 'Tab' && state === 'playing' && typeof toggleSettings === 'function') {{
       e.preventDefault();
@@ -866,13 +1054,13 @@ class HtmlAssembler:
   }});
   window.addEventListener('keyup', function(e) {{ keys[e.key.toLowerCase()] = false; }});
 
-  // Touch controls
+  // Touch controls - feed jump buffer on fresh tap
   var tl = document.getElementById('touchLeft');
   var tr = document.getElementById('touchRight');
   tl.addEventListener('touchstart', function(e) {{ e.preventDefault(); touchLeft = true; }});
   tl.addEventListener('touchend', function() {{ touchLeft = false; }});
-  tl.addEventListener('touchstart', function(e) {{ e.preventDefault(); touchUp = true; }}, {{passive:false}});
-  tr.addEventListener('touchstart', function(e) {{ e.preventDefault(); touchRight = true; if (CONFIG.jumpStrength > 0) touchUp = true; }}, {{passive:false}});
+  tl.addEventListener('touchstart', function(e) {{ e.preventDefault(); touchUp = true; touchUpJustPressed = true; if (state === 'playing') jumpBufferTimer = JUMP_BUFFER_FRAMES; }}, {{passive:false}});
+  tr.addEventListener('touchstart', function(e) {{ e.preventDefault(); touchRight = true; if (CONFIG.jumpStrength > 0) {{ touchUp = true; touchUpJustPressed = true; if (state === 'playing') jumpBufferTimer = JUMP_BUFFER_FRAMES; }} }}, {{passive:false}});
   tr.addEventListener('touchend', function() {{ touchRight = false; touchUp = false; }});
 
   canvas.addEventListener('pointerdown', function() {{
@@ -958,6 +1146,7 @@ class HtmlAssembler:
     entities = [];
     particles = [];
     camera = {{ x: 0, y: 0 }};
+    lastCheckpoint = null; // Reset checkpoint on level load
     if (typeof generateTilemapForLevel === 'function') generateTilemapForLevel(idx);
     if (typeof levelStartTime !== 'undefined') levelStartTime = Date.now();
     if (typeof deathlessLevel !== 'undefined') deathlessLevel = true;
@@ -967,12 +1156,14 @@ class HtmlAssembler:
         id: e.id, name: e.name, type: e.type,
         x: e.x, y: e.y, w: e.w, h: e.h, color: e.color,
         vx: 0, vy: 0, onGround: false, alive: true,
-        facing: 1,
+        facing: 1, tankDir: 'up',
         patrolOrigin: e.x, patrolRange: (e.props && e.props.patrolRange) || 0,
         patrolDir: 1, health: (e.props && e.props.health) || 1,
         isBoss: !!(e.props && e.props.boss), value: (e.props && e.props.value) || 0,
         dialogue: (e.props && e.props.dialogue) || '', role: (e.props && e.props.role) || '',
-        isGoal: !!(e.props && e.props.goal), isStatic: !!(e.props && e.props.static),
+        isGoal: !!(e.props && e.props.goal),
+        isCheckpoint: !!(e.props && e.props.checkpoint),
+        isStatic: !!(e.props && e.props.static),
         powerupKind: (e.props && e.props.powerupKind) || '',
         pairId: (e.props && e.props.pairId) || '',
         isMoving: !!(e.props && e.props.isMoving),
@@ -980,6 +1171,7 @@ class HtmlAssembler:
         moveRange: (e.props && e.props.moveRange) || 0,
         originX: e.x, originY: e.y, movePhase: 0,
         activated: false,
+        wallHp: (e.type === 'terrain') ? 2 : 0, // Destructible brick walls (2 hits)
       }};
       if (e.type === 'player') {{
         player = ent;
@@ -1011,6 +1203,8 @@ class HtmlAssembler:
     updateLives();
     if (typeof sfxDamage === 'function') sfxDamage();
     if (typeof triggerShake === 'function') triggerShake(8);
+    // Hit-stop on player damage for impact emphasis
+    hitStopTimer = 6;
     if (typeof deathlessLevel !== 'undefined') deathlessLevel = false;
     if (typeof deathlessRun !== 'undefined') deathlessRun = false;
     if (typeof resetCombo === 'function') resetCombo();
@@ -1042,24 +1236,92 @@ class HtmlAssembler:
     el.innerHTML = s;
   }}
 
-  function spawnParticles(x, y, color, count) {{
+  function spawnParticles(x, y, color, count, particleType) {{
+    // particleType: 'dot' (default), 'spark', 'star', 'ring'
+    var ptype = particleType || 'dot';
     for (var i = 0; i < count; i++) {{
       var life = 30 + Math.random() * 20;
+      var angle = Math.random() * Math.PI * 2;
+      var speed = 2 + Math.random() * 4;
       particles.push({{
         x: x, y: y,
-        vx: (Math.random() - 0.5) * 6,
-        vy: (Math.random() - 0.5) * 6 - 2,
+        vx: ptype === 'spark' ? Math.cos(angle) * speed * 1.5 : (Math.random() - 0.5) * 6,
+        vy: ptype === 'spark' ? Math.sin(angle) * speed * 1.5 - 1 : (Math.random() - 0.5) * 6 - 2,
         life: life, maxLife: life,
         color: color,
-        size: 2 + Math.random() * 3,
-        type: 'dot'
+        size: ptype === 'star' ? 3 + Math.random() * 4 : 2 + Math.random() * 3,
+        type: ptype,
+        rotation: Math.random() * Math.PI * 2,
+        rotSpeed: (Math.random() - 0.5) * 0.3,
+        gravity: ptype === 'spark' ? 0.15 : 0.08,
       }});
     }}
+  }}
+
+  function updateParticles() {{
+    for (var i = particles.length - 1; i >= 0; i--) {{
+      var p = particles[i];
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += p.gravity;
+      p.vx *= 0.97;
+      p.rotation += p.rotSpeed;
+      p.life--;
+      if (p.life <= 0) particles.splice(i, 1);
+    }}
+  }}
+
+  function renderParticles() {{
+    // Rendered in world space (inside camera translate)
+    for (var i = 0; i < particles.length; i++) {{
+      var p = particles[i];
+      var alpha = p.life / p.maxLife;
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color;
+      if (p.type === 'star') {{
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(p.rotation);
+        ctx.beginPath();
+        for (var s = 0; s < 5; s++) {{
+          var a = (s / 5) * Math.PI * 2 - Math.PI / 2;
+          var r = s % 2 === 0 ? p.size : p.size * 0.4;
+          if (s === 0) ctx.moveTo(Math.cos(a) * r, Math.sin(a) * r);
+          else ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r);
+        }}
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      }} else if (p.type === 'ring') {{
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * (1 + (1 - alpha) * 2), 0, Math.PI * 2);
+        ctx.stroke();
+      }} else if (p.type === 'spark') {{
+        ctx.save();
+        ctx.translate(p.x, p.y);
+        ctx.rotate(Math.atan2(p.vy, p.vx));
+        ctx.fillRect(-p.size, -1, p.size * 2, 2);
+        ctx.restore();
+      }} else {{
+        // dot
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size * alpha, 0, Math.PI * 2);
+        ctx.fill();
+      }}
+    }}
+    ctx.globalAlpha = 1;
   }}
 
   function update() {{
     if (state !== 'playing' || !player) return;
     if (dialogueActive) return;
+    // Hit-stop: freeze gameplay logic briefly on heavy impacts for game feel
+    if (hitStopTimer > 0) {{
+      hitStopTimer--;
+      return;
+    }}
 
     // Sync game state for AI Event Sheet runtime
     window.gameState.score = score;
@@ -1077,9 +1339,26 @@ class HtmlAssembler:
     var up = keys['arrowup'] || keys['w'] || keys[' '] || touchUp;
     var shoot = keys['j'] || keys['k'] || keys['f'];
 
-    if (left) {{ player.vx = -CONFIG.moveSpeed; player.facing = -1; }}
-    else if (right) {{ player.vx = CONFIG.moveSpeed; player.facing = 1; }}
-    else player.vx *= 0.75;
+    // Wall-jump input lock: preserve horizontal velocity during lock so the
+    // wall-jump push is not immediately overridden by held direction input.
+    if (wallJumpLock > 0) {{
+      wallJumpLock--;
+      // Skip horizontal input override; keep wall-jump's outbound velocity.
+    }} else {{
+      if (left) {{ player.vx = -CONFIG.moveSpeed; player.facing = -1; }}
+      else if (right) {{ player.vx = CONFIG.moveSpeed; player.facing = 1; }}
+      else player.vx *= 0.75;
+    }}
+
+    // Tank battle: 4-directional movement with directional facing
+    if (CONFIG.genre === 'tank_battle') {{
+      var downKey = keys['arrowdown'] || keys['s'];
+      if (left) {{ player.vx = -CONFIG.moveSpeed; player.facing = -1; player.tankDir = 'left'; player.vy = 0; }}
+      else if (right) {{ player.vx = CONFIG.moveSpeed; player.facing = 1; player.tankDir = 'right'; player.vy = 0; }}
+      else if (up) {{ player.vy = -CONFIG.moveSpeed; player.tankDir = 'up'; player.vx = 0; }}
+      else if (downKey) {{ player.vy = CONFIG.moveSpeed; player.tankDir = 'down'; player.vx = 0; }}
+      else {{ player.vx *= 0.5; player.vy *= 0.5; }}
+    }}
 
     // Speed powerup boosts movement
     if (typeof activePowerups !== 'undefined' && activePowerups.speed > 0) {{
@@ -1087,34 +1366,87 @@ class HtmlAssembler:
       else if (right) {{ player.vx = CONFIG.moveSpeed * 1.6; player.facing = 1; }}
     }}
 
-    if (CONFIG.jumpStrength > 0 && up && player.onGround) {{
-      player.vy = -CONFIG.jumpStrength;
-      player.onGround = false;
-      if (typeof sfxJump === 'function') sfxJump();
-      if (typeof spawnTrail === 'function') spawnTrail(player.x + player.w/2, player.y + player.h, '#fff', 0, 2);
+    if (CONFIG.jumpStrength > 0) {{
+      // Coyote time: refresh timer while grounded, decay once airborne
+      if (player.onGround) {{
+        coyoteTimer = COYOTE_FRAMES;
+        jumpsRemaining = maxJumps; // Reset double-jump on landing
+      }} else if (coyoteTimer > 0) {{
+        coyoteTimer--;
+      }}
+      // Jump buffer: consume on landing or use with coyote time
+      if (jumpBufferTimer > 0 && coyoteTimer > 0) {{
+        player.vy = -CONFIG.jumpStrength;
+        player.onGround = false;
+        coyoteTimer = 0;
+        jumpBufferTimer = 0;
+        jumpsRemaining = maxJumps - 1;
+        if (typeof sfxJump === 'function') sfxJump();
+        if (typeof spawnTrail === 'function') spawnTrail(player.x + player.w/2, player.y + player.h, '#fff', 0, 2);
+      }}
     }}
-    // Double-jump powerup
-    if (typeof activePowerups !== 'undefined' && activePowerups.doubleJump > 0 && up && !player.onGround && !player._djd) {{
-      player.vy = -CONFIG.jumpStrength * 0.9;
-      player._djd = true;
-      if (typeof sfxJump === 'function') sfxJump();
-      if (typeof spawnBurst === 'function') spawnBurst(player.x + player.w/2, player.y + player.h, '#fbbf24', 8, 3);
+    // Airborne jump: wall-jump takes priority over double-jump when wall-sliding,
+    // so the two never fire in the same frame (avoids wasted double-jump charges
+    // and conflicting horizontal velocities).
+    var jumpPressedNow = jumpBufferTimer > 0 || touchUpJustPressed;
+    if (jumpPressedNow && !player.onGround) {{
+      if (CONFIG.canWallJump && isWallSliding) {{
+        // Wall-jump: kick off wall for parkour/platformer genres
+        player.vy = -CONFIG.jumpStrength * 0.9;
+        player.vx = player.facing * -CONFIG.moveSpeed * 1.4; // Push away from wall
+        wallJumpLock = 10;
+        jumpBufferTimer = 0;
+        jumpsRemaining = maxJumps - 1;
+        isWallSliding = false;
+        if (typeof sfxJump === 'function') sfxJump();
+        if (typeof spawnBurst === 'function') spawnBurst(player.x + player.w/2, player.y + player.h/2, '#00e5ff', 10, 4);
+      }} else if (CONFIG.canDoubleJump && jumpsRemaining > 0) {{
+        // Double-jump: core mechanic for platformer/boss/sandbox genres
+        player.vy = -CONFIG.jumpStrength * 0.85;
+        jumpsRemaining--;
+        jumpBufferTimer = 0;
+        if (typeof sfxJump === 'function') sfxJump();
+        if (typeof spawnBurst === 'function') spawnBurst(player.x + player.w/2, player.y + player.h, CONFIG.accentColor, 8, 3);
+      }}
     }}
-    if (player.onGround) player._djd = false;
+    touchUpJustPressed = false;
 
     // Projectile firing
     if (shoot && typeof fireProjectile === 'function') fireProjectile();
 
-    // Apply gravity
+    // Apply gravity (wall-slide reduces fall speed for parkour/platformer)
     if (CONFIG.gravity > 0) {{
-      player.vy += CONFIG.gravity;
+      if (CONFIG.canWallJump && isWallSliding && player.vy > 2) {{
+        player.vy += CONFIG.gravity * 0.3; // Slow descent while wall-sliding
+      }} else {{
+        player.vy += CONFIG.gravity;
+      }}
       if (player.vy > 16) player.vy = 16;
     }}
 
-    // Move player X
+    // Move player X with wall collision detection
+    isWallSliding = false;
     player.x += player.vx;
     if (player.x < 0) player.x = 0;
     if (player.x > currentLevel.width - player.w) player.x = currentLevel.width - player.w;
+    // X-axis wall collision for ALL gravity>0 games (push player out of walls).
+    // Wall-slide detection is layered on top for canWallJump games when airborne.
+    if (CONFIG.gravity > 0) {{
+      for (var wi = 0; wi < entities.length; wi++) {{
+        var we = entities[wi];
+        if (!we.alive) continue;
+        if (we.type !== 'terrain' && we.type !== 'structure') continue;
+        if (rectOverlap(player, we)) {{
+          if (player.vx > 0) {{
+            player.x = we.x - player.w;
+            if (CONFIG.canWallJump && !player.onGround) isWallSliding = true;
+          }} else if (player.vx < 0) {{
+            player.x = we.x + we.w;
+            if (CONFIG.canWallJump && !player.onGround) isWallSliding = true;
+          }}
+        }}
+      }}
+    }}
 
     // Move player Y and check platform collision
     player.y += player.vy;
@@ -1142,6 +1474,21 @@ class HtmlAssembler:
         player.onGround = true;
       }}
     }}
+    // Tank battle: Y-axis wall collision (top-down view, no gravity)
+    if (CONFIG.genre === 'tank_battle') {{
+      for (var ti = 0; ti < entities.length; ti++) {{
+        var te = entities[ti];
+        if (!te.alive) continue;
+        if (te.type !== 'terrain' && te.type !== 'structure') continue;
+        if (rectOverlap(player, te)) {{
+          if (player.vy > 0) {{ player.y = te.y - player.h; player.vy = 0; }}
+          else if (player.vy < 0) {{ player.y = te.y + te.h; player.vy = 0; }}
+        }}
+      }}
+      // Clamp to level bounds
+      if (player.y < 0) {{ player.y = 0; player.vy = 0; }}
+      if (player.y > currentLevel.height - player.h) {{ player.y = currentLevel.height - player.h; player.vy = 0; }}
+    }}
 
     // Camera follows player
     camera.x = player.x - W / 2 + player.w / 2;
@@ -1155,7 +1502,56 @@ class HtmlAssembler:
     for (var i = 0; i < entities.length; i++) {{
       var e = entities[i];
       if (!e.alive || e.type !== 'enemy') continue;
-      if (e.patrolRange > 0) {{
+      // Boss phases: escalate aggression as HP drops
+      if (e.isBoss && CONFIG.bossPhases) {{
+        var bossMaxHp = 3;
+        var hpRatio = e.health / bossMaxHp;
+        var newPhase = hpRatio < 0.34 ? 3 : (hpRatio < 0.67 ? 2 : 1);
+        if (newPhase === 3) {{
+          // Phase 3: enraged - fast, red glow, lunges at player
+          e.color = '#dc2626';
+          e.patrolDir = (player.x < e.x) ? -1 : 1;
+          e.x += e.patrolDir * CONFIG.enemySpeed * 1.8;
+        }} else if (newPhase === 2) {{
+          // Phase 2: aggressive - faster, orange tint
+          e.color = '#f97316';
+          e.x += Math.sign(player.x - e.x) * CONFIG.enemySpeed * 1.3;
+        }} else {{
+          // Phase 1: cautious - normal patrol
+          e.color = CONFIG.enemyColor;
+        }}
+        // Trigger phase-change shockwave once on transition (epic effect)
+        if (typeof e.lastBossPhase === 'undefined') e.lastBossPhase = newPhase;
+        if (e.lastBossPhase !== newPhase) {{
+          if (typeof spawnPhaseChange === 'function') {{
+            spawnPhaseChange(e.x + e.w/2, e.y + e.h/2);
+          }} else if (typeof spawnBurst === 'function') {{
+            spawnBurst(e.x + e.w/2, e.y + e.h/2, e.color, 12, 5);
+          }}
+          e.lastBossPhase = newPhase;
+        }}
+        // Boss fires projectiles in later phases
+        if (hpRatio < 0.67 && typeof fireEnemyProjectile === 'function' && Math.random() < 0.02) {{
+          fireEnemyProjectile(e.x + e.w/2, e.y + e.h/2, player.x + player.w/2, player.y + player.h/2);
+        }}
+      }} else if (CONFIG.genre === 'tank_battle') {{
+        // Tank enemies: chase player on both axes and shoot
+        var tdx = player.x - e.x, tdy = player.y - e.y;
+        if (Math.abs(tdx) > Math.abs(tdy)) {{
+          e.x += Math.sign(tdx) * CONFIG.enemySpeed;
+        }} else {{
+          e.y += Math.sign(tdy) * CONFIG.enemySpeed;
+        }}
+        // Enemy tank shoots at player
+        if (typeof fireEnemyProjectile === 'function' && Math.random() < 0.008) {{
+          fireEnemyProjectile(e.x + e.w/2, e.y + e.h/2, player.x + player.w/2, player.y + player.h/2);
+        }}
+        // Clamp enemy to level bounds
+        if (e.x < 0) e.x = 0;
+        if (e.x > currentLevel.width - e.w) e.x = currentLevel.width - e.w;
+        if (e.y < 0) e.y = 0;
+        if (e.y > currentLevel.height - e.h) e.y = currentLevel.height - e.h;
+      }} else if (e.patrolRange > 0) {{
         e.x += e.patrolDir * CONFIG.enemySpeed;
         if (e.x > e.patrolOrigin + e.patrolRange) e.patrolDir = -1;
         if (e.x < e.patrolOrigin - e.patrolRange) e.patrolDir = 1;
@@ -1185,6 +1581,8 @@ class HtmlAssembler:
             player.vy = -CONFIG.jumpStrength * 0.7;
             if (typeof sfxStomp === 'function') sfxStomp();
             if (typeof triggerShake === 'function') triggerShake(5);
+            // Hit-stop: brief freeze on heavy impacts (longer for bosses)
+            hitStopTimer = e.isBoss ? 8 : 3;
             if (typeof totalEnemiesDefeated !== 'undefined') totalEnemiesDefeated++;
           }} else {{
             e.alive = true;
@@ -1243,6 +1641,20 @@ class HtmlAssembler:
       }}
     }}
 
+    // Checkpoint triggers (set respawn position)
+    for (var i = 0; i < entities.length; i++) {{
+      var e = entities[i];
+      if (!e.alive || e.type !== 'trigger') continue;
+      if (!e.isCheckpoint || e.activated) continue;
+      if (rectOverlap(player, e)) {{
+        e.activated = true;
+        lastCheckpoint = {{ x: e.x, y: e.y }};
+        if (typeof sfxCollect === 'function') sfxCollect();
+        spawnParticles(e.x + e.w/2, e.y + e.h/2, '#22c55e', 12, 'ring');
+        if (typeof spawnScorePopup === 'function') spawnScorePopup(e.x + e.w/2, e.y, 'CHECKPOINT', '#22c55e');
+      }}
+    }}
+
     // Goal trigger
     for (var i = 0; i < entities.length; i++) {{
       var e = entities[i];
@@ -1282,10 +1694,38 @@ class HtmlAssembler:
 
     // Update extension systems (particles, projectiles, powerups, etc.)
     if (typeof updateExtensions === 'function') updateExtensions();
+    updateEnemyProjectiles();
+    if (typeof checkProjectileWallHits === 'function') checkProjectileWallHits();
     // Update feature systems (save, achievements, shake, camera)
     if (typeof updateFeatureSystems === 'function') updateFeatureSystems();
     // Update polish systems (combo, particles, tutorial, transitions)
     if (typeof updatePolishSystems === 'function') updatePolishSystems();
+    // Per-genre ambient effect ticks (engine trails, afterimages, tread marks)
+    if (state === 'playing' && player) {{
+      if (CONFIG.genre === 'shooter' && typeof spawnEngineTrail === 'function') {{
+        if (Math.abs(player.vx) + Math.abs(player.vy) > 0.5) {{
+          spawnEngineTrail(player.x + player.w/2, player.y + player.h, CONFIG.playerColor);
+        }}
+      }} else if (CONFIG.genre === 'parkour' && typeof spawnAfterimage === 'function') {{
+        var pSpd = Math.abs(player.vx);
+        if (pSpd > 4 && Math.random() < 0.5) {{
+          spawnAfterimage(player.x, player.y, player.w, player.h, CONFIG.playerColor);
+        }}
+      }} else if (CONFIG.genre === 'tank_battle' && typeof spawnTreadMark === 'function') {{
+        if ((Math.abs(player.vx) + Math.abs(player.vy)) > 0.5 && Math.random() < 0.3) {{
+          spawnTreadMark(player.x + player.w/2, player.y + player.h - 2,
+            (player.tankDir === 'up' || player.tankDir === 'down') ? 'v' : 'h');
+        }}
+      }}
+    }}
+    // Update core particle system (dot/sparkle/trail/ring/shard/afterimage/treadmark)
+    updateParticles();
+
+    // Decrement jump buffer (consumed on landing, else expires)
+    if (jumpBufferTimer > 0) jumpBufferTimer--;
+    // Clear edge-detected input state at end of frame
+    keysJustPressed = {{}};
+    touchUpJustPressed = false;
   }}
 
   function rectOverlap(a, b) {{
@@ -1301,6 +1741,37 @@ class HtmlAssembler:
     ctx.fillRect(0, 0, W, H);
 
     if (!currentLevel || !player) return;
+
+    // Parallax background layers (screen-space, scroll slower than camera)
+    var bgBase = currentLevel.background || CONFIG.background || '#0a0a0a';
+    // Far layer: gradient band with slow-scrolling silhouettes
+    var farOffset = -camera.x * 0.15;
+    var grad = ctx.createLinearGradient(0, 0, 0, H);
+    grad.addColorStop(0, bgBase);
+    grad.addColorStop(0.55, bgBase);
+    grad.addColorStop(1, 'rgba(0,0,0,0.5)');
+    ctx.fillStyle = grad;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = 'rgba(255,255,255,0.025)';
+    for (var i = 0; i < 6; i++) {{
+      var bx = ((farOffset + i * 280) % (W + 280) + (W + 280)) % (W + 280) - 140;
+      var by = H * 0.35 + Math.sin(i * 1.7) * 30;
+      var bw = 180 + (i % 3) * 40;
+      ctx.beginPath();
+      ctx.moveTo(bx, by + 60);
+      ctx.lineTo(bx + bw / 2, by);
+      ctx.lineTo(bx + bw, by + 60);
+      ctx.closePath();
+      ctx.fill();
+    }}
+    // Near layer: faster parallax dots / particles
+    var nearOffset = -camera.x * 0.4;
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    for (var i = 0; i < 18; i++) {{
+      var nx = ((nearOffset + i * 90) % (W + 90) + (W + 90)) % (W + 90) - 45;
+      var ny = (i * 53) % H;
+      ctx.fillRect(nx, ny, 3, 3);
+    }}
 
     ctx.save();
     ctx.translate(-camera.x, -camera.y);
@@ -1340,22 +1811,37 @@ class HtmlAssembler:
       ctx.fillRect(e.x + e.w*0.3, e.y + e.h*0.2, e.w*0.4, e.h*0.25);
     }}
 
-    // Collectibles (pulsing)
+    // Collectibles (pulsing with glow halo)
     var pulse = Math.sin(Date.now() / 200) * 0.3 + 0.7;
     for (var i = 0; i < collEnts.length; i++) {{
       var e = collEnts[i];
+      var cx = e.x + e.w/2, cy = e.y + e.h/2;
+      // Outer glow halo
+      ctx.globalAlpha = pulse * 0.35;
       ctx.fillStyle = e.color;
-      ctx.globalAlpha = pulse;
       ctx.beginPath();
-      ctx.arc(e.x + e.w/2, e.y + e.h/2, e.w/2, 0, Math.PI * 2);
+      ctx.arc(cx, cy, e.w * 0.9, 0, Math.PI * 2);
       ctx.fill();
+      // Core orb
+      ctx.globalAlpha = pulse;
+      ctx.fillStyle = e.color;
+      ctx.beginPath();
+      ctx.arc(cx, cy, e.w/2, 0, Math.PI * 2);
+      ctx.fill();
+      // Inner highlight
       ctx.globalAlpha = 1;
-      ctx.strokeStyle = '#fff';
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.arc(cx - e.w*0.12, cy - e.h*0.12, e.w/6, 0, Math.PI * 2);
+      ctx.fill();
+      // Ring outline
+      ctx.strokeStyle = 'rgba(255,255,255,0.6)';
       ctx.lineWidth = 1;
       ctx.beginPath();
-      ctx.arc(e.x + e.w/2, e.y + e.h/2, e.w/3, 0, Math.PI * 2);
+      ctx.arc(cx, cy, e.w/3, 0, Math.PI * 2);
       ctx.stroke();
     }}
+    ctx.globalAlpha = 1;
 
     // NPCs
     for (var i = 0; i < npcEnts.length; i++) {{
@@ -1368,11 +1854,124 @@ class HtmlAssembler:
       ctx.fillText('!', e.x + e.w/2, e.y - 4);
     }}
 
-    // Enemies
+    // Enemies (genre-styled rendering)
     for (var i = 0; i < enemyEnts.length; i++) {{
       var e = enemyEnts[i];
+      var ecx = e.x + e.w/2, ecy = e.y + e.h/2;
+      var eStyle = CONFIG.genreStyle || 'humanoid';
       ctx.fillStyle = e.color;
-      ctx.fillRect(e.x, e.y, e.w, e.h);
+      if (eStyle === 'ship') {{
+        // Enemy ship: inverted triangle pointing toward player
+        var dir = (player && player.x < e.x) ? -1 : 1;
+        ctx.beginPath();
+        if (dir === -1) {{
+          ctx.moveTo(e.x, ecy);
+          ctx.lineTo(e.x + e.w, e.y);
+          ctx.lineTo(e.x + e.w, e.y + e.h);
+        }} else {{
+          ctx.moveTo(e.x + e.w, ecy);
+          ctx.lineTo(e.x, e.y);
+          ctx.lineTo(e.x, e.y + e.h);
+        }}
+        ctx.closePath();
+        ctx.fill();
+        // Red eye/sensor
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.arc(ecx, ecy, 2, 0, Math.PI * 2);
+        ctx.fill();
+      }} else if (eStyle === 'orb') {{
+        // Enemy orb: spiky circle
+        ctx.beginPath();
+        var spikes = 8;
+        for (var s = 0; s < spikes * 2; s++) {{
+          var r = s % 2 === 0 ? e.w/2 : e.w/3;
+          var a = (s / (spikes * 2)) * Math.PI * 2;
+          if (s === 0) ctx.moveTo(ecx + Math.cos(a) * r, ecy + Math.sin(a) * r);
+          else ctx.lineTo(ecx + Math.cos(a) * r, ecy + Math.sin(a) * r);
+        }}
+        ctx.closePath();
+        ctx.fill();
+        // Core
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(ecx, ecy, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }} else if (eStyle === 'isometric') {{
+        // Enemy isometric: hostile 3D cube with red glow
+        var eIsoW = e.w, eIsoH = e.h, eIsoD = e.w * 0.5;
+        var ebx = e.x, eby = e.y;
+        // Top face
+        ctx.fillStyle = e.color;
+        ctx.beginPath();
+        ctx.moveTo(ebx, eby + eIsoD);
+        ctx.lineTo(ebx + eIsoW/2, eby);
+        ctx.lineTo(ebx + eIsoW, eby + eIsoD);
+        ctx.lineTo(ebx + eIsoW/2, eby + eIsoD * 2);
+        ctx.closePath();
+        ctx.fill();
+        // Left face
+        ctx.globalAlpha = 0.7;
+        ctx.beginPath();
+        ctx.moveTo(ebx, eby + eIsoD);
+        ctx.lineTo(ebx + eIsoW/2, eby + eIsoD * 2);
+        ctx.lineTo(ebx + eIsoW/2, eby + eIsoH + eIsoD);
+        ctx.lineTo(ebx, eby + eIsoH);
+        ctx.closePath();
+        ctx.fill();
+        // Right face
+        ctx.globalAlpha = 0.45;
+        ctx.beginPath();
+        ctx.moveTo(ebx + eIsoW, eby + eIsoD);
+        ctx.lineTo(ebx + eIsoW/2, eby + eIsoD * 2);
+        ctx.lineTo(ebx + eIsoW/2, eby + eIsoH + eIsoD);
+        ctx.lineTo(ebx + eIsoW, eby + eIsoH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        // Red eye on top
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.arc(ecx, eby + eIsoD, 2.5, 0, Math.PI * 2);
+        ctx.fill();
+      }} else if (eStyle === 'tank') {{
+        // Enemy tank: body + treads + barrel facing player
+        var etbx = e.x, etby = e.y, etbw = e.w, etbh = e.h;
+        // Determine facing direction toward player
+        var edir = 'up';
+        if (typeof player !== 'undefined' && player) {{
+          var edx = player.x - e.x, edy = player.y - e.y;
+          if (Math.abs(edx) > Math.abs(edy)) edir = edx > 0 ? 'right' : 'left';
+          else edir = edy > 0 ? 'down' : 'up';
+        }}
+        // Treads
+        ctx.fillStyle = '#2a2a2a';
+        ctx.fillRect(etbx - 2, etby + 2, 3, etbh - 4);
+        ctx.fillRect(etbx + etbw - 1, etby + 2, 3, etbh - 4);
+        // Body
+        ctx.fillStyle = e.color;
+        ctx.fillRect(etbx + 2, etby + 2, etbw - 4, etbh - 4);
+        // Barrel
+        ctx.fillStyle = '#111';
+        var ebcx = etbx + etbw/2, ebcy = etby + etbh/2;
+        var ebLen = etbw * 0.55;
+        if (edir === 'up') ctx.fillRect(ebcx - 2, etby - ebLen + 4, 4, ebLen);
+        else if (edir === 'down') ctx.fillRect(ebcx - 2, etby + etbh - 4, 4, ebLen);
+        else if (edir === 'left') ctx.fillRect(etbx - ebLen + 4, ebcy - 2, ebLen, 4);
+        else ctx.fillRect(etbx + etbw - 4, ebcy - 2, ebLen, 4);
+        // Red sensor dot
+        ctx.fillStyle = '#ff0000';
+        ctx.beginPath();
+        ctx.arc(ebcx, ebcy, 3, 0, Math.PI * 2);
+        ctx.fill();
+      }} else {{
+        // Humanoid enemy: rectangle with eyes
+        ctx.fillRect(e.x, e.y, e.w, e.h);
+        // Eyes
+        ctx.fillStyle = '#fff';
+        ctx.fillRect(e.x + e.w*0.25, e.y + e.h*0.3, 3, 3);
+        ctx.fillRect(e.x + e.w*0.65, e.y + e.h*0.3, 3, 3);
+      }}
       if (e.isBoss) {{
         ctx.strokeStyle = '#fff';
         ctx.lineWidth = 2;
@@ -1381,47 +1980,262 @@ class HtmlAssembler:
         ctx.font = 'bold 11px sans-serif';
         ctx.textAlign = 'center';
         ctx.fillText('BOSS', e.x + e.w/2, e.y - 6);
+        // Boss HP bar with phase color coding
+        var bossMaxHp = 3;
+        var hpRatio = Math.max(0, e.health / bossMaxHp);
+        var barW = e.w + 8, barH = 4;
+        var barX = e.x - 4, barY = e.y - 18;
+        ctx.fillStyle = 'rgba(0,0,0,0.6)';
+        ctx.fillRect(barX, barY, barW, barH);
+        ctx.fillStyle = hpRatio > 0.67 ? '#22c55e' : (hpRatio > 0.34 ? '#f97316' : '#dc2626');
+        ctx.fillRect(barX, barY, barW * hpRatio, barH);
+        ctx.strokeStyle = '#333';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(barX, barY, barW, barH);
       }}
-      // Eyes
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(e.x + e.w*0.25, e.y + e.h*0.3, 3, 3);
-      ctx.fillRect(e.x + e.w*0.65, e.y + e.h*0.3, 3, 3);
     }}
 
-    // Goal trigger
+    // Goal and checkpoint triggers
     for (var i = 0; i < triggerEnts.length; i++) {{
       var e = triggerEnts[i];
-      ctx.fillStyle = e.color;
-      ctx.globalAlpha = 0.6 + Math.sin(Date.now() / 300) * 0.3;
-      ctx.fillRect(e.x, e.y, e.w, e.h);
-      ctx.globalAlpha = 1;
-      ctx.fillStyle = '#fff';
-      ctx.font = 'bold 10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText('GOAL', e.x + e.w/2, e.y - 4);
+      var isCheckpoint = e.isCheckpoint;
+      var pulseT = Math.sin(Date.now() / 300) * 0.3 + 0.7;
+      if (isCheckpoint) {{
+        // Checkpoint: flag-style marker, brighter when activated
+        ctx.globalAlpha = e.activated ? 0.9 : 0.5 + pulseT * 0.3;
+        ctx.fillStyle = e.activated ? '#22c55e' : '#666';
+        ctx.fillRect(e.x, e.y, e.w, e.h);
+        // Flag pole
+        ctx.fillStyle = '#888';
+        ctx.fillRect(e.x + e.w/2 - 1, e.y - 8, 2, e.h + 8);
+        // Flag
+        ctx.fillStyle = e.activated ? '#22c55e' : '#555';
+        ctx.beginPath();
+        ctx.moveTo(e.x + e.w/2 + 1, e.y - 8);
+        ctx.lineTo(e.x + e.w/2 + 10, e.y - 4);
+        ctx.lineTo(e.x + e.w/2 + 1, e.y);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = e.activated ? '#22c55e' : '#888';
+        ctx.font = 'bold 9px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(e.activated ? 'SAVED' : 'CHECKPOINT', e.x + e.w/2, e.y - 12);
+      }} else {{
+        // Goal trigger
+        ctx.fillStyle = e.color;
+        ctx.globalAlpha = 0.6 + pulseT * 0.3;
+        ctx.fillRect(e.x, e.y, e.w, e.h);
+        ctx.globalAlpha = 1;
+        ctx.fillStyle = '#fff';
+        ctx.font = 'bold 10px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('GOAL', e.x + e.w/2, e.y - 4);
+      }}
     }}
+    ctx.globalAlpha = 1;
 
-    // Player
+    // Player (genre-styled rendering with animation)
     if (player) {{
       var invFlash = (typeof isInvulnerable === 'function' && isInvulnerable()) ? (Math.floor(Date.now() / 80) % 2 === 0 ? 0.4 : 1) : 1;
       ctx.globalAlpha = invFlash;
-      ctx.fillStyle = player.color;
-      ctx.fillRect(player.x, player.y, player.w, player.h);
-      ctx.fillStyle = '#fff';
-      ctx.fillRect(player.x + player.w*0.2, player.y + player.h*0.2, 4, 4);
-      ctx.fillRect(player.x + player.w*0.6, player.y + player.h*0.2, 4, 4);
-      // Direction indicator
-      ctx.fillStyle = typeof activePowerups !== 'undefined' && activePowerups.speed > 0 ? '#22c55e' : '#fff';
-      var dirX = player.facing === -1 ? player.x : player.x + player.w - 3;
-      ctx.fillRect(dirX, player.y + player.h*0.4, 3, 4);
+      var pcx = player.x + player.w/2, pcy = player.y + player.h/2;
+      var pStyle = CONFIG.genreStyle || 'humanoid';
+
+      // Wall-slide visual: sparks on contact side
+      if (isWallSliding && Math.random() < 0.5) {{
+        var sparkX = player.facing === -1 ? player.x + player.w : player.x;
+        ctx.fillStyle = '#00e5ff';
+        ctx.globalAlpha = invFlash * 0.7;
+        ctx.fillRect(sparkX - 1, player.y + Math.random() * player.h, 2, 2);
+        ctx.globalAlpha = invFlash;
+      }}
+
+      // Double-jump trail: fading aura when airborne with jumps used
+      if (CONFIG.canDoubleJump && !player.onGround && jumpsRemaining < maxJumps - 1) {{
+        ctx.globalAlpha = invFlash * 0.25;
+        ctx.fillStyle = CONFIG.accentColor;
+        ctx.beginPath();
+        ctx.arc(pcx, pcy, player.w * 0.7, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = invFlash;
+      }}
+
+      if (pStyle === 'ship') {{
+        // Spaceship: triangle pointing in facing direction with thrust trail
+        ctx.fillStyle = player.color;
+        ctx.beginPath();
+        if (player.facing === -1) {{
+          ctx.moveTo(player.x, pcy);
+          ctx.lineTo(player.x + player.w, player.y);
+          ctx.lineTo(player.x + player.w, player.y + player.h);
+        }} else {{
+          ctx.moveTo(player.x + player.w, pcy);
+          ctx.lineTo(player.x, player.y);
+          ctx.lineTo(player.x, player.y + player.h);
+        }}
+        ctx.closePath();
+        ctx.fill();
+        // Cockpit
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = invFlash * 0.8;
+        ctx.beginPath();
+        ctx.arc(pcx, pcy, 3, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = invFlash;
+        // Thrust trail
+        var thrustLen = Math.abs(player.vx) > 0.5 ? 8 + Math.random() * 6 : 4;
+        var trailX = player.facing === -1 ? player.x + player.w : player.x;
+        ctx.fillStyle = '#fbbf24';
+        ctx.globalAlpha = invFlash * 0.6;
+        ctx.beginPath();
+        ctx.moveTo(trailX, pcy - 3);
+        ctx.lineTo(trailX + (player.facing === -1 ? thrustLen : -thrustLen), pcy);
+        ctx.lineTo(trailX, pcy + 3);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = invFlash;
+      }} else if (pStyle === 'orb') {{
+        // Orb: circular entity with pulsing aura
+        var orbPulse = Math.sin(Date.now() / 200) * 0.15 + 0.85;
+        // Outer aura
+        ctx.globalAlpha = invFlash * 0.3;
+        ctx.fillStyle = player.color;
+        ctx.beginPath();
+        ctx.arc(pcx, pcy, player.w * 0.7 * orbPulse, 0, Math.PI * 2);
+        ctx.fill();
+        // Core
+        ctx.globalAlpha = invFlash;
+        ctx.fillStyle = player.color;
+        ctx.beginPath();
+        ctx.arc(pcx, pcy, player.w / 2.2, 0, Math.PI * 2);
+        ctx.fill();
+        // Inner highlight
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        ctx.arc(pcx - 2, pcy - 2, 3, 0, Math.PI * 2);
+        ctx.fill();
+        // Direction indicator
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = invFlash * 0.6;
+        ctx.beginPath();
+        ctx.arc(pcx + player.facing * (player.w/2.5), pcy, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = invFlash;
+      }} else if (pStyle === 'isometric') {{
+        // Isometric: pseudo-3D cube with three visible faces
+        var isoW = player.w, isoH = player.h, isoD = player.w * 0.5;
+        var bx = player.x, by = player.y;
+        // Top face (lighter)
+        ctx.fillStyle = player.color;
+        ctx.globalAlpha = invFlash * 1.0;
+        ctx.beginPath();
+        ctx.moveTo(bx, by + isoD);
+        ctx.lineTo(bx + isoW/2, by);
+        ctx.lineTo(bx + isoW, by + isoD);
+        ctx.lineTo(bx + isoW/2, by + isoD * 2);
+        ctx.closePath();
+        ctx.fill();
+        // Left face (medium)
+        ctx.globalAlpha = invFlash * 0.75;
+        ctx.beginPath();
+        ctx.moveTo(bx, by + isoD);
+        ctx.lineTo(bx + isoW/2, by + isoD * 2);
+        ctx.lineTo(bx + isoW/2, by + isoH + isoD);
+        ctx.lineTo(bx, by + isoH);
+        ctx.closePath();
+        ctx.fill();
+        // Right face (darker)
+        ctx.globalAlpha = invFlash * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(bx + isoW, by + isoD);
+        ctx.lineTo(bx + isoW/2, by + isoD * 2);
+        ctx.lineTo(bx + isoW/2, by + isoH + isoD);
+        ctx.lineTo(bx + isoW, by + isoH);
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = invFlash;
+        // Direction marker on top face
+        ctx.fillStyle = '#fff';
+        ctx.globalAlpha = invFlash * 0.9;
+        ctx.beginPath();
+        ctx.arc(bx + isoW/2 + player.facing * 4, by + isoD, 2, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = invFlash;
+      }} else if (pStyle === 'tank') {{
+        // Tank: body + treads + directional barrel
+        var tbx = player.x, tby = player.y, tbw = player.w, tbh = player.h;
+        // Treads (darker side bars)
+        ctx.fillStyle = '#3a3a3a';
+        ctx.globalAlpha = invFlash * 0.9;
+        ctx.fillRect(tbx - 2, tby + 2, 3, tbh - 4);
+        ctx.fillRect(tbx + tbw - 1, tby + 2, 3, tbh - 4);
+        // Tread lines
+        ctx.fillStyle = '#555';
+        for (var tt = 0; tt < tbh - 4; tt += 4) {{
+          ctx.fillRect(tbx - 2, tby + 2 + tt, 3, 2);
+          ctx.fillRect(tbx + tbw - 1, tby + 2 + tt, 3, 2);
+        }}
+        // Tank body
+        ctx.fillStyle = player.color;
+        ctx.globalAlpha = invFlash;
+        ctx.fillRect(tbx + 2, tby + 2, tbw - 4, tbh - 4);
+        // Body highlight
+        ctx.fillStyle = 'rgba(255,255,255,0.2)';
+        ctx.fillRect(tbx + 3, tby + 3, tbw - 6, 3);
+        // Barrel (points in tankDir)
+        ctx.fillStyle = '#222';
+        var bcx = tbx + tbw/2, bcy = tby + tbh/2;
+        var bLen = tbw * 0.6;
+        if (player.tankDir === 'up') {{
+          ctx.fillRect(bcx - 2, tby - bLen + 4, 4, bLen);
+        }} else if (player.tankDir === 'down') {{
+          ctx.fillRect(bcx - 2, tby + tbh - 4, 4, bLen);
+        }} else if (player.tankDir === 'left') {{
+          ctx.fillRect(tbx - bLen + 4, bcy - 2, bLen, 4);
+        }} else {{
+          ctx.fillRect(tbx + tbw - 4, bcy - 2, bLen, 4);
+        }}
+        // Turret center
+        ctx.fillStyle = '#1a1a1a';
+        ctx.beginPath();
+        ctx.arc(bcx, bcy, 4, 0, Math.PI * 2);
+        ctx.fill();
+      }} else {{
+        // Humanoid: rectangle with walk-cycle animation
+        var isMoving = Math.abs(player.vx) > 0.5 && player.onGround;
+        var walkPhase = isMoving ? Math.floor(Date.now() / 80) % 4 : 0;
+        var legOffsets = [[0, 0], [2, -2], [0, 0], [-2, -2]];
+        var lo = legOffsets[walkPhase];
+        // Body
+        ctx.fillStyle = player.color;
+        ctx.fillRect(player.x, player.y, player.w, player.h);
+        // Eyes (face direction)
+        ctx.fillStyle = '#fff';
+        var eyeX = player.facing === -1 ? player.x + player.w*0.15 : player.x + player.w*0.55;
+        ctx.fillRect(eyeX, player.y + player.h*0.2, 4, 4);
+        ctx.fillRect(eyeX + player.w*0.25, player.y + player.h*0.2, 4, 4);
+        // Legs (animated when walking)
+        ctx.fillStyle = player.color;
+        ctx.fillRect(player.x + player.w*0.15, player.y + player.h, 4, 3 + lo[0]);
+        ctx.fillRect(player.x + player.w*0.65, player.y + player.h, 4, 3 + lo[1]);
+        // Direction indicator
+        ctx.fillStyle = typeof activePowerups !== 'undefined' && activePowerups.speed > 0 ? '#22c55e' : '#fff';
+        var dirX = player.facing === -1 ? player.x : player.x + player.w - 3;
+        ctx.fillRect(dirX, player.y + player.h*0.4, 3, 4);
+      }}
       ctx.globalAlpha = 1;
     }}
+
+    // Core particle rendering (world space, before camera restore)
+    renderParticles();
 
     ctx.restore();
 
     // Extension rendering (particles, projectiles, powerups, etc.)
     // Rendered in screen space — extension functions subtract camera themselves.
     if (typeof renderExtensions === 'function') renderExtensions();
+    renderEnemyProjectiles();
     // Feature rendering (tilemap, minimap, overlays) in screen space
     if (typeof renderFeatureSystems === 'function') renderFeatureSystems();
     // Polish rendering (combo, score popups, tutorial, transitions) in screen space
@@ -1447,6 +2261,18 @@ class HtmlAssembler:
       if (activePowerups.shield > 0) {{ ctx.fillStyle = '#60a5fa'; ctx.fillText('SHIELD ' + Math.ceil(activePowerups.shield / 60) + 's', px, py); py += 14; }}
       if (activePowerups.speed > 0) {{ ctx.fillStyle = '#22c55e'; ctx.fillText('SPEED ' + Math.ceil(activePowerups.speed / 60) + 's', px, py); py += 14; }}
       if (activePowerups.doubleJump > 0) {{ ctx.fillStyle = '#fbbf24'; ctx.fillText('2X JUMP ' + Math.ceil(activePowerups.doubleJump / 60) + 's', px, py); py += 14; }}
+    }}
+
+    // Post-processing: per-genre visual identity (scanlines, bloom, speed lines, etc.)
+    // Falls back to a subtle vignette when no genre profile is active.
+    if (typeof applyPostProcess === 'function') {{
+      applyPostProcess();
+    }} else {{
+      var vGrad = ctx.createRadialGradient(W/2, H/2, Math.min(W, H) * 0.35, W/2, H/2, Math.max(W, H) * 0.75);
+      vGrad.addColorStop(0, 'rgba(0,0,0,0)');
+      vGrad.addColorStop(1, 'rgba(0,0,0,0.45)');
+      ctx.fillStyle = vGrad;
+      ctx.fillRect(0, 0, W, H);
     }}
   }}
 
