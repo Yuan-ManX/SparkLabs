@@ -57,6 +57,8 @@ export const modeGroups: ModeGroup[] = [
       { id: 'game-polish', label: 'Polish', icon: 'fa-wand-magic-sparkles' },
       { id: 'game-publisher', label: 'Publisher', icon: 'fa-rocket' },
       { id: 'game-sentinel', label: 'Sentinel', icon: 'fa-shield-halved' },
+      { id: 'cognitive-kernel', label: 'Cognitive', icon: 'fa-brain' },
+      { id: 'architect-conductor', label: 'Architect', icon: 'fa-microchip' },
       { id: 'agent-cognition', label: 'Cognition', icon: 'fa-lightbulb' },
       { id: 'agent-memory', label: 'Memory', icon: 'fa-database' },
       { id: 'agent-reasoning', label: 'Reasoning', icon: 'fa-diagram-project' },
