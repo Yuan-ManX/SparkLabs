@@ -288,6 +288,8 @@ import GameFusionPanel from './GameFusionPanel';
 import GamePolishPanel from './GamePolishPanel';
 import GamePublisherPanel from './GamePublisherPanel';
 import GameSentinelPanel from './GameSentinelPanel';
+import CognitiveKernelPanel from './CognitiveKernelPanel';
+import ArchitectConductorPanel from './ArchitectConductorPanel';
 import AutonomousCreatorPanel from './AutonomousCreatorPanel';
 import InteractionLoopPanel from './InteractionLoopPanel';
 import UnifiedOrchestrationPanel from './UnifiedOrchestrationPanel';
@@ -917,6 +919,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'visual-script': return <VisualScriptingPanel />;
       case 'event-system': return <EngineEventSystemPanel />;
       case 'llm-router': return <LLMRouterPanel />;
+      case 'cognitive-kernel': return <CognitiveKernelPanel />;
+      case 'architect-conductor': return <ArchitectConductorPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
