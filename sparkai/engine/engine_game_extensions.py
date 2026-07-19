@@ -202,9 +202,33 @@ class ParticleEngine:
       }
       if (em.age >= em.duration) emitters.splice(i, 1);
     }
-    // Update particles
+    // Update particles (per-type behavior)
     for (var i = particles.length - 1; i >= 0; i--) {
       var p = particles[i];
+      // Static types: no movement, no gravity
+      if (p.type === 'treadmark' || p.type === 'afterimage') {
+        p.life--;
+        if (p.life <= 0) particles.splice(i, 1);
+        continue;
+      }
+      // Ring: expands outward, no gravity
+      if (p.type === 'ring') {
+        p.size += 2.5;
+        p.life--;
+        if (p.life <= 0) particles.splice(i, 1);
+        continue;
+      }
+      // Shard: rotates, light gravity
+      if (p.type === 'shard') {
+        p.x += p.vx; p.y += p.vy;
+        p.vy += 0.12;
+        p.vx *= 0.97;
+        if (typeof p.rotV !== 'undefined') p.rot += p.rotV;
+        p.life--;
+        if (p.life <= 0) particles.splice(i, 1);
+        continue;
+      }
+      // Default (dot / trail / sparkle)
       p.x += p.vx; p.y += p.vy;
       if (p.type !== 'sparkle') p.vy += 0.2;
       else p.vy += 0.05;
@@ -218,16 +242,50 @@ class ParticleEngine:
       var p = particles[i];
       var alpha = p.life / p.maxLife;
       ctx.globalAlpha = Math.max(0, Math.min(1, alpha));
+      var px = p.x - camera.x, py = p.y - camera.y;
       if (p.type === 'sparkle') {
         var s = p.size * (0.5 + alpha * 0.5);
         ctx.fillStyle = p.color;
-        ctx.fillRect(p.x - camera.x - s/2, p.y - camera.y - s/2, s, s);
+        ctx.fillRect(px - s/2, py - s/2, s, s);
         // Cross sparkle
-        ctx.fillRect(p.x - camera.x - s, p.y - camera.y - 0.5, s*2, 1);
-        ctx.fillRect(p.x - camera.x - 0.5, p.y - camera.y - s, 1, s*2);
+        ctx.fillRect(px - s, py - 0.5, s*2, 1);
+        ctx.fillRect(px - 0.5, py - s, 1, s*2);
+      } else if (p.type === 'ring') {
+        // Expanding shockwave ring
+        ctx.strokeStyle = p.color;
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.arc(px, py, p.size, 0, Math.PI * 2);
+        ctx.stroke();
+      } else if (p.type === 'shard') {
+        // Rotating crystal diamond
+        ctx.save();
+        ctx.translate(px, py);
+        ctx.rotate(p.rot || 0);
+        ctx.fillStyle = p.color;
+        ctx.beginPath();
+        ctx.moveTo(0, -p.size);
+        ctx.lineTo(p.size * 0.7, 0);
+        ctx.lineTo(0, p.size);
+        ctx.lineTo(-p.size * 0.7, 0);
+        ctx.closePath();
+        ctx.fill();
+        ctx.restore();
+      } else if (p.type === 'afterimage') {
+        // Fading rectangle (player silhouette trail)
+        ctx.fillStyle = p.color;
+        ctx.fillRect(px, py, p.w || p.size, p.h || p.size);
+      } else if (p.type === 'treadmark') {
+        // Static tread mark (small rectangle, oriented by dir)
+        ctx.fillStyle = p.color;
+        if (p.dir === 'v') {
+          ctx.fillRect(px - 1, py - 3, 2, 6);
+        } else {
+          ctx.fillRect(px - 3, py - 1, 6, 2);
+        }
       } else {
         ctx.fillStyle = p.color;
-        ctx.fillRect(p.x - camera.x - p.size/2, p.y - camera.y - p.size/2, p.size, p.size);
+        ctx.fillRect(px - p.size/2, py - p.size/2, p.size, p.size);
       }
     }
     ctx.globalAlpha = 1;
