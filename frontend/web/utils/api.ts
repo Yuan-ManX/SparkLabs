@@ -2852,6 +2852,118 @@ export const gameCriticApi = {
   events: (limit?: number) =>
     api.get(`/game-critic/events${limit ? `?limit=${limit}` : ''}`),
   reset: () => api.post('/game-critic/reset'),
+  critique: (html: string, gameTitle?: string, genre?: string, buildVersion?: string) =>
+    api.post('/game-critic/critique', {
+      html,
+      game_title: gameTitle || 'Untitled Game',
+      genre: genre || '',
+      build_version: buildVersion || 'auto-1.0.0',
+    }),
+};
+
+// Game Healer API
+export const gameHealerApi = {
+  status: () => api.get('/game-healer/status'),
+  stats: () => api.get('/game-healer/stats'),
+  history: (limit?: number) => api.get(`/game-healer/history?limit=${limit || 20}`),
+  heal: (html: string, signals?: Record<string, any>) =>
+    api.post('/game-healer/heal', { html, signals }),
+};
+
+// Game Evolver API
+export const gameEvolverApi = {
+  status: () => api.get('/game-evolver/status'),
+  stats: () => api.get('/game-evolver/stats'),
+  history: (limit?: number) => api.get(`/game-evolver/history?limit=${limit || 10}`),
+  strategies: () => api.get('/game-evolver/strategies'),
+  evolve: (
+    html: string,
+    generations?: number,
+    populationSize?: number,
+    gameTitle?: string,
+    genre?: string,
+    strategies?: string[],
+  ) =>
+    api.post('/game-evolver/evolve', {
+      html,
+      generations: generations || 3,
+      population_size: populationSize || 5,
+      game_title: gameTitle || 'Evolved Game',
+      genre: genre || '',
+      strategies,
+    }),
+};
+
+// Game Composer API
+export const gameComposerApi = {
+  status: () => api.get('/game-composer/status'),
+  history: (limit?: number) => api.get(`/game-composer/history?limit=${limit || 10}`),
+  compose: (genre?: string, html?: string, mood?: string, bars?: number) =>
+    api.post('/game-composer/compose', {
+      genre: genre || '', html: html || '', mood: mood || '', bars: bars || 4,
+    }),
+  inject: (html: string, genre?: string) =>
+    api.post('/game-composer/inject', { html, genre: genre || '' }),
+};
+
+// Game Analytics API
+export const gameAnalyticsApi = {
+  status: () => api.get('/game-analytics/status'),
+  history: (limit?: number) => api.get(`/game-analytics/history?limit=${limit || 10}`),
+  analyze: (html: string, genre?: string, simsPerPersona?: number) =>
+    api.post('/game-analytics/analyze', {
+      html, genre: genre || '', simulations_per_persona: simsPerPersona || 50,
+    }),
+};
+
+// Game Tournament API
+export const gameTournamentApi = {
+  status: () => api.get('/game-tournament/status'),
+  history: (limit?: number) => api.get(`/game-tournament/history?limit=${limit || 10}`),
+  run: (variants: Array<{html: string; label?: string; source?: string}>, gameTitle?: string, genre?: string, criticWeight?: number, analyticsWeight?: number) =>
+    api.post('/game-tournament/run', {
+      variants, game_title: gameTitle || '', genre: genre || '',
+      critic_weight: criticWeight, analytics_weight: analyticsWeight,
+    }),
+};
+
+// Game Fusion API
+export const gameFusionApi = {
+  status: () => api.get('/game-fusion/status'),
+  history: (limit?: number) => api.get(`/game-fusion/history?limit=${limit || 10}`),
+  fuse: (variants: Array<{html: string; label?: string; source?: string}>, gameTitle?: string, genre?: string) =>
+    api.post('/game-fusion/fuse', {
+      variants, game_title: gameTitle || '', genre: genre || '',
+    }),
+};
+
+// Game Polish API
+export const gamePolishApi = {
+  status: () => api.get('/game-polish/status'),
+  history: (limit?: number) => api.get(`/game-polish/history?limit=${limit || 10}`),
+  apply: (html: string, gameTitle?: string, description?: string) =>
+    api.post('/game-polish/apply', {
+      html, game_title: gameTitle || '', description: description || '',
+    }),
+};
+
+// Game Publisher API
+export const gamePublisherApi = {
+  status: () => api.get('/game-publisher/status'),
+  history: (limit?: number) => api.get(`/game-publisher/history?limit=${limit || 10}`),
+  publish: (html: string, gameTitle?: string, version?: string, description?: string, shareUrl?: string) =>
+    api.post('/game-publisher/publish', {
+      html, game_title: gameTitle || '', version: version || '',
+      description: description || '', share_url: shareUrl || '',
+    }),
+};
+
+// Game Sentinel API
+export const gameSentinelApi = {
+  status: () => api.get('/game-sentinel/status'),
+  history: (limit?: number) => api.get(`/game-sentinel/history?limit=${limit || 10}`),
+  guard: (html: string, injectTelemetry?: boolean) =>
+    api.post('/game-sentinel/guard', { html, inject_telemetry: injectTelemetry ?? true }),
 };
 
 // Voice Acting Director API
@@ -16333,4 +16445,22 @@ export const eventSheetApi = {
     }),
   history: () => api.get('/agent/event-sheet/history'),
   runtime: () => api.get('/agent/event-sheet/runtime'),
+};
+
+// Adaptive Difficulty Director — real-time player adaptation
+export const adaptiveApi = {
+  status: () => api.get('/agent/adaptive/status'),
+  generate: (prompt: string) => api.post('/agent/adaptive/generate', { prompt }),
+  history: () => api.get('/agent/adaptive/history'),
+};
+
+// Game Mutation Engine — controlled game variations
+export const gameMutatorApi = {
+  status: () => api.get('/agent/game-mutator/status'),
+  strategies: () => api.get('/agent/game-mutator/strategies'),
+  mutate: (html: string, strategyId: string) =>
+    api.post('/agent/game-mutator/mutate', { html, strategy_id: strategyId }),
+  mutateBatch: (html: string, strategyIds?: string[]) =>
+    api.post('/agent/game-mutator/mutate-batch', { html, strategy_ids: strategyIds }),
+  history: () => api.get('/agent/game-mutator/history'),
 };
