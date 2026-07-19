@@ -7,9 +7,18 @@ import {
 } from 'lucide-react';
 import { gameEvolverApi } from '../utils/api';
 
+interface PlayabilityInfo {
+  health_score: number | null;
+  playability_avg: number | null;
+  gate: number;
+  bonus?: number;
+}
+
 interface GenerationVariant {
   strategy: string;
-  score: number;
+  score: number;           // composite fitness (critic * gate + bonus)
+  critic_score?: number;   // raw critic quality score
+  playability?: PlayabilityInfo;
   success: boolean;
 }
 
@@ -310,8 +319,19 @@ const GameEvolverPanel: React.FC = () => {
                               backgroundColor: v.success ? `${scoreColor(v.score)}15` : '#1e1e1e',
                               borderColor: v.success ? `${scoreColor(v.score)}30` : '#333',
                             }}
+                            title={v.playability ? `health=${v.playability.health_score} playability=${v.playability.playability_avg} gate=${v.playability.gate}` : ''}
                           >
                             {v.strategy}: {v.success ? v.score.toFixed(1) : 'fail'}
+                            {v.success && v.critic_score !== undefined && (
+                              <span className="text-[#666] ml-1">
+                                (c:{v.critic_score.toFixed(1)}
+                                {v.playability?.playability_avg !== null && v.playability?.playability_avg !== undefined && (
+                                  <span style={{ color: v.playability.playability_avg >= 90 ? '#6bcb77' : v.playability.playability_avg >= 50 ? '#fdcb6e' : '#e94560' }}>
+                                    p:{v.playability.playability_avg.toFixed(0)}
+                                  </span>
+                                )})
+                              </span>
+                            )}
                           </span>
                         ))}
                       </div>
