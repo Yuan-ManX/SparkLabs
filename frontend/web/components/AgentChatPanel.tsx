@@ -14,10 +14,12 @@ const QUICK_ACTIONS = [
 ];
 
 const SUGGESTIONS = [
-  'Design a boss encounter for a fantasy RPG',
-  'Create an emergent narrative system',
-  'Generate procedural terrain with biomes',
-  'Compose adaptive music for exploration',
+  'Build a 2D platformer with double-jump, gem collection, and enemy stomp mechanics',
+  'Build a side-scrolling shooter with boss waves, weapon upgrades, and power-ups',
+  'Design a fast-paced parkour runner with wall-jumps, speed boosts, and obstacle courses',
+  'Build a Battle City tank game with destructible brick walls, enemy tanks, and base defense',
+  'Create a neon puzzle game with sliding crystal blocks, logic gates, and multiple solutions',
+  'Design a fantasy RPG boss encounter with epic attack patterns and multiple phases',
 ];
 
 const formatTimestamp = (ts: number): string => {
