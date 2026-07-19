@@ -40,6 +40,7 @@ from typing import Any, Dict, List, Optional, Tuple
 
 from sparkai.agent.agent_game_mutator import get_game_mutator
 from sparkai.agent.agent_game_critic import get_game_critic
+from sparkai.agent.agent_game_sentinel import GameSentinel
 
 
 # ---------------------------------------------------------------------------
@@ -137,14 +138,22 @@ class EvolutionStats:
 
 
 class GameEvolver:
-    """Evolutionary game optimization using mutation + critique.
+    """Evolutionary game optimization using mutation + critique + playability.
 
     Each generation:
       1. Generate N mutations of the current best game
-      2. Evaluate each with the Game Critic
-      3. Select the highest-scoring variant
-      4. If it improves on the current best, adopt it
-      5. Repeat for the specified number of generations
+      2. Evaluate each with the Game Critic (quality score)
+      3. Verify playability with the Game Sentinel (health gate)
+      4. Compute composite fitness = quality * playability_gate + bonus
+      5. Select the highest-fitness variant
+      6. If it improves on the current best, adopt it
+      7. Repeat for the specified number of generations
+
+    The composite fitness ensures the evolution optimizes for both
+    aesthetic quality AND actual playability. A variant that scores high
+    on the critic but fails playability checks (missing canvas, no game
+    loop, etc.) is penalized, because an unplayable game has zero value
+    regardless of its design quality.
 
     The evolver can also heal each variant before evaluation to ensure
     that quality patches (audio, touch, etc.) are applied consistently.
@@ -188,7 +197,62 @@ class GameEvolver:
             self._inner_lock: threading.RLock = threading.RLock()
             self._history: List[EvolutionResult] = []
             self._stats = EvolutionStats()
+            self._sentinel: GameSentinel = GameSentinel.get_instance()
             self._initialized = True
+
+    def _compute_fitness(
+        self, critic_score: float, html: str,
+    ) -> Tuple[float, Dict[str, Any]]:
+        """
+        Composite fitness combining critic quality score with sentinel
+        playability verification. A variant that fails playability checks
+        is heavily penalized regardless of its aesthetic quality score,
+        because an unplayable game has zero value regardless of how
+        well-designed its content might be.
+
+        Fitness = critic_score * playability_gate + playability_bonus
+
+        - playability_gate: 0.0 if any critical playability metric < 50,
+          otherwise scales linearly from 0.5 to 1.0 as metrics approach 100.
+        - playability_bonus: up to +5.0 added when all metrics are perfect,
+          rewarding fully playable variants above the critic score alone.
+        """
+        try:
+            if not self._sentinel.initialized:
+                self._sentinel.initialize()
+            guard_result = self._sentinel.guard(html, inject_telemetry=False)
+            report = guard_result.get("report", {})
+            health = report.get("health_score", 0.0)
+            metrics = report.get("metrics", [])
+            play_metrics = [
+                m for m in metrics
+                if m.get("name", "").startswith("playability_")
+            ]
+            if not play_metrics:
+                # No playability metrics means sentinel could not verify;
+                # trust the critic score without modification.
+                return critic_score, {
+                    "health_score": health,
+                    "playability_avg": None,
+                    "gate": 1.0,
+                }
+            play_avg = sum(m.get("value", 0) for m in play_metrics) / len(play_metrics)
+            # Gate: variants with avg playability below 50 are nearly unplayable
+            if play_avg < 50:
+                gate = 0.1
+            else:
+                gate = 0.5 + (play_avg - 50) / 100.0  # 0.5 at 50, 1.0 at 100
+            bonus = (play_avg - 90) * 0.5 if play_avg > 90 else 0.0
+            fitness = critic_score * gate + bonus
+            return fitness, {
+                "health_score": round(health, 2),
+                "playability_avg": round(play_avg, 2),
+                "gate": round(gate, 3),
+                "bonus": round(bonus, 3),
+            }
+        except Exception:
+            # If sentinel fails, fall back to critic score only
+            return critic_score, {"health_score": None, "playability_avg": None}
 
     # -- Public API --------------------------------------------------------
 
@@ -235,10 +299,14 @@ class GameEvolver:
             original_report = critic.critique_game(
                 html, game_title=game_title, genre=genre,
             )
-            original_score = (
+            original_critic_score = (
                 original_report.get("report", {}).get("overall_score", 0.0)
                 if original_report.get("report")
                 else 0.0
+            )
+            # Composite fitness: critic quality * playability gate + bonus
+            original_score, original_play = self._compute_fitness(
+                original_critic_score, html,
             )
 
             current_best_html = html
@@ -278,15 +346,21 @@ class GameEvolver:
                             game_title=f"{game_title} G{gen+1}",
                             genre=genre,
                         )
-                        variant_score = (
+                        variant_critic_score = (
                             variant_report.get("report", {}).get("overall_score", 0.0)
                             if variant_report.get("report")
                             else 0.0
+                        )
+                        # Composite fitness: critic quality * playability gate + bonus
+                        variant_score, variant_play = self._compute_fitness(
+                            variant_critic_score, variant_html,
                         )
 
                         gen_variants.append({
                             "strategy": strategy_id,
                             "score": round(variant_score, 3),
+                            "critic_score": round(variant_critic_score, 3),
+                            "playability": variant_play,
                             "success": True,
                         })
                         gen_scores.append((variant_score, strategy_id, variant_html))
