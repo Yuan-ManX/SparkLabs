@@ -890,6 +890,353 @@ class GameCriticAgent:
             self._record_event(CriticEventKind.SYSTEM_RESET)
             self._seed()
 
+    # -- Automatic Game Critique -------------------------------------------
+
+    def critique_game(
+        self,
+        html: str,
+        game_title: str = "Untitled Game",
+        build_version: str = "auto-1.0.0",
+        genre: str = "",
+        reviewer: str = "AI Critic",
+    ) -> Dict[str, Any]:
+        """Automatically critique a game from its HTML source.
+
+        Analyzes the HTML for quality signals across all 10 review
+        dimensions, scores each dimension heuristically, generates
+        findings and recommendations, and returns a full report.
+
+        This is the AI-native entry point: a single call produces a
+        complete professional critique without manual session management.
+        """
+        signals = self._extract_quality_signals(html)
+
+        # Create session
+        session = self.create_session(
+            game_title=game_title,
+            build_version=build_version,
+            reviewer=reviewer,
+            genre=genre,
+            platform="Web (HTML5)",
+            tags=["auto-critique", "html5"],
+            notes=f"Automatic critique based on HTML analysis ({len(html)} chars).",
+        )
+
+        # Score each dimension and collect findings
+        self._score_and_find(session.session_id, signals, genre)
+
+        # Generate priority recommendations
+        self._generate_auto_recommendations(session.session_id, signals)
+
+        # Complete session and generate report
+        self.complete_session(session.session_id)
+        report = self.generate_report(session.session_id)
+
+        return {
+            "session": session.to_dict(),
+            "report": report.to_dict() if report else None,
+            "signals": signals,
+        }
+
+    def _extract_quality_signals(self, html: str) -> Dict[str, Any]:
+        """Extract quality signals from game HTML."""
+        import re
+
+        html_lower = html.lower()
+        signals: Dict[str, Any] = {
+            "html_size": len(html),
+            "has_config": '"enemySpeed"' in html or "'enemySpeed'" in html,
+            "has_score": "score" in html_lower,
+            "has_lives": "lives" in html_lower,
+            "has_combo": "combo" in html_lower,
+            "has_multiplier": "multiplier" in html_lower,
+            "has_levels": "level" in html_lower,
+            "has_intro": "intro" in html_lower or "startscreen" in html_lower or "start-screen" in html_lower,
+            "has_ending": "ending" in html_lower or "victory" in html_lower or "gameover" in html_lower,
+            "has_quests": "quest" in html_lower,
+            "has_npcs": "npc" in html_lower,
+            "has_particles": "particle" in html_lower,
+            "has_shake": "shake" in html_lower,
+            "has_popups": "popup" in html_lower or "floattext" in html_lower or "scorepopup" in html_lower,
+            "has_audio_api": "audiocontext" in html_lower or "web audio" in html_lower,
+            "has_bgm": "bgm" in html_lower or "backgroundmusic" in html_lower or "background music" in html_lower,
+            "has_sfx": "sfx" in html_lower or "soundeffect" in html_lower or "sound effect" in html_lower,
+            "has_settings": "settings" in html_lower,
+            "has_pause": "pause" in html_lower,
+            "has_keyboard": "keydown" in html_lower or "keyup" in html_lower or "addEventListener('key" in html_lower,
+            "has_touch": "touchstart" in html_lower or "touchend" in html_lower or "touchmove" in html_lower,
+            "has_tutorial": "tutorial" in html_lower or "hint" in html_lower,
+            "has_achievements": "achievement" in html_lower,
+            "has_event_sheet": "sparklabseventsheet" in html_lower or "event_sheet" in html_lower or "sl_events" in html_lower,
+            "has_adaptive": "sparklabsadaptive" in html_lower or "adaptive" in html_lower,
+            "has_mutation": "mutation" in html_lower,
+            "has_level_transitions": "transition" in html_lower or "loadlevel" in html_lower,
+            "has_save_load": "savegame" in html_lower or "loadgame" in html_lower or "localstorage" in html_lower,
+        }
+
+        # Extract CONFIG values
+        config_patterns = {
+            "enemy_speed": re.compile(r'"enemySpeed":\s*([0-9.]+)', re.I),
+            "move_speed": re.compile(r'"moveSpeed":\s*([0-9.]+)', re.I),
+            "gravity": re.compile(r'"gravity":\s*(-?[0-9.]+)', re.I),
+            "jump_strength": re.compile(r'"jumpStrength":\s*([0-9.]+)', re.I),
+            "lives": re.compile(r'"lives":\s*(\d+)', re.I),
+            "enemy_count": re.compile(r'"enemyCount":\s*(\d+)', re.I),
+            "collectible_count": re.compile(r'"collectibleCount":\s*(\d+)', re.I),
+            "levels": re.compile(r'"levels":\s*\[', re.I),
+        }
+        config_values: Dict[str, Any] = {}
+        for key, pattern in config_patterns.items():
+            match = pattern.search(html)
+            if match:
+                raw = match.group(1)
+                try:
+                    if key in ("enemy_speed", "move_speed", "gravity", "jump_strength"):
+                        config_values[key] = float(raw)
+                    else:
+                        config_values[key] = int(raw)
+                except ValueError:
+                    pass
+        signals["config"] = config_values
+
+        # Count level occurrences
+        signals["level_count"] = len(re.findall(r'loadLevel\s*\(', html, re.I))
+
+        return signals
+
+    def _score_and_find(
+        self,
+        session_id: str,
+        signals: Dict[str, Any],
+        genre: str,
+    ) -> None:
+        """Score all dimensions and add findings based on signals."""
+        s = signals
+
+        # FUN: score system, combo, collectibles, enemies, levels
+        fun = 6.0
+        if s.get("has_score"): fun += 1.5
+        if s.get("has_combo"): fun += 1.0
+        if s.get("has_collectibles") or s.get("config", {}).get("collectible_count", 0) > 0: fun += 0.5
+        if s.get("config", {}).get("enemy_count", 0) > 0: fun += 0.5
+        if s.get("level_count", 0) > 1: fun += 0.5
+        fun = min(10.0, fun)
+        self.score_criterion(session_id, ReviewDimension.FUN, fun,
+                             "Score based on game systems present (score, combo, collectibles, levels).")
+        if fun >= 8.0:
+            self.add_finding(session_id, FindingCategory.POSITIVE, SeverityLevel.INFO,
+                             ReviewDimension.FUN, "Engaging Core Loop",
+                             "Multiple game systems (score, combo, collectibles) create an engaging experience.")
+        elif fun < 6.0:
+            self.add_finding(session_id, FindingCategory.NEGATIVE, SeverityLevel.MODERATE,
+                             ReviewDimension.FUN, "Limited Engagement Systems",
+                             "Game lacks core engagement systems like scoring or combos.")
+
+        # PACING: levels, transitions, tutorial, intro
+        pacing = 5.0
+        if s.get("level_count", 0) > 1: pacing += 2.0
+        if s.get("has_level_transitions"): pacing += 1.0
+        if s.get("has_tutorial"): pacing += 1.0
+        if s.get("has_intro"): pacing += 0.5
+        if s.get("has_pause"): pacing += 0.5
+        pacing = min(10.0, pacing)
+        self.score_criterion(session_id, ReviewDimension.PACING, pacing,
+                             "Pacing based on level count, transitions, and tutorial presence.")
+        if pacing < 5.0:
+            self.add_finding(session_id, FindingCategory.NEGATIVE, SeverityLevel.MODERATE,
+                             ReviewDimension.PACING, "Single-Session Pacing",
+                             "Game has limited level variety which may affect long-term pacing.")
+
+        # DIFFICULTY: based on CONFIG values
+        cfg = s.get("config", {})
+        enemy_speed = cfg.get("enemy_speed", 0.0)
+        lives = cfg.get("lives", 0)
+        enemy_count = cfg.get("enemy_count", 0)
+        difficulty = 4.0
+        if 1.0 <= enemy_speed <= 2.0: difficulty += 3.0
+        elif enemy_speed > 0: difficulty += 1.5
+        if lives >= 3: difficulty += 2.0
+        elif lives > 0: difficulty += 1.0
+        if 3 <= enemy_count <= 6: difficulty += 2.0
+        elif enemy_count > 0: difficulty += 1.0
+        difficulty = min(10.0, difficulty)
+        self.score_criterion(session_id, ReviewDimension.DIFFICULTY, difficulty,
+                             f"Difficulty tuning: enemy_speed={enemy_speed}, lives={lives}, enemies={enemy_count}.")
+        if enemy_speed > 2.5:
+            self.add_finding(session_id, FindingCategory.NEGATIVE, SeverityLevel.MAJOR,
+                             ReviewDimension.DIFFICULTY, "Potentially Frustrating Enemy Speed",
+                             f"Enemy speed ({enemy_speed}) may be too fast for comfortable play.",
+                             "CONFIG")
+        if lives <= 2 and lives > 0:
+            self.add_finding(session_id, FindingCategory.SUGGESTION, SeverityLevel.MODERATE,
+                             ReviewDimension.DIFFICULTY, "Consider Adding Lives",
+                             f"Only {lives} lives may cause frequent restarts. Consider 3-5 for accessibility.")
+
+        # NARRATIVE: intro, ending, quests, NPCs
+        narrative = 3.0
+        if s.get("has_intro"): narrative += 2.0
+        if s.get("has_ending"): narrative += 2.0
+        if s.get("has_quests"): narrative += 1.5
+        if s.get("has_npcs"): narrative += 1.0
+        narrative = min(10.0, narrative)
+        self.score_criterion(session_id, ReviewDimension.NARRATIVE, narrative,
+                             "Narrative elements: intro, ending, quests, NPCs.")
+        if narrative < 4.0:
+            self.add_finding(session_id, FindingCategory.OBSERVATION, SeverityLevel.MINOR,
+                             ReviewDimension.NARRATIVE, "Minimal Narrative Framework",
+                             "Game lacks intro/ending text and quest structure.")
+
+        # VISUALS: particles, gradient, shake, popups
+        visuals = 5.0
+        if s.get("has_particles"): visuals += 1.5
+        if s.get("has_shake"): visuals += 1.0
+        if s.get("has_popups"): visuals += 1.0
+        if s.get("has_config"): visuals += 1.0  # Has structured color config
+        visuals = min(10.0, visuals)
+        self.score_criterion(session_id, ReviewDimension.VISUALS, visuals,
+                             "Visual polish: particles, screen shake, score popups.")
+        if visuals >= 8.0:
+            self.add_finding(session_id, FindingCategory.POSITIVE, SeverityLevel.INFO,
+                             ReviewDimension.VISUALS, "Rich Visual Feedback",
+                             "Particles, screen shake, and score popups create satisfying visual feedback.")
+
+        # AUDIO: Web Audio, BGM, SFX
+        audio = 3.0
+        if s.get("has_audio_api"): audio += 3.0
+        if s.get("has_bgm"): audio += 2.0
+        if s.get("has_sfx"): audio += 1.0
+        audio = min(10.0, audio)
+        self.score_criterion(session_id, ReviewDimension.AUDIO, audio,
+                             "Audio systems: Web Audio API, BGM, SFX.")
+        if audio < 5.0:
+            self.add_finding(session_id, FindingCategory.NEGATIVE, SeverityLevel.MODERATE,
+                             ReviewDimension.AUDIO, "Limited Audio Design",
+                             "Game lacks Web Audio integration. Consider adding procedural SFX.")
+
+        # ACCESSIBILITY: settings, keyboard, touch, pause
+        accessibility = 4.0
+        if s.get("has_settings"): accessibility += 2.0
+        if s.get("has_keyboard"): accessibility += 1.5
+        if s.get("has_touch"): accessibility += 1.0
+        if s.get("has_pause"): accessibility += 1.0
+        accessibility = min(10.0, accessibility)
+        self.score_criterion(session_id, ReviewDimension.ACCESSIBILITY, accessibility,
+                             "Accessibility: settings, input methods, pause.")
+        if not s.get("has_touch"):
+            self.add_finding(session_id, FindingCategory.SUGGESTION, SeverityLevel.MINOR,
+                             ReviewDimension.ACCESSIBILITY, "Add Touch Support",
+                             "Adding touch input would make the game playable on mobile devices.")
+        if not s.get("has_settings"):
+            self.add_finding(session_id, FindingCategory.SUGGESTION, SeverityLevel.MODERATE,
+                             ReviewDimension.ACCESSIBILITY, "Add Settings Menu",
+                             "A settings overlay with volume and difficulty options improves accessibility.")
+
+        # REPLAYABILITY: achievements, levels, score, lives, adaptive
+        replayability = 3.0
+        if s.get("has_achievements"): replayability += 2.0
+        if s.get("level_count", 0) > 1: replayability += 1.5
+        if s.get("has_score"): replayability += 1.0
+        if s.get("has_lives"): replayability += 1.0
+        if s.get("has_adaptive"): replayability += 1.5
+        replayability = min(10.0, replayability)
+        self.score_criterion(session_id, ReviewDimension.REPLAYABILITY, replayability,
+                             "Replay value: achievements, levels, adaptive difficulty.")
+        if s.get("has_adaptive"):
+            self.add_finding(session_id, FindingCategory.POSITIVE, SeverityLevel.INFO,
+                             ReviewDimension.REPLAYABILITY, "Adaptive Difficulty System",
+                             "The adaptive director adjusts challenge in real-time, increasing replay value.")
+        if not s.get("has_achievements"):
+            self.add_finding(session_id, FindingCategory.SUGGESTION, SeverityLevel.MINOR,
+                             ReviewDimension.REPLAYABILITY, "Add Achievements",
+                             "Achievement system would give players long-term goals.")
+
+        # INNOVATION: event sheet, adaptive, mutation
+        innovation = 5.0
+        if s.get("has_event_sheet"): innovation += 2.0
+        if s.get("has_adaptive"): innovation += 2.0
+        if s.get("has_mutation"): innovation += 1.0
+        innovation = min(10.0, innovation)
+        self.score_criterion(session_id, ReviewDimension.INNOVATION, innovation,
+                             "Innovation: event sheet, adaptive director, mutation engine.")
+        if innovation >= 8.0:
+            self.add_finding(session_id, FindingCategory.POSITIVE, SeverityLevel.INFO,
+                             ReviewDimension.INNOVATION, "AI-Native Game Systems",
+                             "Event sheet synthesis and adaptive difficulty represent AI-native innovation.")
+
+        # POLISH: particles, popups, transitions, settings, tutorial, combo
+        polish = 5.0
+        if s.get("has_particles"): polish += 1.5
+        if s.get("has_popups"): polish += 1.0
+        if s.get("has_level_transitions"): polish += 1.0
+        if s.get("has_settings"): polish += 0.5
+        if s.get("has_tutorial"): polish += 0.5
+        if s.get("has_combo"): polish += 0.5
+        polish = min(10.0, polish)
+        self.score_criterion(session_id, ReviewDimension.POLISH, polish,
+                             "Polish: particles, transitions, tutorials, combo system.")
+        if polish >= 8.0:
+            self.add_finding(session_id, FindingCategory.POSITIVE, SeverityLevel.INFO,
+                             ReviewDimension.POLISH, "High Production Polish",
+                             "Multiple polish systems (particles, popups, transitions) create a refined feel.")
+
+    def _generate_auto_recommendations(
+        self,
+        session_id: str,
+        signals: Dict[str, Any],
+    ) -> None:
+        """Generate priority recommendations based on quality signals."""
+        s = signals
+        priority = 1
+
+        if not s.get("has_audio_api"):
+            self.add_recommendation(session_id, ReviewDimension.AUDIO, priority,
+                "Integrate Web Audio API",
+                "Add procedural sound effects using the Web Audio API for collectibles, hits, and game over.",
+                estimated_effort="medium")
+            priority += 1
+
+        if not s.get("has_settings"):
+            self.add_recommendation(session_id, ReviewDimension.ACCESSIBILITY, priority,
+                "Add Settings Overlay",
+                "Implement a settings menu with volume sliders, difficulty options, and input remapping.",
+                estimated_effort="medium")
+            priority += 1
+
+        if not s.get("has_touch"):
+            self.add_recommendation(session_id, ReviewDimension.ACCESSIBILITY, priority,
+                "Add Touch Input Support",
+                "Implement touch event handlers (touchstart/touchmove/touchend) for mobile playability.",
+                estimated_effort="low")
+            priority += 1
+
+        if not s.get("has_achievements"):
+            self.add_recommendation(session_id, ReviewDimension.REPLAYABILITY, priority,
+                "Implement Achievement System",
+                "Add unlockable achievements for milestones (first win, no-death run, score thresholds).",
+                estimated_effort="medium")
+            priority += 1
+
+        if not s.get("has_save_load"):
+            self.add_recommendation(session_id, ReviewDimension.POLISH, priority,
+                "Add Save/Load via localStorage",
+                "Persist player progress and high scores using localStorage for continuity across sessions.",
+                estimated_effort="low")
+            priority += 1
+
+        if s.get("level_count", 0) <= 1:
+            self.add_recommendation(session_id, ReviewDimension.PACING, priority,
+                "Add Multiple Levels",
+                "Introduce at least 3-5 levels with varying difficulty to improve pacing and session length.",
+                estimated_effort="high")
+            priority += 1
+
+        if not s.get("has_tutorial"):
+            self.add_recommendation(session_id, ReviewDimension.POLISH, priority,
+                "Add Tutorial Hints",
+                "Display contextual hints during the first level to onboard new players.",
+                estimated_effort="low")
+            priority += 1
+
     # -- Seeding -----------------------------------------------------------
 
     def _seed(self) -> None:
