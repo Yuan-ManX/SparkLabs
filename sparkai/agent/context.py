@@ -42,6 +42,8 @@ class GameGenre(Enum):
     SANDBOX = "sandbox"
     HORROR = "horror"
     SPORTS = "sports"
+    PARKOUR = "parkour"
+    TANK_BATTLE = "tank_battle"
 
 
 class PipelinePhase(Enum):
