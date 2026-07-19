@@ -202,12 +202,12 @@ class PolishInjector:
   // ---- Particle Burst Effects ----
   var burstParticles = [];
 
-  function spawnBurst(x, y, color, count) {{
+  function spawnBurst(x, y, color, count) {
     count = count || 12;
-    for (var i = 0; i < count; i++) {{
+    for (var i = 0; i < count; i++) {
       var angle = (i / count) * Math.PI * 2 + Math.random() * 0.4;
       var speed = 2 + Math.random() * 3;
-      burstParticles.push({{
+      burstParticles.push({
         x: x, y: y,
         vx: Math.cos(angle) * speed,
         vy: Math.sin(angle) * speed,
@@ -215,12 +215,12 @@ class PolishInjector:
         maxLife: 50,
         color: color || '#fbbf24',
         size: 3 + Math.random() * 3
-      }});
-    }}
-  }}
+      });
+    }
+  }
 
-  function updateBurstParticles() {{
-    for (var i = burstParticles.length - 1; i >= 0; i--) {{
+  function updateBurstParticles() {
+    for (var i = burstParticles.length - 1; i >= 0; i--) {
       var p = burstParticles[i];
       p.x += p.vx;
       p.y += p.vy;
@@ -228,20 +228,20 @@ class PolishInjector:
       p.vx *= 0.96;
       p.life--;
       if (p.life <= 0) burstParticles.splice(i, 1);
-    }}
-  }}
+    }
+  }
 
-  function renderBurstParticles() {{
+  function renderBurstParticles() {
     ctx.save();
-    for (var i = 0; i < burstParticles.length; i++) {{
+    for (var i = 0; i < burstParticles.length; i++) {
       var p = burstParticles[i];
       var alpha = p.life / p.maxLife;
       ctx.globalAlpha = alpha;
       ctx.fillStyle = p.color;
       ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
-    }}
+    }
     ctx.restore();
-  }}"""
+  }"""
 
     # =========================================================================
     # Tutorial System
