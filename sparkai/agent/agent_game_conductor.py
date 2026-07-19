@@ -54,6 +54,8 @@ from sparkai.agent.agent_game_reasoner import (
     DesignAnalysis as ReasonerAnalysis,
     DesignSuggestion,
 )
+from sparkai.engine.engine_js_validator import get_validator, ValidationReport
+from sparkai.agent.agent_game_sentinel import GameSentinel
 
 logger = logging.getLogger(__name__)
 
@@ -110,6 +112,8 @@ class ConductorResult:
     error: Optional[str]
     intelligence: Optional[IntelligenceReport]
     metadata: Dict[str, Any]
+    event_sheet: Optional[Dict[str, Any]] = None
+    sentinel: Optional[Dict[str, Any]] = None
 
     def to_dict(self, include_html: bool = True) -> Dict[str, Any]:
         result = {
@@ -124,6 +128,8 @@ class ConductorResult:
             "error": self.error,
             "intelligence": self.intelligence.to_dict() if self.intelligence else None,
             "metadata": dict(self.metadata),
+            "event_sheet": self.event_sheet,
+            "sentinel": self.sentinel,
         }
         if include_html:
             result["html"] = self.html
@@ -157,6 +163,8 @@ class GameConductor:
         self._director: Optional[GameDirector] = None
         self._intelligence: Optional[GameIntelligenceEngine] = None
         self._reasoner: Optional[GameDesignReasoner] = None
+        self._sentinel: Optional[GameSentinel] = None
+        self._validator = get_validator()
         self._session_history: deque = deque(maxlen=50)
         self._lock = threading.RLock()
 
@@ -192,6 +200,13 @@ class GameConductor:
                 logger.warning("GameDesignReasoner acquisition failed: %s", exc)
                 self._reasoner = None
 
+            try:
+                self._sentinel = GameSentinel.get_instance()
+                self._sentinel.initialize()
+            except Exception as exc:
+                logger.warning("GameSentinel acquisition failed: %s", exc)
+                self._sentinel = None
+
             self._initialized = True
             logger.info("GameConductor initialized")
 
@@ -208,7 +223,8 @@ class GameConductor:
         3. Run intelligence engine analysis (patterns, player experience)
         4. Run design reasoner analysis (balance, difficulty curve)
         5. Combine into IntelligenceReport
-        6. Return ConductorResult with both game and intelligence
+        6. Sentinel guard - validate, auto-repair, and inject telemetry
+        7. Return ConductorResult with both game and intelligence
         """
         if not self._initialized:
             self.initialize()
@@ -253,10 +269,59 @@ class GameConductor:
             }
         )
 
+        # Phase 4: Synthesize event-sheet logic and inject into HTML
+        event_sheet_data: Optional[Dict[str, Any]] = None
+        final_html = director_result.html
+        if director_result.success and final_html:
+            try:
+                event_sheet_data, final_html = self._synthesize_and_inject_event_sheet(
+                    final_html, prompt
+                )
+                combined_metadata["event_sheet_injected"] = event_sheet_data is not None
+            except Exception as exc:
+                logger.warning("Event sheet synthesis failed: %s", exc)
+                combined_metadata["event_sheet_injected"] = False
+
+        # Phase 5: Generate and inject adaptive difficulty director
+        adaptive_data: Optional[Dict[str, Any]] = None
+        if director_result.success and final_html:
+            try:
+                adaptive_data, final_html = self._generate_and_inject_adaptive(
+                    final_html, prompt
+                )
+                combined_metadata["adaptive_injected"] = adaptive_data is not None
+            except Exception as exc:
+                logger.warning("Adaptive direction failed: %s", exc)
+                combined_metadata["adaptive_injected"] = False
+
+        # Phase 6: Sentinel guard - validate, auto-repair, inject telemetry
+        sentinel_report: Optional[Dict[str, Any]] = None
+        if director_result.success and final_html:
+            try:
+                sentinel = self._sentinel or GameSentinel.get_instance()
+                sentinel.initialize()
+                guard_result = sentinel.guard(final_html, inject_telemetry=True)
+                final_html = guard_result.get("html", final_html)
+                sentinel_report = guard_result.get("report")
+                combined_metadata["sentinel_guarded"] = True
+                if sentinel_report:
+                    combined_metadata["sentinel_health_score"] = (
+                        sentinel_report.get("health_score", 0.0)
+                    )
+                    combined_metadata["sentinel_repairs"] = len(
+                        sentinel_report.get("repairs", [])
+                    )
+                    combined_metadata["sentinel_passed"] = sentinel_report.get(
+                        "passed", False
+                    )
+            except Exception as exc:
+                logger.warning("Sentinel guard failed: %s", exc)
+                combined_metadata["sentinel_guarded"] = False
+
         result = ConductorResult(
             session_id=session_id,
             success=director_result.success,
-            html=director_result.html,
+            html=final_html,
             quality=director_result.quality,
             simulations=director_result.simulations,
             iterations=director_result.iterations,
@@ -265,6 +330,8 @@ class GameConductor:
             error=director_result.error,
             intelligence=intelligence_report,
             metadata=combined_metadata,
+            event_sheet=event_sheet_data,
+            sentinel=sentinel_report,
         )
 
         # Track session history
@@ -396,6 +463,224 @@ class GameConductor:
             logger.warning("Score computation failed: %s", exc)
 
         return report
+
+    # ---- Event Sheet synthesis and HTML injection ----
+
+    def _synthesize_and_inject_event_sheet(
+        self, html: str, prompt: str,
+    ) -> tuple:
+        """Synthesize an event sheet from the prompt and inject its logic
+        into the game HTML as executable JavaScript.
+
+        Returns (event_sheet_dict, modified_html).
+        """
+        from sparkai.agent.agent_event_sheet_synthesizer import (
+            get_event_sheet_synthesizer,
+        )
+
+        synth = get_event_sheet_synthesizer()
+        if not synth._initialized:
+            synth.initialize()
+
+        result = synth.synthesize(prompt=prompt)
+        if not result.success or not result.events:
+            return None, html
+
+        sheet_js = self._build_event_sheet_js(result)
+        if not sheet_js:
+            return result.to_dict(), html
+
+        # Inject before the closing body tag, or append if not found
+        inject_marker = "</body>"
+        if inject_marker in html:
+            modified_html = html.replace(
+                inject_marker, sheet_js + "\n" + inject_marker, 1,
+            )
+        else:
+            modified_html = html + "\n" + sheet_js
+
+        return result.to_dict(), modified_html
+
+    @staticmethod
+    def _build_event_sheet_js(synthesis_result) -> str:
+        """Convert a synthesized event sheet into executable browser JavaScript.
+
+        The generated JS defines an EventSheetRuntime that hooks into the
+        game loop, evaluates conditions each frame, and fires actions.
+        All calls use typeof checks for graceful degradation.
+        """
+        events = synthesis_result.events
+        if not events:
+            return ""
+
+        # Build the events data as JSON
+        import json as _json
+
+        events_json = _json.dumps(events)
+
+        # Build variable initializers from the sheet's variables
+        var_inits = []
+        for ev in events:
+            for cond in ev.get("conditions", []):
+                prop = cond.get("property", "")
+                if prop and prop not in [v.split(":")[0].strip() for v in var_inits]:
+                    val = cond.get("value", 0)
+                    if isinstance(val, (int, float)):
+                        var_inits.append(f'"{prop}": {val}')
+                    else:
+                        var_inits.append(f'"{prop}": 0')
+
+        var_init_str = ", ".join(var_inits) if var_inits else ""
+
+        # Use a marker comment to avoid f-string brace conflicts
+        js_template = '''<script>
+// SparkLabs AI Event Sheet Runtime - synthesized from creator intent
+(function() {
+  var SL_EVENTS = __EVENTS_JSON__;
+  var SL_VARS = { __VAR_INITS__ };
+  var SL_FIRED = {};
+
+  function sl_getVar(name) {
+    if (typeof window[name] !== 'undefined') return window[name];
+    if (typeof window.gameState !== 'undefined' && window.gameState !== null) {
+      if (typeof window.gameState[name] !== 'undefined') return window.gameState[name];
+    }
+    return SL_VARS[name] || 0;
+  }
+
+  function sl_setVar(name, value) {
+    SL_VARS[name] = value;
+    if (typeof window.gameState !== 'undefined' && window.gameState !== null) {
+      window.gameState[name] = value;
+    }
+  }
+
+  function sl_checkCondition(cond) {
+    var prop = cond.property;
+    var op = cond.operator;
+    var target = cond.value;
+    var actual = sl_getVar(prop);
+    if (op === 'less') return actual < target;
+    if (op === 'greater') return actual > target;
+    if (op === 'equal') return actual == target;
+    if (op === 'not_equal') return actual != target;
+    if (op === 'between') {
+      if (Array.isArray(target) && target.length === 2) {
+        return actual >= target[0] && actual <= target[1];
+      }
+    }
+    if (op === 'contains') return String(actual).indexOf(String(target)) >= 0;
+    return false;
+  }
+
+  function sl_executeAction(action) {
+    var type = action.action_type;
+    var target = action.target;
+    var params = action.parameters || {};
+    if (type === 'spawn_object') {
+      if (typeof spawnEntity === 'function') { spawnEntity(target); }
+      else if (typeof window.spawnEntity === 'function') { window.spawnEntity(target); }
+    } else if (type === 'play_sound') {
+      if (typeof playSound === 'function') { playSound(params.sound_name || target); }
+      else if (typeof window.playSound === 'function') { window.playSound(params.sound_name || target); }
+    } else if (type === 'change_scene') {
+      var sceneName = params.scene_name || target;
+      var sceneIdx = parseInt(sceneName, 10);
+      if (isNaN(sceneIdx)) sceneIdx = 0;
+      if (typeof loadLevel === 'function') { loadLevel(sceneIdx); }
+      else if (typeof window.loadLevel === 'function') { window.loadLevel(sceneIdx); }
+    } else if (type === 'set_variable') {
+      sl_setVar(target, params.value !== undefined ? params.value : 0);
+    } else if (type === 'send_message') {
+      if (typeof window.EventBus !== 'undefined' && typeof window.EventBus.emit === 'function') {
+        window.EventBus.emit(target);
+      }
+    } else if (type === 'move_object') {
+      if (typeof moveEntity === 'function') { moveEntity(target, params.destination); }
+    }
+  }
+
+  function sl_evaluateEvents() {
+    for (var i = 0; i < SL_EVENTS.length; i++) {
+      var ev = SL_EVENTS[i];
+      var evId = ev.event_id || ('ev_' + i);
+      var allCondsMet = true;
+      var hasConds = ev.conditions && ev.conditions.length > 0;
+      if (hasConds) {
+        for (var j = 0; j < ev.conditions.length; j++) {
+          if (!sl_checkCondition(ev.conditions[j])) { allCondsMet = false; break; }
+        }
+      }
+      if (allCondsMet) {
+        var shouldFire = (ev.event_type === 'once') ? !SL_FIRED[evId] : true;
+        if (shouldFire && ev.actions && ev.actions.length > 0) {
+          for (var k = 0; k < ev.actions.length; k++) {
+            sl_executeAction(ev.actions[k]);
+          }
+          SL_FIRED[evId] = true;
+        }
+      }
+    }
+  }
+
+  // Hook into the game loop with graceful degradation
+  var sl_origUpdate = typeof window.update === 'function' ? window.update : null;
+  if (sl_origUpdate) {
+    window.update = function(dt) {
+      sl_origUpdate(dt);
+      sl_evaluateEvents();
+    };
+  } else {
+    // Fallback: poll at 30fps if no update loop exists
+    setInterval(sl_evaluateEvents, 33);
+  }
+
+  // Expose the runtime for debugging
+  window.SparkLabsEventSheet = {
+    events: SL_EVENTS,
+    variables: SL_VARS,
+    evaluate: sl_evaluateEvents,
+    setVar: sl_setVar,
+    getVar: sl_getVar,
+  };
+})();
+</script>'''
+
+        # Replace placeholders
+        js_template = js_template.replace("__EVENTS_JSON__", events_json)
+        js_template = js_template.replace("__VAR_INITS__", var_init_str)
+
+        return js_template
+
+    # ---- Adaptive difficulty director injection ----
+
+    def _generate_and_inject_adaptive(
+        self, html: str, prompt: str,
+    ) -> tuple:
+        """Generate adaptive difficulty rules and inject into game HTML.
+
+        Returns (adaptive_dict, modified_html).
+        """
+        from sparkai.agent.agent_adaptive_director import get_adaptive_director
+
+        director = get_adaptive_director()
+        if not director._initialized:
+            director.initialize()
+
+        result = director.generate(prompt=prompt)
+        if not result.success or not result.js_code:
+            return None, html
+
+        # Inject before closing body tag
+        inject_marker = "</body>"
+        if inject_marker in html:
+            modified_html = html.replace(
+                inject_marker, result.js_code + "\n" + inject_marker, 1,
+            )
+        else:
+            modified_html = html + "\n" + result.js_code
+
+        return result.to_dict(), modified_html
 
     # ---- Helpers: build analysis inputs from the director result ----
 
