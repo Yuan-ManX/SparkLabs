@@ -85,6 +85,8 @@ class GameGenre(Enum):
     NARRATIVE = "narrative"
     MUSIC = "music"
     EXPLORATION = "exploration"
+    PARKOUR = "parkour"
+    TANK_BATTLE = "tank_battle"
     CUSTOM = "custom"
 
 
@@ -249,17 +251,19 @@ class PromptAnalyzer:
         GameGenre.PLATFORMER: ["platform", "jump", "side-scroll", "mario", "sonic", "platformer"],
         GameGenre.TOP_DOWN_ADVENTURE: ["top-down", "zelda", "adventure", "explore", "overworld"],
         GameGenre.PUZZLE: ["puzzle", "sokoban", "match-3", "sliding", "logic", "brain"],
-        GameGenre.SHOOTER: ["shoot", "gun", "bullet", "laser", "blaster", "fps", "twin-stick"],
+        GameGenre.SHOOTER: ["shoot", "shooter", "gun", "bullet", "laser", "blaster", "fps", "twin-stick", "dogfight", "starship", "fighter", "wave", "waves", "power-up", "powerups", "weapon", "side-scrolling shooter", "boss wave", "space battle"],
         GameGenre.RPG: ["rpg", "role-play", "leveling", "stats", "equipment", "party"],
         GameGenre.DUNGEON_CRAWLER: ["dungeon", "crawl", "rogue", "roguelike", "labyrinth"],
         GameGenre.RACING: ["race", "racing", "speed", "track", "lap", "fast"],
-        GameGenre.STRATEGY: ["strategy", "tactical", "command", "build", "manage", "rts"],
+        GameGenre.STRATEGY: ["strategy", "tactical", "command", "manage", "rts", "tower defense", "resource management"],
         GameGenre.SURVIVAL: ["survival", "craft", "gather", "hunger", "shelter", "persist"],
-        GameGenre.SANDBOX: ["sandbox", "creative", "build", "free-form", "open"],
+        GameGenre.SANDBOX: ["sandbox", "creative", "free-form", "open-ended", "build mode"],
         GameGenre.BOSS_BATTLE: ["boss", "raid", "encounter", "epic fight", "final enemy"],
         GameGenre.NARRATIVE: ["narrative", "story", "dialogue", "quest", "plot", "character arc"],
         GameGenre.MUSIC: ["music", "rhythm", "beat", "melody", "compose", "soundtrack"],
         GameGenre.EXPLORATION: ["explore", "discover", "wander", "open world", "journey"],
+        GameGenre.PARKOUR: ["parkour", "runner", "endless runner", "obstacle", "dash", "wall-jump", "speed run"],
+        GameGenre.TANK_BATTLE: ["tank", "battle city", "tank battle", "armor", "cannon", "base defense", "brick wall", "eagle defense"],
     }
 
     THEME_PREFIXES = [
@@ -343,6 +347,7 @@ class PromptAnalyzer:
             GameGenre.EXPLORATION: "Horizons",
             GameGenre.MUSIC: "Beat",
             GameGenre.RACING: "Rush",
+            GameGenre.TANK_BATTLE: "Front",
         }
         suffix = suffixes.get(genre, "Adventure")
         return f"{base} {suffix}"[:60]
@@ -363,6 +368,7 @@ class PromptAnalyzer:
             GameGenre.NARRATIVE: "Listen, choose, act, experience consequences",
             GameGenre.MUSIC: "Listen, time, perform, compose",
             GameGenre.EXPLORATION: "Wander, discover, map, uncover secrets",
+            GameGenre.TANK_BATTLE: "Maneuver, aim, destroy enemies, defend base",
         }
         return loops.get(genre, "Explore and progress")
 
@@ -377,6 +383,7 @@ class PromptAnalyzer:
             GameGenre.NARRATIVE: ["Story", "Characters", "Choices", "Consequences"],
             GameGenre.EXPLORATION: ["Discovery", "Freedom", "Wonder", "Mastery"],
             GameGenre.MUSIC: ["Rhythm", "Harmony", "Expression", "Flow"],
+            GameGenre.TANK_BATTLE: ["Defense", "Precision", "Tactics", "Survival"],
         }
         return pillar_map.get(genre, ["Engagement", "Progression", "Discovery", "Polish"])
 
@@ -413,6 +420,7 @@ class PromptAnalyzer:
             GameGenre.BOSS_BATTLE: 15,
             GameGenre.NARRATIVE: 90,
             GameGenre.EXPLORATION: 60,
+            GameGenre.TANK_BATTLE: 35,
         }.get(genre, 45)
         multiplier = {"simple": 0.6, "medium": 1.0, "complex": 1.5}.get(complexity, 1.0)
         return int(base * multiplier)
@@ -429,6 +437,7 @@ class PromptAnalyzer:
             GameGenre.NARRATIVE: ["dialogue_choices", "branching_story", "character_relationships", "multiple_endings"],
             GameGenre.EXPLORATION: ["map_system", "fast_travel", "discovery_log", "day_night_cycle"],
             GameGenre.MUSIC: ["beat_sync", "note_charts", "score_ranking", "freestyle_mode"],
+            GameGenre.TANK_BATTLE: ["destructible_walls", "base_defense", "enemy_spawning", "power_ups", "grid_movement"],
         }
         return common + genre_features.get(genre, [])
 
@@ -443,6 +452,7 @@ class PromptAnalyzer:
             GameGenre.NARRATIVE: "Protagonist shaping the story through choices",
             GameGenre.EXPLORATION: "Wanderer uncovering the world's secrets",
             GameGenre.MUSIC: "Performer creating harmonious melodies",
+            GameGenre.TANK_BATTLE: "Tank commander defending the base against enemy waves",
         }
         return roles.get(genre, "Player engaging with the game world")
 
