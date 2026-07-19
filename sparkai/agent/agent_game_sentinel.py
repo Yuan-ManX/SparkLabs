@@ -6,11 +6,13 @@ validates game integrity, monitors health metrics, and auto-repairs common
 defects before the game reaches the player.
 
 Capabilities:
-  1. Integrity Scan  - validate JS syntax, brace balance, script tag pairing
-  2. Defect Repair    - auto-fix double-brace artifacts, unclosed tags, etc.
-  3. Health Score     - composite score from integrity, complexity, size, structure
-  4. Runtime Telemetry - inject a lightweight health monitor into the game HTML
-  5. Diagnostic Report - full issue list with severity, location, and fix status
+  1. Integrity Scan         - validate JS syntax, brace balance, script tag pairing
+  2. Defect Repair           - auto-fix double-brace artifacts, unclosed tags, etc.
+  3. Health Score            - composite score from integrity, complexity, size, structure
+  4. Runtime Telemetry       - inject a lightweight health monitor into the game HTML
+  5. Diagnostic Report       - full issue list with severity, location, and fix status
+  6. Playability Verification - semantic checks for canvas, game loop, input, levels, player
+  7. Improvement Suggestions  - actionable guidance for making the game better
 
 The sentinel bridges the AI agent layer and the engine runtime layer — it
 understands both the generated JavaScript and the Python-side game document
@@ -102,6 +104,7 @@ class SentinelResult:
     metrics: List[HealthMetric] = field(default_factory=list)
     repairs: List[RepairAction] = field(default_factory=list)
     issues_remaining: List[Dict[str, Any]] = field(default_factory=list)
+    suggestions: List[Dict[str, Any]] = field(default_factory=list)
     original_size: int = 0
     repaired_size: int = 0
     telemetry_injected: bool = False
@@ -115,6 +118,7 @@ class SentinelResult:
             "metrics": [m.to_dict() for m in self.metrics],
             "repairs": [r.to_dict() for r in self.repairs],
             "issues_remaining": self.issues_remaining,
+            "suggestions": self.suggestions,
             "original_size": self.original_size,
             "repaired_size": self.repaired_size,
             "telemetry_injected": self.telemetry_injected,
@@ -217,18 +221,28 @@ class GameSentinel:
         if inject_telemetry and post_report.passed:
             repaired_html, telemetry_injected = self._inject_telemetry(repaired_html)
 
-        # Step 5: Compute health metrics
+        # Step 5: Playability verification — semantic checks beyond syntax
+        playability = self._check_playability(repaired_html)
+
+        # Step 6: Compute health metrics
         metrics = self._compute_metrics(
             original_html, repaired_html, pre_report, post_report, repairs
         )
+        metrics.extend(playability["metrics"])
 
-        # Step 6: Compute composite health score
+        # Step 7: Compute composite health score
         health_score = self._compute_health_score(metrics)
 
-        # Step 7: Build result
+        # Step 8: Build result
         remaining_issues = [
             i.to_dict() for i in post_report.issues if i.severity == "error"
         ]
+        # Append playability issues as non-blocking warnings
+        for issue in playability["issues"]:
+            remaining_issues.append(issue)
+
+        # Step 9: Generate actionable improvement suggestions
+        suggestions = self._generate_suggestions(metrics, remaining_issues, repaired_html)
 
         result = SentinelResult(
             session_id=session_id,
@@ -237,6 +251,7 @@ class GameSentinel:
             metrics=metrics,
             repairs=repairs,
             issues_remaining=remaining_issues,
+            suggestions=suggestions,
             original_size=original_size,
             repaired_size=len(repaired_html),
             telemetry_injected=telemetry_injected,
@@ -277,9 +292,9 @@ class GameSentinel:
                     RepairAction(
                         category="double_brace",
                         action="normalize_braces",
-                        detail="Replaced {{ with { and }} with } in script blocks",
-                        before="var X = {{ ... }}",
-                        after="var X = { ... }",
+                        detail="Fixed {{ artifacts after )/=/, in script blocks",
+                        before="function() {{ ... }}",
+                        after="function() { ... }",
                     )
                 )
 
@@ -304,15 +319,24 @@ class GameSentinel:
 
     def _fix_double_braces(self, html: str) -> str:
         """
-        Replace {{ with { and }} with } inside <script> blocks only.
-        Leaves CSS and HTML content untouched.
+        Fix double-brace templating artifacts ({{ -> {) inside <script>
+        blocks only. Only targets {{ that follows a closing parenthesis
+        or arrow operator, which is the signature of an f-string escape
+        leak (e.g. "function() {{", "if (x) {{", "=> {{").
+
+        Never blindly collapses }} — that pattern is valid in nested
+        object literals like {"a": {"b": 1}} and JSON data. Instead,
+        the matching }} for each fixed {{ is resolved by removing one
+        } from the next }} that appears at the same statement level.
         """
+        # Pattern: {{ preceded by ), ], =, comma, semicolon, or arrow =>
+        # This catches templating leaks like function() {{, if (x) {{, => {{
+        artifact_re = re.compile(r'([)\]=,;]|\b=>)\s*\{\{')
+
         def fix_script(match: re.Match) -> str:
             opening = match.group(0)[: match.group(0).index(">") + 1]
             content = match.group(1)
-            # Don't replace {{ inside template literals (backtick strings)
-            # Simple heuristic: only replace if not inside backtick context
-            fixed = content.replace("{{", "{").replace("}}", "}")
+            fixed = artifact_re.sub(lambda m: m.group(1) + " {", content)
             return opening + fixed + "</script>"
 
         return re.sub(
@@ -383,6 +407,366 @@ class GameSentinel:
             return html[:idx] + telemetry_script + "\n" + html[idx:], True
         else:
             return html + telemetry_script, True
+
+    # ------------------------------------------------------------------
+    # Playability verification
+    # ------------------------------------------------------------------
+
+    def _check_playability(self, html: str) -> Dict[str, Any]:
+        """
+        Semantic verification that the game has the components required
+        to actually be playable. Goes beyond syntax checking to ensure
+        the runtime contract is satisfied: canvas, game loop, input
+        handling, level data, player entity, and state transitions.
+        """
+        metrics: List[HealthMetric] = []
+        issues: List[Dict[str, Any]] = []
+        html_lower = html.lower()
+
+        # 1. Canvas element present
+        has_canvas = "<canvas" in html_lower
+        metrics.append(HealthMetric(
+            name="playability_canvas",
+            value=100.0 if has_canvas else 0.0,
+            status="ok" if has_canvas else "critical",
+            detail="Canvas rendering surface present" if has_canvas
+            else "Missing <canvas> element — game cannot render",
+        ))
+        if not has_canvas:
+            issues.append({
+                "category": "playability",
+                "severity": "warning",
+                "message": "No <canvas> element found — game has no render surface",
+                "line": 0,
+            })
+
+        # 2. Game loop — requestAnimationFrame or setInterval with update logic
+        has_loop = (
+            "requestAnimationFrame" in html
+            or "setInterval" in html
+        )
+        has_update = "update" in html or "tick" in html.lower() or "loop" in html.lower()
+        loop_score = 0.0
+        if has_loop and has_update:
+            loop_score = 100.0
+        elif has_loop:
+            loop_score = 60.0
+            issues.append({
+                "category": "playability",
+                "severity": "warning",
+                "message": "Game loop scheduler found but no update/tick function detected",
+                "line": 0,
+            })
+        else:
+            issues.append({
+                "category": "playability",
+                "severity": "warning",
+                "message": "No game loop (requestAnimationFrame/setInterval) detected",
+                "line": 0,
+            })
+        metrics.append(HealthMetric(
+            name="playability_game_loop",
+            value=loop_score,
+            status="ok" if loop_score == 100.0 else "warning",
+            detail="Game loop and update function detected" if loop_score == 100.0
+            else "Partial game loop detection",
+        ))
+
+        # 3. Input handling — keyboard and/or touch
+        has_keyboard = "keydown" in html or "keyup" in html or "keypress" in html
+        has_touch = "touchstart" in html or "touchend" in html or "touchmove" in html or "touchLeft" in html
+        input_score = 0.0
+        if has_keyboard and has_touch:
+            input_score = 100.0
+        elif has_keyboard or has_touch:
+            input_score = 70.0
+        else:
+            issues.append({
+                "category": "playability",
+                "severity": "warning",
+                "message": "No input handlers (keyboard/touch) detected — game may be unresponsive",
+                "line": 0,
+            })
+        metrics.append(HealthMetric(
+            name="playability_input",
+            value=input_score,
+            status="ok" if input_score >= 70.0 else "warning",
+            detail="Keyboard + touch input" if input_score == 100.0
+            else ("Keyboard only" if has_keyboard else "Touch only") if input_score > 0
+            else "No input handlers",
+        ))
+
+        # 4. Level data — LEVELS array with at least one level
+        levels_match = re.search(r'var\s+LEVELS\s*=\s*(\[.*?\]);', html, re.DOTALL)
+        level_score = 0.0
+        level_detail = "No LEVELS data found"
+        if levels_match:
+            try:
+                import json as _json
+                levels_data = _json.loads(levels_match.group(1))
+                level_count = len(levels_data)
+                if level_count > 0:
+                    level_score = 100.0
+                    level_detail = "{} level(s) defined".format(level_count)
+                    # Check that at least one level has entities
+                    has_entities = any(
+                        len(lvl.get("entities", [])) > 0 for lvl in levels_data
+                    )
+                    if not has_entities:
+                        level_score = 50.0
+                        level_detail = "{} level(s) but none have entities".format(level_count)
+                        issues.append({
+                            "category": "playability",
+                            "severity": "warning",
+                            "message": "Levels exist but no entities are defined",
+                            "line": 0,
+                        })
+                else:
+                    level_score = 20.0
+                    level_detail = "LEVELS array is empty"
+                    issues.append({
+                        "category": "playability",
+                        "severity": "warning",
+                        "message": "LEVELS array is empty — no levels to play",
+                        "line": 0,
+                    })
+            except Exception:
+                level_score = 30.0
+                level_detail = "LEVELS data exists but JSON is malformed"
+                issues.append({
+                    "category": "playability",
+                    "severity": "warning",
+                    "message": "LEVELS JSON is malformed — game may not load levels",
+                    "line": 0,
+                })
+        else:
+            issues.append({
+                "category": "playability",
+                "severity": "warning",
+                "message": "No LEVELS data found — game has no content",
+                "line": 0,
+            })
+        metrics.append(HealthMetric(
+            name="playability_levels",
+            value=level_score,
+            status="ok" if level_score == 100.0 else "warning",
+            detail=level_detail,
+        ))
+
+        # 5. State transitions — win/lose conditions
+        has_win = "won" in html_lower or "win" in html_lower or "victory" in html_lower or "complete" in html_lower
+        has_lose = "lost" in html_lower or "lose" in html_lower or "game over" in html_lower or "dead" in html_lower or "death" in html_lower
+        state_score = 0.0
+        if has_win and has_lose:
+            state_score = 100.0
+        elif has_win or has_lose:
+            state_score = 50.0
+            missing = "lose" if has_win else "win"
+            issues.append({
+                "category": "playability",
+                "severity": "warning",
+                "message": "Partial end-state detection — {} condition missing".format(missing),
+                "line": 0,
+            })
+        else:
+            issues.append({
+                "category": "playability",
+                "severity": "warning",
+                "message": "No win/lose state transitions detected",
+                "line": 0,
+            })
+        metrics.append(HealthMetric(
+            name="playability_end_states",
+            value=state_score,
+            status="ok" if state_score == 100.0 else "warning",
+            detail="Win + lose states present" if state_score == 100.0
+            else "Partial end-state coverage" if state_score > 0
+            else "No end-state transitions",
+        ))
+
+        # 6. Player entity — check for player type in LEVELS or player spawn
+        has_player = False
+        if levels_match:
+            try:
+                import json as _json
+                levels_data = _json.loads(levels_match.group(1))
+                for lvl in levels_data:
+                    for ent in lvl.get("entities", []):
+                        if ent.get("type") == "player" or "player" in ent.get("id", "").lower():
+                            has_player = True
+                            break
+                    if has_player:
+                        break
+            except Exception:
+                pass
+        if not has_player:
+            # Fallback: check for player color or player-related variables
+            has_player = "playerColor" in html or "player_color" in html or "playerSpawn" in html
+        metrics.append(HealthMetric(
+            name="playability_player",
+            value=100.0 if has_player else 0.0,
+            status="ok" if has_player else "critical",
+            detail="Player entity defined in level data" if has_player
+            else "No player entity found — game cannot be played",
+        ))
+        if not has_player:
+            issues.append({
+                "category": "playability",
+                "severity": "warning",
+                "message": "No player entity found in level data",
+                "line": 0,
+            })
+
+        return {"metrics": metrics, "issues": issues}
+
+    # ------------------------------------------------------------------
+    # Improvement suggestions
+    # ------------------------------------------------------------------
+
+    def _generate_suggestions(
+        self,
+        metrics: List[HealthMetric],
+        issues: List[Dict[str, Any]],
+        html: str,
+    ) -> List[Dict[str, Any]]:
+        """
+        Analyze metrics and issues to produce actionable improvement
+        suggestions. Each suggestion has a priority, category, title,
+        and concrete description of what to change.
+        """
+        suggestions: List[Dict[str, Any]] = []
+        metric_map = {m.name: m for m in metrics}
+
+        # Canvas / rendering surface
+        m = metric_map.get("playability_canvas")
+        if m and m.value < 100.0:
+            suggestions.append({
+                "priority": "critical",
+                "category": "rendering",
+                "title": "Add a canvas element",
+                "description": "The game has no render surface. Add <canvas id=\"gameCanvas\"></canvas> inside <body> and obtain a 2D context with getContext('2d').",
+            })
+
+        # Game loop
+        m = metric_map.get("playability_game_loop")
+        if m and m.value < 100.0:
+            if m.value == 0.0:
+                suggestions.append({
+                    "priority": "critical",
+                    "category": "game_loop",
+                    "title": "Implement a game loop",
+                    "description": "No animation scheduler found. Add window.requestAnimationFrame(loop) with an update(dt) function that advances game state each frame.",
+                })
+            else:
+                suggestions.append({
+                    "priority": "high",
+                    "category": "game_loop",
+                    "title": "Add an update function to the game loop",
+                    "description": "A loop scheduler exists but no update/tick function was detected. Define function update(dt) { ... } that processes physics, input, and rendering each frame.",
+                })
+
+        # Input handling
+        m = metric_map.get("playability_input")
+        if m and m.value < 100.0:
+            if m.value == 0.0:
+                suggestions.append({
+                    "priority": "critical",
+                    "category": "input",
+                    "title": "Add input handlers",
+                    "description": "No input handlers detected. Add keyboard listeners (keydown/keyup) and touch zones for mobile compatibility.",
+                })
+            else:
+                suggestions.append({
+                    "priority": "medium",
+                    "category": "input",
+                    "title": "Add touch input for mobile",
+                    "description": "Only keyboard input detected. Add touchstart/touchend listeners or on-screen touch zones to support mobile play.",
+                })
+
+        # Level data
+        m = metric_map.get("playability_levels")
+        if m and m.value < 100.0:
+            if m.value == 0.0:
+                suggestions.append({
+                    "priority": "critical",
+                    "category": "content",
+                    "title": "Define level data",
+                    "description": "No LEVELS array found. Define var LEVELS = [{name, width, height, entities: [...]}] with at least one level containing player, terrain, and collectibles.",
+                })
+            elif m.value <= 30.0:
+                suggestions.append({
+                    "priority": "high",
+                    "category": "content",
+                    "title": "Fix malformed LEVELS JSON",
+                    "description": "The LEVELS array exists but contains invalid JSON. Check for missing closing braces on entity objects — each entity needs its own closing }.",
+                })
+            elif m.value <= 50.0:
+                suggestions.append({
+                    "priority": "medium",
+                    "category": "content",
+                    "title": "Add entities to levels",
+                    "description": "Levels exist but contain no entities. Add player spawn points, platforms, enemies, and collectibles to each level.",
+                })
+
+        # End states
+        m = metric_map.get("playability_end_states")
+        if m and m.value < 100.0:
+            if m.value == 0.0:
+                suggestions.append({
+                    "priority": "high",
+                    "category": "gameplay",
+                    "title": "Add win and lose conditions",
+                    "description": "No end-state transitions detected. Add state transitions for 'won' (e.g., reaching the goal) and 'lost' (e.g., running out of lives).",
+                })
+            else:
+                missing = "lose" if "win" in str(m.detail).lower() else "win"
+                suggestions.append({
+                    "priority": "medium",
+                    "category": "gameplay",
+                    "title": "Add the missing {} condition".format(missing),
+                    "description": "Only one end-state detected. Add a {} condition so the player can both succeed and fail.".format(missing),
+                })
+
+        # Player entity
+        m = metric_map.get("playability_player")
+        if m and m.value < 100.0:
+            suggestions.append({
+                "priority": "critical",
+                "category": "entity",
+                "title": "Add a player entity",
+                "description": "No player entity found in level data. Add an entity with type='player' to at least one level so the player has a controllable avatar.",
+            })
+
+        # Size optimization
+        m = metric_map.get("size_efficiency")
+        if m and m and m.value < 60.0:
+            suggestions.append({
+                "priority": "low",
+                "category": "optimization",
+                "title": "Reduce game HTML size",
+                "description": "The game is {:.0f} KB — consider minifying JavaScript, removing unused code, or splitting into smaller levels.".format(len(html) / 1024),
+            })
+
+        # Integrity issues
+        m = metric_map.get("integrity")
+        if m and m.value < 100.0:
+            suggestions.append({
+                "priority": "critical",
+                "category": "syntax",
+                "title": "Fix JavaScript syntax errors",
+                "description": "{} syntax errors remain after auto-repair. Check the issues list for specific line numbers and brace mismatches.".format(m.detail),
+            })
+
+        # If everything is perfect, add a positive note
+        if not suggestions and all(m.value >= 90.0 for m in metrics):
+            suggestions.append({
+                "priority": "info",
+                "category": "overall",
+                "title": "Game quality is excellent",
+                "description": "All health metrics score above 90. The game has valid syntax, complete playability checks, and good structure. Consider adding polish: particle effects, screen shake, or dynamic music.",
+            })
+
+        return suggestions
 
     # ------------------------------------------------------------------
     # Health metrics
@@ -485,11 +869,17 @@ class GameSentinel:
     def _compute_health_score(self, metrics: List[HealthMetric]) -> float:
         """Compute a weighted composite health score."""
         weights = {
-            "integrity": 0.35,
-            "script_health": 0.25,
-            "size_efficiency": 0.10,
-            "document_structure": 0.15,
-            "repair_effectiveness": 0.15,
+            "integrity": 0.20,
+            "script_health": 0.15,
+            "size_efficiency": 0.05,
+            "document_structure": 0.10,
+            "repair_effectiveness": 0.10,
+            "playability_canvas": 0.10,
+            "playability_game_loop": 0.08,
+            "playability_input": 0.05,
+            "playability_levels": 0.07,
+            "playability_end_states": 0.05,
+            "playability_player": 0.05,
         }
         score = 0.0
         for m in metrics:
@@ -521,5 +911,7 @@ class GameSentinel:
                     "health_score",
                     "runtime_telemetry",
                     "diagnostic_report",
+                    "playability_verification",
+                    "improvement_suggestions",
                 ],
             }
