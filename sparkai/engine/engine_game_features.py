@@ -93,36 +93,36 @@ class FeatureInjector:
   var SAVE_KEY = 'sparklabs_save_' + (CONFIG.title || 'game').replace(/[^a-zA-Z0-9]/g, '_').toLowerCase();
   var saveNotificationTimer = 0;
 
-  function saveProgress() {{
-    try {{
-      var data = {{
+  function saveProgress() {
+    try {
+      var data = {
         level: levelIdx,
         score: score,
         lives: lives,
-        achievements: typeof ACHIEVEMENTS !== 'undefined' ? ACHIEVEMENTS : {{}}
-      }};
+        achievements: typeof ACHIEVEMENTS !== 'undefined' ? ACHIEVEMENTS : {}
+      };
       localStorage.setItem(SAVE_KEY, JSON.stringify(data));
       saveNotificationTimer = 180;
-    }} catch(e) {{ /* localStorage may be unavailable */ }}
-  }}
+    } catch(e) { /* localStorage may be unavailable */ }
+  }
 
-  function loadSavedProgress() {{
-    try {{
+  function loadSavedProgress() {
+    try {
       var raw = localStorage.getItem(SAVE_KEY);
       if (!raw) return;
       var data = JSON.parse(raw);
       if (data.score) score = data.score;
       if (data.lives) lives = data.lives;
-      if (data.achievements && typeof ACHIEVEMENTS !== 'undefined') {{
+      if (data.achievements && typeof ACHIEVEMENTS !== 'undefined') {
         var keys = Object.keys(data.achievements);
-        for (var i = 0; i < keys.length; i++) {{
-          if (ACHIEVEMENTS[keys[i]]) {{
+        for (var i = 0; i < keys.length; i++) {
+          if (ACHIEVEMENTS[keys[i]]) {
             ACHIEVEMENTS[keys[i]].unlocked = true;
-          }}
-        }}
-      }}
-    }} catch(e) {{ /* parse error */ }}
-  }}"""
+          }
+        }
+      }
+    } catch(e) { /* parse error */ }
+  }"""
 
     # =========================================================================
     # Achievement System
@@ -131,16 +131,16 @@ class FeatureInjector:
     def _achievements_js(self) -> str:
         return """
   // ---- Achievement System ----
-  var ACHIEVEMENTS = {{
-    first_steps:     {{ name: 'First Steps',      desc: 'Complete level 1',           unlocked: false, icon: 'flag' }},
-    collector:       {{ name: 'Collector',        desc: 'Gather 50 collectibles',     unlocked: false, icon: 'gem' }},
-    survivor:        {{ name: 'Survivor',         desc: 'Clear a level without dying', unlocked: false, icon: 'shield' }},
-    speed_runner:    {{ name: 'Speed Runner',     desc: 'Complete a level under 30s',  unlocked: false, icon: 'bolt' }},
-    explorer:        {{ name: 'Explorer',         desc: 'Visit all levels',           unlocked: false, icon: 'compass' }},
-    champion:        {{ name: 'Champion',         desc: 'Complete all levels',        unlocked: false, icon: 'trophy' }},
-    sharpshooter:    {{ name: 'Sharpshooter',     desc: 'Defeat 10 enemies',          unlocked: false, icon: 'crosshairs' }},
-    untouchable:     {{ name: 'Untouchable',      desc: 'Finish without losing a life', unlocked: false, icon: 'star' }}
-  }};
+  var ACHIEVEMENTS = {
+    first_steps:     { name: 'First Steps',      desc: 'Complete level 1',           unlocked: false, icon: 'flag' },
+    collector:       { name: 'Collector',        desc: 'Gather 50 collectibles',     unlocked: false, icon: 'gem' },
+    survivor:        { name: 'Survivor',         desc: 'Clear a level without dying', unlocked: false, icon: 'shield' },
+    speed_runner:    { name: 'Speed Runner',     desc: 'Complete a level under 30s',  unlocked: false, icon: 'bolt' },
+    explorer:        { name: 'Explorer',         desc: 'Visit all levels',           unlocked: false, icon: 'compass' },
+    champion:        { name: 'Champion',         desc: 'Complete all levels',        unlocked: false, icon: 'trophy' },
+    sharpshooter:    { name: 'Sharpshooter',     desc: 'Defeat 10 enemies',          unlocked: false, icon: 'crosshairs' },
+    untouchable:     { name: 'Untouchable',      desc: 'Finish without losing a life', unlocked: false, icon: 'star' }
+  };
   var achievementBannerTimer = 0;
   var achievementBannerText = '';
   var levelStartTime = 0;
@@ -149,33 +149,33 @@ class FeatureInjector:
   var deathlessLevel = true;
   var deathlessRun = true;
 
-  function initAchievements() {{
+  function initAchievements() {
     levelStartTime = Date.now();
-  }}
+  }
 
-  function unlockAchievement(key) {{
-    if (ACHIEVEMENTS[key] && !ACHIEVEMENTS[key].unlocked) {{
+  function unlockAchievement(key) {
+    if (ACHIEVEMENTS[key] && !ACHIEVEMENTS[key].unlocked) {
       ACHIEVEMENTS[key].unlocked = true;
       achievementBannerText = ACHIEVEMENTS[key].name;
       achievementBannerTimer = 240;
       if (typeof saveProgress === 'function') saveProgress();
-    }}
-  }}
+    }
+  }
 
-  function checkAchievements() {{
-    if (levelIdx >= 1 && !ACHIEVEMENTS.first_steps.unlocked) {{
+  function checkAchievements() {
+    if (levelIdx >= 1 && !ACHIEVEMENTS.first_steps.unlocked) {
       unlockAchievement('first_steps');
-    }}
-    if (totalCollectiblesGathered >= 50 && !ACHIEVEMENTS.collector.unlocked) {{
+    }
+    if (totalCollectiblesGathered >= 50 && !ACHIEVEMENTS.collector.unlocked) {
       unlockAchievement('collector');
-    }}
-    if (totalEnemiesDefeated >= 10 && !ACHIEVEMENTS.sharpshooter.unlocked) {{
+    }
+    if (totalEnemiesDefeated >= 10 && !ACHIEVEMENTS.sharpshooter.unlocked) {
       unlockAchievement('sharpshooter');
-    }}
-    if (LEVELS && levelIdx >= LEVELS.length - 1 && !ACHIEVEMENTS.explorer.unlocked) {{
+    }
+    if (LEVELS && levelIdx >= LEVELS.length - 1 && !ACHIEVEMENTS.explorer.unlocked) {
       unlockAchievement('explorer');
-    }}
-  }}"""
+    }
+  }"""
 
     # =========================================================================
     # Screen Shake
