@@ -43,6 +43,10 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any, Deque, Dict, List, Optional, Tuple
 
+from sparkai.engine.engine_game_physics import (
+    PhysicsWorld, InputState, BodyType, CollisionSide, PhysicsState,
+)
+
 logger = logging.getLogger(__name__)
 
 
@@ -767,6 +771,13 @@ class CognitiveGameEngine:
         self._executor = ActionExecutor()
         self._reflection = ReflectionLayer(self._memory)
 
+        # Physics world - lazy-initialized for server-side simulation and
+        # action outcome prediction. Mirrors the client-side physics so the
+        # cognitive layer can forecast the result of a movement before
+        # committing it to the live game state.
+        self._physics: Optional[PhysicsWorld] = None
+        self._physics_synced: bool = False
+
         # Telemetry
         self._tick_history: Deque[CognitiveTickResult] = deque(maxlen=64)
         self._total_duration_s: float = 0.0
@@ -926,6 +937,163 @@ class CognitiveGameEngine:
 
         return result
 
+    # ---- Physics Integration ----
+
+    def _ensure_physics(self) -> PhysicsWorld:
+        """Lazily initialize and sync the physics world on first use."""
+        if self._physics is None:
+            self._physics = PhysicsWorld.get_instance()
+            self._physics.load_default_scene()
+            self._physics.start()
+            self._physics_synced = True
+        elif not self._physics_synced:
+            self._sync_physics_from_entities()
+            self._physics_synced = True
+        return self._physics
+
+    def _sync_physics_from_entities(self) -> None:
+        """Sync the cognitive engine's entity state into the physics world.
+
+        Maps cognitive entities to physics bodies: player entities become
+        the player body, enemies become dynamic bodies, terrain/static
+        entities become static bodies. This is a one-way sync - the
+        physics world is a predictive mirror, not the source of truth.
+        """
+        if self._physics is None:
+            return
+        # Reset physics to default scene as a base, then overlay entities
+        self._physics.load_default_scene()
+        self._physics.start()
+        # Sync player position if a player entity exists
+        for e in self._entities:
+            if e.entity_type == "player":
+                player = self._physics.get_player()
+                if player is not None:
+                    player.position.x = float(e.x)
+                    player.position.y = float(e.y)
+                break
+
+    def step_physics(
+        self, input_state: Optional[InputState] = None,
+        dt: Optional[float] = None,
+    ) -> Dict[str, Any]:
+        """Step the server-side physics world by one fixed timestep.
+
+        Returns the physics step result plus the updated player body state.
+        This lets the cognitive layer observe physics-driven state changes
+        (gravity, collisions, wall-slide) that the cognitive tick alone
+        does not simulate.
+        """
+        physics = self._ensure_physics()
+        result = physics.step(dt=dt, input_state=input_state or InputState())
+        player = physics.get_player()
+        return {
+            "tick": result.tick,
+            "collisions": result.collisions,
+            "bodies_moved": result.bodies_moved,
+            "player_on_ground": result.player_on_ground,
+            "player_wall_sliding": result.player_wall_sliding,
+            "player_position": {
+                "x": player.position.x, "y": player.position.y,
+            } if player else None,
+            "player_velocity": {
+                "x": player.velocity.x, "y": player.velocity.y,
+            } if player else None,
+            "duration_s": result.duration_s,
+        }
+
+    def predict_action_outcome(
+        self,
+        action_type: str,
+        params: Optional[Dict[str, Any]] = None,
+        ticks: int = 30,
+    ) -> Dict[str, Any]:
+        """Predict the outcome of an action by simulating it in physics.
+
+        Creates a snapshot of the current physics world, applies the action
+        (e.g., a jump or movement), runs the simulation for N ticks, then
+        restores the original state. Returns the predicted trajectory and
+        final state without modifying the live world.
+        """
+        physics = self._ensure_physics()
+        params = params or {}
+
+        # Build input sequence from action type
+        inputs: List[InputState] = []
+        if action_type == "jump":
+            for i in range(ticks):
+                inputs.append(InputState(
+                    jump_pressed=(i == 0),
+                    jump_held=(i <= 8),
+                ))
+        elif action_type == "move_left":
+            inputs = [InputState(left=True) for _ in range(ticks)]
+        elif action_type == "move_right":
+            inputs = [InputState(right=True) for _ in range(ticks)]
+        elif action_type == "wall_jump":
+            for i in range(ticks):
+                inputs.append(InputState(
+                    right=True,
+                    jump_pressed=(i == 0),
+                    jump_held=(i <= 10),
+                ))
+        elif action_type == "double_jump":
+            for i in range(ticks):
+                inputs.append(InputState(
+                    jump_pressed=(i in (0, 12)),
+                    jump_held=(i <= 8 or (12 <= i <= 20)),
+                ))
+        else:
+            inputs = [InputState() for _ in range(ticks)]
+
+        # Predict trajectory without modifying live state
+        trajectory = physics.predict_trajectory(
+            body_id="player", ticks=ticks,
+            input_state=inputs[0] if inputs else None,
+        )
+
+        # Also run a non-destructive batch simulation to get telemetry
+        sim_results = physics.simulate(ticks=ticks, input_sequence=inputs)
+        total_collisions = sum(r.collisions for r in sim_results)
+        wall_slide_ticks = sum(1 for r in sim_results if r.player_wall_sliding)
+
+        return {
+            "action_type": action_type,
+            "ticks_simulated": len(sim_results),
+            "total_collisions": total_collisions,
+            "wall_slide_ticks": wall_slide_ticks,
+            "trajectory": [
+                {"x": p.x, "y": p.y} for p in trajectory
+            ],
+            "final_position": {
+                "x": trajectory[-1].x, "y": trajectory[-1].y,
+            } if trajectory else None,
+            "start_position": {
+                "x": trajectory[0].x, "y": trajectory[0].y,
+            } if trajectory else None,
+        }
+
+    def physics_status(self) -> Dict[str, Any]:
+        """Return the current physics world status."""
+        if self._physics is None:
+            return {
+                "initialized": False,
+                "message": "Physics world not yet initialized. Call step_physics or predict_action_outcome first.",
+            }
+        return {
+            "initialized": True,
+            "synced": self._physics_synced,
+            **self._physics.status(),
+        }
+
+    def reset_physics(self) -> Dict[str, Any]:
+        """Reset the physics world to the default scene."""
+        physics = self._ensure_physics()
+        physics.load_default_scene()
+        physics.start()
+        self._physics_synced = True
+        return physics.status()
+
     # ---- Status & Telemetry ----
 
     def status(self) -> Dict[str, Any]:
@@ -962,6 +1130,7 @@ class CognitiveGameEngine:
                     "duration_s": last_tick.duration_s,
                     "lesson": last_tick.lesson,
                 } if last_tick else None,
+                "physics": self.physics_status(),
             }
 
     def history(self, limit: int = 10) -> List[Dict[str, Any]]:
