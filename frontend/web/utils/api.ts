@@ -16577,3 +16577,41 @@ export const aiRuntimeBridgeApi = {
   lastOverrides: () => api.get('/agent/ai-bridge/last-overrides'),
   reset: () => api.post('/agent/ai-bridge/reset'),
 };
+
+// AI-Native Integration - synchronizes architect/conductor/brain/bridge
+export const aiNativeIntegrationApi = {
+  status: () => api.get('/agent/ai-integration/status'),
+  tick: () => api.post('/agent/ai-integration/tick'),
+  history: (limit: number = 16) =>
+    api.get(`/agent/ai-integration/history?limit=${limit}`),
+  learning: () => api.get('/agent/ai-integration/learning'),
+  reset: () => api.post('/agent/ai-integration/reset'),
+};
+
+export const gameCreationOrchestratorApi = {
+  status: () => api.get('/agent/creation-pipeline/status'),
+  create: (prompt: string, genreHint?: string) =>
+    api.post('/agent/creation-pipeline/create', {
+      prompt,
+      genre_hint: genreHint || null,
+    }),
+  history: (limit: number = 16) =>
+    api.get(`/agent/creation-pipeline/history?limit=${limit}`),
+  getRun: (runId: string) => api.get(`/agent/creation-pipeline/run/${runId}`),
+  reset: () => api.post('/agent/creation-pipeline/reset'),
+};
+
+export const cognitiveEngineApi = {
+  status: () => api.get('/agent/cognitive-engine/status'),
+  tick: () => api.post('/agent/cognitive-engine/tick'),
+  tickBatch: (count: number = 10) =>
+    api.post('/agent/cognitive-engine/tick-batch', { count, dt: 1.0 / 60.0 }),
+  start: () => api.post('/agent/cognitive-engine/start'),
+  pause: () => api.post('/agent/cognitive-engine/pause'),
+  resume: () => api.post('/agent/cognitive-engine/resume'),
+  reset: () => api.post('/agent/cognitive-engine/reset'),
+  history: (limit: number = 10) =>
+    api.get(`/agent/cognitive-engine/history?limit=${limit}`),
+  queryMemory: (tier?: string, domain?: string, limit: number = 8) =>
+    api.post('/agent/cognitive-engine/memory', { tier: tier || null, domain: domain || null, limit }),
+};
