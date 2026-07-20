@@ -56,6 +56,9 @@ from sparkai.agent.agent_game_reasoner import (
 )
 from sparkai.engine.engine_js_validator import get_validator, ValidationReport
 from sparkai.agent.agent_game_sentinel import GameSentinel
+from sparkai.agent.agent_unified_kernel import AgentKernel
+from sparkai.engine.engine_kernel_integration import KernelEngineIntegrator
+from sparkai.agent.agent_game_brain import GameBrain
 
 logger = logging.getLogger(__name__)
 
@@ -164,6 +167,9 @@ class GameConductor:
         self._intelligence: Optional[GameIntelligenceEngine] = None
         self._reasoner: Optional[GameDesignReasoner] = None
         self._sentinel: Optional[GameSentinel] = None
+        self._kernel: Optional[AgentKernel] = None
+        self._integrator: Optional[KernelEngineIntegrator] = None
+        self._brain: Optional[GameBrain] = None
         self._validator = get_validator()
         self._session_history: deque = deque(maxlen=50)
         self._lock = threading.RLock()
@@ -207,6 +213,30 @@ class GameConductor:
                 logger.warning("GameSentinel acquisition failed: %s", exc)
                 self._sentinel = None
 
+            # Acquire the unified cognitive kernel
+            try:
+                self._kernel = AgentKernel.get_instance()
+                self._kernel.initialize()
+            except Exception as exc:
+                logger.warning("AgentKernel acquisition failed: %s", exc)
+                self._kernel = None
+
+            # Acquire the kernel-engine integrator
+            try:
+                self._integrator = KernelEngineIntegrator.get_instance()
+                self._integrator.initialize(kernel=self._kernel)
+            except Exception as exc:
+                logger.warning("KernelEngineIntegrator acquisition failed: %s", exc)
+                self._integrator = None
+
+            # Acquire the AI-native game brain
+            try:
+                self._brain = GameBrain.get_instance()
+                self._brain.initialize()
+            except Exception as exc:
+                logger.warning("GameBrain acquisition failed: %s", exc)
+                self._brain = None
+
             self._initialized = True
             logger.info("GameConductor initialized")
 
@@ -218,19 +248,52 @@ class GameConductor:
     ) -> ConductorResult:
         """
         Run the full conductor pipeline:
+        0. Prime the unified kernel with the user prompt as a goal
         1. Call GameDirector.direct() to create the game
         2. Extract game config from the director's metadata
         3. Run intelligence engine analysis (patterns, player experience)
         4. Run design reasoner analysis (balance, difficulty curve)
         5. Combine into IntelligenceReport
         6. Sentinel guard - validate, auto-repair, and inject telemetry
-        7. Return ConductorResult with both game and intelligence
+        7. Run the game brain for initial directorial directives
+        8. Return ConductorResult with both game and intelligence
         """
         if not self._initialized:
             self.initialize()
 
         session_id = f"conductor_{uuid.uuid4().hex[:12]}"
         start_time = time.time()
+
+        # Phase 0: Prime the unified kernel with the user prompt as a goal
+        kernel_status: Optional[Dict[str, Any]] = None
+        if self._kernel is not None:
+            try:
+                self._kernel.perceive(
+                    source="user",
+                    channel="prompt",
+                    payload={"prompt": prompt, "genre_hint": genre_hint},
+                    salience=0.95,
+                )
+                self._kernel.submit_goal(
+                    goal=prompt,
+                    sub_tasks=[
+                        {"name": "design_game", "tool": "game_director",
+                         "args": {"prompt": prompt, "genre_hint": genre_hint}},
+                        {"name": "analyze_intelligence", "tool": "intelligence_engine",
+                         "args": {}},
+                        {"name": "synthesize_event_sheet", "tool": "event_sheet",
+                         "args": {}},
+                        {"name": "guard_with_sentinel", "tool": "sentinel",
+                         "args": {}},
+                    ],
+                )
+                # Run a couple of kernel cycles to bootstrap cognition
+                for _ in range(2):
+                    self._kernel.cycle()
+                kernel_status = self._kernel.status()
+            except Exception as exc:
+                logger.warning("Kernel priming failed: %s", exc)
+                kernel_status = None
 
         # Phase 1: Direct the game creation
         director = self._director or GameDirector.get_instance()
@@ -318,6 +381,65 @@ class GameConductor:
                 logger.warning("Sentinel guard failed: %s", exc)
                 combined_metadata["sentinel_guarded"] = False
 
+        # Phase 7: Run the game brain for initial directorial directives
+        brain_status: Optional[Dict[str, Any]] = None
+        if director_result.success and self._brain is not None:
+            try:
+                # Provide a simulated event stream so the brain can bootstrap
+                # its player and pacing models from the prompt and genre
+                if self._brain._engine_event_provider is None:
+                    initial_events = [
+                        {
+                            "kind": "scene_loaded",
+                            "data": {
+                                "scene": genre_hint or "main",
+                                "prompt": prompt,
+                            },
+                        },
+                        {
+                            "kind": "game_state_change",
+                            "data": {"transition": "session_start"},
+                        },
+                    ]
+                    self._brain.set_engine_event_provider(
+                        lambda evts=initial_events: evts
+                    )
+                # Run several brain ticks to generate initial directives
+                for _ in range(3):
+                    self._brain.tick()
+                brain_status = self._brain.status()
+                combined_metadata["brain_directives_pending"] = (
+                    brain_status.get("pending_directives", 0)
+                )
+                combined_metadata["brain_directives_dispatched"] = (
+                    brain_status.get("dispatched_directives", 0)
+                )
+                combined_metadata["brain_pacing_zone"] = (
+                    brain_status.get("pacing", {}).get("zone")
+                )
+                combined_metadata["brain_player_mood"] = (
+                    brain_status.get("player", {}).get("mood")
+                )
+            except Exception as exc:
+                logger.warning("Game brain tick failed: %s", exc)
+                brain_status = None
+
+        # Phase 8: Record kernel and integrator status in metadata
+        if kernel_status is not None:
+            combined_metadata["kernel_cycles"] = kernel_status.get("cycles", 0)
+            combined_metadata["kernel_memory_stats"] = kernel_status.get(
+                "memory_stats", {}
+            )
+        if self._integrator is not None:
+            try:
+                integrator_status = self._integrator.status()
+                combined_metadata["integrator_tick"] = integrator_status.get("tick", 0)
+                combined_metadata["integrator_dispatched"] = integrator_status.get(
+                    "dispatched_commands", 0
+                )
+            except Exception as exc:
+                logger.warning("Integrator status failed: %s", exc)
+
         result = ConductorResult(
             session_id=session_id,
             success=director_result.success,
@@ -346,6 +468,8 @@ class GameConductor:
                     "iterations": director_result.iterations,
                     "duration_s": round(duration, 3),
                     "intelligence_available": intelligence_report is not None,
+                    "brain_available": brain_status is not None,
+                    "kernel_available": kernel_status is not None,
                     "timestamp": time.time(),
                 }
             )
