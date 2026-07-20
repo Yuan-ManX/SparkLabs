@@ -16464,3 +16464,116 @@ export const gameMutatorApi = {
     api.post('/agent/game-mutator/mutate-batch', { html, strategy_ids: strategyIds }),
   history: () => api.get('/agent/game-mutator/history'),
 };
+
+// Unified Cognitive Kernel — 7-phase cognitive cycle (perceive/reason/plan/act/...)
+export const cognitiveKernelApi = {
+  status: () => api.get('/agent/cognitive-kernel/status'),
+  perceive: (source: string, channel: string, payload: Record<string, unknown>, salience?: number) =>
+    api.post('/agent/cognitive-kernel/perceive', { source, channel, payload, salience: salience ?? 0.5 }),
+  submitGoal: (goal: string, subTasks?: Array<Record<string, unknown>>) =>
+    api.post('/agent/cognitive-kernel/goal', { goal, sub_tasks: subTasks ?? [] }),
+  cycle: () => api.post('/agent/cognitive-kernel/cycle'),
+  recall: (query: string, limit?: number) => {
+    const params = new URLSearchParams();
+    if (query) params.set('query', query);
+    if (limit) params.set('limit', String(limit));
+    const qs = params.toString();
+    return api.get(`/agent/cognitive-kernel/recall${qs ? `?${qs}` : ''}`);
+  },
+  reset: () => api.post('/agent/cognitive-kernel/reset'),
+};
+
+// Kernel-Engine Integrator — binds the kernel with the engine runtime
+export const cognitiveIntegratorApi = {
+  status: () => api.get('/agent/cognitive-integrator/status'),
+  tick: () => api.post('/agent/cognitive-integrator/tick'),
+  submitAction: (kind: string, target: string, args: Record<string, unknown>, priority?: number, issuedBy?: string) =>
+    api.post('/agent/cognitive-integrator/action', {
+      kind, target, args,
+      priority: priority ?? 0,
+      issued_by: issuedBy ?? 'frontend',
+    }),
+  emitEvent: (kind: string, source: string, payload: Record<string, unknown>, tick?: number) =>
+    api.post('/agent/cognitive-integrator/event', {
+      kind, source, payload,
+      tick: tick ?? 0,
+    }),
+  history: (limit?: number) => {
+    const qs = limit ? `?limit=${limit}` : '';
+    return api.get(`/agent/cognitive-integrator/history${qs}`);
+  },
+  reset: () => api.post('/agent/cognitive-integrator/reset'),
+};
+
+// AI-Native Game Brain — real-time directorial cognition
+export const gameBrainApi = {
+  status: () => api.get('/agent/game-brain/status'),
+  tick: () => api.post('/agent/game-brain/tick'),
+  issueDirective: (kind: string, intent: string, args: Record<string, unknown>, priority?: number, confidence?: number, expectedEffect?: string) =>
+    api.post('/agent/game-brain/directive', {
+      kind, intent, args,
+      priority: priority ?? 0,
+      confidence: confidence ?? 0.5,
+      expected_effect: expectedEffect ?? '',
+    }),
+  directives: () => api.get('/agent/game-brain/directives'),
+  reset: () => api.post('/agent/game-brain/reset'),
+};
+
+// Cognitive Architect - multi-modal reasoning, tool evolution, knowledge synthesis
+export const cognitiveArchitectApi = {
+  status: () => api.get('/agent/architect/status'),
+  reason: (task: string, context?: Record<string, unknown>, preferredModes?: string[], strategy?: string) =>
+    api.post('/agent/architect/reason', {
+      task,
+      context: context ?? {},
+      preferred_modes: preferredModes ?? [],
+      strategy: strategy ?? 'adaptive_switch',
+    }),
+  forgeTool: (missingCapability: string, inputSchema?: Record<string, unknown>, outputSchema?: Record<string, unknown>, testCases?: Array<Record<string, unknown>>) =>
+    api.post('/agent/architect/forge-tool', {
+      missing_capability: missingCapability,
+      input_schema: inputSchema ?? {},
+      output_schema: outputSchema ?? {},
+      test_cases: testCases ?? [],
+    }),
+  synthesize: (episodes: Array<Record<string, unknown>>) =>
+    api.post('/agent/architect/synthesize', { episodes }),
+  knowledge: (query: string, domain?: string, limit?: number) => {
+    const params = new URLSearchParams();
+    if (query) params.set('query', query);
+    if (domain) params.set('domain', domain);
+    if (limit) params.set('limit', String(limit));
+    const qs = params.toString();
+    return api.get(`/agent/architect/knowledge${qs ? `?${qs}` : ''}`);
+  },
+  collaborate: (objective: string, subtasks: Array<Record<string, unknown>>) =>
+    api.post('/agent/architect/collaborate', { objective, subtasks }),
+  cycle: () => api.post('/agent/architect/cycle'),
+  tools: () => api.get('/agent/architect/tools'),
+  reset: () => api.post('/agent/architect/reset'),
+};
+
+// AI-Native Engine Conductor - physics, render, scene adjustments
+export const aiNativeConductorApi = {
+  status: () => api.get('/agent/conductor/status'),
+  cycle: () => api.post('/agent/conductor/cycle'),
+  submitPhysics: (kind: string, target: string, args: Record<string, unknown>, rationale?: string) =>
+    api.post('/agent/conductor/physics', { kind, target, args, rationale: rationale ?? '' }),
+  submitRender: (kind: string, target: string, args: Record<string, unknown>, rationale?: string) =>
+    api.post('/agent/conductor/render', { kind, target, args, rationale: rationale ?? '' }),
+  submitScene: (kind: string, target: string, args: Record<string, unknown>, rationale?: string) =>
+    api.post('/agent/conductor/scene', { kind, target, args, rationale: rationale ?? '' }),
+  reset: () => api.post('/agent/conductor/reset'),
+};
+
+// AI Runtime Bridge - connects cognitive layer to game generation pipeline
+export const aiRuntimeBridgeApi = {
+  status: () => api.get('/agent/ai-bridge/status'),
+  buildFromPrompt: (prompt: string, genreHint?: string) =>
+    api.post('/agent/ai-bridge/build-from-prompt', { prompt, genre_hint: genreHint }),
+  buildFromGdd: (gdd: Record<string, unknown>, prompt?: string) =>
+    api.post('/agent/ai-bridge/build-from-gdd', { gdd, prompt: prompt ?? '' }),
+  lastOverrides: () => api.get('/agent/ai-bridge/last-overrides'),
+  reset: () => api.post('/agent/ai-bridge/reset'),
+};
