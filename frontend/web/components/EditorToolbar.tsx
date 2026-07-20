@@ -63,6 +63,7 @@ export const modeGroups: ModeGroup[] = [
       { id: 'ai-native-integration', label: 'Integration', icon: 'fa-circle-nodes' },
       { id: 'game-creation-orchestrator', label: 'Orchestrator', icon: 'fa-wand-magic-sparkles' },
       { id: 'cognitive-engine', label: 'Cognitive Engine', icon: 'fa-atom' },
+      { id: 'cognitive-fusion', label: 'Fusion', icon: 'fa-diagram-project' },
       { id: 'agent-cognition', label: 'Cognition', icon: 'fa-lightbulb' },
       { id: 'agent-memory', label: 'Memory', icon: 'fa-database' },
       { id: 'agent-reasoning', label: 'Reasoning', icon: 'fa-diagram-project' },
@@ -132,6 +133,7 @@ export const modeGroups: ModeGroup[] = [
     cat: 'engine',
     items: [
       { id: 'physics-engine', label: 'Physics Engine', icon: 'fa-atom' },
+      { id: 'game-physics', label: 'Game Physics', icon: 'fa-atom' },
       { id: 'collision-det', label: 'Collision', icon: 'fa-bomb' },
       { id: 'fluid-sim', label: 'Fluid', icon: 'fa-droplet' },
       { id: 'cloth-sim', label: 'Cloth', icon: 'fa-shirt' },
