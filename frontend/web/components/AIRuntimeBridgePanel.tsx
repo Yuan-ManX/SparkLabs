@@ -2,7 +2,7 @@
 
 import React, { useState, useCallback, useEffect } from 'react';
 import {
-  Bridge, Loader2, Play, Zap, Settings, Activity,
+  Network, Loader2, Play, Zap, Settings, Activity,
 } from 'lucide-react';
 import { aiRuntimeBridgeApi } from '../utils/api';
 
@@ -110,7 +110,7 @@ const AIRuntimeBridgePanel: React.FC = () => {
         borderBottom: '1px solid #1a1a1a',
         marginBottom: '10px',
       }}>
-        <Bridge size={16} color="#fff" />
+        <Network size={16} color="#fff" />
         <span style={{
           fontSize: '12px',
           fontWeight: 700,
