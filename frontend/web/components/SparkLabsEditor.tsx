@@ -290,6 +290,7 @@ import GamePublisherPanel from './GamePublisherPanel';
 import GameSentinelPanel from './GameSentinelPanel';
 import CognitiveKernelPanel from './CognitiveKernelPanel';
 import ArchitectConductorPanel from './ArchitectConductorPanel';
+import AIRuntimeBridgePanel from './AIRuntimeBridgePanel';
 import AutonomousCreatorPanel from './AutonomousCreatorPanel';
 import InteractionLoopPanel from './InteractionLoopPanel';
 import UnifiedOrchestrationPanel from './UnifiedOrchestrationPanel';
@@ -921,6 +922,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'llm-router': return <LLMRouterPanel />;
       case 'cognitive-kernel': return <CognitiveKernelPanel />;
       case 'architect-conductor': return <ArchitectConductorPanel />;
+      case 'ai-runtime-bridge': return <AIRuntimeBridgePanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
