@@ -294,6 +294,8 @@ import AIRuntimeBridgePanel from './AIRuntimeBridgePanel';
 import AiNativeIntegrationPanel from './AiNativeIntegrationPanel';
 import GameCreationOrchestratorPanel from './GameCreationOrchestratorPanel';
 import CognitiveEnginePanel from './CognitiveEnginePanel';
+import CognitiveFusionPanel from './CognitiveFusionPanel';
+import GamePhysicsPanel from './GamePhysicsPanel';
 import AutonomousCreatorPanel from './AutonomousCreatorPanel';
 import InteractionLoopPanel from './InteractionLoopPanel';
 import UnifiedOrchestrationPanel from './UnifiedOrchestrationPanel';
@@ -929,6 +931,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'ai-native-integration': return <AiNativeIntegrationPanel />;
       case 'game-creation-orchestrator': return <GameCreationOrchestratorPanel />;
       case 'cognitive-engine': return <CognitiveEnginePanel />;
+      case 'cognitive-fusion': return <CognitiveFusionPanel />;
+      case 'game-physics': return <GamePhysicsPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
