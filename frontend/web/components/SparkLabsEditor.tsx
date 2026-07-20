@@ -291,6 +291,9 @@ import GameSentinelPanel from './GameSentinelPanel';
 import CognitiveKernelPanel from './CognitiveKernelPanel';
 import ArchitectConductorPanel from './ArchitectConductorPanel';
 import AIRuntimeBridgePanel from './AIRuntimeBridgePanel';
+import AiNativeIntegrationPanel from './AiNativeIntegrationPanel';
+import GameCreationOrchestratorPanel from './GameCreationOrchestratorPanel';
+import CognitiveEnginePanel from './CognitiveEnginePanel';
 import AutonomousCreatorPanel from './AutonomousCreatorPanel';
 import InteractionLoopPanel from './InteractionLoopPanel';
 import UnifiedOrchestrationPanel from './UnifiedOrchestrationPanel';
@@ -923,6 +926,9 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'cognitive-kernel': return <CognitiveKernelPanel />;
       case 'architect-conductor': return <ArchitectConductorPanel />;
       case 'ai-runtime-bridge': return <AIRuntimeBridgePanel />;
+      case 'ai-native-integration': return <AiNativeIntegrationPanel />;
+      case 'game-creation-orchestrator': return <GameCreationOrchestratorPanel />;
+      case 'cognitive-engine': return <CognitiveEnginePanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
