@@ -16615,3 +16615,77 @@ export const cognitiveEngineApi = {
   queryMemory: (tier?: string, domain?: string, limit: number = 8) =>
     api.post('/agent/cognitive-engine/memory', { tier: tier || null, domain: domain || null, limit }),
 };
+
+export const cognitiveFusionApi = {
+  status: () => api.get('/agent/cognitive-fusion/status'),
+  full: () => api.get('/agent/cognitive-fusion/full'),
+  tick: () => api.post('/agent/cognitive-fusion/tick'),
+  tickBatch: (count: number = 10) =>
+    api.post('/agent/cognitive-fusion/tick-batch', { count, dt: 1.0 / 60.0 }),
+  start: () => api.post('/agent/cognitive-fusion/start'),
+  pause: () => api.post('/agent/cognitive-fusion/pause'),
+  resume: () => api.post('/agent/cognitive-fusion/resume'),
+  reset: () => api.post('/agent/cognitive-fusion/reset'),
+  history: (limit: number = 10) =>
+    api.get(`/agent/cognitive-fusion/history?limit=${limit}`),
+  listSkills: (tier?: string, statusFilter?: string, limit: number = 20) =>
+    api.get(`/agent/cognitive-fusion/forge/skills?${tier ? `tier=${tier}&` : ''}${statusFilter ? `status_filter=${statusFilter}&` : ''}limit=${limit}`),
+  getSkill: (skillId: string) => api.get(`/agent/cognitive-fusion/forge/skills/${skillId}`),
+  resetSkills: () => api.post('/agent/cognitive-fusion/forge/reset'),
+  physicsStatus: () => api.get('/agent/cognitive-fusion/physics'),
+  physicsHistory: (limit: number = 10) =>
+    api.get(`/agent/cognitive-fusion/physics/history?limit=${limit}`),
+  physicsProfiles: () => api.get('/agent/cognitive-fusion/physics/profiles'),
+  physicsSetGenre: (genre: string) =>
+    api.post('/agent/cognitive-fusion/physics/genre', { genre }),
+  physicsReset: () => api.post('/agent/cognitive-fusion/physics/reset'),
+};
+
+export const gamePhysicsApi = {
+  status: () => api.get<{ status: string; data: unknown }>('/engine/game-physics/status'),
+  step: (input: {
+    left?: boolean; right?: boolean; jump_pressed?: boolean; jump_held?: boolean;
+    up?: boolean; down?: boolean; shoot?: boolean; dt?: number;
+  }) => api.post<{ status: string; data: unknown }>('/engine/game-physics/step', input),
+  stepBatch: (inputs: Array<{
+    left?: boolean; right?: boolean; jump_pressed?: boolean; jump_held?: boolean;
+    up?: boolean; down?: boolean; shoot?: boolean;
+  }>, count?: number) => api.post<{ status: string; data: unknown }>('/engine/game-physics/step-batch', { inputs, count: count || inputs.length }),
+  simulate: (inputs: Array<{
+    left?: boolean; right?: boolean; jump_pressed?: boolean; jump_held?: boolean;
+  }>, ticks: number = 60, returnTrajectory: boolean = true) =>
+    api.post<{ status: string; data: unknown }>('/engine/game-physics/simulate', { inputs, ticks, return_trajectory: returnTrajectory }),
+  predict: (actionType: string, ticks: number = 30, params?: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/engine/game-physics/predict', { action_type: actionType, ticks, params }),
+  start: () => api.post<{ status: string; data: unknown }>('/engine/game-physics/start'),
+  pause: () => api.post<{ status: string; data: unknown }>('/engine/game-physics/pause'),
+  resume: () => api.post<{ status: string; data: unknown }>('/engine/game-physics/resume'),
+  reset: () => api.post<{ status: string; data: unknown }>('/engine/game-physics/reset'),
+  bodies: () => api.get<{ status: string; data: unknown }>('/engine/game-physics/bodies'),
+  collisions: (limit: number = 20) =>
+    api.get<{ status: string; data: unknown }>(`/engine/game-physics/collisions?limit=${limit}`),
+  updateConfig: (config: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/engine/game-physics/config', config),
+  loadScene: (sceneName: string) =>
+    api.post<{ status: string; data: unknown }>('/engine/game-physics/scene', { scene_name: sceneName }),
+};
+
+export const cognitiveSimulationApi = {
+  configure: (strategy: string, maxTicks: number = 600, goalX: number = 1500) =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-simulation/configure', {
+      strategy, max_ticks: maxTicks, goal_x: goalX,
+    }),
+  start: () => api.post<{ status: string; data: unknown }>('/agent/cognitive-simulation/start'),
+  step: () => api.post<{ status: string; data: unknown }>('/agent/cognitive-simulation/step'),
+  stepBatch: (count: number = 60) =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-simulation/step-batch', { count }),
+  pause: () => api.post<{ status: string; data: unknown }>('/agent/cognitive-simulation/pause'),
+  resume: () => api.post<{ status: string; data: unknown }>('/agent/cognitive-simulation/resume'),
+  stop: () => api.post<{ status: string; data: unknown }>('/agent/cognitive-simulation/stop'),
+  reset: () => api.post<{ status: string; data: unknown }>('/agent/cognitive-simulation/reset'),
+  status: () => api.get<{ status: string; data: unknown }>('/agent/cognitive-simulation/status'),
+  history: (limit: number = 60) =>
+    api.get<{ status: string; data: unknown }>(`/agent/cognitive-simulation/history?limit=${limit}`),
+  trajectory: () => api.get<{ status: string; data: unknown }>('/agent/cognitive-simulation/trajectory'),
+  result: () => api.get<{ status: string; data: unknown }>('/agent/cognitive-simulation/result'),
+};
