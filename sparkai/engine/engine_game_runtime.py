@@ -1411,6 +1411,7 @@ class HtmlAssembler:
         wallJumpLock = 10;
         jumpBufferTimer = 0;
         jumpsRemaining = maxJumps - 1;
+        if (typeof window.trackBridgeEvent === 'function') window.trackBridgeEvent('wall_jump');
         isWallSliding = false;
         if (typeof sfxJump === 'function') sfxJump();
         if (typeof spawnBurst === 'function') spawnBurst(player.x + player.w/2, player.y + player.h/2, '#00e5ff', 10, 4);
@@ -1591,6 +1592,7 @@ class HtmlAssembler:
             }} else {{
               score += enemyPoints;
             }}
+            if (typeof window.trackBridgeEvent === 'function') window.trackBridgeEvent('enemy_kill');
             updateScore();
             player.vy = -CONFIG.jumpStrength * 0.7;
             if (typeof sfxStomp === 'function') sfxStomp();
