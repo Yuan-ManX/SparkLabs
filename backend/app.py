@@ -24,7 +24,7 @@ from backend.routes import (
     agent_cognitive_kernel, agent_architect_conductor,
     ai_runtime_bridge, ai_native_integration,
     game_creation_orchestrator, cognitive_engine, cognitive_fusion,
-    game_physics,
+    game_physics, cognitive_simulation, ai_game_bridge,
 )
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
@@ -34,7 +34,7 @@ config = SparkAIConfig()
 app = FastAPI(
     title="SparkLabs API",
     description="SparkLabs AI-Native Game Engine API",
-    version="25.0.0",
+    version="27.0.0",
 )
 
 app.add_middleware(
@@ -101,12 +101,14 @@ app.include_router(game_creation_orchestrator.router, prefix="/api/agent", tags=
 app.include_router(cognitive_engine.router, prefix="/api/agent", tags=["Cognitive Game Engine"])
 app.include_router(cognitive_fusion.router, prefix="/api/agent", tags=["Cognitive Fusion"])
 app.include_router(game_physics.router, prefix="/api/engine", tags=["Game Physics"])
+app.include_router(cognitive_simulation.router, prefix="/api/agent", tags=["Cognitive Simulation"])
+app.include_router(ai_game_bridge.router, prefix="/api/agent/game-bridge", tags=["AI-Native Game Bridge"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "version": "25.0.0", "engine": "SparkLabs"}
+    return {"status": "ok", "version": "27.0.0", "engine": "SparkLabs"}
 
 
 @app.get("/api/status")
@@ -115,5 +117,5 @@ async def get_status():
     engine_instance = SparkEngine.get_instance()
     return {
         "engine": engine_instance.get_status(),
-        "version": "25.0.0",
+        "version": "27.0.0",
     }
