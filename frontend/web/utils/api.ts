@@ -16689,3 +16689,35 @@ export const cognitiveSimulationApi = {
   trajectory: () => api.get<{ status: string; data: unknown }>('/agent/cognitive-simulation/trajectory'),
   result: () => api.get<{ status: string; data: unknown }>('/agent/cognitive-simulation/result'),
 };
+
+// AI-Native Game Bridge API - bidirectional bridge between live HTML5 games and cognitive engine
+export const gameBridgeApi = {
+  status: () => api.get<{ status: string; data: unknown }>('/agent/game-bridge/status'),
+  reset: () => api.post<{ status: string; data: unknown }>('/agent/game-bridge/reset'),
+  listSessions: (onlyActive: boolean = true) =>
+    api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions?only_active=${onlyActive}`),
+  startSession: (gameId: string = '', gameTitle: string = '', genre: string = '', playerId: string = '') =>
+    api.post<{ status: string; data: unknown }>('/agent/game-bridge/sessions', {
+      game_id: gameId, game_title: gameTitle, genre, player_id: playerId,
+    }),
+  getSession: (sessionId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}`),
+  postTelemetry: (sessionId: string, frame: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/telemetry`, frame),
+  getDirectives: (sessionId: string, limit: number = 8) =>
+    api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/directives?limit=${limit}`),
+  getHistory: (sessionId: string, limit: number = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/history?limit=${limit}`),
+  pauseSession: (sessionId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/pause`),
+  resumeSession: (sessionId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/resume`),
+  endSession: (sessionId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/end`),
+  deleteSession: (sessionId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}`),
+  simulate: (frames: number = 60, goalX: number = 800, strategy: string = 'speedrun') =>
+    api.post<{ status: string; data: unknown }>('/agent/game-bridge/simulate', {
+      frames, goal_x: goalX, strategy,
+    }),
+};
