@@ -64,6 +64,7 @@ export const modeGroups: ModeGroup[] = [
       { id: 'game-creation-orchestrator', label: 'Orchestrator', icon: 'fa-wand-magic-sparkles' },
       { id: 'cognitive-engine', label: 'Cognitive Engine', icon: 'fa-atom' },
       { id: 'cognitive-fusion', label: 'Fusion', icon: 'fa-diagram-project' },
+      { id: 'cognitive-simulation', label: 'Simulation', icon: 'fa-flask-vial' },
       { id: 'agent-cognition', label: 'Cognition', icon: 'fa-lightbulb' },
       { id: 'agent-memory', label: 'Memory', icon: 'fa-database' },
       { id: 'agent-reasoning', label: 'Reasoning', icon: 'fa-diagram-project' },
