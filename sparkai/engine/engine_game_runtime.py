@@ -44,6 +44,7 @@ from sparkai.engine.engine_game_extensions import FxInjector, ExtensionConfig
 from sparkai.engine.engine_game_features import FeatureInjector, FeatureConfig
 from sparkai.engine.engine_game_polish import PolishInjector, PolishConfig
 from sparkai.engine.engine_game_assets import GenreAssetProfile, get_dom_overlay_html
+from sparkai.engine.engine_game_bridge_client import BridgeClientBuilder
 
 logger = logging.getLogger(__name__)
 
@@ -769,6 +770,13 @@ class HtmlAssembler:
         genre_post_process_js = asset_profile.build_post_process_js()
         genre_dom_overlay = get_dom_overlay_html(config.genre)
 
+        # AI-Native Game Bridge client script for live cognitive adaptation
+        bridge_script = BridgeClientBuilder.build_script(
+            bridge_url="http://localhost:8000/api/agent/game-bridge",
+            telemetry_interval=30,
+            directive_interval=60,
+        )
+
         return f"""<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1097,6 +1105,10 @@ class HtmlAssembler:
     {polish_init}
     state = 'playing';
     hideOverlay();
+    // Initialize AI-Native Game Bridge connection for live cognitive adaptation
+    if (typeof window.initBridge === 'function') {{
+      window.initBridge('http://localhost:8000/api/agent/game-bridge', CONFIG.title, CONFIG.genre);
+    }}
   }}
 
   // Action helpers for AI Event Sheet runtime
@@ -1200,6 +1212,7 @@ class HtmlAssembler:
   function loseLife() {{
     if (typeof isInvulnerable === 'function' && isInvulnerable()) return;
     lives--;
+    if (typeof window.trackBridgeEvent === 'function') window.trackBridgeEvent('death');
     updateLives();
     if (typeof sfxDamage === 'function') sfxDamage();
     if (typeof triggerShake === 'function') triggerShake(8);
@@ -1382,6 +1395,7 @@ class HtmlAssembler:
         jumpBufferTimer = 0;
         jumpsRemaining = maxJumps - 1;
         if (typeof sfxJump === 'function') sfxJump();
+        if (typeof window.trackBridgeEvent === 'function') window.trackBridgeEvent('jump');
         if (typeof spawnTrail === 'function') spawnTrail(player.x + player.w/2, player.y + player.h, '#fff', 0, 2);
       }}
     }}
@@ -1619,6 +1633,7 @@ class HtmlAssembler:
         }} else {{
           score += collectPoints;
         }}
+        if (typeof window.trackBridgeEvent === 'function') window.trackBridgeEvent('collect');
         updateScore();
         if (typeof spawnSparkles === 'function') spawnSparkles(e.x + e.w/2, e.y + e.h/2, e.color, 6);
         else spawnParticles(e.x + e.w/2, e.y + e.h/2, e.color, 8);
@@ -2289,6 +2304,8 @@ class HtmlAssembler:
       update();
       accumulator -= STEP;
     }}
+    // AI-Native Game Bridge: report telemetry and apply directives each frame
+    if (typeof window.bridgeTick === 'function') window.bridgeTick();
     render();
     requestAnimationFrame(loop);
   }}
@@ -2298,6 +2315,7 @@ class HtmlAssembler:
   showOverlay(CONFIG.title.toUpperCase(), CONFIG.intro || CONFIG.quest, 'PRESS ANY KEY OR TAP TO START');
   requestAnimationFrame(loop);
 }})();
+{bridge_script}
 </script>
 </body>
 </html>"""
