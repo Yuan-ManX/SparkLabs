@@ -297,6 +297,7 @@ import CognitiveEnginePanel from './CognitiveEnginePanel';
 import CognitiveFusionPanel from './CognitiveFusionPanel';
 import GamePhysicsPanel from './GamePhysicsPanel';
 import CognitiveSimulationPanel from './CognitiveSimulationPanel';
+import AiGameBridgePanel from './AiGameBridgePanel';
 import AutonomousCreatorPanel from './AutonomousCreatorPanel';
 import InteractionLoopPanel from './InteractionLoopPanel';
 import UnifiedOrchestrationPanel from './UnifiedOrchestrationPanel';
@@ -935,6 +936,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'cognitive-fusion': return <CognitiveFusionPanel />;
       case 'game-physics': return <GamePhysicsPanel />;
       case 'cognitive-simulation': return <CognitiveSimulationPanel />;
+      case 'game-bridge': return <AiGameBridgePanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
