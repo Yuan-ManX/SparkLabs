@@ -16712,6 +16712,8 @@ export const gameBridgeApi = {
     api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/player`),
   getSessionInsights: (sessionId: string) =>
     api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/insights`),
+  getPreferenceProfile: (sessionId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/preferences`),
   getOrchestratorStatus: () =>
     api.get<{ status: string; data: unknown }>('/agent/game-bridge/orchestrator'),
   getHistory: (sessionId: string, limit: number = 30) =>
