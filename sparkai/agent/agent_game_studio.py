@@ -700,7 +700,7 @@ class GameStudio:
         previous_outputs: Dict[str, Dict[str, Any]] = {}
 
         try:
-            # Round 1: Independent contributions
+            # Phase 1: Independent contributions
             for agent in [self._designer, self._programmer, self._artist, self._tester, self._composer]:
                 contribution = agent.contribute(prompt, previous_outputs)
                 agent_outputs.append(contribution)
@@ -714,7 +714,7 @@ class GameStudio:
                     timestamp=time.time(),
                 ))
 
-            # Round 2: Cross-agent feedback (tester reviews designer + programmer)
+            # Phase 2: Cross-agent feedback (tester reviews designer + programmer)
             if rounds >= 2:
                 tester_feedback = self._tester.contribute(prompt, previous_outputs)
                 tester_feedback.agent_name = "Tester"
@@ -737,7 +737,7 @@ class GameStudio:
                     timestamp=time.time(),
                 ))
 
-            # Round 3: Consensus and blueprint consolidation
+            # Phase 3: Consensus and blueprint consolidation
             blueprint = self._consolidate_blueprint(prompt, previous_outputs)
             consensus = True
 
