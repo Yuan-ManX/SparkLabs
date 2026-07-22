@@ -11,12 +11,15 @@ Endpoints:
   GET  /game-bridge/sessions/{id}       - Get session status
   POST /game-bridge/sessions/{id}/telemetry - Receive a telemetry frame
   GET  /game-bridge/sessions/{id}/directives - Get pending directives
+  POST /game-bridge/sessions/{id}/directives/ack - Acknowledge applied directives
   GET  /game-bridge/sessions/{id}/history    - Get frame history
+  GET  /game-bridge/sessions/{id}/player     - Get player model
   POST /game-bridge/sessions/{id}/pause - Pause a session
   POST /game-bridge/sessions/{id}/resume - Resume a session
   POST /game-bridge/sessions/{id}/end   - End a session
   DELETE /game-bridge/sessions/{id}     - Delete a session
   GET  /game-bridge/status              - Get bridge status
+  GET  /game-bridge/orchestrator        - Get orchestrator status
   POST /game-bridge/reset               - Reset the bridge
   POST /game-bridge/simulate            - Simulate a telemetry stream
 """
@@ -61,6 +64,16 @@ class SimulateRequest(BaseModel):
     frames: int = 60
     goal_x: float = 800.0
     strategy: str = "speedrun"  # speedrun, cautious, random
+
+
+class AckDirectiveItem(BaseModel):
+    directive_id: str = ""
+    directive_type: str = ""
+    applied_at: float = 0.0
+
+
+class AckRequest(BaseModel):
+    applied: List[AckDirectiveItem] = []
 
 
 # =============================================================================
@@ -142,6 +155,33 @@ async def get_directives(session_id: str, limit: int = 8):
     return _ok([d.to_dict() for d in directives])
 
 
+@router.post("/sessions/{session_id}/directives/ack")
+async def ack_directives(session_id: str, req: AckRequest):
+    """
+    Acknowledge that directives were successfully applied by the client.
+    The orchestrator uses this feedback to learn which directives work.
+    """
+    applied_list = [
+        {
+            "directive_id": item.directive_id,
+            "directive_type": item.directive_type,
+            "applied_at": item.applied_at,
+        }
+        for item in req.applied
+    ]
+    _bridge().acknowledge_directives(session_id, applied_list)
+    return _ok({"acknowledged": len(applied_list)})
+
+
+@router.get("/sessions/{session_id}/player")
+async def get_player_model(session_id: str):
+    """Get the orchestrator's player model for this session."""
+    model = _bridge().get_player_model(session_id)
+    if model is None:
+        return _err("session or player model not found")
+    return _ok(model.to_dict())
+
+
 @router.get("/sessions/{session_id}/history")
 async def get_history(session_id: str, limit: int = 30):
     """Get the frame history for a session."""
@@ -189,6 +229,12 @@ async def delete_session(session_id: str):
 async def bridge_status():
     """Get the overall bridge status."""
     return _ok(_bridge().status())
+
+
+@router.get("/orchestrator")
+async def orchestrator_status():
+    """Get the BridgeOrchestrator status (player modeling and strategy stats)."""
+    return _ok(_bridge().orchestrator_status())
 
 
 @router.post("/reset")
