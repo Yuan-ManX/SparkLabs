@@ -100,6 +100,8 @@ interface PlayerModel {
   consecutive_collects: number;
   avg_progress_rate: number;
   exploration_radius: number;
+  churn_risk: number;
+  engagement_trend: number;
 }
 
 interface SessionInsights {
@@ -120,6 +122,22 @@ interface SessionInsights {
   final_engagement: number;
   final_frustration: number;
   final_intent: string;
+  churn_risk: number;
+  engagement_trend: number;
+  preference_profile: PreferenceProfile | null;
+}
+
+interface PreferenceProfile {
+  combat_score: number;
+  collection_score: number;
+  exploration_score: number;
+  platforming_score: number;
+  combat_preference: number;
+  collection_preference: number;
+  exploration_preference: number;
+  platforming_preference: number;
+  total_events: number;
+  dominant: string;
 }
 
 // ---------------------------------------------------------------------------
@@ -709,6 +727,54 @@ const AiGameBridgePanel: React.FC = () => {
                 <span style={{ color: '#666' }}> mastery:</span> {(insights.final_mastery * 100).toFixed(0)}% |
                 <span style={{ color: '#666' }}> engagement:</span> {(insights.final_engagement * 100).toFixed(0)}%
               </div>
+              {/* Churn risk indicator */}
+              <div style={{ marginTop: '6px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ fontSize: '9px', color: '#666', minWidth: '70px' }}>CHURN RISK</span>
+                <div style={{ flex: 1, height: '6px', background: '#222', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div style={{
+                    width: `${Math.min(100, insights.churn_risk * 100)}%`,
+                    height: '100%',
+                    background: insights.churn_risk > 0.65 ? '#ef4444' : insights.churn_risk > 0.35 ? '#fbbf24' : '#22c55e',
+                  }} />
+                </div>
+                <span style={{
+                  fontSize: '10px',
+                  minWidth: '36px',
+                  textAlign: 'right',
+                  color: insights.churn_risk > 0.65 ? '#ef4444' : insights.churn_risk > 0.35 ? '#fbbf24' : '#22c55e',
+                }}>
+                  {(insights.churn_risk * 100).toFixed(0)}%
+                </span>
+                <span style={{ fontSize: '9px', color: '#666' }}>
+                  trend: {insights.engagement_trend >= 0 ? '+' : ''}{insights.engagement_trend.toFixed(2)}
+                </span>
+              </div>
+              {/* Preference Profile */}
+              {insights.preference_profile && (
+                <div style={{ marginTop: '8px' }}>
+                  <div style={{ fontSize: '9px', color: '#666', marginBottom: '4px' }}>
+                    PLAYER PREFERENCE PROFILE
+                    <span style={{ marginLeft: '6px', color: insights.preference_profile.dominant === 'balanced' ? '#888' : '#f97316' }}>
+                      [{insights.preference_profile.dominant}]
+                    </span>
+                    <span style={{ marginLeft: '6px', color: '#555' }}>({insights.preference_profile.total_events} events)</span>
+                  </div>
+                  {([
+                    { label: 'Combat', value: insights.preference_profile.combat_preference, color: '#ef4444' },
+                    { label: 'Collection', value: insights.preference_profile.collection_preference, color: '#22c55e' },
+                    { label: 'Exploration', value: insights.preference_profile.exploration_preference, color: '#3b82f6' },
+                    { label: 'Platforming', value: insights.preference_profile.platforming_preference, color: '#a855f7' },
+                  ] as const).map((p) => (
+                    <div key={p.label} style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '2px' }}>
+                      <span style={{ fontSize: '10px', color: '#666', minWidth: '70px' }}>{p.label}</span>
+                      <div style={{ flex: 1, height: '5px', background: '#222', borderRadius: '3px', overflow: 'hidden' }}>
+                        <div style={{ width: `${Math.min(100, p.value * 100)}%`, height: '100%', background: p.color }} />
+                      </div>
+                      <span style={{ fontSize: '10px', color: p.color, minWidth: '36px', textAlign: 'right' }}>{(p.value * 100).toFixed(0)}%</span>
+                    </div>
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
