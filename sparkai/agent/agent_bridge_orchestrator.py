@@ -92,6 +92,12 @@ class PlayerModel:
     avg_progress_rate: float = 0.0      # x-velocity avg
     avg_input_rate: float = 0.0         # actions per second
     exploration_radius: float = 0.0     # max distance from start
+    # Predictive churn risk (0.0 = stable, 1.0 = about to quit)
+    churn_risk: float = 0.0
+    # Engagement trend: -1.0 (declining) to +1.0 (rising)
+    engagement_trend: float = 0.0
+    # Rolling engagement history for trend detection
+    _engagement_history: Deque[float] = field(default_factory=lambda: deque(maxlen=30))
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -104,6 +110,99 @@ class PlayerModel:
             "consecutive_collects": self.consecutive_collects,
             "avg_progress_rate": round(self.avg_progress_rate, 3),
             "exploration_radius": round(self.exploration_radius, 3),
+            "churn_risk": round(self.churn_risk, 3),
+            "engagement_trend": round(self.engagement_trend, 3),
+        }
+
+
+@dataclass
+class PlayerPreferenceProfile:
+    """Tracks which gameplay activities the player engages with most.
+
+    The profile accumulates weighted engagement scores for each activity
+    type. Over time, this reveals whether the player prefers combat,
+    collection, exploration, or platforming. The orchestrator uses this
+    to customize directives - e.g., a combat-loving player gets CHALLENGE
+    with enemy spawns, while a collector gets REWARD with collectible spawns.
+    """
+    combat_score: float = 0.0        # accumulated from enemy_kill events
+    collection_score: float = 0.0    # accumulated from collect events
+    exploration_score: float = 0.0   # accumulated from movement diversity
+    platforming_score: float = 0.0   # accumulated from jump/wall_jump events
+    # Normalized preferences (0.0 to 1.0 each, sum may exceed 1.0)
+    combat_preference: float = 0.25
+    collection_preference: float = 0.25
+    exploration_preference: float = 0.25
+    platforming_preference: float = 0.25
+    # Total events counted for confidence weighting
+    total_events: int = 0
+    # Dominant preference (updated after enough data)
+    dominant: str = "balanced"
+
+    def record_event(self, event: str, engagement: float) -> None:
+        """Record a gameplay event and accumulate the relevant score."""
+        weight = max(0.1, engagement)  # weight by current engagement
+        if event == "enemy_kill":
+            self.combat_score += 1.0 * weight
+            self.total_events += 1
+        elif event == "collect":
+            self.collection_score += 1.0 * weight
+            self.total_events += 1
+        elif event in ("jump", "wall_jump", "wall_slide"):
+            self.platforming_score += 0.5 * weight
+            self.total_events += 1
+        elif event == "explore" or event == "move":
+            self.exploration_score += 0.3 * weight
+            self.total_events += 1
+        self._recompute_preferences()
+
+    def record_movement(self, vx: float, vy: float, exploration_radius: float) -> None:
+        """Record movement data to update exploration score."""
+        # Diverse vertical movement suggests exploration
+        if abs(vy) > 2.0:
+            self.exploration_score += 0.1
+        # Large exploration radius suggests exploration preference
+        if exploration_radius > 500:
+            self.exploration_score += 0.05
+        self._recompute_preferences()
+
+    def _recompute_preferences(self) -> None:
+        """Recompute normalized preferences from accumulated scores."""
+        total = self.combat_score + self.collection_score + self.exploration_score + self.platforming_score
+        if total < 0.001:
+            return
+        self.combat_preference = self.combat_score / total
+        self.collection_preference = self.collection_score / total
+        self.exploration_preference = self.exploration_score / total
+        self.platforming_preference = self.platforming_score / total
+        # Determine dominant preference (needs at least 10 events for confidence)
+        if self.total_events < 10:
+            self.dominant = "balanced"
+            return
+        prefs = {
+            "combat": self.combat_preference,
+            "collection": self.collection_preference,
+            "exploration": self.exploration_preference,
+            "platforming": self.platforming_preference,
+        }
+        max_pref = max(prefs.values())
+        if max_pref < 0.35:
+            self.dominant = "balanced"
+        else:
+            self.dominant = max(prefs, key=prefs.get)
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "combat_score": round(self.combat_score, 2),
+            "collection_score": round(self.collection_score, 2),
+            "exploration_score": round(self.exploration_score, 2),
+            "platforming_score": round(self.platforming_score, 2),
+            "combat_preference": round(self.combat_preference, 3),
+            "collection_preference": round(self.collection_preference, 3),
+            "exploration_preference": round(self.exploration_preference, 3),
+            "platforming_preference": round(self.platforming_preference, 3),
+            "total_events": self.total_events,
+            "dominant": self.dominant,
         }
 
 
@@ -170,6 +269,7 @@ class BridgeOrchestrator:
         self._lock = threading.RLock()
         # Per-session state
         self._player_models: Dict[str, PlayerModel] = {}
+        self._preference_profiles: Dict[str, PlayerPreferenceProfile] = {}
         self._directive_records: Dict[str, Deque[DirectiveRecord]] = {}
         self._cooldowns: Dict[str, Dict[str, int]] = {}  # session_id -> {directive_type: cooldown_until_tick}
         self._last_strategy: Dict[str, AdaptationStrategy] = {}
@@ -186,6 +286,8 @@ class BridgeOrchestrator:
         self._insights_stored: int = 0
         self._insights_retrieved: int = 0
         self._memory_link: Optional[Any] = None
+        # Predictive stats
+        self._churn_interventions: int = 0
 
     @classmethod
     def get_instance(cls) -> "BridgeOrchestrator":
@@ -212,6 +314,7 @@ class BridgeOrchestrator:
         with self._lock:
             if session_id not in self._player_models:
                 self._player_models[session_id] = PlayerModel()
+                self._preference_profiles[session_id] = PlayerPreferenceProfile()
                 self._directive_records[session_id] = deque(maxlen=64)
                 self._cooldowns[session_id] = {}
                 self._last_strategy[session_id] = AdaptationStrategy.OBSERVE
@@ -240,6 +343,7 @@ class BridgeOrchestrator:
         self._store_session_insights(session_id)
         with self._lock:
             self._player_models.pop(session_id, None)
+            self._preference_profiles.pop(session_id, None)
             self._directive_records.pop(session_id, None)
             self._cooldowns.pop(session_id, None)
             self._last_strategy.pop(session_id, None)
@@ -265,6 +369,10 @@ class BridgeOrchestrator:
             if session_id not in self._player_models:
                 self.init_session(session_id)
             model = self._player_models[session_id]
+            profile = self._preference_profiles.get(session_id)
+            if profile is None:
+                profile = PlayerPreferenceProfile()
+                self._preference_profiles[session_id] = profile
             insights = self._session_insights.get(session_id, {})
 
             tick = getattr(frame, "tick", 0)
@@ -302,9 +410,16 @@ class BridgeOrchestrator:
                 model.skill_estimate = min(1.0, model.skill_estimate + 0.01)
                 insights["wall_jumps"] = insights.get("wall_jumps", 0) + 1
 
+            # Update preference profile from events and movement
+            for evt in events:
+                profile.record_event(evt, model.engagement)
+            vx = getattr(frame, "player_vx", 0.0)
+            vy = getattr(frame, "player_vy", 0.0)
+            profile.record_movement(vx, vy, model.exploration_radius)
+
             # Update progress rate (smoothed)
-            vx = abs(getattr(frame, "player_vx", 0.0))
-            model.avg_progress_rate = model.avg_progress_rate * 0.9 + vx * 0.1
+            vx_abs = abs(vx)
+            model.avg_progress_rate = model.avg_progress_rate * 0.9 + vx_abs * 0.1
 
             # Update exploration radius
             px = abs(getattr(frame, "player_x", 0.0))
@@ -314,6 +429,16 @@ class BridgeOrchestrator:
             # Update skill estimate from flow state
             if skill_estimate > 0:
                 model.skill_estimate = model.skill_estimate * 0.85 + skill_estimate * 0.15
+
+            # Update engagement trend and churn risk
+            model._engagement_history.append(model.engagement)
+            if len(model._engagement_history) >= 10:
+                recent_half = list(model._engagement_history)[-5:]
+                older_half = list(model._engagement_history)[:5]
+                recent_avg = sum(recent_half) / len(recent_half)
+                older_avg = sum(older_half) / len(older_half)
+                model.engagement_trend = max(-1.0, min(1.0, recent_avg - older_avg))
+            model.churn_risk = self._compute_churn_risk(model, tick)
 
             # Infer intent
             model.intent = self._infer_intent(model, tick, flow_state)
@@ -464,6 +589,7 @@ class BridgeOrchestrator:
                 "insights_stored": self._insights_stored,
                 "insights_retrieved": self._insights_retrieved,
                 "memory_linked": self._memory_link is not None,
+                "churn_interventions": self._churn_interventions,
             }
 
     def get_session_insights(self, session_id: str) -> Optional[Dict[str, Any]]:
@@ -474,6 +600,7 @@ class BridgeOrchestrator:
                 return None
             metadata = self._session_metadata.get(session_id, {})
             model = self._player_models.get(session_id)
+            profile = self._preference_profiles.get(session_id)
             return {
                 "session_id": session_id,
                 "game_id": metadata.get("game_id", ""),
@@ -492,11 +619,20 @@ class BridgeOrchestrator:
                 "final_engagement": round(model.engagement, 3) if model else 0.0,
                 "final_frustration": round(model.frustration, 3) if model else 0.0,
                 "final_intent": model.intent.value if model else "unknown",
+                "churn_risk": round(model.churn_risk, 3) if model else 0.0,
+                "engagement_trend": round(model.engagement_trend, 3) if model else 0.0,
+                "preference_profile": profile.to_dict() if profile else None,
             }
+
+    def get_preference_profile(self, session_id: str) -> Optional[PlayerPreferenceProfile]:
+        """Get the player preference profile for a session."""
+        with self._lock:
+            return self._preference_profiles.get(session_id)
 
     def reset(self) -> None:
         with self._lock:
             self._player_models.clear()
+            self._preference_profiles.clear()
             self._directive_records.clear()
             self._cooldowns.clear()
             self._last_strategy.clear()
@@ -511,6 +647,37 @@ class BridgeOrchestrator:
             self._insights_stored = 0
             self._insights_retrieved = 0
 
+    # ---- Internal: Churn Prediction ----
+
+    def _compute_churn_risk(self, model: PlayerModel, tick: int) -> float:
+        """Compute the probability that the player is about to quit.
+
+        Combines multiple signals:
+          - High frustration + declining engagement = high churn risk
+          - Sustained low engagement = moderate churn risk
+          - Recent deaths with no recovery = escalating risk
+          - Negative engagement trend amplifies risk
+
+        Returns a value from 0.0 (stable) to 1.0 (about to quit).
+        """
+        risk = 0.0
+        # Frustration contribution (0.0 to 0.4)
+        if model.frustration > 0.3:
+            risk += model.frustration * 0.4
+        # Low engagement contribution (0.0 to 0.3)
+        if model.engagement < 0.4:
+            risk += (0.4 - model.engagement) * 0.5
+        # Declining engagement trend amplifies risk (0.0 to 0.2)
+        if model.engagement_trend < -0.1:
+            risk += abs(model.engagement_trend) * 0.2
+        # Consecutive deaths amplify risk (0.0 to 0.2)
+        if model.consecutive_deaths >= 2:
+            risk += min(0.2, model.consecutive_deaths * 0.05)
+        # High skill + low engagement = boredom churn (0.0 to 0.1)
+        if model.skill_estimate > 0.7 and model.engagement < 0.3:
+            risk += 0.1
+        return min(1.0, risk)
+
     # ---- Internal: Strategy Selection ----
 
     def _select_strategy(
@@ -522,13 +689,30 @@ class BridgeOrchestrator:
         skill_estimate: float,
         target_difficulty: float,
     ) -> AdaptationStrategy:
-        """Select an adaptation strategy based on the player model and flow state."""
+        """Select an adaptation strategy based on the player model and flow state.
+
+        Incorporates predictive churn detection: when churn risk is high,
+        the orchestrator proactively intervenes with preference-tailored
+        directives before the player quits.
+        """
         # Don't switch strategies too quickly
         last_tick = self._last_strategy_tick.get(session_id, 0)
         last_strategy = self._last_strategy.get(session_id, AdaptationStrategy.OBSERVE)
         if tick - last_tick < 60 and last_strategy != AdaptationStrategy.OBSERVE:
             # Keep current strategy for at least 1 second
             return last_strategy
+
+        # Critical churn risk: proactive intervention with player's preferred content
+        if model.churn_risk > 0.65:
+            profile = self._preference_profiles.get(session_id)
+            if profile and profile.dominant == "combat":
+                return AdaptationStrategy.CHALLENGE
+            elif profile and profile.dominant == "collection":
+                return AdaptationStrategy.REWARD
+            elif profile and profile.dominant == "exploration":
+                return AdaptationStrategy.INTRODUCE
+            # Default churn intervention: nurture to reduce frustration
+            return AdaptationStrategy.NURTURE
 
         # Frustration-driven: nurture
         if model.frustration > 0.6 or model.consecutive_deaths >= self._FRUSTRATION_DEATH_SPIKE:
@@ -604,20 +788,34 @@ class BridgeOrchestrator:
         target_difficulty: float,
         tick: int,
     ) -> List[Dict[str, Any]]:
-        """Author a coherent set of directives for the chosen strategy."""
+        """Author a coherent set of directives for the chosen strategy.
+
+        Directive content is customized based on the player's preference
+        profile so that interventions feel natural rather than generic.
+        """
         directives: List[Dict[str, Any]] = []
         px = getattr(frame, "player_x", 0.0)
         py = getattr(frame, "player_y", 0.0)
         health = getattr(frame, "player_health", 100.0)
+        profile = self._preference_profiles.get(session_id)
 
         if strategy == AdaptationStrategy.NURTURE:
-            # Help struggling player: spawn health, reduce difficulty
+            # Help struggling player: spawn content matching their preference
             if self._off_cooldown(session_id, "spawn_entity", tick):
                 if health < 50:
+                    # Spawn a healing collectible for low-health players
                     directives.append(self._make_directive(
                         "spawn_entity",
                         {"entity_type": "collectible", "x": px + 80, "y": py - 60,
                          "color": "#10b981"},
+                        priority=2,
+                    ))
+                elif profile and profile.dominant == "combat":
+                    # Combat-preferring player: spawn a weak enemy for confidence
+                    directives.append(self._make_directive(
+                        "spawn_entity",
+                        {"entity_type": "enemy", "x": px + 120, "y": py - 20,
+                         "vx": -0.5, "color": "#fbbf24", "width": 20, "height": 20},
                         priority=2,
                     ))
             if self._off_cooldown(session_id, "tune_difficulty", tick):
@@ -634,23 +832,41 @@ class BridgeOrchestrator:
                 ))
 
         elif strategy == AdaptationStrategy.CHALLENGE:
-            # Push bored player: spawn enemy, increase difficulty
+            # Push bored player with their preferred challenge type
             if self._off_cooldown(session_id, "spawn_entity", tick):
-                directives.append(self._make_directive(
-                    "spawn_entity",
-                    {"entity_type": "enemy", "x": px + 250, "y": py - 40,
-                     "vx": -1.5, "color": "#ef4444"},
-                    priority=1,
-                ))
+                if profile and profile.dominant == "collection":
+                    # Collector: spawn a collectible in a risky position
+                    directives.append(self._make_directive(
+                        "spawn_entity",
+                        {"entity_type": "collectible", "x": px + 300, "y": py - 150,
+                         "color": "#fbbf24"},
+                        priority=1,
+                    ))
+                else:
+                    # Default or combat-preferring: spawn an enemy
+                    directives.append(self._make_directive(
+                        "spawn_entity",
+                        {"entity_type": "enemy", "x": px + 250, "y": py - 40,
+                         "vx": -1.5, "color": "#ef4444"},
+                        priority=1,
+                    ))
             if self._off_cooldown(session_id, "tune_difficulty", tick):
-                directives.append(self._make_directive(
-                    "tune_difficulty",
-                    {"enemy_speed_multiplier": 1.15, "duration_ticks": 240},
-                    priority=1,
-                ))
+                if profile and profile.dominant == "platforming":
+                    # Platformer: increase gravity for tighter challenge
+                    directives.append(self._make_directive(
+                        "tune_physics",
+                        {"gravity_multiplier": 1.1},
+                        priority=1,
+                    ))
+                else:
+                    directives.append(self._make_directive(
+                        "tune_difficulty",
+                        {"enemy_speed_multiplier": 1.15, "duration_ticks": 240},
+                        priority=1,
+                    ))
 
         elif strategy == AdaptationStrategy.REWARD:
-            # Celebrate mastery: show celebration, spawn reward
+            # Celebrate mastery with the player's preferred reward type
             if self._off_cooldown(session_id, "trigger_event", tick):
                 directives.append(self._make_directive(
                     "trigger_event",
@@ -658,12 +874,22 @@ class BridgeOrchestrator:
                     priority=2,
                 ))
             if self._off_cooldown(session_id, "spawn_entity", tick):
-                directives.append(self._make_directive(
-                    "spawn_entity",
-                    {"entity_type": "collectible", "x": px + 100, "y": py - 80,
-                     "color": "#fbbf24"},
-                    priority=2,
-                ))
+                if profile and profile.dominant == "combat":
+                    # Combat lover: spawn a slow enemy for satisfying kill
+                    directives.append(self._make_directive(
+                        "spawn_entity",
+                        {"entity_type": "enemy", "x": px + 150, "y": py - 20,
+                         "vx": -0.3, "color": "#fbbf24", "width": 32, "height": 32},
+                        priority=2,
+                    ))
+                else:
+                    # Default: spawn a golden collectible
+                    directives.append(self._make_directive(
+                        "spawn_entity",
+                        {"entity_type": "collectible", "x": px + 100, "y": py - 80,
+                         "color": "#fbbf24"},
+                        priority=2,
+                    ))
 
         elif strategy == AdaptationStrategy.REDIRECT:
             # Nudge stuck player: pacing nudge, slight physics tweak
@@ -683,15 +909,25 @@ class BridgeOrchestrator:
                 ))
 
         elif strategy == AdaptationStrategy.INTRODUCE:
-            # Introduce a new element: spawn a different type, change physics
+            # Introduce the player's least-experienced activity type for variety
             if self._off_cooldown(session_id, "spawn_entity", tick):
-                # Spawn an enemy in an unexpected position
-                directives.append(self._make_directive(
-                    "spawn_entity",
-                    {"entity_type": "enemy", "x": px - 150, "y": py - 120,
-                     "vx": 1.0, "color": "#a855f7", "width": 28, "height": 28},
-                    priority=2,
-                ))
+                # Determine what to introduce based on preference gaps
+                if profile and profile.dominant == "combat":
+                    # Combat-heavy player: introduce a collectible to discover
+                    directives.append(self._make_directive(
+                        "spawn_entity",
+                        {"entity_type": "collectible", "x": px - 150, "y": py - 120,
+                         "color": "#a855f7", "width": 28, "height": 28},
+                        priority=2,
+                    ))
+                else:
+                    # Default: spawn an enemy in an unexpected position
+                    directives.append(self._make_directive(
+                        "spawn_entity",
+                        {"entity_type": "enemy", "x": px - 150, "y": py - 120,
+                         "vx": 1.0, "color": "#a855f7", "width": 28, "height": 28},
+                        priority=2,
+                    ))
             if self._off_cooldown(session_id, "tune_physics", tick):
                 # Slightly reduce gravity for a floaty section
                 directives.append(self._make_directive(
@@ -820,7 +1056,8 @@ class BridgeOrchestrator:
 
         Called automatically when a session is cleaned up. The insight is
         stored with genre/game tags so future sessions for the same genre
-        can retrieve and benefit from past learnings.
+        can retrieve and benefit from past learnings. Includes the player
+        preference profile so future sessions start with known preferences.
         """
         memory = self._ensure_memory_link()
         if memory is None:
@@ -829,6 +1066,7 @@ class BridgeOrchestrator:
             insights = self._session_insights.get(session_id)
             metadata = self._session_metadata.get(session_id, {})
             model = self._player_models.get(session_id)
+            profile = self._preference_profiles.get(session_id)
         if insights is None or insights.get("frames_processed", 0) == 0:
             return
         genre = metadata.get("genre", "unknown")
@@ -846,12 +1084,15 @@ class BridgeOrchestrator:
         skill = round(model.skill_estimate, 3) if model else 0.0
         mastery = round(model.mastery, 3) if model else 0.0
         intent = model.intent.value if model else "unknown"
+        churn = round(model.churn_risk, 3) if model else 0.0
+        dominant_pref = profile.dominant if profile else "balanced"
         # Compose a concise insight summary
         content = (
             f"Bridge session [{genre}/{title}] {frames} frames: "
             f"deaths={deaths} collects={collects} kills={kills} wall_jumps={wall_jumps} | "
             f"directives: +{pos} -{neg} | top_strategy={top_strategy} | "
-            f"skill={skill} mastery={mastery} intent={intent}"
+            f"skill={skill} mastery={mastery} intent={intent} | "
+            f"pref={dominant_pref} churn={churn}"
         )
         try:
             memory.store_memory(
@@ -871,6 +1112,12 @@ class BridgeOrchestrator:
                     "final_skill": skill,
                     "final_mastery": mastery,
                     "final_intent": intent,
+                    "churn_risk": churn,
+                    "dominant_preference": dominant_pref,
+                    "combat_pref": round(profile.combat_preference, 3) if profile else 0.25,
+                    "collection_pref": round(profile.collection_preference, 3) if profile else 0.25,
+                    "exploration_pref": round(profile.exploration_preference, 3) if profile else 0.25,
+                    "platforming_pref": round(profile.platforming_preference, 3) if profile else 0.25,
                 },
                 tags=["bridge", genre, f"game:{game_id}"] if game_id else ["bridge", genre],
                 ttl=86400.0 * 7,  # 7 days
@@ -887,7 +1134,9 @@ class BridgeOrchestrator:
         Called automatically when a session is initialized. The retrieved
         insights are used to prime the player model with expectations from
         past sessions (e.g., if players typically struggle with this genre,
-        start with a lower skill estimate).
+        start with a lower skill estimate). Player preferences from past
+        sessions are also restored so the orchestrator can tailor directives
+        from the very first frame.
         """
         if not genre:
             return
@@ -911,12 +1160,21 @@ class BridgeOrchestrator:
                     avg_skill = 0.0
                     avg_mastery = 0.0
                     death_heavy = 0
+                    # Aggregate preference scores from past sessions
+                    agg_combat = 0.0
+                    agg_collection = 0.0
+                    agg_exploration = 0.0
+                    agg_platforming = 0.0
                     for r in results:
                         ctx = r.context if hasattr(r, "context") else r.get("context", {})
                         avg_skill += float(ctx.get("final_skill", 0.5))
                         avg_mastery += float(ctx.get("final_mastery", 0.0))
                         if ctx.get("deaths", 0) > ctx.get("collects", 0):
                             death_heavy += 1
+                        agg_combat += float(ctx.get("combat_pref", 0.25))
+                        agg_collection += float(ctx.get("collection_pref", 0.25))
+                        agg_exploration += float(ctx.get("exploration_pref", 0.25))
+                        agg_platforming += float(ctx.get("platforming_pref", 0.25))
                     if total_sessions > 0:
                         avg_skill /= total_sessions
                         avg_mastery /= total_sessions
@@ -926,6 +1184,28 @@ class BridgeOrchestrator:
                         # slightly elevated frustration anticipation
                         if death_heavy > total_sessions / 2:
                             model.frustration = 0.1
+                        # Restore preference profile from past sessions
+                        profile = self._preference_profiles.get(session_id)
+                        if profile is None:
+                            profile = PlayerPreferenceProfile()
+                            self._preference_profiles[session_id] = profile
+                        profile.combat_preference = agg_combat / total_sessions
+                        profile.collection_preference = agg_collection / total_sessions
+                        profile.exploration_preference = agg_exploration / total_sessions
+                        profile.platforming_preference = agg_platforming / total_sessions
+                        # Determine dominant from restored preferences
+                        prefs = {
+                            "combat": profile.combat_preference,
+                            "collection": profile.collection_preference,
+                            "exploration": profile.exploration_preference,
+                            "platforming": profile.platforming_preference,
+                        }
+                        max_pref = max(prefs.values())
+                        if max_pref < 0.35:
+                            profile.dominant = "balanced"
+                        else:
+                            profile.dominant = max(prefs, key=prefs.get)
+                        profile.total_events = total_sessions * 10  # confidence marker
             logger.info(
                 "Retrieved %d past insights for session %s (genre=%s)",
                 len(results), session_id, genre,
