@@ -80,6 +80,28 @@ interface Directive {
   created_at: number;
 }
 
+interface OrchestratorStatus {
+  active: boolean;
+  total_decisions: number;
+  total_directives_authored: number;
+  total_positive_outcomes: number;
+  total_negative_outcomes: number;
+  active_sessions: number;
+  strategy_usage: Record<string, number>;
+}
+
+interface PlayerModel {
+  skill_estimate: number;
+  engagement: number;
+  frustration: number;
+  mastery: number;
+  intent: string;
+  consecutive_deaths: number;
+  consecutive_collects: number;
+  avg_progress_rate: number;
+  exploration_radius: number;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -213,6 +235,8 @@ const AiGameBridgePanel: React.FC = () => {
   const [selectedSession, setSelectedSession] = useState<BridgeSession | null>(null);
   const [directives, setDirectives] = useState<Directive[]>([]);
   const [history, setHistory] = useState<BridgeSession['last_frame'][]>([]);
+  const [orchestrator, setOrchestrator] = useState<OrchestratorStatus | null>(null);
+  const [playerModel, setPlayerModel] = useState<PlayerModel | null>(null);
   const [loading, setLoading] = useState(false);
   const [simRunning, setSimRunning] = useState(false);
   const [simStrategy, setSimStrategy] = useState('speedrun');
@@ -221,17 +245,19 @@ const AiGameBridgePanel: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const pollRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // Fetch bridge status and sessions
+  // Fetch bridge status, sessions, and orchestrator status
   const refresh = useCallback(async () => {
     try {
-      const [statusRes, sessionsRes] = await Promise.all([
+      const [statusRes, sessionsRes, orchRes] = await Promise.all([
         gameBridgeApi.status(),
         gameBridgeApi.listSessions(true),
+        gameBridgeApi.getOrchestratorStatus(),
       ]);
       const sData = statusRes.data as BridgeStatus;
       const sessData = (sessionsRes.data as BridgeSession[]) || [];
       setBridgeStatus(sData);
       setSessions(sessData);
+      setOrchestrator(orchRes.data as OrchestratorStatus);
       setError(null);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch bridge status');
@@ -244,17 +270,20 @@ const AiGameBridgePanel: React.FC = () => {
       setSelectedSession(null);
       setDirectives([]);
       setHistory([]);
+      setPlayerModel(null);
       return;
     }
     try {
-      const [sessRes, dirRes, histRes] = await Promise.all([
+      const [sessRes, dirRes, histRes, playerRes] = await Promise.all([
         gameBridgeApi.getSession(sessionId),
         gameBridgeApi.getDirectives(sessionId, 10),
         gameBridgeApi.getHistory(sessionId, 20),
+        gameBridgeApi.getPlayerModel(sessionId),
       ]);
       setSelectedSession(sessRes.data as BridgeSession);
       setDirectives((dirRes.data as Directive[]) || []);
       setHistory((histRes.data as BridgeSession['last_frame'][]) || []);
+      setPlayerModel(playerRes.data as PlayerModel);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch session');
     }
@@ -311,11 +340,29 @@ const AiGameBridgePanel: React.FC = () => {
       setSelectedSession(null);
       setDirectives([]);
       setHistory([]);
+      setPlayerModel(null);
+      setOrchestrator(null);
       await refresh();
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Reset failed');
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleAckDirectives = async () => {
+    if (!selectedSession || directives.length === 0) return;
+    try {
+      const now = Date.now() / 1000;
+      const applied = directives.map((d) => ({
+        directive_id: d.directive_id,
+        directive_type: d.directive_type,
+        applied_at: now,
+      }));
+      await gameBridgeApi.acknowledgeDirectives(selectedSession.session_id, applied);
+      await refreshSession(selectedSession.session_id);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Acknowledge failed');
     }
   };
 
@@ -380,6 +427,47 @@ const AiGameBridgePanel: React.FC = () => {
         <StatTile label="Frames" value={bridgeStatus?.total_frames_received ?? 0} icon={<TrendingUp size={14} />} />
         <StatTile label="Directives" value={bridgeStatus?.total_directives_composed ?? 0} icon={<Send size={14} />} color="#f97316" />
       </div>
+
+      {/* Orchestrator Status */}
+      {orchestrator && (
+        <div style={cardStyle}>
+          <div style={{ fontSize: '9px', color: '#666', marginBottom: '8px' }}>
+            <Brain size={10} style={{ display: 'inline', marginRight: '4px' }} />
+            BRIDGE ORCHESTRATOR {orchestrator.active ? '' : '(inactive)'}
+          </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '10px' }}>
+            <StatTile label="Decisions" value={orchestrator.total_decisions} />
+            <StatTile label="Authored" value={orchestrator.total_directives_authored} color="#f97316" />
+            <StatTile label="Positive" value={orchestrator.total_positive_outcomes} color="#22c55e" />
+            <StatTile label="Negative" value={orchestrator.total_negative_outcomes} color="#ef4444" />
+          </div>
+          {orchestrator.strategy_usage && Object.keys(orchestrator.strategy_usage).length > 0 && (
+            <div>
+              <div style={{ fontSize: '9px', color: '#666', marginBottom: '4px' }}>STRATEGY USAGE</div>
+              <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                {Object.entries(orchestrator.strategy_usage)
+                  .filter(([, v]) => v > 0)
+                  .sort((a, b) => b[1] - a[1])
+                  .map(([strategy, count]) => {
+                    const colors: Record<string, string> = {
+                      nurture: '#22c55e', challenge: '#ef4444', reward: '#fbbf24',
+                      redirect: '#3b82f6', observe: '#666', introduce: '#a855f7',
+                    };
+                    const c = colors[strategy] || '#888';
+                    return (
+                      <span key={strategy} style={{ fontSize: '9px', padding: '2px 8px', borderRadius: '4px', background: c + '22', color: c, border: `1px solid ${c}44` }}>
+                        {strategy}: {count}
+                      </span>
+                    );
+                  })}
+                {Object.entries(orchestrator.strategy_usage).every(([, v]) => v === 0) && (
+                  <span style={{ fontSize: '9px', color: '#444' }}>No strategies used yet</span>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Control Bar */}
       <div style={{ ...cardStyle, display: 'flex', gap: '8px', alignItems: 'center', flexWrap: 'wrap' }}>
@@ -512,6 +600,39 @@ const AiGameBridgePanel: React.FC = () => {
             </div>
           )}
 
+          {/* Player Model (from orchestrator) */}
+          {playerModel && (
+            <div style={cardStyle}>
+              <div style={{ fontSize: '9px', color: '#666', marginBottom: '8px' }}>
+                <Gauge size={10} style={{ display: 'inline', marginRight: '4px' }} />
+                PLAYER MODEL (orchestrator)
+              </div>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '8px' }}>
+                {([
+                  { label: 'Skill', value: playerModel.skill_estimate, color: '#22c55e' },
+                  { label: 'Engagement', value: playerModel.engagement, color: '#3b82f6' },
+                  { label: 'Frustration', value: playerModel.frustration, color: '#ef4444' },
+                  { label: 'Mastery', value: playerModel.mastery, color: '#a855f7' },
+                ] as const).map((m) => (
+                  <div key={m.label} style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                    <span style={{ fontSize: '10px', color: '#666', minWidth: '70px' }}>{m.label}</span>
+                    <div style={{ flex: 1, height: '6px', background: '#222', borderRadius: '3px', overflow: 'hidden' }}>
+                      <div style={{ width: `${Math.min(100, m.value * 100)}%`, height: '100%', background: m.color }} />
+                    </div>
+                    <span style={{ fontSize: '10px', color: m.color, minWidth: '36px', textAlign: 'right' }}>{(m.value * 100).toFixed(0)}%</span>
+                  </div>
+                ))}
+              </div>
+              <div style={{ display: 'flex', gap: '12px', marginTop: '8px', fontSize: '10px', color: '#888', flexWrap: 'wrap' }}>
+                <span><span style={{ color: '#666' }}>intent:</span> {playerModel.intent}</span>
+                <span><span style={{ color: '#666' }}>deaths:</span> {playerModel.consecutive_deaths}</span>
+                <span><span style={{ color: '#666' }}>collects:</span> {playerModel.consecutive_collects}</span>
+                <span><span style={{ color: '#666' }}>prog rate:</span> {playerModel.avg_progress_rate.toFixed(2)}</span>
+                <span><span style={{ color: '#666' }}>explore:</span> {playerModel.exploration_radius.toFixed(0)}</span>
+              </div>
+            </div>
+          )}
+
           {/* Last Frame */}
           {selectedSession.last_frame && (
             <div style={cardStyle}>
@@ -543,9 +664,20 @@ const AiGameBridgePanel: React.FC = () => {
 
           {/* Directives */}
           <div style={cardStyle}>
-            <div style={{ fontSize: '9px', color: '#666', marginBottom: '6px' }}>
-              <ArrowDownToLine size={10} style={{ display: 'inline', marginRight: '4px' }} />
-              PENDING DIRECTIVES ({directives.length})
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
+              <div style={{ fontSize: '9px', color: '#666' }}>
+                <ArrowDownToLine size={10} style={{ display: 'inline', marginRight: '4px' }} />
+                PENDING DIRECTIVES ({directives.length})
+              </div>
+              {directives.length > 0 && (
+                <button
+                  onClick={handleAckDirectives}
+                  style={{ ...buttonBase, fontSize: '9px', padding: '3px 8px', borderColor: '#22c55e', color: '#22c55e' }}
+                  title="Acknowledge applied directives back to the orchestrator"
+                >
+                  Ack All
+                </button>
+              )}
             </div>
             {directives.length === 0 ? (
               <div style={{ color: '#444', textAlign: 'center', padding: '8px' }}>No pending directives</div>
