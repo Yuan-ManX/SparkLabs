@@ -174,12 +174,18 @@ class BridgeOrchestrator:
         self._cooldowns: Dict[str, Dict[str, int]] = {}  # session_id -> {directive_type: cooldown_until_tick}
         self._last_strategy: Dict[str, AdaptationStrategy] = {}
         self._last_strategy_tick: Dict[str, int] = {}
+        self._session_metadata: Dict[str, Dict[str, str]] = {}  # session_id -> {game_id, genre, title}
+        self._session_insights: Dict[str, Dict[str, Any]] = {}  # session_id -> accumulated insights
         # Aggregated stats
         self._total_decisions: int = 0
         self._total_directives_authored: int = 0
         self._total_positive_outcomes: int = 0
         self._total_negative_outcomes: int = 0
         self._strategy_usage: Dict[str, int] = {s.value: 0 for s in AdaptationStrategy}
+        # Cross-session learning stats
+        self._insights_stored: int = 0
+        self._insights_retrieved: int = 0
+        self._memory_link: Optional[Any] = None
 
     @classmethod
     def get_instance(cls) -> "BridgeOrchestrator":
@@ -190,8 +196,19 @@ class BridgeOrchestrator:
 
     # ---- Public API ----
 
-    def init_session(self, session_id: str) -> None:
-        """Initialize orchestrator state for a new session."""
+    def init_session(
+        self,
+        session_id: str,
+        game_id: str = "",
+        genre: str = "",
+        title: str = "",
+    ) -> None:
+        """Initialize orchestrator state for a new session.
+
+        Retrieves past insights from the AgentMemoryOrchestrator for the
+        same genre/game so the orchestrator can start with context from
+        previous sessions instead of learning from scratch each time.
+        """
         with self._lock:
             if session_id not in self._player_models:
                 self._player_models[session_id] = PlayerModel()
@@ -199,15 +216,36 @@ class BridgeOrchestrator:
                 self._cooldowns[session_id] = {}
                 self._last_strategy[session_id] = AdaptationStrategy.OBSERVE
                 self._last_strategy_tick[session_id] = 0
+                self._session_metadata[session_id] = {
+                    "game_id": game_id,
+                    "genre": genre,
+                    "title": title,
+                }
+                self._session_insights[session_id] = {
+                    "frames_processed": 0,
+                    "deaths": 0,
+                    "collects": 0,
+                    "kills": 0,
+                    "wall_jumps": 0,
+                    "strategies_used": {},
+                    "positive_directives": 0,
+                    "negative_directives": 0,
+                }
+            # Retrieve past insights for this genre/game (outside lock to avoid deadlock)
+        self._retrieve_past_insights(session_id, genre, game_id)
 
     def cleanup_session(self, session_id: str) -> None:
-        """Remove orchestrator state for a session."""
+        """Store session insights to memory, then remove orchestrator state."""
+        # Store insights before clearing (outside lock to avoid deadlock)
+        self._store_session_insights(session_id)
         with self._lock:
             self._player_models.pop(session_id, None)
             self._directive_records.pop(session_id, None)
             self._cooldowns.pop(session_id, None)
             self._last_strategy.pop(session_id, None)
             self._last_strategy_tick.pop(session_id, None)
+            self._session_metadata.pop(session_id, None)
+            self._session_insights.pop(session_id, None)
 
     def update_player_model(
         self,
@@ -227,9 +265,13 @@ class BridgeOrchestrator:
             if session_id not in self._player_models:
                 self.init_session(session_id)
             model = self._player_models[session_id]
+            insights = self._session_insights.get(session_id, {})
 
             tick = getattr(frame, "tick", 0)
             events = list(getattr(frame, "events", []) or [])
+
+            # Track session-level insight counters
+            insights["frames_processed"] = insights.get("frames_processed", 0) + 1
 
             # Update consecutive counts
             if "death" in events:
@@ -237,6 +279,7 @@ class BridgeOrchestrator:
                 model.consecutive_deaths += 1
                 model.consecutive_collects = 0
                 model.frustration = min(1.0, model.frustration + 0.15)
+                insights["deaths"] = insights.get("deaths", 0) + 1
             else:
                 model.consecutive_deaths = max(0, model.consecutive_deaths - 1) if model.consecutive_deaths > 0 else 0
                 model.frustration = max(0.0, model.frustration - 0.005)
@@ -245,16 +288,19 @@ class BridgeOrchestrator:
                 model.last_collect_tick = tick
                 model.consecutive_collects += 1
                 model.engagement = min(1.0, model.engagement + 0.05)
+                insights["collects"] = insights.get("collects", 0) + 1
             else:
                 model.engagement = max(0.2, model.engagement - 0.002)
 
             if "enemy_kill" in events:
                 model.mastery = min(1.0, model.mastery + 0.03)
                 model.engagement = min(1.0, model.engagement + 0.04)
+                insights["kills"] = insights.get("kills", 0) + 1
 
             if "wall_jump" in events:
                 model.mastery = min(1.0, model.mastery + 0.02)
                 model.skill_estimate = min(1.0, model.skill_estimate + 0.01)
+                insights["wall_jumps"] = insights.get("wall_jumps", 0) + 1
 
             # Update progress rate (smoothed)
             vx = abs(getattr(frame, "player_vx", 0.0))
@@ -311,6 +357,11 @@ class BridgeOrchestrator:
             self._last_strategy[session_id] = strategy
             self._strategy_usage[strategy.value] += 1
             self._total_decisions += 1
+            # Track per-session strategy usage for insight storage
+            insights = self._session_insights.get(session_id, {})
+            su = insights.get("strategies_used", {})
+            su[strategy.value] = su.get(strategy.value, 0) + 1
+            insights["strategies_used"] = su
 
             # Author directives based on strategy
             directives = self._author_directives(
@@ -385,10 +436,13 @@ class BridgeOrchestrator:
                 if outcome:
                     record.outcome = outcome
                     record.outcome_observed_at_tick = tick
+                    insights = self._session_insights.get(session_id, {})
                     if outcome == "positive":
                         self._total_positive_outcomes += 1
+                        insights["positive_directives"] = insights.get("positive_directives", 0) + 1
                     elif outcome == "negative":
                         self._total_negative_outcomes += 1
+                        insights["negative_directives"] = insights.get("negative_directives", 0) + 1
 
     def get_player_model(self, session_id: str) -> Optional[PlayerModel]:
         with self._lock:
@@ -407,6 +461,37 @@ class BridgeOrchestrator:
                 "total_negative_outcomes": self._total_negative_outcomes,
                 "strategy_usage": dict(self._strategy_usage),
                 "active_sessions": len(self._player_models),
+                "insights_stored": self._insights_stored,
+                "insights_retrieved": self._insights_retrieved,
+                "memory_linked": self._memory_link is not None,
+            }
+
+    def get_session_insights(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """Get the accumulated insights for a session."""
+        with self._lock:
+            insights = self._session_insights.get(session_id)
+            if insights is None:
+                return None
+            metadata = self._session_metadata.get(session_id, {})
+            model = self._player_models.get(session_id)
+            return {
+                "session_id": session_id,
+                "game_id": metadata.get("game_id", ""),
+                "genre": metadata.get("genre", ""),
+                "title": metadata.get("title", ""),
+                "frames_processed": insights.get("frames_processed", 0),
+                "deaths": insights.get("deaths", 0),
+                "collects": insights.get("collects", 0),
+                "kills": insights.get("kills", 0),
+                "wall_jumps": insights.get("wall_jumps", 0),
+                "strategies_used": dict(insights.get("strategies_used", {})),
+                "positive_directives": insights.get("positive_directives", 0),
+                "negative_directives": insights.get("negative_directives", 0),
+                "final_skill": round(model.skill_estimate, 3) if model else 0.0,
+                "final_mastery": round(model.mastery, 3) if model else 0.0,
+                "final_engagement": round(model.engagement, 3) if model else 0.0,
+                "final_frustration": round(model.frustration, 3) if model else 0.0,
+                "final_intent": model.intent.value if model else "unknown",
             }
 
     def reset(self) -> None:
@@ -416,11 +501,15 @@ class BridgeOrchestrator:
             self._cooldowns.clear()
             self._last_strategy.clear()
             self._last_strategy_tick.clear()
+            self._session_metadata.clear()
+            self._session_insights.clear()
             self._total_decisions = 0
             self._total_directives_authored = 0
             self._total_positive_outcomes = 0
             self._total_negative_outcomes = 0
             self._strategy_usage = {s.value: 0 for s in AdaptationStrategy}
+            self._insights_stored = 0
+            self._insights_retrieved = 0
 
     # ---- Internal: Strategy Selection ----
 
@@ -710,6 +799,139 @@ class BridgeOrchestrator:
             "params": params,
             "priority": priority,
         }
+
+    # ---- Internal: Cross-Session Memory Integration ----
+
+    def _ensure_memory_link(self) -> Any:
+        """Lazy-connect to AgentMemoryOrchestrator for cross-session learning."""
+        if self._memory_link is not None:
+            return self._memory_link if self._memory_link is not False else None
+        try:
+            from sparkai.agent.agent_memory_orchestrator import AgentMemoryOrchestrator
+            self._memory_link = AgentMemoryOrchestrator.get_instance()
+            return self._memory_link
+        except Exception as e:
+            logger.warning("AgentMemoryOrchestrator link failed: %s", e)
+            self._memory_link = False
+            return None
+
+    def _store_session_insights(self, session_id: str) -> None:
+        """Store a session's accumulated insights into the persistent memory.
+
+        Called automatically when a session is cleaned up. The insight is
+        stored with genre/game tags so future sessions for the same genre
+        can retrieve and benefit from past learnings.
+        """
+        memory = self._ensure_memory_link()
+        if memory is None:
+            return
+        with self._lock:
+            insights = self._session_insights.get(session_id)
+            metadata = self._session_metadata.get(session_id, {})
+            model = self._player_models.get(session_id)
+        if insights is None or insights.get("frames_processed", 0) == 0:
+            return
+        genre = metadata.get("genre", "unknown")
+        game_id = metadata.get("game_id", "")
+        title = metadata.get("title", "")
+        frames = insights.get("frames_processed", 0)
+        deaths = insights.get("deaths", 0)
+        collects = insights.get("collects", 0)
+        kills = insights.get("kills", 0)
+        wall_jumps = insights.get("wall_jumps", 0)
+        pos = insights.get("positive_directives", 0)
+        neg = insights.get("negative_directives", 0)
+        strategies = insights.get("strategies_used", {})
+        top_strategy = max(strategies, key=strategies.get) if strategies else "none"
+        skill = round(model.skill_estimate, 3) if model else 0.0
+        mastery = round(model.mastery, 3) if model else 0.0
+        intent = model.intent.value if model else "unknown"
+        # Compose a concise insight summary
+        content = (
+            f"Bridge session [{genre}/{title}] {frames} frames: "
+            f"deaths={deaths} collects={collects} kills={kills} wall_jumps={wall_jumps} | "
+            f"directives: +{pos} -{neg} | top_strategy={top_strategy} | "
+            f"skill={skill} mastery={mastery} intent={intent}"
+        )
+        try:
+            memory.store_memory(
+                content=content,
+                category="bridge_insight",
+                priority="medium",
+                context={
+                    "genre": genre,
+                    "game_id": game_id,
+                    "frames": frames,
+                    "deaths": deaths,
+                    "collects": collects,
+                    "kills": kills,
+                    "positive_directives": pos,
+                    "negative_directives": neg,
+                    "top_strategy": top_strategy,
+                    "final_skill": skill,
+                    "final_mastery": mastery,
+                    "final_intent": intent,
+                },
+                tags=["bridge", genre, f"game:{game_id}"] if game_id else ["bridge", genre],
+                ttl=86400.0 * 7,  # 7 days
+            )
+            with self._lock:
+                self._insights_stored += 1
+            logger.info("Stored bridge insight for session %s (genre=%s)", session_id, genre)
+        except Exception as e:
+            logger.warning("Failed to store bridge insight: %s", e)
+
+    def _retrieve_past_insights(self, session_id: str, genre: str, game_id: str) -> None:
+        """Retrieve past session insights for the same genre/game.
+
+        Called automatically when a session is initialized. The retrieved
+        insights are used to prime the player model with expectations from
+        past sessions (e.g., if players typically struggle with this genre,
+        start with a lower skill estimate).
+        """
+        if not genre:
+            return
+        memory = self._ensure_memory_link()
+        if memory is None:
+            return
+        try:
+            results = memory.retrieve_memories(
+                category="bridge_insight",
+                query_tags=[genre] if not game_id else [genre, f"game:{game_id}"],
+                limit=10,
+            )
+            if not results:
+                return
+            with self._lock:
+                self._insights_retrieved += len(results)
+                if session_id in self._player_models:
+                    model = self._player_models[session_id]
+                    # Prime the player model with aggregated past insights
+                    total_sessions = len(results)
+                    avg_skill = 0.0
+                    avg_mastery = 0.0
+                    death_heavy = 0
+                    for r in results:
+                        ctx = r.context if hasattr(r, "context") else r.get("context", {})
+                        avg_skill += float(ctx.get("final_skill", 0.5))
+                        avg_mastery += float(ctx.get("final_mastery", 0.0))
+                        if ctx.get("deaths", 0) > ctx.get("collects", 0):
+                            death_heavy += 1
+                    if total_sessions > 0:
+                        avg_skill /= total_sessions
+                        avg_mastery /= total_sessions
+                        # Bias initial skill estimate toward past average
+                        model.skill_estimate = (model.skill_estimate + avg_skill) / 2.0
+                        # If most past sessions were death-heavy, start with
+                        # slightly elevated frustration anticipation
+                        if death_heavy > total_sessions / 2:
+                            model.frustration = 0.1
+            logger.info(
+                "Retrieved %d past insights for session %s (genre=%s)",
+                len(results), session_id, genre,
+            )
+        except Exception as e:
+            logger.warning("Failed to retrieve past insights: %s", e)
 
 
 # =============================================================================
