@@ -15,6 +15,7 @@ Endpoints:
   GET  /game-bridge/sessions/{id}/history    - Get frame history
   GET  /game-bridge/sessions/{id}/player     - Get player model
   GET  /game-bridge/sessions/{id}/insights   - Get session insights (cross-session learning data)
+  GET  /game-bridge/sessions/{id}/preferences - Get player preference profile
   POST /game-bridge/sessions/{id}/pause - Pause a session
   POST /game-bridge/sessions/{id}/resume - Resume a session
   POST /game-bridge/sessions/{id}/end   - End a session
@@ -196,6 +197,20 @@ async def get_session_insights(session_id: str):
     if insights is None:
         return _err("session or insights not found")
     return _ok(insights)
+
+
+@router.get("/sessions/{session_id}/preferences")
+async def get_preferences(session_id: str):
+    """Get the player preference profile for this session.
+
+    Returns accumulated preference scores for combat, collection,
+    exploration, and platforming activities. The dominant preference
+    drives how the orchestrator customizes adaptation directives.
+    """
+    profile = _bridge().get_preference_profile(session_id)
+    if profile is None:
+        return _err("session or preference profile not found")
+    return _ok(profile)
 
 
 @router.get("/sessions/{session_id}/history")
