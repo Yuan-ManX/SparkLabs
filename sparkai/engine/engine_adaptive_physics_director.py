@@ -292,10 +292,14 @@ class FlowEstimator:
         self._last_estimate: FlowEstimate = FlowEstimate()
         self._estimate_count: int = 0
 
-    def estimate(self, signals: PlayerSignals) -> FlowEstimate:
+    def estimate(self, signals: PlayerSignals, current_difficulty: float = 0.5) -> FlowEstimate:
         """
         Estimate player skill from signals. Higher collectible rate +
         lower death rate + higher progress rate = higher skill.
+
+        current_difficulty: the game's current difficulty multiplier
+        (0.0 easy .. 1.0 hard). Used to determine the flow state by
+        comparing challenge against skill.
         """
         with self._lock:
             self._estimate_count += 1
@@ -325,16 +329,18 @@ class FlowEstimator:
         # Target difficulty: slightly above skill (flow zone)
         target = max(0.1, min(1.0, skill + 0.15))
 
-        # Determine flow state
-        gap = target - skill
-        if abs(gap) < 0.15:
-            flow_state = FlowState.FLOW
-        elif gap > 0.3:
-            flow_state = FlowState.ANXIETY
-        elif gap < -0.2:
-            flow_state = FlowState.BOREDOM
+        # Determine flow state by comparing the CURRENT challenge (what
+        # the game is actually throwing at the player right now) against
+        # the player's estimated skill. This is what produces meaningful
+        # anxiety/boredom signals - comparing target vs skill would always
+        # yield "flow" since target is derived from skill.
+        challenge_gap = current_difficulty - skill
+        if challenge_gap > 0.2:
+            flow_state = FlowState.ANXIETY    # game too hard for current skill
+        elif challenge_gap < -0.2:
+            flow_state = FlowState.BOREDOM    # game too easy for current skill
         else:
-            flow_state = FlowState.FLOW
+            flow_state = FlowState.FLOW       # challenge matches skill
 
         # Confidence based on sample size and signal variance
         confidence = min(1.0, 0.3 + 0.7 * min(1.0, self._estimate_count / 30.0))
@@ -504,8 +510,11 @@ class AdaptivePhysicsDirector:
         with self._lock:
             self._last_signals = signals
 
-        # Step 2: Estimate flow
-        estimate = self._estimator.estimate(signals)
+        # Step 2: Estimate flow (pass current difficulty so the estimator
+        # can determine whether the player is in anxiety/flow/boredom).
+        with self._lock:
+            current_difficulty = self._parameters.difficulty_multiplier
+        estimate = self._estimator.estimate(signals, current_difficulty=current_difficulty)
         with self._lock:
             self._last_estimate = estimate
 
