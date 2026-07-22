@@ -957,6 +957,22 @@ class AiNativeGameBridge:
             logger.debug("Get session insights failed: %s", e)
             return None
 
+    def get_preference_profile(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """Get the orchestrator's player preference profile for a session.
+
+        Returns the player's accumulated gameplay preferences (combat,
+        collection, exploration, platforming) so the frontend can display
+        how the AI perceives the player's play style.
+        """
+        if not self._orchestrator or self._orchestrator is False:
+            return None
+        try:
+            profile = self._orchestrator.get_preference_profile(session_id)
+            return profile.to_dict() if profile else None
+        except Exception as e:
+            logger.debug("Get preference profile failed: %s", e)
+            return None
+
     # ---- Maintenance ----
 
     def _cleanup_expired_locked(self) -> int:
