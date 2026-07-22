@@ -116,7 +116,7 @@ class DebugProtocol:
                 error_type="network",
                 root_cause="Cross-origin request blocked by browser",
                 solution="Add CORS middleware to the backend server",
-                verification_command="curl -H 'Origin: http://localhost:3000' http://localhost:8000/api/health",
+                verification_command="curl -H 'Origin: http://<frontend-host>:3000' http://<backend-host>:8000/api/health",
                 category="network",
             ),
             DebugEntry(
