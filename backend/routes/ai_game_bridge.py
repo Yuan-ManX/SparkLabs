@@ -14,6 +14,7 @@ Endpoints:
   POST /game-bridge/sessions/{id}/directives/ack - Acknowledge applied directives
   GET  /game-bridge/sessions/{id}/history    - Get frame history
   GET  /game-bridge/sessions/{id}/player     - Get player model
+  GET  /game-bridge/sessions/{id}/insights   - Get session insights (cross-session learning data)
   POST /game-bridge/sessions/{id}/pause - Pause a session
   POST /game-bridge/sessions/{id}/resume - Resume a session
   POST /game-bridge/sessions/{id}/end   - End a session
@@ -180,6 +181,21 @@ async def get_player_model(session_id: str):
     if model is None:
         return _err("session or player model not found")
     return _ok(model.to_dict())
+
+
+@router.get("/sessions/{session_id}/insights")
+async def get_session_insights(session_id: str):
+    """Get cross-session learning insights accumulated for this session.
+
+    Returns accumulated statistics (deaths, collects, kills, wall_jumps),
+    strategies used, directive outcomes, and the final player model state.
+    Also indicates whether insights were retrieved from past sessions at
+    session init (cross-session learning priming).
+    """
+    insights = _bridge().get_session_insights(session_id)
+    if insights is None:
+        return _err("session or insights not found")
+    return _ok(insights)
 
 
 @router.get("/sessions/{session_id}/history")
