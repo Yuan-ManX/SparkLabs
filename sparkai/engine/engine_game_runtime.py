@@ -770,11 +770,17 @@ class HtmlAssembler:
         genre_post_process_js = asset_profile.build_post_process_js()
         genre_dom_overlay = get_dom_overlay_html(config.genre)
 
-        # AI-Native Game Bridge client script for live cognitive adaptation
+        # AI-Native Game Bridge client script for live cognitive adaptation.
+        # Pass empty bridge_url so the client auto-detects the backend origin
+        # from window.location (or window.parent for iframe scenarios).
         bridge_script = BridgeClientBuilder.build_script(
-            bridge_url="http://localhost:8000/api/agent/game-bridge",
+            bridge_url="",
             telemetry_interval=30,
             directive_interval=60,
+        )
+        bridge_init_call = BridgeClientBuilder.build_init_call(
+            game_title=config.title,
+            genre=config.genre,
         )
 
         return f"""<!DOCTYPE html>
@@ -1105,10 +1111,9 @@ class HtmlAssembler:
     {polish_init}
     state = 'playing';
     hideOverlay();
-    // Initialize AI-Native Game Bridge connection for live cognitive adaptation
-    if (typeof window.initBridge === 'function') {{
-      window.initBridge('http://localhost:8000/api/agent/game-bridge', CONFIG.title, CONFIG.genre);
-    }}
+    // Initialize AI-Native Game Bridge connection for live cognitive adaptation.
+    // The bridge URL is auto-detected by the client from window.location.
+    {bridge_init_call}
   }}
 
   // Action helpers for AI Event Sheet runtime
