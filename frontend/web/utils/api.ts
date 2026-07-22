@@ -16706,6 +16706,12 @@ export const gameBridgeApi = {
     api.post<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/telemetry`, frame),
   getDirectives: (sessionId: string, limit: number = 8) =>
     api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/directives?limit=${limit}`),
+  acknowledgeDirectives: (sessionId: string, applied: Array<{ directive_id: string; directive_type: string; applied_at: number }>) =>
+    api.post<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/directives/ack`, { applied }),
+  getPlayerModel: (sessionId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/player`),
+  getOrchestratorStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/game-bridge/orchestrator'),
   getHistory: (sessionId: string, limit: number = 30) =>
     api.get<{ status: string; data: unknown }>(`/agent/game-bridge/sessions/${sessionId}/history?limit=${limit}`),
   pauseSession: (sessionId: string) =>
