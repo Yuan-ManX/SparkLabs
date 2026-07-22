@@ -383,7 +383,21 @@ class AiNativeGameBridge:
                 player_id=player_id,
             )
             self._sessions[session.session_id] = session
-            return session
+        # Prime the orchestrator with past session insights for this genre/game.
+        # This is done outside the bridge lock to avoid deadlock with the
+        # orchestrator's own lock. Safe because init_session is idempotent.
+        self._ensure_cognitive_links()
+        if self._orchestrator and self._orchestrator is not False:
+            try:
+                self._orchestrator.init_session(
+                    session.session_id,
+                    game_id=game_id,
+                    genre=genre,
+                    title=game_title,
+                )
+            except Exception as e:
+                logger.debug("Orchestrator init on start_session failed: %s", e)
+        return session
 
     def get_session(self, session_id: str) -> Optional[BridgeSession]:
         with self._lock:
@@ -402,11 +416,24 @@ class AiNativeGameBridge:
             if session is None:
                 return False
             session.status = "ended"
-            return True
+        # Store session insights to persistent memory before cleanup
+        if self._orchestrator and self._orchestrator is not False:
+            try:
+                self._orchestrator.cleanup_session(session_id)
+            except Exception as e:
+                logger.warning("Orchestrator cleanup failed: %s", e)
+        return True
 
     def delete_session(self, session_id: str) -> bool:
         with self._lock:
-            return self._sessions.pop(session_id, None) is not None
+            existed = self._sessions.pop(session_id, None) is not None
+        # Clean up orchestrator state and store insights
+        if existed and self._orchestrator and self._orchestrator is not False:
+            try:
+                self._orchestrator.cleanup_session(session_id)
+            except Exception as e:
+                logger.warning("Orchestrator cleanup failed: %s", e)
+        return existed
 
     def pause_session(self, session_id: str) -> bool:
         with self._lock:
@@ -549,7 +576,12 @@ class AiNativeGameBridge:
         orchestrator_directives: List[BridgeDirective] = []
         if self._orchestrator and self._orchestrator is not False:
             try:
-                self._orchestrator.init_session(session.session_id)
+                self._orchestrator.init_session(
+                    session.session_id,
+                    game_id=session.game_id,
+                    genre=session.genre,
+                    title=session.game_title,
+                )
                 self._orchestrator.update_player_model(
                     session.session_id, frame,
                     flow_state, skill_est, target_diff,
@@ -908,6 +940,21 @@ class AiNativeGameBridge:
             return self._orchestrator.get_player_model(session_id)
         except Exception as e:
             logger.debug("Get player model failed: %s", e)
+            return None
+
+    def get_session_insights(self, session_id: str) -> Optional[Dict[str, Any]]:
+        """Get the orchestrator's accumulated insights for a session.
+
+        Returns cross-session learning data including deaths, collects, kills,
+        strategies used, and final player model state. Useful for showing
+        the player how the AI adapted to their play style.
+        """
+        if not self._orchestrator or self._orchestrator is False:
+            return None
+        try:
+            return self._orchestrator.get_session_insights(session_id)
+        except Exception as e:
+            logger.debug("Get session insights failed: %s", e)
             return None
 
     # ---- Maintenance ----
