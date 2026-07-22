@@ -40,6 +40,11 @@ import uuid
 from dataclasses import dataclass, field
 from typing import Any, Dict, List, Optional, Tuple
 
+# Lazy imports to avoid circular dependencies at module load time.
+# These are imported inside methods where needed.
+# from sparkai.agent.agent_cognitive_skill_forge import CognitiveSkillForge
+# from sparkai.engine.engine_adaptive_physics_director import AdaptivePhysicsDirector
+
 logger = logging.getLogger(__name__)
 
 
@@ -332,6 +337,15 @@ class AiNativeGameBridge:
         self._total_directives_composed: int = 0
         self._last_cleanup_at: float = time.time()
         self._cleanup_interval_s: float = 60.0
+        # Cognitive module links (lazy-initialized to avoid circular imports)
+        self._skill_forge: Optional[Any] = None
+        self._physics_director: Optional[Any] = None
+        self._orchestrator: Optional[Any] = None
+        self._skills_matched_total: int = 0
+        self._skills_extracted_total: int = 0
+        self._physics_adaptations_total: int = 0
+        self._orchestrator_decisions_total: int = 0
+        self._orchestrator_directives_total: int = 0
 
     @classmethod
     def get_instance(cls) -> "AiNativeGameBridge":
@@ -460,9 +474,34 @@ class AiNativeGameBridge:
             "cognitive_phase": result.get("cognitive_phase", "idle"),
             "confidence": result.get("confidence", 0.0),
             "lesson": result.get("lesson", ""),
+            "skills_matched": result.get("skills_matched", 0),
         }
 
     # ---- Bridge Tick ----
+
+    def _ensure_cognitive_links(self) -> None:
+        """Lazy-initialize links to SkillForge, AdaptivePhysicsDirector, and BridgeOrchestrator."""
+        if self._skill_forge is None:
+            try:
+                from sparkai.agent.agent_cognitive_skill_forge import CognitiveSkillForge
+                self._skill_forge = CognitiveSkillForge.get_instance()
+            except Exception as e:
+                logger.warning("SkillForge link failed: %s", e)
+                self._skill_forge = False  # type: ignore
+        if self._physics_director is None:
+            try:
+                from sparkai.engine.engine_adaptive_physics_director import AdaptivePhysicsDirector
+                self._physics_director = AdaptivePhysicsDirector.get_instance()
+            except Exception as e:
+                logger.warning("AdaptivePhysicsDirector link failed: %s", e)
+                self._physics_director = False  # type: ignore
+        if self._orchestrator is None:
+            try:
+                from sparkai.agent.agent_bridge_orchestrator import BridgeOrchestrator
+                self._orchestrator = BridgeOrchestrator.get_instance()
+            except Exception as e:
+                logger.warning("BridgeOrchestrator link failed: %s", e)
+                self._orchestrator = False  # type: ignore
 
     def _bridge_tick(
         self,
@@ -470,30 +509,85 @@ class AiNativeGameBridge:
         frame: TelemetryFrame,
     ) -> Dict[str, Any]:
         """
-        Run one cognitive bridge tick for a session. This feeds the
-        telemetry frame into the CognitiveGameEngine and composes
-        directives from the engine's planned actions.
+        Run one cognitive bridge tick for a session. Feeds telemetry to
+        the SkillForge, AdaptivePhysicsDirector, and BridgeOrchestrator,
+        then composes directives from all cognitive layers.
         """
         self._bridge_tick_count += 1
+        self._ensure_cognitive_links()
 
-        # Heuristic reasoning based on telemetry (no LLM required)
-        # This produces directives that adapt the game to the player's
-        # current skill and flow state.
-        directives = self._heuristic_reason(session, frame)
+        # Phase 1: BEFORE - query SkillForge for matched skills
+        matched_skills = self._query_skill_forge(session, frame)
+
+        # Phase 2: AFTER - record signals to AdaptivePhysicsDirector
+        adapt_result = self._record_to_physics_director(session, frame)
+
+        # Phase 3: Extract skills from successful outcomes
+        self._extract_skill_from_frame(session, frame)
+
+        # Update flow state from AdaptivePhysicsDirector if available.
+        # The director only runs adaptation every N ticks; on off-ticks we
+        # reuse the last cached estimate so the orchestrator sees a stable
+        # flow state instead of flip-flopping to the cruder fallback.
+        if adapt_result is not None:
+            flow_state = adapt_result.get("flow_state", "unknown")
+            skill_est = adapt_result.get("skill_estimate", 0.5)
+            target_diff = adapt_result.get("target_difficulty", 0.5)
+            session._last_director_flow = (flow_state, skill_est, target_diff)
+            session.metrics.physics_adaptations += 1
+            self._physics_adaptations_total += 1
+        elif getattr(session, "_last_director_flow", None) is not None:
+            flow_state, skill_est, target_diff = session._last_director_flow
+        else:
+            flow_state, skill_est, target_diff = self._estimate_flow(session, frame)
+
+        session.flow_state = flow_state
+        session.skill_estimate = skill_est
+        session.target_difficulty = target_diff
+
+        # Phase 4: BRIDGE ORCHESTRATOR - update player model and observe outcomes
+        orchestrator_directives: List[BridgeDirective] = []
+        if self._orchestrator and self._orchestrator is not False:
+            try:
+                self._orchestrator.init_session(session.session_id)
+                self._orchestrator.update_player_model(
+                    session.session_id, frame,
+                    flow_state, skill_est, target_diff,
+                )
+                self._orchestrator.observe_outcomes(session.session_id, frame)
+
+                # Author directives via the orchestrator (replaces heuristic reasoner)
+                authored = self._orchestrator.compose_directives(
+                    session.session_id, frame,
+                    flow_state, skill_est, target_diff,
+                    existing_directives=[],
+                )
+                for d in authored:
+                    orchestrator_directives.append(BridgeDirective(
+                        directive_id=d["directive_id"],
+                        directive_type=d["directive_type"],
+                        params=d.get("params", {}),
+                        priority=d.get("priority", 0),
+                    ))
+                self._orchestrator_decisions_total += 1
+                self._orchestrator_directives_total += len(orchestrator_directives)
+            except Exception as e:
+                logger.debug("Orchestrator tick failed: %s", e)
+
+        # Fallback to heuristic reasoning if orchestrator produced nothing
+        if not orchestrator_directives:
+            orchestrator_directives = self._heuristic_reason(session, frame)
+
+        directives = orchestrator_directives
 
         # Compose directives
         for d in directives:
             session.push_directive(d)
         self._total_directives_composed += len(directives)
 
-        # Update flow state estimate from player behavior
-        flow_state, skill_est, target_diff = self._estimate_flow(session, frame)
-        session.flow_state = flow_state
-        session.skill_estimate = skill_est
-        session.target_difficulty = target_diff
-
         # Update session metrics
         session.metrics.cognitive_ticks_run += 1
+        session.metrics.skills_extracted = self._skills_extracted_total
         if frame.player_x / 1600.0 > session.metrics.max_progress:
             session.metrics.max_progress = frame.player_x / 1600.0
 
@@ -509,7 +603,103 @@ class AiNativeGameBridge:
             "cognitive_phase": session.cognitive_phase,
             "confidence": 0.5 + min(0.4, session.metrics.frames_received / 200.0),
             "lesson": self._extract_lesson(session, frame),
+            "skills_matched": len(matched_skills),
         }
+
+    def _query_skill_forge(
+        self,
+        session: BridgeSession,
+        frame: TelemetryFrame,
+    ) -> List[Any]:
+        """Query the SkillForge for skills matching the current player state."""
+        if not self._skill_forge or self._skill_forge is False:
+            return []
+        try:
+            state_snapshot = {
+                "player_health": frame.player_health,
+                "enemy_count": frame.enemy_count,
+                "pacing_zone": session.flow_state if session.flow_state != "unknown" else "normal",
+                "difficulty": session.target_difficulty,
+            }
+            matched = self._skill_forge.match_skills(state_snapshot, limit=3)
+            if matched:
+                self._skills_matched_total += len(matched)
+            return matched
+        except Exception as e:
+            logger.debug("SkillForge match failed: %s", e)
+            return []
+
+    def _record_to_physics_director(
+        self,
+        session: BridgeSession,
+        frame: TelemetryFrame,
+    ) -> Optional[Dict[str, Any]]:
+        """Record player signals to the AdaptivePhysicsDirector and run adaptation."""
+        if not self._physics_director or self._physics_director is False:
+            return None
+        try:
+            died = "death" in frame.events
+            jumped = "jump" in frame.events or "wall_jump" in frame.events
+            wall_touch = frame.wall_sliding
+            speed = abs(frame.player_vx)
+            collected = "collect" in frame.events
+            progress_delta = max(0.0, frame.player_vx * (1.0 / 60.0))
+
+            self._physics_director.record_tick(
+                tick=session.metrics.cognitive_ticks_run,
+                died=died,
+                jumped=jumped,
+                wall_touch=wall_touch,
+                speed=speed,
+                collected=collected,
+                progress_delta=progress_delta,
+            )
+            # Run adaptation at the director's own interval
+            return self._physics_director.adapt(session.metrics.cognitive_ticks_run)
+        except Exception as e:
+            logger.debug("PhysicsDirector record failed: %s", e)
+            return None
+
+    def _extract_skill_from_frame(
+        self,
+        session: BridgeSession,
+        frame: TelemetryFrame,
+    ) -> None:
+        """Extract a skill from the current frame if the player succeeded."""
+        if not self._skill_forge or self._skill_forge is False:
+            return
+        # Only extract on frames with successful events
+        success_events = {"enemy_kill", "collect", "wall_jump"}
+        if not any(evt in success_events for evt in frame.events):
+            return
+        try:
+            actions_data = [
+                {
+                    "action_type": evt,
+                    "params": {"x": frame.player_x, "y": frame.player_y},
+                    "target_id": "player",
+                    "expected_outcome": "progress",
+                    "confidence": 0.7,
+                }
+                for evt in frame.events if evt in success_events
+            ]
+            outcomes_data = [{"success": True, "notes": f"event: {evt}"} for evt in frame.events if evt in success_events]
+            state_snapshot = {
+                "player_health": frame.player_health,
+                "enemy_count": frame.enemy_count,
+                "pacing_zone": "normal",
+                "difficulty": session.target_difficulty,
+            }
+            skill = self._skill_forge.extract_from_tick(
+                tick=session.metrics.cognitive_ticks_run,
+                actions=actions_data,
+                outcomes=outcomes_data,
+                state_snapshot=state_snapshot,
+            )
+            if skill is not None:
+                self._skills_extracted_total += 1
+        except Exception as e:
+            logger.debug("SkillForge extraction failed: %s", e)
 
     def _heuristic_reason(
         self,
@@ -678,7 +868,47 @@ class AiNativeGameBridge:
                 "bridge_tick_count": self._bridge_tick_count,
                 "max_sessions": self._max_sessions,
                 "session_idle_timeout_s": self._session_idle_timeout_s,
+                "skills_matched_total": self._skills_matched_total,
+                "skills_extracted_total": self._skills_extracted_total,
+                "physics_adaptations_total": self._physics_adaptations_total,
+                "orchestrator_decisions_total": self._orchestrator_decisions_total,
+                "orchestrator_directives_total": self._orchestrator_directives_total,
+                "cognitive_links_active": bool(self._skill_forge and self._skill_forge is not False),
+                "physics_director_active": bool(self._physics_director and self._physics_director is not False),
+                "orchestrator_active": bool(self._orchestrator and self._orchestrator is not False),
             }
+
+    def orchestrator_status(self) -> Dict[str, Any]:
+        """Get the BridgeOrchestrator's status."""
+        if not self._orchestrator or self._orchestrator is False:
+            return {"active": False}
+        try:
+            return {"active": True, **self._orchestrator.status()}
+        except Exception as e:
+            return {"active": False, "error": str(e)}
+
+    def acknowledge_directives(
+        self,
+        session_id: str,
+        applied: List[Dict[str, Any]],
+    ) -> None:
+        """Forward directive acknowledgments to the orchestrator."""
+        if not self._orchestrator or self._orchestrator is False:
+            return
+        try:
+            self._orchestrator.acknowledge_directives(session_id, applied)
+        except Exception as e:
+            logger.debug("Acknowledge failed: %s", e)
+
+    def get_player_model(self, session_id: str) -> Optional[Any]:
+        """Get the orchestrator's player model for a session."""
+        if not self._orchestrator or self._orchestrator is False:
+            return None
+        try:
+            return self._orchestrator.get_player_model(session_id)
+        except Exception as e:
+            logger.debug("Get player model failed: %s", e)
+            return None
 
     # ---- Maintenance ----
 
@@ -701,7 +931,18 @@ class AiNativeGameBridge:
             self._sessions.clear()
             self._bridge_tick_count = 0
             self._total_directives_composed = 0
+            self._skills_matched_total = 0
+            self._skills_extracted_total = 0
+            self._physics_adaptations_total = 0
+            self._orchestrator_decisions_total = 0
+            self._orchestrator_directives_total = 0
             self._last_cleanup_at = time.time()
+        # Reset the orchestrator (outside lock to avoid deadlock)
+        if self._orchestrator and self._orchestrator is not False:
+            try:
+                self._orchestrator.reset()
+            except Exception as e:
+                logger.debug("Orchestrator reset failed: %s", e)
 
 
 # =============================================================================
