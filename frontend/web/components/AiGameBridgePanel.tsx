@@ -102,6 +102,26 @@ interface PlayerModel {
   exploration_radius: number;
 }
 
+interface SessionInsights {
+  session_id: string;
+  game_id: string;
+  genre: string;
+  title: string;
+  frames_processed: number;
+  deaths: number;
+  collects: number;
+  kills: number;
+  wall_jumps: number;
+  strategies_used: Record<string, number>;
+  positive_directives: number;
+  negative_directives: number;
+  final_skill: number;
+  final_mastery: number;
+  final_engagement: number;
+  final_frustration: number;
+  final_intent: string;
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------
@@ -237,6 +257,7 @@ const AiGameBridgePanel: React.FC = () => {
   const [history, setHistory] = useState<BridgeSession['last_frame'][]>([]);
   const [orchestrator, setOrchestrator] = useState<OrchestratorStatus | null>(null);
   const [playerModel, setPlayerModel] = useState<PlayerModel | null>(null);
+  const [insights, setInsights] = useState<SessionInsights | null>(null);
   const [loading, setLoading] = useState(false);
   const [simRunning, setSimRunning] = useState(false);
   const [simStrategy, setSimStrategy] = useState('speedrun');
@@ -271,19 +292,22 @@ const AiGameBridgePanel: React.FC = () => {
       setDirectives([]);
       setHistory([]);
       setPlayerModel(null);
+      setInsights(null);
       return;
     }
     try {
-      const [sessRes, dirRes, histRes, playerRes] = await Promise.all([
+      const [sessRes, dirRes, histRes, playerRes, insightsRes] = await Promise.all([
         gameBridgeApi.getSession(sessionId),
         gameBridgeApi.getDirectives(sessionId, 10),
         gameBridgeApi.getHistory(sessionId, 20),
         gameBridgeApi.getPlayerModel(sessionId),
+        gameBridgeApi.getSessionInsights(sessionId),
       ]);
       setSelectedSession(sessRes.data as BridgeSession);
       setDirectives((dirRes.data as Directive[]) || []);
       setHistory((histRes.data as BridgeSession['last_frame'][]) || []);
       setPlayerModel(playerRes.data as PlayerModel);
+      setInsights(insightsRes.data as SessionInsights);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch session');
     }
@@ -341,6 +365,7 @@ const AiGameBridgePanel: React.FC = () => {
       setDirectives([]);
       setHistory([]);
       setPlayerModel(null);
+      setInsights(null);
       setOrchestrator(null);
       await refresh();
     } catch (err) {
@@ -629,6 +654,60 @@ const AiGameBridgePanel: React.FC = () => {
                 <span><span style={{ color: '#666' }}>collects:</span> {playerModel.consecutive_collects}</span>
                 <span><span style={{ color: '#666' }}>prog rate:</span> {playerModel.avg_progress_rate.toFixed(2)}</span>
                 <span><span style={{ color: '#666' }}>explore:</span> {playerModel.exploration_radius.toFixed(0)}</span>
+              </div>
+            </div>
+          )}
+
+          {/* Session Insights (cross-session learning) */}
+          {insights && (
+            <div style={cardStyle}>
+              <div style={{ fontSize: '9px', color: '#666', marginBottom: '8px' }}>
+                <Sparkles size={10} style={{ display: 'inline', marginRight: '4px' }} />
+                SESSION INSIGHTS (cross-session learning)
+              </div>
+              {insights.title && (
+                <div style={{ fontSize: '11px', color: '#e2e8f0', marginBottom: '6px' }}>
+                  {insights.title} <span style={{ color: '#666' }}>| genre: {insights.genre || 'unknown'}</span>
+                </div>
+              )}
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '6px', marginBottom: '8px' }}>
+                <StatTile label="Frames" value={insights.frames_processed} />
+                <StatTile label="Deaths" value={insights.deaths} color="#ef4444" />
+                <StatTile label="Collects" value={insights.collects} color="#22c55e" />
+                <StatTile label="Kills" value={insights.kills} color="#f97316" />
+                <StatTile label="Wall Jumps" value={insights.wall_jumps} color="#a855f7" />
+                <StatTile label="Positive" value={insights.positive_directives} color="#22c55e" />
+                <StatTile label="Negative" value={insights.negative_directives} color="#ef4444" />
+                <StatTile label="Skill" value={`${(insights.final_skill * 100).toFixed(0)}%`} color="#3b82f6" />
+              </div>
+              {insights.strategies_used && Object.keys(insights.strategies_used).length > 0 && (
+                <div style={{ marginTop: '6px' }}>
+                  <div style={{ fontSize: '9px', color: '#666', marginBottom: '4px' }}>STRATEGY USAGE</div>
+                  <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
+                    {Object.entries(insights.strategies_used)
+                      .sort((a, b) => b[1] - a[1])
+                      .map(([strategy, count]) => (
+                        <span
+                          key={strategy}
+                          style={{
+                            padding: '2px 8px',
+                            borderRadius: '4px',
+                            background: '#1a1a1a',
+                            border: '1px solid #333',
+                            fontSize: '10px',
+                            color: count > 0 ? '#e2e8f0' : '#555',
+                          }}
+                        >
+                          {strategy}: {count}
+                        </span>
+                      ))}
+                  </div>
+                </div>
+              )}
+              <div style={{ marginTop: '8px', fontSize: '10px', color: '#888' }}>
+                <span style={{ color: '#666' }}>final intent:</span> {insights.final_intent} |
+                <span style={{ color: '#666' }}> mastery:</span> {(insights.final_mastery * 100).toFixed(0)}% |
+                <span style={{ color: '#666' }}> engagement:</span> {(insights.final_engagement * 100).toFixed(0)}%
               </div>
             </div>
           )}
