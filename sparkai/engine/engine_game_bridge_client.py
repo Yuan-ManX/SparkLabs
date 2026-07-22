@@ -76,16 +76,31 @@ BRIDGE_CLIENT_JS = r"""
     if (typeof window === 'undefined' || !window.location) {
       return '/api/agent/game-bridge';
     }
-    // Same-origin: use relative URL (works if frontend proxies to backend)
     var loc = window.location;
+    // If the game runs inside an iframe (blob/srcdoc/data URL),
+    // try to read the parent frame's location for the backend origin.
+    if (loc.protocol === 'blob:' || loc.protocol === 'data:' ||
+        loc.origin === 'null' || loc.origin === 'about:srcdoc') {
+      try {
+        if (window.parent && window.parent !== window && window.parent.location) {
+          loc = window.parent.location;
+        }
+      } catch (e) {
+        // Cross-origin parent: cannot access. Fall through to relative URL.
+      }
+    }
     // If frontend is served from a different port than the backend,
     // assume the backend is on the same hostname at port 8000.
     // This is the SparkLabs default deployment topology.
     if (loc.port === '3000' || loc.port === '5173' || loc.port === '4173') {
       return loc.protocol + '//' + loc.hostname + ':8000/api/agent/game-bridge';
     }
-    // Same-origin fallback
-    return loc.origin + '/api/agent/game-bridge';
+    // Same-origin fallback (works when frontend proxies to backend)
+    if (loc.origin && loc.origin !== 'null') {
+      return loc.origin + '/api/agent/game-bridge';
+    }
+    // Last resort: relative URL
+    return '/api/agent/game-bridge';
   }
 
   // Collect telemetry from the running game state
