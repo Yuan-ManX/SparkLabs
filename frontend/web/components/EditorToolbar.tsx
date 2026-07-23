@@ -103,6 +103,8 @@ export const modeGroups: ModeGroup[] = [
     cat: 'creative',
     items: [
       { id: 'narrative-engine', label: 'Narrative Engine', icon: 'fa-book-open' },
+      { id: 'story-director', label: 'Story Director', icon: 'fa-clapperboard' },
+      { id: 'frame-architect', label: 'Frame Architect', icon: 'fa-video' },
       { id: 'story-editor', label: 'Story Editor', icon: 'fa-pen-fancy' },
       { id: 'dialogue-tree', label: 'Dialogue Tree', icon: 'fa-comments' },
       { id: 'quest-designer', label: 'Quest Designer', icon: 'fa-flag' },
@@ -183,6 +185,12 @@ export const modeGroups: ModeGroup[] = [
       { id: 'visual-script', label: 'Visual Script', icon: 'fa-code' },
       { id: 'event-system', label: 'Event System', icon: 'fa-bolt' },
       { id: 'llm-router', label: 'LLM Router', icon: 'fa-route' },
+      { id: 'chat-editor', label: 'Chat Editor', icon: 'fa-comments' },
+      { id: 'model-chat', label: 'Model Chat', icon: 'fa-robot' },
+      { id: 'coordination-hub', label: 'Coord Hub', icon: 'fa-network-wired' },
+      { id: 'cognitive-mesh', label: 'Cognitive Mesh', icon: 'fa-brain' },
+      { id: 'live-tuner', label: 'Live Tuner', icon: 'fa-gauge-high' },
+      { id: 'ai-workflow', label: 'AI Workflow', icon: 'fa-diagram-project' },
     ],
   },
 ];
