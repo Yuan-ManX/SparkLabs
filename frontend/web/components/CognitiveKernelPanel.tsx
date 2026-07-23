@@ -184,7 +184,7 @@ const moodColor = (mood: string): string => {
   }
 };
 
-const moodBg = (mood: string): string => {
+const moodBg = (mood: string): { bg: string; border: string } => {
   switch (mood) {
     case 'frustrated':
     case 'overwhelmed':
