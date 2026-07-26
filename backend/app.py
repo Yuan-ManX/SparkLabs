@@ -25,6 +25,17 @@ from backend.routes import (
     ai_runtime_bridge, ai_native_integration,
     game_creation_orchestrator, cognitive_engine, cognitive_fusion,
     game_physics, cognitive_simulation, ai_game_bridge,
+    agent_fusion_loop, creative_autonomy, agent_chat, chat_editor_bridge,
+    coordination_hub, playtest_simulator, cognitive_mesh,
+    story_director, frame_workflow, temporal_music,
+    semantic_prefetch, dream_bubble, resonance_emergence,
+    persona_harmonics,
+    chemistry_quantum,
+    belief_phase,
+    resonance_temporal,
+    cognitive_aurora,
+    consciousness_mist,
+    crystal_mycelium,
 )
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
@@ -103,6 +114,26 @@ app.include_router(cognitive_fusion.router, prefix="/api/agent", tags=["Cognitiv
 app.include_router(game_physics.router, prefix="/api/engine", tags=["Game Physics"])
 app.include_router(cognitive_simulation.router, prefix="/api/agent", tags=["Cognitive Simulation"])
 app.include_router(ai_game_bridge.router, prefix="/api/agent/game-bridge", tags=["AI-Native Game Bridge"])
+app.include_router(agent_fusion_loop.router, prefix="/api/agent", tags=["Agent-Engine Fusion Loop"])
+app.include_router(creative_autonomy.router, prefix="/api/agent", tags=["Creative Autonomy"])
+app.include_router(agent_chat.router, prefix="/api/agent", tags=["Agent Chat"])
+app.include_router(chat_editor_bridge.router, prefix="/api/agent", tags=["Chat-Editor Bridge"])
+app.include_router(coordination_hub.router, prefix="/api/agent", tags=["Coordination Hub"])
+app.include_router(playtest_simulator.router, prefix="/api/agent", tags=["Playtest Simulator"])
+app.include_router(cognitive_mesh.router, prefix="/api/agent", tags=["Cognitive Mesh"])
+app.include_router(story_director.router, prefix="/api/agent", tags=["Story Director & Live Tuner"])
+app.include_router(frame_workflow.router, prefix="/api/agent", tags=["Frame Architect & AI Workflow"])
+app.include_router(temporal_music.router, prefix="/api/agent", tags=["Temporal Director & Music Conductor"])
+app.include_router(semantic_prefetch.router, prefix="/api/agent", tags=["Semantic World Indexer & Predictive Prefetcher"])
+app.include_router(dream_bubble.router, prefix="/api/agent", tags=["Memory Dream Consolidator & Reality Bubble Projector"])
+app.include_router(resonance_emergence.router, prefix="/api/agent", tags=["Narrative Resonance Engine & Emergence Pattern Detector"])
+app.include_router(persona_harmonics.router, prefix="/api/agent", tags=["Persona Lifecycle Manager & Spatial Harmonics Resonator"])
+app.include_router(chemistry_quantum.router, prefix="/api/agent", tags=["Motivation Chemistry Engine & Quantum State Projector"])
+app.include_router(belief_phase.router, prefix="/api/agent", tags=["Belief Ecosystem Evolver & Phase Transition Catalyst"])
+app.include_router(resonance_temporal.router, prefix="/api/agent", tags=["Emotional Resonance Field & Temporal Flow Regulator"])
+app.include_router(cognitive_aurora.router, prefix="/api/agent", tags=["Cognitive Tide Orchestrator & Chromatic Aurora Projector"])
+app.include_router(consciousness_mist.router, prefix="/api/agent", tags=["Consciousness Stratum Former & Probability Mist Diffuser"])
+app.include_router(crystal_mycelium.router, prefix="/api/agent", tags=["Memory Crystal Lattice & Spatial Mycelium Weaver"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
