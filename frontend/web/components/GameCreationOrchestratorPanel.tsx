@@ -81,11 +81,11 @@ const GameCreationOrchestratorPanel: React.FC = () => {
         gameCreationOrchestratorApi.status(),
         gameCreationOrchestratorApi.history(8),
       ]);
-      if (statusRes.data?.status === 'success') {
-        setStatus(statusRes.data.data);
+      if (statusRes.status === 'success') {
+        setStatus(statusRes.data as OrchestratorStatus);
       }
-      if (historyRes.data?.status === 'success') {
-        setHistory(historyRes.data.data || []);
+      if (historyRes.status === 'success') {
+        setHistory((historyRes.data as CreationRun[]) || []);
       }
     } catch (e) {
       // Silent fail - status will show as unavailable
@@ -111,11 +111,11 @@ const GameCreationOrchestratorPanel: React.FC = () => {
         prompt.trim(),
         genreHint.trim() || undefined,
       );
-      if (res.data?.status === 'success') {
-        setLastResult(res.data.data);
+      if (res.status === 'success') {
+        setLastResult(res.data as CreationRun);
         refresh();
       } else {
-        setError(res.data?.message || 'Creation failed');
+        setError(res.message || 'Creation failed');
       }
     } catch (e: any) {
       setError(e?.message || 'Network error');
@@ -127,9 +127,10 @@ const GameCreationOrchestratorPanel: React.FC = () => {
   const handlePlayRun = useCallback(async (runId: string) => {
     try {
       const res = await gameCreationOrchestratorApi.getRun(runId);
-      if (res.data?.status === 'success' && res.data.data?.html) {
+      const runData = res.status === 'success' ? (res.data as { html?: string }) : null;
+      if (runData?.html) {
         // Open the playable HTML in a new window
-        const blob = new Blob([res.data.data.html], { type: 'text/html' });
+        const blob = new Blob([runData.html], { type: 'text/html' });
         const url = URL.createObjectURL(blob);
         window.open(url, '_blank');
         setTimeout(() => URL.revokeObjectURL(url), 30000);
