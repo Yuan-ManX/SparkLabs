@@ -2588,12 +2588,46 @@ class LLMRouter:
             rate_limit_tpm=10_000_000,
         )
         models = [
+            # Llama family
+            ("llama3.3", [ModelType.TEXT, ModelType.REASONING], 128_000, 4_096, 0.0, 0.0, 0.9, "low", True, False, False),
+            ("llama3.2", [ModelType.TEXT], 128_000, 4_096, 0.0, 0.0, 0.85, "low", True, False, False),
+            ("llama3.2-vision", [ModelType.TEXT, ModelType.VISION], 128_000, 4_096, 0.0, 0.0, 0.87, "medium", True, False, True),
+            ("llama3.1", [ModelType.TEXT], 128_000, 4_096, 0.0, 0.0, 0.88, "low", True, False, False),
             ("llama3", [ModelType.TEXT], 8_000, 4_096, 0.0, 0.0, 0.8, "low", True, False, False),
+            # Qwen family
+            ("qwen2.5", [ModelType.TEXT], 32_000, 4_096, 0.0, 0.0, 0.85, "low", True, False, False),
+            ("qwen2.5-coder", [ModelType.TEXT, ModelType.CODE], 32_000, 4_096, 0.0, 0.0, 0.85, "low", True, False, False),
+            ("qwen2.5-vision", [ModelType.TEXT, ModelType.VISION], 32_000, 4_096, 0.0, 0.0, 0.83, "medium", True, False, True),
             ("qwen2", [ModelType.TEXT], 32_000, 4_096, 0.0, 0.0, 0.8, "low", True, False, False),
+            # Mistral family
+            ("mistral-nemo", [ModelType.TEXT], 128_000, 4_096, 0.0, 0.0, 0.82, "low", True, False, False),
             ("mistral", [ModelType.TEXT], 32_000, 4_096, 0.0, 0.0, 0.78, "low", True, False, False),
+            # DeepSeek family (local)
+            ("deepseek-r1", [ModelType.TEXT, ModelType.REASONING], 128_000, 4_096, 0.0, 0.0, 0.92, "medium", True, False, False),
+            ("deepseek-v3", [ModelType.TEXT, ModelType.CODE], 128_000, 4_096, 0.0, 0.0, 0.9, "low", True, False, False),
+            ("deepseek-coder-v2", [ModelType.TEXT, ModelType.CODE], 128_000, 4_096, 0.0, 0.0, 0.87, "low", True, False, False),
+            # Phi family
+            ("phi4", [ModelType.TEXT, ModelType.REASONING], 16_000, 4_096, 0.0, 0.0, 0.85, "low", True, False, False),
+            ("phi3.5", [ModelType.TEXT], 128_000, 4_096, 0.0, 0.0, 0.78, "low", True, False, False),
             ("phi3", [ModelType.TEXT], 4_000, 4_096, 0.0, 0.0, 0.7, "low", True, False, False),
+            # Gemma family
+            ("gemma3", [ModelType.TEXT, ModelType.VISION], 128_000, 4_096, 0.0, 0.0, 0.85, "low", True, False, True),
             ("gemma2", [ModelType.TEXT], 8_000, 4_096, 0.0, 0.0, 0.78, "low", True, False, False),
+            # Code models
             ("codellama", [ModelType.TEXT, ModelType.CODE], 16_000, 4_096, 0.0, 0.0, 0.78, "low", True, False, False),
+            ("codeqwen", [ModelType.TEXT, ModelType.CODE], 32_000, 4_096, 0.0, 0.0, 0.82, "low", True, False, False),
+            # Vision/multimodal models
+            ("llava", [ModelType.TEXT, ModelType.VISION], 8_000, 4_096, 0.0, 0.0, 0.75, "medium", True, False, True),
+            ("llama3.2-vision:90b", [ModelType.TEXT, ModelType.VISION], 128_000, 4_096, 0.0, 0.0, 0.88, "medium", True, False, True),
+            ("moondream", [ModelType.TEXT, ModelType.VISION], 8_000, 4_096, 0.0, 0.0, 0.7, "low", True, False, True),
+            # Embedding models
+            ("nomic-embed-text", [ModelType.EMBEDDING], 8_000, 0, 0.0, 0.0, 0.0, "low", False, False, False),
+            ("mxbai-embed-large", [ModelType.EMBEDDING], 512, 0, 0.0, 0.0, 0.0, "low", False, False, False),
+            # Specialized models
+            ("dolphin-llama3", [ModelType.TEXT], 8_000, 4_096, 0.0, 0.0, 0.8, "low", True, False, False),
+            ("orca-mini", [ModelType.TEXT], 8_000, 4_096, 0.0, 0.0, 0.7, "low", True, False, False),
+            ("starcoder2", [ModelType.TEXT, ModelType.CODE], 16_000, 4_096, 0.0, 0.0, 0.8, "low", True, False, False),
+            ("wizardlm2", [ModelType.TEXT], 32_000, 4_096, 0.0, 0.0, 0.82, "low", True, False, False),
         ]
         for m in models:
             mid, types, ctx, out, ci, co, q, tier, stream, fn, vision = m
