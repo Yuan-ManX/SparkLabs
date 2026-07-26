@@ -1,334 +1,551 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { API_BASE as API_ROOT } from '../utils/api';
+"use client";
 
-type TabId = 'sessions' | 'actions';
+import React, { useState, useCallback, useEffect } from 'react';
+import {
+  Activity, Play, RefreshCw, Trash2, AlertTriangle,
+  CheckCircle, XCircle, Trophy, Users, Zap, Target,
+} from 'lucide-react';
+import { playtestSimulatorApi } from '../utils/api';
 
-interface PlaySession {
-  id: string;
-  game_scene: string;
-  mode: string;
-  player_profile: string;
-  status: string;
-  actions_count: number;
-  created_at: number;
+// ---------------------------------------------------------------------------
+// Types
+// ---------------------------------------------------------------------------
+
+interface SimulatorStatus {
+  active: boolean;
+  total_playtests: number;
+  total_issues_found: number;
+  total_suggestions: number;
+  avg_score: number;
+  history_count: number;
 }
 
-interface SimAction {
-  id: string;
-  session_id: string;
-  action_type: string;
-  target: string;
-  result: string;
-  created_at: number;
+interface ArchetypeResult {
+  archetype: string;
+  reached_goal: boolean;
+  deaths: number;
+  collects: number;
+  kills: number;
+  time_to_complete: number;
+  engagement_score: number;
+  frustration_score: number;
+  distance_traveled: number;
+  frames_played: number;
 }
 
-const uid = () => `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+interface GameIssue {
+  issue_id: string;
+  category: string;
+  severity: string;
+  description: string;
+  location: [number, number];
+  archetype: string | null;
+  suggestion: string;
+}
 
-const MODE_COLORS: Record<string, string> = {
-  manual: '#74b9ff',
-  automated: '#6bcb77',
-  hybrid: '#fdcb6e',
-  replay: '#a29bfe',
+interface PlaytestReport {
+  report_id: string;
+  game_id: string;
+  timestamp: number;
+  duration_s: number;
+  overall_score: number;
+  scores: {
+    playability: number;
+    balance: number;
+    engagement: number;
+    completeness: number;
+    pacing: number;
+  };
+  archetype_results: ArchetypeResult[];
+  issues: GameIssue[];
+  total_frames: number;
+  total_deaths: number;
+  total_collects: number;
+  suggestions: string[];
+}
+
+// ---------------------------------------------------------------------------
+// Styles
+// ---------------------------------------------------------------------------
+
+const panelStyle: React.CSSProperties = {
+  background: '#0a0a0a',
+  color: '#e2e8f0',
+  fontFamily: 'ui-monospace, SFMono-Regular, Menlo, monospace',
+  fontSize: '12px',
+  height: '100%',
+  overflow: 'auto',
+  padding: '16px',
 };
 
+const cardStyle: React.CSSProperties = {
+  background: '#111',
+  border: '1px solid #222',
+  borderRadius: '8px',
+  padding: '12px',
+  marginBottom: '12px',
+};
+
+const btnStyle: React.CSSProperties = {
+  padding: '6px 12px',
+  borderRadius: '6px',
+  fontSize: '11px',
+  fontWeight: 600,
+  cursor: 'pointer',
+  border: '1px solid #333',
+  background: '#1a1a1a',
+  color: '#e2e8f0',
+  display: 'inline-flex',
+  alignItems: 'center',
+  gap: '4px',
+};
+
+const btnPrimary: React.CSSProperties = {
+  ...btnStyle,
+  background: '#fff',
+  color: '#000',
+  borderColor: '#fff',
+};
+
+const severityColors: Record<string, string> = {
+  CRITICAL: '#ef4444',
+  MAJOR: '#f97316',
+  MINOR: '#fbbf24',
+  INFO: '#3b82f6',
+};
+
+const archetypeColors: Record<string, string> = {
+  speedrunner: '#ef4444',
+  explorer: '#22c55e',
+  completionist: '#fbbf24',
+  casual: '#3b82f6',
+  struggling: '#a855f7',
+};
+
+const scoreColor = (score: number): string => {
+  if (score >= 80) return '#22c55e';
+  if (score >= 60) return '#fbbf24';
+  if (score >= 40) return '#f97316';
+  return '#ef4444';
+};
+
+// ---------------------------------------------------------------------------
+// Main Panel
+// ---------------------------------------------------------------------------
+
 const PlaytestSimulatorPanel: React.FC = () => {
-  const [sessions, setSessions] = useState<PlaySession[]>([]);
-  const [actions, setActions] = useState<SimAction[]>([]);
-  const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' | 'info' } | null>(null);
-  const [activeTab, setActiveTab] = useState<TabId>('sessions');
+  const [status, setStatus] = useState<SimulatorStatus | null>(null);
+  const [latest, setLatest] = useState<PlaytestReport | null>(null);
+  const [history, setHistory] = useState<PlaytestReport[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [gameId, setGameId] = useState('test_game');
 
-  const [sessionGameScene, setSessionGameScene] = useState('');
-  const [sessionMode, setSessionMode] = useState('manual');
-  const [sessionPlayerProfile, setSessionPlayerProfile] = useState('');
-
-  const [actionSessionId, setActionSessionId] = useState('');
-  const [actionType, setActionType] = useState('click');
-  const [actionTarget, setActionTarget] = useState('');
-
-  const [exploreSessionId, setExploreSessionId] = useState('');
-  const [exploreMaxActions, setExploreMaxActions] = useState('10');
-
-  const [summarySessionId, setSummarySessionId] = useState('');
-  const [sessionSummary, setSessionSummary] = useState<any>(null);
-
-  const apiBase = API_ROOT + '/agent';
-
-  const defaultSessions: PlaySession[] = [
-    { id: uid(), game_scene: 'Level 1 Forest', mode: 'automated', player_profile: 'casual', status: 'running', actions_count: 45, created_at: Date.now() - 86400000 },
-    { id: uid(), game_scene: 'Boss Arena', mode: 'manual', player_profile: 'hardcore', status: 'completed', actions_count: 120, created_at: Date.now() - 172800000 },
-  ];
-
-  const defaultActions: SimAction[] = [
-    { id: uid(), session_id: 's1', action_type: 'click', target: 'start_button', result: 'success', created_at: Date.now() - 3600000 },
-    { id: uid(), session_id: 's1', action_type: 'swipe', target: 'character', result: 'success', created_at: Date.now() - 1800000 },
-    { id: uid(), session_id: 's2', action_type: 'attack', target: 'boss_enemy', result: 'critical_hit', created_at: Date.now() - 900000 },
-  ];
-
-  const showMessage = (text: string, type: 'success' | 'error' | 'info') => {
-    setMessage({ text, type });
-    setTimeout(() => setMessage(null), 4000);
-  };
-
-  const fetchStats = useCallback(async () => {
+  const refresh = useCallback(async () => {
     try {
-      const res = await fetch(`${apiBase}/playtest-simulator/stats`);
-      const data = await res.json();
-      if (data.sessions) setSessions(data.sessions);
-      if (data.actions) setActions(data.actions);
-    } catch { /* use defaults */ }
+      const [statusRes, latestRes, historyRes] = await Promise.all([
+        playtestSimulatorApi.getStatus(),
+        playtestSimulatorApi.getLatest(),
+        playtestSimulatorApi.getHistory(5),
+      ]);
+      setStatus(statusRes.data as SimulatorStatus);
+      setLatest(latestRes.data as PlaytestReport | null);
+      setHistory((historyRes.data as PlaytestReport[]) || []);
+      setError(null);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to fetch');
+    }
   }, []);
 
   useEffect(() => {
-    setSessions(defaultSessions);
-    setActions(defaultActions);
-    fetchStats();
-  }, [fetchStats]);
+    refresh();
+    const interval = setInterval(refresh, 5000);
+    return () => clearInterval(interval);
+  }, [refresh]);
 
-  const handleStartSession = async () => {
-    if (!sessionGameScene.trim()) { showMessage('Game scene is required', 'error'); return; }
+  const handleRunPlaytest = async () => {
+    setLoading(true);
     try {
-      await fetch(`${apiBase}/playtest-simulator/start-session`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ game_scene: sessionGameScene, mode: sessionMode, player_profile: sessionPlayerProfile }),
-      });
-      const newSession: PlaySession = { id: uid(), game_scene: sessionGameScene, mode: sessionMode, player_profile: sessionPlayerProfile, status: 'running', actions_count: 0, created_at: Date.now() };
-      setSessions(prev => [...prev, newSession]);
-      setSessionGameScene('');
-      showMessage('Session started', 'success');
-    } catch {
-      const newSession: PlaySession = { id: uid(), game_scene: sessionGameScene, mode: sessionMode, player_profile: sessionPlayerProfile, status: 'running', actions_count: 0, created_at: Date.now() };
-      setSessions(prev => [...prev, newSession]);
-      setSessionGameScene('');
-      showMessage('Session started (offline fallback)', 'info');
+      await playtestSimulatorApi.runPlaytest(gameId);
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Playtest failed');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleSimulateAction = async () => {
-    if (!actionSessionId.trim()) { showMessage('Session ID is required', 'error'); return; }
+  const handleReset = async () => {
+    setLoading(true);
     try {
-      await fetch(`${apiBase}/playtest-simulator/simulate-action`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: actionSessionId, action_type: actionType, target: actionTarget }),
-      });
-      const newAction: SimAction = { id: uid(), session_id: actionSessionId, action_type: actionType, target: actionTarget, result: 'success', created_at: Date.now() };
-      setActions(prev => [...prev, newAction]);
-      setSessions(prev => prev.map(s => s.id === actionSessionId ? { ...s, actions_count: s.actions_count + 1 } : s));
-      setActionTarget('');
-      showMessage('Action simulated', 'success');
-    } catch {
-      const newAction: SimAction = { id: uid(), session_id: actionSessionId, action_type: actionType, target: actionTarget, result: 'success', created_at: Date.now() };
-      setActions(prev => [...prev, newAction]);
-      setSessions(prev => prev.map(s => s.id === actionSessionId ? { ...s, actions_count: s.actions_count + 1 } : s));
-      setActionTarget('');
-      showMessage('Action simulated (offline fallback)', 'info');
+      await playtestSimulatorApi.reset();
+      await refresh();
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Reset failed');
+    } finally {
+      setLoading(false);
     }
   };
 
-  const handleAutoExplore = async () => {
-    if (!exploreSessionId.trim()) { showMessage('Session ID is required', 'error'); return; }
-    const max = parseInt(exploreMaxActions, 10) || 10;
-    try {
-      await fetch(`${apiBase}/playtest-simulator/auto-explore`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: exploreSessionId, max_actions: max }),
-      });
-      Array.from({ length: max }).forEach((_, i) => {
-        const newAction: SimAction = { id: uid(), session_id: exploreSessionId, action_type: 'auto', target: `target_${i + 1}`, result: 'success', created_at: Date.now() };
-        setActions(prev => [...prev, newAction]);
-      });
-      setSessions(prev => prev.map(s => s.id === exploreSessionId ? { ...s, actions_count: s.actions_count + max } : s));
-      showMessage(`Auto-explored with ${max} actions`, 'success');
-    } catch {
-      showMessage(`Auto-explored with ${max} actions (offline fallback)`, 'info');
-    }
-  };
-
-  const handleGenerateSummary = async () => {
-    if (!summarySessionId.trim()) { showMessage('Session ID is required', 'error'); return; }
-    try {
-      const res = await fetch(`${apiBase}/playtest-simulator/generate-summary`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ session_id: summarySessionId }),
-      });
-      const data = await res.json();
-      setSessionSummary(data);
-      showMessage('Summary generated', 'success');
-    } catch {
-      const s = sessions.find(s => s.id === summarySessionId);
-      setSessionSummary({ session_id: summarySessionId, scene: s?.game_scene || 'unknown', total_actions: s?.actions_count || 0, status: 'completed', issues_found: 2 });
-      showMessage('Summary generated (offline fallback)', 'info');
-    }
-  };
-
-  const formatTime = (ts: number) => {
-    const d = new Date(ts);
-    return d.toLocaleString([], { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' });
-  };
-
-  const tabItems: { key: TabId; label: string; icon: string; count: number }[] = [
-    { key: 'sessions', label: 'Sessions', icon: '\uD83C\uDFAE', count: sessions.length },
-    { key: 'actions', label: 'Actions', icon: '\uD83D\uDD79\uFE0F', count: actions.length },
-  ];
+  if (!status) {
+    return (
+      <div style={panelStyle}>
+        <div style={{ textAlign: 'center', padding: '40px', color: '#555' }}>
+          {error || 'Loading...'}
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', backgroundColor: '#1a1a2e', color: '#e0e0e0', fontFamily: 'system-ui, sans-serif', fontSize: 13 }}>
-      <div style={{ padding: '12px 16px', borderBottom: '1px solid #2a2a3e', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
-          <span style={{ fontSize: 18 }}>{'\uD83D\uDD79\uFE0F'}</span>
-          <span style={{ fontWeight: 700, fontSize: 15 }}>Playtest Simulator</span>
+    <div style={panelStyle}>
+      {/* Header */}
+      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Activity size={18} color="#fff" />
+          <span style={{ fontSize: '14px', fontWeight: 700, color: '#fff' }}>Playtest Simulator</span>
+          {status.active && (
+            <span style={{ fontSize: '9px', padding: '2px 6px', borderRadius: '4px', background: '#ffffff22', color: '#fff' }}>
+              RUNNING
+            </span>
+          )}
         </div>
-        <span style={{ fontSize: 10, color: '#888' }}>{sessions.length} sessions · {actions.length} actions</span>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <button style={btnPrimary} onClick={handleRunPlaytest} disabled={loading}>
+            <Play size={11} /> Run
+          </button>
+          <button style={btnStyle} onClick={handleReset} disabled={loading}>
+            <Trash2 size={11} />
+          </button>
+          <button style={btnStyle} onClick={refresh}>
+            <RefreshCw size={11} />
+          </button>
+        </div>
       </div>
 
-      {message && (
-        <div style={{ padding: '8px 16px', fontSize: 12, backgroundColor: message.type === 'success' ? '#1a3a1a' : message.type === 'error' ? '#3a1a1a' : '#1a2a3a', borderBottom: `1px solid ${message.type === 'success' ? '#2d5a2d' : message.type === 'error' ? '#5a2d2d' : '#2a3a4a'}`, color: message.type === 'success' ? '#6bcb77' : message.type === 'error' ? '#ff6b6b' : '#74b9ff' }}>
-          {message.text}
+      {error && (
+        <div style={{ fontSize: '10px', color: '#ef4444', marginBottom: '8px', padding: '4px 8px', background: '#ef444415', borderRadius: '4px' }}>
+          {error}
         </div>
       )}
 
-      <div style={{ display: 'flex', borderBottom: '1px solid #2a2a3e' }}>
-        {tabItems.map(tab => (
-          <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{ flex: 1, padding: '8px 12px', fontSize: 12, fontWeight: 600, backgroundColor: activeTab === tab.key ? '#22223a' : 'transparent', color: activeTab === tab.key ? '#e0e0e0' : '#888', border: 'none', borderBottom: activeTab === tab.key ? '2px solid #6c5ce7' : '2px solid transparent', cursor: 'pointer' }}>
-            {tab.icon} {tab.label} <span style={{ color: '#666', fontWeight: 400 }}>({tab.count})</span>
-          </button>
-        ))}
+      {/* Game ID Input */}
+      <div style={{ ...cardStyle, display: 'flex', alignItems: 'center', gap: '8px' }}>
+        <span style={{ fontSize: '10px', color: '#666' }}>GAME ID</span>
+        <input
+          type="text"
+          value={gameId}
+          onChange={(e) => setGameId(e.target.value)}
+          style={{
+            flex: 1,
+            background: '#0a0a0a',
+            border: '1px solid #222',
+            borderRadius: '4px',
+            padding: '4px 8px',
+            color: '#fff',
+            fontSize: '11px',
+            fontFamily: 'inherit',
+          }}
+        />
       </div>
 
-      <div style={{ flex: 1, overflow: 'auto', padding: 12 }}>
-        {activeTab === 'sessions' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ padding: 12, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#aaa', marginBottom: 8 }}>{'\u25B6\uFE0F'} start-session</div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                <div style={{ flex: 1, minWidth: 200 }}>
-                  <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Game Scene</div>
-                  <input value={sessionGameScene} onChange={e => setSessionGameScene(e.target.value)} placeholder="e.g. Level 1 Forest" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
+      {/* Stats Grid */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '8px', marginBottom: '12px' }}>
+        <div style={cardStyle}>
+          <div style={{ fontSize: '9px', color: '#666' }}>PLAYTESTS</div>
+          <div style={{ fontSize: '20px', fontWeight: 700, color: '#fff' }}>{status.total_playtests}</div>
+        </div>
+        <div style={cardStyle}>
+          <div style={{ fontSize: '9px', color: '#666' }}>AVG SCORE</div>
+          <div style={{ fontSize: '20px', fontWeight: 700, color: scoreColor(status.avg_score) }}>
+            {status.avg_score.toFixed(0)}
+          </div>
+        </div>
+        <div style={cardStyle}>
+          <div style={{ fontSize: '9px', color: '#666' }}>ISSUES</div>
+          <div style={{ fontSize: '20px', fontWeight: 700, color: '#f97316' }}>{status.total_issues_found}</div>
+        </div>
+        <div style={cardStyle}>
+          <div style={{ fontSize: '9px', color: '#666' }}>SUGGESTIONS</div>
+          <div style={{ fontSize: '20px', fontWeight: 700, color: '#3b82f6' }}>{status.total_suggestions}</div>
+        </div>
+      </div>
+
+      {/* Latest Report */}
+      {latest && (
+        <>
+          <div style={cardStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <Trophy size={12} color="#fff" />
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#fff' }}>LATEST REPORT</span>
+              </div>
+              <span style={{ fontSize: '9px', color: '#666' }}>
+                {latest.game_id} | {latest.duration_s.toFixed(2)}s | {latest.total_frames} frames
+              </span>
+            </div>
+
+            {/* Overall Score */}
+            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '10px' }}>
+              <div style={{
+                width: '60px',
+                height: '60px',
+                borderRadius: '50%',
+                border: `3px solid ${scoreColor(latest.overall_score)}`,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '24px',
+                fontWeight: 700,
+                color: scoreColor(latest.overall_score),
+              }}>
+                {latest.overall_score}
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: '9px', color: '#666', marginBottom: '4px' }}>OVERALL SCORE</div>
+                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '4px' }}>
+                  {[
+                    ['Play', latest.scores.playability],
+                    ['Bal', latest.scores.balance],
+                    ['Eng', latest.scores.engagement],
+                    ['Comp', latest.scores.completeness],
+                    ['Pace', latest.scores.pacing],
+                  ].map(([label, val]) => (
+                    <div key={label as string} style={{ textAlign: 'center' }}>
+                      <div style={{ fontSize: '8px', color: '#555' }}>{label}</div>
+                      <div style={{ fontSize: '12px', fontWeight: 600, color: scoreColor((val as number) * 100) }}>
+                        {((val as number) * 100).toFixed(0)}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div>
-                  <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Mode</div>
-                  <select value={sessionMode} onChange={e => setSessionMode(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
-                    <option value="manual">Manual</option>
-                    <option value="automated">Automated</option>
-                    <option value="hybrid">Hybrid</option>
-                    <option value="replay">Replay</option>
-                  </select>
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Player Profile</div>
-                  <select value={sessionPlayerProfile} onChange={e => setSessionPlayerProfile(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
-                    <option value="">Default</option>
-                    <option value="casual">Casual</option>
-                    <option value="hardcore">Hardcore</option>
-                    <option value="speedrunner">Speedrunner</option>
-                    <option value="explorer">Explorer</option>
-                  </select>
-                </div>
-                <button onClick={handleStartSession} style={{ padding: '6px 14px', backgroundColor: '#2d4a2d', color: '#6bcb77', border: '1px solid #3d5a3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Start</button>
               </div>
             </div>
 
-            <div style={{ padding: 12, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#aaa', marginBottom: 8 }}>{'\uD83E\uDD1E'} auto-explore</div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                <div>
-                  <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={exploreSessionId} onChange={e => setExploreSessionId(e.target.value)} placeholder="Session ID" style={{ padding: '6px 10px', fontSize: 11, width: 200, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Max Actions</div>
-                  <input value={exploreMaxActions} onChange={e => setExploreMaxActions(e.target.value)} type="number" min="1" max="100" style={{ padding: '6px 10px', fontSize: 11, width: 80, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
-                </div>
-                <button onClick={handleAutoExplore} style={{ padding: '6px 14px', backgroundColor: '#3a2d4a', color: '#a29bfe', border: '1px solid #4a3d5a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Explore</button>
+            {/* Totals */}
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '6px', marginBottom: '10px' }}>
+              <div style={{ textAlign: 'center', padding: '4px', background: '#0a0a0a', borderRadius: '4px' }}>
+                <div style={{ fontSize: '8px', color: '#555' }}>DEATHS</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#ef4444' }}>{latest.total_deaths}</div>
+              </div>
+              <div style={{ textAlign: 'center', padding: '4px', background: '#0a0a0a', borderRadius: '4px' }}>
+                <div style={{ fontSize: '8px', color: '#555' }}>COLLECTS</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#fbbf24' }}>{latest.total_collects}</div>
+              </div>
+              <div style={{ textAlign: 'center', padding: '4px', background: '#0a0a0a', borderRadius: '4px' }}>
+                <div style={{ fontSize: '8px', color: '#555' }}>ISSUES</div>
+                <div style={{ fontSize: '14px', fontWeight: 600, color: '#f97316' }}>{latest.issues.length}</div>
               </div>
             </div>
+          </div>
 
-            <div style={{ padding: 12, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#aaa', marginBottom: 8 }}>{'\uD83D\uDCCA'} generate-summary</div>
-              <div style={{ display: 'flex', gap: 8, alignItems: 'flex-end' }}>
-                <div style={{ flex: 1 }}>
-                  <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={summarySessionId} onChange={e => setSummarySessionId(e.target.value)} placeholder="Session ID" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
-                </div>
-                <button onClick={handleGenerateSummary} style={{ padding: '6px 14px', backgroundColor: '#2d3a5a', color: '#74b9ff', border: '1px solid #3d4a6a', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Generate</button>
-              </div>
-              {sessionSummary && (
-                <div style={{ marginTop: 8, padding: 8, backgroundColor: '#111', borderRadius: 4, fontSize: 10, color: '#aaa' }}>
-                  <pre style={{ margin: 0, whiteSpace: 'pre-wrap' }}>{JSON.stringify(sessionSummary, null, 2)}</pre>
-                </div>
-              )}
+          {/* Archetype Results */}
+          <div style={cardStyle}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+              <Users size={12} color="#fff" />
+              <span style={{ fontSize: '11px', fontWeight: 700, color: '#fff' }}>ARCHETYPE RESULTS</span>
             </div>
-
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#aaa' }}>{'\uD83C\uDFAE'} Sessions <span style={{ fontSize: 10, color: '#888', marginLeft: 4 }}>({sessions.length})</span></div>
-            {sessions.map(s => (
-              <div key={s.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: `3px solid ${MODE_COLORS[s.mode] || '#888'}` }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 4 }}>
-                  <span style={{ fontWeight: 600, fontSize: 12, color: '#ccc' }}>{s.game_scene}</span>
-                  <div style={{ display: 'flex', gap: 6 }}>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: (MODE_COLORS[s.mode] || '#888') + '33', color: MODE_COLORS[s.mode] || '#888' }}>{s.mode}</span>
-                    <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: s.status === 'running' ? '#1a3a1a' : '#1a2a3a', color: s.status === 'running' ? '#6bcb77' : '#74b9ff' }}>{s.status}</span>
+            {latest.archetype_results.map((ar) => {
+              const color = archetypeColors[ar.archetype] || '#888';
+              return (
+                <div key={ar.archetype} style={{
+                  marginBottom: '6px',
+                  padding: '6px 8px',
+                  borderRadius: '4px',
+                  background: '#0a0a0a',
+                  border: '1px solid #1a1a1a',
+                }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '4px' }}>
+                    <span style={{
+                      fontSize: '8px',
+                      padding: '1px 5px',
+                      borderRadius: '3px',
+                      background: color + '22',
+                      color,
+                    }}>
+                      {ar.archetype.toUpperCase()}
+                    </span>
+                    {ar.reached_goal ? (
+                      <CheckCircle size={10} color="#22c55e" />
+                    ) : (
+                      <XCircle size={10} color="#ef4444" />
+                    )}
+                    <span style={{ fontSize: '9px', color: ar.reached_goal ? '#22c55e' : '#ef4444' }}>
+                      {ar.reached_goal ? 'REACHED GOAL' : 'FAILED'}
+                    </span>
+                  </div>
+                  <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '4px', fontSize: '9px' }}>
+                    <div>
+                      <span style={{ color: '#555' }}>Deaths: </span>
+                      <span style={{ color: '#ef4444' }}>{ar.deaths}</span>
+                    </div>
+                    <div>
+                      <span style={{ color: '#555' }}>Collects: </span>
+                      <span style={{ color: '#fbbf24' }}>{ar.collects}</span>
+                    </div>
+                    <div>
+                      <span style={{ color: '#555' }}>Eng: </span>
+                      <span style={{ color: scoreColor(ar.engagement_score * 100) }}>
+                        {(ar.engagement_score * 100).toFixed(0)}%
+                      </span>
+                    </div>
+                    <div>
+                      <span style={{ color: '#555' }}>Time: </span>
+                      <span style={{ color: '#aaa' }}>{ar.time_to_complete.toFixed(1)}s</span>
+                    </div>
+                  </div>
+                  <div style={{ marginTop: '4px', fontSize: '9px' }}>
+                    <span style={{ color: '#555' }}>Frustration: </span>
+                    <span style={{ color: ar.frustration_score > 0.6 ? '#ef4444' : '#aaa' }}>
+                      {(ar.frustration_score * 100).toFixed(0)}%
+                    </span>
+                    <span style={{ color: '#555', marginLeft: '8px' }}>Frames: </span>
+                    <span style={{ color: '#aaa' }}>{ar.frames_played}</span>
                   </div>
                 </div>
-                <div style={{ display: 'flex', gap: 12, fontSize: 10, color: '#888' }}>
-                  <span>Profile: <span style={{ color: '#aaa' }}>{s.player_profile || 'default'}</span></span>
-                  <span>{s.actions_count} actions</span>
-                  <span>{formatTime(s.created_at)}</span>
-                </div>
-              </div>
-            ))}
+              );
+            })}
           </div>
-        )}
 
-        {activeTab === 'actions' && (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
-            <div style={{ padding: 12, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e' }}>
-              <div style={{ fontSize: 12, fontWeight: 600, color: '#aaa', marginBottom: 8 }}>{'\uD83D\uDD79\uFE0F'} simulate-action</div>
-              <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap', alignItems: 'flex-end' }}>
-                <div>
-                  <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Session ID</div>
-                  <input value={actionSessionId} onChange={e => setActionSessionId(e.target.value)} placeholder="Session ID" style={{ padding: '6px 10px', fontSize: 11, width: 160, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
-                </div>
-                <div>
-                  <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Action Type</div>
-                  <select value={actionType} onChange={e => setActionType(e.target.value)} style={{ padding: '6px 10px', fontSize: 11, backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }}>
-                    <option value="click">Click</option>
-                    <option value="swipe">Swipe</option>
-                    <option value="drag">Drag</option>
-                    <option value="keypress">Key Press</option>
-                    <option value="attack">Attack</option>
-                    <option value="interact">Interact</option>
-                  </select>
-                </div>
-                <div style={{ flex: 1, minWidth: 150 }}>
-                  <div style={{ fontSize: 10, color: '#888', marginBottom: 2 }}>Target</div>
-                  <input value={actionTarget} onChange={e => setActionTarget(e.target.value)} placeholder="e.g. start_button" style={{ padding: '6px 10px', fontSize: 11, width: '100%', backgroundColor: '#111', color: '#ccc', border: '1px solid #333', borderRadius: 4, outline: 'none' }} />
-                </div>
-                <button onClick={handleSimulateAction} style={{ padding: '6px 14px', backgroundColor: '#4a3d2d', color: '#fdcb6e', border: '1px solid #5a4d3d', borderRadius: 4, cursor: 'pointer', fontSize: 11, fontWeight: 600 }}>Simulate</button>
+          {/* Issues Detected */}
+          {latest.issues.length > 0 && (
+            <div style={cardStyle}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                <AlertTriangle size={12} color="#f97316" />
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#fff' }}>
+                  ISSUES DETECTED ({latest.issues.length})
+                </span>
               </div>
+              {latest.issues.map((issue) => {
+                const color = severityColors[issue.severity] || '#666';
+                return (
+                  <div key={issue.issue_id} style={{
+                    marginBottom: '6px',
+                    padding: '6px 8px',
+                    borderRadius: '4px',
+                    background: '#0a0a0a',
+                    border: `1px solid ${color}33`,
+                  }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                      <span style={{
+                        fontSize: '8px',
+                        padding: '1px 5px',
+                        borderRadius: '3px',
+                        background: color + '22',
+                        color,
+                      }}>
+                        {issue.severity}
+                      </span>
+                      <span style={{
+                        fontSize: '8px',
+                        padding: '1px 5px',
+                        borderRadius: '3px',
+                        background: '#333',
+                        color: '#aaa',
+                      }}>
+                        {issue.category}
+                      </span>
+                      {issue.archetype && (
+                        <span style={{
+                          fontSize: '8px',
+                          padding: '1px 5px',
+                          borderRadius: '3px',
+                          background: (archetypeColors[issue.archetype] || '#666') + '22',
+                          color: archetypeColors[issue.archetype] || '#666',
+                        }}>
+                          {issue.archetype}
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ fontSize: '10px', color: '#ccc', marginTop: '3px' }}>
+                      {issue.description}
+                    </div>
+                    {issue.suggestion && (
+                      <div style={{ fontSize: '9px', color: '#22c55e', marginTop: '3px' }}>
+                        Fix: {issue.suggestion}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
             </div>
+          )}
 
-            <div style={{ fontSize: 13, fontWeight: 600, color: '#aaa' }}>{'\uD83D\uDD79\uFE0F'} Actions <span style={{ fontSize: 10, color: '#888', marginLeft: 4 }}>({actions.length})</span></div>
-            {actions.map(a => (
-              <div key={a.id} style={{ padding: 10, backgroundColor: '#22223a', borderRadius: 6, border: '1px solid #2a2a3e', borderLeft: '3px solid #fdcb6e' }}>
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#3a3a1a', color: '#fdcb6e', fontWeight: 600 }}>{a.action_type}</span>
-                  <span style={{ fontSize: 9, padding: '1px 6px', borderRadius: 3, backgroundColor: '#1a3a1a', color: '#6bcb77' }}>{a.result}</span>
-                </div>
-                <div style={{ fontSize: 11, color: '#ccc', marginTop: 4 }}>Target: {a.target}</div>
-                <div style={{ fontSize: 9, color: '#666', marginTop: 2 }}>Session: {a.session_id} · {formatTime(a.created_at)}</div>
+          {/* Improvement Suggestions */}
+          {latest.suggestions.length > 0 && (
+            <div style={cardStyle}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                <Target size={12} color="#3b82f6" />
+                <span style={{ fontSize: '11px', fontWeight: 700, color: '#fff' }}>
+                  IMPROVEMENT SUGGESTIONS
+                </span>
               </div>
-            ))}
-          </div>
-        )}
-      </div>
+              {latest.suggestions.map((s, i) => (
+                <div key={i} style={{
+                  fontSize: '10px',
+                  color: '#aaa',
+                  marginBottom: '4px',
+                  paddingLeft: '12px',
+                  position: 'relative',
+                }}>
+                  <span style={{
+                    position: 'absolute',
+                    left: '0',
+                    color: '#3b82f6',
+                  }}>
+                    {i + 1}.
+                  </span>
+                  {s}
+                </div>
+              ))}
+            </div>
+          )}
+        </>
+      )}
 
-      <div style={{ padding: '6px 12px', borderTop: '1px solid #2a2a3e', backgroundColor: '#111', display: 'flex', alignItems: 'center', justifyContent: 'space-between', fontSize: 10, color: '#666' }}>
-        <span>{'\uD83D\uDD79\uFE0F'} {sessions.length} sessions · {actions.length} actions</span>
-        <span>Connected</span>
-      </div>
+      {/* Empty State */}
+      {!latest && (
+        <div style={cardStyle}>
+          <div style={{ textAlign: 'center', padding: '24px', color: '#555' }}>
+            <Zap size={32} color="#333" style={{ margin: '0 auto 8px' }} />
+            <div style={{ fontSize: '11px' }}>No playtests yet.</div>
+            <div style={{ fontSize: '10px', color: '#444', marginTop: '4px' }}>
+              Click "Run" to simulate a playtest with 5 player archetypes.
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* History */}
+      {history.length > 0 && (
+        <div style={cardStyle}>
+          <div style={{ fontSize: '10px', color: '#666', marginBottom: '8px' }}>
+            RECENT HISTORY ({history.length})
+          </div>
+          {history.map((h) => (
+            <div key={h.report_id} style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              padding: '4px 6px',
+              marginBottom: '3px',
+              borderRadius: '4px',
+              background: '#0a0a0a',
+              fontSize: '10px',
+            }}>
+              <span style={{ color: '#888' }}>{h.game_id}</span>
+              <span style={{ color: '#555' }}>{h.duration_s.toFixed(2)}s</span>
+              <span style={{ color: '#f97316' }}>{h.issues.length} issues</span>
+              <span style={{
+                fontWeight: 700,
+                color: scoreColor(h.overall_score),
+              }}>
+                {h.overall_score}
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
