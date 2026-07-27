@@ -36,6 +36,11 @@ from backend.routes import (
     cognitive_aurora,
     consciousness_mist,
     crystal_mycelium,
+    tectonic_quantum,
+    holographic_temporal,
+    oneiric_synthesis,
+    reality_substrate,
+    cognitive_genesis,
 )
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
@@ -134,6 +139,11 @@ app.include_router(resonance_temporal.router, prefix="/api/agent", tags=["Emotio
 app.include_router(cognitive_aurora.router, prefix="/api/agent", tags=["Cognitive Tide Orchestrator & Chromatic Aurora Projector"])
 app.include_router(consciousness_mist.router, prefix="/api/agent", tags=["Consciousness Stratum Former & Probability Mist Diffuser"])
 app.include_router(crystal_mycelium.router, prefix="/api/agent", tags=["Memory Crystal Lattice & Spatial Mycelium Weaver"])
+app.include_router(tectonic_quantum.router, prefix="/api/agent", tags=["Narrative Tectonic Forge & Quantum Entanglement Field"])
+app.include_router(holographic_temporal.router, prefix="/api/agent", tags=["Holographic Cognition Matrix & Temporal Crystal Resonator"])
+app.include_router(oneiric_synthesis.router, prefix="/api/agent", tags=["Oneiric Synthesis Engine"])
+app.include_router(reality_substrate.router, prefix="/api/engine", tags=["Reality Substrate Field"])
+app.include_router(cognitive_genesis.router, prefix="/api/agent", tags=["Cognitive Genesis Protocol"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
