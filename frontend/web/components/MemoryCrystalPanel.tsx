@@ -255,9 +255,9 @@ const MemoryCrystalPanel: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white">
+    <div className="flex flex-col h-full bg-[#0d0d0d] text-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1e1e1e]">
         <div className="flex items-center gap-3">
           <i className="fas fa-gem text-pink-400 text-lg" />
           <h2 className="text-sm font-bold tracking-wide uppercase">Memory Crystal Lattice</h2>
@@ -289,7 +289,7 @@ const MemoryCrystalPanel: React.FC = () => {
 
       {/* Status bar */}
       {status && (
-        <div className="flex gap-4 px-4 py-2 text-xs border-b border-gray-800 bg-gray-950 flex-wrap">
+        <div className="flex gap-4 px-4 py-2 text-xs border-b border-[#1a1a1a] bg-[#0a0a0a] flex-wrap">
           <span className="text-gray-400">Crystals: <span className="text-white font-bold">{status.total_crystals}</span></span>
           <span className="text-gray-400">Fragments: <span className="text-orange-400 font-bold">{status.total_fragments}</span></span>
           <span className="text-gray-400">Boundaries: <span className="text-gray-300 font-bold">{status.total_boundaries}</span></span>
@@ -315,7 +315,7 @@ const MemoryCrystalPanel: React.FC = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-700">
+      <div className="flex border-b border-[#1e1e1e]">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -336,7 +336,7 @@ const MemoryCrystalPanel: React.FC = () => {
         {activeTab === 'crystals' && (
           <div className="space-y-3">
             {/* Quick register */}
-            <div className="flex flex-wrap gap-2 pb-3 border-b border-gray-800">
+            <div className="flex flex-wrap gap-2 pb-3 border-b border-[#1a1a1a]">
               {CRYSTAL_TEMPLATES.map(tpl => (
                 <button
                   key={tpl.id}
@@ -355,7 +355,7 @@ const MemoryCrystalPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No memory crystals registered</div>
             ) : (
               crystals.map(crystal => (
-                <div key={crystal.crystal_id} className="p-3 border border-gray-800 hover:border-gray-600">
+                <div key={crystal.crystal_id} className="p-3 border border-[#1a1a1a] hover:border-gray-600">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       <i className="fas fa-gem" style={{ color: LATTICE_COLORS[crystal.lattice_type] || '#868e96' }} />
@@ -472,7 +472,7 @@ const MemoryCrystalPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No fragments awaiting recrystallization</div>
             ) : (
               fragments.map(frag => (
-                <div key={frag.fragment_id} className="flex items-center justify-between p-2 border border-gray-800 text-xs">
+                <div key={frag.fragment_id} className="flex items-center justify-between p-2 border border-[#1a1a1a] text-xs">
                   <div className="flex items-center gap-2">
                     <i className="fas fa-puzzle-piece" style={{ color: LATTICE_COLORS[frag.lattice_type] || '#868e96' }} />
                     <span className="font-bold">{frag.fragment_id}</span>
@@ -499,7 +499,7 @@ const MemoryCrystalPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No grain boundaries formed</div>
             ) : (
               boundaries.map(b => (
-                <div key={b.boundary_id} className="p-2 border border-gray-800 text-xs">
+                <div key={b.boundary_id} className="p-2 border border-[#1a1a1a] text-xs">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <i className="fas fa-link text-gray-400" />
@@ -527,7 +527,7 @@ const MemoryCrystalPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No crystal events recorded</div>
             ) : (
               events.map(event => (
-                <div key={event.event_id} className="flex items-center justify-between p-2 border border-gray-800 text-xs">
+                <div key={event.event_id} className="flex items-center justify-between p-2 border border-[#1a1a1a] text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-bold uppercase" style={{ color: EVENT_COLORS[event.event_type] || '#868e96' }}>
                       {event.event_type.replace(/_/g, ' ')}
