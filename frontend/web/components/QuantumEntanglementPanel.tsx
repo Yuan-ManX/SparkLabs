@@ -275,9 +275,9 @@ const QuantumEntanglementPanel: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white">
+    <div className="flex flex-col h-full bg-[#0d0d0d] text-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1e1e1e]">
         <div className="flex items-center gap-3">
           <i className="fas fa-atom text-cyan-400 text-lg" />
           <h2 className="text-sm font-bold tracking-wide uppercase">Quantum Entanglement Field</h2>
@@ -300,7 +300,7 @@ const QuantumEntanglementPanel: React.FC = () => {
           <button
             onClick={handleReset}
             disabled={loading}
-            className="px-3 py-1 text-xs font-bold uppercase border border-gray-500 text-gray-300 hover:bg-gray-800 disabled:opacity-50"
+            className="px-3 py-1 text-xs font-bold uppercase border border-gray-500 text-gray-300 hover:bg-[#1a1a1a] disabled:opacity-50"
           >
             Reset
           </button>
@@ -309,7 +309,7 @@ const QuantumEntanglementPanel: React.FC = () => {
 
       {/* Status bar */}
       {status && (
-        <div className="flex gap-4 px-4 py-2 text-xs border-b border-gray-800 bg-gray-950 flex-wrap">
+        <div className="flex gap-4 px-4 py-2 text-xs border-b border-[#1a1a1a] bg-[#0a0a0a] flex-wrap">
           <span className="text-gray-400">Particles: <span className="text-white font-bold">{status.total_particles}</span></span>
           <span className="text-gray-400">Entangl.: <span className="text-yellow-400 font-bold">{status.total_entanglements}</span></span>
           <span className="text-gray-400">Measur.: <span className="text-red-400 font-bold">{status.total_measurements}</span></span>
@@ -334,13 +334,13 @@ const QuantumEntanglementPanel: React.FC = () => {
       )}
 
       {/* Quick register templates */}
-      <div className="flex gap-2 px-4 py-2 border-b border-gray-800 overflow-x-auto">
+      <div className="flex gap-2 px-4 py-2 border-b border-[#1a1a1a] overflow-x-auto">
         {PARTICLE_TEMPLATES.map((t) => (
           <button
             key={t.id}
             onClick={() => handleRegisterParticle(t)}
             disabled={loading}
-            className="px-2 py-1 text-xs border border-gray-600 hover:bg-gray-800 disabled:opacity-50 whitespace-nowrap"
+            className="px-2 py-1 text-xs border border-gray-600 hover:bg-[#1a1a1a] disabled:opacity-50 whitespace-nowrap"
             style={{ borderLeftColor: PARTICLE_COLORS[t.type], borderLeftWidth: 3 }}
           >
             + {t.label}
@@ -349,13 +349,13 @@ const QuantumEntanglementPanel: React.FC = () => {
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-700">
+      <div className="flex border-b border-[#1e1e1e]">
         {tabs.map((t) => (
           <button
             key={t.id}
             onClick={() => setActiveTab(t.id)}
             className={`px-4 py-2 text-xs font-bold uppercase transition-colors ${
-              activeTab === t.id ? 'bg-white text-black' : 'text-gray-400 hover:bg-gray-800'
+              activeTab === t.id ? 'bg-white text-black' : 'text-gray-400 hover:bg-[#1a1a1a]'
             }`}
           >
             {t.label}
@@ -368,13 +368,13 @@ const QuantumEntanglementPanel: React.FC = () => {
         {activeTab === 'particles' && (
           <div className="p-2 space-y-2">
             {/* Entanglement creator */}
-            <div className="border border-gray-700 bg-gray-950 p-2 text-xs">
+            <div className="border border-[#1e1e1e] bg-[#0a0a0a] p-2 text-xs">
               <div className="text-gray-400 mb-1">Form Entanglement:</div>
               <div className="flex gap-1 items-center">
                 <select
                   value={linkA}
                   onChange={(e) => setLinkA(e.target.value)}
-                  className="flex-1 bg-gray-900 border border-gray-700 px-1 py-0.5 text-xs"
+                  className="flex-1 bg-[#0d0d0d] border border-[#1e1e1e] px-1 py-0.5 text-xs"
                 >
                   <option value="">Particle A...</option>
                   {particles.map((p) => (
@@ -385,7 +385,7 @@ const QuantumEntanglementPanel: React.FC = () => {
                 <select
                   value={linkB}
                   onChange={(e) => setLinkB(e.target.value)}
-                  className="flex-1 bg-gray-900 border border-gray-700 px-1 py-0.5 text-xs"
+                  className="flex-1 bg-[#0d0d0d] border border-[#1e1e1e] px-1 py-0.5 text-xs"
                 >
                   <option value="">Particle B...</option>
                   {particles.map((p) => (
@@ -406,7 +406,7 @@ const QuantumEntanglementPanel: React.FC = () => {
               <div className="text-center text-gray-500 text-xs py-8">No particles in field</div>
             ) : (
               particles.map((p) => (
-                <div key={p.particle_id} className="border border-gray-700 bg-gray-950 p-3 text-xs">
+                <div key={p.particle_id} className="border border-[#1e1e1e] bg-[#0a0a0a] p-3 text-xs">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-2">
                       <span className="w-2 h-2 rounded-full" style={{ background: PARTICLE_COLORS[p.particle_type] }} />
@@ -455,7 +455,7 @@ const QuantumEntanglementPanel: React.FC = () => {
                       <span>Coherence</span>
                       <span>{p.coherence.toFixed(3)} (dec {p.decohere_rate.toFixed(3)}/c)</span>
                     </div>
-                    <div className="h-1.5 bg-gray-800">
+                    <div className="h-1.5 bg-[#1a1a1a]">
                       <div className="h-full bg-cyan-500" style={{ width: `${p.coherence * 100}%` }} />
                     </div>
                   </div>
@@ -471,7 +471,7 @@ const QuantumEntanglementPanel: React.FC = () => {
               <div className="text-center text-gray-500 text-xs py-8">No entanglements formed</div>
             ) : (
               entanglements.map((e) => (
-                <div key={e.link_id} className="border border-gray-700 bg-gray-950 p-2 text-xs">
+                <div key={e.link_id} className="border border-[#1e1e1e] bg-[#0a0a0a] p-2 text-xs">
                   <div className="flex justify-between mb-1">
                     <span className="font-bold text-white">{e.link_id}</span>
                     <span className={e.broken ? 'text-red-400' : 'text-green-400'}>
@@ -486,7 +486,7 @@ const QuantumEntanglementPanel: React.FC = () => {
                       <span>Correlation</span>
                       <span className="text-yellow-400">{e.correlation.toFixed(3)}</span>
                     </div>
-                    <div className="h-1 bg-gray-800">
+                    <div className="h-1 bg-[#1a1a1a]">
                       <div className="h-full bg-yellow-500" style={{ width: `${e.correlation * 100}%` }} />
                     </div>
                   </div>
@@ -502,7 +502,7 @@ const QuantumEntanglementPanel: React.FC = () => {
               <div className="text-center text-gray-500 text-xs py-8">No measurements recorded</div>
             ) : (
               measurements.map((m) => (
-                <div key={m.measurement_id} className="border border-gray-700 bg-gray-950 p-2 text-xs">
+                <div key={m.measurement_id} className="border border-[#1e1e1e] bg-[#0a0a0a] p-2 text-xs">
                   <div className="flex justify-between mb-1">
                     <span className="font-bold text-white">{m.measurement_id}</span>
                     <span className="text-red-400">State {m.observed_state}</span>
@@ -528,7 +528,7 @@ const QuantumEntanglementPanel: React.FC = () => {
               <div className="text-center text-gray-500 text-xs py-8">No events recorded</div>
             ) : (
               events.map((e) => (
-                <div key={e.event_id} className="border-l-2 bg-gray-950 p-2 text-xs" style={{ borderLeftColor: EVENT_COLORS[e.event_type] }}>
+                <div key={e.event_id} className="border-l-2 bg-[#0a0a0a] p-2 text-xs" style={{ borderLeftColor: EVENT_COLORS[e.event_type] }}>
                   <div className="flex justify-between mb-0.5">
                     <span className="font-bold text-white">{e.event_type}</span>
                     <span className="text-gray-500">I={e.intensity.toFixed(3)}</span>
