@@ -287,9 +287,9 @@ const ChromaticAuroraPanel: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white">
+    <div className="flex flex-col h-full bg-[#0d0d0d] text-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1e1e1e]">
         <div className="flex items-center gap-3">
           <i className="fas fa-aurora text-pink-400 text-lg" style={{ color: '#f783ac' }} />
           <h2 className="text-sm font-bold tracking-wide uppercase">Chromatic Aurora Projector</h2>
@@ -321,7 +321,7 @@ const ChromaticAuroraPanel: React.FC = () => {
 
       {/* Status bar */}
       {status && (
-        <div className="flex gap-4 px-4 py-2 text-xs border-b border-gray-800 bg-gray-950 flex-wrap">
+        <div className="flex gap-4 px-4 py-2 text-xs border-b border-[#1a1a1a] bg-[#0a0a0a] flex-wrap">
           <span className="text-gray-400">Zones: <span className="text-white font-bold">{status.total_zones}</span></span>
           <span className="text-gray-400">Particles: <span className="text-pink-400 font-bold">{status.active_particles}</span></span>
           <span className="text-gray-400">Curtains: <span className="text-blue-400 font-bold">{status.active_curtains}</span></span>
@@ -346,7 +346,7 @@ const ChromaticAuroraPanel: React.FC = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-700">
+      <div className="flex border-b border-[#1e1e1e]">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -367,7 +367,7 @@ const ChromaticAuroraPanel: React.FC = () => {
         {activeTab === 'zones' && (
           <div className="space-y-3">
             {/* Quick register */}
-            <div className="flex flex-wrap gap-2 pb-3 border-b border-gray-800">
+            <div className="flex flex-wrap gap-2 pb-3 border-b border-[#1a1a1a]">
               {ZONE_TEMPLATES.map(tpl => (
                 <button
                   key={tpl.id}
@@ -387,12 +387,12 @@ const ChromaticAuroraPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No color zones registered</div>
             ) : (
               zones.map(zone => (
-                <div key={zone.zone_id} className="p-3 border border-gray-800 hover:border-gray-600">
+                <div key={zone.zone_id} className="p-3 border border-[#1a1a1a] hover:border-gray-600">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       {/* Live color preview */}
                       <div
-                        className="w-6 h-6 rounded border border-gray-700"
+                        className="w-6 h-6 rounded border border-[#1e1e1e]"
                         style={{ backgroundColor: hslToColor(zone.hue, zone.saturation, zone.luminance) }}
                         title={`hsl(${zone.hue.toFixed(0)}, ${(zone.saturation * 100).toFixed(0)}%, ${(zone.luminance * 100).toFixed(0)}%)`}
                       />
@@ -473,7 +473,7 @@ const ChromaticAuroraPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No aurora curtains formed yet</div>
             ) : (
               curtains.map(curtain => (
-                <div key={curtain.curtain_id} className="p-3 border border-gray-800 hover:border-gray-600">
+                <div key={curtain.curtain_id} className="p-3 border border-[#1a1a1a] hover:border-gray-600">
                   <div className="flex items-center justify-between">
                     <div>
                       <span className="text-sm font-bold">Curtain {curtain.curtain_id.slice(-6)}</span>
@@ -511,7 +511,7 @@ const ChromaticAuroraPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No aurora events recorded</div>
             ) : (
               events.map(event => (
-                <div key={event.event_id} className="flex items-center justify-between p-2 border border-gray-800 text-xs">
+                <div key={event.event_id} className="flex items-center justify-between p-2 border border-[#1a1a1a] text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-bold uppercase" style={{ color: EVENT_COLORS[event.event_type] || '#868e96' }}>
                       {event.event_type.replace(/_/g, ' ')}
