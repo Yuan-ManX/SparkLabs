@@ -263,9 +263,9 @@ const ProbabilityMistPanel: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white">
+    <div className="flex flex-col h-full bg-[#0d0d0d] text-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1e1e1e]">
         <div className="flex items-center gap-3">
           <i className="fas fa-cloud text-cyan-400 text-lg" />
           <h2 className="text-sm font-bold tracking-wide uppercase">Probability Mist Diffuser</h2>
@@ -297,7 +297,7 @@ const ProbabilityMistPanel: React.FC = () => {
 
       {/* Status bar */}
       {status && (
-        <div className="flex gap-4 px-4 py-2 text-xs border-b border-gray-800 bg-gray-950 flex-wrap">
+        <div className="flex gap-4 px-4 py-2 text-xs border-b border-[#1a1a1a] bg-[#0a0a0a] flex-wrap">
           <span className="text-gray-400">Regions: <span className="text-white font-bold">{status.total_regions}</span></span>
           <span className="text-gray-400">Channels: <span className="text-cyan-400 font-bold">{status.total_channels}</span></span>
           <span className="text-gray-400">Outcomes: <span className="text-blue-400 font-bold">{status.total_outcomes}</span></span>
@@ -322,7 +322,7 @@ const ProbabilityMistPanel: React.FC = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-700">
+      <div className="flex border-b border-[#1e1e1e]">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -343,7 +343,7 @@ const ProbabilityMistPanel: React.FC = () => {
         {activeTab === 'regions' && (
           <div className="space-y-3">
             {/* Quick register */}
-            <div className="flex flex-wrap gap-2 pb-3 border-b border-gray-800">
+            <div className="flex flex-wrap gap-2 pb-3 border-b border-[#1a1a1a]">
               {REGION_TEMPLATES.map(tpl => (
                 <button
                   key={tpl.id}
@@ -363,12 +363,12 @@ const ProbabilityMistPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No mist regions registered</div>
             ) : (
               regions.map(region => (
-                <div key={region.region_id} className="p-3 border border-gray-800 hover:border-gray-600">
+                <div key={region.region_id} className="p-3 border border-[#1a1a1a] hover:border-gray-600">
                   <div className="flex items-center justify-between mb-2">
                     <div className="flex items-center gap-3">
                       {/* Density visualization dot */}
                       <div
-                        className="w-6 h-6 rounded-full border border-gray-700"
+                        className="w-6 h-6 rounded-full border border-[#1e1e1e]"
                         style={{
                           backgroundColor: MIST_TYPE_COLORS[region.mist_type] || '#868e96',
                           opacity: 0.3 + region.density * 0.7,
@@ -455,7 +455,7 @@ const ProbabilityMistPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No outcomes precipitated yet</div>
             ) : (
               outcomes.map(outcome => (
-                <div key={outcome.outcome_id} className="p-3 border border-gray-800 hover:border-gray-600">
+                <div key={outcome.outcome_id} className="p-3 border border-[#1a1a1a] hover:border-gray-600">
                   <div className="flex items-center justify-between mb-1">
                     <div className="flex items-center gap-2">
                       <i className="fas fa-droplet" style={{ color: OUTCOME_COLORS[outcome.outcome_type] || '#868e96' }} />
@@ -491,7 +491,7 @@ const ProbabilityMistPanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No mist events recorded</div>
             ) : (
               events.map(event => (
-                <div key={event.event_id} className="flex items-center justify-between p-2 border border-gray-800 text-xs">
+                <div key={event.event_id} className="flex items-center justify-between p-2 border border-[#1a1a1a] text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-bold uppercase" style={{ color: EVENT_COLORS[event.event_type] || '#868e96' }}>
                       {event.event_type.replace(/_/g, ' ')}
