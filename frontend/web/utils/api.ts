@@ -16589,16 +16589,19 @@ export const aiNativeIntegrationApi = {
 };
 
 export const gameCreationOrchestratorApi = {
-  status: () => api.get('/agent/creation-pipeline/status'),
+  status: () =>
+    api.get<{ status: string; data: unknown }>('/agent/creation-pipeline/status'),
   create: (prompt: string, genreHint?: string) =>
-    api.post('/agent/creation-pipeline/create', {
+    api.post<{ status: string; data: unknown; message?: string }>('/agent/creation-pipeline/create', {
       prompt,
       genre_hint: genreHint || null,
     }),
   history: (limit: number = 16) =>
-    api.get(`/agent/creation-pipeline/history?limit=${limit}`),
-  getRun: (runId: string) => api.get(`/agent/creation-pipeline/run/${runId}`),
-  reset: () => api.post('/agent/creation-pipeline/reset'),
+    api.get<{ status: string; data: unknown }>(`/agent/creation-pipeline/history?limit=${limit}`),
+  getRun: (runId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/creation-pipeline/run/${runId}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/creation-pipeline/reset'),
 };
 
 export const cognitiveEngineApi = {
@@ -16730,4 +16733,1137 @@ export const gameBridgeApi = {
     api.post<{ status: string; data: unknown }>('/agent/game-bridge/simulate', {
       frames, goal_x: goalX, strategy,
     }),
+};
+
+export const fusionLoopApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/fusion/status'),
+  start: (frequencyHz: number = 10.0) =>
+    api.post<{ status: string; data: unknown }>(`/agent/fusion/start?frequency_hz=${frequencyHz}`),
+  stop: () =>
+    api.post<{ status: string; data: unknown }>('/agent/fusion/stop'),
+  tick: () =>
+    api.post<{ status: string; data: unknown }>('/agent/fusion/tick'),
+  getTicks: (limit: number = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/fusion/ticks?limit=${limit}`),
+  getGoals: () =>
+    api.get<{ status: string; data: unknown }>('/agent/fusion/goals'),
+  getActions: (limit: number = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/fusion/actions?limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/fusion/reset'),
+};
+
+export const creativeAutonomyApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/creative/status'),
+  recordSnapshot: (data: { engagement: number; difficulty: number; variety: number; exploration: number; events: string[]; session_id?: string }) =>
+    api.post<{ status: string; data: unknown }>('/agent/creative/snapshot', data),
+  check: () =>
+    api.post<{ status: string; data: unknown }>('/agent/creative/check'),
+  getGoals: () =>
+    api.get<{ status: string; data: unknown }>('/agent/creative/goals'),
+  getCompletedGoals: (limit: number = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/creative/goals/completed?limit=${limit}`),
+  getPendingSteps: () =>
+    api.get<{ status: string; data: unknown }>('/agent/creative/steps/pending'),
+  executeStep: (data: { goal_id: string; step_id: string; result?: Record<string, unknown> }) =>
+    api.post<{ status: string; data: unknown }>('/agent/creative/steps/execute', data),
+  evaluate: (data: { goal_id: string; impact: Record<string, number> }) =>
+    api.post<{ status: string; data: unknown }>('/agent/creative/evaluate', data),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/creative/reset'),
+  simulate: (snapshots: number = 15, sessionId: string = 'sim') =>
+    api.post<{ status: string; data: unknown }>('/agent/creative/simulate', { snapshots, session_id: sessionId }),
+};
+
+export const agentChatApi = {
+  sendMessage: (data: {
+    message: string;
+    system_prompt?: string;
+    session_id?: string;
+    model_id?: string;
+    provider_id?: string;
+    task_type?: string;
+    temperature?: number;
+    max_tokens?: number;
+    images?: string[];
+  }) =>
+    api.post<{ status: string; data: unknown }>('/agent/chat/message', data),
+  getModels: () =>
+    api.get<{ status: string; data: unknown }>('/agent/chat/models'),
+  getTaskTypes: () =>
+    api.get<{ status: string; data: unknown }>('/agent/chat/task-types'),
+  getStrategies: () =>
+    api.get<{ status: string; data: unknown }>('/agent/chat/strategies'),
+  setStrategy: (strategy: string) =>
+    api.post<{ status: string; data: unknown }>('/agent/chat/strategy', { strategy }),
+  setSimulation: (enabled: boolean) =>
+    api.post<{ status: string; data: unknown }>('/agent/chat/simulation', { enabled }),
+  getHistory: (sessionId?: string, limit?: number) =>
+    api.get<{ status: string; data: unknown }>(`/agent/chat/history?session_id=${sessionId || ''}&limit=${limit || 50}`),
+  generate: (data: {
+    prompt: string;
+    modality: string;
+    provider_id?: string;
+    model_id?: string;
+    width?: number;
+    height?: number;
+    duration?: number;
+    voice?: string;
+    n?: number;
+  }) =>
+    api.post<{ status: string; data: unknown }>('/agent/chat/generate', data),
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/chat/status'),
+};
+
+export const chatEditorApi = {
+  execute: (data: {
+    message: string;
+    action_type?: string;
+    session_id?: string;
+    model_id?: string;
+    provider_id?: string;
+    context?: Record<string, unknown>;
+  }) =>
+    api.post<{ status: string; data: unknown }>('/agent/chat-editor/execute', data),
+  getActions: () =>
+    api.get<{ status: string; data: unknown }>('/agent/chat-editor/actions'),
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/chat-editor/status'),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/chat-editor/reset'),
+};
+
+export const coordinationHubApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/coordination-hub/status'),
+  getInsights: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/coordination-hub/insights?limit=${limit}`),
+  getContext: () =>
+    api.get<{ status: string; data: unknown }>('/agent/coordination-hub/context'),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/coordination-hub/cycle'),
+  simulate: (count: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/coordination-hub/simulate', { count }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/coordination-hub/reset'),
+};
+
+export const playtestSimulatorApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/playtest-sim/status'),
+  runPlaytest: (gameId: string) =>
+    api.post<{ status: string; data: unknown }>('/agent/playtest-sim/run', { game_id: gameId }),
+  getLatest: () =>
+    api.get<{ status: string; data: unknown }>('/agent/playtest-sim/latest'),
+  getHistory: (limit = 10) =>
+    api.get<{ status: string; data: unknown }>(`/agent/playtest-sim/history?limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/playtest-sim/reset'),
+};
+
+export const cognitiveMeshApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/cognitive-mesh/status'),
+  getNodes: () =>
+    api.get<{ status: string; data: unknown }>('/agent/cognitive-mesh/nodes'),
+  getSignals: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/cognitive-mesh/signals?limit=${limit}`),
+  emitSignal: (data: {
+    signal_type: string;
+    category: string;
+    source_node: string;
+    payload?: unknown;
+    priority?: string;
+    target_node?: string;
+  }) =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-mesh/emit', data),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-mesh/cycle'),
+  simulate: (count = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-mesh/simulate', { count }),
+  getIntelligence: () =>
+    api.get<{ status: string; data: unknown }>('/agent/cognitive-mesh/intelligence'),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-mesh/reset'),
+};
+
+export const intelligenceSurfaceApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/intelligence-surface/status'),
+  getCapabilities: (domain?: string) =>
+    api.get<{ status: string; data: unknown }>(
+      domain
+        ? `/agent/intelligence-surface/capabilities?domain=${domain}`
+        : '/agent/intelligence-surface/capabilities',
+    ),
+  getCapability: (capId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/intelligence-surface/capabilities/${capId}`),
+  submitIntent: (data: {
+    action: string;
+    target: string;
+    parameters?: unknown;
+    description?: string;
+  }) =>
+    api.post<{ status: string; data: unknown }>('/agent/intelligence-surface/intent', data),
+  getIntents: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/intelligence-surface/intents?limit=${limit}`),
+  simulate: (count = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/intelligence-surface/simulate', { count }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/intelligence-surface/reset'),
+};
+
+export const storyDirectorApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/story-director/status'),
+  getCharacters: () =>
+    api.get<{ status: string; data: unknown }>('/agent/story-director/characters'),
+  getRelationships: () =>
+    api.get<{ status: string; data: unknown }>('/agent/story-director/relationships'),
+  getArcs: () =>
+    api.get<{ status: string; data: unknown }>('/agent/story-director/arcs'),
+  createArc: (data: { title: string; theme: string; description?: string; acts?: number; priority?: number }) =>
+    api.post<{ status: string; data: unknown }>('/agent/story-director/arcs', data),
+  startArc: (arcId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/story-director/arcs/${arcId}/start`),
+  completeArc: (arcId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/story-director/arcs/${arcId}/complete`),
+  getPlots: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/story-director/plots?limit=${limit}`),
+  deployPlot: (data: { plot_type: string; arc_id?: string; characters?: string[] }) =>
+    api.post<{ status: string; data: unknown }>('/agent/story-director/plots/deploy', data),
+  getTension: () =>
+    api.get<{ status: string; data: unknown }>('/agent/story-director/tension'),
+  getMemory: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/story-director/memory?limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/story-director/cycle'),
+  simulate: (cycles = 5) =>
+    api.post<{ status: string; data: unknown }>('/agent/story-director/simulate', { cycles }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/story-director/reset'),
+};
+
+export const liveTunerApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/live-tuner/status'),
+  getParameters: (domain?: string) =>
+    api.get<{ status: string; data: unknown }>(
+      domain ? `/agent/live-tuner/parameters?domain=${domain}` : '/agent/live-tuner/parameters',
+    ),
+  setParameter: (paramId: string, value: number) =>
+    api.put<{ status: string; data: unknown }>(`/agent/live-tuner/parameters/${paramId}`, { value }),
+  resetParameter: (paramId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/live-tuner/parameters/${paramId}/reset`),
+  getMetrics: () =>
+    api.get<{ status: string; data: unknown }>('/agent/live-tuner/metrics'),
+  getAdjustments: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/live-tuner/adjustments?limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/live-tuner/cycle'),
+  simulate: (count = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/live-tuner/simulate', { count }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/live-tuner/reset'),
+};
+
+// ============================================================================
+// Frame Architect API - Real-time cinematographic frame composition
+// ============================================================================
+
+export const frameArchitectApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/frame-architect/status'),
+  updateContext: (context: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/frame-architect/context', context),
+  getDirectives: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/frame-architect/directives?limit=${limit}`),
+  getCurrent: () =>
+    api.get<{ status: string; data: unknown }>('/agent/frame-architect/current'),
+  getDistribution: () =>
+    api.get<{ status: string; data: unknown }>('/agent/frame-architect/distribution'),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/frame-architect/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/frame-architect/simulate', { cycles }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/frame-architect/reset'),
+};
+
+// ============================================================================
+// AI Workflow API - Declarative AI agent action chaining
+// ============================================================================
+
+export const aiWorkflowApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/ai-workflow/status'),
+  getRules: (statusFilter?: string) =>
+    api.get<{ status: string; data: unknown }>(
+      statusFilter ? `/agent/ai-workflow/rules?status_filter=${statusFilter}` : '/agent/ai-workflow/rules',
+    ),
+  addRule: (rule: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/ai-workflow/rules', rule),
+  getRule: (ruleId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/ai-workflow/rules/${ruleId}`),
+  removeRule: (ruleId: string) =>
+    api.delete<{ status: string; removed: boolean }>(`/agent/ai-workflow/rules/${ruleId}`),
+  setRuleStatus: (ruleId: string, status: string) =>
+    api.put<{ status: string; data: unknown }>(`/agent/ai-workflow/rules/${ruleId}/status`, { status }),
+  getMetrics: () =>
+    api.get<{ status: string; data: unknown }>('/agent/ai-workflow/metrics'),
+  reportMetric: (metricName: string, value: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/ai-workflow/metrics', { metric_name: metricName, value }),
+  reportMetricsBatch: (metrics: Record<string, number>) =>
+    api.post<{ status: string; data: unknown }>('/agent/ai-workflow/metrics/batch', { metrics }),
+  getFlags: () =>
+    api.get<{ status: string; data: unknown }>('/agent/ai-workflow/flags'),
+  getLog: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/ai-workflow/log?limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/ai-workflow/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/ai-workflow/simulate', { cycles }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/ai-workflow/reset'),
+};
+
+// ============================================================================
+// Temporal Director API - Time and pacing intelligence
+// ============================================================================
+
+export const temporalDirectorApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/temporal-director/status'),
+  setTimeScale: (scale: string) =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-director/time-scale', { scale }),
+  forcePacing: (phase: string) =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-director/pacing', { phase }),
+  getEvents: (limit = 20, includeFired = true) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-director/events?limit=${limit}&include_fired=${includeFired}`),
+  scheduleEvent: (event: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-director/events', event),
+  cancelEvent: (eventId: string) =>
+    api.delete<{ status: string; cancelled: boolean }>(`/agent/temporal-director/events/${eventId}`),
+  getHistory: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-director/history?limit=${limit}`),
+  getEffects: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-director/effects?limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-director/cycle'),
+  simulate: (cycles = 20) =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-director/simulate', { cycles }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-director/reset'),
+};
+
+// ============================================================================
+// Music Conductor API - Adaptive music direction
+// ============================================================================
+
+export const musicConductorApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/music-conductor/status'),
+  updateContext: (context: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/music-conductor/context', context),
+  getDirectives: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/music-conductor/directives?limit=${limit}`),
+  getCurrent: () =>
+    api.get<{ status: string; data: unknown }>('/agent/music-conductor/current'),
+  getLayers: () =>
+    api.get<{ status: string; data: unknown }>('/agent/music-conductor/layers'),
+  getDistribution: () =>
+    api.get<{ status: string; data: unknown }>('/agent/music-conductor/distribution'),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/music-conductor/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/music-conductor/simulate', { cycles }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/music-conductor/reset'),
+};
+
+export const semanticIndexerApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/semantic-indexer/status'),
+  registerEntity: (entity: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/semantic-indexer/entities', entity),
+  removeEntity: (entityId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/semantic-indexer/entities/${entityId}`),
+  addRelation: (relation: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/semantic-indexer/relations', relation),
+  query: (params: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/semantic-indexer/query', params),
+  queryRelations: (params: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/semantic-indexer/relations/query', params),
+  findPath: (params: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/semantic-indexer/path', params),
+  getEntities: (limit = 20, category?: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/semantic-indexer/entities?limit=${limit}${category ? `&category=${category}` : ''}`),
+  getRelations: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/semantic-indexer/relations?limit=${limit}`),
+  getQueries: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/semantic-indexer/queries?limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/semantic-indexer/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/semantic-indexer/simulate', { cycles }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/semantic-indexer/reset'),
+};
+
+export const predictivePrefetcherApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/predictive-prefetcher/status'),
+  observe: (data: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/predictive-prefetcher/observe', data),
+  predict: () =>
+    api.post<{ status: string; data: unknown }>('/agent/predictive-prefetcher/predict'),
+  prefetch: () =>
+    api.post<{ status: string; data: unknown }>('/agent/predictive-prefetcher/prefetch'),
+  verify: () =>
+    api.post<{ status: string; data: unknown }>('/agent/predictive-prefetcher/verify'),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/predictive-prefetcher/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/predictive-prefetcher/simulate', { cycles }),
+  getPredictions: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/predictive-prefetcher/predictions?limit=${limit}`),
+  getPrefetches: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/predictive-prefetcher/prefetches?limit=${limit}`),
+  getTrajectory: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/predictive-prefetcher/trajectory?limit=${limit}`),
+  cancelPrefetch: (requestId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/predictive-prefetcher/prefetches/${requestId}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/predictive-prefetcher/reset'),
+};
+
+// Memory Dream Consolidator API
+export const dreamConsolidatorApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/dream-consolidator/status'),
+  recordEpisode: (episode: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/dream-consolidator/episodes', episode),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/dream-consolidator/cycle'),
+  simulate: (cycles = 5) =>
+    api.post<{ status: string; data: unknown }>('/agent/dream-consolidator/simulate', { cycles }),
+  getEpisodic: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/dream-consolidator/episodic?limit=${limit}`),
+  getSemantic: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/dream-consolidator/semantic?limit=${limit}`),
+  getLinks: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/dream-consolidator/links?limit=${limit}`),
+  getDreams: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/dream-consolidator/dreams?limit=${limit}`),
+  queryKnowledge: (params: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/dream-consolidator/knowledge/query', params),
+  getKnowledge: (knowledgeId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/dream-consolidator/knowledge/${knowledgeId}`),
+  reinforceKnowledge: (knowledgeId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/dream-consolidator/knowledge/${knowledgeId}/reinforce`),
+  contradictKnowledge: (knowledgeId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/dream-consolidator/knowledge/${knowledgeId}/contradict`),
+  queryByScene: (scene: string, limit = 20) =>
+    api.post<{ status: string; data: unknown }>('/agent/dream-consolidator/query/scene', { scene, limit }),
+  queryByActor: (actor: string, limit = 20) =>
+    api.post<{ status: string; data: unknown }>('/agent/dream-consolidator/query/actor', { actor, limit }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/dream-consolidator/reset'),
+};
+
+// Reality Bubble Projector API
+export const realityBubbleApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/reality-bubble/status'),
+  registerEntity: (entity: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/reality-bubble/entities', entity),
+  removeEntity: (entityId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/reality-bubble/entities/${entityId}`),
+  updatePlayer: (data: { position: number[]; velocity?: number[] }) =>
+    api.post<{ status: string; data: unknown }>('/agent/reality-bubble/player', data),
+  updateConfig: (config: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/reality-bubble/config', config),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/reality-bubble/cycle'),
+  simulate: (cycles = 10, movePlayer = true) =>
+    api.post<{ status: string; data: unknown }>('/agent/reality-bubble/simulate', { cycles, move_player: movePlayer }),
+  getEntities: (zone?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/reality-bubble/entities?limit=${limit}${zone ? `&zone=${zone}` : ''}`),
+  getEntity: (entityId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/reality-bubble/entities/${entityId}`),
+  forceCollapse: (entityId: string, reason = 'manual') =>
+    api.post<{ status: string; data: unknown }>(`/agent/reality-bubble/entities/${entityId}/collapse`, { reason }),
+  getObservable: (radius?: number) =>
+    api.get<{ status: string; data: unknown }>(`/agent/reality-bubble/observable${radius ? `?radius=${radius}` : ''}`),
+  getSuperposition: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/reality-bubble/superposition?limit=${limit}`),
+  getSnapshots: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/reality-bubble/snapshots?limit=${limit}`),
+  getEvents: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/reality-bubble/events?limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/reality-bubble/reset'),
+};
+
+// Narrative Resonance Engine API
+export const narrativeResonanceApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/narrative-resonance/status'),
+  updatePlayerState: (data: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-resonance/player-state', data),
+  registerBeat: (beat: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-resonance/beats', beat),
+  removeBeat: (beatId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/narrative-resonance/beats/${beatId}`),
+  scoreBeat: (beatId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/narrative-resonance/beats/${beatId}/score`),
+  tune: (params: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-resonance/tune', params),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-resonance/cycle'),
+  simulate: (cycles = 5) =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-resonance/simulate', { cycles }),
+  getBeats: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-resonance/beats?limit=${limit}`),
+  getScores: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-resonance/scores?limit=${limit}`),
+  getDeployed: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-resonance/deployed?limit=${limit}`),
+  getHistory: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-resonance/history?limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-resonance/reset'),
+};
+
+// Emergence Pattern Detector API
+export const emergencePatternApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/emergence-detector/status'),
+  recordSnapshot: (entities: unknown[]) =>
+    api.post<{ status: string; data: unknown }>('/agent/emergence-detector/snapshots', { entities }),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/emergence-detector/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/emergence-detector/simulate', { cycles }),
+  getPatterns: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/emergence-detector/patterns?limit=${limit}`),
+  getPattern: (patternId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/emergence-detector/patterns/${patternId}`),
+  setCultivation: (patternId: string, action: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/emergence-detector/patterns/${patternId}/cultivation`, { action }),
+  getHistory: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/emergence-detector/history?limit=${limit}`),
+  getSnapshots: (limit = 10) =>
+    api.get<{ status: string; data: unknown }>(`/agent/emergence-detector/snapshots?limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/emergence-detector/reset'),
+};
+
+// Persona Lifecycle Manager API
+export const personaLifecycleApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/persona-lifecycle/status'),
+  createPersona: (persona: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/persona-lifecycle/personas', persona),
+  getPersonas: (stage?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/persona-lifecycle/personas?${stage ? `stage=${stage}&` : ''}limit=${limit}`),
+  getPersona: (personaId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/persona-lifecycle/personas/${personaId}`),
+  recordEvent: (personaId: string, event: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>(`/agent/persona-lifecycle/personas/${personaId}/events`, event),
+  getEvents: (personaId: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/persona-lifecycle/personas/${personaId}/events?limit=${limit}`),
+  addRelationship: (personaId: string, target: string, strength: number) =>
+    api.post<{ status: string; data: unknown }>(`/agent/persona-lifecycle/personas/${personaId}/relationships`, { target_name: target, strength }),
+  getLegacies: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/persona-lifecycle/legacies?limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/persona-lifecycle/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/persona-lifecycle/simulate', { cycles }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/persona-lifecycle/reset'),
+};
+
+// Spatial Harmonics Resonator API
+export const spatialHarmonicsApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/spatial-harmonics/status'),
+  registerLocation: (location: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-harmonics/locations', location),
+  removeLocation: (locationId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/spatial-harmonics/locations/${locationId}`),
+  getLocations: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-harmonics/locations?limit=${limit}`),
+  getLocation: (locationId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-harmonics/locations/${locationId}`),
+  measureResonance: (locationId: string, eventType: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/spatial-harmonics/locations/${locationId}/measure`, { event_type: eventType }),
+  recordFieldEvent: (locationId: string, eventType: string, intensity = 0.5, description = '') =>
+    api.post<{ status: string; data: unknown }>(`/agent/spatial-harmonics/locations/${locationId}/events`, { event_type: eventType, intensity, description }),
+  findResonant: (eventType: string, limit = 5) =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-harmonics/resonant', { event_type: eventType, limit }),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-harmonics/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-harmonics/simulate', { cycles }),
+  getReadings: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-harmonics/readings?limit=${limit}`),
+  getFieldEvents: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-harmonics/events?limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-harmonics/reset'),
+};
+
+// Motivation Chemistry Engine API
+export const motivationChemistryApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/motivation-chemistry/status'),
+  createSolution: (npcId: string, concentrations?: Record<string, number>) =>
+    api.post<{ status: string; data: unknown }>('/agent/motivation-chemistry/solutions', { npc_id: npcId, initial_concentrations: concentrations }),
+  getSolutions: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/motivation-chemistry/solutions?limit=${limit}`),
+  getSolution: (npcId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/motivation-chemistry/solutions/${npcId}`),
+  removeSolution: (npcId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/motivation-chemistry/solutions/${npcId}`),
+  applyCatalyst: (npcId: string, catalystType: string, intensity = 0.5, description = '') =>
+    api.post<{ status: string; data: unknown }>(`/agent/motivation-chemistry/solutions/${npcId}/catalysts`, { catalyst_type: catalystType, intensity, description }),
+  getCatalysts: (npcId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/motivation-chemistry/catalysts?${npcId ? `npc_id=${npcId}&` : ''}limit=${limit}`),
+  getCompounds: (npcId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/motivation-chemistry/compounds?${npcId ? `npc_id=${npcId}&` : ''}limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/motivation-chemistry/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/motivation-chemistry/simulate', { cycles }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/motivation-chemistry/reset'),
+};
+
+// Quantum State Projector API
+export const quantumStateApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/quantum-state/status'),
+  registerObject: (objectId: string, objectType: string, states: Array<Record<string, unknown>>) =>
+    api.post<{ status: string; data: unknown }>('/agent/quantum-state/objects', { object_id: objectId, object_type: objectType, states }),
+  getObjects: (objectType?: string, superpositionOnly = false, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-state/objects?${objectType ? `object_type=${objectType}&` : ''}superposition_only=${superpositionOnly}&limit=${limit}`),
+  getObject: (objectId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-state/objects/${objectId}`),
+  removeObject: (objectId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/quantum-state/objects/${objectId}`),
+  entangle: (objectId: string, objectB: string, linkType = 'correlated') =>
+    api.post<{ status: string; data: unknown }>(`/agent/quantum-state/objects/${objectId}/entangle`, { object_b: objectB, link_type: linkType }),
+  observe: (objectId: string, observationType = 'player_interact', observer = 'player') =>
+    api.post<{ status: string; data: unknown }>(`/agent/quantum-state/objects/${objectId}/observe`, { observation_type: observationType, observer }),
+  queueObservation: (objectId: string, observationType = 'player_interact', observer = 'player') =>
+    api.post<{ status: string; data: unknown }>(`/agent/quantum-state/objects/${objectId}/queue-observation`, { observation_type: observationType, observer }),
+  resetSuperposition: (objectId: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/quantum-state/objects/${objectId}/reset-superposition`),
+  getEntanglements: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-state/entanglements?limit=${limit}`),
+  getCollapses: (objectId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-state/collapses?${objectId ? `object_id=${objectId}&` : ''}limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/quantum-state/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/quantum-state/simulate', { cycles }),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/quantum-state/reset'),
+};
+
+// Belief Ecosystem Evolver API
+export const beliefEcosystemApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/belief-ecosystem/status'),
+  createEcosystem: (npcId: string, beliefs?: Array<Record<string, unknown>>) =>
+    api.post<{ status: string; data: unknown }>('/agent/belief-ecosystem/ecosystems', { npc_id: npcId, beliefs }),
+  getEcosystem: (npcId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/belief-ecosystem/ecosystems/${npcId}`),
+  getEcosystems: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/belief-ecosystem/ecosystems?limit=${limit}`),
+  removeEcosystem: (npcId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/belief-ecosystem/ecosystems/${npcId}`),
+  introduceBelief: (npcId: string, beliefId: string, label: string, niche = 'worldview', initialPopulation = 0.2, fitness = 0.5, description = '') =>
+    api.post<{ status: string; data: unknown }>(`/agent/belief-ecosystem/ecosystems/${npcId}/beliefs`, { belief_id: beliefId, label, niche, initial_population: initialPopulation, fitness, description }),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/belief-ecosystem/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/belief-ecosystem/simulate', { cycles }),
+  getInvasions: (npcId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/belief-ecosystem/invasions?${npcId ? `npc_id=${npcId}&` : ''}limit=${limit}`),
+  getBeliefs: (npcId?: string, niche?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/belief-ecosystem/beliefs?${npcId ? `npc_id=${npcId}&` : ''}${niche ? `niche=${niche}&` : ''}limit=${limit}`),
+  getRelationships: (npcId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/belief-ecosystem/relationships?${npcId ? `npc_id=${npcId}&` : ''}limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/belief-ecosystem/reset'),
+};
+
+// Phase Transition Catalyst API
+export const phaseTransitionApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/phase-transition/status'),
+  registerSystem: (systemId: string, label: string, initialPhase = 'solid', initialEnergy = 0.0, baseDissipation = 0.02, properties?: Record<string, unknown>) =>
+    api.post<{ status: string; data: unknown }>('/agent/phase-transition/systems', { system_id: systemId, label, initial_phase: initialPhase, initial_energy: initialEnergy, base_dissipation: baseDissipation, properties }),
+  getSystem: (systemId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/phase-transition/systems/${systemId}`),
+  getSystems: () =>
+    api.get<{ status: string; data: unknown }>('/agent/phase-transition/systems'),
+  removeSystem: (systemId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/phase-transition/systems/${systemId}`),
+  setThresholds: (systemId: string, riseThresholds?: Record<string, number>, fallThresholds?: Record<string, number>) =>
+    api.put<{ status: string; data: unknown }>(`/agent/phase-transition/systems/${systemId}/thresholds`, { rise_thresholds: riseThresholds, fall_thresholds: fallThresholds }),
+  linkSystems: (systemId: string, targetId: string, coupling = 0.5, direction = 'upward') =>
+    api.post<{ status: string; data: unknown }>(`/agent/phase-transition/systems/${systemId}/links`, { target_id: targetId, coupling, direction }),
+  unlinkSystems: (systemId: string, targetId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/phase-transition/systems/${systemId}/links/${targetId}`),
+  getLinks: (systemId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/phase-transition/systems/${systemId}/links`),
+  fireCatalyst: (catalystType: string, targetSystemIds?: string[], energyDelta?: number, description = '') =>
+    api.post<{ status: string; data: unknown }>('/agent/phase-transition/catalysts', { catalyst_type: catalystType, target_system_ids: targetSystemIds, energy_delta: energyDelta, description }),
+  getCatalysts: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/phase-transition/catalysts?limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/phase-transition/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/phase-transition/simulate', { cycles }),
+  getHistory: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/phase-transition/history?limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/phase-transition/reset'),
+};
+
+// Emotional Resonance Field API
+export const emotionalResonanceApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/emotional-resonance/status'),
+  registerNPC: (npcId: string, initialEmotions?: Record<string, number>) =>
+    api.post<{ status: string; data: unknown }>('/agent/emotional-resonance/npcs', { npc_id: npcId, initial_emotions: initialEmotions }),
+  getNPC: (npcId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/emotional-resonance/npcs/${npcId}`),
+  getNPCs: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/emotional-resonance/npcs?limit=${limit}`),
+  removeNPC: (npcId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/emotional-resonance/npcs/${npcId}`),
+  coupleNPCs: (npcId: string, targetId: string, couplingStrength = 0.5, isAmplifier = true) =>
+    api.post<{ status: string; data: unknown }>(`/agent/emotional-resonance/npcs/${npcId}/couplings`, { target_id: targetId, coupling_strength: couplingStrength, is_amplifier: isAmplifier }),
+  uncoupleNPCs: (npcId: string, targetId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/emotional-resonance/npcs/${npcId}/couplings/${targetId}`),
+  getCouplings: (npcId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/emotional-resonance/npcs/${npcId}/couplings`),
+  emitEmotion: (npcId: string, emotion: string, amplitude = 0.5) =>
+    api.post<{ status: string; data: unknown }>(`/agent/emotional-resonance/npcs/${npcId}/emotions`, { emotion, amplitude }),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/emotional-resonance/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/emotional-resonance/simulate', { cycles }),
+  getInteractions: (npcId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/emotional-resonance/interactions?${npcId ? `npc_id=${npcId}&` : ''}limit=${limit}`),
+  getChords: (npcId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/emotional-resonance/chords?${npcId ? `npc_id=${npcId}&` : ''}limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/emotional-resonance/reset'),
+};
+
+// Temporal Flow Regulator API
+export const temporalFlowApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/temporal-flow/status'),
+  registerRegion: (regionId: string, label: string, regionType = 'normal', flowRate?: number, viscosity?: number, density?: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-flow/regions', { region_id: regionId, label, region_type: regionType, flow_rate: flowRate, viscosity, density }),
+  getRegion: (regionId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-flow/regions/${regionId}`),
+  getRegions: () =>
+    api.get<{ status: string; data: unknown }>('/agent/temporal-flow/regions'),
+  removeRegion: (regionId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/temporal-flow/regions/${regionId}`),
+  setFlowRate: (regionId: string, flowRate: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/temporal-flow/regions/${regionId}/flow-rate`, { flow_rate: flowRate, description }),
+  linkRegions: (regionId: string, targetId: string, flowDifferential = 0.1) =>
+    api.post<{ status: string; data: unknown }>(`/agent/temporal-flow/regions/${regionId}/links`, { target_id: targetId, flow_differential: flowDifferential }),
+  unlinkRegions: (regionId: string, targetId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/temporal-flow/regions/${regionId}/links/${targetId}`),
+  getLinks: (regionId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-flow/regions/${regionId}/links`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-flow/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-flow/simulate', { cycles }),
+  getEvents: (regionId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-flow/events?${regionId ? `region_id=${regionId}&` : ''}limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-flow/reset'),
+};
+
+// Cognitive Tide Orchestrator API
+export const cognitiveTideApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/cognitive-tide/status'),
+  registerBody: (bodyId: string, bodyType: string, label: string, mass?: number, orbitalDistance?: number, orbitalAngle?: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-tide/bodies', { body_id: bodyId, body_type: bodyType, label, mass, orbital_distance: orbitalDistance, orbital_angle: orbitalAngle }),
+  getBody: (bodyId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/cognitive-tide/bodies/${bodyId}`),
+  getBodies: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/cognitive-tide/bodies?limit=${limit}`),
+  removeBody: (bodyId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/cognitive-tide/bodies/${bodyId}`),
+  setBodyMass: (bodyId: string, mass: number) =>
+    api.put<{ status: string; data: unknown }>(`/agent/cognitive-tide/bodies/${bodyId}/mass`, { mass }),
+  registerZone: (zoneId: string, label: string, baselineDepth = 0.5, tidalAmplitude = 0.3) =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-tide/zones', { zone_id: zoneId, label, baseline_depth: baselineDepth, tidal_amplitude: tidalAmplitude }),
+  getZone: (zoneId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/cognitive-tide/zones/${zoneId}`),
+  getZones: () =>
+    api.get<{ status: string; data: unknown }>('/agent/cognitive-tide/zones'),
+  removeZone: (zoneId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/cognitive-tide/zones/${zoneId}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-tide/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-tide/simulate', { cycles }),
+  getEvents: (zoneId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/cognitive-tide/events?${zoneId ? `zone_id=${zoneId}&` : ''}limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/cognitive-tide/reset'),
+};
+
+// Chromatic Aurora Projector API
+export const chromaticAuroraApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/chromatic-aurora/status'),
+  registerZone: (zoneId: string, label: string, zoneType = 'twilight', excitation?: number, hue?: number, saturation?: number, luminance?: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/chromatic-aurora/zones', { zone_id: zoneId, label, zone_type: zoneType, excitation, hue, saturation, luminance }),
+  getZone: (zoneId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/chromatic-aurora/zones/${zoneId}`),
+  getZones: () =>
+    api.get<{ status: string; data: unknown }>('/agent/chromatic-aurora/zones'),
+  removeZone: (zoneId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/chromatic-aurora/zones/${zoneId}`),
+  setExcitation: (zoneId: string, excitation: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/chromatic-aurora/zones/${zoneId}/excitation`, { excitation, description }),
+  linkZones: (zoneId: string, targetId: string, fieldStrength = 0.5, polarity = true) =>
+    api.post<{ status: string; data: unknown }>(`/agent/chromatic-aurora/zones/${zoneId}/links`, { target_id: targetId, field_strength: fieldStrength, polarity }),
+  unlinkZones: (zoneId: string, targetId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/chromatic-aurora/zones/${zoneId}/links/${targetId}`),
+  getLinks: (zoneId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/chromatic-aurora/zones/${zoneId}/links`),
+  emitParticle: (zoneId: string, particleType = 'photon', energy = 0.5, targetZoneId?: string) =>
+    api.post<{ status: string; data: unknown }>(`/agent/chromatic-aurora/zones/${zoneId}/particles`, { particle_type: particleType, energy, target_zone_id: targetZoneId }),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/chromatic-aurora/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/chromatic-aurora/simulate', { cycles }),
+  getEvents: (zoneId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/chromatic-aurora/events?${zoneId ? `zone_id=${zoneId}&` : ''}limit=${limit}`),
+  getCurtains: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/chromatic-aurora/curtains?limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/chromatic-aurora/reset'),
+};
+
+// Consciousness Stratum Former API
+export const consciousnessStratumApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/consciousness-stratum/status'),
+  registerDeposit: (depositId: string, label: string, layer = 'reflexive', mass?: number, emotionalCharge = 0.3) =>
+    api.post<{ status: string; data: unknown }>('/agent/consciousness-stratum/deposits', { deposit_id: depositId, label, layer, mass, emotional_charge: emotionalCharge }),
+  getDeposit: (depositId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/consciousness-stratum/deposits/${depositId}`),
+  getDeposits: (layer?: string, limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/consciousness-stratum/deposits?${layer ? `layer=${layer}&` : ''}limit=${limit}`),
+  removeDeposit: (depositId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/consciousness-stratum/deposits/${depositId}`),
+  setDepositMass: (depositId: string, mass: number) =>
+    api.put<{ status: string; data: unknown }>(`/agent/consciousness-stratum/deposits/${depositId}/mass`, { mass }),
+  getCrystal: (crystalId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/consciousness-stratum/crystals/${crystalId}`),
+  getCrystals: (layer?: string, limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/consciousness-stratum/crystals?${layer ? `layer=${layer}&` : ''}limit=${limit}`),
+  removeCrystal: (crystalId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/consciousness-stratum/crystals/${crystalId}`),
+  getFault: (faultId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/consciousness-stratum/faults/${faultId}`),
+  getFaults: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/consciousness-stratum/faults?limit=${limit}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/consciousness-stratum/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/consciousness-stratum/simulate', { cycles }),
+  getEvents: (layer?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/consciousness-stratum/events?${layer ? `layer=${layer}&` : ''}limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/consciousness-stratum/reset'),
+};
+
+// Probability Mist Diffuser API
+export const probabilityMistApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/probability-mist/status'),
+  registerRegion: (regionId: string, label: string, mistType = 'fog', density?: number, viscosity?: number, volatility?: number, isSource = false) =>
+    api.post<{ status: string; data: unknown }>('/agent/probability-mist/regions', { region_id: regionId, label, mist_type: mistType, density, viscosity, volatility, is_source: isSource }),
+  getRegion: (regionId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/probability-mist/regions/${regionId}`),
+  getRegions: () =>
+    api.get<{ status: string; data: unknown }>('/agent/probability-mist/regions'),
+  removeRegion: (regionId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/probability-mist/regions/${regionId}`),
+  setDensity: (regionId: string, density: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/probability-mist/regions/${regionId}/density`, { density, description }),
+  linkRegions: (regionId: string, targetId: string, flowRate = 0.5) =>
+    api.post<{ status: string; data: unknown }>(`/agent/probability-mist/regions/${regionId}/links`, { target_id: targetId, flow_rate: flowRate }),
+  unlinkRegions: (regionId: string, targetId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/probability-mist/regions/${regionId}/links/${targetId}`),
+  getLinks: (regionId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/probability-mist/regions/${regionId}/links`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/probability-mist/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/probability-mist/simulate', { cycles }),
+  getEvents: (regionId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/probability-mist/events?${regionId ? `region_id=${regionId}&` : ''}limit=${limit}`),
+  getOutcomes: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/probability-mist/outcomes?limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/probability-mist/reset'),
+};
+
+// Memory Crystal Lattice API
+export const memoryCrystalApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/memory-crystal/status'),
+  registerCrystal: (crystalId: string, label: string, latticeType = 'ionic', size?: number, coherence?: number, stressTolerance?: number, axisCount?: number, emotionalCharge = 0.3) =>
+    api.post<{ status: string; data: unknown }>('/agent/memory-crystal/crystals', { crystal_id: crystalId, label, lattice_type: latticeType, size, coherence, stress_tolerance: stressTolerance, axis_count: axisCount, emotional_charge: emotionalCharge }),
+  getCrystal: (crystalId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/memory-crystal/crystals/${crystalId}`),
+  getCrystals: (latticeType?: string, limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/memory-crystal/crystals?${latticeType ? `lattice_type=${latticeType}&` : ''}limit=${limit}`),
+  removeCrystal: (crystalId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/memory-crystal/crystals/${crystalId}`),
+  setCrystalTargetSize: (crystalId: string, targetSize: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/memory-crystal/crystals/${crystalId}/target-size`, { target_size: targetSize, description }),
+  recallCrystal: (crystalId: string, isContradictory = false) =>
+    api.post<{ status: string; data: unknown }>(`/agent/memory-crystal/crystals/${crystalId}/recall`, { is_contradictory: isContradictory }),
+  getFragments: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/memory-crystal/fragments?limit=${limit}`),
+  removeFragment: (fragmentId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/memory-crystal/fragments/${fragmentId}`),
+  getBoundaries: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/memory-crystal/boundaries?limit=${limit}`),
+  getBoundary: (boundaryId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/memory-crystal/boundaries/${boundaryId}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/memory-crystal/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/memory-crystal/simulate', { cycles }),
+  getEvents: (latticeType?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/memory-crystal/events?${latticeType ? `lattice_type=${latticeType}&` : ''}limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/memory-crystal/reset'),
+};
+
+// Spatial Mycelium Weaver API
+export const spatialMyceliumApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/spatial-mycelium/status'),
+  registerNode: (nodeId: string, label: string, position?: number[], nutrientLevel?: number, isSource = false, isSink = false) =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-mycelium/nodes', { node_id: nodeId, label, position, nutrient_level: nutrientLevel, is_source: isSource, is_sink: isSink }),
+  getNode: (nodeId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-mycelium/nodes/${nodeId}`),
+  getNodes: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-mycelium/nodes?limit=${limit}`),
+  removeNode: (nodeId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/spatial-mycelium/nodes/${nodeId}`),
+  setNodeNutrient: (nodeId: string, nutrientLevel: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/spatial-mycelium/nodes/${nodeId}/nutrient`, { nutrient_level: nutrientLevel, description }),
+  registerHypha: (sourceId: string, targetId: string, hyphaType = 'exploratory', flow?: number, vitality?: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-mycelium/hyphae', { source_id: sourceId, target_id: targetId, hypha_type: hyphaType, flow, vitality }),
+  getHypha: (hyphaId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-mycelium/hyphae/${hyphaId}`),
+  getHyphae: (hyphaType?: string, limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-mycelium/hyphae?${hyphaType ? `hypha_type=${hyphaType}&` : ''}limit=${limit}`),
+  removeHypha: (hyphaId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/spatial-mycelium/hyphae/${hyphaId}`),
+  setHyphaFlow: (hyphaId: string, flow: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/spatial-mycelium/hyphae/${hyphaId}/flow`, { flow, description }),
+  getFruits: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-mycelium/fruits?limit=${limit}`),
+  getFruit: (fruitId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-mycelium/fruits/${fruitId}`),
+  removeFruit: (fruitId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/spatial-mycelium/fruits/${fruitId}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-mycelium/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-mycelium/simulate', { cycles }),
+  getEvents: (nodeId?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/spatial-mycelium/events?${nodeId ? `node_id=${nodeId}&` : ''}limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/spatial-mycelium/reset'),
+};
+
+// Narrative Tectonic Forge API
+export const narrativeTectonicApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/narrative-tectonic/status'),
+  registerPlate: (plateId: string, label: string, plateType = 'plot', mass?: number, driftVector?: number[], richness?: number, stressTolerance?: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-tectonic/plates', { plate_id: plateId, label, plate_type: plateType, mass, drift_vector: driftVector, richness, stress_tolerance: stressTolerance }),
+  getPlate: (plateId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-tectonic/plates/${plateId}`),
+  getPlates: (plateType?: string, limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-tectonic/plates?${plateType ? `plate_type=${plateType}&` : ''}limit=${limit}`),
+  removePlate: (plateId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/narrative-tectonic/plates/${plateId}`),
+  setPlateDriftVector: (plateId: string, driftVector: number[], description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/narrative-tectonic/plates/${plateId}/drift-vector`, { drift_vector: driftVector, description }),
+  applyTension: (plateId: string, magnitude = 0.2, description = '') =>
+    api.post<{ status: string; data: unknown }>(`/agent/narrative-tectonic/plates/${plateId}/tension`, { magnitude, description }),
+  getFaults: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-tectonic/faults?limit=${limit}`),
+  getFault: (faultId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-tectonic/faults/${faultId}`),
+  getSeisms: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-tectonic/seisms?limit=${limit}`),
+  getSeism: (seismId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-tectonic/seisms/${seismId}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-tectonic/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-tectonic/simulate', { cycles }),
+  getEvents: (plateType?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/narrative-tectonic/events?${plateType ? `plate_type=${plateType}&` : ''}limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/narrative-tectonic/reset'),
+};
+
+// Quantum Entanglement Field API
+export const quantumFieldApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/quantum-field/status'),
+  registerParticle: (particleId: string, label: string, particleType = 'qubit', stateCount?: number, amplitudes?: number[], coherence?: number, decohereRate?: number, entanglementAffinity?: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/quantum-field/particles', { particle_id: particleId, label, particle_type: particleType, state_count: stateCount, amplitudes, coherence, decohere_rate: decohereRate, entanglement_affinity: entanglementAffinity }),
+  getParticle: (particleId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-field/particles/${particleId}`),
+  getParticles: (particleType?: string, limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-field/particles?${particleType ? `particle_type=${particleType}&` : ''}limit=${limit}`),
+  removeParticle: (particleId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/quantum-field/particles/${particleId}`),
+  setAmplitudes: (particleId: string, amplitudes: number[], description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/quantum-field/particles/${particleId}/amplitudes`, { amplitudes, description }),
+  measureParticle: (particleId: string, forceState?: number) =>
+    api.post<{ status: string; data: unknown }>(`/agent/quantum-field/particles/${particleId}/measure`, { force_state: forceState }),
+  registerEntanglement: (particleAId: string, particleBId: string, correlation?: number, phaseRelation = 'in_phase') =>
+    api.post<{ status: string; data: unknown }>('/agent/quantum-field/entanglements', { particle_a_id: particleAId, particle_b_id: particleBId, correlation, phase_relation: phaseRelation }),
+  getEntanglement: (linkId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-field/entanglements/${linkId}`),
+  getEntanglements: (particleId?: string, limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-field/entanglements?${particleId ? `particle_id=${particleId}&` : ''}limit=${limit}`),
+  removeEntanglement: (linkId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/quantum-field/entanglements/${linkId}`),
+  setEntanglementCorrelation: (linkId: string, correlation: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/quantum-field/entanglements/${linkId}/correlation`, { correlation, description }),
+  getMeasurements: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-field/measurements?limit=${limit}`),
+  getMeasurement: (measurementId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-field/measurements/${measurementId}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/quantum-field/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/quantum-field/simulate', { cycles }),
+  getEvents: (particleType?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/quantum-field/events?${particleType ? `particle_type=${particleType}&` : ''}limit=${limit}`),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/quantum-field/reset'),
+};
+
+// Holographic Cognition Matrix API
+export const holographicCognitionApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/holographic-cognition/status'),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/holographic-cognition/reset'),
+  registerFringe: (fringeId: string, label: string, fringeType = 'memory', amplitude?: number, phase?: number, wavelength?: number, coherence?: number, attenuationRate?: number, position?: number[]) =>
+    api.post<{ status: string; data: unknown }>('/agent/holographic-cognition/fringes', { fringe_id: fringeId, label, fringe_type: fringeType, amplitude, phase, wavelength, coherence, attenuation_rate: attenuationRate, position }),
+  getFringe: (fringeId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/holographic-cognition/fringes/${fringeId}`),
+  getFringes: (fringeType?: string, limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/holographic-cognition/fringes?${fringeType ? `fringe_type=${fringeType}&` : ''}limit=${limit}`),
+  removeFringe: (fringeId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/holographic-cognition/fringes/${fringeId}`),
+  setFringeAmplitude: (fringeId: string, amplitude: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/holographic-cognition/fringes/${fringeId}/amplitude`, { amplitude, description }),
+  lockCoherence: (fringeId: string, description = '') =>
+    api.post<{ status: string; data: unknown }>(`/agent/holographic-cognition/fringes/${fringeId}/lock`, { description }),
+  registerAperture: (apertureId: string, label: string, center?: number[], radius = 0.2, openness = 0.5) =>
+    api.post<{ status: string; data: unknown }>('/agent/holographic-cognition/apertures', { aperture_id: apertureId, label, center, radius, openness }),
+  getApertures: (limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/holographic-cognition/apertures?limit=${limit}`),
+  getAperture: (apertureId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/holographic-cognition/apertures/${apertureId}`),
+  removeAperture: (apertureId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/holographic-cognition/apertures/${apertureId}`),
+  setApertureOpenness: (apertureId: string, openness: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/holographic-cognition/apertures/${apertureId}/openness`, { openness, description }),
+  getInterferenceNodes: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/holographic-cognition/interference-nodes?limit=${limit}`),
+  getInterferenceNode: (nodeId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/holographic-cognition/interference-nodes/${nodeId}`),
+  getReconstructions: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/holographic-cognition/reconstructions?limit=${limit}`),
+  getReconstruction: (reconstructionId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/holographic-cognition/reconstructions/${reconstructionId}`),
+  triggerReconstruction: (fringeId: string, description = '') =>
+    api.post<{ status: string; data: unknown }>(`/agent/holographic-cognition/fringes/${fringeId}/reconstruct`, { description }),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/holographic-cognition/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/holographic-cognition/simulate', { cycles }),
+  getEvents: (fringeType?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/holographic-cognition/events?${fringeType ? `fringe_type=${fringeType}&` : ''}limit=${limit}`),
+};
+
+// Temporal Crystal Resonator API
+export const temporalCrystalApi = {
+  getStatus: () =>
+    api.get<{ status: string; data: unknown }>('/agent/temporal-crystal/status'),
+  reset: () =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-crystal/reset'),
+  registerPhonon: (phononId: string, label: string, latticeType = 'chrono', frequency?: number, amplitude?: number, axis?: number[], position?: number[], dampingRate?: number, refractiveIndex?: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-crystal/phonons', { phonon_id: phononId, label, lattice_type: latticeType, frequency, amplitude, axis, position, damping_rate: dampingRate, refractive_index: refractiveIndex }),
+  getPhonon: (phononId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-crystal/phonons/${phononId}`),
+  getPhonons: (latticeType?: string, limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-crystal/phonons?${latticeType ? `lattice_type=${latticeType}&` : ''}limit=${limit}`),
+  removePhonon: (phononId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/temporal-crystal/phonons/${phononId}`),
+  setPhononAmplitude: (phononId: string, amplitude: number, description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/temporal-crystal/phonons/${phononId}/amplitude`, { amplitude, description }),
+  setPhononAxis: (phononId: string, axis: number[], description = '') =>
+    api.put<{ status: string; data: unknown }>(`/agent/temporal-crystal/phonons/${phononId}/axis`, { axis, description }),
+  registerZone: (zoneId: string, label: string, latticeType = 'chrono', center?: number[], radius = 0.2, density?: number, refractiveIndex?: number, stressTolerance?: number) =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-crystal/zones', { zone_id: zoneId, label, lattice_type: latticeType, center, radius, density, refractive_index: refractiveIndex, stress_tolerance: stressTolerance }),
+  getZones: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-crystal/zones?limit=${limit}`),
+  getZone: (zoneId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-crystal/zones/${zoneId}`),
+  removeZone: (zoneId: string) =>
+    api.delete<{ status: string; data: unknown }>(`/agent/temporal-crystal/zones/${zoneId}`),
+  getFractures: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-crystal/fractures?limit=${limit}`),
+  getFracture: (fractureId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-crystal/fractures/${fractureId}`),
+  getStandingWaves: (limit = 30) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-crystal/standing-waves?limit=${limit}`),
+  getStandingWave: (waveId: string) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-crystal/standing-waves/${waveId}`),
+  runCycle: () =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-crystal/cycle'),
+  simulate: (cycles = 10) =>
+    api.post<{ status: string; data: unknown }>('/agent/temporal-crystal/simulate', { cycles }),
+  getEvents: (latticeType?: string, limit = 20) =>
+    api.get<{ status: string; data: unknown }>(`/agent/temporal-crystal/events?${latticeType ? `lattice_type=${latticeType}&` : ''}limit=${limit}`),
 };
