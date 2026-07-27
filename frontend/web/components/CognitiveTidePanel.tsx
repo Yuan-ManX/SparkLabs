@@ -238,9 +238,9 @@ const CognitiveTidePanel: React.FC = () => {
   ];
 
   return (
-    <div className="flex flex-col h-full bg-gray-900 text-white">
+    <div className="flex flex-col h-full bg-[#0d0d0d] text-white">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-gray-700">
+      <div className="flex items-center justify-between px-4 py-3 border-b border-[#1e1e1e]">
         <div className="flex items-center gap-3">
           <i className="fas fa-water text-blue-400 text-lg" />
           <h2 className="text-sm font-bold tracking-wide uppercase">Cognitive Tide Orchestrator</h2>
@@ -272,7 +272,7 @@ const CognitiveTidePanel: React.FC = () => {
 
       {/* Status bar */}
       {status && (
-        <div className="flex gap-4 px-4 py-2 text-xs border-b border-gray-800 bg-gray-950">
+        <div className="flex gap-4 px-4 py-2 text-xs border-b border-[#1a1a1a] bg-[#0a0a0a]">
           <span className="text-gray-400">Bodies: <span className="text-white font-bold">{status.total_bodies}</span></span>
           <span className="text-gray-400">Zones: <span className="text-white font-bold">{status.total_zones}</span></span>
           <span className="text-gray-400">Events: <span className="text-white font-bold">{status.stats.total_events}</span></span>
@@ -295,7 +295,7 @@ const CognitiveTidePanel: React.FC = () => {
       )}
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-700">
+      <div className="flex border-b border-[#1e1e1e]">
         {tabs.map(tab => (
           <button
             key={tab.id}
@@ -316,7 +316,7 @@ const CognitiveTidePanel: React.FC = () => {
         {activeTab === 'bodies' && (
           <div className="space-y-3">
             {/* Quick register */}
-            <div className="flex flex-wrap gap-2 pb-3 border-b border-gray-800">
+            <div className="flex flex-wrap gap-2 pb-3 border-b border-[#1a1a1a]">
               {BODY_TEMPLATES.map(tpl => (
                 <button
                   key={tpl.id}
@@ -336,7 +336,7 @@ const CognitiveTidePanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No cognitive bodies registered</div>
             ) : (
               bodies.map(body => (
-                <div key={body.body_id} className="flex items-center justify-between p-3 border border-gray-800 hover:border-gray-600">
+                <div key={body.body_id} className="flex items-center justify-between p-3 border border-[#1a1a1a] hover:border-gray-600">
                   <div className="flex items-center gap-3">
                     <div
                       className="w-3 h-3 rounded-full"
@@ -364,7 +364,7 @@ const CognitiveTidePanel: React.FC = () => {
         {activeTab === 'zones' && (
           <div className="space-y-3">
             {/* Quick register */}
-            <div className="flex gap-2 pb-3 border-b border-gray-800">
+            <div className="flex gap-2 pb-3 border-b border-[#1a1a1a]">
               <button
                 onClick={() => handleRegisterZone('zone_focus', 'Focus Zone')}
                 disabled={loading}
@@ -388,7 +388,7 @@ const CognitiveTidePanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No tidal zones registered</div>
             ) : (
               zones.map(zone => (
-                <div key={zone.zone_id} className="p-3 border border-gray-800 hover:border-gray-600">
+                <div key={zone.zone_id} className="p-3 border border-[#1a1a1a] hover:border-gray-600">
                   <div className="flex items-center justify-between mb-2">
                     <div>
                       <span className="text-sm font-bold">{zone.label}</span>
@@ -437,7 +437,7 @@ const CognitiveTidePanel: React.FC = () => {
               <div className="text-center text-gray-500 py-8">No tidal events recorded</div>
             ) : (
               events.map(event => (
-                <div key={event.event_id} className="flex items-center justify-between p-2 border border-gray-800 text-xs">
+                <div key={event.event_id} className="flex items-center justify-between p-2 border border-[#1a1a1a] text-xs">
                   <div className="flex items-center gap-2">
                     <span className="font-bold uppercase" style={{
                       color: event.event_type === 'spring_tide' ? '#ffd700' :
