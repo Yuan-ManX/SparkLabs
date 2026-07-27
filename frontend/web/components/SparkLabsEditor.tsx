@@ -351,6 +351,9 @@ import MemoryCrystalPanel from './MemoryCrystalPanel';
 import SpatialMyceliumPanel from './SpatialMyceliumPanel';
 import NarrativeTectonicPanel from './NarrativeTectonicPanel';
 import QuantumEntanglementPanel from './QuantumEntanglementPanel';
+import HolographicCognitionPanel from './HolographicCognitionPanel';
+import TemporalCrystalPanel from './TemporalCrystalPanel';
+import UnifiedHubPanel from './UnifiedHubPanel';
 import FrameArchitectPanel from './FrameArchitectPanel';
 import AIWorkflowPanel from './AIWorkflowPanel';
 
@@ -608,6 +611,20 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
   const renderModePanel = (mode: string) => {
     switch (mode) {
       case 'dashboard': return null;
+      // Consolidated hub panels - each hub manages multiple sub-panels via internal tabs
+      case 'agent-hub':
+      case 'world-hub':
+      case 'character-hub':
+      case 'narrative-hub':
+      case 'game-systems-hub':
+      case 'render-hub':
+      case 'physics-hub':
+      case 'audio-hub':
+      case 'asset-hub':
+      case 'qa-hub':
+      case 'system-hub':
+      case 'cognition-lab':
+        return <UnifiedHubPanel hubId={mode} renderPanel={renderModePanel} />;
       case 'game-studio': return <GameEditor />;
       case 'templates': return <GameGenerator />;
       case 'story': return <StoryEditor />;
@@ -989,6 +1006,8 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'spatial-mycelium': return <SpatialMyceliumPanel />;
       case 'narrative-tectonic': return <NarrativeTectonicPanel />;
       case 'quantum-field': return <QuantumEntanglementPanel />;
+      case 'holographic-cognition': return <HolographicCognitionPanel />;
+      case 'temporal-crystal': return <TemporalCrystalPanel />;
       case 'frame-architect': return <FrameArchitectPanel />;
       case 'ai-workflow': return <AIWorkflowPanel />;
       case 'cognitive-kernel': return <CognitiveKernelPanel />;
