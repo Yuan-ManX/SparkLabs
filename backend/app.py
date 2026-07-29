@@ -41,6 +41,34 @@ from backend.routes import (
     oneiric_synthesis,
     reality_substrate,
     cognitive_genesis,
+    causal_tapestry,
+    mythic_resonance,
+    semantic_diffusion,
+    holographic_scene,
+    volition_reactor,
+    luminous_narrative_flux,
+    empathy_resonance,
+    probability_collapse,
+    identity_forge,
+    temporal_weft,
+    cognitive_apex,
+    quantum_forge,
+    synaptic_lattice,
+    topology_composer,
+    mythogenic_flux,
+    chronosynthesis,
+    epistemic_horizon,
+    semantic_gravity,
+    axiological_lattice,
+    narrative_thermodynamics,
+    ontological_vault,
+    echo_resonance,
+    somatic_crucible,
+    phase_harmonics,
+    mnemonic_palace,
+    tension_topology,
+    chrono_perception,
+    kinetic_forge,
 )
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
@@ -144,6 +172,34 @@ app.include_router(holographic_temporal.router, prefix="/api/agent", tags=["Holo
 app.include_router(oneiric_synthesis.router, prefix="/api/agent", tags=["Oneiric Synthesis Engine"])
 app.include_router(reality_substrate.router, prefix="/api/engine", tags=["Reality Substrate Field"])
 app.include_router(cognitive_genesis.router, prefix="/api/agent", tags=["Cognitive Genesis Protocol"])
+app.include_router(causal_tapestry.router, prefix="/api/agent", tags=["Causal Tapestry Loom"])
+app.include_router(mythic_resonance.router, prefix="/api/engine", tags=["Mythic Resonance Chamber"])
+app.include_router(semantic_diffusion.router, prefix="/api/agent", tags=["Semantic Diffusion Field"])
+app.include_router(holographic_scene.router, prefix="/api/engine", tags=["Holographic Scene Composer"])
+app.include_router(volition_reactor.router, prefix="/api/agent", tags=["Volition Genesis Reactor"])
+app.include_router(luminous_narrative_flux.router, prefix="/api/engine", tags=["Luminous Narrative Flux"])
+app.include_router(empathy_resonance.router, prefix="/api/agent", tags=["Empathy Resonance Network"])
+app.include_router(probability_collapse.router, prefix="/api/engine", tags=["Probability Collapse Theater"])
+app.include_router(identity_forge.router, prefix="/api/agent", tags=["Identity Crystallization Forge"])
+app.include_router(temporal_weft.router, prefix="/api/engine", tags=["Temporal Weft Loom"])
+app.include_router(cognitive_apex.router, prefix="/api/agent", tags=["Cognitive Apex Synthesizer"])
+app.include_router(quantum_forge.router, prefix="/api/engine", tags=["Quantum Reality Forge"])
+app.include_router(synaptic_lattice.router, prefix="/api/agent", tags=["Synaptic Resonance Lattice"])
+app.include_router(topology_composer.router, prefix="/api/engine", tags=["Emergent Topology Composer"])
+app.include_router(mythogenic_flux.router, prefix="/api/agent", tags=["Mythogenic Flux Conductor"])
+app.include_router(chronosynthesis.router, prefix="/api/engine", tags=["Chronosynthesis Director"])
+app.include_router(epistemic_horizon.router, prefix="/api/agent", tags=["Epistemic Horizon Scanner"])
+app.include_router(semantic_gravity.router, prefix="/api/engine", tags=["Semantic Gravity Well"])
+app.include_router(axiological_lattice.router, prefix="/api/agent", tags=["Axiological Lattice Weaver"])
+app.include_router(narrative_thermodynamics.router, prefix="/api/engine", tags=["Narrative Thermodynamics"])
+app.include_router(ontological_vault.router, prefix="/api/agent", tags=["Ontological Vault Architect"])
+app.include_router(echo_resonance.router, prefix="/api/engine", tags=["Echo Resonance Composer"])
+app.include_router(somatic_crucible.router, prefix="/api/agent", tags=["Somatic Marker Crucible"])
+app.include_router(phase_harmonics.router, prefix="/api/engine", tags=["Phase Harmonics Director"])
+app.include_router(mnemonic_palace.router, prefix="/api/agent", tags=["Mnemonic Palace Architect"])
+app.include_router(tension_topology.router, prefix="/api/engine", tags=["Tension Topology Cartographer"])
+app.include_router(chrono_perception.router, prefix="/api/agent", tags=["Chrono-Perception Forge"])
+app.include_router(kinetic_forge.router, prefix="/api/engine", tags=["Kinetic Narrative Forge"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
