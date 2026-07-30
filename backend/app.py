@@ -69,6 +69,18 @@ from backend.routes import (
     tension_topology,
     chrono_perception,
     kinetic_forge,
+    empathic_resonance,
+    causal_cascade,
+    dream_logic,
+    emergent_grammar,
+    lexical_identity,
+    moral_prism,
+    silence_architecture,
+    edge_of_chaos,
+    possibility_braiding,
+    metacognitive_self,
+    emergent_quest,
+    living_economy,
 )
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
@@ -78,7 +90,7 @@ config = SparkAIConfig()
 app = FastAPI(
     title="SparkLabs API",
     description="SparkLabs AI-Native Game Engine API",
-    version="27.0.0",
+    version="29.0.0",
 )
 
 app.add_middleware(
@@ -200,12 +212,24 @@ app.include_router(mnemonic_palace.router, prefix="/api/agent", tags=["Mnemonic 
 app.include_router(tension_topology.router, prefix="/api/engine", tags=["Tension Topology Cartographer"])
 app.include_router(chrono_perception.router, prefix="/api/agent", tags=["Chrono-Perception Forge"])
 app.include_router(kinetic_forge.router, prefix="/api/engine", tags=["Kinetic Narrative Forge"])
+app.include_router(empathic_resonance.router, prefix="/api/agent", tags=["Empathic Resonance Weaver"])
+app.include_router(causal_cascade.router, prefix="/api/engine", tags=["Causal Cascade Composer"])
+app.include_router(dream_logic.router, prefix="/api/agent", tags=["Dream Logic Synthesizer"])
+app.include_router(emergent_grammar.router, prefix="/api/engine", tags=["Emergent Grammar Engine"])
+app.include_router(lexical_identity.router, prefix="/api/agent", tags=["Lexical Identity Forge"])
+app.include_router(moral_prism.router, prefix="/api/agent", tags=["Moral Prism Refractor"])
+app.include_router(silence_architecture.router, prefix="/api/engine", tags=["Silence Architecture Composer"])
+app.include_router(edge_of_chaos.router, prefix="/api/engine", tags=["Edge-of-Chaos Stabilizer"])
+app.include_router(possibility_braiding.router, prefix="/api/agent", tags=["Possibility Braiding Loom"])
+app.include_router(metacognitive_self.router, prefix="/api/agent", tags=["Metacognitive Self-Model"])
+app.include_router(emergent_quest.router, prefix="/api/engine", tags=["Emergent Quest Composer"])
+app.include_router(living_economy.router, prefix="/api/engine", tags=["Living Economy Director"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "version": "27.0.0", "engine": "SparkLabs"}
+    return {"status": "ok", "version": "29.0.0", "engine": "SparkLabs"}
 
 
 @app.get("/api/status")
@@ -214,5 +238,5 @@ async def get_status():
     engine_instance = SparkEngine.get_instance()
     return {
         "engine": engine_instance.get_status(),
-        "version": "27.0.0",
+        "version": "29.0.0",
     }
