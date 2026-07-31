@@ -424,3 +424,325 @@ class EngineStratifiedAtmosphereWeaver:
                 upper = next(
                     (l for l in stratum.layers if l.layer_id == edge.upper_layer_id),
                     None,
+                )
+                lower = next(
+                    (l for l in stratum.layers if l.layer_id == edge.lower_layer_id),
+                    None,
+                )
+                if upper is None or lower is None:
+                    continue
+                record = self._mediate_edge(edge, upper, lower)
+                stratum.mediations.append(record)
+                upper.state = StratumState.MEDIATED
+                lower.state = StratumState.MEDIATED
+                mediated += 1
+            stratum.total_mediated += mediated
+        self._record_event("phase_mediate", {"mediated": mediated})
+        return {"mediated": mediated}
+
+    def _phase_blend(self) -> Dict[str, Any]:
+        """Blend phase: blend the stratified layers toward a coherent whole."""
+        blended = 0
+        for stratum in self._worlds.values():
+            coherence_gain = 0.0
+            for record in stratum.mediations:
+                # Each mediated edge pulls the whole toward coherence, weighted
+                # by how much intensity it actually moved.
+                coherence_gain += self._BLEND_COHERENCE_GAIN * (
+                    0.5 + abs(record.intensity_delta)
+                )
+            stratum.coherence = max(0.0, min(1.0, stratum.coherence + coherence_gain))
+            for layer in stratum.layers:
+                if layer.state in (StratumState.MEDIATED, StratumState.STRATIFIED):
+                    layer.state = StratumState.BLENDED
+                    blended += 1
+            stratum.total_blended += blended
+        self._record_event("phase_blend", {
+            "blended": blended,
+            "coherence_gain": sum(
+                s.coherence for s in self._worlds.values()
+            ) if self._worlds else 0.0,
+        })
+        return {"blended": blended}
+
+    def _phase_settle(self) -> Dict[str, Any]:
+        """Settle phase: let the blended atmosphere settle over the world."""
+        settled = 0
+        for stratum in self._worlds.values():
+            intensity_sum = 0.0
+            for layer in stratum.layers:
+                if layer.state != StratumState.BLENDED:
+                    continue
+                # Settle decays the working intensity toward a stable value.
+                layer.settled_intensity = max(
+                    0.0, layer.intensity - self._SETTLE_DECAY * layer.intensity
+                )
+                layer.state = StratumState.SETTLED
+                intensity_sum += layer.settled_intensity
+                settled += 1
+            # The settled whole is the mean of its settled layers, scaled by coherence.
+            if stratum.layers:
+                stratum.settled_intensity = max(
+                    0.0, min(1.0, (intensity_sum / max(1, len(stratum.layers))) * (0.5 + stratum.coherence * 0.5))
+                )
+            stratum.mood = self._compute_mood(stratum)
+            stratum.total_settled += settled
+        self._record_event("phase_settle", {"settled": settled})
+        return {"settled": settled}
+
+    # -------------------------------------------------------------------------
+    # Internal Helpers
+    # -------------------------------------------------------------------------
+
+    def _classify_relation(self, upper: LayerContribution,
+                           lower: LayerContribution) -> LayerRelation:
+        """Classify how an upper layer relates to the layer beneath it."""
+        hue_gap = abs(upper.hue - lower.hue)
+        # If the upper layer is much stronger, it dominates the lower.
+        if upper.intensity - lower.intensity > 0.3:
+            return LayerRelation.DOMINATING
+        # If the lower layer is much stronger, the upper yields.
+        if lower.intensity - upper.intensity > 0.3:
+            return LayerRelation.SUBORDINATING
+        # If the hues are far apart, the layers contrast.
+        if hue_gap > self._MEDIATE_CONTRAST_THRESHOLD:
+            return LayerRelation.CONTRASTING
+        return LayerRelation.HARMONIZING
+
+    def _mediate_edge(self, edge: StratumEdge, upper: LayerContribution,
+                      lower: LayerContribution) -> MediationRecord:
+        """Mediate a single edge between two layers and record the outcome."""
+        hue_gap = abs(upper.hue - lower.hue)
+        intensity_delta = 0.0
+        if edge.relation == LayerRelation.CONTRASTING:
+            # Pull the upper layer's intensity down toward the lower to ease the clash,
+            # proportional to the weight of the coupling.
+            delta = min(upper.intensity, lower.intensity) * edge.weight * 0.2
+            upper.intensity = max(0.0, upper.intensity - delta)
+            lower.intensity = max(0.0, lower.intensity - delta * 0.5)
+            intensity_delta = -delta
+            resolution = LayerRelation.CONTRASTING
+        elif edge.relation == LayerRelation.DOMINATING:
+            # The upper layer keeps its intensity; the lower gives a fraction up.
+            delta = lower.intensity * edge.weight * 0.1
+            lower.intensity = max(0.0, lower.intensity - delta)
+            upper.intensity = min(1.0, upper.intensity + delta * 0.5)
+            intensity_delta = delta
+            resolution = LayerRelation.DOMINATING
+        elif edge.relation == LayerRelation.SUBORDINATING:
+            # The upper layer yields; lower keeps most of its intensity.
+            delta = upper.intensity * edge.weight * 0.1
+            upper.intensity = max(0.0, upper.intensity - delta)
+            intensity_delta = -delta
+            resolution = LayerRelation.SUBORDINATING
+        else:
+            # Harmonizing layers nudge each other toward a shared mean.
+            shared = (upper.intensity + lower.intensity) / 2.0
+            delta = (shared - upper.intensity) * edge.weight * 0.3
+            upper.intensity = max(0.0, min(1.0, upper.intensity + delta))
+            intensity_delta = delta
+            resolution = LayerRelation.HARMONIZING
+        # If hues are very close, soften the contrast into harmony.
+        if hue_gap < self._MEDIATE_CONTRAST_THRESHOLD * 0.5 and resolution == LayerRelation.CONTRASTING:
+            resolution = LayerRelation.HARMONIZING
+        return MediationRecord(
+            edge_id=edge.edge_id,
+            resolution=resolution,
+            intensity_delta=intensity_delta,
+        )
+
+    def _compute_mood(self, stratum: AtmosphereStratum) -> AtmosphereMood:
+        """Compute the overall mood for a settled stratum."""
+        if not stratum.layers:
+            return AtmosphereMood.CONTEMPLATIVE
+        dominating = sum(
+            1 for m in stratum.mediations
+            if m.resolution == LayerRelation.DOMINATING
+        )
+        contrasting = sum(
+            1 for m in stratum.mediations
+            if m.resolution == LayerRelation.CONTRASTING
+        )
+        harmonizing = sum(
+            1 for m in stratum.mediations
+            if m.resolution == LayerRelation.HARMONIZING
+        )
+        total = max(1, len(stratum.mediations))
+        if contrasting / total > 0.5 and stratum.coherence < 0.4:
+            return AtmosphereMood.TURBULENT
+        if dominating / total > 0.5:
+            return AtmosphereMood.EERIE
+        if contrasting > harmonizing and stratum.settled_intensity > 0.5:
+            return AtmosphereMood.RESTLESS
+        if stratum.coherence > 0.7 and harmonizing / total > 0.5:
+            return AtmosphereMood.SERENE
+        return AtmosphereMood.CONTEMPLATIVE
+
+    def _compute_coherence(self, stratum: AtmosphereStratum) -> float:
+        """Compute a coherence score for a stratum from its mediation records."""
+        if not stratum.mediations:
+            return stratum.coherence
+        harmonizing = sum(
+            1 for m in stratum.mediations
+            if m.resolution == LayerRelation.HARMONIZING
+        )
+        contrasting = sum(
+            1 for m in stratum.mediations
+            if m.resolution == LayerRelation.CONTRASTING
+        )
+        total = len(stratum.mediations)
+        # Coherence rises with harmony and falls with contrast.
+        return max(0.0, min(1.0, (harmonizing - contrasting) / total + 0.5))
+
+    # -------------------------------------------------------------------------
+    # Queries
+    # -------------------------------------------------------------------------
+
+    def get_status(self) -> Dict[str, Any]:
+        with self._global_lock:
+            return {
+                "phase": self._phase.value,
+                "cycle_count": self._cycle_count,
+                "worlds": len(self._worlds),
+                "stats": dict(self._stats),
+            }
+
+    def get_world_state(self, world_id: str) -> Dict[str, Any]:
+        with self._global_lock:
+            stratum = self._worlds.get(world_id)
+            if stratum is None:
+                return {"error": f"World not found: {world_id}"}
+            return {
+                "world_id": world_id,
+                "layers_count": len(stratum.layers),
+                "edges_count": len(stratum.edges),
+                "mediations_count": len(stratum.mediations),
+                "mood": stratum.mood.value,
+                "coherence": stratum.coherence,
+                "settled_intensity": stratum.settled_intensity,
+                "total_layered": stratum.total_layered,
+                "total_stratified": stratum.total_stratified,
+                "total_mediated": stratum.total_mediated,
+                "total_blended": stratum.total_blended,
+                "total_settled": stratum.total_settled,
+            }
+
+    def get_layers(self, world_id: str, limit: int = 20) -> Dict[str, Any]:
+        with self._global_lock:
+            stratum = self._worlds.get(world_id)
+            if stratum is None:
+                return {"error": f"World not found: {world_id}"}
+            layers = sorted(
+                stratum.layers,
+                key=lambda l: l.created_at,
+                reverse=True,
+            )[:limit]
+            return {
+                "world_id": world_id,
+                "layers": [
+                    {
+                        "layer_id": l.layer_id,
+                        "kind": l.kind.value,
+                        "intensity": l.intensity,
+                        "hue": l.hue,
+                        "texture_note": l.texture_note,
+                        "state": l.state.value,
+                        "settled_intensity": l.settled_intensity,
+                    }
+                    for l in layers
+                ],
+            }
+
+    def get_edges(self, world_id: str, limit: int = 30) -> Dict[str, Any]:
+        with self._global_lock:
+            stratum = self._worlds.get(world_id)
+            if stratum is None:
+                return {"error": f"World not found: {world_id}"}
+            edges = stratum.edges[-limit:]
+            return {
+                "world_id": world_id,
+                "edges": [
+                    {
+                        "edge_id": e.edge_id,
+                        "upper_layer_id": e.upper_layer_id,
+                        "lower_layer_id": e.lower_layer_id,
+                        "relation": e.relation.value,
+                        "weight": e.weight,
+                    }
+                    for e in edges
+                ],
+            }
+
+    def get_mood(self, world_id: str) -> Dict[str, Any]:
+        with self._global_lock:
+            stratum = self._worlds.get(world_id)
+            if stratum is None:
+                return {"error": f"World not found: {world_id}"}
+            return {
+                "world_id": world_id,
+                "mood": stratum.mood.value,
+                "coherence": stratum.coherence,
+                "settled_intensity": stratum.settled_intensity,
+            }
+
+    def get_events_log(self, limit: int = 50) -> List[Dict[str, Any]]:
+        with self._global_lock:
+            return list(self._events_log)[-limit:]
+
+    # -------------------------------------------------------------------------
+    # Simulation
+    # -------------------------------------------------------------------------
+
+    def simulate(self, cycles: int = 5) -> Dict[str, Any]:
+        """Seed synthetic worlds and layers, then run multiple cycles."""
+        with self._global_lock:
+            self._seed_synthetic_worlds()
+            results: List[Dict[str, Any]] = []
+            for _ in range(max(1, cycles)):
+                results.append(self.cycle())
+            return {
+                "cycles_run": len(results),
+                "results": results,
+                "final_status": self.get_status(),
+            }
+
+    def _seed_synthetic_worlds(self) -> None:
+        """Seed a small synthetic set of worlds with stratified layers."""
+        seed_worlds = ["sim_valley", "sim_atrium", "sim_promenade"]
+        for world_id in seed_worlds:
+            if world_id not in self._worlds:
+                self.register_world(world_id)
+        # Seed layers across worlds, one of each kind per world.
+        seed_layers = [
+            ("sim_valley", "sim_v_surface", AtmosphereLayerKind.SURFACE, 0.6, 0.3, "cold morning mist"),
+            ("sim_valley", "sim_v_wind", AtmosphereLayerKind.WIND, 0.7, 0.4, "dry ridge gusts"),
+            ("sim_valley", "sim_v_light", AtmosphereLayerKind.LIGHT, 0.4, 0.2, "low amber dawn"),
+            ("sim_valley", "sim_v_sound", AtmosphereLayerKind.SOUND, 0.3, 0.5, "distant river"),
+            ("sim_valley", "sim_v_social", AtmosphereLayerKind.SOCIAL, 0.5, 0.6, "sparse travelers"),
+            ("sim_atrium", "sim_a_surface", AtmosphereLayerKind.SURFACE, 0.5, 0.5, "polished stone"),
+            ("sim_atrium", "sim_a_wind", AtmosphereLayerKind.WIND, 0.2, 0.6, "still interior air"),
+            ("sim_atrium", "sim_a_light", AtmosphereLayerKind.LIGHT, 0.8, 0.7, "shafted noon"),
+            ("sim_atrium", "sim_a_sound", AtmosphereLayerKind.SOUND, 0.6, 0.4, "echoing footsteps"),
+            ("sim_atrium", "sim_a_social", AtmosphereLayerKind.SOCIAL, 0.7, 0.5, "quiet congregation"),
+            ("sim_promenade", "sim_p_surface", AtmosphereLayerKind.SURFACE, 0.4, 0.4, "warm cobbles"),
+            ("sim_promenade", "sim_p_wind", AtmosphereLayerKind.WIND, 0.5, 0.5, "river breeze"),
+            ("sim_promenade", "sim_p_light", AtmosphereLayerKind.LIGHT, 0.6, 0.8, "harsh afternoon"),
+            ("sim_promenade", "sim_p_sound", AtmosphereLayerKind.SOUND, 0.7, 0.3, "market clatter"),
+            ("sim_promenade", "sim_p_social", AtmosphereLayerKind.SOCIAL, 0.8, 0.6, "dense crowd"),
+        ]
+        for world_id, layer_id, kind, intensity, hue, note in seed_layers:
+            stratum = self._worlds.get(world_id)
+            if stratum is None:
+                continue
+            if not any(l.layer_id == layer_id for l in stratum.layers):
+                self.add_layer(world_id, layer_id, kind,
+                               intensity=intensity, hue=hue, texture_note=note)
+
+    def reset(self) -> Dict[str, Any]:
+        with self._global_lock:
+            self._worlds.clear()
+            self._events_log.clear()
+            self._phase = StratifiedAtmospherePhase.LAYER
+            self._cycle_count = 0
+            self._init_stats()
+            return {"reset": True}
