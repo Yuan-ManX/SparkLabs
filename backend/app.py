@@ -81,6 +81,10 @@ from backend.routes import (
     metacognitive_self,
     emergent_quest,
     living_economy,
+    anticipatory_empathy,
+    perspective_lattice,
+    intentional_drift,
+    stratified_atmosphere,
 )
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
@@ -90,7 +94,7 @@ config = SparkAIConfig()
 app = FastAPI(
     title="SparkLabs API",
     description="SparkLabs AI-Native Game Engine API",
-    version="29.0.0",
+    version="30.0.0",
 )
 
 app.add_middleware(
@@ -224,12 +228,16 @@ app.include_router(possibility_braiding.router, prefix="/api/agent", tags=["Poss
 app.include_router(metacognitive_self.router, prefix="/api/agent", tags=["Metacognitive Self-Model"])
 app.include_router(emergent_quest.router, prefix="/api/engine", tags=["Emergent Quest Composer"])
 app.include_router(living_economy.router, prefix="/api/engine", tags=["Living Economy Director"])
+app.include_router(anticipatory_empathy.router, prefix="/api/agent", tags=["Anticipatory Empathy Weaver"])
+app.include_router(perspective_lattice.router, prefix="/api/engine", tags=["Perspective Lattice Projector"])
+app.include_router(intentional_drift.router, prefix="/api/agent", tags=["Intentional Drift Cartographer"])
+app.include_router(stratified_atmosphere.router, prefix="/api/engine", tags=["Stratified Atmosphere Weaver"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "version": "29.0.0", "engine": "SparkLabs"}
+    return {"status": "ok", "version": "30.0.0", "engine": "SparkLabs"}
 
 
 @app.get("/api/status")
@@ -238,5 +246,5 @@ async def get_status():
     engine_instance = SparkEngine.get_instance()
     return {
         "engine": engine_instance.get_status(),
-        "version": "29.0.0",
+        "version": "30.0.0",
     }
