@@ -85,6 +85,14 @@ from backend.routes import (
     perspective_lattice,
     intentional_drift,
     stratified_atmosphere,
+    temporal_self_projection,
+    modal_horizon,
+    narrative_momentum,
+    choreographic_field,
+    ambient_self_steward,
+    causal_blame_arbiter,
+    perceptual_grain_modulator,
+    thematic_resonance_strata,
 )
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
@@ -94,7 +102,7 @@ config = SparkAIConfig()
 app = FastAPI(
     title="SparkLabs API",
     description="SparkLabs AI-Native Game Engine API",
-    version="30.0.0",
+    version="32.0.0",
 )
 
 app.add_middleware(
@@ -232,12 +240,20 @@ app.include_router(anticipatory_empathy.router, prefix="/api/agent", tags=["Anti
 app.include_router(perspective_lattice.router, prefix="/api/engine", tags=["Perspective Lattice Projector"])
 app.include_router(intentional_drift.router, prefix="/api/agent", tags=["Intentional Drift Cartographer"])
 app.include_router(stratified_atmosphere.router, prefix="/api/engine", tags=["Stratified Atmosphere Weaver"])
+app.include_router(temporal_self_projection.router, prefix="/api/agent", tags=["Temporal Self-Projection"])
+app.include_router(modal_horizon.router, prefix="/api/engine", tags=["Modal Horizon Expander"])
+app.include_router(narrative_momentum.router, prefix="/api/agent", tags=["Narrative Momentum Governor"])
+app.include_router(choreographic_field.router, prefix="/api/engine", tags=["Choreographic Field Weaver"])
+app.include_router(ambient_self_steward.router, prefix="/api/agent", tags=["Ambient Self Steward"])
+app.include_router(causal_blame_arbiter.router, prefix="/api/agent", tags=["Causal Blame Arbiter"])
+app.include_router(perceptual_grain_modulator.router, prefix="/api/engine", tags=["Perceptual Grain Modulator"])
+app.include_router(thematic_resonance_strata.router, prefix="/api/engine", tags=["Thematic Resonance Strata"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "version": "30.0.0", "engine": "SparkLabs"}
+    return {"status": "ok", "version": "32.0.0", "engine": "SparkLabs"}
 
 
 @app.get("/api/status")
@@ -246,5 +262,5 @@ async def get_status():
     engine_instance = SparkEngine.get_instance()
     return {
         "engine": engine_instance.get_status(),
-        "version": "30.0.0",
+        "version": "32.0.0",
     }
