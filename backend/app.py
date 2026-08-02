@@ -93,7 +93,35 @@ from backend.routes import (
     causal_blame_arbiter,
     perceptual_grain_modulator,
     thematic_resonance_strata,
+    world_hypothesis_tester,
+    skill_crystallization_forge,
+    spatiotemporal_rhythm_sequencer,
+    emergent_semantics_weaver,
+    creative_constraint_sculptor,
+    meta_goal_decomposer,
+    causal_timeline_weaver,
+    procedural_constraint_lattice,
+    narrative_foil_designer,
+    motivational_tension_weaver,
+    causality_cascade_simulator,
+    emergent_political_cartographer,
+    dramatic_irony_orchestrator,
+    embodied_presence_synthesizer,
+    dynamical_systems_attractor,
+    layered_locomotion_choreographer,
+    empathic_attunement_tuner,
+    cognitive_dissonance_resolver,
+    thermodynamic_mood_propagator,
+    topological_emotion_mapper,
 )
+from backend.routes import motif_evolution_cultivator
+from backend.routes import persona_shadow_integrator
+from backend.routes import phase_coherence_stabilizer
+from backend.routes import fractal_boundary_resolver
+from backend.routes import dialogic_rhythm_composer
+from backend.routes import perceptual_saliency_curator
+from backend.routes import strange_attractor_narrative
+from backend.routes import quantum_superposition_resolver
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
 
@@ -102,7 +130,7 @@ config = SparkAIConfig()
 app = FastAPI(
     title="SparkLabs API",
     description="SparkLabs AI-Native Game Engine API",
-    version="32.0.0",
+    version="39.0.0",
 )
 
 app.add_middleware(
@@ -248,12 +276,40 @@ app.include_router(ambient_self_steward.router, prefix="/api/agent", tags=["Ambi
 app.include_router(causal_blame_arbiter.router, prefix="/api/agent", tags=["Causal Blame Arbiter"])
 app.include_router(perceptual_grain_modulator.router, prefix="/api/engine", tags=["Perceptual Grain Modulator"])
 app.include_router(thematic_resonance_strata.router, prefix="/api/engine", tags=["Thematic Resonance Strata"])
+app.include_router(world_hypothesis_tester.router, prefix="/api/agent", tags=["World Hypothesis Tester"])
+app.include_router(skill_crystallization_forge.router, prefix="/api/agent", tags=["Skill Crystallization Forge"])
+app.include_router(spatiotemporal_rhythm_sequencer.router, prefix="/api/engine", tags=["Spatiotemporal Rhythm Sequencer"])
+app.include_router(emergent_semantics_weaver.router, prefix="/api/engine", tags=["Emergent Semantics Weaver"])
+app.include_router(creative_constraint_sculptor.router, prefix="/api/agent", tags=["Creative Constraint Sculptor"])
+app.include_router(meta_goal_decomposer.router, prefix="/api/agent", tags=["Meta Goal Decomposer"])
+app.include_router(causal_timeline_weaver.router, prefix="/api/engine", tags=["Causal Timeline Weaver"])
+app.include_router(procedural_constraint_lattice.router, prefix="/api/engine", tags=["Procedural Constraint Lattice"])
+app.include_router(narrative_foil_designer.router, prefix="/api/agent", tags=["Narrative Foil Designer"])
+app.include_router(motivational_tension_weaver.router, prefix="/api/agent", tags=["Motivational Tension Weaver"])
+app.include_router(causality_cascade_simulator.router, prefix="/api/engine", tags=["Causality Cascade Simulator"])
+app.include_router(emergent_political_cartographer.router, prefix="/api/engine", tags=["Emergent Political Cartographer"])
+app.include_router(dramatic_irony_orchestrator.router, prefix="/api/agent", tags=["Dramatic Irony Orchestrator"])
+app.include_router(embodied_presence_synthesizer.router, prefix="/api/agent", tags=["Embodied Presence Synthesizer"])
+app.include_router(dynamical_systems_attractor.router, prefix="/api/engine", tags=["Dynamical Systems Attractor"])
+app.include_router(layered_locomotion_choreographer.router, prefix="/api/engine", tags=["Layered Locomotion Choreographer"])
+app.include_router(empathic_attunement_tuner.router, prefix="/api/agent", tags=["Empathic Attunement Tuner"])
+app.include_router(cognitive_dissonance_resolver.router, prefix="/api/agent", tags=["Cognitive Dissonance Resolver"])
+app.include_router(thermodynamic_mood_propagator.router, prefix="/api/engine", tags=["Thermodynamic Mood Propagator"])
+app.include_router(topological_emotion_mapper.router, prefix="/api/engine", tags=["Topological Emotion Mapper"])
+app.include_router(motif_evolution_cultivator.router, prefix="/api/agent", tags=["Motif Evolution Cultivator"])
+app.include_router(persona_shadow_integrator.router, prefix="/api/agent", tags=["Persona Shadow Integrator"])
+app.include_router(phase_coherence_stabilizer.router, prefix="/api/engine", tags=["Phase Coherence Stabilizer"])
+app.include_router(fractal_boundary_resolver.router, prefix="/api/engine", tags=["Fractal Boundary Resolver"])
+app.include_router(dialogic_rhythm_composer.router, prefix="/api/agent", tags=["Dialogic Rhythm Composer"])
+app.include_router(perceptual_saliency_curator.router, prefix="/api/agent", tags=["Perceptual Saliency Curator"])
+app.include_router(strange_attractor_narrative.router, prefix="/api/engine", tags=["Strange Attractor Narrative"])
+app.include_router(quantum_superposition_resolver.router, prefix="/api/engine", tags=["Quantum Superposition Resolver"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
 
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "version": "32.0.0", "engine": "SparkLabs"}
+    return {"status": "ok", "version": "39.0.0", "engine": "SparkLabs"}
 
 
 @app.get("/api/status")
@@ -262,5 +318,5 @@ async def get_status():
     engine_instance = SparkEngine.get_instance()
     return {
         "engine": engine_instance.get_status(),
-        "version": "32.0.0",
+        "version": "39.0.0",
     }
