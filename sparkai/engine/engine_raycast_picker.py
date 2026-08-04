@@ -6,8 +6,7 @@ AI-native game engine. This system is distinct from the general physics
 collision system: it operates on pickable object registries with layer
 filtering, screen-to-world ray generation, and multi-mode selection queries
 (point ray, box, sphere, frustum). It is the precise subsystem that game
-editors (GDevelop object picker, Godot raycast nodes, three.js Raycaster,
-Phaser input picker) require for object selection, hover highlighting, and
+editors require for object selection, hover highlighting, and
 editor interaction.
 
 Architecture:
