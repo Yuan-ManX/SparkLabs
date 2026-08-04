@@ -3,7 +3,7 @@ SparkLabs Engine - Tactical Grid Combat System
 
 A grid-based tactical combat engine for the SparkLabs AI-native game
 engine. Provides turn-based tactical combat on square, hex, offset, and
-isometric grids in the style of classic strategy RPGs. Manages grid
+isometric grids for tactical gameplay. Manages grid
 terrain, unit deployment, movement with pathfinding-aware ranges,
 attack resolution with terrain and elevation modifiers, fog of war,
 faction turn order, and battle lifecycle from setup through victory or
