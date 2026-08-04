@@ -3,9 +3,8 @@ SparkLabs Engine - Scene Tree System
 
 Hierarchical scene graph management for the SparkLabs AI-native game
 engine. Provides node parenting, scene lifecycle, node group management,
-and scene switching. The design follows the scene tree concept from
-Godot Engine and Phaser, with a flat-dict node storage model and
-parent-child ID references.
+and scene switching. The architecture uses a flat-dict node storage
+model and parent-child ID references.
 
 Architecture:
   SceneTree (singleton, thread-safe)
