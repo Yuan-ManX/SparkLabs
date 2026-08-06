@@ -122,6 +122,42 @@ from backend.routes import dialogic_rhythm_composer
 from backend.routes import perceptual_saliency_curator
 from backend.routes import strange_attractor_narrative
 from backend.routes import quantum_superposition_resolver
+from backend.routes import palimpsest_memory_weaver
+from backend.routes import liminal_threshold_surveyor
+from backend.routes import cymatic_geometry_projector
+from backend.routes import chreodic_current_mapper
+from backend.routes import contrapuntal_intent_choir
+from backend.routes import interoceptive_resonance_anatomist
+from backend.routes import liquid_narrative_foundry
+from backend.routes import orbital_semantics_compass
+from backend.routes import crepuscular_threshold_warden
+from backend.routes import hierophantic_symbol_weaver
+from backend.routes import chthonic_resonance_forge
+from backend.routes import telluric_gradient_mapper
+from backend.routes import selenographic_terrain_oracle
+from backend.routes import anemographic_wind_archivist
+from backend.routes import pyroclastic_flow_choreographer
+from backend.routes import thixotropic_fluid_cartographer
+from backend.routes import vespertine_ledger_keeper
+from backend.routes import hiemal_codex_curator
+from backend.routes import asthenospheric_drift_sensor
+from backend.routes import piezometric_aquifer_governor
+from backend.routes import nacreous_lumen_curator
+from backend.routes import sidereal_orbit_chronicler
+from backend.routes import flocculent_vapor_aggregator
+from backend.routes import penumbral_shadow_calibrator
+from backend.routes import luminous_aether_warden
+from backend.routes import celestial_ephemeris_scribe
+from backend.routes import cryogenic_flux_manifold
+from backend.routes import tidal_harmonic_resonator
+from backend.routes import auroral_umbra_archivist
+from backend.routes import lunar_parallax_observer
+from backend.routes import cataclysmic_magma_vent
+from backend.routes import zephyrous_stratal_weaver
+from backend.routes import ionospheric_pulse_herald
+from backend.routes import diatropic_flux_metronome
+from backend.routes import fulminant_geyser_arbiter
+from backend.routes import laminar_foam_condenser
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
 
@@ -130,7 +166,7 @@ config = SparkAIConfig()
 app = FastAPI(
     title="SparkLabs API",
     description="SparkLabs AI-Native Game Engine API",
-    version="39.0.0",
+    version="48.0.0",
 )
 
 app.add_middleware(
@@ -141,6 +177,26 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(vespertine_ledger_keeper.router, prefix="/api/agent", tags=["Vespertine Ledger Keeper"])
+app.include_router(hiemal_codex_curator.router, prefix="/api/agent", tags=["Hiemal Codex Curator"])
+app.include_router(asthenospheric_drift_sensor.router, prefix="/api/engine", tags=["Asthenospheric Drift Sensor"])
+app.include_router(piezometric_aquifer_governor.router, prefix="/api/engine", tags=["Piezometric Aquifer Governor"])
+app.include_router(nacreous_lumen_curator.router, prefix="/api/agent", tags=["Nacreous Lumen Curator"])
+app.include_router(sidereal_orbit_chronicler.router, prefix="/api/agent", tags=["Sidereal Orbit Chronicler"])
+app.include_router(flocculent_vapor_aggregator.router, prefix="/api/engine", tags=["Flocculent Vapor Aggregator"])
+app.include_router(penumbral_shadow_calibrator.router, prefix="/api/engine", tags=["Penumbral Shadow Calibrator"])
+app.include_router(luminous_aether_warden.router, prefix="/api/agent", tags=["Luminous Aether Warden"])
+app.include_router(celestial_ephemeris_scribe.router, prefix="/api/agent", tags=["Celestial Ephemeris Scribe"])
+app.include_router(cryogenic_flux_manifold.router, prefix="/api/engine", tags=["Cryogenic Flux Manifold"])
+app.include_router(tidal_harmonic_resonator.router, prefix="/api/engine", tags=["Tidal Harmonic Resonator"])
+app.include_router(auroral_umbra_archivist.router, prefix="/api/agent", tags=["Auroral Umbra Archivist"])
+app.include_router(lunar_parallax_observer.router, prefix="/api/agent", tags=["Lunar Parallax Observer"])
+app.include_router(cataclysmic_magma_vent.router, prefix="/api/engine", tags=["Cataclysmic Magma Vent"])
+app.include_router(zephyrous_stratal_weaver.router, prefix="/api/engine", tags=["Zephyrous Stratal Weaver"])
+app.include_router(ionospheric_pulse_herald.router, prefix="/api/agent", tags=["Ionospheric Pulse Herald"])
+app.include_router(diatropic_flux_metronome.router, prefix="/api/agent", tags=["Diatropic Flux Metronome"])
+app.include_router(fulminant_geyser_arbiter.router, prefix="/api/engine", tags=["Fulminant Geyser Arbiter"])
+app.include_router(laminar_foam_condenser.router, prefix="/api/engine", tags=["Laminar Foam Condenser"])
 app.include_router(engine.router, prefix="/api/engine", tags=["Engine"])
 app.include_router(agent.router, prefix="/api/agent", tags=["Agent"])
 app.include_router(scene.router, prefix="/api/scene", tags=["Scene"])
@@ -304,12 +360,28 @@ app.include_router(dialogic_rhythm_composer.router, prefix="/api/agent", tags=["
 app.include_router(perceptual_saliency_curator.router, prefix="/api/agent", tags=["Perceptual Saliency Curator"])
 app.include_router(strange_attractor_narrative.router, prefix="/api/engine", tags=["Strange Attractor Narrative"])
 app.include_router(quantum_superposition_resolver.router, prefix="/api/engine", tags=["Quantum Superposition Resolver"])
+app.include_router(palimpsest_memory_weaver.router, prefix="/api/agent", tags=["Palimpsest Memory Weaver"])
+app.include_router(liminal_threshold_surveyor.router, prefix="/api/agent", tags=["Liminal Threshold Surveyor"])
+app.include_router(cymatic_geometry_projector.router, prefix="/api/engine", tags=["Cymatic Geometry Projector"])
+app.include_router(chreodic_current_mapper.router, prefix="/api/engine", tags=["Chreodic Current Mapper"])
+app.include_router(contrapuntal_intent_choir.router, prefix="/api/agent", tags=["Contrapuntal Intent Choir"])
+app.include_router(interoceptive_resonance_anatomist.router, prefix="/api/agent", tags=["Interoceptive Resonance Anatomist"])
+app.include_router(liquid_narrative_foundry.router, prefix="/api/engine", tags=["Liquid Narrative Foundry"])
+app.include_router(orbital_semantics_compass.router, prefix="/api/engine", tags=["Orbital Semantics Compass"])
+app.include_router(crepuscular_threshold_warden.router, prefix="/api/agent", tags=["Crepuscular Threshold Warden"])
+app.include_router(hierophantic_symbol_weaver.router, prefix="/api/agent", tags=["Hierophantic Symbol Weaver"])
+app.include_router(chthonic_resonance_forge.router, prefix="/api/engine", tags=["Chthonic Resonance Forge"])
+app.include_router(telluric_gradient_mapper.router, prefix="/api/engine", tags=["Telluric Gradient Mapper"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
+app.include_router(selenographic_terrain_oracle.router, prefix="/api/agent", tags=["Selenographic Terrain Oracle"])
+app.include_router(anemographic_wind_archivist.router, prefix="/api/agent", tags=["Anemographic Wind Archivist"])
+app.include_router(pyroclastic_flow_choreographer.router, prefix="/api/engine", tags=["Pyroclastic Flow Choreographer"])
+app.include_router(thixotropic_fluid_cartographer.router, prefix="/api/engine", tags=["Thixotropic Fluid Cartographer"])
 
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "version": "39.0.0", "engine": "SparkLabs"}
+    return {"status": "ok", "version": "48.0.0", "engine": "SparkLabs"}
 
 
 @app.get("/api/status")
@@ -318,5 +390,5 @@ async def get_status():
     engine_instance = SparkEngine.get_instance()
     return {
         "engine": engine_instance.get_status(),
-        "version": "39.0.0",
+        "version": "48.0.0",
     }
