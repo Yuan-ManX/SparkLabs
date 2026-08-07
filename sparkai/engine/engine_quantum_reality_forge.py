@@ -13,7 +13,7 @@ is now." Each region, each NPC, each event exists as a cloud of
 possibility amplitudes that interfere, entangle, and eventually collapse
 into the actual game state the player experiences.
 
-The forge models four quantum-inspired operations:
+The forge models four quantum operations:
   - Superposition: maintain multiple possibility-states for one entity
   - Entanglement: link two entities so collapsing one affects the other
   - Annealing: gradually cool the field, letting high-energy
