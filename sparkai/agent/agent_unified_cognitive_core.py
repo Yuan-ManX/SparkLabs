@@ -14,7 +14,7 @@ Layered cognition model implemented here:
                           salience detection
   2. Belief Layer        - BDI beliefs about world state, other agents, self
   3. Desire Layer        - goals, motivations, needs, drives arranged on a
-                          Maslow-inspired hierarchy
+                          tiered desire hierarchy
   4. Intention Layer     - committed goals, action plans, commitment mgmt
   5. Planning Layer      - HTN decomposition, means-ends reasoning, repair
   6. Reflection Layer    - self-model, performance evaluation, adaptation
@@ -90,7 +90,7 @@ class BeliefSource(Enum):
 
 
 class DesireCategory(Enum):
-    """Maslow-inspired categories for agent desires."""
+    """Tiered categories for agent desires."""
     SURVIVAL = "survival"
     SAFETY = "safety"
     SOCIAL = "social"

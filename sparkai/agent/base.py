@@ -26,13 +26,19 @@ from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
 
-from sparkai.agent.memory import AgentMemory, MemoryType
+from sparkai.agent.memory import AgentMemory, MemoryType, NodeType
 from sparkai.agent.toolkit import ToolRegistry, Tool, Toolset, ToolsetRegistry, get_tools_for_role
 from sparkai.agent.llm import LLMProvider, LLMConfig
 from sparkai.agent.skills.base import Skill, SkillRegistry
 from sparkai.agent.agent_error_classifier import ErrorClassifier, get_error_classifier
 from sparkai.agent.agent_tool_pruner import ToolOutputPruner, get_tool_output_pruner
 from sparkai.agent.agent_file_state import FileStateEngine, get_file_state_engine
+from sparkai.agent.context_manager import ContextManager, ContextBudget
+from sparkai.agent.trajectory import TrajectoryRecorder, PermissionTier, get_trajectory_recorder
+from sparkai.agent.perception import (
+    PerceptionDecisionPipeline, PerceptionBuilder, ActionMenuBuilder,
+    Perception, ActionMenuItem, Decision,
+)
 
 
 class AgentCapability(Enum):
@@ -164,6 +170,15 @@ class SparkAgent:
         self._load_role_toolsets()
         self._load_role_skills()
 
+        # Context management (orthogonal compress vs. select)
+        self._context_mgr = ContextManager(ContextBudget(max_tokens=8000))
+
+        # Trajectory recording (audit spine for all actions)
+        self._trajectory = get_trajectory_recorder()
+
+        # Perception-decision pipeline (game world interaction)
+        self._perception_pipeline: Optional[PerceptionDecisionPipeline] = None
+
     @property
     def memory(self) -> AgentMemory:
         return self._memory
@@ -171,6 +186,24 @@ class SparkAgent:
     @property
     def tools(self) -> ToolRegistry:
         return self._tools
+
+    @property
+    def context_manager(self) -> ContextManager:
+        return self._context_mgr
+
+    @property
+    def trajectory(self) -> TrajectoryRecorder:
+        return self._trajectory
+
+    @property
+    def perception_pipeline(self) -> Optional[PerceptionDecisionPipeline]:
+        return self._perception_pipeline
+
+    def init_perception_pipeline(self, engine_bridge: Any = None) -> None:
+        """Initialize the perception-menu-decision pipeline with an engine bridge."""
+        builder = PerceptionBuilder(engine_bridge)
+        menu_builder = ActionMenuBuilder()
+        self._perception_pipeline = PerceptionDecisionPipeline(builder, menu_builder)
 
     def set_llm_provider(self, provider: LLMProvider) -> None:
         self._llm = provider
@@ -233,7 +266,8 @@ class SparkAgent:
     async def think(self, prompt: str, context: Optional[Dict[str, Any]] = None) -> str:
         """
         Phase 2: Reason about the current state and decide on action.
-        Uses LLM with memory-augmented context for decision-making.
+        Uses LLM with memory-augmented context and context selection
+        for efficient per-turn retrieval.
         """
         self.state = AgentState.THINKING
         self.emit("thinking_start", {"prompt": prompt})
@@ -242,11 +276,18 @@ class SparkAgent:
             memory_context = self._build_memory_context(prompt)
             full_prompt = self._assemble_prompt(prompt, memory_context, context)
 
+            # Add to context manager
+            self._context_mgr.add_message("user", prompt)
+
+            # Select relevant context for this turn
+            selected = self._context_mgr.select_context(prompt)
+
             self._memory.remember(
                 content=f"User: {prompt}",
                 memory_type=MemoryType.SHORT_TERM,
                 importance=0.5,
             )
+            self._memory.tick()
 
             if self._llm:
                 try:
@@ -259,6 +300,8 @@ class SparkAgent:
                     self.emit("thinking_timeout", {"prompt": prompt[:100]})
             else:
                 response = self._fallback_think(prompt)
+
+            self._context_mgr.add_message("agent", response)
 
             self._memory.remember(
                 content=f"Agent({self.name}): {response}",
@@ -282,16 +325,31 @@ class SparkAgent:
             classified = classifier.classify(e, context_messages=len(self._message_history))
             self.emit("thinking_error", {"error": str(e), "category": classified.category.value, "hints": classified.hints.to_dict()})
             if classified.hints.should_compress:
-                self.emit("context_overflow_detected", {"tokens": len(self._message_history)})
+                self._context_mgr.compress()
+                self.emit("context_overflow_detected", {"tokens": self._context_mgr.token_usage})
             return f"Error during thinking: {str(e)}"
 
     async def act(self, action: str, params: Optional[Dict[str, Any]] = None) -> Any:
         """
         Phase 3: Execute an action using registered tools.
-        Actions modify the game world state.
+        Actions modify the game world state. All actions are recorded
+        in the trajectory timeline with before/after state and validation.
         """
         self.state = AgentState.EXECUTING
         self.emit("action_start", {"action": action, "params": params})
+
+        # Determine permission tier
+        read_only_actions = {"query_entities", "list_scenes", "get_world_state", "get_console_logs"}
+        tier = PermissionTier.TIER_0_READONLY if action in read_only_actions else PermissionTier.TIER_1_UNDOABLE
+
+        # Begin trajectory recording
+        traj_entry = self._trajectory.begin_action(
+            agent_id=self.id,
+            agent_name=self.name,
+            action=action,
+            params=params or {},
+            permission_tier=tier,
+        )
 
         try:
             tool = self._tools.get(action)
@@ -304,8 +362,20 @@ class SparkAgent:
                 except asyncio.TimeoutError:
                     self._consecutive_failures += 1
                     self.state = AgentState.ERROR
+                    self._trajectory.fail_action(traj_entry.id, "Timeout")
                     self.emit("action_timeout", {"action": action})
                     return f"Timeout executing action: {action}"
+
+                # Complete trajectory entry with result
+                affected = []
+                if isinstance(result, dict):
+                    eid = result.get("entity_id") or result.get("world_id") or result.get("scene_id")
+                    if eid:
+                        affected.append(eid)
+                self._trajectory.complete_action(
+                    traj_entry.id, result, affected_entities=affected
+                )
+
                 self._memory.remember(
                     content=f"Executed tool '{action}' with result: {str(result)[:200]}",
                     memory_type=MemoryType.EPISODIC,
@@ -331,12 +401,14 @@ class SparkAgent:
                 self.emit("action_complete", {"action": action, "result": result})
                 return result
             else:
+                self._trajectory.fail_action(traj_entry.id, f"Tool '{action}' not found")
                 self.state = AgentState.IDLE
                 return f"Tool '{action}' not found"
 
         except Exception as e:
             self._consecutive_failures += 1
             self.state = AgentState.ERROR
+            self._trajectory.fail_action(traj_entry.id, str(e))
             classifier = get_error_classifier()
             classified = classifier.classify(e)
             self.emit("action_error", {"action": action, "error": str(e), "category": classified.category.value})
@@ -626,6 +698,72 @@ class SparkAgent:
             pass
         return options[0] if options else ""
 
+    async def perceive_and_decide(self) -> Optional[Decision]:
+        """
+        Run the perception-menu-decision pipeline.
+
+        Builds a filtered perception of the game world, constructs
+        an enumerated action menu, queries the LLM for a choice,
+        and resolves the response via fuzzy ID matching.
+        """
+        if not self._perception_pipeline:
+            return None
+
+        # Stage 1: Perceive the game world
+        perception = await self._perception_pipeline.perceive(self.id, self.name)
+
+        # Stage 2: Build action menu from tools and perception
+        tool_names = [t.name for t in self._tools.list_tools()]
+        menu = self._perception_pipeline.build_menu(perception, tool_names)
+
+        if not menu:
+            return None
+
+        # Stage 3: Ask LLM to choose
+        prompt = f"{perception.to_prompt()}\n\n{self._perception_pipeline._menu_builder.to_prompt(menu)}"
+        response = await self.think(prompt)
+
+        # Resolve the response to a concrete decision
+        decision = self._perception_pipeline.resolve_decision(response, menu, perception)
+
+        # Execute the chosen action if it maps to a tool
+        if decision.action_id and self._tools.get(decision.action_id):
+            params = dict(decision.params)
+            if decision.target_id:
+                params["entity_id"] = decision.target_id
+            await self.act(decision.action_id, params)
+
+        return decision
+
+    async def reflect_on_memories(self, query: str) -> Optional[str]:
+        """
+        Generate a reflection from recent memories and store it
+        in the reflection DAG with provenance pointers.
+        """
+        relevant = self._memory.recall(query=query, max_results=10)
+        if not relevant:
+            return None
+
+        # Build reflection prompt from retrieved memories
+        memory_texts = [m["content"][:200] for m in relevant]
+        reflection_prompt = (
+            f"Reflect on the following memories and generate an insight:\n"
+            + "\n".join(f"- {t}" for t in memory_texts)
+            + "\n\nProvide a concise insight or pattern you observe."
+        )
+
+        response = await self.think(reflection_prompt)
+
+        # Store as reflection node with provenance pointers
+        source_ids = [m["id"] for m in relevant]
+        self._memory.add_reflection(
+            content=response[:500],
+            source_ids=source_ids,
+            importance=0.8,
+        )
+
+        return response
+
     # === Task Management ===
 
     def assign_task(self, task: AgentTask) -> None:
@@ -656,11 +794,15 @@ class SparkAgent:
             "task_count": len(self._task_history),
             "plan_count": len(self._plan_history),
             "memory_size": self._memory.size(),
+            "memory_emotional_state": self._memory.get_emotional_summary(),
             "iteration_count": self._iteration_count,
             "consecutive_failures": self._consecutive_failures,
             "skills": list(self._skills.keys()),
             "toolsets": self._loaded_toolsets,
             "tool_count": len(self._tools.list_tools()),
+            "context_stats": self._context_mgr.get_statistics(),
+            "trajectory_stats": self._trajectory.get_statistics(),
+            "perception_enabled": self._perception_pipeline is not None,
         }
 
     # === Internal Methods ===
