@@ -20,6 +20,10 @@ from sparkai.engine.ecs.system import System, SystemRegistry
 from sparkai.engine.ecs.resource import ResourceManager
 from sparkai.engine.game_loop import GameLoop, get_game_loop, ExecutionPhase
 from sparkai.engine.signal_system import SignalBus, get_signal_bus
+from sparkai.engine.game_logic_ir import (
+    GameLogicRuntime, GameLogicCompiler, GameEvent, GameAction,
+    Condition, ConditionOperator, Expression, ActionType,
+)
 from sparkai.engine.animation_system import (
     AnimationPlayer, get_animation_player,
     AnimationSystem, get_animation_system,
@@ -38,6 +42,9 @@ from sparkai.engine.behavior_system import BehaviorSystem, get_behavior_system
 from sparkai.engine.tilemap_system import TilemapSystem, get_tilemap_system
 from sparkai.engine.camera_system import CameraSystem, get_camera_system
 from sparkai.engine.serialization import Serializer, get_serializer
+from sparkai.engine.world_checkpoint import (
+    WorldCheckpointService, WorldCheckpoint, get_world_checkpoint_service,
+)
 from sparkai.engine.ui_system import UISystem, get_ui_system
 from sparkai.engine.layer_system import LayerSystem, get_layer_system
 from sparkai.engine.profiler import Profiler, get_profiler
@@ -424,6 +431,14 @@ class SparkEngine:
         self._render_pipeline = get_render_pipeline()
         self._scene_graph = get_scene_graph()
         self._ai_system = get_ai_system()
+        # Per-scene game logic runtimes (scene-isolated event execution)
+        self._scene_logic_runtimes: Dict[str, GameLogicRuntime] = {}
+        # Engine-level (global) logic runtime — used when a scene has no own runtime
+        self._game_logic_compiler: GameLogicCompiler = GameLogicCompiler()
+        self._game_logic_runtime: GameLogicRuntime = GameLogicRuntime(self._game_logic_compiler)
+        self._register_default_logic_handlers()
+        # World checkpointing / predictive simulation sandbox
+        self._checkpoint_service: WorldCheckpointService = get_world_checkpoint_service()
         self._wire_engine_phases()
 
     def _wire_engine_phases(self) -> None:
@@ -454,6 +469,8 @@ class SparkEngine:
         self._physics_constraints.step(dt)
         self._ragdoll_system.step(dt)
         self._network_sync.tick()
+        # Evaluate structured game logic (GameLogicIR) against current engine state
+        self._tick_game_logic(dt)
         self._rendering_server.end_frame()
         self._game_loop.register_phase_handler(
             ExecutionPhase.POST_STEP,
@@ -463,6 +480,282 @@ class SparkEngine:
             ExecutionPhase.CLEANUP,
             lambda dt, stats: self._signal_bus.flush_deferred(),
         )
+
+    def _register_default_logic_handlers(self) -> None:
+        """
+        Wire GameLogicIR ActionType values to engine operations.
+
+        Each handler receives (action, context) so it can resolve the
+        action target/params against the live engine state. Handlers
+        execute synchronously inside the simulation step.
+        """
+        compiler = self._game_logic_compiler
+
+        def _spawn(action: GameAction, ctx: Dict[str, Any]) -> None:
+            scene = self.get_active_scene()
+            if scene is None:
+                return
+            name = action.params.get("name", action.target or "Spawned")
+            count = max(1, int(action.params.get("count", 1)))
+            for _ in range(count):
+                ent = scene.create_entity(name=name)
+                self._signal_bus.emit(
+                    "entity_spawned", entity_id=ent.id, scene_id=scene.id,
+                    source="game_logic", owner_id="engine",
+                )
+
+        def _destroy(action: GameAction, ctx: Dict[str, Any]) -> None:
+            scene = self.get_active_scene()
+            if scene is None:
+                return
+            target = action.target
+            if target in ("self", "", "all"):
+                return
+            entity = scene.get_entity(target) or scene.find_entity_by_name(target)
+            if entity and scene.remove_entity(entity.id):
+                self._signal_bus.emit(
+                    "entity_destroyed", entity_id=entity.id, scene_id=scene.id,
+                    source="game_logic", owner_id="engine",
+                )
+
+        def _move(action: GameAction, ctx: Dict[str, Any]) -> None:
+            scene = self.get_active_scene()
+            if scene is None:
+                return
+            entity = scene.get_entity(action.target) or scene.find_entity_by_name(action.target)
+            if not entity:
+                return
+            pos = action.params.get("position") or action.params.get("target_position")
+            if isinstance(pos, (list, tuple)) and len(pos) >= 2:
+                entity.set_position(float(pos[0]), float(pos[1]),
+                                    float(pos[2]) if len(pos) > 2 else 0.0)
+
+        def _set_property(action: GameAction, ctx: Dict[str, Any]) -> None:
+            scene = self.get_active_scene()
+            if scene is None:
+                return
+            entity = scene.get_entity(action.target) or scene.find_entity_by_name(action.target)
+            if not entity:
+                return
+            key = action.params.get("key") or action.params.get("property")
+            value = action.params.get("value")
+            if key is not None:
+                entity.properties[key] = value
+
+        def _emit_signal(action: GameAction, ctx: Dict[str, Any]) -> None:
+            signal_name = action.params.get("signal") or action.params.get("name")
+            if not signal_name:
+                return
+            payload = action.params.get("payload", {}) or {}
+            owner_id = action.params.get("owner_id", "game_logic")
+            self._signal_bus.emit(signal_name, payload, owner_id=owner_id)
+
+        def _change_scene(action: GameAction, ctx: Dict[str, Any]) -> None:
+            target = action.target or action.params.get("scene")
+            if target and self.set_active_scene(target):
+                self._signal_bus.emit(
+                    "scene_changed", scene_id=target,
+                    source="game_logic", owner_id="engine",
+                )
+
+        def _add_score(action: GameAction, ctx: Dict[str, Any]) -> None:
+            amount = float(action.params.get("amount", 0))
+            current = float(ctx.get("game", {}).get("score", 0))
+            self._game_logic_runtime.set_context(
+                "game", {"score": current + amount,
+                         "score_delta": amount},
+            )
+
+        def _set_variable(action: GameAction, ctx: Dict[str, Any]) -> None:
+            key = action.params.get("key") or action.params.get("name")
+            value = action.params.get("value")
+            if key is not None:
+                self._game_logic_runtime.set_context(key, value)
+
+        def _toggle_pause(action: GameAction, ctx: Dict[str, Any]) -> None:
+            if self._running:
+                self.stop()
+            else:
+                self.start()
+            self._signal_bus.emit(
+                "pause_toggled", paused=not self._running,
+                owner_id="engine", source="game_logic",
+            )
+
+        def _display_text(action: GameAction, ctx: Dict[str, Any]) -> None:
+            text = action.params.get("text", "")
+            self._signal_bus.emit(
+                "display_text", text=text, target=action.target,
+                owner_id="engine", source="game_logic",
+            )
+
+        def _damage(action: GameAction, ctx: Dict[str, Any]) -> None:
+            scene = self.get_active_scene()
+            if scene is None:
+                return
+            entity = scene.get_entity(action.target) or scene.find_entity_by_name(action.target)
+            if not entity:
+                return
+            amount = float(action.params.get("amount", 10))
+            current = float(entity.properties.get("health", 100))
+            entity.properties["health"] = max(0.0, current - amount)
+            self._signal_bus.emit(
+                "entity_damaged", entity_id=entity.id, amount=amount,
+                owner_id="engine", source="game_logic",
+            )
+
+        def _heal(action: GameAction, ctx: Dict[str, Any]) -> None:
+            scene = self.get_active_scene()
+            if scene is None:
+                return
+            entity = scene.get_entity(action.target) or scene.find_entity_by_name(action.target)
+            if not entity:
+                return
+            amount = float(action.params.get("amount", 25))
+            current = float(entity.properties.get("health", 0))
+            entity.properties["health"] = current + amount
+            self._signal_bus.emit(
+                "entity_healed", entity_id=entity.id, amount=amount,
+                owner_id="engine", source="game_logic",
+            )
+
+        def _add_component(action: GameAction, ctx: Dict[str, Any]) -> None:
+            scene = self.get_active_scene()
+            if scene is None:
+                return
+            entity = scene.get_entity(action.target) or scene.find_entity_by_name(action.target)
+            if not entity:
+                return
+            ctype = action.params.get("component_type") or action.params.get("type")
+            if ctype:
+                entity.add_component(ctype, action.params.get("data", {}))
+
+        def _remove_component(action: GameAction, ctx: Dict[str, Any]) -> None:
+            scene = self.get_active_scene()
+            if scene is None:
+                return
+            entity = scene.get_entity(action.target) or scene.find_entity_by_name(action.target)
+            if not entity:
+                return
+            ctype = action.params.get("component_type") or action.params.get("type")
+            if ctype:
+                entity.remove_component(ctype)
+
+        def _trigger_event(action: GameAction, ctx: Dict[str, Any]) -> None:
+            event_name = action.params.get("event") or action.params.get("name")
+            if event_name:
+                self._signal_bus.emit(
+                    event_name, action.params.get("payload", {}),
+                    owner_id="game_logic",
+                )
+
+        def _noop(action: GameAction, ctx: Dict[str, Any]) -> None:
+            """Default handler for action types without engine-side effects
+            (PLAY_ANIMATION, PLAY_SOUND, ADD_SCORE handled above, CUSTOM, etc.)."""
+            return
+
+        handler_map = {
+            ActionType.SPAWN_ENTITY: _spawn,
+            ActionType.DESTROY_ENTITY: _destroy,
+            ActionType.MOVE_ENTITY: _move,
+            ActionType.SET_PROPERTY: _set_property,
+            ActionType.PLAY_ANIMATION: _noop,
+            ActionType.PLAY_SOUND: _noop,
+            ActionType.EMIT_SIGNAL: _emit_signal,
+            ActionType.CHANGE_SCENE: _change_scene,
+            ActionType.ADD_SCORE: _add_score,
+            ActionType.SET_VARIABLE: _set_variable,
+            ActionType.TOGGLE_PAUSE: _toggle_pause,
+            ActionType.DISPLAY_TEXT: _display_text,
+            ActionType.DAMAGE_ENTITY: _damage,
+            ActionType.HEAL_ENTITY: _heal,
+            ActionType.ADD_COMPONENT: _add_component,
+            ActionType.REMOVE_COMPONENT: _remove_component,
+            ActionType.TRIGGER_EVENT: _trigger_event,
+            ActionType.CUSTOM: _noop,
+        }
+        for action_type, handler in handler_map.items():
+            compiler.register_handler(action_type, handler)
+
+    def _build_logic_context(self) -> Dict[str, Any]:
+        """
+        Build the GameLogicIR evaluation context from live engine state.
+
+        Exposes:
+          - game.tick, game.score, game.frame_count, game.delta_time, game.running
+          - scene.id, scene.name, scene.entity_count, scene.entities (id+name+props)
+          - player.* (resolved from entity tagged 'player' in active scene)
+          - input.action (latest input action label, if any)
+        """
+        ctx: Dict[str, Any] = {
+            "game": {
+                "tick": self._frame_count,
+                "frame_count": self._frame_count,
+                "score": float(self._game_logic_runtime.context.get("game", {}).get("score", 0)),
+                "delta_time": self._delta_time,
+                "running": self._running,
+            },
+        }
+        scene = self.get_active_scene()
+        if scene is not None:
+            entities_summary = [
+                {"id": e.id, "name": e.name, "tags": list(e.tags),
+                 "properties": dict(e.properties)}
+                for e in scene.entities.values()
+            ]
+            ctx["scene"] = {
+                "id": scene.id,
+                "name": scene.name,
+                "entity_count": len(scene.entities),
+                "entities": entities_summary,
+            }
+            # Resolve player entity (tagged 'player' or named 'player')
+            player = scene.find_entity_by_name("player") or next(
+                (e for e in scene.entities.values() if "player" in e.tags), None,
+            )
+            if player is not None:
+                ctx["player"] = {
+                    "id": player.id,
+                    "name": player.name,
+                    "position": list(player.position),
+                    "health": float(player.properties.get("health", 100)),
+                    "score": float(player.properties.get("score", 0)),
+                    "properties": dict(player.properties),
+                }
+        try:
+            snapshot = self._input_manager.get_snapshot()
+            ctx["input"] = {"action": snapshot.get("action", "") if isinstance(snapshot, dict) else ""}
+        except Exception:
+            ctx["input"] = {"action": ""}
+        return ctx
+
+    def _tick_game_logic(self, dt: float) -> None:
+        """
+        Evaluate structured game logic against the current engine state.
+
+        Tries the active scene's own runtime first (scene isolation),
+        then the engine-level runtime. Both can be active simultaneously.
+        """
+        if not self._running:
+            return
+        ctx = self._build_logic_context()
+
+        # Engine-global runtime (always ticks if engine is running)
+        self._game_logic_runtime.update_context(ctx)
+        try:
+            self._game_logic_runtime.tick(dt)
+        except Exception:
+            pass
+
+        # Scene-isolated runtime (if active scene has one)
+        scene = self.get_active_scene()
+        if scene is not None and scene.id in self._scene_logic_runtimes:
+            scene_rt = self._scene_logic_runtimes[scene.id]
+            scene_rt.update_context(ctx)
+            try:
+                scene_rt.tick(dt)
+            except Exception:
+                pass
 
     def _tick_worlds(self, dt: float) -> None:
         for world in self._worlds.values():
@@ -522,6 +815,9 @@ class SparkEngine:
         self._scenes[scene.id] = scene
         if not self._active_scene_id:
             self._active_scene_id = scene.id
+        self._signal_bus.emit(
+            "scene_created", scene_id=scene.id, name=name, owner_id="engine",
+        )
         return scene
 
     def get_scene(self, scene_id: str) -> Optional["Scene"]:
@@ -534,7 +830,12 @@ class SparkEngine:
 
     def set_active_scene(self, scene_id: str) -> bool:
         if scene_id in self._scenes:
+            previous = self._active_scene_id
             self._active_scene_id = scene_id
+            self._signal_bus.emit(
+                "scene_changed", scene_id=scene_id, previous_scene_id=previous,
+                owner_id="engine",
+            )
             return True
         return False
 
@@ -544,10 +845,150 @@ class SparkEngine:
     def delete_scene(self, scene_id: str) -> bool:
         if scene_id in self._scenes:
             del self._scenes[scene_id]
+            # Drop its isolated logic runtime, if any
+            self._scene_logic_runtimes.pop(scene_id, None)
             if self._active_scene_id == scene_id:
                 self._active_scene_id = next(iter(self._scenes), None)
+            self._signal_bus.emit(
+                "scene_deleted", scene_id=scene_id, owner_id="engine",
+            )
             return True
         return False
+
+    # ------------------------------------------------------------------
+    # Game Logic IR integration (scene-isolated + engine-global runtimes)
+    # ------------------------------------------------------------------
+
+    @property
+    def game_logic_runtime(self) -> GameLogicRuntime:
+        """Engine-global logic runtime. Always ticks while engine is running."""
+        return self._game_logic_runtime
+
+    @property
+    def game_logic_compiler(self) -> GameLogicCompiler:
+        return self._game_logic_compiler
+
+    def ensure_scene_logic_runtime(self, scene_id: str) -> Optional[GameLogicRuntime]:
+        """
+        Create a scene-isolated GameLogicRuntime for the given scene.
+
+        Events registered on this runtime only fire when its scene is
+        active, providing scene-level isolation. The runtime shares the
+        engine-global compiler so registered action handlers work
+        identically across scenes.
+        """
+        if scene_id not in self._scenes:
+            return None
+        if scene_id not in self._scene_logic_runtimes:
+            self._scene_logic_runtimes[scene_id] = GameLogicRuntime(self._game_logic_compiler)
+        return self._scene_logic_runtimes[scene_id]
+
+    def get_scene_logic_runtime(self, scene_id: str) -> Optional[GameLogicRuntime]:
+        return self._scene_logic_runtimes.get(scene_id)
+
+    def remove_scene_logic_runtime(self, scene_id: str) -> bool:
+        return self._scene_logic_runtimes.pop(scene_id, None) is not None
+
+    def add_logic_event(self, event: GameEvent, scene_id: Optional[str] = None) -> str:
+        """
+        Register a GameEvent with the logic runtime.
+
+        If scene_id is provided (and exists), the event is registered
+        with that scene's isolated runtime. Otherwise it is registered
+        with the engine-global runtime and fires regardless of active scene.
+        """
+        if scene_id is not None:
+            rt = self.ensure_scene_logic_runtime(scene_id)
+            if rt is None:
+                raise ValueError(f"Unknown scene_id: {scene_id}")
+        else:
+            rt = self._game_logic_runtime
+        return rt.add_event(event)
+
+    def remove_logic_event(self, event_id: str, scene_id: Optional[str] = None) -> bool:
+        if scene_id is not None:
+            rt = self._scene_logic_runtimes.get(scene_id)
+            if rt is None:
+                return False
+            return rt.remove_event(event_id)
+        return self._game_logic_runtime.remove_event(event_id)
+
+    def get_logic_status(self, scene_id: Optional[str] = None) -> Dict[str, Any]:
+        rt = self._scene_logic_runtimes.get(scene_id) if scene_id else self._game_logic_runtime
+        if rt is None:
+            return {"error": "unknown scene", "scene_id": scene_id}
+        return rt.get_statistics()
+
+    def get_logic_action_log(self, scene_id: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
+        rt = self._scene_logic_runtimes.get(scene_id) if scene_id else self._game_logic_runtime
+        if rt is None:
+            return []
+        return rt.get_action_log(limit)
+
+    def get_logic_action_errors(self, scene_id: Optional[str] = None, limit: int = 50) -> List[Dict[str, Any]]:
+        rt = self._scene_logic_runtimes.get(scene_id) if scene_id else self._game_logic_runtime
+        if rt is None:
+            return []
+        return rt.get_action_errors(limit)
+
+    def export_logic_events(self, scene_id: Optional[str] = None) -> List[Dict[str, Any]]:
+        rt = self._scene_logic_runtimes.get(scene_id) if scene_id else self._game_logic_runtime
+        if rt is None:
+            return []
+        return rt.export_events()
+
+    # ------------------------------------------------------------------
+    # World checkpointing & predictive simulation sandbox
+    # ------------------------------------------------------------------
+
+    @property
+    def checkpoints(self) -> WorldCheckpointService:
+        """Predictive-simulation sandbox for the current world state."""
+        return self._checkpoint_service
+
+    def create_checkpoint(self, reason: str = "checkpoint") -> Dict[str, Any]:
+        """
+        Snapshot the current world so it can be restored later.
+
+        This is the foundation of AI-native "what-if" reasoning: an agent
+        snapshots, mutates/simulates, inspects the outcome, then either
+        restores (rollback) or commits.
+        """
+        cp = self._checkpoint_service.capture_checkpoint(self, reason=reason)
+        return cp.full_dict()
+
+    def restore_checkpoint(self, checkpoint_id: str) -> bool:
+        """Restore the world to a captured checkpoint (rollback)."""
+        return self._checkpoint_service.restore_checkpoint(self, checkpoint_id)
+
+    def discard_checkpoint(self, checkpoint_id: str) -> bool:
+        return self._checkpoint_service.discard_checkpoint(checkpoint_id)
+
+    def list_checkpoints(self) -> List[Dict[str, Any]]:
+        return self._checkpoint_service.list_checkpoints()
+
+    def clear_checkpoints(self) -> int:
+        return self._checkpoint_service.clear_checkpoints()
+
+    def simulate_frames(
+        self,
+        frames: int = 60,
+        delta_time: float = 1.0 / 60.0,
+        commit: bool = False,
+    ) -> Dict[str, Any]:
+        """
+        Run the world forward in a sandbox and report predicted outcomes.
+
+        Defaults to predictive (rollback) mode: the world is restored to
+        its pre-simulation state after measurement. With `commit=True` the
+        simulated outcome is retained.
+
+        Returns the before/after state, the diff, and a human-readable
+        summary suitable for feeding back into an agent's reasoning.
+        """
+        return self._checkpoint_service.simulate_frames(
+            self, frames=frames, delta_time=delta_time, commit=commit,
+        )
 
     def start(self) -> None:
         self._running = True
@@ -769,7 +1210,7 @@ class SparkEngine:
             "tilemap_runtime": self._tilemap_runtime.get_stats(),
             "ecs": self._ecs.get_stats(),
             "physics_world_2d": self._physics_world_2d.get_stats(),
-            "visual_scripting": self._visual_scripting.get_stats(),
+            "visual_scripting": self._visual_scripting.get_status(),
             "scene_manager": self._scene_manager.get_stats(),
             "animation_engine": self._animation_system.get_stats(),
             "particle_engine": self._particle_engine.get_stats(),
@@ -782,7 +1223,13 @@ class SparkEngine:
             "destruction_physics_engine": self._destruction_physics_engine.get_stats(),
             "render_pipeline": self._render_pipeline.get_stats(),
             "scene_graph": self._scene_graph.get_stats(),
-            "ai_system": self._ai_system.get_stats(),
+            "ai_system": self._ai_system.get_status(),
+            "game_logic": self._game_logic_runtime.get_statistics(),
+            "scene_logic_runtimes": {
+                sid: rt.get_statistics()
+                for sid, rt in self._scene_logic_runtimes.items()
+            },
+            "checkpoints": self._checkpoint_service.get_statistics(),
         }
 
     @property
