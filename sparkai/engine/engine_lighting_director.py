@@ -4,9 +4,8 @@ SparkLabs Engine - Lighting Director
 Engine-side cinematic lighting director that orchestrates dynamic lighting
 for game scenes. It manages light sources (directional, point, spot, area,
 ambient, hemisphere), light groups, lighting moods/presets, time-of-day
-mood transitions, and shadow casting configuration. Similar to how a film's
-gaffer and director of photography collaborate on lighting design, this
-system coordinates all light sources to achieve a desired visual atmosphere.
+mood transitions, and shadow casting configuration. This system
+coordinates all light sources to achieve a desired visual atmosphere.
 
 The lighting director maintains a registry of light sources, light groups
 (which reference sets of lights), lighting moods (named presets that pin a
