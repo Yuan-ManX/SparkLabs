@@ -1,7 +1,7 @@
 """
 SparkLabs Agent - Unified Memory System
 
-A cognitive-architecture-inspired unified memory system that provides
+A unified memory system that provides
 four distinct memory stores with automatic consolidation across layers.
 The system models human-like memory processes: working memory for active
 reasoning, episodic memory for experiential records, semantic memory for
@@ -639,7 +639,7 @@ def _compute_similarity(query: str, content: str) -> float:
 
 class UnifiedMemorySystem:
     """
-    Cognitive-architecture-inspired unified memory system.
+    Unified memory system.
 
     Provides four distinct memory stores with automatic consolidation
     across layers, modeling human-like memory processes for AI agents.
