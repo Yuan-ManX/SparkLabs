@@ -1,5 +1,10 @@
 """
 SparkAI Agent - Hierarchical Memory System
+
+Supports three-factor retrieval (recency x relevance x importance)
+with a reflection DAG that enables recursive reflection-on-reflection.
+Memories are nodes in a provenance graph where reflection nodes point
+back to the observations that inspired them.
 """
 
 from __future__ import annotations
@@ -19,6 +24,12 @@ class MemoryType(Enum):
     WORKING = "working"
 
 
+class NodeType(Enum):
+    """Memory node type for the reflection DAG."""
+    OBSERVATION = "observation"
+    REFLECTION = "reflection"
+
+
 @dataclass
 class MemoryEntry:
     id: str = ""
@@ -30,6 +41,13 @@ class MemoryEntry:
     embedding: List[float] = field(default_factory=list)
     metadata: Dict[str, Any] = field(default_factory=dict)
     access_count: int = 0
+    # Reflection DAG fields
+    node_type: NodeType = NodeType.OBSERVATION
+    pointer_ids: List[str] = field(default_factory=list)
+    last_retrieved: float = field(default_factory=time.time)
+    # Emotional valence for game agent context (-1.0 to 1.0)
+    emotional_valence: float = 0.0
+    emotional_intensity: float = 0.0
 
     def is_expired(self) -> bool:
         if self.expires_at is None:
@@ -49,6 +67,28 @@ class MemoryEntry:
         rate = decay_rates.get(self.memory_type, 1.0)
         return self.importance * math.exp(-rate * elapsed / 3600.0)
 
+    def recency_score(self, current_time: Optional[float] = None) -> float:
+        """Exponential recency decay based on last retrieval time."""
+        current_time = current_time or time.time()
+        elapsed = current_time - self.last_retrieved
+        return 0.99 ** (elapsed / 60.0)  # Decay per minute
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "id": self.id,
+            "content": self.content,
+            "type": self.memory_type.value,
+            "node_type": self.node_type.value,
+            "importance": self.importance,
+            "timestamp": self.timestamp,
+            "last_retrieved": self.last_retrieved,
+            "access_count": self.access_count,
+            "pointer_ids": self.pointer_ids,
+            "emotional_valence": self.emotional_valence,
+            "emotional_intensity": self.emotional_intensity,
+            "metadata": self.metadata,
+        }
+
 
 class AgentMemory:
     """
@@ -60,6 +100,15 @@ class AgentMemory:
     - Episodic: Medium decay, event sequences
     - Semantic: Minimal decay, world facts
     - Working: Active processing buffer
+
+    Three-factor retrieval scores each memory by:
+    - Recency: exponential decay from last retrieval time
+    - Relevance: keyword/bigram/semantic similarity to query
+    - Importance: LLM-assigned or heuristic score (0.0-1.0)
+
+    The reflection DAG allows reflections to be stored as memory nodes
+    with provenance pointers to their source observations, enabling
+    recursive reflection-on-reflection for deep agent reasoning.
     """
 
     def __init__(
@@ -69,6 +118,10 @@ class AgentMemory:
         episodic_capacity: int = 500,
         semantic_capacity: int = 2000,
         working_capacity: int = 20,
+        # Three-factor retrieval weights (recency, relevance, importance)
+        recency_weight: float = 0.3,
+        relevance_weight: float = 0.4,
+        importance_weight: float = 0.3,
     ):
         self._memories: Dict[MemoryType, List[MemoryEntry]] = {
             MemoryType.SHORT_TERM: [],
@@ -85,6 +138,16 @@ class AgentMemory:
             MemoryType.WORKING: working_capacity,
         }
         self._id_counter = 0
+        # Retrieval weights
+        self._recency_w = recency_weight
+        self._relevance_w = relevance_weight
+        self._importance_w = importance_weight
+        # Index for fast lookup by ID (reflection DAG traversal)
+        self._id_index: Dict[str, MemoryEntry] = {}
+        # Reflection cadence tracking
+        self._tick_count: int = 0
+        self._last_micro_reflection: float = 0.0
+        self._last_full_reflection: float = 0.0
 
     def remember(
         self,
@@ -92,6 +155,10 @@ class AgentMemory:
         memory_type: MemoryType = MemoryType.SHORT_TERM,
         importance: float = 0.5,
         metadata: Optional[Dict[str, Any]] = None,
+        node_type: NodeType = NodeType.OBSERVATION,
+        pointer_ids: Optional[List[str]] = None,
+        emotional_valence: float = 0.0,
+        emotional_intensity: float = 0.0,
     ) -> MemoryEntry:
         self._id_counter += 1
         entry = MemoryEntry(
@@ -100,8 +167,13 @@ class AgentMemory:
             memory_type=memory_type,
             importance=importance,
             metadata=metadata or {},
+            node_type=node_type,
+            pointer_ids=pointer_ids or [],
+            emotional_valence=emotional_valence,
+            emotional_intensity=emotional_intensity,
         )
         self._memories[memory_type].append(entry)
+        self._id_index[entry.id] = entry
         self._enforce_capacity(memory_type)
         return entry
 
@@ -111,6 +183,12 @@ class AgentMemory:
         max_results: int = 5,
         memory_types: Optional[List[MemoryType]] = None,
     ) -> List[Dict[str, Any]]:
+        """
+        Three-factor retrieval: recency x relevance x importance.
+
+        Each factor is normalized to [0, 1] before weighted combination.
+        Updates last_retrieved timestamp on accessed memories.
+        """
         types = memory_types or list(MemoryType)
         candidates: List[MemoryEntry] = []
         for mt in types:
@@ -118,26 +196,126 @@ class AgentMemory:
                 e for e in self._memories.get(mt, []) if not e.is_expired()
             )
 
-        scored = []
+        if not candidates:
+            return []
+
+        current_time = time.time()
         query_lower = query.lower()
+
+        # Compute raw scores for all candidates
+        raw_scores = []
         for entry in candidates:
-            score = self._compute_relevance(entry, query_lower)
-            scored.append((score, entry))
+            recency = entry.recency_score(current_time)
+            relevance = self._compute_relevance(entry, query_lower)
+            importance = max(0.0, min(1.0, entry.decay_importance(current_time)))
+            raw_scores.append((recency, relevance, importance, entry))
+
+        # Normalize each factor to [0, 1]
+        max_recency = max(r[0] for r in raw_scores) or 1.0
+        max_relevance = max(r[1] for r in raw_scores) or 1.0
+        max_importance = max(r[2] for r in raw_scores) or 1.0
+
+        scored = []
+        for recency, relevance, importance, entry in raw_scores:
+            n_recency = recency / max_recency if max_recency > 0 else 0.0
+            n_relevance = relevance / max_relevance if max_relevance > 0 else 0.0
+            n_importance = importance / max_importance if max_importance > 0 else 0.0
+
+            master_score = (
+                self._recency_w * n_recency
+                + self._relevance_w * n_relevance
+                + self._importance_w * n_importance
+            )
+            scored.append((master_score, entry))
 
         scored.sort(key=lambda x: x[0], reverse=True)
+
         results = []
         for score, entry in scored[:max_results]:
             entry.access_count += 1
+            entry.last_retrieved = current_time
             results.append({
                 "id": entry.id,
                 "content": entry.content,
                 "type": entry.memory_type.value,
+                "node_type": entry.node_type.value,
                 "importance": entry.importance,
-                "relevance": score,
+                "score": round(score, 4),
                 "timestamp": entry.timestamp,
+                "pointer_ids": entry.pointer_ids,
                 "metadata": entry.metadata,
             })
         return results
+
+    def add_reflection(
+        self,
+        content: str,
+        source_ids: List[str],
+        importance: float = 0.8,
+        memory_type: MemoryType = MemoryType.LONG_TERM,
+        emotional_valence: float = 0.0,
+        emotional_intensity: float = 0.0,
+    ) -> MemoryEntry:
+        """
+        Add a reflection node to the memory DAG.
+
+        Reflections are higher-abstraction memories that point back to
+        the observation nodes that inspired them. This enables recursive
+        reflection-on-reflection for deep agent reasoning.
+        """
+        entry = self.remember(
+            content=content,
+            memory_type=memory_type,
+            importance=importance,
+            node_type=NodeType.REFLECTION,
+            pointer_ids=source_ids,
+            emotional_valence=emotional_valence,
+            emotional_intensity=emotional_intensity,
+        )
+        return entry
+
+    def get_reflection_chain(self, reflection_id: str) -> List[Dict[str, Any]]:
+        """Trace the provenance chain of a reflection back to source observations."""
+        chain = []
+        visited = set()
+        stack = [reflection_id]
+        while stack:
+            node_id = stack.pop()
+            if node_id in visited:
+                continue
+            visited.add(node_id)
+            entry = self._id_index.get(node_id)
+            if entry:
+                chain.append(entry.to_dict())
+                stack.extend(entry.pointer_ids)
+        return chain
+
+    def tick(self) -> None:
+        """Advance the memory system's internal tick counter for cadence tracking."""
+        self._tick_count += 1
+
+    def should_micro_reflect(self, interval_ticks: int = 60) -> bool:
+        """Check if a micro-reflection is due (lightweight, frequent)."""
+        return self._tick_count - self._last_micro_reflection >= interval_ticks
+
+    def should_full_reflect(self, interval_ticks: int = 3600) -> bool:
+        """Check if a full reflection is due (heavyweight, infrequent)."""
+        return self._tick_count - self._last_full_reflection >= interval_ticks
+
+    def mark_micro_reflected(self) -> None:
+        self._last_micro_reflection = self._tick_count
+
+    def mark_full_reflected(self) -> None:
+        self._last_full_reflection = self._tick_count
+
+    def get_emotional_summary(self) -> Dict[str, float]:
+        """Aggregate emotional state across recent memories."""
+        recent = self._memories[MemoryType.SHORT_TERM][-20:]
+        if not recent:
+            return {"valence": 0.0, "intensity": 0.0}
+        avg_valence = sum(e.emotional_valence for e in recent) / len(recent)
+        avg_intensity = sum(e.emotional_intensity for e in recent) / len(recent)
+        return {"valence": round(avg_valence, 3), "intensity": round(avg_intensity, 3)}
 
     def forget(self, entry_id: str) -> bool:
         for mt in MemoryType:
@@ -145,6 +323,7 @@ class AgentMemory:
             for i, entry in enumerate(memories):
                 if entry.id == entry_id:
                     memories.pop(i)
+                    self._id_index.pop(entry_id, None)
                     return True
         return False
 
@@ -264,4 +443,5 @@ class AgentMemory:
                 if imp < lowest_importance:
                     lowest_importance = imp
                     lowest_idx = i
-            memories.pop(lowest_idx)
+            evicted = memories.pop(lowest_idx)
+            self._id_index.pop(evicted.id, None)
