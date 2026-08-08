@@ -8,9 +8,8 @@ events. It adapts its tone based on the intensity and context of the action,
 maintains a priority queue to avoid flooding the player with overlapping
 lines, and provides cooldown management to keep commentary fresh.
 
-The system fuses the real-time decision-making patterns of Hermes Agent with
-the narrative simulation approach of genagents and the situational awareness
-of WorldX. The announcer is not a static line-picker — it evaluates the
+The system fuses real-time decision-making with narrative simulation and
+situational awareness. The announcer is not a static line-picker — it evaluates the
 current game state (score gap, streak length, time remaining, player skill
 disparity) to select commentary that matches the moment.
 

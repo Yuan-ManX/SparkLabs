@@ -180,7 +180,7 @@ class RelationKind(Enum):
     SPECIALIZES = "specializes"
     GENERALIZES = "generalizes"
     COMPOSED_OF = "composed_of"
-    INSPIRED_BY = "inspired_by"
+    DERIVED_FROM = "derived_from"
 
 
 class ConfidenceLevel(Enum):

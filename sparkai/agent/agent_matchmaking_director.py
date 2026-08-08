@@ -4,8 +4,8 @@ SparkLabs Agent - AI Matchmaking Director
 An AI-driven matchmaking system for the SparkLabs AI-native game engine.
 This agent manages player profiles with skill ratings, processes match
 tickets, and assembles balanced match sessions using a multi-factor scoring
-algorithm. It fuses Hermes Agent's decision-making patterns with genagents'
-simulation strategies to produce fair, latency-aware, and engaging matches.
+algorithm. It fuses real-time decision-making with multi-agent coordination
+strategies to produce fair, latency-aware, and engaging matches.
 
 Architecture:
   MatchmakingDirector (singleton)
