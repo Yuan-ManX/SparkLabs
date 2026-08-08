@@ -1,8 +1,8 @@
 """
 SparkLabs Engine - Component-Based Game Object System
 
-A composable, data-driven architecture for game object management inspired
-by the component pattern used in Phaser, GDevelop, and Godot. Game objects
+A composable, data-driven architecture for game object management built on
+the entity-component pattern. Game objects
 are composed of reusable components that define behavior, avoiding deep
 inheritance hierarchies. Each component type is defined by a
 ComponentDefinition, and runtime instances are tracked as ComponentInstance
