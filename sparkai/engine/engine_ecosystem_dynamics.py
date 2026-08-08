@@ -3,7 +3,7 @@ SparkLabs Engine - Ecosystem Dynamics Simulation System
 
 A population dynamics simulation engine modeling flora and fauna
 interactions including predator-prey relationships, carrying capacity,
-species migration, and seasonal effects. Uses a Lotka-Volterra inspired
+species migration, and seasonal effects. Uses a predator-prey
 model with logistic growth for producers, functional response predation
 for consumers, and seasonal modifiers on growth and carrying capacity.
 
@@ -18,7 +18,7 @@ Architecture:
 Ecological Model:
   - Producers: logistic growth toward carrying capacity (season-modified)
   - Primary consumers: Holling Type II functional response on producers
-  - Secondary/Tertiary consumers: Lotka-Volterra predation on lower trophic levels
+  - Secondary/Tertiary consumers: Predator-prey predation on lower trophic levels
   - Decomposers: growth proportional to dead biomass (mortality)
   - Migration: triggered by overpopulation, resource scarcity, or season
   - Seasonal effects: growth rate and carrying capacity modifiers per season
@@ -277,7 +277,7 @@ class EcosystemReport:
 # ---------------------------------------------------------------------------
 
 class EcosystemDynamicsEngine:
-    """Population dynamics simulation engine using a Lotka-Volterra inspired model.
+    """Population dynamics simulation engine using a predator-prey dynamics model.
 
     Models flora and fauna population dynamics including predator-prey
     relationships, carrying capacity, species migration, and seasonal
@@ -526,7 +526,7 @@ class EcosystemDynamicsEngine:
     ) -> Optional[EcosystemReport]:
         """Advance a region's ecosystem by one simulation tick.
 
-        Applies a Lotka-Volterra inspired model:
+        Applies a predator-prey dynamics model:
           1. Compute seasonal modifiers on growth and carrying capacity.
           2. Producers grow logistically toward carrying capacity.
           3. Consumers grow based on prey availability (Holling Type II).
@@ -594,7 +594,7 @@ class EcosystemDynamicsEngine:
                     SpeciesType.SECONDARY_CONSUMER,
                     SpeciesType.TERTIARY_CONSUMER,
                 ):
-                    # Lotka-Volterra with Holling Type II functional response
+                    # Predator-prey with Holling Type II functional response
                     total_prey = sum(
                         current_pops.get(pid, 0.0) for pid in profile.prey_ids
                     )
