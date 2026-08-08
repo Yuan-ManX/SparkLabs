@@ -531,7 +531,7 @@ export default function AgentMultiAgentProtocolPanel() {
                       <option value="unanimous">Unanimous</option>
                       <option value="weighted">Weighted</option>
                       <option value="random">Random</option>
-                      <option value="raft">Raft</option>
+                      <option value="consensus">Consensus</option>
                     </select>
                   </div>
                   <div>
