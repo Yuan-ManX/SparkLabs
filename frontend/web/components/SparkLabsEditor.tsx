@@ -356,6 +356,10 @@ import TemporalCrystalPanel from './TemporalCrystalPanel';
 import UnifiedHubPanel from './UnifiedHubPanel';
 import FrameArchitectPanel from './FrameArchitectPanel';
 import AIWorkflowPanel from './AIWorkflowPanel';
+import TrajectoryTimelinePanel from './TrajectoryTimelinePanel';
+import MemoryBrowserPanel from './MemoryBrowserPanel';
+import PerceptionVisualizerPanel from './PerceptionVisualizerPanel';
+import PredictiveSimulationPanel from './PredictiveSimulationPanel';
 
 type TransformTool = 'move' | 'rotate' | 'scale';
 
@@ -1020,6 +1024,11 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'game-physics': return <GamePhysicsPanel />;
       case 'cognitive-simulation': return <CognitiveSimulationPanel />;
       case 'game-bridge': return <AiGameBridgePanel />;
+      // AI-native agent systems: trajectory, memory, perception pipeline
+      case 'trajectory-timeline': return <TrajectoryTimelinePanel />;
+      case 'memory-browser': return <MemoryBrowserPanel />;
+      case 'perception-visualizer': return <PerceptionVisualizerPanel />;
+      case 'predictive-simulation': return <PredictiveSimulationPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };
