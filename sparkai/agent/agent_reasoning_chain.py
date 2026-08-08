@@ -2,9 +2,9 @@
 SparkLabs Agent - Reasoning Chain Engine
 
 Recursive reasoning engine that enables agents to decompose complex problems
-through multi-step chain-of-thought reasoning with self-verification. Inspired
-by recursive agent architectures, this module provides structured reasoning
-steps, belief tracking, and intermediate conclusion validation.
+through multi-step chain-of-thought reasoning with self-verification. This
+module provides structured reasoning steps, belief tracking, and intermediate
+conclusion validation.
 
 Architecture:
   ReasoningChainEngine (Singleton)
