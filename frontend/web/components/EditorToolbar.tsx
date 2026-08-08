@@ -44,6 +44,10 @@ export const modeGroups: ModeGroup[] = [
     items: [
       { id: 'agent-hub', label: 'Agent Hub', icon: 'fa-brain' },
       { id: 'cognition-lab', label: 'Cognition Lab', icon: 'fa-atom' },
+      { id: 'trajectory-timeline', label: 'Trajectory', icon: 'fa-route' },
+      { id: 'memory-browser', label: 'Memory', icon: 'fa-database' },
+      { id: 'perception-visualizer', label: 'Perception', icon: 'fa-eye' },
+      { id: 'predictive-simulation', label: 'Simulation', icon: 'fa-flask' },
     ],
   },
   {
