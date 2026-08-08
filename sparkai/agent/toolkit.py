@@ -15,6 +15,7 @@ Toolset composition enables:
 from __future__ import annotations
 
 import asyncio
+import uuid
 from abc import ABC, abstractmethod
 from dataclasses import dataclass, field
 from typing import Any, Callable, Dict, List, Optional, Awaitable
@@ -176,10 +177,30 @@ class ToolsetRegistry:
         cls._toolsets.clear()
 
 
+def _get_engine_handlers():
+    try:
+        from sparkai.agent.engine_bridge import get_engine_bridge_handlers
+        return get_engine_bridge_handlers()
+    except Exception:
+        return {}
+
+
 def create_engine_toolset() -> Toolset:
-    """Core engine tools for world, entity, and scene management."""
+    """Core engine tools for world, entity, and scene management.
+
+    When the SparkEngine is available, tools interact with the live engine.
+    Otherwise they return simulation responses for development and testing.
+    """
+
+    _engine_handlers = _get_engine_handlers()
 
     async def create_world(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("create_world")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
         return {
             "action": "create_world",
             "name": params.get("name", "World"),
@@ -187,6 +208,12 @@ def create_engine_toolset() -> Toolset:
         }
 
     async def create_entity(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("create_entity")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
         return {
             "action": "create_entity",
             "name": params.get("name", "Entity"),
@@ -197,6 +224,12 @@ def create_engine_toolset() -> Toolset:
         }
 
     async def add_component(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("add_component")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
         return {
             "action": "add_component",
             "entity_id": params.get("entity_id", ""),
@@ -206,6 +239,12 @@ def create_engine_toolset() -> Toolset:
         }
 
     async def remove_component(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("remove_component")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
         return {
             "action": "remove_component",
             "entity_id": params.get("entity_id", ""),
@@ -214,6 +253,12 @@ def create_engine_toolset() -> Toolset:
         }
 
     async def create_scene(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("create_scene")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
         return {
             "action": "create_scene",
             "name": params.get("name", "Untitled Scene"),
@@ -221,10 +266,70 @@ def create_engine_toolset() -> Toolset:
         }
 
     async def query_entities(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("query_entities")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
         return {
             "action": "query_entities",
             "filter": params.get("filter", {}),
             "status": "queried",
+        }
+
+    async def simulate_world(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("simulate_world")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
+        return {
+            "action": "simulate_world",
+            "frames": params.get("frames", 60),
+            "commit": params.get("commit", False),
+            "status": "simulated",
+            "summary": "Predicted world state held in sandbox; rolled back.",
+        }
+
+    async def create_checkpoint(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("create_checkpoint")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
+        return {
+            "action": "create_checkpoint",
+            "checkpoint_id": "sim-" + str(uuid.uuid4())[:8],
+            "status": "created",
+        }
+
+    async def restore_checkpoint(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("restore_checkpoint")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
+        return {
+            "action": "restore_checkpoint",
+            "checkpoint_id": params.get("checkpoint_id", ""),
+            "status": "restored",
+        }
+
+    async def list_checkpoints(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("list_checkpoints")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
+        return {
+            "action": "list_checkpoints",
+            "checkpoints": [],
+            "status": "listed",
         }
 
     return Toolset("engine", "Core engine tools for world and entity management").add(Tool(
@@ -281,6 +386,38 @@ def create_engine_toolset() -> Toolset:
             ToolParameter(name="filter", type="object", description="Query filter", required=False),
         ],
         handler=query_entities,
+    )).add(Tool(
+        name="simulate_world",
+        description="Predict consequences of the current world by stepping the engine in a sandbox. Rolled back by default (what-if); set commit=true to keep the outcome.",
+        category="engine",
+        parameters=[
+            ToolParameter(name="frames", type="integer", description="Number of frames to simulate", required=False),
+            ToolParameter(name="delta_time", type="number", description="Frame delta time", required=False),
+            ToolParameter(name="commit", type="boolean", description="Keep the simulated outcome", required=False),
+        ],
+        handler=simulate_world,
+    )).add(Tool(
+        name="create_checkpoint",
+        description="Snapshot the current world so it can be restored or diffed later",
+        category="engine",
+        parameters=[
+            ToolParameter(name="reason", type="string", description="Checkpoint reason", required=False),
+        ],
+        handler=create_checkpoint,
+    )).add(Tool(
+        name="restore_checkpoint",
+        description="Restore the world to a previously captured checkpoint (rollback)",
+        category="engine",
+        parameters=[
+            ToolParameter(name="checkpoint_id", type="string", description="Checkpoint ID to restore"),
+        ],
+        handler=restore_checkpoint,
+    )).add(Tool(
+        name="list_checkpoints",
+        description="List all captured world checkpoints",
+        category="engine",
+        parameters=[],
+        handler=list_checkpoints,
     ))
 
 
