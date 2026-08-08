@@ -28,8 +28,8 @@ from backend.routes import (
     agent_fusion_loop, creative_autonomy, agent_chat, chat_editor_bridge,
     coordination_hub, playtest_simulator, cognitive_mesh,
     story_director, frame_workflow, temporal_music,
-    semantic_prefetch, dream_bubble, resonance_emergence,
-    persona_harmonics,
+    game_runtime, agent_systems, game_logic,
+    engine_checkpoint,
 )
 from backend.websocket import router as ws_router
 from sparkai.api.routes import llm_router_routes
@@ -118,11 +118,11 @@ app.include_router(cognitive_mesh.router, prefix="/api/agent", tags=["Cognitive 
 app.include_router(story_director.router, prefix="/api/agent", tags=["Story Director & Live Tuner"])
 app.include_router(frame_workflow.router, prefix="/api/agent", tags=["Frame Architect & AI Workflow"])
 app.include_router(temporal_music.router, prefix="/api/agent", tags=["Temporal Director & Music Conductor"])
-app.include_router(semantic_prefetch.router, prefix="/api/agent", tags=["Semantic World Indexer & Predictive Prefetcher"])
-app.include_router(dream_bubble.router, prefix="/api/agent", tags=["Memory Dream Consolidator & Reality Bubble Projector"])
-app.include_router(resonance_emergence.router, prefix="/api/agent", tags=["Narrative Resonance Engine & Emergence Pattern Detector"])
-app.include_router(persona_harmonics.router, prefix="/api/agent", tags=["Persona Lifecycle Manager & Spatial Harmonics Resonator"])
 app.include_router(llm_router_routes.router, prefix="/api/llm-router", tags=["LLM Router"])
+app.include_router(game_runtime.router, prefix="/api/game", tags=["Game Runtime"])
+app.include_router(agent_systems.router, prefix="/api/agent", tags=["Agent Systems"])
+app.include_router(game_logic.router, prefix="/api/game", tags=["Game Logic IR"])
+app.include_router(engine_checkpoint.router, prefix="/api/engine", tags=["Engine Checkpoint & Simulation"])
 
 
 @app.get("/api/health")
