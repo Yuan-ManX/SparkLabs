@@ -3,8 +3,8 @@ SparkLabs Engine - Animation Director
 
 Engine-side animation state machine director that orchestrates skeletal
 animations, blend trees, state transitions, and animation layers for game
-entities. It provides director-level animation control similar to Unity's
-Animator and Godot's AnimationTree - managing animation states, transitions
+entities. It provides director-level animation control - managing
+animation states, transitions
 between them with gating conditions, parametric blend trees for procedural
 movement, and layered animation for combining upper/lower body clips.
 
