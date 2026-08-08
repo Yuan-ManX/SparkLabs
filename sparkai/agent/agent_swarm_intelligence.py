@@ -11,7 +11,7 @@ through shared knowledge and coordinated action.
 Architecture:
   SwarmIntelligenceEngine (singleton)
     |-- SwarmAgent (autonomous participant with identity and reputation)
-    |-- ConsensusCompiler (Raft-inspired collective decision making)
+    |-- ConsensusCompiler (consensus-based collective decision making)
     |-- TaskDisperser (capability-aware work distribution)
     |-- InsightReservoir (versioned, decaying shared knowledge)
     |-- PatternOracle (emergent behavior detection and serendipity logging)
@@ -232,7 +232,7 @@ class SwarmTasklet:
 @dataclass
 class ConsensusBallot:
     """A single proposal within a consensus round, carrying votes and
-    Raft-inspired term tracking for distributed agreement.
+    term-based tracking for distributed agreement.
     """
 
     ballot_id: str = field(default_factory=lambda: uuid.uuid4().hex)
@@ -374,7 +374,7 @@ class EmergenceTrace:
 
 
 class ConsensusCompiler:
-    """Collective decision-making engine with Raft-inspired agreement.
+    """Collective decision-making engine with consensus-based agreement.
 
     Drives structured consensus rounds where agents nominate options,
     campaign for their positions, cast weighted ballots, and converge
