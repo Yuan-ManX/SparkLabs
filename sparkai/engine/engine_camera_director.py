@@ -4,8 +4,7 @@ SparkLabs Engine - Camera Director
 A cinematic camera director that orchestrates camera shots, transitions,
 and sequences for the game engine. It provides director-level camera
 control including shot composition, camera rigs, focus pulls, and
-cutscene sequencing - similar to a film director's camera department but
-for real-time interactive game scenes.
+cutscene sequencing - for real-time interactive game scenes.
 
 The camera director maintains a registry of camera shots, transitions
 between them, ordered sequences of shots, and focus pulls. Shots
