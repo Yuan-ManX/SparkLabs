@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Causality Cascade Simulator
-
-The CausalityCascadeSimulator models how a small perturbation at one
-event ripples through the causal dependency graph of the timeline. A
-nudge introduced at a source event propagates along cause->effect
-edges, splitting into alternative consequence branches at each hop.
-The further a ripple travels from its origin the more it is damped,
-so distant consequences fade - but the branching factor can still
-produce a wide envelope of small effects. The surviving ripples fold
-into a single cascade signature that is emitted back onto the
-timeline as a cascade envelope.
-
-The butterfly effect here is not a single dramatic consequence but
-the aggregate reshuffling produced by many small, damped, branching
-ripples - a cascade signature that captures how one event rewrites
-the shape of what comes after.
-
-Architecture:
-  PROPAGATE  ->  BRANCH     ->  DAMPEN     ->  ACCUMULATE  ->  EMIT
-  (a seed      (the wavefront    (each ripple     (the surviving      (the cascade
-   perturbs    splits into       loses energy     ripples fold into    envelope is
-   the graph   alternative       with causal      a single signature)  released onto
-   as a wave)  consequence       distance)                              the timeline)
-              paths)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Causality Cascade Simulator"""
 
 from __future__ import annotations
 

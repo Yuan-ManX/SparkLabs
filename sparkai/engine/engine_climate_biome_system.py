@@ -1,43 +1,5 @@
 """
-SparkLabs Engine - Climate and Biome Management System
-
-A comprehensive climate and biome simulation layer for the SparkLabs AI-native
-game engine. It models geographic biome regions, the climate data that shapes
-them, the flora and fauna that inhabit them, seasonal cycles, gradual or
-magical biome transitions, and overall ecosystem health.
-
-Architecture:
-  ClimateBiomeSystem (Singleton)
-    |-- BiomeType / ClimateZone / Season / FloraType / FaunaType
-    |-- BiomeEventKind / TransitionType / BiomeStatus
-    |-- TemperatureRange / HumidityRange / ClimateData
-    |-- FloraSpecies / FaunaSpecies
-    |-- BiomeRegion / BiomeTransition
-    |-- SeasonalPattern / EcosystemHealth
-    |-- ClimateBiomeConfig / ClimateBiomeStats / ClimateBiomeSnapshot
-    |-- BiomeEvent
-
-Design notes:
-  - Thread-safe singleton using double-checked locking with an RLock.
-  - All public mutating operations return structured tuples so callers can
-    branch on success without raising exceptions for expected failures.
-  - Data structures serialize to plain dicts via to_dict() so they can be
-    handed to the AI narrative layer or persisted to save files.
-  - Seed data is loaded on first initialization to give the engine a usable
-    starting world out of the box.
-
-Usage:
-    system = get_climate_biome_system()
-    system.initialize()
-    region = system.register_region(
-        name="Whispering Vale",
-        biome_type=BiomeType.TEMPERATE_FOREST,
-        climate_zone=ClimateZone.TEMPERATE,
-        area=1200.0,
-        center_coord=(100.0, 100.0),
-    )
-    summary = system.tick(0.1)
-"""
+SparkLabs Engine - Climate and Biome Management System"""
 
 from __future__ import annotations
 

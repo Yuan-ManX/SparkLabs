@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Chronosynthesis Director
-
-The EngineChronosynthesisDirector models how a game world synthesizes
-its own timeline - weaving past memories, present actions, and future
-possibilities into a single coherent chrono fabric. Rather than treating
-time as a linear track, the director treats it as a synthesis chamber
-where different temporal strata actively shape each other.
-
-A game world's timeline is not a recording - it is a synthesis. The
-past is not fixed; it is constantly re-interpreted through the lens of
-the present. The future is not predetermined; it is constrained by the
-weight of accumulated past. The director models this reciprocity:
-present actions retroactively charge past memories with new meaning,
-while future possibilities exert a backward pull that shapes current
-decisions.
-
-The director models three temporal strata:
-  - Past (Memory Stratum): accumulated events, weighted by significance
-  - Present (Action Stratum): current state, weighted by agency
-  - Future (Possibility Stratum): branching futures, weighted by probability
-
-And four synthesis operations:
-  - Retrocharge: present actions charge past memories with new meaning
-  - Premonition: future possibilities pull backward on present decisions
-  - Reconcile: contradictions between strata are resolved (or amplified)
-  - Crystallize: when all three strata align, a Chronosynthetic Moment
-    crystallizes - a peak experience where past/present/future become one
-
-This produces a game world where time is genuinely alive - where the
-player's present actions literally reshape what their past meant, and
-where the futures they're moving toward cast shadows backward that
-shape their current choices.
-
-Architecture:
-  GATHER    ->  RETRO    ->  PREMON   ->  RECON    ->  CRYSTAL
-  (gather   (present     (future      (resolve     (alignments
-   strata   actions      possibilities contradictions crystallize
-   from all charge past   pull back   between      into peak
-   three    memories     on present  strata)      chrono
-   times)   with new     decisions)               moments)
-   meaning)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Chronosynthesis Director"""
 
 from __future__ import annotations
 

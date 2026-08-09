@@ -1,47 +1,5 @@
 """
-SparkLabs Engine - Camera Director
-
-A cinematic camera director that orchestrates camera shots, transitions,
-and sequences for the game engine. It provides director-level camera
-control including shot composition, camera rigs, focus pulls, and
-cutscene sequencing - for real-time interactive game scenes.
-
-The camera director maintains a registry of camera shots, transitions
-between them, ordered sequences of shots, and focus pulls. Shots
-progress through the ``CameraState`` lifecycle (IDLE -> PREPARING ->
-ACTIVE -> TRANSITIONING -> COMPLETED). When a shot is activated it
-becomes part of the active shot set; transitions move the active
-camera from one shot to another; sequences chain shots together for
-hands-off cinematic playback.
-
-This subsystem focuses on director-level orchestration and composition
-evaluation. Low-level camera transform integration is delegated to the
-engine's camera controller; this module decides which shot is active,
-how it is composed, and how the cut moves between shots.
-
-Architecture:
-  CameraDirectorEngine (Singleton)
-    |-- CameraShot                  (a single directed camera shot)
-    |-- CameraTransition            (a cut/dissolve/fade between shots)
-    |-- CameraSequence              (an ordered playlist of shots)
-    |-- FocusPull                   (a depth-of-field focus change)
-    |-- CameraEvent                 (an emitted director lifecycle event)
-    |-- CameraStats                 (aggregate statistic counters)
-    |-- CameraSnapshot              (immutable snapshot of director state)
-
-Lifecycle:
-  1. create_shot(...)                       -> CameraShot
-  2. activate_shot(shot_id)                 -> CameraShot
-  3. create_transition(from, to, type, ...) -> CameraTransition
-  4. execute_transition(transition_id)      -> CameraTransition
-  5. create_sequence(name, shot_ids, ...)   -> CameraSequence
-  6. start_sequence(sequence_id)            -> CameraSequence
-  7. advance_sequence(sequence_id)          -> CameraSequence
-  8. complete_sequence(sequence_id)         -> CameraSequence
-  9. create_focus_pull(...) / execute_focus_pull(...)
- 10. compute_composition(shot_id)          -> Dict[str, Any]
- 11. get_active_shots() / get_snapshot() / get_status() / reset()
-"""
+SparkLabs Engine - Camera Director"""
 
 from __future__ import annotations
 

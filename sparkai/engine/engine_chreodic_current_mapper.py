@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Chreodic Current Mapper
-
-The ChreodicCurrentMapper maps chreodic currents in world state. A chreode
-is a habitually-formed trajectory groove - a pathway that, once traveled
-repeatedly, deepens and becomes progressively easier to fall into, like
-water carving a channel. Recurring state transitions carve grooves that
-bias future transitions toward the same path.
-
-The editor renders these currents as flow lines whose thickness encodes
-groove depth. New events either reinforce existing chreodes or pioneer
-new ones. A locked groove exerts strong attraction on nearby state space;
-a shallow groove barely biases it.
-
-This is original SparkLabs work. Chreodes are first-class citizens of the
-world state: they are not narrative decorations, they are the actual
-habitual grooves along which world state tends to flow.
-
-Architecture:
-  REGISTER_TRANSITION  ->  CARVE_GROOVE  ->  COMPUTE_CURRENT_BIAS  ->
-  (register state-        (deepen grooves  (compute flow biases:     (
-   transition events       for observed      deeper grooves exert     (
-   observed in the world)  transitions;      stronger pull on nearby   (
-                           pioneer new       state space)              (
-                           grooves for                                 (
-                           novel ones)                                 (
-                                                      RENDER_FLOW_LINES  ->  EMIT_CHREODIC_MAP
-                                                      (render editor-flow   (emit the full chreodic
-                                                       lines per chreode     map with grooves,
-                                                       with thickness =      biases, flow lines)
-                                                       groove depth)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Chreodic Current Mapper"""
 
 from __future__ import annotations
 

@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Cable Physics System
-
-A verlet-integration-based cable and rope physics runtime for the SparkLabs
-AI-native game engine. Cables are 1D chains of nodes connected by distance
-constraints, complementing the 2D cloth physics and rigid body dynamics
-modules. The system supports multiple cable types (rope, chain, vine, whip,
-elastic), point-to-point and body attachments, tension computation with
-break thresholds, gravity and wind influence, and sphere collision response.
-
-Architecture:
-  CablePhysicsSystem (singleton)
-    |-- CableNode, CableDefinition, CableParams,
-       CableStats, CableSnapshot, CableEvent
-    |-- CableKind, CableEndpointType, CableEventKind
-
-Core Capabilities:
-  - register_cable / get_cable / list_cables / update_cable / remove_cable:
-    cable lifecycle with verlet node chains and configurable parameters.
-  - attach_endpoint / detach_endpoint: bind cable endpoints to fixed points
-    or dynamic body references.
-  - set_params: update stiffness, damping, gravity, wind, break threshold.
-  - compute_tension: per-segment tension analysis with max and average.
-  - step: verlet integration with constraint relaxation iterations.
-  - find_collisions: sphere-vs-cable collision detection and response.
-  - break_cable: force-break a cable at its highest-tension segment.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CablePhysicsSystem.get_instance` or the module-level
-:func:`get_cable_physics` factory.
-"""
+SparkLabs Engine - Cable Physics System"""
 
 from __future__ import annotations
 

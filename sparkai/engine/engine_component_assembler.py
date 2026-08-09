@@ -1,22 +1,5 @@
 """
-SparkLabs Engine - Component Assembler
-
-A composition-based entity assembly system
-node-composition model and behavior system. Entities
-are constructed by assembling reusable ComponentBlueprints into
-EntityArchetypes, then instantiating AssembledEntity instances
-with runtime state management and hierarchical parent/child trees.
-
-Architecture:
-  ComponentAssembler
-    |-- ComponentBlueprint (reusable typed component definition)
-    |-- EntityArchetype (named entity template composed of components)
-    |-- AssembledEntity (runtime entity instance with state and hierarchy)
-    |-- Dependency Validator (ensures component dependency chains are met)
-    |-- Conflict Detector (flags incompatible component combinations)
-    |-- Entity Tree Manager (tracks parent/child entity relationships)
-    |-- Template Instantiation (quick-create from predefined EntityTemplate)
-"""
+SparkLabs Engine - Component Assembler"""
 
 from __future__ import annotations
 

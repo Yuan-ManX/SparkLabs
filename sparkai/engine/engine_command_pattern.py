@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Command Pattern
-
-Undoable command architecture for agent-driven editor operations.
-Every mutation to the engine state passes through a command object
-that records its inverse, enabling full undo/redo, macro recording,
-and transactional batch operations across the entire editor.
-
-Architecture:
-  CommandInvoker
-    |-- CommandHistory (undo/redo stacks with branch support)
-    |-- MacroRecorder (records command sequences into reusable macros)
-    |-- TransactionManager (atomic multi-command transactions)
-    |-- ConflictResolver (merge and rebase concurrent edits)
-
-Command Categories:
-  - ENTITY: create, modify, delete game objects
-  - SCENE: scene-level mutations and reordering
-  - COMPONENT: component add/remove/modify
-  - PROPERTY: single property value changes
-  - RELATIONSHIP: parent-child and reference links
-"""
+SparkLabs Engine - Command Pattern"""
 
 from __future__ import annotations
 

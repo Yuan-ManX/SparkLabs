@@ -1,21 +1,5 @@
 """
-SparkLabs Engine - Camera Controller
-
-Comprehensive camera orchestration system for dynamic viewport
-management. Provides smooth tracking, multi-target framing,
-cinematic transitions, boundary clamping, shake effects,
-and intelligent auto-framing for gameplay and cutscenes.
-
-Architecture:
-  EngineCameraController (Singleton)
-    |-- Camera Target Tracker (single/multi-target following)
-    |-- Cinematic Sequencer (smooth dolly/pan/zoom transitions)
-    |-- Boundary Manager (viewport clamping and dead zones)
-    |-- Shake Engine (procedural camera shake with profiles)
-    |-- Auto-Frame Calculator (intelligent scene framing)
-    |-- Zoom Controller (orthographic/perspective zoom levels)
-    |-- Look-Ahead Predictor (velocity-based target anticipation)
-"""
+SparkLabs Engine - Camera Controller"""
 
 from __future__ import annotations
 

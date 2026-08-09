@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Cognitive Game Engine
-
-The deepest fusion of agent cognition and engine execution in the SparkLabs
-stack. Where the CognitiveArchitect reasons ABOUT games and the AINativeConductor
-directs engine parameters, the CognitiveGameEngine dissolves the boundary
-entirely: every engine tick IS a cognitive cycle.
-
-Original SparkLabs design principles:
-  1. Unified Tick - A single cognitive_tick(dt) call runs perceive, reason,
-     plan, act, reflect, and learn in one deterministic pass. The agent does
-     not sit beside the engine; the agent IS the engine's heartbeat.
-  2. Game-State Perception - The engine's live state (entities, physics,
-     events, player input) is exposed as a structured PerceptionFrame that
-     feeds directly into the reasoning layer.
-  3. Action Space - Atomic engine mutations (spawn, despawn, tune, trigger,
-     morph) are exposed as a typed ActionSpace the reasoning layer selects
-     from. No separate "agent API" exists.
-  4. Reflection Loop - Each tick compares the expected outcome of the last
-     action against the observed outcome, producing a signed delta that
-     updates confidence in similar actions.
-  5. Layered Memory - Working, episodic, semantic, and procedural memory
-     share a single MemoryBank. The engine writes episodes; the reasoning
-     layer queries semantic facts; procedural memory caches successful
-     action sequences as reusable skills.
-  6. Deterministic Replay - Because the cognitive tick is deterministic,
-     any session can be replayed tick-by-tick for debugging or training.
-
-This module is intentionally self-contained: it has no hard dependency on
-external LLM providers. When a provider is configured, the reasoning layer
-uses it; otherwise it falls back to a heuristic planner that still produces
-valid engine mutations. This keeps the project immediately runnable.
-"""
+SparkLabs Engine - Cognitive Game Engine"""
 
 from __future__ import annotations
 

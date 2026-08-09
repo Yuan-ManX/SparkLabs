@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Cloth & Soft-Body Physics
-
-A complete cloth and soft-body simulation system providing deformable
-object dynamics for the AI-native game engine. Supports multiple solver
-backends, material-based physical properties, collision interaction with
-rigid spheres, and procedural mesh generation.
-
-Architecture:
-  ClothPhysicsEngine (Singleton)
-    |-- ClothParticle         — 3D mass point with Verlet/PBD state
-    |-- ClothConstraint       — distance/volume constraint between particles
-    |-- ClothMesh             — grid-based cloth mesh with material
-    |-- ClothMaterial         — physical property definitions
-    |-- SoftBody              — inflatable volume-preserving body
-    |-- ClothCollisionSphere  — spherical obstacle for collision
-
-Solver Backends:
-  VERLET  — velocity-less Verlet integration with iterative relaxation
-  PBD     — Position-Based Dynamics with Gauss-Seidel constraint projection
-  XPBD    — Extended PBD with compliance-based constraint solving
-  JACOBI  — Jacobi-style parallel constraint averaging
-
-Simulation Pipeline:
-  1. Apply external forces (gravity, wind, user forces)
-  2. Integrate particle positions (Verlet or velocity-based)
-  3. Solve constraints iteratively (structural, shear, bend, pressure, volume)
-  4. Detect and resolve collision sphere intersections
-  5. Update particle velocities and normals
-"""
+SparkLabs Engine - Cloth & Soft-Body Physics"""
 
 from __future__ import annotations
 

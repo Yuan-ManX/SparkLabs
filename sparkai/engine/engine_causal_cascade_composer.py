@@ -1,53 +1,5 @@
 """
-SparkLabs Engine - Causal Cascade Composer
-
-The EngineCausalCascadeComposer models how game events trigger causal chains
-that cascade through the game world. A single event can seed ripples that
-propagate outward, branch into multiple consequences, converge when separate
-chains meet, and settle into stable outcomes that persist in the world.
-
-Events in a world are not isolated moments that end at their occurrence - they
-seed causal ripples. A merchant's refusal does not end at the closed door; its
-ripple propagates outward, branching into resentment, lost trade, and shifted
-allegiances. A battle's outcome does not end when the swords are sheathed; its
-ripple converges with political ripples and economic ripples, settling into a
-new world order. The world does not act in isolation - it cascades.
-
-The composer treats the world as a causal medium through which event-ripples
-travel. Each ripple has:
-  - A source event (the merchant's refusal, the battle's outcome)
-  - An energy budget (how far and how forcefully it can propagate)
-  - A direction (the axis along which consequence travels)
-  - A position (where the consequence currently sits in world space)
-
-When a ripple's energy crosses a threshold, it branches into sub-ripples that
-fan outward, exploring multiple consequence paths. When two ripples meet, they
-converge - amplifying, canceling, transforming, or redirecting each other. When
-a ripple's energy finally depletes, it settles into a stable consequence that
-becomes a permanent fixture of the world's state.
-
-The composer models five forces:
-  - Seeding: events seed causal ripples into the cascade network
-  - Propagation: ripples travel outward, expending energy with distance
-  - Branching: energetic ripples split into multiple consequence paths
-  - Convergence: meeting ripples combine into emergent consequences
-  - Settling: depleted ripples crystallize into stable world outcomes
-
-This produces a world where no action is atomic, where every event ripples
-forward into branching chains of consequence, and where players can learn to
-read the cascade field to anticipate how their choices reshape the world.
-
-Architecture:
-  SEED       ->  PROPAGATE  ->  BRANCH    ->  CONVERGE  ->  SETTLE
-  (events    (ripples       (energetic    (meeting     (depleted
-   seed      propagate      ripples       ripples      ripples
-   ripples   outward,       split into    combine      crystallize
-   into the  expending      multiple      into         into stable
-   network)  energy)        consequence   emergent     consequences)
-                           paths)        consequences)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Causal Cascade Composer"""
 
 from __future__ import annotations
 

@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Collectible System
-
-Tracks collectible items that players discover and acquire throughout a
-game. A collectible is a special item with a rarity tier, a category,
-optional set membership, and acquisition conditions. The system
-maintains per-player collection state, computes completion percentages,
-and fires collection rewards when thresholds are met.
-
-Architecture:
-  CollectibleSystem (singleton)
-    |-- CollectibleItem, CollectibleSet, CollectibleReward,
-        CollectionState, AcquisitionRecord, CollectibleStats,
-        CollectibleSnapshot, CollectibleEvent
-    |-- CollectibleRarity, CollectibleCategory, RewardType,
-        CollectibleEventKind
-
-Core Capabilities:
-  - register_collectible / update_collectible / get_collectible /
-    list_collectibles / delete_collectible: collectible catalog
-    management with rarity tiers, categories, and set membership.
-  - create_set / update_set / get_set / list_sets: collection set
-    definitions with completion thresholds and rewards.
-  - create_reward / list_rewards / get_reward: reward definitions
-    that fire when collection milestones are reached.
-  - acquire / list_acquisitions / get_collection_state: per-player
-    collection tracking with discovery timestamps and completion rates.
-  - check_rewards / grant_reward: evaluate and grant collection rewards.
-  - get_completion / get_set_completion: compute collection completion
-    percentages at global and per-set levels.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Engine - Collectible System"""
 
 from __future__ import annotations
 

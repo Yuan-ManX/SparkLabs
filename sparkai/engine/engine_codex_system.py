@@ -1,47 +1,5 @@
 """
-SparkLabs Engine - Codex System
-
-A discovery-driven knowledge compendium for the SparkLabs AI-native
-game engine. It maintains a categorized archive of bestiary entries,
-item lore, location atlases, character profiles, faction dossiers,
-quest logs, artifact records, recipe schematics, and skill
-descriptions. Entries progress through a discovery lifecycle (locked,
-discovered, partial, completed, archived) and can be organized into
-curated collections. The system tracks per-category completion
-statistics and emits audit events for every lifecycle transition.
-
-Architecture:
-  CodexSystem (singleton)
-    |-- CodexEntry, CodexCategory, CodexCollection,
-       CodexStats, CodexSnapshot, CodexEvent
-    |-- CodexCategoryKind, CodexEntryStatus, CodexRarityTier,
-       CodexEventKind
-
-Core Capabilities:
-  - register_category / get_category / list_categories /
-    remove_category: category lifecycle with display metadata.
-  - register_entry / get_entry / list_entries / update_entry /
-    remove_entry: entry lifecycle with category, rarity, and
-    unlock conditions.
-  - discover_entry / complete_entry: lifecycle transitions that
-    advance entries through the discovery pipeline.
-  - register_collection / get_collection / list_collections /
-    update_collection / remove_collection: curated groupings of
-    entries with ordering and visibility rules.
-  - add_to_collection / remove_from_collection: membership
-    management for collections.
-  - search_entries: token-based search across names, tags, and
-    summary text with optional category and status filters.
-  - get_completion_stats: per-category and overall completion
-    metrics that drive codex UI progress bars.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CodexSystem.get_instance` or the module-level
-:func:`get_codex_system` factory.
-"""
+SparkLabs Engine - Codex System"""
 
 from __future__ import annotations
 

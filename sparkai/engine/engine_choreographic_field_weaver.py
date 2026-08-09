@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Choreographic Field Weaver
-
-The EngineChoreographicFieldWeaver weaves choreographic fields: fields in
-which multiple entities move in coordinated patterns. A choreographic field
-is not a static formation (entities placed in a shape) and not a crowd
-(aggregate flow). It is a field with notated lines - one trajectory per
-entity - that are coupled so that when one line accelerates, its partners
-respond, and the whole field flows forward through the choreography as a
-single moving thing.
-
-Each entity gets a movement line: a notated sequence of waypoints through
-the field. Lines are staged onto the field at their starting positions,
-coupled to partner lines whose motion they should answer to, flowed
-forward step by step (with coupled lines adjusting toward their partners),
-and finally resolved when an entity reaches the end of its line and
-settles.
-
-A field with no coupling is just parallel trajectories; a field with
-coupling is a choreography - the entities move as one body without any
-of them being told where to stand.
-
-Architecture:
-  NOTATE  ->  STAGE   ->  COUPLE  ->  FLOW    ->  RESOLVE
-  (each      (place      (link        (advance       (entities
-   entity     entities    lines        every line     that have
-   gets a     at their    whose        one step       reached the
-   notated    starting    motions      along its      end of their
-   line, a    positions   should       waypoints,     line settle
-   trajectory on the      respond      coupled lines  into their
-   through    field       to one       adjusting      final
-   the field)             another)     toward         position and
-                                       partners)      the pattern
-                                                       locks in)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Choreographic Field Weaver"""
 
 from __future__ import annotations
 

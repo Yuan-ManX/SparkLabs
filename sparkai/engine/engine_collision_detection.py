@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - Collision Detection System
-
-A full collision detection pipeline for the SparkLabs AI-native game
-engine. Combines a dynamic bounding volume hierarchy (AABB tree) for
-broadphase culling with precise narrowphase tests for the common
-primitive shape pairs. Designed to feed a downstream physics solver
-with stable contact manifolds and to drive gameplay collision events
-(enter / stay / exit).
-
-Architecture:
-  CollisionDetectionSystem
-    |-- BroadphaseAABBTree (dynamic BVH for pair generation)
-    |-- NarrowphaseTests (sphere / box / capsule / convex hull pairs)
-    |-- RayCaster (single + batch ray queries with layer filtering)
-    |-- ShapeSweeper (continuous collision via time-of-impact)
-    |-- ContactManager (persistent contacts for stable stacking)
-    |-- CollisionFilter (layer/mask + group + custom callback)
-    |-- DebugVisualizer (wireframe + contact point draw data)
-    |-- StatisticsCollector (per-phase timing and throughput)
-
-Shape Support: Box (AABB/OBB), Sphere, Capsule, Convex Hull (mesh),
-Plane (infinite half-space).
-
-Narrowphase Algorithms:
-  - Sphere-Sphere: center distance check
-  - Sphere-Box: closest point on box to sphere center
-  - Box-Box: Separating Axis Theorem (SAT) over candidate axes
-  - Capsule-Capsule: segment-segment shortest distance
-  - Capsule-Sphere: point-segment shortest distance
-  - Mesh-Mesh: GJK (Gilbert-Johnson-Keerthi) distance algorithm
-
-The class is thread-safe; every public method acquires the internal
-``threading.Lock``. AI-assisted helpers ``ai_optimize_broadphase`` and
-``ai_predict_hotspots`` inspect scene structure and entity trajectories
-to suggest broadphase parameters and flag regions likely to produce
-collision spikes.
-"""
+SparkLabs Engine - Collision Detection System"""
 
 from __future__ import annotations
 

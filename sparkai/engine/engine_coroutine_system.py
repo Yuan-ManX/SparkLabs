@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Coroutine System
-
-A game-loop coroutine system that lets game logic spread work across
-frames, mirroring the classic StartCoroutine / yield pattern found in
-native game engines. Coroutines are plain Python generators that yield
-YieldInstruction objects to suspend execution until a condition is met,
-then resume on a subsequent frame. This keeps long-running gameplay
-logic (cutscenes, timed sequences, AI step logic, tween chains)
-non-blocking with respect to the main game loop.
-
-Architecture:
-  CoroutineSystem (Singleton)
-    |-- Coroutine (generator wrapper with lifecycle state)
-    |-- YieldInstruction (declarative suspension contract)
-    |-- YieldType (wait seconds / frames / condition / coroutine)
-    |-- CoroutineState (pending / running / paused / completed / ...)
-    |-- Scheduler (frame-driven update advancing running coroutines)
-    |-- Snapshot / Status (introspection of live coroutine population)
-
-The system is driven externally via update(delta_time), which advances
-every running coroutine whose current yield instruction is satisfied,
-captures the next yielded instruction, and reports the ids of
-coroutines that completed during the tick. All public methods are
-thread-safe.
-"""
+SparkLabs Engine - Coroutine System"""
 
 from __future__ import annotations
 

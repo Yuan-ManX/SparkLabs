@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Cross-Platform Cloud Save System
-
-Synchronizes game save data across devices for the SparkLabs AI-native game
-engine. The system handles save slot management, incremental chunk sync,
-conflict detection and resolution, version tracking, cloud storage quotas,
-compression and encryption of payloads, snapshot backups, and audit events.
-
-Architecture:
-  CloudSaveSystem (thread-safe singleton)
-    |-- SaveSlot              (per-slot save metadata and snapshot)
-    |-- SaveDataChunk         (incremental typed data block within a slot)
-    |-- SyncOperation         (upload / download / sync lifecycle record)
-    |-- ConflictRecord        (local-vs-cloud divergence needing resolution)
-    |-- CloudStorageQuota     (per-player cloud storage budget)
-    |-- CloudSaveConfig       (tunable engine configuration)
-    |-- CloudSaveStats        (aggregate engine statistics)
-    |-- CloudSaveSnapshot     (immutable point-in-time state capture)
-    |-- CloudSaveEvent        (audit log entry)
-
-Core Capabilities:
-  - register_save_slot / update_save_slot / remove_save_slot: Slot lifecycle
-  - save_data / get_save_data / load_save_data / delete_save_data: Chunk I/O
-  - upload_to_cloud / download_from_cloud / sync_slot / sync_player: Sync flow
-  - detect_conflict / list_conflicts / resolve_conflict: Conflict handling
-  - get_quota / update_quota: Per-player storage budgets
-  - calculate_data_hash / compress_data / encrypt_data: Payload utilities
-  - create_snapshot_backup / list_backups / restore_backup: Backup management
-  - list_events / get_status / get_stats / get_snapshot / get_config /
-    set_config / tick / reset: Observability and lifecycle
-
-Thread-safety:
-  All public mutators and accessors acquire the engine-wide reentrant lock.
-  Use get_cloud_save_system() to obtain the singleton instance.
-"""
+SparkLabs Engine - Cross-Platform Cloud Save System"""
 
 from __future__ import annotations
 

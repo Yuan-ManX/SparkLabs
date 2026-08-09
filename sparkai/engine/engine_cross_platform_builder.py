@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - Cross Platform Builder
-
-Multi-platform game build and export system that compiles game projects
-for various target platforms. Supports web (HTML5/WebGL), desktop
-(Windows/macOS/Linux), mobile (iOS/Android), and console platforms.
-Handles platform-specific optimizations, asset packaging, and deployment
-configuration.
-
-Architecture:
-  EngineCrossPlatformBuilder (Singleton)
-    |-- PlatformProfile (per-platform build configuration)
-    |-- BuildPipeline (sequential build stages with validation)
-    |-- AssetPackager (platform-specific asset compression and bundling)
-    |-- CodeTranspiler (cross-platform code transformation)
-    |-- DeploymentManager (package signing, store submission prep)
-
-Target Platforms:
-  - WEB: HTML5/WebGL, WASM, PWA
-  - DESKTOP: Windows, macOS, Linux
-  - MOBILE: iOS, Android
-  - CONSOLE: Switch, PlayStation, Xbox
-
-Usage:
-    cb = EngineCrossPlatformBuilder.get_instance()
-    cb.initialize()
-
-    profile = cb.create_platform_profile("web", {"resolution": "1920x1080"})
-    build = cb.start_build(project_id, "web", profile)
-    result = cb.export(build.build_id)
-    cb.shutdown()
-"""
+SparkLabs Engine - Cross Platform Builder"""
 
 from __future__ import annotations
 

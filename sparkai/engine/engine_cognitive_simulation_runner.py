@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Cognitive Simulation Runner
-
-A unified simulation runner that creates a self-playing game where the
-AI agent both plays the game (via physics-driven virtual player) and
-directs the game (via cognitive engine). This is the capstone module
-that demonstrates the full AI-native game engine in action.
-
-The simulation loop:
-  1. VIRTUAL PLAYER: A heuristic controller generates input based on
-     the current physics state (move toward goal, jump over gaps,
-     wall-jump when stuck). This simulates a human player.
-  2. PHYSICS ENGINE: Steps the world with the virtual player's input,
-     producing collision events, position changes, and state transitions.
-  3. COGNITIVE FUSION: The fusion layer runs its 6-phase cognitive
-     cycle (perceive/reason/plan/act/reflect/learn) observing the
-     physics state and taking engine-level actions.
-  4. ADAPTIVE DIRECTOR: Records player signals and tunes physics
-     parameters to maintain flow.
-  5. SKILL FORGE: Extracts skills from successful action sequences.
-  6. TELEMETRY: Records full simulation telemetry for replay/analysis.
-
-The result is a closed-loop simulation where:
-  - The virtual player navigates the level
-  - The cognitive engine adapts the game in real-time
-  - The system learns what works and applies it to future runs
-
-Thread-safe singleton: use get_instance() to access.
-"""
+SparkLabs Engine - Cognitive Simulation Runner"""
 
 from __future__ import annotations
 

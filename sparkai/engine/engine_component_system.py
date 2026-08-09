@@ -1,21 +1,5 @@
 """
-SparkLabs Engine - Component-Based Game Object System
-
-A composable, data-driven architecture for game object management built on
-the entity-component pattern. Game objects
-are composed of reusable components that define behavior, avoiding deep
-inheritance hierarchies. Each component type is defined by a
-ComponentDefinition, and runtime instances are tracked as ComponentInstance
-records attached to GameEntity containers.
-
-Architecture:
-  ComponentRegistry (Singleton)
-    |-- ComponentDefinition  — reusable component template with metadata
-    |-- ComponentInstance    — runtime component attached to an entity
-    |-- GameEntity           — lightweight container aggregating components
-    |-- ComponentCategory    — functional classification of components
-    |-- ComponentLifecycle   — runtime state machine for component instances
-"""
+SparkLabs Engine - Component-Based Game Object System"""
 
 from __future__ import annotations
 

@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Crash & Error Reporting System
-
-An original, self-contained runtime crash and error reporting pipeline designed
-from the ground up for the SparkLabs AI-native game engine. The system captures
-crash and error reports as they occur during play sessions, fingerprints each
-report so that recurrent defects roll up into actionable groups, and exposes
-release-level health metrics that quantify the player-visible stability of a
-build.
-
-The design is intentionally engine-native: it owns no external dependencies,
-serializes to plain JSON-friendly dictionaries so any route layer can project
-the data over HTTP, and is fully thread-safe through a single reentrant lock.
-Every mutation is recorded as an audit event so that triage decisions, group
-merges, and resolution actions form a traceable history.
-
-Architecture:
-  CrashReporterSystem (singleton)
-    |-- StackFrame, Breadcrumb, CrashReport, CrashGroup, SymbolicationResult,
-    |   ReleaseHealth, CrashReporterStats, CrashReporterSnapshot,
-    |   CrashReporterEvent
-    |-- ErrorSeverity, ErrorCategory, Platform, ReportState, BreadcombType,
-        StackFrameKind, CrashReporterEventKind
-
-Core Capabilities:
-  - submit_report: Capture a runtime crash or error, fingerprint it, and roll
-    it up into a crash group (creating the group on first occurrence).
-  - get_report / list_reports: Lookup and filtered queries over the report
-    store by severity, category, state, platform, group, or player.
-  - update_report_state / add_tag / remove_tag: Triage and annotate reports.
-  - get_group / list_groups: Inspect aggregated crash groups and filter them
-    by state, category, severity, or assignee.
-  - assign_group / update_group_state / merge_groups: Route groups to owners,
-    advance their lifecycle, and deduplicate groups that share a root cause.
-  - compute_fingerprint: Deterministic signature over message, category, and
-    the first user-authored stack frame.
-  - add_breadcrumb / get_breadcrumbs: Per-session breadcrumb trail captured
-    ahead of a crash so the moments leading up to a failure can be replayed.
-  - symbolicate: Resolve native frames into symbolicated stack frames and
-    report missing symbol files.
-  - get_release_health: Per-build stability metrics computed live from the
-    report store, including crash-free and error-free session rates.
-  - list_events / get_stats / get_status / get_snapshot / reset: Observability
-    and lifecycle management for the entire subsystem.
-"""
+SparkLabs Engine - Crash & Error Reporting System"""
 
 from __future__ import annotations
 

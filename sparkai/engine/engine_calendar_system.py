@@ -1,45 +1,5 @@
 """
-SparkLabs Engine - Calendar & Event Schedule System
-
-A scheduled event and seasonal content management system for the
-SparkLabs AI-native game engine. Manages calendar events with start/end
-timestamps, recurring schedules, seasonal content rotations, countdown
-timers, event phases, reward tracks, and participation tracking.
-
-Each calendar event defines a schedule with start and end times,
-recurrence patterns, event phases, associated rewards, participation
-requirements, and active state tracking. Designed for live-service game
-events, seasonal festivals, limited-time modes, daily/weekly rotations,
-and community challenges.
-
-Architecture:
-  CalendarSystem (singleton)
-    |-- EventType, EventPhase, RecurrencePattern, CalendarEventKind
-    |-- EventReward, EventPhaseDef, CalendarEvent, RewardTrack,
-       CalendarConfig, CalendarStats, CalendarSnapshot, CalendarEvent_
-    |-- get_calendar_system
-
-Core Capabilities:
-  - register_event / remove_event / get_event / list_events: manage
-    scheduled calendar events with phases and rewards.
-  - activate_event / deactivate_event: control event active state.
-  - advance_phase / get_current_phase: manage event phase progression.
-  - register_reward_track / claim_reward: event reward track progression.
-  - track_participation / get_participation: player participation
-    tracking per event.
-  - get_upcoming / get_active / get_expired: query events by schedule
-    state.
-  - set_recurrence / get_next_occurrence: recurring event scheduling.
-  - tick: advance event timers, auto-activate and auto-expire events.
-  - set_config / get_config: global tuning for max events and phases.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CalendarSystem.get_instance` or the module-level
-:func:`get_calendar_system` factory.
-"""
+SparkLabs Engine - Calendar & Event Schedule System"""
 
 from __future__ import annotations
 

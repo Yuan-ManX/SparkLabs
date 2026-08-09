@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Cooking & Alchemy System
-
-Manages recipe-based crafting of consumable items through cooking and
-alchemy. Players gather ingredients, discover recipes, operate crafting
-stations, and produce food buffs and potions with stacking effects,
-quality tiers, and skill-based crafting outcomes.
-
-Architecture:
-  CookingAlchemySystem (singleton)
-    |-- RecipeType, IngredientCategory, CraftingStation, CraftQuality,
-       EffectKind, CookingAlchemyEventKind
-    |-- IngredientDefinition, RecipeDefinition, CraftingStationInstance,
-       CraftedItem, ActiveEffect, CraftingSkill, RecipeDiscovery,
-       CookingAlchemyConfig, CookingAlchemyStats, CookingAlchemySnapshot,
-       CookingAlchemyEvent
-    |-- get_cooking_alchemy_system
-
-Core Capabilities:
-  - register_ingredient / remove_ingredient / get_ingredient / list_ingredients
-  - register_recipe / remove_recipe / get_recipe / list_recipes
-  - register_station / remove_station / get_station / list_stations
-  - craft_item / get_crafted_item / list_crafted_items
-  - get_active_effects / apply_effect / dispel_effect
-  - get_crafting_skill / level_up_skill / get_skill_rank
-  - discover_recipe / get_discoveries / list_discoveries
-  - get_recipe_suggestions / get_ingredient_substitutes
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CookingAlchemySystem.get_instance` or the module-level
-:func:`get_cooking_alchemy_system` factory.
-"""
+SparkLabs Engine - Cooking & Alchemy System"""
 
 from __future__ import annotations
 

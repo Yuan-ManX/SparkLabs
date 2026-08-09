@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Casino, Betting & Wager System
-
-Manages casino games, sports betting, wagers, and the in-game gambling
-economy. Players can play slot machines, roulette, blackjack, dice games,
-place bets on simulated events, create peer-to-peer wagers, and track
-their gambling statistics and win/loss history.
-
-The system supports multiple casino game types with configurable odds,
-payouts, and house edges. Betting markets support event-based wagering
-with dynamic odds. Peer wagers allow players to stake currency against
-each other on custom conditions.
-
-Architecture:
-  CasinoBettingSystem (singleton)
-    |-- GameType, GameOutcome, BetStatus, WagerStatus, CasinoEventKind
-    |-- CasinoGame, GameSession, BetMarket, Bet, Wager, PlayerStats,
-       CasinoConfig, CasinoStats, CasinoSnapshot, CasinoEvent
-    |-- get_casino_betting_system
-
-Core Capabilities:
-  - register_game / remove_game / get_game / list_games: manage the
-    catalog of available casino games with odds and payouts.
-  - play_game / get_session / list_sessions: play casino games and track
-    session history with win/loss outcomes.
-  - register_market / remove_market / get_market / list_markets: manage
-    betting markets for event-based wagering.
-  - place_bet / cancel_bet / settle_bet / get_bet / list_bets: manage
-    individual bets on betting markets.
-  - create_wager / accept_wager / cancel_wager / settle_wager /
-    get_wager / list_wagers: manage peer-to-peer wagers.
-  - get_player_stats / get_leaderboard: track player gambling statistics.
-  - tick / set_config / get_config: lifecycle and tuning.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CasinoBettingSystem.get_instance` or the module-level
-:func:`get_casino_betting_system` factory.
-"""
+SparkLabs Engine - Casino, Betting & Wager System"""
 
 from __future__ import annotations
 

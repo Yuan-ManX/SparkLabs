@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Causal Timeline Weaver
-
-The EngineCausalTimelineWeaver weaves a causal timeline of events.
-Every consequential thing that happens in the world has causes behind
-it and effects ahead of it; this engine maintains the chain by recording
-each event, linking it to its causes, and tracing its effects forward.
-As the timeline grows, the weaver detects causal threads (chains of
-events that share a common root cause), identifies feedback loops (an
-effect that circles back to cause its own cause), and flags orphan
-events (effects with no recorded cause). The output is a queryable
-causal history that lets the engine answer "why did this happen?" and
-"what will this lead to?" - the backbone of a world where consequences
-feel real.
-
-Architecture:
-  RECORD  ->  LINK   ->  TRACE  ->  PRUNE  ->  EMIT
-  (accept    (resolve    (detect     (retire     (emit the
-   new        cause to    threads,    stale       current
-   events     effect      loops,      edges,      causal map
-   with       edges,      orphans)    compact     for downstream
-   declared   validate                the         queries)
-   causes)    temporal                timeline)
-              order)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Causal Timeline Weaver"""
 
 from __future__ import annotations
 

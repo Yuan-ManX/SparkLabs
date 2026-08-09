@@ -1,19 +1,5 @@
 """
-SparkLabs Engine - Camera System
-
-A camera and viewport management system for 2D games providing
-follow mechanics, shake effects, boundary constraints, and
-coordinate transformation between world and screen space.
-
-Architecture:
-  EngineCameraSystem (Singleton)
-    |-- CameraViewport — viewport definition with position, zoom, rotation
-    |-- CameraTarget  — follow target with lookahead and motion modes
-    |-- CameraShake   — runtime shake effect with configurable waveforms
-    |-- CameraBounds  — boundary constraints with damping
-    |-- CameraEffect  — time-based camera post-effects
-    |-- CameraSnapshot — capture of camera state at a point in time
-"""
+SparkLabs Engine - Camera System"""
 
 from __future__ import annotations
 

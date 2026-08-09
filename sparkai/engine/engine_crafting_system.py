@@ -1,15 +1,5 @@
 """
-SparkLabs Engine - Crafting System
-
-Manages recipe-based item crafting with material consumption,
-crafting stations, skill-based success rates, recipe discovery,
-and timed crafting operations. Supports item combination, material
-substitution, batch crafting, and quality rolls.
-
-Designed for RPG survival, and adventure games where players gather
-materials and transform them into weapons, tools, potions, and
-equipment. Integrates with the inventory system and resource system.
-"""
+SparkLabs Engine - Crafting System"""
 
 from __future__ import annotations
 

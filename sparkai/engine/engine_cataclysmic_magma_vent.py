@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Cataclysmic Magma Vent
-
-The CataclysmicMagmaVent monitors cataclysmic magma vents: it tracks molten
-rock surge pressure at volcanic vents and predicts eruption intensity. Each
-vent is tracked with a surge pressure, a chamber temperature, a vent
-aperture, and a magma chamber volume. The vent samples surge pressure each
-cycle, tracks the pressurization of the magma chamber, predicts eruption
-intensity, and emits a consolidated surge-pressure map for the editor.
-
-This is original SparkLabs work. Magma vents are first-class volcano
-entities: their surge pressures, pressurization imbalances, and eruption
-forecasts are computed each cycle, and the editor previews them as a surge
-pressure map so designers can steer the magma regime.
-
-Architecture:
-  REGISTER_VENT          ->  SAMPLE_SURGE_PRESSURE  ->  TRACK_CHAMBER_PRESSURIZATION  ->  PREDICT_ERUPTION  ->  EMIT_SURGE_PRESSURE_MAP
-  (register magma vents   (sample each vent's          (track the magma chamber's         (predict the eruption    (emit the full surge
-   with their sensors      surge pressure for this      pressurization, flag pressure       intensity for each        pressure map with
-   and initial surge)      cycle, update the regime)    surges against the aperture)        vent against the          pressures, chamber
-                                                                                            chamber volume)           temperatures, and forecasts)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Cataclysmic Magma Vent"""
 
 from __future__ import annotations
 

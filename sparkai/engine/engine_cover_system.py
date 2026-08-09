@@ -1,11 +1,5 @@
 """
-SparkLabs Engine - Cover System
-
-Manages tactical cover points for shooter and stealth games. Provides
-cover quality scoring, flank detection, suppressive fire tracking,
-cover degradation, and AI cover selection scoring. Designed for
-integration with combat AI, navigation, and level design workflows.
-"""
+SparkLabs Engine - Cover System"""
 
 from __future__ import annotations
 

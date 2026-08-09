@@ -1,49 +1,5 @@
 """
-SparkLabs Engine - Character Appearance System
-
-A complete character appearance engine providing facial animation,
-lip synchronization, and hair/fur simulation for the AI-native game
-engine. It fills the facial animation, lip sync, and hair/fur gaps
-in the engine.
-
-Architecture:
-  CharacterAppearanceEngine (Singleton)
-    |-- BlendShape          -- a single morph target (e.g. Smile, JawOpen)
-    |-- BlendShapeGroup     -- a logical group of related blend shapes
-    |-- ExpressionPreset    -- a named preset expression configuration
-    |-- FacialRig           -- a character's complete facial rig
-    |-- PhonemeMapping      -- maps phonemes to a viseme and shape weights
-    |-- LipSyncTrack        -- a timed viseme sequence for spoken text
-    |-- HairStrand          -- a single simulated hair strand
-    |-- HairStyle           -- a character's full hair configuration
-    |-- FurCoat             -- a character's fur coat configuration
-    |-- WindConfig          -- global wind parameters
-    |-- AppearanceStats     -- aggregate counts
-    |-- AppearanceSnapshot  -- immutable engine state snapshot
-    |-- AppearanceEvent     -- audit log entry
-
-Facial Animation:
-  Blend shapes are weighted morph targets (0.0 to 1.0). Expression
-  presets bundle a set of weights for a given FacialExpression +
-  EmotionIntensity. Expression blending interpolates between the
-  current weights and a target preset over a duration using the
-  selected AnimationBlendMode easing curve.
-
-Lip Synchronization:
-  Phonemes are mapped to visemes (visual mouth shapes). The engine
-  splits spoken text into phonemes using simple vowel/consonant
-  detection, maps each phoneme to a viseme, and lays the visemes
-  out evenly across the requested duration. Ticking advances the
-  current time and applies the active viseme's blend shape weights
-  to the character's facial rig.
-
-Hair & Fur Simulation:
-  Hair strands are chains of segments advanced each tick by gravity
-  and wind forces. The simulation method (PBD, Verlet, mass-spring,
-  strand-based, hybrid) controls the integrator. Fur uses the same
-  solver pipeline with shorter strands and higher density. A global
-  WindConfig drives all simulations.
-"""
+SparkLabs Engine - Character Appearance System"""
 
 from __future__ import annotations
 

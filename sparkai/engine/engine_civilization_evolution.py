@@ -1,43 +1,5 @@
 """
-SparkLabs Engine - Civilization Evolution Simulation Engine
-
-A long-term societal development simulation module for the AI-native game
-engine. Models technology progression across historical eras, cultural
-drift, government transitions, demographic dynamics, and inter-civilization
-diplomatic relations over simulated time.
-
-Architecture:
-  CivilizationEvolutionEngine (Singleton)
-    |-- TechnologyNode      — single researchable technology within a tech tree
-    |-- CulturalIdentity    — evolving cultural profile of a civilization
-    |-- CivilizationState   — full runtime state of one civilization
-    |-- DiplomaticEvent     — recorded relation change between two civilizations
-    |-- CivilizationSnapshot— compact historical record of civilization state
-
-Core Capabilities:
-  - create_civilization: Found a new civilization with starting parameters
-  - research_technology: Unlock a technology node from the tech tree
-  - change_government: Transition to a new government type
-  - evolve_culture: Shift a specific cultural aspect over time
-  - establish_relation: Set the diplomatic relation between two civilizations
-  - simulate_tick: Advance a civilization by one simulation step
-  - simulate_ticks: Advance a civilization by multiple simulation steps
-  - assess_stability: Analyze the factors contributing to stability
-  - get_stats: Global engine statistics and health summary
-
-Usage:
-    engine = get_civilization_engine()
-    civ = engine.create_civilization(
-        name="Aurelia",
-        starting_era=TechEra.STONE_AGE,
-        government=GovernmentType.TRIBAL,
-        population=120,
-        territory_size=10.0,
-        resources={"food": 200, "wood": 80, "stone": 40},
-    )
-    engine.research_technology(civ.civ_id, "stone_tools")
-    snapshots = engine.simulate_ticks(civ.civ_id, 50)
-"""
+SparkLabs Engine - Civilization Evolution Simulation Engine"""
 
 from __future__ import annotations
 

@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Card & Deck Game System
-
-A card game mechanics engine for the SparkLabs AI-native game engine.
-Provides collectible card definitions, deck construction, in-match play
-loops, and turn-based combat resolution similar to Hearthstone, MTG, and
-Slay the Spire.
-
-The system models the full lifecycle of a card game: card catalog
-registration, deck building and validation, match creation, mulligan,
-draw, main phase actions (playing minions, spells, weapons), combat
-resolution through damage and healing, turn rotation with mana ramp,
-and end-of-game detection.
-
-Architecture:
-  CardDeckSystem (singleton)
-    |-- CardType, CardRarity, CardElement, DeckArchetype, GamePhase,
-       CardStatus, TargetType, EffectType, DeckFormat, CardDeckEventKind
-    |-- CardDefinition, CardInstance, Deck, CardEffect, MatchState,
-       PlayerState, CardDeckConfig, CardDeckStats, CardDeckSnapshot,
-       CardDeckEvent
-    |-- get_card_deck_system
-
-Core Capabilities:
-  - register_card / remove_card / get_card / list_cards: manage the
-    collectible card catalog indexed by card_id.
-  - register_deck / remove_deck / get_deck / list_decks / validate_deck:
-    build, inspect, and validate player decks against format rules.
-  - shuffle_deck / draw_card: manipulate a deck draw pile.
-  - create_match / get_match / list_matches / end_turn / play_card /
-    deal_damage / heal_target: run matches with turn rotation, mana
-    ramp, and combat resolution.
-  - get_player_state / get_board_state / calculate_deck_stats: inspect
-    match and deck state for UIs and balancing tools.
-  - set_config / get_config: global tuning for hand size, board size,
-    starting health, mana cap, deck size, and mulligan count.
-  - tick: advance the simulation and expire transient effects.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability, auditing, and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CardDeckSystem.get_instance` or the module-level
-:func:`get_card_deck_system` factory.
-"""
+SparkLabs Engine - Card & Deck Game System"""
 
 from __future__ import annotations
 

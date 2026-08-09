@@ -1,45 +1,5 @@
 """
-SparkLabs Engine - Chemical Reaction System
-
-Simulates chemical reactions for gameplay such as alchemy, crafting,
-explosions, poison-making, and science puzzles. The system tracks
-substances, reactions, catalysts, reaction vessels, and mixtures, and
-steps them forward with realistic chemistry formulas: the Arrhenius
-equation for reaction rates, Le Chatelier's principle for equilibrium
-shifts, the ideal gas law for pressure/volume coupling, and Hess-style
-heat-of-reaction summation for enthalpy. Vessels can be heated, sealed,
-stirred, and pressurized; catalysts lower the effective activation
-energy; and an AI helper layer predicts plausible products, optimizes
-operating conditions, and assesses vessel stability.
-
-Architecture:
-  _ChemicalReactionSystem (Singleton)
-    |-- Substance, Reaction, Mixture, Catalyst, ReactionVessel
-    |-- ReactionStep, ReactionResult, ChemicalStats, ChemicalConfig
-    |-- ChemicalSnapshot, ChemicalEvent
-    |-- SubstanceState, ReactionType, VesselStatus, ChemicalEventKind
-
-Core Capabilities:
-  - register_substance / remove_substance / get_substance / list_substances
-  - register_reaction / remove_reaction / get_reaction / list_reactions
-  - register_catalyst / remove_catalyst / get_catalyst / list_catalysts
-  - register_vessel / remove_vessel / get_vessel / list_vessels
-  - create_mixture / get_mixture / remove_mixture / list_mixtures
-  - trigger_reaction / check_reaction / compute_activation_energy
-  - apply_catalyst / remove_catalyst_from_vessel
-  - set_temperature / set_pressure / stir_vessel
-  - check_equilibrium / compute_reaction_rate
-  - ai_predict_products / ai_optimize_conditions / ai_assess_stability
-  - get_visualization_data / get_reaction_graph
-  - reset_vessel / list_events / tick
-  - get_stats / get_snapshot / get_status / get_config / set_config
-
-Usage:
-    crs = get_chemical_reaction_system()
-    ok, msg, substance = crs.register_substance("sub_water", "Water", "H2O", "liquid")
-    ok, msg, reaction = crs.register_reaction("rxn_combustion", ["sub_fuel"], ["sub_ash"], -500.0)
-    ok, msg, result = crs.trigger_reaction("vessel_001", "rxn_combustion")
-"""
+SparkLabs Engine - Chemical Reaction System"""
 
 from __future__ import annotations
 

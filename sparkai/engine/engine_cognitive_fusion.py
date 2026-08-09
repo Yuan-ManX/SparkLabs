@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Cognitive Fusion Layer
-
-Integrates three previously-independent modules into a single
-coordinated cognitive loop:
-  1. CognitiveGameEngine - the unified perceive/reason/act/reflect/learn tick
-  2. CognitiveSkillForge - persistent skill library with extraction/matching/evolution
-  3. AdaptivePhysicsDirector - flow-channel physics tuning
-
-The fusion layer runs the three modules in a coordinated sequence:
-  - BEFORE tick: query skill forge for matched skills, query physics
-    director for current parameters
-  - DURING tick: the CognitiveGameEngine runs its 6-phase cognitive cycle
-  - AFTER tick: extract skill candidates from successful outcomes,
-    record player signals to physics director, run physics adaptation
-    at its own interval, run skill evolution at its own interval
-
-This produces a self-reinforcing learning loop: the engine acts,
-the forge captures successful actions as skills, the physics director
-tunes parameters to maintain flow, and on the next tick the engine
-benefits from both. Over time, the system converges on a parameter
-surface and skill library tuned to the player's skill level.
-
-Thread-safe singleton: use get_instance() to access.
-"""
+SparkLabs Engine - Cognitive Fusion Layer"""
 
 from __future__ import annotations
 

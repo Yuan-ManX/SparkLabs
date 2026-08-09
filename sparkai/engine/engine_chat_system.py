@@ -1,47 +1,5 @@
 """
-SparkLabs Engine - In-Game Voice & Text Chat System
-
-A comprehensive real-time communication system for the SparkLabs AI-native
-game engine. The chat system orchestrates text channels, voice channels,
-per-user presence, AI-powered content moderation, and audit logging.
-Players can join channels, send text messages, participate in voice chats,
-and have their messages filtered by configurable rules. Moderators can
-warn, mute, kick, ban, or shadow-mute users who violate policies.
-
-Architecture:
-  ChatSystem (singleton)
-    |-- ChatChannel         -- a text or voice channel with members
-    |-- ChatMessage         -- a single chat message with lifecycle status
-    |-- VoiceParticipant    -- a participant in a voice channel session
-    |-- ChatFilterRule      -- a moderation filter rule (profanity, spam, etc.)
-    |-- ModerationAction    -- a moderation action applied to a user
-    |-- ChatUser            -- a registered chat user with presence state
-    |-- ChatStats           -- aggregate counters describing chat state
-    |-- ChatSnapshot        -- immutable state snapshot
-    |-- ChatEvent           -- audit log entry
-    |-- ChannelType         -- 9 channel classifications
-    |-- MessageStatus       -- 5 message lifecycle states
-    |-- FilterCategory      -- 6 filter rule categories
-    |-- ModerationActionType -- 6 moderation action types
-    |-- UserStatus          -- 5 user presence states
-    |-- ChatEventKind       -- audit event kinds
-
-Core Capabilities:
-  - create_channel / get_channel / list_channels / delete_channel:
-    channel registry with type, members, voice, and slow-mode.
-  - join_channel / leave_channel: membership management with voice
-    participant tracking for voice channels.
-  - send_message / get_message / list_messages / delete_message:
-    message lifecycle with content filtering and status tracking.
-  - register_user / get_user / update_user_status / list_users:
-    user registry with presence and per-channel mute state.
-  - create_filter_rule / get_filter_rule / list_filter_rules /
-    delete_filter_rule: configurable content moderation rules.
-  - moderate_user / list_moderation_actions: moderation enforcement
-    with mute, ban, kick, warn, shadow-mute, and filter-message.
-  - list_events_log / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Engine - In-Game Voice & Text Chat System"""
 
 from __future__ import annotations
 
