@@ -1,32 +1,5 @@
 """
-SparkLabs Agent - Agent Audit Trail
-
-Comprehensive action audit log with compliance tracking for the
-AI-native game engine. Records every agent action, resource access,
-configuration change, permission grant, error occurrence, model call,
-and session event in a tamper-evident trail suitable for compliance
-audits (GDPR, SOC2, ISO 27001, HIPAA) and internal governance.
-
-Architecture:
-  AgentAuditTrail
-    |-- AuditEventType (categorization of auditable events)
-    |-- SeverityLevel (importance ranking of log entries)
-    |-- ComplianceStandard (supported compliance frameworks)
-    |-- AuditEntry (single immutable audit record)
-    |-- ComplianceCheck (result of a compliance validation run)
-    |-- AuditReport (aggregated summary for a time window)
-    |-- TrailFilter (query criteria for filtering the trail)
-    |-- TrailStorage (in-memory storage with size caps)
-    |-- ComplianceRulesEngine (rule-based compliance verification)
-
-Features:
-  - Immutable audit entries with cryptographic entry IDs
-  - Multi-standard compliance rule checking
-  - Time-range queries with flexible filtering
-  - Automated report generation with severity summaries
-  - Trail archiving with count-based retention
-  - JSON-serializable export for external consumption
-"""
+SparkLabs Agent - Agent Audit Trail"""
 
 from __future__ import annotations
 

@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Autonomous Tester Engine
-
-AI agent that autonomously explores game states, discovers bugs, tests
-edge cases, and generates comprehensive test reports. The engine
-supports multiple testing strategies, captures game state snapshots,
-computes test coverage metrics, and replays sessions for reproducible
-bug analysis.
-
-Architecture:
-  AutonomousTesterEngine (Singleton)
-    |-- TestCase (strategy, preconditions, steps, expected result)
-    |-- BugReport (severity, category, reproduction steps, game state)
-    |-- TestSession (strategy, test cases, bugs, coverage, duration)
-    |-- GameStateSnapshot (entities, variables, position, timestamp)
-
-Core Capabilities:
-  - Create test sessions with configurable testing strategies
-  - Add test cases with preconditions, steps, and expected results
-  - Run autonomous exploration of game states
-  - Record bugs with severity, category, and reproduction steps
-  - Capture game state snapshots for reproducibility
-  - Generate comprehensive test reports with coverage metrics
-  - Compute coverage across entities, states, and code paths
-  - Replay test sessions for reproducible debugging
-"""
+SparkLabs Agent - Autonomous Tester Engine"""
 
 from __future__ import annotations
 

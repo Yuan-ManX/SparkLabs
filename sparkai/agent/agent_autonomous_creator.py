@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Autonomous Creator Engine
-
-AI-driven autonomous content generation system for the SparkLabs AI-native game
-engine. Generates game content including levels, quests, NPCs, items, and
-mechanics without human intervention. Combines procedural generation with
-AI-driven design decisions to produce coherent, theme-consistent game content
-at scale.
-
-Architecture:
-  AutonomousCreatorEngine (Singleton)
-    |-- ContentCategory (classification of content types)
-    |-- GenerationStrategy (algorithmic approach selection)
-    |-- ContentQuality (lifecycle quality states)
-    |-- ComplexityLevel (content scope and depth tiers)
-    |-- ThemeCategory (narrative and aesthetic themes)
-    |-- ContentSpec (generation request specification)
-    |-- GeneratedContent (output wrapper with metadata)
-    |-- LevelBlueprint (room layout and enemy placement)
-    |-- QuestDefinition (objectives, rewards, branching)
-    |-- NPCProfile (personality, dialogue, behavior)
-    |-- ItemTemplate (stats, rarity, crafting, lore)
-    |-- CreatorSession (aggregated generation session)
-    |-- LevelGenerator (blueprint and layout generation)
-    |-- QuestGenerator (quest chain and branching creation)
-    |-- NPCGenerator (personality and dialogue generation)
-    |-- ItemGenerator (template creation with stats and lore)
-    |-- MechanicDesigner (game mechanics and rules design)
-    |-- ContentValidator (constraint and quality validation)
-"""
+SparkLabs Agent - Autonomous Creator Engine"""
 
 from __future__ import annotations
 

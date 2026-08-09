@@ -1,34 +1,5 @@
 """
-SparkLabs Agent - Blackboard Knowledge Workspace
-
-Distributed shared-memory coordination layer for multi-agent game AI
-systems. The Blackboard Knowledge Workspace provides a structured,
-versioned, and policy-governed knowledge repository where agents
-publish observations, query shared understanding, and subscribe to
-relevant changes without direct peer-to-peer communication.
-
-Architecture:
-  BlackboardEngine
-    |-- EntryStore (keyed knowledge entries with type and confidence)
-    |-- IndexManager (tag, source, and type indices for fast queries)
-    |-- PolicyResolver (conflict resolution per key pattern)
-    |-- ConsensusCollector (multi-agent agreement for CONSENSUS policy)
-    |-- SubscriptionHub (pattern-based change notifications)
-    |-- ExpirationSweeper (TTL-based entry eviction)
-    |-- SnapshotEngine (point-in-time workspace capture)
-
-Knowledge Flow:
-  Agent writes observation -> evaluate policy -> resolve conflicts ->
-  store entry -> update indices -> notify matching subscribers ->
-  periodically expire stale entries -> snapshot for persistence
-
-Key format:
-  Entries are identified by unique string keys. Agents use structured
-  key naming conventions (e.g. "world:player_position", "team_alpha:threat_level")
-  to organize knowledge. The blackboard enforces type safety and confidence
-  tracking to ensure high-quality knowledge propagation across the agent
-  population.
-"""
+SparkLabs Agent - Blackboard Knowledge Workspace"""
 
 from __future__ import annotations
 

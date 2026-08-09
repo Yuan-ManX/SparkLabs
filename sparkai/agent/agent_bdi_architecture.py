@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - BDI Architecture
-
-Belief-Desire-Intention architecture for rational AI agents. Structures
-agent reasoning around three mental attitudes: beliefs (what the agent
-knows about the world), desires (what the agent wants to achieve), and
-intentions (what the agent has committed to doing).
-
-The BDI engine orchestrates the reasoning cycle: observe new
-perceptions, update beliefs, generate candidate options from active
-desires, filter options into committed intentions, execute actions,
-and reflect on outcomes. This produces goal-directed, adaptive
-behavior that responds to changing world conditions.
-
-Each agent has its own BDI state. The engine supports multiple
-concurrent agents, each with independent belief bases, desire sets,
-and intention stacks. Reasoning cycles can be triggered manually or
-through the tick() method for periodic processing.
-"""
+SparkLabs Agent - BDI Architecture"""
 
 from __future__ import annotations
 

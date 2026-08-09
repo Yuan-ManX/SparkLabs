@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Belief & Reputation Engine
-
-A social simulation system for AI-native game agents. Agents maintain
-beliefs about the world, other agents, factions, and themselves. Social
-events propagate through witness networks, updating reputation profiles
-and trust relationships. The engine models belief decay, inference
-chains, gossip propagation, and faction-based standing.
-
-Architecture:
-  BeliefReputationEngine (Singleton)
-    |-- Belief (propositional knowledge with confidence and evidence)
-    |-- ReputationProfile (aggregated social standing with trait scores)
-    |-- SocialEvent (action record with witnesses and magnitude)
-    |-- TrustNetwork (directed trust graph between agents)
-    |-- FactionStanding (agent standing within a faction)
-
-Core Capabilities:
-  - Form, update, infer, and decay agent beliefs
-  - Record social events and propagate reputation effects
-  - Compute reputation profiles from event history
-  - Build and query trust networks between agents
-  - Track faction standing with reputation thresholds
-  - Share beliefs through agent-to-agent communication
-  - Generate gossip events among nearby agents
-  - Classify standing levels on a hostility-to-alliance spectrum
-"""
+SparkLabs Agent - Belief & Reputation Engine"""
 
 from __future__ import annotations
 

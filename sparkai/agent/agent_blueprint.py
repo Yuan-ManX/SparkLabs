@@ -1,20 +1,5 @@
 """
-SparkAI Agent - Game Design Blueprint
-
-Spec-driven game design system that captures game concepts as
-structured blueprints. Each blueprint defines the game's core loop,
-mechanics, progression, and aesthetic direction as a living document
-that evolves through the development lifecycle.
-
-Architecture:
-  BlueprintEngine
-    |-- GameBlueprint (top-level game design spec)
-    |-- CoreLoop (primary gameplay cycle definition)
-    |-- MechanicSpec (individual game mechanic specification)
-    |-- ProgressionModel (player advancement structure)
-    |-- AestheticDirection (visual and audio style guide)
-    |-- BlueprintRevision (version history and change tracking)
-"""
+SparkAI Agent - Game Design Blueprint"""
 
 from __future__ import annotations
 

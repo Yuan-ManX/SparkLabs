@@ -1,41 +1,5 @@
 """
-SparkLabs Agent - Atmospheric Weather Director
-
-An atmospheric and weather orchestration agent for the SparkLabs
-AI-native game engine. It orchestrates weather state machines toward
-dramatic and emergent outcomes, schedules transitions around player
-heartbeat and story arc, and seeds weather-modified gameplay
-opportunities. The director fuses mood alignment, narrative beats,
-and biome ecology to produce cohesive atmospheric experiences.
-
-Architecture:
-  AtmosphericWeatherDirector (singleton)
-    |-- WeatherState, WeatherSchedule, WeatherBeat, MoodAlignment,
-       DirectorStats, DirectorSnapshot, DirectorEvent
-    |-- WeatherMood, WeatherPhase, WeatherIntensity,
-       DirectorEventKind
-
-Core Capabilities:
-  - register_state / get_state / list_states / update_state /
-    remove_state: weather state lifecycle with mood, intensity,
-    and biome metadata.
-  - register_schedule / get_schedule / list_schedules / remove_schedule:
-    scheduled weather transitions that gate progression beats.
-  - add_beat / get_beat / list_beats / remove_beat: narrative beats
-    that trigger weather changes.
-  - assess_mood: score alignment between current weather and a target
-    narrative mood.
-  - suggest_transition: propose a weather transition that fits the
-    current narrative context.
-  - advance_schedule: progress the schedule and emit state changes.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`AtmosphericWeatherDirector.get_instance` or the module-level
-:func:`get_atmospheric_weather_director` factory.
-"""
+SparkLabs Agent - Atmospheric Weather Director"""
 
 from __future__ import annotations
 

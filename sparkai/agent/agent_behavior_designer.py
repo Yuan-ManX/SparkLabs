@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Behavior Designer
-
-AI-driven NPC behavior design system that constructs intelligent
-decision frameworks for non-player characters. Generates behavior trees,
-finite state machines, and composable action patterns from archetype
-profiles and gameplay requirements.
-
-Architecture:
-  AgentBehaviorDesigner (Singleton)
-    |-- BehaviorTreeNode (atomic decision unit in a behavior tree)
-    |-- BehaviorTree (hierarchical composition of decision nodes)
-    |-- StateTransition (event-driven edge between FSM states)
-    |-- StateMachine (finite state machine for NPC lifecycle)
-    |-- ActionPattern (reusable action template with costs)
-    |-- NPCBehaviorProfile (personality-driven behavior config)
-
-Design Principles:
-  - COMPOSABLE: behaviors assemble from reusable atomic patterns
-  - ADAPTIVE: runtime parameter tuning via archetype profiles
-  - DETERMINISTIC: predictable evaluation with stochastic exploration
-  - TRACEABLE: full execution simulation and complexity analysis
-"""
+SparkLabs Agent - Behavior Designer"""
 
 from __future__ import annotations
 

@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Behavioral Genome System
-
-A behavioral genome system for NPC personality traits and behavioral
-inheritance. Models NPC behavior as a genome of quantitative traits that
-can be registered, cross-bred to produce offspring, mutated to introduce
-variation, and expressed into a phenotype used at runtime.
-
-Architecture:
-  BehavioralGenomeSystem (Singleton)
-    |-- GenomeTrait (single heritable trait with dominance and mutation rate)
-    |-- BehavioralGenome (collection of traits with lineage and fitness)
-    |-- GenomeExpression (expressed phenotype derived from a genome)
-    |-- BehavioralGenomeSnapshot (point-in-time state capture)
-
-The system is intentionally deterministic in its breeding logic so that
-population evolution is reproducible given the same parent genomes and
-mutation seed. Trait values are normalized to the [0.0, 1.0] range.
-"""
+SparkLabs Agent - Behavioral Genome System"""
 
 from __future__ import annotations
 

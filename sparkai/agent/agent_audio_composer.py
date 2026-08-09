@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Audio Composer
-
-AI-driven procedural audio and music generation system for game
-development. Generates music tracks, sound effects, ambient layers,
-and full audio scenes from high-level descriptions. Supports
-genre-based composition, mood-driven atmosphere design, spatial 3D
-audio configuration, and multi-layer instrument arrangement.
-
-Architecture:
-  AudioComposer
-    |-- CompositionSession (tracks an active composition workflow)
-    |-- MusicTrack (multi-section song with instrument arrangement)
-    |-- SoundEffect (event-triggered one-shot audio with variations)
-    |-- AudioClip (generic audio container for ambient/UI layers)
-    |-- AudioScene (complete audio mix for a game scene)
-
-Design Principles:
-  - PROCEDURAL: algorithms generate varied, non-repetitive audio
-  - GENRE-AWARE: instrument selection respects genre conventions
-  - MOOD-DRIVEN: composition parameters respond to emotional context
-  - SPATIAL: 3D audio positioning for immersive environments
-  - ITERATIVE: variations and refinements without restarting
-"""
+SparkLabs Agent - Audio Composer"""
 
 from __future__ import annotations
 

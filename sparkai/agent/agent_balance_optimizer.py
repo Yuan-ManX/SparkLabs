@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Balance Optimizer
-
-Autonomous game balance optimization system that analyzes game parameters
-and finds optimal balance configurations through simulation-based tuning.
-Uses a hill-climbing approach with configurable mutation strategies to
-converge on parameter values that satisfy target gameplay metrics.
-
-Architecture:
-  AgentBalanceOptimizer (singleton)
-    |-- GameParameter (parameter definition with bounds and constraints)
-    |-- BalanceTarget (desired metric outcome specification)
-    |-- SimulationResult (per-iteration fitness and metric snapshot)
-    |-- OptimizationSession (full optimization run lifecycle)
-    |-- BalanceReport (post-optimization analysis and recommendations)
-
-Optimization Domains:
-  - COMBAT: damage, health, cooldowns, critical hit rates
-  - ECONOMY: currency flow, item pricing, resource generation
-  - PROGRESSION: XP curves, unlock pacing, power scaling
-  - DIFFICULTY: enemy stats, spawn rates, challenge scaling
-  - LOOT: drop rates, rarity distributions, reward frequencies
-"""
+SparkLabs Agent - Balance Optimizer"""
 
 from __future__ import annotations
 

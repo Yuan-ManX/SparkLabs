@@ -1,32 +1,5 @@
 """
-SparkAI Agent - Autowork Loop Enforcer
-
-Three-phase structured execution engine that enforces a strict
-Plan -> Execute -> Verify cycle for agent operations. Each phase
-produces structured output that must be validated before the next
-phase can begin. The enforcer tracks a full transcript of all
-operations and cross-checks verification claims against actual
-tool calls.
-
-Architecture:
-  AutoworkEngine
-    |-- PhaseStateMachine (PLAN -> EXECUTE -> VERIFY)
-    |-- TranscriptTracker (full operation history)
-    |-- VerificationAuditor (transcript-backed verification)
-    |-- StalenessDetector (stale claim detection)
-    |-- SafetyGates (consecutive failure tracking)
-
-Phase Flow:
-  1. PLAN: Agent must emit structured plan with end-state and verification gates
-  2. EXECUTE: Agent performs work until completion candidate is proven
-  3. VERIFY: Mandatory audit pass before clean stop
-
-Safety Mechanisms:
-  - Consecutive failure tracking with exponential backoff
-  - Staleness detection (verification commands must run AFTER last code change)
-  - Plan coverage checking (completion must cover every planned end-state item)
-  - Abort grace period for runaway loops
-"""
+SparkAI Agent - Autowork Loop Enforcer"""
 
 from __future__ import annotations
 

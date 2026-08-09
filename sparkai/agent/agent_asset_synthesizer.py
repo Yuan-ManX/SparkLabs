@@ -1,11 +1,5 @@
 """
-AssetSynthesizer - AI-powered procedural asset generation system.
-
-Given text descriptions, generates complete asset packs including sprite
-definitions, material configurations, sound descriptors, and animation data
-for the AI-native game engine. Uses a singleton pattern with thread-safe
-double-check locking.
-"""
+AssetSynthesizer - AI-powered procedural asset generation system."""
 
 import threading
 import time

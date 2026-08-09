@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Asset Harmonizer
-
-Consistency validation engine that checks visual, audio, and spatial
-coherence across all game assets. Detects style mismatches, palette
-conflicts, resolution gaps, and ensures a unified aesthetic vision
-for AI-native game creation.
-
-Architecture:
-  AssetHarmonizer
-    |-- AssetDescriptor (registered asset metadata and dimensions)
-    |-- HarmonizationReport (pairwise compatibility analysis)
-    |-- StyleClassifier (visual style profile detection)
-    |-- DimensionComparator (cross-dimension consistency scoring)
-    |-- ConflictResolver (recommendation generation for mismatches)
-
-Harmonization Dimensions:
-  - Visual Style: art direction coherence across all visual assets
-  - Color Palette: chromatic harmony and mood consistency
-  - Spatial Coherence: scale, proportion, and grid alignment
-  - Audio Style: sonic identity and mix consistency
-  - Performance Budget: polycount, texture size, shader complexity
-  - Resolution Tier: texture resolution and LOD consistency
-  - Texture Density: texel density across surfaces
-"""
+SparkLabs Agent - Asset Harmonizer"""
 
 from __future__ import annotations
 

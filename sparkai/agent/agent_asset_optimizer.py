@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Asset Optimization Engine
-
-Intelligent game asset analysis and optimization for AI-native
-content pipelines. Evaluates textures, meshes, audio clips, and
-animation data to identify optimization opportunities, reduce
-memory footprint, and improve runtime performance without
-degrading visual or gameplay quality.
-
-Architecture:
-  AssetOptimizationEngine
-    |-- TextureAnalyzer (resolution, format, compression audit)
-    |-- MeshOptimizer (polygon reduction, LOD generation)
-    |-- AudioCompressor (bitrate analysis, format conversion)
-    |-- AnimationCompactor (keyframe reduction, curve simplification)
-    |-- BundleOptimizer (atlas generation, dependency dedup)
-    |-- OptimizationReport (before/after metrics comparison)
-
-Optimization Strategies:
-  - COMPRESS: reduce file size with lossy/lossless compression
-  - DOWNSAMPLE: reduce resolution while maintaining quality
-  - ATLAS: combine textures into sprite sheets
-  - LOD: generate level-of-detail mesh variants
-  - DEDUPLICATE: identify and remove duplicate assets
-"""
+SparkLabs Agent - Asset Optimization Engine"""
 
 from __future__ import annotations
 

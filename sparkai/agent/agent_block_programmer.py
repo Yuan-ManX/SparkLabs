@@ -1,34 +1,5 @@
 """
-SparkLabs Agent - AI Block Programmer
-
-This module implements an AI agent that synthesizes, validates, and manages
-stack-based game logic programs. Each program is an ordered stack of
-self-contained blocks (event triggers, conditions, actions, control-flow,
-variables, operators) that snap together vertically to define game behavior
-without writing code.
-
-The block programmer is the AI-native counterpart to the engine's visual
-scripting graph: where the graph wires nodes by edges, the block stack
-composes behavior by vertical snapping. The agent can register new block
-types, compose programs from natural-language briefs, validate type
-signatures and control-flow integrity, dry-run programs to capture execution
-traces, and merge multiple programs into a single coordinated stack.
-
-Architecture:
-  BlockProgrammerEngine (Singleton, double-checked locking, threading.RLock)
-    |-- BlockType       -- a reusable block definition (category + signature)
-    |-- BlockInstance   -- a placed block inside a program stack
-    |-- BlockProgram    -- an ordered, named stack of block instances
-    |-- ValidationReport-- the result of validating a program
-    |-- DryRunTrace     -- the step-by-step execution trace of a dry run
-    |-- BlockStats      -- aggregate engine statistics
-    |-- BlockSnapshot   -- full engine snapshot
-    |-- BlockEvent      -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the
-engine is safe to call from multiple agent threads. Bounded in-memory
-stores use FIFO eviction when their capacity constants are exceeded.
-"""
+SparkLabs Agent - AI Block Programmer"""
 
 from __future__ import annotations
 

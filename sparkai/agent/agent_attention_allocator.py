@@ -1,51 +1,5 @@
 """
-SparkLabs Agent - Cognitive Attention Allocator
-
-Cognitive attention allocation system for AI agents operating inside the
-SparkLabs game engine. Agents have limited attention capacity and must
-dynamically allocate focus across competing stimuli in the game world.
-The system computes salience scores for each potential attention target
-based on novelty, intensity, relevance, urgency, social salience and
-threat, then selects which targets to attend to based on the current
-attention mode (FOCUSED, SCANNING, DIVIDED, SUSTAINED, VIGILANT).
-
-Architecture:
-  AttentionAllocatorEngine (Singleton)
-    |-- AttentionTarget Registry (per-agent stimuli with salience factors)
-    |-- FocusState Manager (per-agent attention budget and active targets)
-    |-- Salience Computer (weighted aggregation of multi-factor salience)
-    |-- Attention Shifter (mode-aware selection of the next target)
-    |-- Distraction Tracker (resistance vs. capture of competing stimuli)
-    |-- Audit Trail (history of attention shifts and distractions)
-    |-- Event Bus (handlers for attention lifecycle events)
-
-Core Capabilities:
-  - register_target / remove_target / get_target / list_targets
-  - compute_salience / update_salience (per-factor recomputation)
-  - acquire_focus / release_focus (budget-bounded attention capture)
-  - shift_attention (mode-aware re-targeting with audit trail)
-  - set_mode / get_focus_state (FOCUSED, SCANNING, DIVIDED, SUSTAINED, VIGILANT)
-  - register_distraction (resistance vs. capture decisions)
-  - tick (one attention cycle: recompute salience, shift if needed)
-  - get_audit_trail (per-agent history of attention shifts)
-  - register_event_handler / list_events (event subscriptions)
-  - get_status / get_snapshot / reset (lifecycle and observability)
-
-Usage:
-    engine = get_attention_allocator()
-    target = engine.register_target(
-        agent_id="agent_1",
-        target_id="enemy_scout",
-        label="Enemy scout spotted near the ridge",
-        position=(120.0, 64.0, 12.0),
-        salience=0.6,
-        factors={SalienceFactor.THREAT.value: 0.9, SalienceFactor.URGENCY.value: 0.7},
-        priority=0.8,
-    )
-    engine.set_mode("agent_1", AttentionMode.FOCUSED)
-    engine.acquire_focus("agent_1", target.id, budget_cost=0.5)
-    engine.tick("agent_1")
-"""
+SparkLabs Agent - Cognitive Attention Allocator"""
 
 from __future__ import annotations
 

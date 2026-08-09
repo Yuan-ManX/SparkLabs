@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Game Balance Tuner
-
-Automated game balance analysis and parameter optimization.
-Continuously monitors gameplay metrics to identify imbalance
-patterns and applies corrective tuning to game parameters,
-maintaining competitive fairness and engagement across all
-player segments.
-
-Architecture:
-  GameBalanceTuner
-    |-- MetricCollector (real-time gameplay statistic aggregation)
-    |-- ImbalanceDetector (anomaly and disparity identification)
-    |-- ParameterOptimizer (gradient-free parameter tuning)
-    |-- FairnessValidator (competitive equilibrium verification)
-    |-- TuningProfile (per-game-mode balance configuration)
-
-Tuning Domains:
-  - COMBAT: weapon/ability damage, health, defense ratios
-  - ECONOMY: resource generation rates, pricing curves
-  - PROGRESSION: XP curves, unlock pacing, difficulty scaling
-  - SPAWNING: enemy distribution, loot drop frequencies
-"""
+SparkLabs Agent - Game Balance Tuner"""
 
 from __future__ import annotations
 

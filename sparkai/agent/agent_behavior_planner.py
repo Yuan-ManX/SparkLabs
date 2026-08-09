@@ -1,10 +1,5 @@
 """
-SparkLabs Agent Behavior Planner
-
-Autonomous behavior planning system that enables agents to decompose
-high-level goals into executable action sequences. Supports priority
-scheduling, precondition validation, and dynamic replanning.
-"""
+SparkLabs Agent Behavior Planner"""
 
 from __future__ import annotations
 

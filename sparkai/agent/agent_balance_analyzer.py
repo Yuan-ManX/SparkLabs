@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Balance Analyzer
-
-Automated game balance intelligence that evaluates mechanics, economy,
-progression systems, and combat parameters to ensure fair and engaging gameplay.
-Produces detailed balance reports with severity ratings and concrete tuning
-recommendations across all game dimensions.
-
-Architecture:
-  BalanceAnalyzer
-    |-- MechanicsEvaluator (checks ability/weapon/character balance)
-    |-- EconomySimulator (models resource flows and inflation)
-    |-- ProgressionCurveAnalyst (validates level-up and unlock pacing)
-    |-- CombatBalance (analyzes damage-per-second and survivability)
-    |-- DifficultyValidator (ensures appropriate challenge scaling)
-
-Analysis Domains:
-  - MECHANICS: ability cooldowns, damage ratios, status effect balance
-  - ECONOMY: currency faucets/sinks, item pricing, reward frequency
-  - PROGRESSION: XP curves, unlock pacing, power scaling over levels
-  - COMBAT: DPS balance, time-to-kill, threat distribution, counterplay
-  - DIFFICULTY: challenge scaling, adaptive difficulty, skill floor/ceiling
-"""
+SparkLabs Agent - Balance Analyzer"""
 
 from __future__ import annotations
 
