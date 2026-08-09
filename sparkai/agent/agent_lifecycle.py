@@ -1,10 +1,5 @@
 """
-SparkLabs Agent Lifecycle System
-
-Unified lifecycle management for AI-native game engine agents.
-Implements a Blueprint-driven spawn pipeline with Plan-Execute-Reflect cycle,
-confidence-scored verification, and context-aware delegation.
-"""
+SparkLabs Agent Lifecycle System"""
 
 from __future__ import annotations
 

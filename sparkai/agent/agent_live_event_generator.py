@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - AI Live Event & Seasonal Content Generator
-
-A runtime module that generates time-limited events, seasonal festivals,
-and rotating challenges for the SparkLabs AI-native game engine. The
-generator designs event content, attaches rewards, schedules activation
-windows, manages the full event lifecycle (draft -> scheduled ->
-announced -> active -> ending -> completed), tracks participants, and
-exposes reusable templates for recurring seasonal content.
-
-This module embodies the AI-native principle: live content is not a
-static calendar authored by hand but a generative, observable system
-that an intelligent agent provisions, schedules, and retunes while
-players are in-session.
-
-Architecture:
-  LiveEventGenerator (singleton)
-    |-- LiveEvent, EventReward, EventSchedule, EventTemplate,
-        EventParticipant, EventMetrics, LiveEventStats, LiveEventSnapshot,
-        LiveEventEvent
-    |-- EventType, EventStatus, EventScope, RewardType, EventTemplateType,
-        LiveEventEventKind
-
-Core Capabilities:
-  - create_event / update_event / get_event / list_events / delete_event:
-    full CRUD over live event definitions.
-  - schedule_event / announce_event / activate_event / complete_event /
-    cancel_event: event lifecycle management from draft to completion.
-  - register_participant / list_participants: participant tracking and
-    scoring per event.
-  - create_template / get_template / list_templates: reusable event
-    templates for seasonal and recurring content.
-  - create_reward / list_rewards: reward catalog attachable to events.
-  - list_events_log / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Agent - AI Live Event & Seasonal Content Generator"""
 
 from __future__ import annotations
 

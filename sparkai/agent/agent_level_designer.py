@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Level Designer
-
-AI-driven procedural level and map generation system. Creates tile-based
-level layouts using multiple generation algorithms including BSP tree
-partitioning, cellular automata, drunkard's walk, wave function collapse,
-agent-based placement, and room graph construction.
-
-Architecture:
-  LevelDesigner
-    |-- Session Manager (tracks generation sessions and their lifecycle)
-    |-- Generator Engine (produces deterministic level layouts from seed)
-    |-- Room Manager (add/remove/modify rooms within layouts)
-    |-- Spawn System (places enemy, item, and player spawn points)
-    |-- Layout Analyzer (connectivity, flow, chokepoint, difficulty analysis)
-    |-- Exporter (serializes layouts to exportable dictionaries)
-
-Supports 7 terrain biomes and 6 generation algorithms for diverse level design.
-"""
+SparkLabs Agent - Level Designer"""
 
 from __future__ import annotations
 

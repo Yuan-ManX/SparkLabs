@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Learning Pipeline
-
-An observation-driven learning system for the AI-native game engine that
-monitors player behavior, discovers patterns, and generates actionable
-insights to continuously refine game design.
-
-Architecture:
-  LearningPipeline (singleton)
-    |-- PlayerObservation (atomic behavioral data point)
-    |-- LearnedInsight (derived knowledge with confidence)
-    |-- PlayerProfile (aggregated player model)
-    |-- LearningModel (trained prediction capability)
-
-Core Capabilities:
-  - Session lifecycle management (start, record, end)
-  - Pattern analysis (repeated action sequences, failure points, preferred paths)
-  - Anomaly detection (unusual behavior, exploits, outlier performance)
-  - Trend identification (engagement shifts, difficulty evolution, speed changes)
-  - Recommendation generation (design changes based on data)
-  - Player profiling (skill level, play style, preferences)
-  - Retention/churn prediction (engagement patterns, session frequency)
-  - Player segmentation (casual, core, hardcore, explorer, achiever)
-"""
+SparkLabs Agent - Learning Pipeline"""
 
 from __future__ import annotations
 

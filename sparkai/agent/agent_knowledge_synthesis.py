@@ -1,42 +1,5 @@
 """
-SparkLabs Agent - AI Knowledge Synthesis and Cross-Domain Concept Fusion
-
-A knowledge synthesis agent for the SparkLabs AI-native game engine. It
-maintains a graph of game-development concepts spanning many domains,
-fuses concepts across domain boundaries, draws inferences over concept
-premises, explores domains, discovers patterns, and answers
-natural-language questions over the concept graph.
-
-Architecture:
-  KnowledgeSynthesis (singleton)
-    |-- KnowledgeConcept, ConceptRelation, SynthesisResult,
-       InferenceChain, DomainMap, InsightRecord, KnowledgeQuery,
-       KnowledgeStats, KnowledgeSnapshot, KnowledgeEvent
-    |-- KnowledgeDomain, ConceptTier, SynthesisMethod, InferenceType,
-       RelationKind, ConfidenceLevel, KnowledgeEventKind
-
-Core Capabilities:
-  - create_concept / get_concept / list_concepts / update_concept /
-    merge_concepts: concept lifecycle and merging.
-  - add_relation / get_relation / list_relations: concept graph edges.
-  - synthesize / get_synthesis / list_syntheses: cross-domain concept
-    fusion with multiple synthesis methods.
-  - draw_inference / get_inference / list_inferences: inference chains
-    built from concept premises.
-  - explore_domain / get_domain_map / list_domain_maps: domain-scoped
-    exploration and mapping.
-  - discover_pattern / get_insight / list_insights: pattern discovery
-    and insight records.
-  - query / get_query / list_queries: natural-language question
-    answering over the concept graph.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`KnowledgeSynthesis.get_instance` or the module-level
-:func:`get_knowledge_synthesis` factory.
-"""
+SparkLabs Agent - AI Knowledge Synthesis and Cross-Domain Concept Fusion"""
 
 from __future__ import annotations
 

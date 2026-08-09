@@ -1,16 +1,5 @@
 """
-SparkLabs Agent - AI Knowledge Retrieval System
-
-A RAG-based knowledge manager for the SparkLabs AI-native game engine.
-Ingests game design documents, lore, code, and assets; chunks them into
-retrievable units; performs semantic search via simulated TF-IDF scoring;
-maintains a concept knowledge graph; assembles context windows for model
-consumption; and tracks provenance, freshness, and search analytics.
-
-Thread safety: all mutating operations are guarded by a single
-``threading.Lock``. Returned objects are snapshots; live mutation must
-go through the public API.
-"""
+SparkLabs Agent - AI Knowledge Retrieval System"""
 
 from __future__ import annotations
 

@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Knowledge Graph Engine
-
-A structured knowledge base for the AI-native game engine that stores
-game design patterns, code patterns, architecture decisions, and
-reusable game components. Supports knowledge inference, pattern
-matching, and contextual retrieval.
-
-Architecture:
-  KnowledgeGraph
-    |-- KnowledgeNode (atomic knowledge unit)
-    |-- KnowledgeRelation (typed connections between nodes)
-    |-- PatternLibrary (reusable game design patterns)
-    |-- InferenceEngine (derive new knowledge from existing)
-    |-- ContextRetriever (context-aware knowledge search)
-"""
+SparkAI Agent - Knowledge Graph Engine"""
 
 from __future__ import annotations
 

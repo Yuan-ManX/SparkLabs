@@ -1,32 +1,5 @@
 """
-SparkAI Agent - Interaction Synthesis Engine
-
-An autonomous system that transforms high-level gameplay descriptions
-into complete, executable interaction systems. The synthesis engine
-understands game design principles and generates cohesive interaction
-networks that combine mechanics, physics, input handling, feedback,
-and progression into unified gameplay loops.
-
-Key capabilities:
-  - Interaction network synthesis from natural language
-  - Mechanic-to-physics parameter mapping
-  - Input-to-action binding generation
-  - Progression curve computation with difficulty scaling
-  - Feedback system orchestration (visual, audio, haptic)
-  - Interaction conflict detection and resolution
-  - Gameplay loop flow validation
-
-Architecture:
-  InteractionSynthesisEngine (Singleton)
-    |-- InteractionConcept (dataclass)
-    |-- InteractionNetwork (dataclass)
-    |-- ProgressionProfile (dataclass)
-    |-- synthesize_interaction_network()
-    |-- compute_progression_curve()
-    |-- detect_interaction_conflicts()
-    |-- generate_feedback_spec()
-    |-- validate_loop_integrity()
-"""
+SparkAI Agent - Interaction Synthesis Engine"""
 
 from __future__ import annotations
 

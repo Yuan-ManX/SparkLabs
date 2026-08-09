@@ -1,43 +1,5 @@
 """
-SparkLabs Agent - AI Live-Ops Director
-
-A runtime fusion module that closes the loop between live player telemetry
-and the running engine. The director segments players into cohorts,
-ingests real-time gameplay metrics, reasons over trends to detect churn
-risk and engagement drops, proposes retuning actions (difficulty
-adjustments, live events, store promotions, balance changes), executes
-approved actions against engine subsystems, and measures the impact of
-each intervention.
-
-This module embodies the AI-native principle: the engine is not a static
-artifact but a living system that an intelligent agent continuously
-observes, diagnoses, and retunes while players are in-session.
-
-Architecture:
-  LiveOpsDirector (singleton)
-    |-- PlayerCohort, TelemetrySnapshot, TrendAnalysis, RetuneAction,
-        ActionImpact, LiveOpsCampaign, LiveOpsStats, LiveOpsSnapshot,
-        LiveOpsEvent
-    |-- CohortType, MetricType, TrendDirection, AlertSeverity,
-        ActionType, ActionStatus, ImpactVerdict, LiveOpsEventKind
-
-Core Capabilities:
-  - register_cohort / update_cohort / get_cohort / list_cohorts /
-    delete_cohort: player segmentation with criteria and size tracking.
-  - ingest_telemetry / get_telemetry / list_telemetry: real-time metric
-    ingestion per cohort with retention and monetization signals.
-  - analyze_trends / get_trend / list_trends: trend detection with
-    direction, severity, and AI confidence scoring.
-  - propose_action / approve_action / reject_action / execute_action /
-    list_actions / get_action: retuning action lifecycle from proposal
-    through execution to impact measurement.
-  - measure_impact / get_impact / list_impacts: A/B-style impact
-    measurement comparing before/after metric snapshots.
-  - create_campaign / update_campaign / get_campaign / list_campaigns:
-    campaign grouping for coordinated multi-action live-ops events.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Agent - AI Live-Ops Director"""
 
 from __future__ import annotations
 

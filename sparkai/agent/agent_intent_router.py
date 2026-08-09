@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Intent Router
-
-LLM-driven intent routing and task decomposition system for the
-SparkLabs AI-native game engine. Receives raw user intents,
-classifies them against registered intent patterns, produces
-routing decisions with confidence scores, and decomposes complex
-intents into structured sub-task execution plans managed by
-spawned sub-agents.
-
-Architecture:
-  AgentIntentRouter (singleton)
-    |-- IntentPattern Registry (learnable pattern matching)
-    |-- RoutingDecision Engine (confidence-ranked intent routing)
-    |-- DecompositionPlanner (intent → sub-task plan generation)
-    |-- SubAgentSpawner (isolated sub-agent lifecycle management)
-    |-- RoutingOptimizer (path analysis and optimization)
-    |-- StatsAggregator (telemetry and analytics)
-
-Routing Strategies:
-  - DIRECT:       route intent straight to a single module
-  - DELEGATE:     hand off to a specialized sub-agent
-  - PARALLEL:     fan out to multiple agents concurrently
-  - CASCADE:      try primary module, fall back through chain
-  - ROUND_ROBIN:  distribute across available modules evenly
-  - CONTEXT_AWARE:choose routing based on session context
-"""
+SparkLabs Agent - Intent Router"""
 
 from __future__ import annotations
 

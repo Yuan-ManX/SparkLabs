@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Interrupt System
-
-Thread-scoped interrupt signaling for concurrent agent sessions.
-Allows interrupting one agent session without affecting tools
-running in other sessions. Essential for the multi-agent
-game engine environment.
-
-Architecture:
-  InterruptSystem
-    |-- ThreadRegistry (maps session IDs to thread identifiers)
-    |-- InterruptSignaler (per-thread interrupt state)
-    |-- SessionController (graceful session shutdown)
-
-Usage:
-    interrupt = get_interrupt_system()
-    interrupt.set_interrupt(session_id="agent-42", active=True)
-    
-    # In tool execution loop:
-    if interrupt.is_interrupted("agent-42"):
-        return {"status": "interrupted", "partial": results_so_far}
-"""
+SparkLabs Agent - Interrupt System"""
 
 from __future__ import annotations
 

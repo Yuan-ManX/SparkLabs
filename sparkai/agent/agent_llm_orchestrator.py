@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - LLM Orchestrator
-
-Central LLM orchestration engine that provides a unified interface for all
-agent modules to call AI APIs for reasoning, generation, and analysis.
-Handles provider management, prompt templating, token tracking, rate
-limiting, streaming, caching, and fallback chains.
-
-Architecture:
-  LLMOrchestratorEngine
-    |-- ProviderRegistry (OpenAI, Anthropic, local, custom)
-    |-- PromptTemplateLibrary (templated prompts with context injection)
-    |-- TokenTracker (usage stats and cost management)
-    |-- RateLimiter (throttling and retry logic)
-    |-- ResponseCache (keyed cache for repeated queries)
-    |-- StreamingAdapter (chunked response delivery)
-    |-- FallbackChain (primary -> secondary provider cascade)
-
-Provider Flow:
-  Request arrives -> check cache -> resolve template -> select provider
-  -> apply rate limit -> dispatch to API -> parse response -> track tokens
-  -> cache result -> return LLMResponse
-"""
+SparkLabs Agent - LLM Orchestrator"""
 
 from __future__ import annotations
 

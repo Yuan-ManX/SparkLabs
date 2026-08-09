@@ -1,18 +1,5 @@
 """
-SparkLabs Agent Layered Memory System
-
-Provides a multi-layered memory architecture for AI game agents.
-Each layer serves a distinct purpose: core memory for identity,
-session memory for recent context, procedural memory for reusable
-patterns, and episodic memory for significant experiences.
-
-Core architecture:
-  - Core Memory: Persistent identity, preferences, and critical knowledge
-  - Session Memory: Short-term context with searchable history
-  - Procedural Memory: Accumulated skills and behavioral patterns
-  - Episodic Memory: Significant events and experiences
-  - Memory Consolidation: Periodic promotion from session to core
-"""
+SparkLabs Agent Layered Memory System"""
 
 import threading
 import time

@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Interaction Loop Engine
-
-Manages continuous agent-environment feedback loops for game environments.
-Implements the full perception-action-reflection-learning cycle that enables
-agents to observe, decide, execute, reflect, and improve over time. The engine
-orchestrates structured feedback loops with exploration-exploitation tradeoffs,
-learning curves, and strategy adaptation.
-
-Architecture:
-  InteractionLoopEngine (Singleton)
-    |-- PerceptionProcessor (raw data -> structured frames)
-    |-- DecisionEngine (state + strategy -> action selection)
-    |-- ActionExecutor (action -> environment result)
-    |-- ReflectionEngine (experience -> insights)
-    |-- LearningEngine (feedback -> knowledge updates)
-    |-- InteractionCycle (complete loop record)
-    |-- LoopState (aggregate performance tracking)
-"""
+SparkLabs Agent - Interaction Loop Engine"""
 
 from __future__ import annotations
 

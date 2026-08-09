@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Agent Journal System
-
-Agent self-documentation, reflection, and structured diary for the
-AI-native game engine. Enables agents to record observations, reflect
-on decisions, log errors, track milestones, and synthesize learnings
-into structured journal entries. Supports private, team-shared, and
-public visibility scopes with mood tagging for emotional tone tracking.
-
-Architecture:
-  AgentJournalSystem
-    |-- JournalEntryType (classification of diary entries)
-    |-- EntryVisibility (access scope for journal content)
-    |-- MoodTone (emotional tone annotation)
-    |-- JournalEntry (single timestamped diary record)
-    |-- JournalBook (collection of entries for one agent)
-    |-- ReflectionPrompt (auto-generated introspective question)
-    |-- JournalSummary (synthesized digest over a time window)
-    |-- JournalIndex (inverted index for full-text search)
-    |-- ReflectionGenerator (prompt creation from journal patterns)
-
-Features:
-  - Structured journal entries with mood and tag annotation
-  - Per-agent journal books with visibility scoping
-  - Random reflection prompts generated from journal history
-  - Time-windowed summarization with trend detection
-  - Full-text search across all journal entries
-  - Multi-agent journal merging for team-level insights
-  - Markdown and JSON export formats
-"""
+SparkLabs Agent - Agent Journal System"""
 
 from __future__ import annotations
 

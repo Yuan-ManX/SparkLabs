@@ -1,35 +1,5 @@
 """
-SparkLabs Agent - Live Debugger
-
-A runtime debugging module that provides AI-powered error analysis,
-state inspection, breakpoint management, and fix suggestion capabilities
-for game development. Tracks debug entries, runtime errors, state
-snapshots, and generates fix suggestions through pattern matching.
-
-Core capabilities:
-  - Debug session lifecycle management
-  - Structured log entry collection with level filtering
-  - Breakpoint management (line, condition, data-watch, event, exception)
-  - Runtime error tracking with deduplication and occurrence counting
-  - State snapshot capture for runtime inspection
-  - Pattern-matched fix suggestion generation
-  - Debug report generation with session statistics
-
-Architecture:
-  AgentLiveDebugger (Singleton)
-    |-- DebugEntry (dataclass)
-    |-- Breakpoint (dataclass)
-    |-- StateSnapshot (dataclass)
-    |-- RuntimeError (dataclass)
-    |-- FixSuggestion (dataclass)
-    |-- DebugSession (dataclass)
-    |-- start_session()
-    |-- log_entry()
-    |-- add_breakpoint()
-    |-- report_error()
-    |-- suggest_fix()
-    |-- generate_debug_report()
-"""
+SparkLabs Agent - Live Debugger"""
 
 from __future__ import annotations
 

@@ -1,58 +1,5 @@
 """
-SparkLabs Agent - Kanban Coordinator
-
-A persistent multi-agent task board where specialized worker agents
-pick up, execute, and hand off tasks with structured handoff protocols
-and human-in-the-loop review gates. Manages the full lifecycle of
-development tasks across AI-native game creation pipelines.
-
-Architecture:
-  KanbanCoordinator
-    |-- KanbanBoard (project-level task organization)
-    |-- KanbanTask (individual work unit with column state)
-    |-- WorkerProfile (agent capabilities and load tracking)
-    |-- HandoffNote (structured inter-agent task transfers)
-    |-- BlockRecord (task blockage tracking and resolution)
-
-Board Columns:
-  - BACKLOG: newly captured ideas and unrefined tasks
-  - READY: refined tasks awaiting worker assignment
-  - IN_PROGRESS: actively worked on by a worker
-  - REVIEW: completed, awaiting human or peer review
-  - BLOCKED: paused due to dependency or ambiguity
-  - DONE: reviewed and accepted
-  - ARCHIVED: historical records, no longer active
-
-Task Types:
-  - CODE_GENERATION: script and logic synthesis
-  - ASSET_CREATION: sprite, audio, tilemap generation
-  - LEVEL_DESIGN: scene and environment layout
-  - GAME_BALANCE: tuning parameters and difficulty
-  - BUG_FIX: defect resolution
-  - TESTING: test generation and execution
-  - DOCUMENTATION: design docs and code comments
-  - REFACTOR: structural code improvements
-
-Handoff Types:
-  - COMPLETE: task fully transferred to next worker
-  - PARTIAL: partial results handed off for continuation
-  - FOLLOW_UP: additional work requested after completion
-  - ESCALATE: issue raised to coordinator or lead
-
-Usage:
-    coordinator = get_kanban_coordinator()
-    board = coordinator.create_board("Sprint 1", "SpaceShooter")
-    task = coordinator.create_task(
-        board.id, "Implement player controller",
-        "Create WASD movement with physics-based acceleration",
-        task_type="code_generation", priority=2,
-    )
-    worker = coordinator.register_worker("CodeBot", "engineer", ["python", "gameplay"])
-    coordinator.assign_task(task.id, worker.id)
-    coordinator.move_task(task.id, "in_progress", worker.id)
-    coordinator.move_task(task.id, "review", worker.id)
-    coordinator.move_task(task.id, "done", worker.id)
-"""
+SparkLabs Agent - Kanban Coordinator"""
 
 from __future__ import annotations
 

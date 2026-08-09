@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Interaction Designer
-
-AI-driven UI/UX interaction flow designer for game interfaces.
-Models complete interaction architectures including screens, dialogs,
-overlays, and navigation patterns. Provides flow validation, AI-driven
-flow generation from natural language prompts, accessibility analysis,
-and JSON serialization for integration with design toolchains.
-
-Architecture:
-  InteractionDesigner
-    |-- FlowNode (individual interaction surface)
-    |-- FlowTransition (animated state changes between nodes)
-    |-- InteractionFlow (complete flow graph with metadata)
-    |-- AccessibilityAnalyzer (WCAG compliance verification)
-    |-- FlowValidator (structural integrity and dead-end detection)
-    |-- FlowPromptInterpreter (natural language to flow generation)
-
-Supports 9 interaction patterns and 7 flow node types for
-comprehensive UI/UX modeling across game genres.
-"""
+SparkLabs Agent - Interaction Designer"""
 
 from __future__ import annotations
 
