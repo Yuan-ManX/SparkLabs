@@ -1,15 +1,5 @@
 """
-SparkLabs Backend - Game Composer API Routes
-
-REST API endpoints for the AI Game Composer that generates procedural
-background music for games using the Web Audio API.
-
-Endpoints:
-  GET  /game-composer/status     - Composer status
-  GET  /game-composer/history    - Recent compositions
-  POST /game-composer/compose    - Compose BGM from genre/HTML
-  POST /game-composer/inject     - Compose and inject into HTML
-"""
+SparkLabs Backend - Game Composer API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

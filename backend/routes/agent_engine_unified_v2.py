@@ -1,17 +1,5 @@
 """
-SparkLabs Backend - Unified Agent & Engine Core API Routes
-
-Comprehensive REST API endpoints for the UnifiedAgentCore and UnifiedGameEngine
-systems. Provides complete integration between the agent layer, engine layer,
-and frontend web interface. All endpoints are designed for the AI-native
-game development workflow.
-
-Routes:
-  /api/unified/agent/*     - Unified Agent Core operations
-  /api/unified/engine/*    - Unified Game Engine operations
-  /api/unified/bridge/*    - Agent-Engine bridge operations
-  /api/unified/system/*    - System status and orchestration
-"""
+SparkLabs Backend - Unified Agent & Engine Core API Routes"""
 
 from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse

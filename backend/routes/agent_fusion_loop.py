@@ -1,20 +1,5 @@
 """
-SparkLabs Backend - Agent-Engine Fusion Loop API Routes
-
-REST API endpoints for the AgentEngineFusionLoop that tightly couples
-the AgentKernel with the AINativeEngineCore in a real-time bidirectional
-feedback cycle.
-
-Endpoints:
-  GET  /fusion/status       - Fusion loop status and statistics
-  POST /fusion/start        - Start the fusion loop
-  POST /fusion/stop         - Stop the fusion loop
-  POST /fusion/tick         - Run a single fusion tick manually
-  GET  /fusion/ticks        - Get recent tick history
-  GET  /fusion/goals        - Get active autonomous goals
-  GET  /fusion/actions      - Get recent fusion actions
-  POST /fusion/reset        - Reset fusion loop state
-"""
+SparkLabs Backend - Agent-Engine Fusion Loop API Routes"""
 
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse

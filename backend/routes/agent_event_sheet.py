@@ -1,15 +1,5 @@
 """
-SparkLabs Backend - Event Sheet Synthesizer API Routes
-
-REST API endpoints for the AI Event Sheet Synthesizer that converts
-natural-language game logic into executable EventSheet structures.
-
-Endpoints:
-  GET  /event-sheet/status       - Synthesizer status and runtime stats
-  POST /event-sheet/synthesize   - Synthesize an event sheet from text
-  GET  /event-sheet/history      - List recent synthesis sessions
-  GET  /event-sheet/runtime      - EventSheetRuntime stats and sheet list
-"""
+SparkLabs Backend - Event Sheet Synthesizer API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

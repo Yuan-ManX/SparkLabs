@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Agent Game Creation Routes
-
-API endpoints for natural-language game creation including
-description parsing, project management, blueprint refinement,
-and genre templates.
-"""
+SparkLabs Backend - Agent Game Creation Routes"""
 
 import uuid
 from datetime import datetime

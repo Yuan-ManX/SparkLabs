@@ -1,14 +1,5 @@
 """
-SparkLabs Backend - Game Analytics API Routes
-
-REST API endpoints for the AI Game Analytics that predicts game
-engagement metrics via Monte Carlo player simulation.
-
-Endpoints:
-  GET  /game-analytics/status    - Analytics status
-  GET  /game-analytics/history   - Recent analysis runs
-  POST /game-analytics/analyze   - Analyze game and predict metrics
-"""
+SparkLabs Backend - Game Analytics API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

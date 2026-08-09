@@ -1,32 +1,5 @@
 """
-SparkLabs Backend - Cognitive Kernel & Game Brain API Routes
-
-REST API endpoints for the unified cognitive kernel, kernel-engine
-integrator, and AI-native game brain. These endpoints expose the new
-cognitive substrate so the web frontend and external clients can drive
-real-time cognition, inspect state, and dispatch directorial directives.
-
-Endpoints:
-  GET  /cognitive-kernel/status        - Kernel status and memory stats
-  POST /cognitive-kernel/perceive      - Inject a perception into the kernel
-  POST /cognitive-kernel/goal          - Submit a goal for decomposition
-  POST /cognitive-kernel/cycle         - Advance the kernel one cognitive cycle
-  GET  /cognitive-kernel/recall        - Recall memories by query
-  POST /cognitive-kernel/reset         - Reset the kernel state
-
-  GET  /cognitive-integrator/status    - Integrator status and tick history
-  POST /cognitive-integrator/tick      - Advance the integrator by one tick
-  POST /cognitive-integrator/action    - Submit an engine command
-  POST /cognitive-integrator/event     - Emit an engine event
-  GET  /cognitive-integrator/history   - Recent integrator tick results
-  POST /cognitive-integrator/reset     - Reset the integrator tick state
-
-  GET  /game-brain/status              - Brain status (player, pacing, difficulty)
-  POST /game-brain/tick                - Advance the brain by one cognitive tick
-  POST /game-brain/directive           - Manually issue a directorial directive
-  GET  /game-brain/directives          - List pending and dispatched directives
-  POST /game-brain/reset               - Reset the brain state
-"""
+SparkLabs Backend - Cognitive Kernel & Game Brain API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

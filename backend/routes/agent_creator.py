@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Agent Autonomous Creator & Interaction Loop Routes
-
-API endpoints for autonomous content creation (level blueprints,
-quest definitions, NPC profiles, generation stats) and interaction
-loop engine (perception-action cycles, state management, history).
-"""
+SparkLabs Backend - Agent Autonomous Creator & Interaction Loop Routes"""
 
 import uuid
 from datetime import datetime

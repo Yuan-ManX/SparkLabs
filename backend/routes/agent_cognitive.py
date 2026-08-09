@@ -1,11 +1,5 @@
 """
-SparkLabs Backend - Agent Cognitive Synthesis & Game Intelligence Routes
-
-API endpoints for cognitive synthesis engine (input analysis,
-goal-driven synthesis, history tracking, performance metrics)
-and game intelligence engine (design analysis, quality evaluation,
-improvement suggestions, pattern detection).
-"""
+SparkLabs Backend - Agent Cognitive Synthesis & Game Intelligence Routes"""
 
 import uuid
 from datetime import datetime
