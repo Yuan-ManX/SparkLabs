@@ -1,45 +1,5 @@
 """
-SparkLabs Engine - Procedural Music Composer
-
-Composes original music procedurally using music-theoretic primitives.
-Supports multiple genres, mood-to-music mapping, motif development,
-harmonic progression, and real-time adaptation to gameplay events.
-
-Architecture:
-  ProceduralMusicComposer (singleton)
-    |-- Composition, Track, Measure, Note, ChordProgression, Motif,
-    |   MoodMapping, CompositionTemplate, AdaptationRule,
-    |   MusicSnapshot, MusicEvent
-    |-- Genre, ScaleType, MoodState, TrackRole, CompositionStatus,
-        AdaptationTrigger, MusicEventKind
-
-Core Capabilities:
-  - create_composition / update_composition / get_composition /
-    list_compositions / delete_composition: lifecycle management.
-  - add_track / remove_track / update_track: multi-track composition
-    with roles (MELODY, HARMONY, BASS, PERCUSSION, PAD, COUNTER_MELODY).
-  - add_measure / remove_measure / reorder_measures: build the
-    timeline measure by measure.
-  - compose_motif / develop_motif: generate a short melodic motif and
-    apply variation techniques (sequence, inversion, retrograde,
-    augmentation, diminution).
-  - set_progression / get_progression: harmonic chord progressions
-    with roman-numeral labels.
-  - map_mood / get_mood_mapping: translate gameplay moods into musical
-    parameters (tempo, key, dynamics, density).
-  - set_template / list_templates: reusable composition templates.
-  - create_adaptation_rule / evaluate_adaptation: real-time music
-    adaptation based on gameplay triggers (COMBAT, EXPLORATION, etc.).
-  - export_composition: serialize a composition into a playable note
-    sequence with timing, velocity, and instrument assignments.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and lifecycle management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`ProceduralMusicComposer.get_instance` or the module-level
-:func:`get_procedural_music_composer` factory.
-"""
+SparkLabs Engine - Procedural Music Composer"""
 
 from __future__ import annotations
 

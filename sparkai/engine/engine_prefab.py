@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Prefab System
-
-Reusable game object template system that enables rapid game development
-through composable, nestable prefabs. Provides prefab instantiation with
-property overrides, variant management, and AI-driven prefab generation
-and optimization.
-
-Architecture:
-  PrefabSystem (Singleton)
-    |-- PrefabDefinition (template with components and properties)
-    |-- PrefabInstance (runtime instance with overrides)
-    |-- PrefabVariant (derived prefab with modifications)
-    |-- PrefabLibrary (organized collection of prefabs)
-    |-- PrefabGenerator (AI-driven prefab creation)
-
-Prefab Features:
-  - Hierarchical prefab nesting with parent-child relationships
-  - Property overrides for per-instance customization
-  - Variant system for creating derived prefabs
-  - Component-based prefab composition
-  - Prefab library with categorization and search
-  - AI-assisted prefab generation from descriptions
-
-Usage:
-    ps = get_prefab_system()
-    ps.initialize()
-
-    # Create a prefab
-    prefab = ps.create_prefab("enemy_slime", PrefabCategory.CHARACTER, {
-        "components": ["sprite", "physics", "ai_behavior"],
-        "properties": {"health": 100, "speed": 2.0},
-    })
-
-    # Instantiate a prefab
-    instance = ps.instantiate("enemy_slime", position=(100, 200),
-                              overrides={"health": 150})
-
-    # Generate prefabs with AI
-    ps.generate_prefabs("Create assets for a fantasy RPG", count=5)
-"""
+SparkLabs Engine - Prefab System"""
 
 from __future__ import annotations
 

@@ -1,11 +1,5 @@
 """
-ProceduralAudio - Runtime procedural audio synthesis system.
-
-Generates sound effects algorithmically for footsteps, impacts, ambiance,
-and UI sounds without requiring pre-recorded audio files. Provides sound
-preset management, layer-based mixing, and environment-aware ambience
-generation for the SparkLabs game engine.
-"""
+ProceduralAudio - Runtime procedural audio synthesis system."""
 
 import math
 import threading

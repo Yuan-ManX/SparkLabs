@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - Procedural Terrain Generation
-
-A comprehensive procedural terrain generation system providing
-multi-octave noise generation, heightmap synthesis, hydraulic and
-thermal erosion simulation, biome mapping, and terrain mesh
-construction for the SparkLabs game engine.
-
-Architecture:
-  ProceduralTerrainEngine (Singleton)
-    |-- NoiseGenerator       — Perlin, Simplex, and Worley noise
-    |-- HeightmapGenerator   — multi-octave fractal heightmap
-    |-- ErosionSimulator     — hydraulic and thermal erosion
-    |-- BiomeMapper          — terrain type assignment from parameters
-    |-- TerrainMeshBuilder   — vertex/index buffer generation
-    |-- TerrainChunk         — spatial subdivision with LOD support
-
-Generation Pipeline:
-  1. NoiseGenerator produces base noise values at each coordinate
-  2. HeightmapGenerator combines multi-octave noise for heightmap
-  3. ErosionSimulator applies hydraulic/thermal erosion
-  4. BiomeMapper assigns terrain types based on height, slope, moisture
-  5. TerrainMeshBuilder generates vertex/index data for rendering
-  6. TerrainChunk partitions the terrain spatially with LOD levels
-
-Usage:
-    engine = get_procedural_terrain_engine()
-    engine.generate_heightmap(size=512, seed=12345)
-    engine.apply_erosion(iterations=100)
-    engine.build_terrain_mesh(chunk_size=32)
-"""
+SparkLabs Engine - Procedural Terrain Generation"""
 
 from __future__ import annotations
 

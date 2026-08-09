@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Prefab Composer
-
-A composition system for creating reusable composite objects (prefabs) that
-encapsulate child objects, behaviors, and logic as a single reusable unit.
-Supports variants, nested prefab composition, instance-level overrides,
-prefab extraction from existing objects, and a searchable prefab library.
-
-Architecture:
-  PrefabComposer
-    |-- PrefabComponent (individual child object within a prefab)
-    |-- PrefabDefinition (named reusable object template)
-    |-- PrefabVariant (parameterized variation of a prefab)
-    |-- PrefabInstance (runtime-spawned copy of a prefab)
-    |-- Composition Engine (merges prefabs via MERGE/OVERRIDE/EXTEND/WRAP)
-    |-- Prefab Library (searchable catalog with tag indexing)
-"""
+SparkLabs Engine - Prefab Composer"""
 
 from __future__ import annotations
 

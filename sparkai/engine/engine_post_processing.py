@@ -1,26 +1,5 @@
 """
-SparkLabs Engine Post-Processing Effects Pipeline
-
-A full suite of screen-space post-processing effects for the AI-native
-game engine. Provides composable effect chains with quality profiles,
-blend mode control, and stage-based ordering for bloom, blur, color
-grading, vignette, chromatic aberration, motion blur, depth of field,
-ambient occlusion, film grain, lens flare, tone mapping, anti-aliasing,
-sharpen, and pixelate effects.
-
-Architecture:
-  PostProcessingEngine (Singleton-per-name)
-    |-- PostProcessEffect   — individual effect with typed parameters
-    |-- EffectParameter     — parameter metadata with min/max/description
-    |-- PipelineConfig      — named collection of ordered effects
-    |-- EffectResult        — execution outcome with timing diagnostics
-
-Pipeline Stages:
-  1. PRE_PROCESS   — effects applied before the main render pass
-  2. MAIN_PROCESS  — effects composited during the main render pass
-  3. POST_PROCESS  — effects applied after the main render pass
-  4. OVERLAY       — screen-space overlay effects rendered last
-"""
+SparkLabs Engine Post-Processing Effects Pipeline"""
 
 from __future__ import annotations
 

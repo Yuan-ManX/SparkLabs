@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Procedural Synthesis
-
-A singleton procedural content generation system for the SparkLabs
-game engine. Generates terrain, textures, level layouts, and
-decorative elements through noise-driven algorithms and modular
-synthesis pipelines.
-
-Architecture:
-  ProceduralSynthesis (singleton)
-    |-- TerrainGenerator (heightmap, biome blending, erosion)
-    |-- TextureSynthesizer (procedural texture generation via noise)
-    |-- LayoutComposer (rule-based room/dungeon/city generation)
-    |-- DecorationPainter (foliage, props, detail scattering)
-"""
+SparkLabs Engine - Procedural Synthesis"""
 
 from __future__ import annotations
 

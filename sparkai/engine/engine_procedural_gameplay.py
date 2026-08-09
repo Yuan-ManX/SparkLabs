@@ -1,19 +1,5 @@
 """
-SparkLabs Engine - Procedural Gameplay Generation
-
-An AI-driven procedural gameplay generation system that dynamically
-creates game mechanics, events, challenges, and interactions based on
-design intent and player behavior for the AI-native game engine.
-
-Architecture:
-  ProceduralGameplayEngine (Singleton)
-    |-- MechanicType          — classification of generated gameplay elements
-    |-- DifficultyTier        — scaling from trivial to impossible challenges
-    |-- GenerationStyle       — style bias for generation algorithms
-    |-- GameplayMechanic      — atomic gameplay unit with parameters and rules
-    |-- GameplayEvent         — time-bound composition of multiple mechanics
-    |-- GameplaySession       — state container for a generation run
-"""
+SparkLabs Engine - Procedural Gameplay Generation"""
 
 from __future__ import annotations
 

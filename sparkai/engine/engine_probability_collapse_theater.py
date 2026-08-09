@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - Probability Collapse Theater
-
-The EngineProbabilityCollapseTheater models game events as quantum-like
-probability amplitudes. Before an event is observed, it exists in
-superposition - a cloud of possible outcomes, each with its own
-probability amplitude. When a player or agent observes the event, the
-superposition collapses into a single definite outcome.
-
-This creates a world where the future is genuinely undetermined until
-someone looks. A treasure chest doesn't contain a specific item until
-opened; an NPC doesn't have a fixed disposition until talked to; a
-dungeon's layout isn't finalized until explored. The theater manages
-these probability waves, their interference patterns, and their collapse.
-
-The theater also models entanglement between events. Two probability
-waves can be entangled such that collapsing one immediately determines
-the other, even at a distance. This enables correlated world generation:
-if the boss in dungeon A drops a fire sword, the boss in dungeon B
-(the entangled partner) will drop an ice shield.
-
-Architecture:
-  SUPERPOSE   ->  INTERFERE   ->  OBSERVE    ->  COLLAPSE   ->  DECOHERE
-  (new events    (waves        (an observer   (waves         (collapsed
-   enter          interact,     triggers       collapse       outcomes
-   superposition  creating      potential      into definite  fade back
-   with multiple  constructive  collapse)      outcomes)      into potential
-   outcomes)      or            )              )              for future
-                 destructive                                  events)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Probability Collapse Theater"""
 
 from __future__ import annotations
 

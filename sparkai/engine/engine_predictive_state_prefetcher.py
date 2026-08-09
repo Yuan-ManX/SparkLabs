@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Predictive State Prefetcher
-
-The EnginePredictiveStatePrefetcher uses AI prediction to drive engine
-resource management. By analyzing player behavior patterns, narrative
-trajectory, and agent decisions, it predicts what will happen in the next
-5-30 seconds and pre-loads/pre-computes the necessary resources.
-
-This eliminates loading screens and frame hitches in an AI-native way:
-the engine anticipates needs before they arise.
-
-Architecture:
-  OBSERVE  ->  PREDICT  ->  PREFETCH  ->  VERIFY  ->  ADAPT
-  (collect      (forecast    (pre-load      (check if      (learn from
-   player and    future       assets,        predictions    prediction
-   world state)  states)      warm shaders,  were accurate)  outcomes)
-                            generate paths)
-
-The prefetcher manages:
-  - Player trajectory prediction (next positions, likely destinations)
-  - Action prediction (combat, dialogue, exploration transitions)
-  - Scene transition prediction (which areas will be entered)
-  - Asset prefetching (textures, models, audio, scripts)
-  - Shader pre-warming (compile shaders before they're needed)
-  - Path pre-computation (NPC navigation paths)
-  - Prediction accuracy tracking and adaptive learning
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Predictive State Prefetcher"""
 
 from __future__ import annotations
 

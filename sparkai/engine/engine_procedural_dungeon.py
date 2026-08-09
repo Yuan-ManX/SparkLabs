@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Procedural Dungeon Generator
-
-Procedural dungeon and indoor level generation engine. Creates room
-layouts, connects corridors, places decorations, distributes encounters
-and treasures, and generates narrative-consistent dungeon themes using
-algorithmic design principles.
-
-Core capabilities:
-  - Room layout generation with configurable size distributions
-  - Corridor connection algorithms (BSP, cellular, digger-based)
-  - Room decoration with thematic furniture and prop placement
-  - Encounter distribution (combat, puzzle, treasure, trap, empty)
-  - Dungeon theme management (cave, castle, tomb, lab, etc.)
-  - Difficulty curve generation across dungeon levels
-  - Key-lock progression (keys, doors, backtracking)
-  - Secret room and hidden passage generation
-  - Lighting and atmosphere zone placement
-
-Architecture:
-  EngineProceduralDungeon (Singleton)
-    |-- DungeonRoom (dataclass)
-    |-- DungeonCorridor (dataclass)
-    |-- EncounterNode (dataclass)
-    |-- TreasureNode (dataclass)
-    |-- DungeonTheme (dataclass)
-    |-- DungeonLayout (dataclass)
-    |-- generate_dungeon_layout()
-    |-- connect_rooms()
-    |-- distribute_encounters()
-    |-- place_treasures()
-    |-- define_dungeon_theme()
-    |-- compute_difficulty_curve()
-"""
+SparkLabs Engine - Procedural Dungeon Generator"""
 
 from __future__ import annotations
 

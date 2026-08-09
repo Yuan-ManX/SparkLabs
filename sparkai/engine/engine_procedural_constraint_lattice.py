@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - Procedural Constraint Lattice
-
-The EngineProceduralConstraintLattice holds procedural generation rules as
-nodes in a lattice. Each node is a single constraint - a region must hold
-exactly one landmark, two settlements must sit at least N tiles apart, no
-two dungeons may share a boss theme - and the edges between nodes encode
-precedence (A must be satisfied before B is evaluated) and mutual exclusion
-(A and B cannot both hold in the same region).
-
-Procedural generation that ignores design intent produces noise; procedural
-generation that follows rigid rules produces sterility. The lattice sits
-between the generator and the world: when the generator asks "what can I
-place here?" the lattice returns the placements still satisfiable under
-the active rules; when a placement would violate the lattice, the engine
-reports which constraints conflict and offers relaxation candidates that
-would unblock the request at minimal cost.
-
-The output is a constraint-aware generation surface that keeps procedural
-content coherent with design intent without locking it into a single
-sterile answer.
-
-Architecture:
-  ASSERT    ->  WIRE     ->  EVALUATE  ->  RELAX   ->  COMMIT
-  (accept a    (connect     (for each     (when a     (record accepted
-   constraint  nodes with    pending       request     placement as a
-   into the    precedence    request,      is unsat-   new fact that
-   lattice,    and exclusion compute the   isfiable,   further
-   validate    edges,        set of        identify    constrains the
-   against     detect        satisfiable   the minimal lattice, emit
-   existing    immediate     placements    constraint  the updated
-   nodes)      conflicts)    under the     set whose   satisfiable
-                            active        relaxation  surface)
-                            lattice)      would
-                                          unblock it)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Procedural Constraint Lattice"""
 
 from __future__ import annotations
 

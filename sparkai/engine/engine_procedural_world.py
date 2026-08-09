@@ -1,21 +1,5 @@
 """
-SparkLabs Engine - Procedural World Generator
-
-Procedural world generation system for the SparkLabs AI-native
-game engine. Generates diverse game worlds including terrains,
-biomes, settlements, dungeons, and ecosystems using layered
-procedural algorithms.
-
-Architecture:
-  EngineProceduralWorld (Singleton)
-    |-- Terrain Generator (heightmap-based terrain synthesis)
-    |-- Biome Distributor (climate-driven biome placement)
-    |-- Settlement Planner (procedural city/village layout)
-    |-- Dungeon Forge (room-and-corridor dungeon generation)
-    |-- Ecosystem Builder (flora/fauna distribution)
-    |-- Road Network (path-based connectivity between regions)
-    |-- World Composer (orchestrate all layers into coherent world)
-"""
+SparkLabs Engine - Procedural World Generator"""
 
 from __future__ import annotations
 

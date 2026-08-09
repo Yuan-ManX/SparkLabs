@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Procedural Animation Engine
-
-Runtime procedural animation system that generates character and object
-animations dynamically without pre-authored keyframes. Combines inverse
-kinematics, procedural locomotion, ragdoll physics blending, and
-environment-aware animation adaptation.
-
-Architecture:
-  EngineProceduralAnimation (Singleton)
-    |-- IKSolver (multi-joint inverse kinematics chain resolver)
-    |-- LocomotionController (procedural walk/run cycle generation)
-    |-- AnimationBlender (seamless transition between animation states)
-    |-- PhysicsAnimator (ragdoll and physics-driven animation)
-    |-- LookAtController (head/eye tracking and gaze direction)
-    |-- ProceduralGesture (dynamic hand and body gestures)
-
-Animation Layers:
-  - LOCOMOTION: walk, run, crouch, crawl, swim, fly
-  - INTERACTION: grab, push, pull, climb, mount
-  - EXPRESSION: idle, gesture, emote, dialogue
-  - PHYSICS: ragdoll, hit reaction, force response
-  - ADAPTATION: terrain alignment, slope handling, obstacle avoidance
-
-Usage:
-    pa = EngineProceduralAnimation.get_instance()
-    pa.initialize()
-
-    pa.create_ik_chain("right_arm", ["shoulder", "elbow", "wrist"])
-    pa.set_ik_target("right_arm", (1.0, 0.5, 0.0))
-    pa.solve_ik("right_arm")
-
-    pa.start_locomotion("character_1", "run", speed=5.0)
-    pa.update_animation("character_1", delta_time=0.016)
-    pa.shutdown()
-"""
+SparkLabs Engine - Procedural Animation Engine"""
 
 from __future__ import annotations
 

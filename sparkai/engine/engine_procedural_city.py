@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Procedural City Generator
-
-Procedural city generation engine for the SparkLabs AI-native game
-engine. Builds coherent urban environments from a seed by laying out
-a hierarchical road network, partitioning the area into themed
-districts, populating each district with appropriate buildings, and
-placing landmark structures (palace, temple, market square).
-
-Core capabilities:
-  - Hierarchical road network generation (highways, main roads,
-    streets, alleys) using radial and grid patterns
-  - District partitioning driven by the road grid with type
-    assignment based on distance from the city center
-  - Building generation that respects district theme, wealth level,
-    and style while avoiding road overlap
-  - Landmark placement (palace, temple, market square, barracks,
-    watchtower) at strategic positions
-  - Optional city walls, river crossing, and port district
-  - City analysis covering density, connectivity, and district
-    balance metrics
-
-Architecture:
-  ProceduralCityEngine (Singleton)
-    |-- RoadSegment (dataclass)
-    |-- Building (dataclass)
-    |-- District (dataclass)
-    |-- CityLayout (dataclass)
-    |-- CityGenerationConfig (dataclass)
-    |-- generate_city()
-    |-- generate_road_network()
-    |-- generate_districts()
-    |-- generate_buildings()
-    |-- place_landmark()
-    |-- analyze_city()
-"""
+SparkLabs Engine - Procedural City Generator"""
 
 from __future__ import annotations
 

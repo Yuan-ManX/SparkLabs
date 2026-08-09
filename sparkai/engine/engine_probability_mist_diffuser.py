@@ -1,35 +1,6 @@
 """
 Engine Probability Mist Diffuser
-================================
-
-Models uncertainty and probability in the game world as a diffusing mist.
-Regions of high uncertainty generate dense mist that flows through connected
-areas based on pressure differentials, affecting NPC decisions, loot
-randomness, and event triggering. As mist condenses, it precipitates into
-concrete outcomes.
-
-Mist types (low -> high uncertainty):
-  FOG    - ambient low uncertainty, gentle diffusion
-  HAZE   - medium uncertainty, visible but passable
-  VAPOR  - high uncertainty, dynamic and shifting
-  STEAM  - action-triggered uncertainty, forceful
-  ETHER  - mystical/quantum uncertainty, unpredictable
-
-Cycle phases: EVAPORATE -> DIFFUSE -> CONDENSE -> PRECIPITATE -> DISSIPATE
-  EVAPORATE   - uncertainty rises from sources into the mist field
-  DIFFUSE     - mist spreads through connected regions
-  CONDENSE    - mist forms droplets of certainty at saturation points
-  PRECIPITATE - certainty falls as concrete decisions/outcomes
-  DISSIPATE   - residual uncertainty fades away
-
-Events:
-  MIST_SURGE        - sudden influx of uncertainty
-  CLARITY_BURST     - rapid condensation clears a region
-  DENSITY_INVERSION - heavy mist rises over light mist
-  FOG_BANK          - large stable mist formation
-  VAPOR_LOCK        - mist trapped, unable to diffuse
-  ETHER_STORM       - chaotic quantum uncertainty outbreak
-"""
+================================"""
 
 from __future__ import annotations
 
