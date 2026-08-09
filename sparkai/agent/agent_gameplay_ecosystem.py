@@ -1,36 +1,5 @@
 """
-SparkLabs Agent - Gameplay Ecosystem Simulator
-
-An autonomous system for simulating and managing complex game world
-ecosystems. Models species populations, resource flows, trophic
-relationships, and environmental dynamics to create living,
-breathing game worlds that respond to player actions.
-
-Core capabilities:
-  - Species population modeling with birth/death/migration rates
-  - Trophic web construction (predator-prey, symbiosis, competition)
-  - Resource distribution and depletion dynamics
-  - Environmental event simulation (drought, bloom, migration)
-  - Ecosystem stability analysis and equilibrium prediction
-  - Biome transition modeling with gradient blending
-  - Player impact assessment on ecological balance
-  - Emergent behavior detection from species interactions
-
-Architecture:
-  GameplayEcosystemSimulator (Singleton)
-    |-- EcosystemSpecies (dataclass)
-    |-- EcosystemResource (dataclass)
-    |-- TrophicRelation (dataclass)
-    |-- EcosystemSnapshot (dataclass)
-    |-- EnvironmentalEvent (dataclass)
-    |-- EcologyReport (dataclass)
-    |-- simulate_tick()
-    |-- construct_trophic_web()
-    |-- introduce_species()
-    |-- trigger_environmental_event()
-    |-- analyze_stability()
-    |-- compute_biome_transition()
-"""
+SparkLabs Agent - Gameplay Ecosystem Simulator"""
 
 from __future__ import annotations
 

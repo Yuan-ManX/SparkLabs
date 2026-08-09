@@ -1,45 +1,5 @@
 """
-SparkLabs Agent - Agent Gateway
-
-The central entry point that routes all user requests to the appropriate
-agent subsystem. Manages provider selection, observability, and the full
-request lifecycle. All agent interactions flow through this gateway,
-which handles authentication, routing, monitoring, and plugin extension.
-
-Architecture:
-  AgentGateway (Singleton)
-    |-- Provider Routing (intelligent LLM provider selection)
-    |-- Request Lifecycle (initiation through completion tracking)
-    |-- Observability (telemetry and monitoring for all operations)
-    |-- Plugin System (extensible via registered plugins)
-    |-- Stats & Metrics (aggregated performance data)
-
-Gateway Modes:
-  - SINGLE_AGENT: route to a single agent subsystem
-  - MULTI_AGENT: coordinate across multiple agent subsystems
-  - AUTO_ROUTE: automatic selection of the best routing strategy
-  - OBSERVER: passive observation, no routing decisions
-
-Provider Types:
-  - OPENAI: OpenAI API (GPT-4o, GPT-4o-mini, etc.)
-  - ANTHROPIC: Anthropic Claude models
-  - GOOGLE: Google Gemini models
-  - LOCAL: On-premise models via Ollama, vLLM
-  - CUSTOM: Any HTTP-compatible LLM endpoint
-
-Usage:
-    gw = get_agent_gateway()
-    gw.initialize()
-
-    result = gw.route_request(
-        prompt="Design a 2D platformer level",
-        context={"genre": "platformer", "target_fps": 60},
-        mode=GatewayMode.AUTO_ROUTE,
-    )
-
-    metrics = gw.get_metrics()
-    gw.shutdown()
-"""
+SparkLabs Agent - Agent Gateway"""
 from __future__ import annotations
 
 import logging

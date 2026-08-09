@@ -1,45 +1,5 @@
 """
-SparkLabs Agent - Loot Reward Curator
-
-A loot and reward curation agent for the SparkLabs AI-native game engine.
-It generates contextual loot tables, schedules reward pulses to maintain
-engagement curves, curates rarity rolls against live-ops events, and
-adapts drop distribution to per-player reward profiles. The curator
-fuses procedural reward design, dopamine pacing, and runtime economy
-balance into a single intelligent surface.
-
-Architecture:
-  LootRewardCurator (singleton)
-    |-- LootEntry, LootTable, RewardPulse, DropPolicy,
-       PlayerRewardProfile, CuratorStats, CuratorSnapshot, CuratorEvent
-    |-- LootRewardKind, LootRarityTier, CurationStrategy,
-       CuratorEventKind
-
-Core Capabilities:
-  - register_table / get_table / list_tables / update_table /
-    remove_table: loot table lifecycle with weighted entries.
-  - add_entry / remove_entry: compose loot tables with rarity and
-    weight metadata.
-  - roll_loot: deterministic-weighted random roll over a table that
-    respects rarity tiers and luck modifiers.
-  - register_pulse / get_pulse / list_pulses / remove_pulse: scheduled
-    reward pulses that inject generosity into the engagement curve.
-  - register_profile / get_profile / list_profiles / update_profile:
-    per-player reward profiles that tune drop distribution to
-    playstyle, fatigue, and retention signals.
-  - curate_for_player: contextual loot generation that fuses the
-    active table, profile, and live-ops context.
-  - suggest_pulse_timing: predict the next optimal reward pulse based
-    on time-since-last-reward and engagement decay.
-  - assess_engagement: score engagement from recent reward history.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`LootRewardCurator.get_instance` or the module-level
-:func:`get_loot_reward_curator` factory.
-"""
+SparkLabs Agent - Loot Reward Curator"""
 
 from __future__ import annotations
 

@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Game Settings Engine
-
-Intelligent configuration generation and optimization for AI-native
-games. Analyzes game design parameters across graphics, audio,
-controls, gameplay rules, and accessibility domains to produce
-comprehensive settings profiles. Supports preset generation,
-conflict detection between interdependent settings, platform-aware
-optimization, and accessibility-first configuration suggestions.
-
-Architecture:
-  GameSettingsEngine
-    |-- GraphicsConfigurator (resolution, quality, post-effects)
-    |-- AudioConfigurator (volume, channels, 3D audio settings)
-    |-- ControlBinder (input mapping, sensitivity, dead zones)
-    |-- GameplayTuner (rule sets, timer settings, scoring configs)
-    |-- AccessibilityAdvisor (colorblind modes, subtitles, remapping)
-    |-- ConflictResolver (cross-domain dependency validation)
-
-Settings Domains:
-  - GRAPHICS: resolution, quality, vsync, anti-aliasing, shadows
-  - AUDIO: master/music/sfx volume, surround mode, voice chat
-  - CONTROLS: key bindings, sensitivity, invert axis, dead zone
-  - GAMEPLAY: difficulty modifiers, timer settings, HUD options
-  - ACCESSIBILITY: subtitles, colorblind mode, text scaling, TTS
-  - NETWORK: region, max ping, cross-play, voice chat settings
-"""
+SparkLabs Agent - Game Settings Engine"""
 
 from __future__ import annotations
 

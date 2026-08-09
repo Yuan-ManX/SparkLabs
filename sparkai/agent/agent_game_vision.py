@@ -1,10 +1,5 @@
 """
-SparkAI Game Vision Agent - Holistic game analysis and design intelligence.
-
-Provides comprehensive game vision analysis combining design theory,
-player psychology, market understanding, and creative direction into
-a unified game design intelligence system.
-"""
+SparkAI Game Vision Agent - Holistic game analysis and design intelligence."""
 
 from __future__ import annotations
 

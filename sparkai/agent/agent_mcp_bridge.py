@@ -1,34 +1,5 @@
 """
-SparkLabs Agent - MCP Bridge
-
-Model Context Protocol bridge for dynamic tool discovery and
-registration. Enables SparkLabs agents to discover, register, and
-invoke tools from MCP-compatible servers — connecting the game
-engine to external services, asset APIs, and specialized tools.
-
-Architecture:
-  MCPBridge
-    |-- ToolRegistry (dynamic tool discovery + caching)
-    |-- TransportManager (stdio/HTTP/WebSocket transport backends)
-    |-- CapabilityNegotiator (server capability handshake)
-    |-- ToolInvoker (unified invocation with argument validation)
-
-MCP Transport Types:
-  - STDIO: subprocess-based local server
-  - HTTP_SSE: Server-Sent Events over HTTP
-  - WEBSOCKET: bidirectional WebSocket connection
-
-Server Lifecycle:
-  CONNECTING → NEGOTIATING → READY → ACTIVE
-                                      ↳ DISCONNECTED → RECONNECTING
-
-Usage:
-    bridge = MCPBridge()
-    await bridge.connect_stdio("image_generator", ["python", "-m", "mcp_server"])
-    await bridge.connect_http("asset_api", "http://asset-service/sse")
-    tools = bridge.list_available_tools()
-    result = await bridge.invoke("image_generator", "generate_sprite", {...})
-"""
+SparkLabs Agent - MCP Bridge"""
 from __future__ import annotations
 
 import asyncio

@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Memory Consolidation Engine
-
-Unified memory architecture bridging semantic, episodic, and working
-memory domains for persistent agent reasoning across extended game
-development sessions. Enables agents to maintain coherent context,
-recall past decisions, and surface relevant historical knowledge
-during AI-native game creation workflows.
-
-Architecture:
-  MemoryConsolidationEngine
-    |-- SemanticStore (factual game design knowledge base)
-    |-- EpisodicBuffer (session-level interaction records)
-    |-- WorkingMemory (active context window management)
-    |-- ConsolidationScheduler (importance-weighted memory transfer)
-    |-- RetrievalRouter (multi-source memory query dispatch)
-    |-- DecayManager (temporal relevance scoring)
-
-Memory Domains:
-  - SEMANTIC: domain facts, design patterns, engine capabilities
-  - EPISODIC: user interactions, agent decisions, project events
-  - WORKING: current task context, recent observations, pending actions
-"""
+SparkLabs Agent - Memory Consolidation Engine"""
 
 from __future__ import annotations
 

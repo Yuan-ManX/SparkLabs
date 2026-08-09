@@ -1,40 +1,5 @@
 """
-SparkLabs Agent - AI Matchmaking Director
-
-An AI-driven matchmaking system for the SparkLabs AI-native game engine.
-This agent manages player profiles with skill ratings, processes match
-tickets, and assembles balanced match sessions using a multi-factor scoring
-algorithm. It fuses real-time decision-making with multi-agent coordination
-strategies to produce fair, latency-aware, and engaging matches.
-
-Architecture:
-  MatchmakingDirector (singleton)
-    |-- PlayerProfile, MatchTicket, MatchSession, TeamAssignment,
-       MatchQuality, MatchmakingConfig, MatchmakingStats,
-       MatchmakingSnapshot, MatchmakingEvent
-    |-- TicketStatus, MatchKind, Region, MatchmakingEventKind
-
-Core Capabilities:
-  - register_player / get_player / list_players / remove_player: player
-    profile lifecycle with skill rating, region, and playstyle tags.
-  - create_ticket / get_ticket / list_tickets / cancel_ticket: match
-    request lifecycle with party size, region preference, and priority.
-  - find_match: AI-driven matching algorithm scoring candidates by
-    skill_proximity*0.4 + region_affinity*0.3 + wait_urgency*0.2 +
-    playstyle_match*0.1.
-  - create_session / get_session / list_sessions / end_session: assembled
-    match lifecycle with team assignments and quality assessment.
-  - evaluate_match: post-match quality scoring (balance, duration, outcome).
-  - tick: process pending tickets, attempt matches, expire stale tickets.
-  - set_config / get_config: tuning parameters for the matching algorithm.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`MatchmakingDirector.get_instance` or the module-level
-:func:`get_matchmaking_director` factory.
-"""
+SparkLabs Agent - AI Matchmaking Director"""
 
 from __future__ import annotations
 

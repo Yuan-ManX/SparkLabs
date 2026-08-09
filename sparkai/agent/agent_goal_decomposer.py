@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Goal Decomposer
-
-Two-phase goal decomposition engine with verification. Breaks
-complex game development objectives into structured checklists,
-evaluates item completion against verifiable criteria, and tracks
-blocking dependency chains for AI-driven project planning.
-
-Architecture:
-  GoalDecomposer
-    |-- Phase One: Structural Decomposition (goal → checklist items)
-    |-- Phase Two: Verification (evidence-driven status evaluation)
-    |-- Dependency Graph Analyzer (blocking chain computation)
-    |-- Merge Engine (combine parent-child decompositions)
-
-Goal Categories span the full game development lifecycle from
-core mechanics through deployment, enabling comprehensive
-coverage of all project dimensions.
-"""
+SparkLabs Agent - Goal Decomposer"""
 
 from __future__ import annotations
 

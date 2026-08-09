@@ -1,58 +1,5 @@
 """
-SparkLabs Agent - Memory Consolidation & Dream System
-
-Offline memory consolidation engine that processes short-term episodic
-memories into stabilized long-term memories, mirroring how the human
-brain consolidates experience during sleep. The system replays,
-integrates, and prunes memory fragments, and additionally generates
-"dream" sequences that creatively recombine memory fragments to
-discover novel associations and strengthen important memory pathways.
-
-Architecture:
-  MemoryConsolidatorEngine (thread-safe singleton)
-    |-- MemoryFragment       (atomic memory unit with salience & strength)
-    |-- ConsolidationTask    (offline consolidation work item)
-    |-- ReplaySession        (ordered re-retrieval of fragments)
-    |-- DreamSequence        (creatively recombined memory narrative)
-    |-- SleepCycle           (a single sleep stage execution window)
-    |-- Event System         (consolidation lifecycle notifications)
-    |-- Forgetting Curve     (Ebbinghaus-style retention modeling)
-
-Consolidation Lifecycle:
-  1. register_fragment      - ingest a short-term episodic memory
-  2. start_consolidation    - schedule a consolidation task (encode/stabilize/...)
-  3. complete_consolidation - finalize a task with a result summary
-  4. start_replay           - replay fragments to reinforce pathways
-  5. complete_replay        - apply strengthening from a replay session
-  6. integrate_fragments    - merge several fragments into a single one
-  7. prune_fragment         - retire a low-strength fragment
-  8. generate_dream         - recombine fragments into a dream sequence
-  9. start_sleep_cycle      - open a sleep stage window
- 10. complete_sleep_cycle   - close a sleep stage window
-
-Sleep stages loosely mirror human sleep:
-  LIGHT - light encoding & stabilization
-  DEEP  - slow-wave stabilization & integration
-  REM   - dreaming and associative replay
-  AWAKE - active retrieval & pruning
-
-Usage:
-    engine = get_memory_consolidator()
-    frag = engine.register_fragment(
-        agent_id="agent_alpha",
-        memory_type=MemoryType.EPISODIC,
-        content="Discovered a shortcut through the canyon",
-        salience=0.8,
-        emotional_weight=0.3,
-    )
-    task = engine.start_consolidation(
-        agent_id="agent_alpha",
-        fragment_ids=[frag.id],
-        phase=ConsolidationPhase.STABILIZE,
-    )
-    engine.complete_consolidation(task.id, result_summary="Stabilized 1 fragment")
-    dream = engine.generate_dream("agent_alpha", [frag.id])
-"""
+SparkLabs Agent - Memory Consolidation & Dream System"""
 
 from __future__ import annotations
 

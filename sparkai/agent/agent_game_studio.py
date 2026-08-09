@@ -1,31 +1,5 @@
 """
-SparkLabs Agent - Game Studio
-
-A multi-agent collaboration system where specialized AI agents work together
-to design, build, test, and polish a game. Each agent has a distinct role and
-contributes its expertise to the final game design document.
-
-Studio Agents:
-  - DesignerAgent   : defines mechanics, rules, balance, progression
-  - ProgrammerAgent : translates design into logic, evaluates feasibility
-  - ArtistAgent     : defines visual style, palette, atmosphere
-  - TesterAgent     : simulates playtests, identifies issues, suggests fixes
-  - ComposerAgent   : defines audio mood, tempo, SFX landscape
-  - StudioDirector  : orchestrates the agents, aggregates their outputs
-
-The studio produces a StudioResult containing:
-  - A consolidated game design blueprint from all agents
-  - Individual agent contributions for transparency
-  - A collaboration log showing how agents built on each other's work
-  - Quality assessment from the tester's perspective
-
-Usage:
-    studio = GameStudio.get_instance()
-    studio.initialize()
-    result = studio.collaborate("Design a roguelike dungeon crawler with permadeath")
-    # result.blueprint contains the consolidated design
-    # result.agent_outputs contains each agent's contribution
-"""
+SparkLabs Agent - Game Studio"""
 
 from __future__ import annotations
 

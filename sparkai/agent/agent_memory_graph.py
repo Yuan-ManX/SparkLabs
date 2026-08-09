@@ -1,19 +1,5 @@
 """
-SparkLabs Agent - Memory Graph
-
-Cross-session persistent memory with vector embeddings simulation, knowledge graph
-construction, semantic search, and context-aware retrieval for long-running AI agents.
-Provides intelligent memory consolidation that strengthens important memories and
-prunes stale ones, maintaining a high-quality knowledge base over time.
-
-Architecture:
-  AgentMemoryGraph (Singleton)
-    |-- MemoryNode (discrete memory units with embeddings)
-    |-- MemoryEdge (typed relationships between nodes)
-    |-- KnowledgeGraph (composite view of nodes and edges)
-    |-- SearchQuery (parameterized retrieval requests)
-    |-- RetrievalResult (scored and ranked matches)
-"""
+SparkLabs Agent - Memory Graph"""
 
 from __future__ import annotations
 

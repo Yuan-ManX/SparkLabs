@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Memory Dream Consolidator
-
-The AgentMemoryDreamConsolidator runs a "dreaming" cycle during agent
-downtime. Instead of passively storing every episodic memory, it actively
-recombines, abstracts, and distills memories into compact semantic
-knowledge. This mirrors how biological dreaming consolidates the day's
-experiences into long-term understanding.
-
-The dreamer transforms raw experience into wisdom:
-  - Episodic ("I fought a goblin at the bridge at noon")
-      -> Semantic ("Goblins attack travelers near bridges during daylight")
-
-Architecture:
-  RECALL  ->  RECOMBINE  ->  ABSTRACT  ->  CONSOLIDATE  ->  DISTILL
-  (gather    (find cross-   (extract       (merge into         (prune
-   recent     memory         patterns and    long-term           redundant
-   episodes)  links)         principles)     semantic nodes)     episodes)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Memory Dream Consolidator"""
 
 from __future__ import annotations
 

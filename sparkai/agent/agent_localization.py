@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Content Localization Engine
-
-Intelligent game content localization with context-aware translation
-and cultural adaptation. Processes game text, UI strings, dialogue
-trees, and lore entries through multi-stage localization pipelines
-that preserve narrative intent, humor, and gameplay meaning across
-target languages.
-
-Architecture:
-  ContentLocalizationEngine
-    |-- StringTable (translatable string registry with context)
-    |-- LocaleProfile (language-specific formatting and conventions)
-    |-- ContextResolver (gameplay-contextual meaning preservation)
-    |-- CulturalAdapter (idiom, humor, and reference adaptation)
-    |-- QualityValidator (translation completeness and consistency)
-
-Features:
-  - Context-aware: preserves gameplay meaning via metadata tags
-  - Cultural adaptation: adjusts idioms and cultural references
-  - Formatted strings: handles parameterized text templates
-  - Pluralization: locale-aware plural form selection
-"""
+SparkLabs Agent - Content Localization Engine"""
 
 from __future__ import annotations
 

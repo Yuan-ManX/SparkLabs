@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Game Tournament
-
-The capstone agent of the AI-native game pipeline. It takes multiple game
-HTML variants and runs them through a competitive tournament bracket where
-each game is evaluated by the Game Critic (quality) and Game Analytics
-(engagement). A composite tournament score determines the winner of each
-head-to-head match, and the champion emerges as the final victor.
-
-Architecture:
-  GameTournament (Singleton)
-    |-- GameCriticAgent     -> quality scores across 10 dimensions (0-10)
-    |-- GameAnalytics       -> engagement prediction via Monte Carlo (0-100)
-    |-- Bracket Engine      -> single-elimination tournament brackets
-
-Tournament scoring formula:
-  composite = critic_overall * 10 * critic_weight + engagement_score * analytics_weight
-  (both normalized to 0-100 scale, then weighted sum)
-
-Usage:
-    tourney = GameTournament.get_instance()
-    tourney.initialize()
-    result = tourney.run(variants, game_title="My Game")
-    # result.champion_html contains the winning game
-    # result.bracket contains the full match history
-"""
+SparkLabs Agent - Game Tournament"""
 
 from __future__ import annotations
 

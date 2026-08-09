@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Game State Intelligence
-
-Real-time game state analysis and optimization system that uses
-heuristic analysis to understand gameplay, detect patterns, identify
-balancing issues, and suggest optimizations for the AI-native game engine.
-
-Architecture:
-  GameStateIntelligence (singleton)
-    |-- GameStateSnapshot (point-in-time capture of game state)
-    |-- IntelligenceInsight (domain-specific finding with severity)
-    |-- Heuristic analyzers (balance, pacing, difficulty, engagement,
-    |   economy, progression, accessibility)
-
-Analysis Domains:
-  - BALANCE: entity/mechanic fairness across player options
-  - PACING: tension-release rhythm and content density
-  - DIFFICULTY: challenge ramp matching player skill growth
-  - ENGAGEMENT: player retention and interaction quality
-  - ECONOMY: resource flow, currency sinks, and reward structures
-  - PROGRESSION: unlock sequencing and power curve shaping
-  - ACCESSIBILITY: barrier analysis for entry and mastery
-"""
+SparkLabs Agent - Game State Intelligence"""
 
 from __future__ import annotations
 

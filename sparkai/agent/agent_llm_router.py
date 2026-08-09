@@ -1,54 +1,5 @@
 """
-SparkLabs Agent - LLM Router & Model Integration System
-
-Comprehensive LLM router and model integration system for the SparkLabs
-AI-native game engine. Provides a unified interface for routing requests
-across a diverse catalog of model providers spanning text LLMs, multimodal
-models, image/video/audio/3D generation, embeddings, and open-source models
-served via Ollama.
-
-The catalog covers major hosted LLMs (OpenAI, Anthropic, Google, Meta,
-Mistral, Cohere, DeepSeek, Qwen, xAI, Perplexity, AI21), fast-inference
-platforms (Groq, Cerebras, Fireworks, Together, NVIDIA NIM, DeepInfra),
-cloud gateways (Amazon Bedrock, Azure OpenAI, OpenRouter), regional model
-providers (Zhipu, Moonshot, MiniMax, Doubao, ERNIE, StepFun, Lambda), and
-specialized speech and media providers (Replicate, AssemblyAI, Deepgram,
-PlayHT, Cartesia) for speech-to-text and text-to-speech pipelines.
-
-Architecture:
-  LLMRouter (singleton)
-    |-- ProviderRegistry   (register/unregister model providers)
-    |-- ModelCatalog        (searchable metadata for all models)
-    |-- TaskRouter          (map game-dev tasks to optimal models)
-    |-- LoadBalancer        (distribute requests by health/latency/cost)
-    |-- FallbackChain       (automatic failover to backup models)
-    |-- CostTracker         (token usage and estimated cost per provider)
-    |-- RateLimiter         (per-provider token-bucket rate limiting)
-    |-- ResponseCache       (cache identical prompts to reduce API calls)
-    |-- StreamingAdapter    (stream responses for text generation)
-    |-- HealthMonitor       (periodic health checks per provider endpoint)
-    |-- APIKeyVault          (secure storage for API keys, never logged)
-    |-- SimulationMode      (fake responses when no API keys configured)
-
-Routing strategy:
-  1. Classify the task type from the request
-  2. Match task type to provider capabilities
-  3. Select best provider per active routing strategy
-  4. Apply rate limiting and check response cache
-  5. Dispatch to provider endpoint (or simulate)
-  6. On failure, walk the fallback chain
-  7. Track usage, cost, latency and health for future routing
-
-Task-to-model mappings cover the full game-development pipeline:
-  - World building   -> text LLM with long context
-  - Character design -> multimodal vision + text LLM
-  - Dialogue         -> fast text LLM with personality
-  - Code generation  -> code-specialized LLM
-  - Asset generation -> image / video / 3D models
-  - Music composition-> audio generation model
-  - Voice acting     -> TTS model
-  - Bug analysis     -> reasoning LLM
-"""
+SparkLabs Agent - LLM Router & Model Integration System"""
 
 from __future__ import annotations
 

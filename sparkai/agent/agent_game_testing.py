@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Automated Game Testing Engine
-
-Comprehensive automated game testing framework that simulates player
-behavior patterns to detect bugs, balance issues, progression blockers,
-and user experience problems before release. Generates detailed test
-reports with reproducible scenarios.
-
-Architecture:
-  GameTestingEngine
-    |-- TestScenarioGenerator (coverage-driven test case creation)
-    |-- PlayerSimulator (behavioral-model-driven play simulation)
-    |-- BugDetector (anomaly and regression identification)
-    |-- ProgressionValidator (game completion path verification)
-    |-- CoverageAnalyzer (feature and code path coverage tracking)
-
-Test Types:
-  - SMOKE: basic functionality verification
-  - REGRESSION: change impact detection
-  - EXPLORATION: random state space coverage
-  - PROGRESSION: full game completion verification
-  - BALANCE: numerical equilibrium testing
-  - STRESS: resource limit and boundary testing
-"""
+SparkLabs Agent - Automated Game Testing Engine"""
 
 from __future__ import annotations
 
