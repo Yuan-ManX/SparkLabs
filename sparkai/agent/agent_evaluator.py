@@ -1,18 +1,5 @@
 """
-SparkAI Agent - Game Evaluator Engine
-
-A comprehensive game quality evaluation pipeline for the AI-native
-game engine. Scores games across Build Health, Visual Usability,
-and Intent Alignment dimensions with detailed metrics and reports.
-
-Architecture:
-  GameEvaluatorEngine
-    |-- EvaluationDimension (scoring dimension)
-    |-- EvaluationMetric (individual metric within a dimension)
-    |-- EvaluationReport (comprehensive evaluation results)
-    |-- EvaluationBenchmark (reference benchmark for scoring)
-    |-- EvaluationComparison (cross-game comparison)
-"""
+SparkAI Agent - Game Evaluator Engine"""
 
 from __future__ import annotations
 

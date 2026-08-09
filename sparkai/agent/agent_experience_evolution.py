@@ -1,37 +1,5 @@
 """
-SparkLabs Agent - Experience Evolution System
-
-A closed-loop self-improvement system that enables agents to autonomously
-extract reusable skills and knowledge from their operational experiences.
-Implements a continuous cycle of experience capture, pattern recognition,
-skill crystallization, and background self-review — creating agents that
-become more capable with every interaction.
-
-Architecture:
-  AgentExperienceEvolution (Singleton)
-    |-- ExperienceCapture (records agent interactions and outcomes)
-    |-- PatternRecognizer (identifies recurring successful patterns)
-    |-- SkillCrystallizer (converts patterns into reusable skills)
-    |-- BackgroundReviewer (periodic self-review for improvement nudges)
-    |-- EvolutionMetrics (tracks learning progress and effectiveness)
-    |-- EvolutionEvent (immutable evolution activity records)
-
-Evolution Cycle:
-  CAPTURE -> ANALYZE -> CRYSTALLIZE -> VALIDATE -> DEPLOY -> REVIEW
-
-Self-Review Triggers:
-  - User turn threshold (every N interactions)
-  - Tool iteration threshold (every M tool calls)
-  - Session boundary (session start/end)
-  - Error threshold (after N consecutive errors)
-
-Usage:
-    evolver = get_agent_experience_evolution()
-    evolver.start_background_review()
-    evolver.capture_experience(trajectory)
-    skills = evolver.extract_skills(context)
-    evolver.shutdown()
-"""
+SparkLabs Agent - Experience Evolution System"""
 
 from __future__ import annotations
 

@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Game Design Analyzer
-
-AI-driven game design quality analysis evaluating core gameplay
-pillars. Assesses fun factor, balance, pacing, difficulty curves,
-progression systems, and accessibility to produce actionable
-design recommendations for AI-native game creation.
-
-Architecture:
-  GameAnalyzer
-    |-- FunFactorHeuristic (engagement potential scoring)
-    |-- BalanceChecker (multi-entity equilibrium analysis)
-    |-- PacingProfiler (tension/rest cycle evaluation)
-    |-- DifficultyCurveMapper (skill-to-challenge alignment)
-    |-- ProgressionValidator (unlock sequencing review)
-    |-- DesignReport (aggregated findings with severity)
-
-Dimensions:
-  - FUN_FACTOR: core loop engagement and reward satisfaction
-  - BALANCE: entity/mechanic fairness across player options
-  - PACING: tension-release rhythm and content density
-  - DIFFICULTY: challenge ramp matching player skill growth
-  - PROGRESSION: unlock sequence coherence and motivation
-  - ACCESSIBILITY: barrier analysis for entry and mastery
-"""
+SparkLabs Agent - Game Design Analyzer"""
 
 from __future__ import annotations
 

@@ -1,15 +1,5 @@
 """
-SparkAI Agent - Environment Manager
-
-Centralized environment lifecycle management for the Agent runtime.
-Handles environment provisioning, sandbox isolation, dependency
-resolution, resource allocation, and context management across
-all agent execution environments.
-
-Provides unified environment orchestration for local, containerized,
-and serverless execution contexts with automatic resource scaling
-and process isolation.
-"""
+SparkAI Agent - Environment Manager"""
 
 from __future__ import annotations
 

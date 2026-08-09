@@ -1,46 +1,5 @@
 """
-SparkLabs Agent - AI Cutscene Choreographer
-
-An AI cinematic direction and camera choreography agent for the SparkLabs
-AI-native game engine. The choreographer designs in-engine cutscenes by
-arranging camera shots, marking emotional beats, blocking actor movement,
-timing subtitle lines, and managing transitions and pacing across a full
-sequence. Directors can draft, approve, reject, and archive cutscenes, and
-the agent emits a complete audit trail of every editorial action.
-
-Architecture:
-  CutsceneChoreographer (singleton)
-    |-- CameraShot, EmotionalBeatMark, ActorBlocking, SubtitleLine,
-       CutsceneSequence, CutsceneTemplate, CutsceneStats,
-       CutsceneSnapshot, CutsceneEvent
-    |-- ShotType, CameraMovement, TransitionType, EmotionalBeat,
-       PacingMode, CutsceneStatus, CutsceneEventKind
-
-Core Capabilities:
-  - create_cutscene / get_cutscene / list_cutscenes / update_cutscene /
-    delete_cutscene: cutscene sequence lifecycle management.
-  - add_shot / get_shot / list_shots / update_shot / remove_shot /
-    set_transition: camera shot composition with framing, movement,
-    field of view, focal length, depth of field, and transitions.
-  - mark_beat / get_beat / list_beats: emotional beat markers tied to
-    shots for pacing and dramatic emphasis.
-  - block_actor / get_blocking / list_blocking: actor staging with
-    position, facing, animation, and entry/exit timing.
-  - add_subtitle / get_subtitle / list_subtitles: timed subtitle lines
-    with speaker, typography, and screen position.
-  - adjust_pacing: shift the pacing mode of a cutscene.
-  - create_template / get_template / list_templates: reusable cutscene
-    templates with default shots, pacing, and transitions.
-  - approve_cutscene / reject_cutscene / archive_cutscene: editorial
-    review workflow with status transitions.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CutsceneChoreographer.get_instance` or the module-level
-:func:`get_cutscene_choreographer` factory.
-"""
+SparkLabs Agent - AI Cutscene Choreographer"""
 
 from __future__ import annotations
 

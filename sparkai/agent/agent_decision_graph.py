@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Decision Graph Engine
-
-Graph-based decision-making engine that enables agents to navigate complex
-decision spaces through structured decision graphs. Supports multi-branch
-evaluation, probabilistic path selection, and runtime graph optimization.
-
-Architecture:
-  DecisionGraphEngine (Singleton)
-    |-- DecisionNode (atomic decision point with conditions)
-    |-- DecisionEdge (weighted transition between nodes)
-    |-- DecisionGraph (complete decision structure)
-    |-- PathEvaluator (evaluates and scores decision paths)
-    |-- GraphOptimizer (prunes and optimizes decision graphs)
-
-Decision Node Types:
-  - CONDITION: branch based on condition evaluation
-  - ACTION: execute a specific action
-  - SEQUENCE: ordered sequence of child decisions
-  - PARALLEL: concurrent decision branches
-  - SELECTOR: try children until one succeeds
-  - FALLBACK: primary with fallback options
-
-Usage:
-    dg = DecisionGraphEngine.get_instance()
-    dg.initialize()
-
-    graph = dg.create_graph("combat_decision", DecisionNodeType.SELECTOR)
-    dg.add_node(graph.graph_id, DecisionNode(
-        node_id="attack_check",
-        node_type=DecisionNodeType.CONDITION,
-        condition="target_in_range",
-    ))
-    result = dg.evaluate(graph.graph_id, world_state)
-    dg.shutdown()
-"""
+SparkLabs Agent - Decision Graph Engine"""
 
 from __future__ import annotations
 

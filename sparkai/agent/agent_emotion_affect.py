@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Emotion & Affect Engine
-
-NPC emotion simulation system that models emotional states, mood
-dynamics, personality-driven responses, and social affect propagation.
-The engine supports emotional contagion through social networks, mood
-history tracking, and stimulus-driven emotional state transitions
-grounded in personality profiles.
-
-Architecture:
-  EmotionEngine (Singleton)
-    |-- EmotionVector (multi-dimensional emotion state per entity)
-    |-- PersonalityProfile (OCEAN traits with mood baselines)
-    |-- SocialEvent (emotional impact propagation between entities)
-    |-- MoodHistory (temporal mood tracking with statistics)
-
-Core Capabilities:
-  - Set personality profiles with OCEAN trait dimensions
-  - Apply emotional stimuli and compute state transitions
-  - Model emotional contagion across social networks
-  - Track mood history with statistics and trend analysis
-  - Record social events with ripple effects on nearby entities
-  - Simulate emotion propagation through social graphs
-  - Compute current mood states from emotion vectors
-  - Generate emotional state snapshots for AI-driven behavior
-"""
+SparkLabs Agent - Emotion & Affect Engine"""
 
 from __future__ import annotations
 

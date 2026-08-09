@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Developer Oracle
-
-A singleton system that builds a deepening model of the game developer
-across sessions. Tracks developer skills, preferences, coding patterns,
-tool usage habits, and project context to personalize the AI-native
-game development experience.
-
-Architecture:
-  DeveloperOracle (singleton)
-    |-- DevProfile (per-developer identity, expertise, preferences)
-    |-- SessionFootprint (per-session behavioral trace)
-    |-- DevInsight (derived observations with confidence scoring)
-    |-- Pattern Analyzer (extracts habits from footprint history)
-    |-- Recommendation Engine (tool shortcuts, learning paths)
-    |-- Action Predictor (next-action inference from context)
-"""
+SparkLabs Agent - Developer Oracle"""
 
 from __future__ import annotations
 

@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - Economy Simulator
-
-Game economy simulation and balancing engine for the SparkLabs AI-Native
-Game Engine. Models dynamic markets, multi-currency systems, trade networks,
-production chains, and macroeconomic indicators. Provides automated imbalance
-detection and balancing suggestions to keep game economies healthy and engaging.
-
-Architecture:
-  AgentEconomySimulator (Singleton)
-    |-- MarketEngine (supply/demand curves, price computation, arbitrage)
-    |-- CurrencySystem (multiple currencies, exchange rates, inflation)
-    |-- TradeNetwork (trade routes, merchant NPCs, tariffs)
-    |-- ProductionChain (resource transformation recipes, crafting)
-    |-- EconomyMetrics (GDP tracking, wealth distribution, market health)
-    |-- BalanceAdvisor (detect imbalances, suggest parameter adjustments)
-
-Key Features:
-  - Dynamic supply/demand curves with price elasticity and equilibrium
-  - Multi-currency system with floating exchange rates and inflation modeling
-  - Trade network simulation with routes, tariffs, and embargoes
-  - Production chain modeling with tiered recipes and crafting costs
-  - Macroeconomic tracking: GDP, Gini coefficient, inflation, market health
-  - Automated imbalance detection and parameter tuning suggestions
-
-Usage:
-    sim = get_agent_economy_simulator()
-    sim.add_item("Iron Sword", "weapons", base_price=150.0)
-    sim.update_market(item_id, supply_delta=10, demand_delta=5)
-    sim.create_currency(CurrencyType.GOLD, initial_amount=10000.0)
-    sim.simulate_tick()
-    snapshot = sim.get_economy_snapshot()
-    imbalances = sim.detect_imbalances()
-    suggestions = sim.get_balance_suggestions()
-"""
+SparkLabs Agent - Economy Simulator"""
 
 from __future__ import annotations
 

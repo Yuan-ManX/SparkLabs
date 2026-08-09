@@ -1,35 +1,5 @@
 """
-SparkLabs Agent - Expression Evaluator
-
-Expression evaluation engine for game logic conditions, mathematical
-computations, and string operations. Powers the event system's
-condition checking, variable computations, and dynamic game rules.
-Provides safe evaluation with configurable operator and function sets.
-
-Architecture:
-  ExpressionEvaluator
-    |-- Tokenizer (lexer: numbers, operators, identifiers, parens)
-    |-- Parser (recursive descent AST builder)
-    |-- Evaluator (AST walker with scoped variable resolution)
-    |-- FunctionRegistry (pluggable functions: sin, cos, random, clamp)
-    |-- SecuritySandbox (forbidden operations, recursion depth limit)
-
-Expression Types:
-  - MATH: "score * 1.5 + bonus"
-  - LOGIC: "health > 0 && ammo >= 1"
-  - STRING: "Player: " + player_name
-  - MIXED: ternary, type coercion
-
-Operator Precedence (low to high):
-  1. Assignment (=)
-  2. Logical OR (||)
-  3. Logical AND (&&)
-  4. Comparison (==, !=, <, >, <=, >=)
-  5. Addition/Subtraction (+, -)
-  6. Multiplication/Division (*, /, %)
-  7. Unary (!, -)
-  8. Function call, Member access (.)
-"""
+SparkLabs Agent - Expression Evaluator"""
 
 from __future__ import annotations
 

@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Engine Semantic Translator
-
-Translates high-level agent semantic intents into concrete, ordered
-engine operations. Acts as the linguistic bridge between cognitive
-agent goals (e.g. "make this boss fight feel more epic") and the
-granular engine mutations required to realize them (adjust enemy
-damage, spawn cinematic particle effects, change music layering,
-modify camera shake profile, etc.).
-
-Architecture:
-  SemanticTranslatorEngine (Singleton)
-    |-- SemanticIntent (high-level goal expressed in natural language)
-    |-- EngineOperation (atomic engine mutation with target system)
-    |-- TranslationRule (pattern that maps an intent to operations)
-    |-- TranslationPlan (ordered collection of operations)
-    |-- TranslationResult (execution outcome with per-op status)
-
-The translator ships with a curated rule set covering the most common
-game-development intents. Rules are fully introspectable so that AI
-agents can reason about why a particular translation was produced,
-and human designers can audit and extend the mapping at runtime.
-"""
+SparkLabs Agent - Engine Semantic Translator"""
 
 from __future__ import annotations
 

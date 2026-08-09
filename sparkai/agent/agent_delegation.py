@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - Delegation System
-
-Subagent spawning architecture for task isolation and parallel
-execution. Creates child agent instances with restricted toolsets,
-isolated conversation context, and configurable resource limits.
-Supports single-task and batch (parallel) delegation modes.
-
-Architecture:
-  DelegationSystem
-    |-- SubagentSpawner (creates isolated child agent instances)
-    |-- ToolsetFilter (restricts tools per subagent policy)
-    |-- BatchExecutor (parallel subagent execution with timeout)
-    |-- ResultAggregator (collects and merges subagent outputs)
-
-Delegation Policy:
-  - ISOLATED: no shared context, only result returned
-  - SHARED_READ: child can read parent workspace
-  - SHARED_WRITE: child can write to parent workspace
-  - PIPE: child output feeds into parent's next step
-
-Blocked Tools (always stripped from subagents):
-  - delegate_task (no recursive delegation)
-  - clarify (no user interaction)
-  - memory_write (no shared memory mutation)
-
-Usage:
-    ds = DelegationSystem()
-    sub = ds.spawn("research_enemies", tools=["search", "read_file"])
-    result = await ds.execute(sub, "Find 5 enemy types for a platformer")
-    batch_results = await ds.execute_batch([
-        ("design_level1", "Design level 1 layout"),
-        ("design_boss", "Design the boss fight"),
-    ])
-"""
+SparkLabs Agent - Delegation System"""
 from __future__ import annotations
 
 import asyncio

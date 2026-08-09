@@ -1,36 +1,5 @@
 """
-SparkLabs Agent - Engine Fusion Loop
-
-The real-time bidirectional fusion layer that tightly couples the AgentKernel
-with the AINativeEngineCore. This module is the defining innovation of the
-SparkLabs AI-native game engine: the agent does not merely send commands to
-the engine — it continuously perceives engine state, autonomously generates
-goals based on what it observes, reasons about optimal interventions, and
-executes engine commands in a closed feedback loop.
-
-Architecture:
-  AgentEngineFusionLoop (Singleton)
-    |-- EngineStateObserver   -> captures engine snapshots as perceptions
-    |-- GoalSynthesizer       -> generates autonomous goals from engine state
-    |-- FusionReasoner        -> selects reasoning mode based on context
-    |-- ActionTranslator      -> converts agent decisions to engine commands
-    |-- OutcomeEvaluator      -> measures the impact of agent interventions
-    |-- FusionMemory          -> cross-session learning of effective strategies
-
-Fusion Cycle (per tick):
-  1. OBSERVE  -> Capture engine state snapshot (FPS, entities, metrics, events)
-  2. PERCEIVE -> Convert snapshot to multi-modal perceptions for the agent
-  3. SYNTHESIZE -> Generate autonomous goals from perceived anomalies
-  4. REASON   -> Select and apply the best reasoning mode for the context
-  5. ACT      -> Translate agent decisions into engine commands
-  6. EVALUATE -> Measure outcome delta from previous snapshot
-  7. LEARN    -> Store effective strategies in fusion memory
-
-The loop runs at a configurable frequency (default 10Hz) and is designed
-to be non-blocking — each tick completes in <50ms to avoid frame stalls.
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Engine Fusion Loop"""
 
 from __future__ import annotations
 

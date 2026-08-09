@@ -1,54 +1,6 @@
 """
 SparkLabs AI-Native Game Engine - Agent Demonstration Learner
-=============================================================
-
-Learning from Demonstration (LfD) and Behavior Cloning for AI agents.
-
-This module enables AI agents in the SparkLabs engine to acquire new
-behaviors by observing and reproducing expert demonstrations. Rather than
-requiring hand-crafted policies or pure reinforcement-learning exploration,
-agents can learn directly from recorded trajectories of expert play.
-
-Learning from Demonstration (LfD):
-    LfD is a paradigm where an agent learns a policy from a dataset of
-    expert demonstrations. Each demonstration is a trajectory -- a sequence
-    of (state, action, reward, next_state) transitions recorded while an
-    expert (human or AI) solves a task. The agent generalizes from these
-    examples to act in similar situations without exploring the full
-    state-action space from scratch.
-
-Behavior Cloning:
-    Behavior Cloning (BC) is the simplest form of LfD. It treats imitation
-    as supervised learning: the demonstrations are converted into
-    (state -> action) training pairs, and a model (the "behavior policy")
-    is fit to map states to actions. At inference time the policy predicts
-    the action most likely taken by the expert given the current state.
-
-Pipeline:
-    1. Record demonstrations -- capture expert trajectories step by step.
-    2. Finalize demonstrations -- lock them as immutable training data.
-    3. Train behavior policies -- fit a policy to one or more demonstrations.
-    4. Predict actions -- use a trained policy to choose actions at runtime.
-    5. Evaluate policies -- measure accuracy against held-out demonstrations.
-    6. Prune low-quality demonstrations -- keep the dataset curated.
-
-Architecture:
-    DemonstrationLearnerEngine (thread-safe singleton)
-        |-- TrajectoryStep       (single state-action-transition record)
-        |-- Demonstration        (ordered trajectory of steps)
-        |-- BehaviorPolicy       (trained imitation model)
-        |-- PredictionResult     (a single predicted action)
-        |-- EvaluationReport     (policy quality metrics)
-        |-- ImitationEvent       (observable lifecycle event)
-        |-- ImitationStats       (aggregate statistics)
-        |-- ImitationSnapshot    (point-in-time state capture)
-
-The engine is a process-wide singleton accessed via ``get_instance()`` or
-the module-level ``get_demonstration_learner()`` helper. All public
-methods are guarded by a reentrant lock for thread safety. In-memory
-stores are bounded by capacity constants and use FIFO eviction so that
-the engine never grows without limit.
-"""
+============================================================="""
 
 from __future__ import annotations
 

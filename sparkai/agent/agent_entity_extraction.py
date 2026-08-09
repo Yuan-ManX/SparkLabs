@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Entity Extraction Engine
-
-Natural language game description parser that extracts structured
-game world entities, relationships, and mechanics. Transforms
-freeform game concept descriptions into machine-readable game
-design documents ready for AI-native game generation.
-
-Architecture:
-  EntityExtractor
-    |-- EntityClassifier (type detection and categorization)
-    |-- RelationshipMapper (entity interconnection graph)
-    |-- MechanicDetector (gameplay rule extraction)
-    |-- WorldModelBuilder (composite game world assembly)
-    |-- SchemaValidator (structural integrity checking)
-
-Entity Types:
-  - CHARACTER: player avatars, NPCs, enemies
-  - ITEM: collectibles, equipment, consumables
-  - LOCATION: levels, zones, areas, rooms
-  - MECHANIC: rules, systems, interactions
-  - QUEST: mission definitions and objectives
-  - ABILITY: skills, powers, spells
-"""
+SparkLabs Agent - Entity Extraction Engine"""
 
 from __future__ import annotations
 

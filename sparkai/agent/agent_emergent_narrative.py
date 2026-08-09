@@ -1,21 +1,5 @@
 """
-SparkLabs Agent - Emergent Narrative Engine
-
-Narrative generation engine that creates dynamic storylines from
-autonomous agent interactions. Weaves individual agent actions,
-social dynamics, and world events into coherent emergent narratives
-without pre-scripted plots.
-
-Architecture:
-  AgentEmergentNarrative (Singleton)
-    |-- Story Weaver (thread individual events into story arcs)
-    |-- Arc Tracker (monitor active story arcs and their progress)
-    |-- Conflict Generator (create dramatic tension from agent goals)
-    |-- Theme Analyzer (identify emerging themes in the narrative)
-    |-- Climax Detector (recognize narrative climax points)
-    |-- Resolution Composer (generate satisfying story resolutions)
-    |-- Narrative Memory (persist story history across sessions)
-"""
+SparkLabs Agent - Emergent Narrative Engine"""
 
 from __future__ import annotations
 

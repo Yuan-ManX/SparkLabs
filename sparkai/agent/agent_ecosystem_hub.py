@@ -1,47 +1,5 @@
 """
-SparkLabs Agent - Ecosystem Hub
-
-Unified connectivity layer that links SparkLabs agents to external AI
-services, model providers, and third-party tools through a single API.
-Manages API key references, service endpoints, rate limits, call
-recording, and usage metrics for all external interactions.
-
-Architecture:
-  EcosystemHub
-    |-- ServiceConnection (registered service with auth and rate limits)
-    |-- ServiceCall (immutable record of each external API call)
-    |-- ServiceMetric (time-windowed usage statistics per service)
-    |-- ServiceDiscovery (catalog of available service templates)
-
-Service Types:
-  - LLM_PROVIDER: text generation, chat completion, embeddings
-  - IMAGE_GENERATION: diffusion models, style transfer, upscaling
-  - AUDIO_GENERATION: TTS, voice cloning, music composition
-  - CODE_EXECUTION: sandboxed code runtime, REPL environments
-  - VECTOR_DATABASE: embedding storage and similarity search
-  - ANALYTICS: usage dashboards, cost tracking, performance reports
-  - STORAGE: cloud file storage, dataset hosting, artifact management
-  - CUSTOM: user-defined service via configurable endpoint
-
-Auth Methods:
-  - API_KEY: bearer token or header-based key authentication
-  - OAUTH: OAuth 2.0 three-legged or client-credentials flow
-  - JWT: JSON Web Token with automatic refresh support
-  - NONE: public endpoint requiring no authentication
-
-Usage:
-    hub = get_ecosystem_hub()
-    service = hub.register_service(
-        "OpenAI GPT-4o", ServiceType.LLM_PROVIDER,
-        "https://api.openai.com/v1", AuthMethod.API_KEY,
-        "OPENAI_API_KEY", rate_limit_rpm=500, rate_limit_tpm=100000,
-    )
-    ok = hub.check_rate_limit(service.id)
-    call = hub.record_call(service.id, "POST", "/chat/completions",
-                           {"model": "gpt-4o"}, {"choices": [...]}, 200, 350.2, 512)
-    metrics = hub.get_usage_metrics(service.id, hours=1)
-    stats = hub.get_stats()
-"""
+SparkLabs Agent - Ecosystem Hub"""
 from __future__ import annotations
 
 import threading

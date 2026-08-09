@@ -1,37 +1,5 @@
 """
-SparkLabs Agent - AI-Native Development Loop
-
-The central iteration controller for AI-driven game development.
-Orchestrates the Plan → Code → Test → Iterate cycle, coordinating
-all agent subsystems during active development sessions.
-
-Architecture:
-  DevelopmentLoop
-    |-- CycleController (state machine: PLAN → CODE → TEST → ITERATE)
-    |-- QualityGate (validates each cycle phase before proceeding)
-    |-- IterationTracker (counts attempts, success rates, timing)
-    |-- RollbackManager (reverts to last good state on cycle failure)
-    |-- ProgressReporter (streams cycle status to UI via WebSocket)
-
-Development Cycle:
-  PLAN    → agent composes a work plan with sub-tasks
-  CODE    → agent generates/modifies game code via tools
-  TEST    → agent validates output against quality criteria
-  ITERATE → agent refines based on test feedback, loops back to CODE
-
-Cycle Policies:
-  - MAX_ITERATIONS: hard stop after N iterations per task
-  - TIMEOUT: cycle timeout with graceful abort
-  - QUALITY_THRESHOLD: minimum quality score to exit ITERATE
-  - AUTO_COMMIT: checkpoint before each CODE phase
-
-Usage:
-    loop = DevelopmentLoop()
-    loop.set_policy(max_iterations=5, timeout_seconds=300)
-    result = await loop.execute("Create reusable platformer mechanics")
-    if result.success:
-        engine.apply(result.artifacts)
-"""
+SparkLabs Agent - AI-Native Development Loop"""
 
 from __future__ import annotations
 

@@ -1,11 +1,5 @@
 """
-SparkAI Agent - Error Classification Engine
-
-A centralized error classification pipeline that produces structured
-recovery hints for every error encountered in the agent runtime.
-The classifier determines the correct recovery action based on
-error patterns, HTTP status codes, and context-aware heuristics.
-"""
+SparkAI Agent - Error Classification Engine"""
 
 import re
 import time

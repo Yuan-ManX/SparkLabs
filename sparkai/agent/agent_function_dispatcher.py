@@ -1,32 +1,5 @@
 """
-SparkLabs Agent - Function Dispatch System
-
-A structured function-calling framework that enables agents to dynamically
-discover, validate, and execute game development operations. The dispatch
-system provides schema-validated function invocation with parameter coercion,
-result normalization, and execution auditing — forming the core action layer
-for autonomous game creation agents.
-
-Architecture:
-  AgentFunctionDispatcher (Singleton)
-    |-- FunctionSchema (typed parameter definitions with constraints)
-    |-- FunctionBinding (schema + execution handler pair)
-    |-- DispatchRequest (validated invocation request)
-    |-- DispatchResult (normalized execution outcome)
-    |-- DispatchAudit (immutable execution record)
-    |-- FunctionCategory (domain-based function grouping)
-    |-- ParameterType (supported parameter data types)
-    |-- ExecutionPolicy (safety and resource governance)
-
-Core Capabilities:
-  - register_function: Register callable game-dev functions with schemas
-  - discover_functions: Query available functions by category and capability
-  - dispatch: Schema-validated function invocation with parameter coercion
-  - batch_dispatch: Parallel execution of multiple functions
-  - chain_dispatch: Sequential pipelined function execution
-  - get_audit_trail: Retrieve execution history for debugging
-  - validate_parameters: Pre-flight parameter validation
-"""
+SparkLabs Agent - Function Dispatch System"""
 
 from __future__ import annotations
 

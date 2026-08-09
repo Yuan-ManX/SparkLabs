@@ -1,37 +1,5 @@
 """
-SparkLabs Agent - Game Composer
-
-An AI agent that generates procedural background music for games using
-the Web Audio API. The composer analyzes the game's genre and mood,
-then algorithmically composes a chord progression, melody, bassline,
-and drum pattern that matches the game's emotional tone.
-
-This is a core AI-native capability: traditional engines require manual
-music composition, but an AI-native engine generates adaptive music
-automatically based on the game's design parameters.
-
-Architecture:
-  GameComposer (singleton)
-    |-- MoodAnalyzer     -> detects mood from game genre and HTML
-    |-- ScaleGenerator   -> selects musical scale based on mood
-    |-- ChordProgression -> generates chord progressions
-    |-- MelodyGenerator  -> composes melody lines
-    |-- BasslineBuilder  -> creates bass patterns
-    |-- DrumPattern      -> generates rhythmic patterns
-    |-- JsCompiler       -> converts composition to Web Audio API JS
-
-Mood Mapping:
-  - platformer: energetic, major pentatonic, 140 BPM
-  - puzzle: calm, major pentatonic, 90 BPM
-  - shooter: intense, minor scale, 160 BPM
-  - rpg: epic, dorian mode, 110 BPM
-  - racing: driving, mixolydian, 150 BPM
-  - narrative: ambient, lydian, 80 BPM
-  - survival: tense, phrygian, 130 BPM
-  - strategy: thoughtful, dorian, 95 BPM
-  - sandbox: playful, major, 120 BPM
-  - default: balanced, major, 110 BPM
-"""
+SparkLabs Agent - Game Composer"""
 
 from __future__ import annotations
 

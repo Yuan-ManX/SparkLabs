@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - AI-Native Game Brain
-
-The high-level cognitive controller that fuses the unified AgentKernel with
-the KernelEngineIntegrator to provide real-time game direction. The brain
-converts live engine signals into directorial decisions: when to raise
-difficulty, when to slow pacing, when to inject narrative beats, and when
-to surface emergent gameplay opportunities.
-
-Unlike low-level agents that operate on individual tasks, the Game Brain
-operates on the *experience curve* of the game as a whole. It continuously
-models player state, narrative tension, mechanical load, and aesthetic
-coherence, then issues directorial commands through the integrator.
-
-Architecture:
-  GameBrain (Singleton)
-    |-- PlayerModeler        -> tracks skill, fatigue, frustration, delight
-    |-- PacingDirector       -> shapes tension/release curves over time
-    |-- DifficultyTuner      -> adjusts challenge parameters in real time
-    |-- NarrativeConductor   -> injects story beats at dramatic inflection points
-    |-- EmergenceDetector    -> spots emergent gameplay patterns worth amplifying
-    |-- CoherenceGuard       -> prevents contradictory direction signals
-    |-- DirectiveQueue       -> serializes directorial intents into engine commands
-
-Cognitive Cadence (per brain tick):
-  observe player + world -> model experience -> decide directive -> dispatch
-  -> observe outcome -> refine player model -> learn
-
-Original SparkLabs design - real-time directorial cognition for AI-native games.
-"""
+SparkLabs Agent - AI-Native Game Brain"""
 
 from __future__ import annotations
 

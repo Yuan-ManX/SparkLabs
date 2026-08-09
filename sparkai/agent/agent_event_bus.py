@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Event Bus
-
-Centralized publish-subscribe event bus for inter-agent and
-agent-to-engine communication. Enables decoupled message
-passing between agents, game systems, and editor components
-using typed event channels with priority routing.
-
-Architecture:
-  AgentEventBus
-    |-- EventChannel (typed message topic)
-    |-- Subscription (agent + filter + handler binding)
-    |-- PriorityRouter (order events by importance)
-    |-- AsyncDispatcher (non-blocking event delivery)
-    |-- EventTrace (audit trail of all dispatched events)
-
-Event Domains:
-  - AGENT_LIFECYCLE: agent creation, destruction, state changes
-  - GAME_EVENT: entity spawn, collision, score changes
-  - EDITOR_EVENT: file save, scene switch, build start
-  - USER_ACTION: input, selection, command execution
-  - SYSTEM_ALERT: errors, warnings, performance thresholds
-"""
+SparkLabs Agent - Event Bus"""
 
 from __future__ import annotations
 

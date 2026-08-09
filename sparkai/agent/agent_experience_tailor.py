@@ -1,41 +1,5 @@
 """
-SparkLabs Agent - AI Experience Tailor
-
-A personalization agent for the SparkLabs AI-native game engine. It
-analyzes player behavior, predicts preferences, and dynamically adjusts
-content, difficulty, and pacing to craft a unique experience for each
-player. The tailor maintains per-player profiles, preference vectors,
-skill assessments, and engagement histories, and produces real-time
-adjustment recommendations.
-
-Architecture:
-  ExperienceTailor (singleton)
-    |-- PlayerProfile, PreferenceVector, SkillAssessment, EngagementRecord,
-       AdjustmentRecommendation, ExperienceSession, ExperienceStats,
-       ExperienceSnapshot, ExperienceEvent
-    |-- PlayerArchetype, EngagementLevel, AdjustmentType, ContentCategory,
-       SkillDimension, ExperienceEventKind
-
-Core Capabilities:
-  - register_player / get_player / list_players: player profile lifecycle
-    with archetype classification and skill tracking.
-  - record_engagement: log a player's engagement event (session length,
-    content type, emotional response) and update the profile.
-  - assess_skill: update multi-dimensional skill ratings (combat, puzzle,
-    exploration, social, resource management).
-  - update_preferences: adjust the player's preference vector across
-    content categories.
-  - recommend_adjustment: produce a real-time recommendation for
-    difficulty, pacing, content type, or reward tuning.
-  - get_session / list_sessions: per-session experience tracking.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`ExperienceTailor.get_instance` or the module-level
-:func:`get_experience_tailor` factory.
-"""
+SparkLabs Agent - AI Experience Tailor"""
 
 from __future__ import annotations
 

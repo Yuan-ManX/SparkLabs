@@ -1,54 +1,5 @@
 """
-SparkLabs Agent - Agent Explanation Engine
-
-Interpretability system that produces human-readable explanations for
-AI agent decisions in the SparkLabs AI-native game engine. The engine
-records the reasoning chain behind each decision, generates explanations
-at multiple levels of detail, reports confidence, runs counterfactual
-what-if analysis, surfaces feature importance, and keeps a complete audit
-trail of every explanation for review.
-
-Architecture:
-  ExplanationEngine (Singleton)
-    |-- Decision Tracing (records the step-by-step reasoning chain)
-    |-- Explanation Generation (turns traces into human-readable text)
-    |-- Confidence Reporting (aggregates per-step confidence)
-    |-- Counterfactual Analysis (what would have happened if...)
-    |-- Feature Importance (which factors drove the decision)
-    |-- Explanation Templates (pre-built templates per decision category)
-    |-- Audit Trail (complete history of explanations)
-
-Core Capabilities:
-  - start_trace: Begin recording a decision trace
-  - add_step: Append a reasoning step to a trace
-  - complete_trace: Finalize a trace with outcome and alternatives
-  - generate_explanation: Produce a human-readable explanation
-  - add_feature_importance: Attach feature importance weights to a trace
-  - add_counterfactual: Attach a what-if scenario to a trace
-  - compute_confidence: Aggregate confidence across all steps
-  - get_audit_trail: Return the full explanation history for an agent
-  - register_template: Register a reusable explanation template
-  - export_trace / import_trace: Serialize and restore traces
-
-Usage:
-    engine = get_explanation_engine()
-    trace = engine.start_trace(
-        agent_id="agent_1",
-        category=DecisionCategory.MOVEMENT,
-        summary="Move north toward resource node",
-        context={"position": [10, 20]},
-    )
-    engine.add_step(
-        trace_id=trace.id,
-        step_type=TraceStepType.PERCEPTION,
-        description="Detected resource node 5 tiles north",
-        inputs={"scan_radius": 10},
-        outputs={"node": [10, 25]},
-        confidence=0.92,
-    )
-    engine.complete_trace(trace.id, outcome="moved_north", confidence=0.88)
-    explanation = engine.generate_explanation(trace.id, level=ExplanationLevel.STANDARD)
-"""
+SparkLabs Agent - Agent Explanation Engine"""
 
 from __future__ import annotations
 

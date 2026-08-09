@@ -1,63 +1,6 @@
 """
 SparkLabs AI-Native Game Engine - Agent Emotion Contagion System
-================================================================
-
-Emotion contagion engine for AI agents in the SparkLabs
-AI-native game engine.
-
-This module models how emotions and moods spread through a population of
-agents connected in a social network. When an agent experiences an
-emotion, that emotion can propagate to nearby agents based on connection
-strength, agent susceptibility, and the emotion's intensity. The engine
-tracks contagion chains, detects emotion outbreaks, and supports decay of
-active emotional signals over time.
-
-Core Concepts
--------------
-
-1. **Emotion Signals** -- ``emit_emotion`` records an :class:`EmotionSignal`
-   emitted by an agent. The engine then propagates the signal through the
-   social network to connected agents, attenuating intensity at each hop.
-
-2. **Agent Susceptibility** -- Each agent has a ``base_susceptibility`` in
-   [0, 1] that modulates how strongly incoming emotions affect them.
-   Agents can be made immune to specific emotions (``grant_immunity``) or
-   amplify certain emotions (``add_amplifier``). A ``social_resistance``
-   threshold gates whether a signal is strong enough to shift the
-   agent's mood at all.
-
-3. **Contagion Links** -- Directed social connections between agents
-   (``connect_agents``). Each :class:`ContagionLink` carries a
-   ``connection_strength`` in [0, 1] that scales how much of an emotion's
-   intensity survives the transmission.
-
-4. **Propagation** -- ``propagate_signal`` walks the source agent's
-   outgoing links via breadth-first expansion. For each target agent:
-   - Immune agents are skipped.
-   - ``received_intensity = signal.intensity * connection_strength *
-     target.base_susceptibility * amplifier``
-   - If ``received_intensity > target.social_resistance`` a
-     :class:`ContagionRecord` is created and the target's mood shifts by
-     the received intensity.
-
-5. **Contagion Chains** -- When an emotion reaches 3+ agents, the engine
-   records a :class:`ContagionChain` tracking the propagation path and
-   the total intensity decay from origin to the furthest recipient.
-
-6. **Outbreaks** -- When 3+ agents are affected by the same emotion
-   within a time window, an :class:`EmotionOutbreak` is detected.
-   Outbreaks can be contained (``contain_outbreak``) and eventually
-   expire.
-
-7. **Decay** -- ``apply_decay`` attenuates all active emotion signal
-   intensities, modeling the natural fade of emotional impact over time.
-
-The engine is a process-wide singleton accessed via ``get_instance()`` or
-the module-level ``get_emotion_contagion()`` helper. All public methods
-are guarded by a reentrant lock for thread safety. In-memory stores are
-bounded by capacity constants and use FIFO eviction so the engine never
-grows without limit.
-"""
+================================================================"""
 
 from __future__ import annotations
 

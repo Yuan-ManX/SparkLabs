@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Documentation Generator
-
-Automated game design documentation synthesis from AI-native
-game development sessions. Generates structured design documents,
-API references, asset catalogs, and player-facing guides by
-observing agent actions, engine configurations, and asset
-generation activity across the development lifecycle.
-
-Architecture:
-  DocumentationGenerator
-    |-- DesignDocComposer (GDD structural template engine)
-    |-- APIDocExtractor (function/class documentation synthesis)
-    |-- AssetCatalogBuilder (texture, audio, model inventory)
-    |-- PlayerGuideWriter (tutorial and reference manual creation)
-    |-- ChangeLogTracker (version history accumulation)
-    |-- ExportFormatter (markdown, HTML, PDF output pipeline)
-
-Document Types:
-  - GAME_DESIGN: core mechanics, systems, and design intent
-  - TECHNICAL: architecture, APIs, integration points
-  - ASSET_CATALOG: all generated and imported assets listed
-  - PLAYER_GUIDE: controls, UI navigation, gameplay tutorials
-  - CHANGE_LOG: chronological development history
-"""
+SparkLabs Agent - Documentation Generator"""
 
 from __future__ import annotations
 

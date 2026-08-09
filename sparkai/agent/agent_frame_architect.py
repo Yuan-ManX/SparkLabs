@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Frame Architect
-
-The AgentFrameArchitect is the real-time cinematographic intelligence of the
-AI-native game engine. It analyzes the current game state (player position,
-action intensity, narrative tension, emotional context) and generates
-frame-by-frame cinematographic directives: camera angle, shot type, depth of
-field, focal point, lighting mood, and transition style.
-
-Unlike a runtime camera controller, this module is an intelligent DIRECTOR
-that makes creative cinematographic decisions and feeds them as structured
-directives to the engine's rendering and camera subsystems.
-
-Architecture:
-  Game State  -->  ANALYZE  -->  COMPOSE  -->  DIRECT  -->  TRANSITION  -->  REVIEW
-  (player,      (extract       (select        (emit         (manage         (verify
-   narrative,    scene          shot          frame         cuts and       frame
-   engine)       features)      strategy)     directives)   pacing)        quality)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Frame Architect"""
 
 from __future__ import annotations
 

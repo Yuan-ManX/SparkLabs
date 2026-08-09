@@ -1,23 +1,5 @@
 """
-SparkLabs Agent - Expression Validator
-
-Expression AST pipeline for validating AI-generated game logic.
-Parses expression text into structured AST nodes, applies type
-inference and constraint checking, and produces diagnostics with
-automatic fix suggestions for common authoring mistakes.
-
-Architecture:
-  ExpressionValidator
-    |-- Tokenizer (raw text → token stream)
-    |-- Parser (token stream → ExpressionNode AST)
-    |-- TypeChecker (infer and validate expression types)
-    |-- DiagnosticGenerator (severity-graded issue reporting)
-    |-- AutoFixEngine (deterministic repair patterns)
-
-Supports number, string, boolean, Vector2, Vector3, Color,
-object reference, and function call expression types common
-in game scripting contexts.
-"""
+SparkLabs Agent - Expression Validator"""
 
 from __future__ import annotations
 

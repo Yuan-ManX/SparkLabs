@@ -1,45 +1,5 @@
 """
-SparkLabs Agent - Delegation Framework
-
-A flat delegation system where a parent agent spawns isolated child
-agents with restricted toolsets and clean contexts. Children execute
-sub-tasks independently and return only summarized results to the parent.
-
-Architecture:
-  DelegationFramework
-    |-- ChildAgent (isolated worker with restricted tool access)
-    |-- DelegationTask (sub-task dispatched to a child)
-    |-- DelegationResult (summarized output from child execution)
-    |-- DelegationPool (managed collection of children with scheduling)
-
-Delegation Strategies:
-  - ROUND_ROBIN: cycle through available children evenly
-  - FIRST_AVAILABLE: assign to the first idle child found
-  - CAPABILITY_MATCH: match task to child by capability set
-  - LOAD_BALANCED: assign to child with least active tasks
-  - PRIORITY_QUEUE: critical tasks preempt lower-priority work
-
-Isolation Levels:
-  - FULL: no shared context, only result returned to parent
-  - TOOL_RESTRICTED: child has limited tool access only
-  - CONTEXT_SHARED: child can read parent context
-  - READ_ONLY: child can read but not modify parent state
-
-Usage:
-    df = DelegationFramework()
-    child = df.register_child("code_auditor", ChildRole.SPECIALIST,
-                              capabilities=["code_review", "linting"],
-                              allowed_tools=["read_file", "search"],
-                              blocked_tools=["write_file", "delete_file"],
-                              isolation=IsolationLevel.TOOL_RESTRICTED)
-    pool = df.create_pool("audit_pool", [child.id],
-                          strategy=DelegationStrategy.FIRST_AVAILABLE,
-                          max_concurrent=3)
-    task = df.delegate_task(pool.id, parent_session_id,
-                            "Audit all TypeScript files for security issues",
-                            {"priority": "high"})
-    result = df.get_child_result(task.id)
-"""
+SparkLabs Agent - Delegation Framework"""
 
 from __future__ import annotations
 

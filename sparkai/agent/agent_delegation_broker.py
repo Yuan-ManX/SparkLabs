@@ -1,40 +1,5 @@
 """
-DelegationBroker - Subagent delegation and parallel task management system.
-
-Subagent spawning capabilities, this module
-provides a centralized broker for registering specialized subagents,
-delegating tasks using configurable strategies, executing tasks in
-parallel via threading, and orchestrating multi-agent pipeline workflows.
-
-Architecture:
-    DelegationBroker (singleton)
-      |-- SubagentDefinition (agent capability registry entry)
-      |-- DelegationTask (task lifecycle tracking)
-      |-- DelegationStrategy (task-to-agent assignment logic)
-      |-- ParallelExecutor (threading-based concurrent execution)
-      |-- WorkflowPipeline (planner -> executor -> reviewer)
-
-Delegation Strategies:
-    - ROUND_ROBIN: cycles through available agents evenly
-    - PRIORITY_BASED: assigns to highest-priority available agent
-    - CAPABILITY_MATCH: scores agents by capability overlap
-    - LOAD_BALANCED: assigns to least-loaded capable agent
-    - FIRST_AVAILABLE: assigns to first agent with matching capability
-
-Usage:
-    broker = get_delegation_broker()
-    agent = broker.register_agent(
-        name="Gameplay Coder",
-        role=AgentRole.CODER,
-        capabilities=["code_gen", "world_build"],
-    )
-    task = broker.assign_task(
-        agent_id=agent.id,
-        task_description="Implement player controller",
-        strategy=DelegationStrategy.CAPABILITY_MATCH,
-    )
-    results = broker.execute_parallel([task1, task2, task3])
-"""
+DelegationBroker - Subagent delegation and parallel task management system."""
 
 from __future__ import annotations
 

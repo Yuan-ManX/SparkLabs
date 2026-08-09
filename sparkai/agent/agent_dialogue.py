@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Dialogue Engine
-
-A comprehensive dialogue and narrative system for the AI-native game
-engine. Manages NPC conversations, dialogue trees, story branching,
-quest dialogue, and dynamic narrative generation.
-
-Architecture:
-  DialogueEngine
-    |-- DialogueTree (branching conversation graph)
-    |-- DialogueNode (individual dialogue entry with choices)
-    |-- DialogueChoice (player choice leading to next node)
-    |-- DialogueCondition (conditional branching logic)
-    |-- DialogueVariable (conversation state tracking)
-    |-- NarrativeArc (story arc management)
-"""
+SparkAI Agent - Dialogue Engine"""
 
 from __future__ import annotations
 

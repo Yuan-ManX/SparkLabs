@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Experience Memory Engine
-
-Experience memory system with trajectory compression for
-AI-native game agents. Stores agent experiences, compresses them for
-efficient retrieval, and provides context-aware memory recall. Supports
-importance-based retention, memory consolidation, episodic/semantic
-separation, time-decay weighting, and memory chain linking.
-
-Architecture:
-  ExperienceMemoryEngine
-    |-- ExperienceStore (entry storage with metadata tagging)
-    |-- TrajectoryCompressor (merge similar experiences within time windows)
-    |-- ImportanceManager (retain important memories, forget trivial ones)
-    |-- ContextRetriever (context-aware memory retrieval)
-    |-- ConsolidationEngine (periodic episodic-to-semantic summarization)
-    |-- MemoryLinker (chain related memories together)
-    |-- TimeDecayCalculator (recency-weighted scoring)
-
-Memory Flow:
-  New experience -> tag & index -> evaluate importance ->
-  store in appropriate type -> periodically compress trajectories ->
-  consolidate episodic into semantic -> decay old/trivial memories
-"""
+SparkLabs Agent - Experience Memory Engine"""
 
 from __future__ import annotations
 

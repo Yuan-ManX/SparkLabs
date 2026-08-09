@@ -1,21 +1,5 @@
 """
-SparkLabs Agent - Dynamic Narrative Adapter
-
-Real-time narrative adaptation engine that responds to player behavior.
-Dynamically adjusts story elements, character arcs, and plot branches
-based on player actions, maintaining narrative coherence while allowing
-meaningful player agency.
-
-Architecture:
-  AgentDynamicNarrative (Singleton)
-    |-- Narrative Graph Builder (DAG construction from story templates)
-    |-- Player Action Processor (impact computation from player behavior)
-    |-- Story Adapter (real-time narrative element modification)
-    |-- Character Arc Tracker (character development progression)
-    |-- Coherence Evaluator (story consistency scoring)
-    |-- Branch Manager (multi-path narrative branching)
-    |-- Outcome Predictor (forward simulation of narrative possibilities)
-"""
+SparkLabs Agent - Dynamic Narrative Adapter"""
 
 from __future__ import annotations
 

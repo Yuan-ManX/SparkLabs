@@ -1,21 +1,5 @@
 """
-SparkLabs Agent - Feedback Loop
-
-Agent outcome feedback collection and learning system for the
-SparkLabs AI-native game engine. Collects structured feedback on
-agent actions, builds a quality signal from playtest results,
-compilation errors, and user ratings. Aggregates feedback into
-actionable insights that guide future agent behavior, forming
-a closed-loop improvement cycle.
-
-Architecture:
-  FeedbackLoop
-    |-- FeedbackEntry (single piece of structured feedback)
-    |-- FeedbackSource (origin: playtest, compiler, user, self-eval)
-    |-- FeedbackAggregator (rolling statistics per action type)
-    |-- ImprovementSuggestion (generated guidance from patterns)
-    |-- QualitySignal (composite score from multiple sources)
-"""
+SparkLabs Agent - Feedback Loop"""
 
 from __future__ import annotations
 

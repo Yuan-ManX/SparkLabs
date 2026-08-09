@@ -1,17 +1,5 @@
 """
-SparkLabs Agent - Federated Learner
-
-A singleton system for privacy-preserving distributed AI model training
-across game sessions. Aggregates model updates from player devices without
-centralizing raw gameplay data. Uses differential privacy with configurable
-epsilon budgets and secure aggregation protocols.
-
-Architecture:
-  FederatedLearner (singleton)
-    |-- FederatedRound (aggregation round state and metadata)
-    |-- ClientUpdate (per-device model gradient contribution)
-    |-- PrivacyBudget (differential privacy epsilon tracking)
-"""
+SparkLabs Agent - Federated Learner"""
 
 from __future__ import annotations
 

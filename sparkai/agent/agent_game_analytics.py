@@ -1,40 +1,5 @@
 """
-SparkLabs Agent - Game Analytics
-
-An AI agent that simulates virtual players to predict game engagement
-metrics. Uses Monte Carlo simulation with different player personas
-(casual, regular, hardcore, speedrunner) to model how each type would
-experience the game, producing predictions for session length,
-completion rate, retention, and churn risk.
-
-This is a core AI-native capability: traditional engines require live
-playtesting to gather metrics, but an AI-native engine can predict
-player behavior from the game design itself.
-
-Architecture:
-  GameAnalytics (singleton)
-    |-- DesignExtractor  -> extracts difficulty/pacing from HTML
-    |-- PlayerPersona    -> models different player types
-    |-- PlaySimulator    -> Monte Carlo simulation of playthroughs
-    |-- MetricsAggregator -> aggregates results across personas
-    |-- ReportGenerator  -> produces engagement predictions
-
-Player Personas:
-  - casual:      low skill (0.3), low persistence (0.3), short sessions
-  - regular:     medium skill (0.5), medium persistence (0.6)
-  - hardcore:    high skill (0.8), high persistence (0.9), completionist
-  - speedrunner: very high skill (0.95), high persistence (0.85), fast
-
-Predicted Metrics:
-  - avg_session_length:  estimated minutes per session
-  - completion_rate:     percentage of players who finish
-  - avg_death_count:     average deaths per playthrough
-  - d1_retention:        day-1 retention probability
-  - d7_retention:        day-7 retention probability
-  - churn_risk:          probability of player churning
-  - engagement_score:    overall engagement (0-100)
-  - difficulty_perception: how players perceive difficulty
-"""
+SparkLabs Agent - Game Analytics"""
 
 from __future__ import annotations
 

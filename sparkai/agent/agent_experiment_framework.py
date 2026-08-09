@@ -1,19 +1,5 @@
 """
-SparkLabs Agent - Experiment Framework
-
-A/B testing and behavioral parameter experimentation for agents.
-Provides creation and management of experiments with multiple variant
-groups, trial recording, statistical comparison between variants,
-and comprehensive reporting across latency, accuracy, creativity,
-token usage, and user satisfaction metrics.
-
-Architecture:
-  AgentExperimentFramework
-    |-- ExperimentConfig (defines experiment name, variants, metrics)
-    |-- VariantGroup (isolated parameter set for a single variant)
-    |-- TrialResult (individual trial outcome with metric snapshots)
-    |-- ExperimentReport (aggregated results with statistical analysis)
-"""
+SparkLabs Agent - Experiment Framework"""
 
 from __future__ import annotations
 

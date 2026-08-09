@@ -1,32 +1,5 @@
 """
-SparkAI Agent - Self-Improving Debug Protocol
-
-A living debugging knowledge base that accumulates diagnostic
-experience from every debugging session. When the same error
-pattern appears multiple times, the protocol automatically
-generalizes it into a proactive validation rule that prevents
-the error from occurring in future sessions.
-
-Architecture:
-  DebugProtocolEngine
-    |-- ErrorClassifier (physics-first + pattern matching)
-    |-- DiagnosticPipeline (validate -> diagnose -> repair -> verify)
-    |-- KnowledgeGeneralizer (pattern promotion to rules)
-    |-- DebugTrace (full iteration tracking)
-
-Protocol Flow:
-  1. Receive error report with context
-  2. Classify error by category and severity
-  3. Search protocol for matching entries
-  4. If match found, apply known fix
-  5. If no match, run diagnostic pipeline
-  6. Record new entry with fix
-  7. Generalize repeated patterns into rules
-
-Knowledge Types:
-  Reactive entries - used during diagnosis (match error signatures)
-  Proactive entries - used before execution (pre-validation checks)
-"""
+SparkAI Agent - Self-Improving Debug Protocol"""
 
 from __future__ import annotations
 

@@ -1,34 +1,5 @@
 """
-SparkLabs Agent - Embodiment Interface
-
-Embodiment interface that links cognitive agents to game entities, providing
-a sensory channel for perceiving the world through entity sensors and a motor
-channel for acting through entity actuators. Supports one-to-many (swarm),
-many-to-one (shared control), and one-to-one embodiment relationships.
-
-When an agent inhabits an entity, it receives periodic perception updates
-from the entity's sensory channels and can issue motor actions through the
-entity's actuators. Conflicting actions from multiple agents inhabiting the
-same entity are resolved through configurable arbitration strategies.
-
-The module focuses on the embodiment contract and lifecycle. Actual sensory
-data acquisition and motor action execution are delegated to registered
-supplier callbacks, allowing integration with any perception or action
-system.
-
-Architecture:
-  AgentEmbodimentEngine (Singleton)
-    |-- EmbodimentProfile (agent <-> entity link contract)
-    |-- SensoryInput (single channel reading)
-    |-- PerceptSnapshot (aggregated perception delivered to an agent)
-    |-- MotorAction (action issued through an entity actuator)
-    |-- EmbodimentEvent (lifecycle event audit trail)
-    |-- EmbodimentSnapshot (point-in-time engine state)
-    |-- inhabit() / leave() / suspend() / resume()
-    |-- receive_perception() / issue_action()
-    |-- arbitrate_actions() (conflict resolution)
-    |-- tick() (advance the embodiment clock)
-"""
+SparkLabs Agent - Embodiment Interface"""
 
 from __future__ import annotations
 

@@ -1,10 +1,5 @@
 """
-SparkAI Agent - File State Coordination Engine
-
-Tracks which agent reads and writes which file to prevent
-stale-cache bugs in multi-agent workflows. Provides write-lock
-coordination, stale-cache detection, and file versioning.
-"""
+SparkAI Agent - File State Coordination Engine"""
 
 import hashlib
 import os

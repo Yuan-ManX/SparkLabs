@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Event Sheet Synthesizer
-
-Bridges natural-language game logic descriptions and the engine's
-EventSheetRuntime. The synthesizer parses creator intent expressed as
-plain text (e.g. "when the player collects 10 coins, spawn a boss and
-play a fanfare") and compiles it into structured EventSheet objects
-that the runtime can evaluate and execute each frame.
-
-This module fuses AI-driven generation with the visual event-sheet
-paradigm: creators describe behavior in language, the agent produces
-a sheet of conditions and actions that the engine editor can render,
-inspect, and tune. The result is a closed loop from intent to
-executable game logic without manual node wiring.
-
-Architecture:
-  EventSheetSynthesizer (singleton)
-    |-- LogicParser      -> extracts conditions, actions, triggers from text
-    |-- IntentClassifier -> categorizes the logic genre (combat, economy, ...)
-    |-- SheetBuilder     -> assembles EventSheet via EventSheetRuntime
-    |-- SheetValidator   -> checks structural integrity and coverage
-"""
+SparkLabs Agent - Event Sheet Synthesizer"""
 
 from __future__ import annotations
 

@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Dialogue Engine
-
-Context-aware dialogue generation system for dynamic NPC conversations.
-Generates branching dialogue trees, personality-driven responses,
-and context-sensitive conversation flows.
-
-Architecture:
-  AgentDialogueEngine (Singleton)
-    |-- Dialogue Tree Builder (branching conversation structures)
-    |-- Response Generator (personality-driven response creation)
-    |-- Context Tracker (conversation history and state)
-    |-- Tone Analyzer (emotional tone and sentiment detection)
-    |-- Choice Generator (player dialogue options)
-    |-- Conversation Memory (persistent conversation history)
-    |-- Locale Adapter (language and cultural adaptation)
-"""
+SparkLabs Agent - Dialogue Engine"""
 
 from __future__ import annotations
 

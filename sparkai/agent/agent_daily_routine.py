@@ -1,57 +1,6 @@
 """
 SparkLabs AI-Native Game Engine - Agent Daily Routine System
-============================================================
-
-Daily routine and schedule management for AI agents in the
-SparkLabs AI-native game engine.
-
-This module equips each agent with a structured yet flexible daily routine.
-An agent's day is modeled as an hourly
-schedule composed of discrete *activity blocks*. Agents generate a schedule
-at the start of their day, execute activities in sequence, react to
-unexpected events that disrupt the plan, and replan the remainder of the
-day when the original plan no longer fits reality.
-
-Core Concepts
--------------
-
-1. **Hourly Schedule Generation** -- ``generate_schedule`` produces a
-   ``DailySchedule`` that fills the agent's wake period (from ``wake_time``
-   to ``sleep_time``) with a sequence of ``ActivityBlock`` entries. Each
-   block carries a category (WORK, LEISURE, MEAL, ...), a start hour in
-   [0, 24], a duration, a location, and a priority. Schedules may be
-   generated from a reusable ``RoutineTemplate``, from caller-supplied
-   preferences, or from sensible defaults.
-
-2. **Activity Blocks** -- The atomic unit of a routine. Activities move
-   through a lifecycle: PENDING -> IN_PROGRESS -> COMPLETED (or SKIPPED /
-   INTERRUPTED). The engine exposes ``start_activity``,
-   ``complete_activity``, ``skip_activity``, ``interrupt_activity``, and
-   ``update_activity`` to drive that lifecycle.
-
-3. **Event Reactions** -- When the world surprises an agent (an unexpected
-   visitor, a sudden storm, an urgent message), ``react_to_event`` records
-   a ``ScheduleReaction`` and applies it to the affected activities. The
-   reaction type determines the effect: RESCHEDULE shifts activities,
-   CANCEL removes them, SUBSTITUTE replaces them, DELAY pushes them back,
-   EXPEDITE moves them earlier, and MULTI_TASK merges them into one.
-
-4. **Replanning** -- ``replan_schedule`` regenerates the remaining PENDING
-   activities of a schedule based on what has already been completed or
-   interrupted, producing a new schedule version. This lets agents adapt
-   when a significant portion of the day has been disrupted.
-
-5. **Routine Templates** -- Reusable day-shape templates
-   (``RoutineTemplate``) capture the structure of a typical day for an
-   agent on a given day of the week. Templates can be created, listed,
-   fetched, and applied to existing schedules via ``apply_template``.
-
-The engine is a process-wide singleton accessed via ``get_instance()`` or
-the module-level ``get_daily_routine()`` helper. All public methods are
-guarded by a reentrant lock for thread safety. In-memory stores are
-bounded by capacity constants and use FIFO eviction so the engine never
-grows without limit.
-"""
+============================================================"""
 
 from __future__ import annotations
 

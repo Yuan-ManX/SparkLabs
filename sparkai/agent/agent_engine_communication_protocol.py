@@ -1,18 +1,5 @@
 """
-Agent-Engine Communication Protocol
-
-This module defines the standardized bidirectional communication interface between
-the Agent layer and the Engine layer of the SparkLabs AI-native game engine. It enables
-AI agents to send commands, query engine state, receive events, and synchronize data
-with the game engine in real-time.
-
-Architecture:
-    Agent Layer  <─── commands / queries ───>  Engine Layer
-    Agent Layer  <─── events / sync ─────────>  Engine Layer
-
-The protocol is implemented as a thread-safe singleton to ensure consistent state
-across all agent-engine interactions within a single process.
-"""
+Agent-Engine Communication Protocol"""
 
 from __future__ import annotations
 

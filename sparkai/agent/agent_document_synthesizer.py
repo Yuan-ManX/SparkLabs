@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Document Synthesizer
-
-Auto-generates structured Game Design Documents (GDD) from agent workflows.
-Ingests agent workflow data and produces formatted, sectioned documents in
-multiple output formats. Supports template-based document creation, section
-management, multi-document merging, and export to various formats.
-
-Architecture:
-  AgentDocumentSynthesizer (Singleton)
-    |-- DocumentTemplate (structural blueprint for document types)
-    |-- DocumentSection (individual content section)
-    |-- SynthesizedDocument (assembled document output)
-    |-- SynthesisContext (workflow ingestion context)
-
-Document Types: GDD, TDD, API_REF, USER_MANUAL, RELEASE_NOTES, ARCHITECTURE_OVERVIEW
-Output Formats: MARKDOWN, HTML, PDF, JSON, RESTRUCTURED_TEXT
-Section Types: OVERVIEW, MECHANICS, STORY, TECHNICAL, ASSETS, ROADMAP
-
-Usage:
-    synth = get_document_synthesizer()
-    template = synth.create_template("My GDD", doc_type="gdd")
-    synth.add_section(template.id, "overview", "Overview", "Game concept...")
-    doc = synth.synthesize_from_workflow("agent_level_designer")
-    output = synth.render_document(doc.id, format="markdown")
-"""
+SparkLabs Agent - Document Synthesizer"""
 from __future__ import annotations
 
 import time

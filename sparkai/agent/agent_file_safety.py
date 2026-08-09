@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - File Safety Controller
-
-Path-based access control for agent file operations within the game
-engine project workspace. Prevents agents from accessing sensitive
-system paths, credential files, and internal engine configuration.
-
-Architecture:
-  FileSafetyController
-    |-- DeniedPaths (exact-match blocked absolute paths)
-    |-- DeniedPrefixes (directory-prefix blocked paths)
-    |-- AllowedRoots (write-safety root boundaries)
-    |-- PathNormalizer (resolves symlinks and relative paths)
-
-Safety Rules:
-  - Write operations restricted to project workspace
-  - Read operations blocked on internal cache/config directories
-  - Symlink traversal checked for escape attempts
-  - Environment variable access through designated APIs only
-
-Usage:
-    fsc = FileSafetyController(workspace_root="/path/to/project")
-    if fsc.is_write_allowed("/path/to/project/assets/sprite.png"):
-        write_file(path, content)
-    if not fsc.is_write_allowed("/etc/passwd"):
-        raise SecurityError("Access denied")
-"""
+SparkLabs Agent - File Safety Controller"""
 
 from __future__ import annotations
 

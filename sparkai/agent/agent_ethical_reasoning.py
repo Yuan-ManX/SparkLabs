@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Ethical Reasoning Engine
-
-Ethical reasoning engine that ensures agent decisions align with ethical
-guidelines covering safety, fairness, harm avoidance, and bias mitigation.
-The engine provides content safety guardrails for AI-generated content and
-evaluates proposed actions against a configurable set of ethical principles.
-
-Architecture:
-  EthicalReasoningEngine (Singleton, double-checked locking)
-    |-- EthicalPrinciple     -- core ethical principles (safety, fairness, ...)
-    |-- ViolationSeverity    -- severity scale for ethical violations
-    |-- EvaluationVerdict    -- final verdict for an ethical evaluation
-    |-- EthicalRule          -- a single configurable ethical rule
-    |-- EthicalEvaluation    -- the result of evaluating an action or content
-    |-- EthicalReasoningSnapshot -- complete engine snapshot
-
-Subsystems:
-  1. Rule Management       -- add, remove, query ethical rules by principle
-  2. Action Evaluation     -- score proposed actions against enabled rules
-  3. Content Safety         -- scan generated content for harmful patterns
-  4. Violation Scoring      -- weight-based violation scoring and verdicts
-  5. Recommendation Engine  -- produce actionable recommendations per principle
-  6. Snapshot and Status    -- emit operational snapshots for observability
-"""
+SparkLabs Agent - Ethical Reasoning Engine"""
 
 from __future__ import annotations
 

@@ -1,41 +1,5 @@
 """
-SparkLabs Agent - AI Emergent Gameplay Detector
-
-An agent for the SparkLabs AI-native game engine that monitors live
-gameplay sessions to detect emergent patterns - unexpected player
-strategies, creative solutions, exploit attempts, and novel interactions.
-The detector analyzes player action sequences, identifies statistical
-anomalies, categorizes emergent behaviors, and feeds insights back to
-the design loop so the engine can adapt and evolve.
-
-Architecture:
-  EmergentGameplayDetector (singleton)
-    |-- GameplaySession, PlayerAction, EmergentPattern, DetectionRule,
-       EmergenceInsight, DetectorStats, DetectorSnapshot, DetectorEvent
-    |-- ActionType, PatternCategory, PatternSeverity, DetectionMethod,
-       PatternStatus, DetectorEventKind
-
-Core Capabilities:
-  - start_session / end_session / get_session / list_sessions: gameplay
-    session lifecycle management.
-  - record_action / get_action / list_actions: player action stream
-    ingestion with context and outcome tracking.
-  - register_rule / get_rule / list_rules / remove_rule: custom
-    detection rules with conditions and thresholds.
-  - detect_patterns / get_pattern / list_patterns: emergent pattern
-    detection and classification.
-  - classify_pattern / resolve_pattern: pattern categorization and
-    lifecycle management.
-  - generate_insight / get_insight / list_insights: design insights
-    derived from detected patterns.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`EmergentGameplayDetector.get_instance` or the module-level
-:func:`get_emergent_gameplay_detector` factory.
-"""
+SparkLabs Agent - AI Emergent Gameplay Detector"""
 
 from __future__ import annotations
 

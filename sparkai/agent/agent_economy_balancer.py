@@ -1,35 +1,5 @@
 """
-SparkLabs Agent - Economy Balancer
-
-AI-driven economy balancing system for the SparkLabs AI-Native Game Engine.
-Manages in-game currencies, resource flows, market dynamics, inflation
-control, and reward balancing. Provides automated detection of economic
-imbalances and generates corrective actions to maintain a healthy,
-sustainable game economy.
-
-Architecture:
-  EconomyBalancerEngine (Singleton)
-    |-- Currency Registry (multi-currency management, exchange rates)
-    |-- Transaction Ledger (player wallet tracking, transaction history)
-    |-- Market Board (dynamic pricing, supply/demand equilibrium)
-    |-- Inflation Monitor (detection, severity classification, remedies)
-    |-- Reward Calibrator (activity-based reward computation, sustainability)
-
-Key Features:
-  - Multi-currency system with configurable exchange rates
-  - Full transaction ledger with per-player balance tracking
-  - Dynamic market simulation with supply/demand-driven pricing
-  - Automated inflation detection with severity analysis
-  - Reward balancing with difficulty/time factoring and sustainability checks
-
-Usage:
-    balancer = get_agent_economy_balancer()
-    gold = balancer.create_currency("Gold", CurrencyType.GOLD, 1000000.0)
-    balancer.record_transaction("player_1", gold.currency_id, TransactionType.EARN, 500.0, "Quest reward")
-    balancer.simulate_market(cycles=10)
-    report = balancer.analyze_economy()
-    rewards = balancer.balance_rewards("combat", difficulty=7, target_value=100.0)
-"""
+SparkLabs Agent - Economy Balancer"""
 
 from __future__ import annotations
 

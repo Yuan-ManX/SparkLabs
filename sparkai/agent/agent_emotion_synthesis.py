@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Emotion Synthesis Engine
-
-Computational emotion synthesis system for autonomous agents. Models
-multi-dimensional emotional states, mood transitions, personality-driven
-emotional responses, and emotional contagion in agent populations.
-
-Architecture:
-  AgentEmotionSynthesis (Singleton)
-    |-- Emotion State Machine (PAD model: Pleasure-Arousal-Dominance)
-    |-- Mood Controller (long-term mood with decay and inertia)
-    |-- Emotion Trigger System (event-to-emotion mapping)
-    |-- Expression Generator (behavioral/verbal emotional expression)
-    |-- Emotion Contagion (spread of emotions in groups)
-    |-- Emotion Memory (past emotional experiences and trauma)
-    |-- Coping Strategy Engine (agent stress management)
-"""
+SparkLabs Agent - Emotion Synthesis Engine"""
 
 from __future__ import annotations
 

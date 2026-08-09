@@ -1,51 +1,5 @@
 """
-SparkLabs Agent - AI Game Announcer
-
-An AI-driven narration and commentary system for the SparkLabs AI-native game
-engine. This agent generates real-time play-by-play descriptions, color
-commentary, announcements, and dramatic reactions in response to gameplay
-events. It adapts its tone based on the intensity and context of the action,
-maintains a priority queue to avoid flooding the player with overlapping
-lines, and provides cooldown management to keep commentary fresh.
-
-The system fuses real-time decision-making with narrative simulation and
-situational awareness. The announcer is not a static line-picker — it evaluates the
-current game state (score gap, streak length, time remaining, player skill
-disparity) to select commentary that matches the moment.
-
-Architecture:
-  GameAnnouncer (singleton)
-    |-- CommentaryLine, CommentaryTrigger, GameContext, AnnouncerConfig,
-       AnnouncerStats, AnnouncerSnapshot, AnnouncerEvent
-    |-- CommentaryKind, ToneProfile, CommentaryPriority, TriggerKind,
-       AnnouncerEventKind
-
-Core Capabilities:
-  - register_line / get_line / list_lines / remove_line: lifecycle for the
-    commentary line library, organized by trigger and tone.
-  - register_trigger / get_trigger / list_triggers / remove_trigger: event
-    predicates that activate commentary (kill streaks, objective captures,
-    match phase transitions, comeback thresholds).
-  - submit_event: feed a gameplay event into the announcer for evaluation;
-    the announcer selects a matching line, applies cooldowns, and enqueues
-    it for delivery.
-  - dequeue_line: retrieve the next highest-priority line for playback.
-  - peek_queue / clear_queue: inspect or flush the pending delivery queue.
-  - set_context / get_context: update the game state context (scores, timers,
-    streaks) that informs commentary selection.
-  - set_tone / get_tone: override the global tone profile (excited, calm,
-    tense, celebratory, analytical, dramatic).
-  - tick: expire stale queued lines and decay cooldowns.
-  - set_config / get_config: tuning for queue size, cooldown duration,
-    and spam prevention.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`GameAnnouncer.get_instance` or the module-level
-:func:`get_game_announcer` factory.
-"""
+SparkLabs Agent - AI Game Announcer"""
 
 from __future__ import annotations
 

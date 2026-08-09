@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Dynamic Difficulty Adjustment
-
-Real-time difficulty adaptation system that monitors player performance
-and intelligently adjusts game difficulty parameters to maintain optimal
-challenge and engagement within the AI-native game engine.
-
-Architecture:
-  DynamicDifficultyEngine (singleton)
-    |-- DifficultyProfile (per-player difficulty state and configuration)
-    |-- PerformanceMetrics (raw gameplay measurement data points)
-    |-- DifficultyAdjustment (individual parameter change records)
-    |-- PlayerState assessment (struggling -> bored spectrum)
-    |-- Strategy-driven adjustment (gradual/aggressive/conservative/adaptive/predictive)
-
-Adjustment Strategies:
-  - GRADUAL: small incremental changes for subtle tuning
-  - AGGRESSIVE: large swings to rapidly find optimal difficulty
-  - CONSERVATIVE: prefers lower difficulty, slow to increase
-  - ADAPTIVE: responds to rate-of-change in player state
-  - PREDICTIVE: anticipates needs from historical performance patterns
-"""
+SparkLabs Agent - Dynamic Difficulty Adjustment"""
 
 from __future__ import annotations
 

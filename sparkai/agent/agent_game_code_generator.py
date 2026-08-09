@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Game Code Generator
-
-AI-powered game code generator that translates natural language specifications
-into executable game logic — including behaviors, scripts, mechanics, systems,
-and shaders. Maintains a library of reusable code templates and generates
-domain-specific code by matching templates and synthesizing procedural logic.
-
-Architecture:
-  AgentGameCodeGenerator (Singleton)
-    |-- Template Library (reusable code blueprints across domains)
-    |-- Code Synthesizer (template-matching + procedural generation)
-    |-- Code Reviewer (quality scoring and issue detection)
-    |-- Code Compiler (status progression through the code lifecycle)
-    |-- Code Bundler (aggregate generated codes into deployable bundles)
-    |-- Validator (static analysis of generated code)
-"""
+SparkLabs Agent - Game Code Generator"""
 
 from __future__ import annotations
 

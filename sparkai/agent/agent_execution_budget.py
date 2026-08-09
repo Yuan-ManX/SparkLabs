@@ -1,24 +1,5 @@
 """
-SparkAI Agent - Execution Budget Engine
-
-Token and cost budget tracking system. Monitors resource consumption
-across agent sessions, enforces budget limits, and provides detailed
-usage statistics. Supports multiple budget tiers with warnings,
-soft limits, and hard caps to prevent runaway spending.
-
-Architecture:
-  ExecutionBudget
-    |-- TokenTracker (token usage per session/provider)
-    |-- CostTracker (cost estimation from token usage)
-    |-- BudgetEnforcer (limit enforcement with warnings)
-    |-- UsageReporter (detailed usage statistics)
-    |-- SessionLimiter (per-session iteration/step limits)
-
-Budget Tiers:
-  - Warning: notification sent, execution continues
-  - Soft Limit: agent is asked to wrap up current task
-  - Hard Cap: execution is terminated immediately
-"""
+SparkAI Agent - Execution Budget Engine"""
 
 from __future__ import annotations
 

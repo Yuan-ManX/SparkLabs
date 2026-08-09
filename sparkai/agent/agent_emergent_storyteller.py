@@ -1,19 +1,5 @@
 """
-SparkLabs Agent Emergent Storyteller
-
-Provides autonomous emergent narrative generation for AI-native game worlds.
-Stories emerge from entity interactions, world events, and character decisions
-rather than being pre-scripted. The system tracks narrative arcs, generates
-story beats, and adapts to player actions.
-
-Core architecture:
-  - Narrative Tracking: Monitors world state for story-worthy events
-  - Arc Management: Tracks character arcs, plot lines, and themes
-  - Beat Generation: Creates story beats from significant interactions
-  - Player Impact: Adapts narrative based on player choices and actions
-  - Story Synthesis: Composes coherent narratives from emergent events
-  - Theme Detection: Identifies and reinforces narrative themes
-"""
+SparkLabs Agent Emergent Storyteller"""
 
 import threading
 import time

@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Developer Assistant
-
-Real-time AI developer co-pilot that monitors editing context, provides
-intelligent code suggestions, explains errors, and offers optimization
-recommendations during game development sessions.
-
-Architecture:
-  DeveloperAssistant
-    |-- ContextTracker (monitors active editing state)
-    |-- SuggestionEngine (context-aware code and design suggestions)
-    |-- ErrorExplainer (diagnostic analysis with fixes)
-    |-- OptimizationAdvisor (performance and structure improvements)
-    |-- SessionManager (per-developer session state)
-
-Assistant Modes:
-  - CODE_SUGGESTION: real-time code completion and generation
-  - ERROR_DIAGNOSIS: error analysis with root cause detection
-  - DESIGN_REVIEW: architecture and pattern recommendations
-  - PERFORMANCE_TUNING: optimization advice for game systems
-  - LEARNING_TRACKER: tracks developer patterns for personalized help
-"""
+SparkLabs Agent - Developer Assistant"""
 
 from __future__ import annotations
 
