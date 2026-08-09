@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Reasoning Chain Engine
-
-Recursive reasoning engine that enables agents to decompose complex problems
-through multi-step chain-of-thought reasoning with self-verification. This
-module provides structured reasoning steps, belief tracking, and intermediate
-conclusion validation.
-
-Architecture:
-  ReasoningChainEngine (Singleton)
-    |-- ReasoningStep (individual reasoning node with premises and conclusions)
-    |-- ReasoningChain (ordered sequence of reasoning steps with dependency graph)
-    |-- BeliefState (agent's current beliefs and confidence levels)
-    |-- ConclusionValidator (validates intermediate and final conclusions)
-
-Reasoning Modes:
-  - DEDUCTIVE: top-down logical reasoning from general principles
-  - INDUCTIVE: bottom-up pattern recognition from specific observations
-  - ABDUCTIVE: inference to the best explanation from incomplete data
-  - ANALOGICAL: reasoning by analogy and similarity comparison
-  - CREATIVE: open-ended generative reasoning for novel solutions
-
-Usage:
-    rc = get_reasoning_chain()
-    rc.initialize()
-
-    result = rc.reason(
-        problem="Design an optimal NPC patrol route covering all waypoints",
-        mode=ReasoningMode.DEDUCTIVE,
-        max_steps=5,
-        context={"world_bounds": (0, 0, 1000, 1000), "waypoints": [...]}
-    )
-
-    chain = rc.get_chain(result.chain_id)
-    rc.shutdown()
-"""
+SparkLabs Agent - Reasoning Chain Engine"""
 
 from __future__ import annotations
 

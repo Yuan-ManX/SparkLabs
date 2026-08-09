@@ -1,15 +1,5 @@
 """
-Agent Retention Predictor
-
-AI-driven churn prediction and retention strategy engine. Fills the player
-retention gap by combining engagement signals (recency, frequency, duration,
-progression, social, monetary) into a unified churn risk score and recommending
-personalized retention actions.
-
-Distinct from agent_player_modeler (which models playstyle and skill) and
-agent_liveops_director (which schedules live events): this module focuses
-specifically on predicting churn and prescribing targeted interventions.
-"""
+Agent Retention Predictor"""
 
 from __future__ import annotations
 

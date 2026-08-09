@@ -1,31 +1,5 @@
 """
-SparkAI Agent - Prompt Builder
-
-Dynamic system prompt construction system. Assembles comprehensive
-agent system prompts from multiple sources including environment
-configuration, skill registries, context documents, and game-world
-parameters. Supports layered prompt construction with configurable
-sections, caching of static portions, and injection of dynamic
-context at runtime.
-
-Architecture:
-  PromptBuilder
-    |-- IdentityLayer (agent personality, role, constraints)
-    |-- EnvironmentLayer (platform, tool env, working directory)
-    |-- SkillLayer (available skills, tool schemas, capabilities)
-    |-- ContextLayer (AGENTS.md, SOUL.md, project files)
-    |-- GameWorldLayer (game state, entities, world rules)
-    |-- InstructionLayer (current task, goals, constraints)
-
-Prompt Construction Flow:
-  1. Build identity and role description
-  2. Layer environment details and constraints
-  3. Index available skills and capabilities
-  4. Load context documents (project conventions)
-  5. Inject game world state and rules
-  6. Append current task instructions
-  7. Apply caching markers for repeated sections
-"""
+SparkAI Agent - Prompt Builder"""
 
 from __future__ import annotations
 

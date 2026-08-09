@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Quest Generator
-
-AI-driven quest generation system for the SparkLabs AI-native game engine.
-Generates quests with objectives, branching paths, rewards, story arcs,
-and narrative coherence. Supports single quest creation, random quest
-generation, quest chain composition, and quest validation.
-
-Architecture:
-  QuestGeneratorEngine (Singleton)
-    |-- QuestType (categorization of quest archetypes)
-    |-- QuestDifficulty (scaling tier for rewards and objectives)
-    |-- QuestStatus (lifecycle state machine)
-    |-- ObjectiveType (concrete task types within a quest)
-    |-- QuestObjective (individual task with progress tracking)
-    |-- QuestReward (structured reward package)
-    |-- QuestDefinition (complete quest data model)
-    |-- QuestChain (ordered sequence of interconnected quests)
-"""
+SparkLabs Agent - Quest Generator"""
 
 from __future__ import annotations
 

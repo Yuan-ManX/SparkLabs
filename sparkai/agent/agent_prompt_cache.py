@@ -1,17 +1,5 @@
 """
-Prompt Cache - Intelligent prompt deduplication and caching for cost optimization.
-
-Architecture:
-    PromptCache/
-    |-- CachePolicy (eviction strategy enumeration)
-    |-- CacheEntry (cached prompt with metadata dataclass)
-    |-- CacheFingerprint (prompt hashing dataclass)
-    |-- PromptCache (global cache orchestration)
-
-Reduces LLM API costs during AI-native game development by caching identical
-or similar prompts. Computes content fingerprints, supports TTL-based and
-LRU eviction, and provides hit-rate analytics for optimization insight.
-"""
+Prompt Cache - Intelligent prompt deduplication and caching for cost optimization."""
 
 from __future__ import annotations
 

@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Quest Composer
-
-AI-driven quest and mission chain composition system with branching
-narratives. Generates complete quest structures — single quests, multi-step
-quest chains, branching decision points, and balanced reward distributions —
-all managed through a singleton composition engine.
-
-Architecture:
-  AgentQuestComposer (singleton)
-    |-- QuestObjective (individual task within a quest)
-    |-- QuestNode (single quest with objectives and rewards)
-    |-- QuestChain (ordered or branching sequence of quests)
-    |-- BranchingCondition (narrative decision point logic)
-    |-- RewardBundle (structured reward package)
-    |-- QuestNarrative (dialogue, lore, and character arc integration)
-"""
+SparkLabs Agent - Quest Composer"""
 
 from __future__ import annotations
 

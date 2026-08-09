@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Prompt Template Library
-
-Structured prompt template management for AI-native game engine
-agents. Provides versioned, composable prompt templates with
-variable interpolation, conditional blocks, and chain-of-thought
-patterns tailored for game development tasks.
-
-Architecture:
-  PromptTemplateLib
-    |-- TemplateEntry (single versioned prompt template)
-    |-- TemplateCategory (organization by domain)
-    |-- VariableResolver (interpolate template variables)
-    |-- ComposeEngine (chain templates into multi-turn prompts)
-    |-- TemplateValidator (structural and semantic validation)
-
-Template Domains:
-  - game_design: concept generation, mechanics design
-  - code_gen: script generation, system implementation
-  - level_design: layout, terrain, obstacle placement
-  - dialogue: NPC dialogue, quest text, narration
-  - art_direction: visual style, palette, asset descriptions
-  - debugging: error analysis, fix suggestions
-"""
+SparkLabs Agent - Prompt Template Library"""
 
 from __future__ import annotations
 

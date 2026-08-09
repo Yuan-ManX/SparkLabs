@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - Provider Switch
-
-Dynamic LLM provider and model management system with automatic
-failover, cost optimization, usage tracking, and intelligent model
-selection. Routes agent requests to the most suitable model based
-on task requirements, budget constraints, and real-time performance.
-
-Architecture:
-  ProviderSwitch
-    |-- ProviderConfig (connection details and authentication)
-    |-- ModelProfile (capability matrix, pricing, performance tiers)
-    |-- SwitchRule (condition-action rules for model routing)
-    |-- FailoverEvent (historical record of failover actions)
-    |-- UsageStats (accumulated token and cost tracking per model)
-
-Provider Types:
-  - OPENAI: OpenAI API models (GPT-4o, GPT-4o-mini, etc.)
-  - ANTHROPIC: Anthropic Claude models (Sonnet, Opus, etc.)
-  - LOCAL: On-premise models via Ollama, vLLM, etc.
-  - CLOUD: Cloud-hosted inference endpoints (AWS Bedrock, GCP Vertex)
-  - CUSTOM: Any HTTP-compatible LLM endpoint
-
-Failover Strategies:
-  - ROUND_ROBIN: sequential cycling through available models
-  - LOWEST_COST: route to the cheapest capable model
-  - HIGHEST_PERFORMANCE: route to the highest-scoring capable model
-  - CUSTOM: user-defined routing function
-
-Usage:
-    ps = get_provider_switch()
-    ps.register_provider("openai", ProviderType.OPENAI, "https://api.openai.com", "OPENAI_KEY")
-    ps.configure_model("gpt-4o", "openai", capabilities=[ModelCapability.CODE, ModelCapability.VISION])
-    model = ps.auto_select_model("Generate game code", requirements={"code": True})
-"""
+SparkLabs Agent - Provider Switch"""
 from __future__ import annotations
 
 import random

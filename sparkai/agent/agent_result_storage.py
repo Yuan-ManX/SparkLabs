@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Result Storage
-
-Structured storage and retrieval for agent tool execution results.
-Maintains an in-memory result registry with schema validation,
-expiration, and query capabilities. Supports deduplication
-and versioned result tracking.
-
-Architecture:
-  ResultStorage
-    |-- ResultEntry (timestamped result with metadata)
-    |-- ResultRegistry (indexed in-memory store with TTL)
-    |-- QueryEngine (filtering, sorting, pagination)
-    |-- SchemaValidator (type-checking on stored values)
-
-Usage:
-    rs = ResultStorage(max_entries=10000, default_ttl=3600)
-    rs.store("entity_query_abc", {"entities": [...], "count": 5})
-    result = rs.retrieve("entity_query_abc")
-    older = rs.query(lambda e: e.timestamp < cutoff)
-"""
+SparkLabs Agent - Result Storage"""
 
 from __future__ import annotations
 

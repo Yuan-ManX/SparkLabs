@@ -1,45 +1,5 @@
 """
-SparkLabs Agent - Quality Assurance Orchestrator
-
-Comprehensive quality assurance subsystem that orchestrates end-to-end QA
-processes for the SparkLabs AI-Native Game Engine. Coordinates automated
-testing, code review, performance validation, accessibility auditing,
-compatibility checking, security scanning, localization verification,
-content validation, UX evaluation, and continuous quality monitoring
-across the entire game development lifecycle.
-
-Architecture:
-  QualityAssuranceOrchestrator (singleton)
-    |-- CheckRegistry (registered QA checks and their handlers)
-    |-- DefectDatabase (tracking and triage of detected defects)
-    |-- ReportHistory (historical QA reports for trend analysis)
-    |-- ContinuousMonitor (background continuous QA monitoring)
-
-QA Lifecycle Phases:
-  PRE_BUILD -> BUILD -> POST_BUILD -> PRE_RELEASE -> POST_RELEASE -> CONTINUOUS
-
-QA Categories:
-  FUNCTIONAL       - core game functionality and behavior
-  PERFORMANCE      - frame rate, memory, load times, profiling
-  CODE_QUALITY     - linting, complexity, coverage, patterns
-  ACCESSIBILITY    - WCAG compliance, input alternatives, contrast
-  COMPATIBILITY    - cross-platform, device, and OS validation
-  SECURITY         - vulnerability scanning, secrets, sanitization
-  LOCALIZATION     - i18n, locale correctness, text rendering
-  CONTENT         - asset quality, narrative consistency, balance
-  UX              - usability, onboarding, friction analysis
-  REGRESSION       - behavior preservation across versions
-
-Usage:
-    qa = get_quality_assurance()
-    qa.initialize()
-    qa.register_check("smoke_test", QACategory.FUNCTIONAL, my_handler)
-    result = qa.run_check("smoke_test", target="game_001")
-    report = qa.run_full_qa("game_001", QAConfig(phases=[QAPhase.BUILD]))
-    qa.run_continuous("game_001", interval=60.0)
-    status = qa.get_status()
-    qa.shutdown()
-"""
+SparkLabs Agent - Quality Assurance Orchestrator"""
 
 from __future__ import annotations
 

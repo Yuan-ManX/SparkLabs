@@ -1,43 +1,5 @@
 """
-SparkLabs Agent - Puzzle Architect
-
-An AI puzzle design director for the SparkLabs AI-native game engine. It
-generates, calibrates, validates, and remixes puzzles across logic, spatial,
-word, and mechanical genres. The architect fuses procedural generation with
-solvability verification, frustration-aware hint ladders, and difficulty
-calibration that adapts to observed player skill. Puzzles are first-class
-citizens with components, constraints, solutions, and attempt telemetry that
-together form a closed feedback loop for intelligent content pacing.
-
-Architecture:
-  PuzzleArchitect (singleton)
-    |-- PuzzleComponent, PuzzleConstraint, Puzzle, PuzzleHint,
-       PuzzleAttempt, PuzzleStats, PuzzleSnapshot, PuzzleEvent
-    |-- PuzzleGenre, PuzzleDifficulty, PuzzleComponentKind,
-       PuzzleHintTier, PuzzleStatus, PuzzleEventKind
-
-Core Capabilities:
-  - register_puzzle / get_puzzle / list_puzzles / update_puzzle /
-    remove_puzzle: puzzle lifecycle with components and constraints.
-  - generate_puzzle: procedural synthesis from genre, theme, and a
-    constraint set, producing a solvable puzzle with a verified solution.
-  - validate_solvability: confirm a puzzle has at least one solution path.
-  - calibrate_difficulty: tune a puzzle toward a target solve time given
-    observed player skill.
-  - hint_ladder: produce a tiered sequence of hints ordered from gentle
-    nudges to explicit solutions, paced by a frustration signal.
-  - remix_puzzle: derive a variant puzzle from a seed with controlled
-    divergence in components and constraints.
-  - register_attempt / list_attempts: capture solve telemetry that feeds
-    calibration and difficulty assessment.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`PuzzleArchitect.get_instance` or the module-level
-:func:`get_puzzle_architect` factory.
-"""
+SparkLabs Agent - Puzzle Architect"""
 
 from __future__ import annotations
 

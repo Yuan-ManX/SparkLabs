@@ -1,26 +1,5 @@
 """
-SparkAI Agent - Recovery Engine
-
-Automatic failure recovery system that detects runtime failures
-and applies structured recovery recipes. Each recipe defines
-a sequence of recovery steps with escalation policies when
-automatic recovery fails.
-
-Architecture:
-  RecoveryEngine
-    |-- FailureDetector (pattern-based failure classification)
-    |-- RecoveryRecipe (structured recovery procedures)
-    |-- EscalationPolicy (fallback when recovery fails)
-    |-- RecoveryTracker (history and success rate tracking)
-
-Recovery Flow:
-  1. Detect failure via pattern matching or health check
-  2. Classify failure type and severity
-  3. Look up matching recovery recipe
-  4. Execute recovery steps with retry logic
-  5. Verify recovery succeeded
-  6. Escalate if recovery fails after max attempts
-"""
+SparkAI Agent - Recovery Engine"""
 
 from __future__ import annotations
 

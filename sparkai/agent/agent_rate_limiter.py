@@ -1,17 +1,5 @@
 """
-Rate Limiter - Token bucket and sliding window rate limiting.
-
-Architecture:
-    RateLimiter/
-    |-- LimitStrategy (rate limiting algorithm selection)
-    |-- RateLimitConfig (per-endpoint limit configuration)
-    |-- TokenBucket (token bucket algorithm implementation)
-    |-- SlidingWindow (sliding window counter implementation)
-    |-- RateLimiter (unified rate limiting orchestrator)
-
-Provides multi-strategy rate limiting for API calls with burst support,
-concurrent call capping, and wait queue management for agent operations.
-"""
+Rate Limiter - Token bucket and sliding window rate limiting."""
 
 from __future__ import annotations
 

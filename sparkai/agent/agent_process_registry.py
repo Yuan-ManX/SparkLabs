@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Process Registry
-
-Background process lifecycle management for game development workflows.
-Tracks long-running processes: build servers, game previews, asset
-compilation, dev servers. Adapted for game engine orchestration where
-AI agents need to spawn, monitor, and control multi-process pipelines.
-
-Architecture:
-  ProcessRegistry
-    |-- ProcessEntry (pid, command, status, resource usage)
-    |-- ProcessPool (grouped processes per game project)
-    |-- ResourceMonitor (CPU/memory tracking per process)
-    |-- LifecycleHooks (on_start, on_exit, on_crash callbacks)
-    |-- TimeoutManager (auto-kill hung processes)
-
-Process States:
-  - SPAWNING: process is being created
-  - RUNNING: executing normally
-  - IDLE: process alive but no activity
-  - STALLED: no output for threshold period
-  - STOPPING: termination requested
-  - STOPPED: clean exit
-  - CRASHED: non-zero exit or signal
-"""
+SparkLabs Agent - Process Registry"""
 
 from __future__ import annotations
 

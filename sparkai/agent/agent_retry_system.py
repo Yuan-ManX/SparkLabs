@@ -1,17 +1,5 @@
 """
-Retry System - Intelligent retry with circuit breaker pattern.
-
-Architecture:
-    RetrySystem/
-    |-- RetryStrategy (backoff algorithm selection)
-    |-- RetryConfig (per-operation retry configuration)
-    |-- CircuitBreaker (failure-tracking circuit breaker)
-    |-- RetryContext (execution context for retry tracking)
-    |-- RetrySystem (unified retry orchestration)
-
-Provides intelligent retry with exponential backoff, jitter,
-circuit breaker protection, and error classification for agent operations.
-"""
+Retry System - Intelligent retry with circuit breaker pattern."""
 
 from __future__ import annotations
 

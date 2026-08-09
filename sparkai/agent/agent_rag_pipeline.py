@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - RAG (Retrieval Augmented Generation) Pipeline
-
-A retrieval augmented generation system for the AI-native game engine.
-Ingests game development knowledge documents, chunks content using
-configurable strategies, builds keyword and vector indexes, and
-retrieves context for augmenting LLM prompts at generation time.
-
-Architecture:
-  RAGPipeline
-    |-- Document (ingested game dev knowledge)
-    |-- DocumentChunk (sub-document retrieval unit)
-    |-- SearchResult (scored retrieval hit)
-    |-- InvertedIndex (keyword-based BM25-like search)
-    |-- EmbeddingStore (cosine-similarity vector search)
-    |-- HybridRanker (combined keyword + vector scoring)
-"""
+SparkLabs Agent - RAG (Retrieval Augmented Generation) Pipeline"""
 
 import math
 import re

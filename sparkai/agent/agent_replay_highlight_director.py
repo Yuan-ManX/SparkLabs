@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - AI Replay Highlight Director
-
-A replay highlight director agent for the SparkLabs AI-native game engine. It
-analyzes gameplay replay streams to identify highlight-worthy moments,
-curates highlight reels, and tags moments by significance, novelty, skill,
-and drama. The director composes compilations from disparate gameplay
-sessions and scores each moment with a multi-factor significance model.
-
-Architecture:
-  ReplayHighlightDirector (singleton)
-    |-- HighlightMoment, HighlightReel, MomentAnalysis,
-       HighlightTag, DirectorStats, DirectorSnapshot, DirectorEvent
-    |-- HighlightCategory, MomentSignificance, HighlightTagKind,
-       DirectorEventKind
-
-Core Capabilities:
-  - register_replay / get_replay / list_replays / remove_replay: replay
-    stream lifecycle management.
-  - record_moment / get_moment / list_moments: highlight moment capture
-    with category, timestamp, and actor context.
-  - analyze_moment: compute a multi-factor significance score from
-    rarity, skill, drama, and impact dimensions.
-  - curate_reel / get_reel / list_reels / remove_reel: compose highlight
-    reels from filtered and ranked moments.
-  - tag_moment / list_tags: attach semantic tags to moments for search
-    and filtering.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`ReplayHighlightDirector.get_instance` or the module-level
-:func:`get_replay_highlight_director` factory.
-"""
+SparkLabs Agent - AI Replay Highlight Director"""
 
 from __future__ import annotations
 

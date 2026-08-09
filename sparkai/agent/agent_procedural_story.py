@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Procedural Story Engine
-
-AI-driven narrative generation system that constructs branching story
-graphs, manages character arcs, maintains plot coherence, and builds
-world-building lore. Stories are modeled as traversable directed graphs
-where each node represents a scene, choice, branch, merge point, or
-ending. The engine tracks emotional tone, tension levels, and narrative
-arc progression across the entire story structure.
-
-Architecture:
-  StoryEngine (Singleton)
-    |-- StoryGraph (narrative graph with nodes and arcs)
-    |-- PlotNode (scene, choice, branch, merge, or ending)
-    |-- CharacterArc (character transformation over time)
-    |-- WorldLore (history, factions, locations, rules)
-
-Core Capabilities:
-  - Create stories with genre classification and arc tracking
-  - Add scenes, choices, branches, and endings to the story graph
-  - Traverse the story graph along different narrative paths
-  - Manage character arcs with starting/ending states and milestones
-  - Build world lore entries with history, factions, and locations
-  - Track emotional tone and tension levels across scenes
-  - Generate coherent endings based on story state and character arcs
-  - Export full story graphs with metadata for external rendering
-"""
+SparkLabs Agent - Procedural Story Engine"""
 
 from __future__ import annotations
 

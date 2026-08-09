@@ -1,33 +1,5 @@
 """
-SparkAI Agent - Sandbox Execution Engine
-
-Isolated execution environment for agent tool calls that provides
-resource limits, output capture, and safety boundaries. Each
-sandbox session runs in a controlled context with configurable
-constraints on execution time, memory, and file system access.
-
-Architecture:
-  SandboxEngine
-    |-- SandboxSession (isolated execution context)
-    |-- ResourceLimits (time, memory, file system constraints)
-    |-- OutputCapture (stdout/stderr collection)
-    |-- FileSystemGuard (path access control)
-    |-- ExecutionResult (structured output with metrics)
-
-Sandbox Flow:
-  1. Create sandbox session with resource limits
-  2. Register allowed tools and file paths
-  3. Execute tool call within sandbox boundaries
-  4. Capture output and measure resource usage
-  5. Enforce limits (timeout, memory, disk)
-  6. Return structured result with metrics
-
-Safety Guarantees:
-  - Tool execution time is bounded by timeout
-  - File system access is restricted to allowed paths
-  - Output size is truncated to prevent memory exhaustion
-  - Failed executions are isolated and don't affect other sessions
-"""
+SparkAI Agent - Sandbox Execution Engine"""
 
 from __future__ import annotations
 

@@ -1,19 +1,5 @@
 """
-SparkLabs Reasoning Synthesis Engine
-
-A multi-strategy reasoning engine that combines chain-of-thought,
-tree-of-thought, and mixture-of-agents reasoning approaches. The engine
-runs parallel reasoning paths and synthesizes them into a unified
-conclusion with confidence scoring.
-
-Key capabilities:
-- Multiple reasoning strategies with automatic selection
-- Parallel reasoning path execution
-- Consensus synthesis from divergent conclusions
-- Confidence scoring with uncertainty quantification
-- Reasoning trace recording for transparency and debugging
-- Adaptive strategy selection based on task complexity
-"""
+SparkLabs Reasoning Synthesis Engine"""
 
 from __future__ import annotations
 

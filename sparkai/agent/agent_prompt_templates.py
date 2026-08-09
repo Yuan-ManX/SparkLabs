@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Prompt Templates Library
-
-A singleton structured prompt template management system for the SparkLabs AI
-game engine. Manages prompt templates with variable interpolation, versioning,
-role-based assembly, and chain composition for building complex LLM interactions.
-
-Supports template categorization across game development domains (system prompts,
-code generation, NPC dialogue, level generation, etc.), variable validation with
-type enforcement, and token estimation for budget-conscious prompt construction.
-
-Architecture:
-  PromptLibrary (singleton)
-    |-- PromptTemplate (versioned template with variables, tags, and lineage)
-    |-- TemplateVariable (typed variable definition with defaults and validation)
-    |-- AssembledPrompt (composed multi-template prompt with role assignments)
-"""
+SparkLabs Agent - Prompt Templates Library"""
 
 from __future__ import annotations
 

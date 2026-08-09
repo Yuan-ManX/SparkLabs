@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Reflex Engine
-
-A self-improving feedback loop system that monitors agent performance,
-identifies bottlenecks, and automatically optimizes agent behavior.
-Provides real-time metrics collection, anomaly detection, and
-adaptive tuning for the AI-native game engine.
-
-Architecture:
-  ReflexEngine
-    |-- MetricCollector (gather performance data from all subsystems)
-    |-- AnomalyDetector (identify performance deviations)
-    |-- OptimizationAdvisor (generate improvement suggestions)
-    |-- AdaptiveTuner (auto-adjust system parameters)
-    |-- ReflexReport (comprehensive performance analysis)
-"""
+SparkAI Agent - Reflex Engine"""
 
 from __future__ import annotations
 

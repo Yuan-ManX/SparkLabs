@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Real-Time Collaboration Engine
-
-Multi-user co-editing system with operational transforms, conflict
-resolution, and granular file locking. Enables concurrent editing
-across the game development workflow for AI-native game creation.
-
-Architecture:
-  RealtimeCollaborationEngine
-    |-- CollaborativeOperation (atomic edit operation with transform)
-    |-- CollaborationSession (shared editing context)
-    |-- OperationTransformer (OT-based conflict resolution)
-    |-- LockManager (granular file region locking)
-    |-- VersionVector (causal ordering and convergence)
-    |-- ConflictResolver (merge conflict detection and resolution)
-
-Collaboration Modes:
-  - ASYNCHRONOUS: non-blocking edits with delayed sync
-  - REAL_TIME: concurrent editing with immediate transforms
-  - REVIEW_CYCLE: staged review with approval gates
-  - APPROVAL_FLOW: sequential approval chain
-  - PAIR_PROGRAMMING: synchronous collaborative editing
-"""
+SparkLabs Agent - Real-Time Collaboration Engine"""
 
 from __future__ import annotations
 

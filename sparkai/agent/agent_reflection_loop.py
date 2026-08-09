@@ -1,17 +1,5 @@
 """
-SparkLabs Agent - Reflection Loop
-
-A singleton self-improvement system for the SparkLabs AI game engine.
-Implements a reflection loop that analyzes past agent decisions, identifies
-improvement opportunities, generates actionable insights, and adapts agent
-strategies for increasingly better outcomes over time.
-
-Architecture:
-  ReflectionLoop (singleton)
-    |-- ReflectionEntry (record of a single decision-outcome pair)
-    |-- ImprovementInsight (actionable finding derived from reflections)
-    |-- StrategyAdaptation (modified strategy based on an insight)
-"""
+SparkLabs Agent - Reflection Loop"""
 
 from __future__ import annotations
 

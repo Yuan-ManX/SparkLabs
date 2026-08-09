@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Risk Assessment Engine
-
-Proactive safety evaluation for AI-generated game content and
-engine configurations. Assesses risks across technical stability,
-gameplay integrity, content appropriateness, and performance
-impact domains to ensure AI-native game generation produces
-reliable, appropriate, and performant results.
-
-Architecture:
-  RiskAssessmentEngine
-    |-- TechnicalRiskAnalyzer (crash/stability forecaster)
-    |-- GameplayRiskAnalyzer (balance-breaking change detection)
-    |-- ContentRiskAnalyzer (appropriateness screening)
-    |-- PerformanceRiskAnalyzer (frame budget impact scoring)
-    |-- RiskAggregator (cross-domain risk synthesis)
-    |-- MitigationPlanner (remediation suggestion generation)
-
-Risk Categories:
-  - TECHNICAL: crashes, memory leaks, infinite loops
-  - GAMEPLAY: balance disruption, progression breaking
-  - CONTENT: inappropriate material, cultural insensitivity
-  - PERFORMANCE: frame drops, load spikes, memory pressure
-  - SECURITY: injection risks, data exposure, unsafe operations
-"""
+SparkLabs Agent - Risk Assessment Engine"""
 
 from __future__ import annotations
 

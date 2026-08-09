@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Predictive Intelligence System
-
-An advanced forecasting and counterfactual reasoning engine that enables
-agents to anticipate future game states, simulate alternative scenarios,
-and make proactive decisions. This system powers the game engine's ability
-to predict player behavior, forecast game economy trends, anticipate
-narrative branching outcomes, and optimize resource allocation.
-
-Architecture:
-  AgentPredictiveIntelligence (Singleton)
-    |-- ForecastModel (time-series prediction pipeline)
-    |-- CounterfactualEngine (what-if scenario simulation)
-    |-- TrendAnalyzer (pattern detection and extrapolation)
-    |-- RiskPredictor (threat and opportunity forecasting)
-    |-- ScenarioSimulator (branching outcome simulation)
-    |-- PredictionRecord (outcome tracking and calibration)
-
-Core Capabilities:
-  - Time-series forecasting for game metrics and player behavior
-  - Counterfactual reasoning for "what-if" scenario analysis
-  - Pattern-based trend detection and extrapolation
-  - Proactive risk and opportunity identification
-  - Multi-path scenario simulation with probability distributions
-  - Feedback-driven prediction accuracy improvement
-"""
+SparkLabs Agent - Predictive Intelligence System"""
 
 from __future__ import annotations
 

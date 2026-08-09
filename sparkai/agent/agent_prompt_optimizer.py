@@ -1,40 +1,5 @@
 """
-SparkLabs Agent - Prompt Optimization Engine
-
-Learns from prompt-outcome pairs to generate optimized prompts for
-game development tasks. Tracks templates, sessions, and optimization
-rules to continuously improve prompt quality through iterative
-feedback analysis and rule-based transformation.
-
-Architecture:
-  PromptOptimizer
-    |-- PromptTemplate (versioned prompt with variable slots)
-    |-- PromptSession (recorded prompt-outcome pair with quality)
-    |-- OptimizationRule (domain-specific transformation logic)
-    |-- TemplateRegistry (storage and retrieval of templates)
-    |-- SessionAnalyzer (quality trend and feedback analysis)
-    |-- RuleEngine (condition-based template transformation)
-
-Domains:
-  - GAME_GENERATION: full game concept prompts
-  - CODE_GENERATION: code implementation prompts
-  - WORLD_BUILDING: environment and terrain prompts
-  - CHARACTER_DESIGN: character creation prompts
-  - LEVEL_DESIGN: level layout and pacing prompts
-  - NARRATIVE: story and dialogue prompts
-  - BALANCING: stat distribution and tuning prompts
-  - ASSET_DESCRIPTION: visual/audio asset prompts
-  - MECHANICS: core gameplay mechanic prompts
-  - TESTING: QA and validation prompts
-
-Optimization Flow:
-  1. Create template with variable placeholders
-  2. Fill template, dispatch to LLM, record outcome
-  3. Accumulate sessions with quality scores and feedback
-  4. Analyze session history for improvement patterns
-  5. Apply matching optimization rules to template text
-  6. Export optimized template for production use
-"""
+SparkLabs Agent - Prompt Optimization Engine"""
 
 from __future__ import annotations
 
