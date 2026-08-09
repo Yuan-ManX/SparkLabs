@@ -1,36 +1,5 @@
 """
-SparkLabs Agent - Context Reference Resolver
-
-Resolves structured references embedded in agent messages to actual
-game project content. Enables the agent to reference game assets,
-scenes, scripts, and entities using a concise `@domain:target` syntax
-— essential for precise natural-language game editing commands.
-
-Reference Syntax:
-  @asset:hero.png          → resolves to asset metadata + path
-  @asset:sounds/jump.wav   → subfolder asset reference
-  @scene:Level1            → resolves to scene definition object
-  @scene:Main Menu         → scene names with spaces supported
-  @script:player.gd        → resolves to script content
-  @script:enemies/boss.ai  → subfolder script reference
-  @entity:Player           → resolves to game entity/object
-  @entity:Enemies/Goblin   → entity group sub-type reference
-  @config:resolution       → resolves to engine config value
-
-Reference Resolution Pipeline:
-  1. Parse → extract @domain:target tokens from message
-  2. Validate → check domain exists and target is accessible
-  3. Resolve → fetch actual content/metadata from the project
-  4. Inject → append resolved context to the prompt (token-budgeted)
-  5. Cache → store resolved refs to avoid re-resolution per message
-
-Usage:
-    resolver = ContextReferenceResolver()
-    resolver.register_resolver("asset", asset_pipeline.get_asset)
-    resolver.register_resolver("scene", scene_manager.get_scene_by_name)
-    result = resolver.resolve_message("Modify @asset:hero.png scale @entity:Player speed")
-    print(result.expanded_message)  # with resolved metadata injected
-"""
+SparkLabs Agent - Context Reference Resolver"""
 
 from __future__ import annotations
 

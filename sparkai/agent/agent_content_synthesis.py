@@ -1,46 +1,5 @@
 """
-SparkLabs Agent - Content Synthesis Engine
-
-A unified content synthesis system that consolidates all game content
-generation pipelines into a single cohesive framework. The engine
-coordinates level design, character creation, dialogue authoring, music
-composition, sound effects, textures, UI elements, story quests, and
-advanced visual effects (animations, particles, shaders, cutscenes) with
-quality control, style consistency enforcement, and batch generation.
-
-Architecture:
-  ContentSynthesisEngine (Singleton)
-    |-- RequestRouter (dispatch by ContentType and SynthesisStrategy)
-    |-- StyleRegistry (style consistency profiles and references)
-    |-- ConsistencyValidator (cross-content style coherence checks)
-    |-- QualityRanker (multi-dimension quality scoring and ranking)
-    |-- ContentCache (deduplicated result storage for reuse)
-    |-- HistoryLog (per-type synthesis audit trail)
-
-Core Capabilities:
-  - synthesize: Generate a single content item under constraints
-  - synthesize_batch: Generate multiple items with shared context
-  - create_style_profile: Build a reusable style consistency profile
-  - apply_style: Apply a style profile to existing content
-  - validate_consistency: Validate style coherence across a batch
-  - rank_quality: Rank results by multi-dimension quality scoring
-  - get_synthesis_history: Per-type audit trail retrieval
-  - get_style_profiles: Access all registered style profiles
-  - get_status: Real-time engine status snapshot
-
-Usage:
-    engine = get_content_synthesis_engine()
-    request = SynthesisRequest(
-        content_type=ContentType.CHARACTER,
-        strategy=SynthesisStrategy.HYBRID,
-        quality_tier=QualityTier.REFINED,
-        prompt="Design a rogue alchemist NPC",
-        constraints={"faction": "underground", "power_level": 7},
-    )
-    result = engine.synthesize(request)
-    batch = engine.synthesize_batch([request, request2, request3])
-    style = engine.create_style_profile("noir", references=[result])
-"""
+SparkLabs Agent - Content Synthesis Engine"""
 
 from __future__ import annotations
 

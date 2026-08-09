@@ -1,55 +1,5 @@
 """
-SparkLabs Agent - Counterfactual Simulator
-
-Counterfactual reasoning engine that lets agents evaluate what-if scenarios
-for game design decisions before committing to them. The simulator applies
-proposed changes to a snapshot of game state, runs heuristic simulation
-steps, scores outcomes across multiple metrics, detects side effects, and
-produces actionable recommendations.
-
-Architecture:
-  CounterfactualSimulatorEngine (Singleton)
-    |-- Scenario Builder (define what-if scenarios over state snapshots)
-    |-- Change Applier (apply parameter, entity, rule, and event changes)
-    |-- Heuristic Simulator (propagate effects across N simulation steps)
-    |-- Metric Scorer (score engagement, balance, coherence, economy, performance)
-    |-- Side Effect Detector (flag unexpected interactions between changes)
-    |-- Comparison Reporter (rank multiple scenarios by metric outcomes)
-
-Core Capabilities:
-  - create_scenario: Define a counterfactual scenario over a base state snapshot
-  - add_change: Attach a proposed change to an existing scenario
-  - run_scenario: Execute heuristic simulation and produce a scored result
-  - compare_scenarios: Rank multiple scenarios across selected metrics
-  - evaluate_impact: Score a single metric for a scenario
-  - recommend_action: Decide whether to apply, revise, or reject changes
-  - rollback_scenario: Discard results and restore draft status
-  - get_scenario: Retrieve a scenario by id
-  - list_scenarios: List scenarios with optional status filter
-  - get_stats: Engine-wide operational statistics
-
-Usage:
-    engine = get_counterfactual_simulator()
-    scenario = engine.create_scenario(
-        name="Reduce boss health",
-        description="Test lowering boss HP by 30 percent",
-        base_state_snapshot={"parameters": {"boss_hp": 1000, "player_dps": 50}},
-    )
-    engine.add_change(
-        scenario_id=scenario.scenario_id,
-        change_type=ChangeType.PARAMETER_MODIFICATION,
-        target_entity="boss",
-        property_path="parameters.boss_hp",
-        original_value=1000,
-        counterfactual_value=700,
-        description="Lower boss HP by 30 percent",
-    )
-    result = engine.run_scenario(scenario.scenario_id, simulation_steps=20)
-    report = engine.compare_scenarios(
-        [scenario.scenario_id],
-        metrics=[ComparisonMetric.DIFFICULTY_BALANCE],
-    )
-"""
+SparkLabs Agent - Counterfactual Simulator"""
 
 from __future__ import annotations
 

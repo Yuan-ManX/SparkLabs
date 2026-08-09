@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Creative Flow Orchestrator
-
-End-to-end creative pipeline manager for the AI-native game engine.
-Connects game vision, design decisions, content generation, and game
-assembly into a seamless creative pipeline with structured stage tracking
-and artifact management.
-
-Architecture:
-  CreativeFlowOrchestrator (singleton)
-    |-- CreativeFlow (pipeline definition with stage progression)
-    |-- FlowArtifact (versioned content artifacts per stage)
-    |-- FlowStage enum (IDEATION → DESIGN → PROTOTYPE → PRODUCTION → POLISH → DEPLOY)
-    |-- FlowState enum (PENDING, ACTIVE, COMPLETED, BLOCKED, FAILED)
-
-Flow Stages:
-  IDEATION - generate and refine the core game concept
-  DESIGN - create detailed game design specifications
-  PROTOTYPE - build a playable proof-of-concept
-  PRODUCTION - implement the full game content
-  POLISH - refine, balance, and optimize
-  DEPLOY - package and prepare for distribution
-"""
+SparkLabs Agent - Creative Flow Orchestrator"""
 
 from __future__ import annotations
 

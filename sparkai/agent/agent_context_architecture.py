@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Context Architecture System
-
-A layered prompt and context management system that intelligently organizes
-agent context into stable, dynamic, and volatile tiers — enabling efficient
-context utilization, cache-friendly prompt assembly, and graceful handling
-of long-running agent sessions through progressive compression strategies.
-
-Architecture:
-  AgentContextArchitecture (Singleton)
-    |-- StableContext (immutable system identity and core directives)
-    |-- DynamicContext (session-specific project and environment data)
-    |-- VolatileContext (transient memory snapshots and temporal data)
-    |-- ContextAssembler (intelligent prompt composition engine)
-    |-- ContextCompressor (progressive compression with head/tail protection)
-    |-- SessionManager (cross-session state with search capability)
-
-Three-Tier Context Model:
-  STABLE  — system identity, tool behavior guides, skill indices (never changes)
-  DYNAMIC — project context, environment info, user preferences (session-variable)
-  VOLATILE — memory snapshots, time data, conversation state (per-turn variable)
-
-Compression Strategy:
-  1. Tool Output Pruning (cheap, no LLM)
-  2. Head/Tail Protection (preserve first 3 + last 20 messages)
-  3. Structured Middle Summarization (LLM-powered)
-  4. Session Splitting (new session with summary as first message)
-
-Usage:
-    arch = get_agent_context_architecture()
-    arch.set_stable_context({"identity": "...", "tools": "..."})
-    arch.set_dynamic_context({"project": {...}})
-    arch.set_volatile_context({"memory": "...", "time": "..."})
-    prompt = arch.assemble_prompt(user_message)
-    compressed = arch.compress_if_needed(token_limit=8000)
-"""
+SparkLabs Agent - Context Architecture System"""
 
 from __future__ import annotations
 

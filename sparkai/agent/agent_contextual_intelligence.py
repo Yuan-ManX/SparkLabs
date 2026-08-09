@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Contextual Intelligence Engine
-
-Contextual intelligence for scene understanding and situation awareness.
-Analyzes raw scene data, classifies it into a typed game context, assesses
-the situation (threat and opportunity levels), and predicts the likely
-next context so downstream agents can plan proactively.
-
-Architecture:
-  ContextualIntelligenceEngine (Singleton)
-    |-- ContextType (typed category of a scene)
-    |-- ContextFeature (a single named signal extracted from a scene)
-    |-- SceneContext (typed, feature-bundled representation of a scene)
-    |-- SituationAssessment (actionable read of a SceneContext)
-    |-- ContextualIntelligenceSnapshot (point-in-time state capture)
-
-The engine supports pluggable per-type handlers so callers can override
-classification or assessment behavior for specific context types.
-"""
+SparkLabs Agent - Contextual Intelligence Engine"""
 
 from __future__ import annotations
 

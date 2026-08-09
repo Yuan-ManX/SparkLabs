@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Context Assembler
-
-Builds rich, structured context payloads for LLM calls by
-aggregating game state, agent history, tool availability, and
-project metadata into coherent context windows. Enables agents
-to make informed decisions with full situational awareness.
-
-Architecture:
-  ContextAssembler
-    |-- GameStateSnapshot (serialize current game world state)
-    |-- AgentHistoryCollector (gather recent agent interactions)
-    |-- ToolCapabilityIndex (list available tools and their specs)
-    |-- ProjectMetadataLayer (game name, genre, tech stack)
-    |-- ContextCompressor (trim context to fit token budgets)
-
-Context Sources (assembled into unified context):
-  - GAME_STATE: current entities, scenes, variables
-  - AGENT_HISTORY: recent agent actions and outcomes
-  - TOOL_CATALOG: what tools can this agent invoke
-  - PROJECT_META: project name, genre, platform, resolution
-  - ENGINE_STATUS: FPS, memory, active systems
-  - USER_PREFERENCES: user-configured defaults and style guides
-"""
+SparkLabs Agent - Context Assembler"""
 
 from __future__ import annotations
 

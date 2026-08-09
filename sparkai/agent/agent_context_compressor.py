@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Context Compressor
-
-Smart context window management that summarizes conversation history,
-prioritizes relevant information, compresses tool outputs, and maintains
-coherent agent state within token limits.
-
-Architecture:
-  AgentContextCompressor (singleton)
-    |-- ContentChunk registry (all tracked content pieces)
-    |-- CompressionPolicy engine (strategy-driven compression rules)
-    |-- TokenBudget monitor (real-time token usage tracking)
-    |-- CompressionResult ledger (historical compression outcomes)
-
-Compression Strategies:
-  - SUMMARIZE: condense content into concise summaries via abstractive compression
-  - TRUNCATE: keep the first N tokens, discarding the remainder
-  - EXTRACT_KEY: isolate and retain only high-priority excerpts
-  - PRUNE_OLD: remove chunks older than a configured time threshold
-  - PRIORITY_FILTER: keep critical/high-priority chunks, drop lower tiers
-  - HYBRID: combine multiple strategies adaptively based on content profile
-"""
+SparkLabs Agent - Context Compressor"""
 
 from __future__ import annotations
 

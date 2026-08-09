@@ -1,35 +1,5 @@
 """
-SparkLabs Agent - Creative Director
-
-An AI-driven game design orchestrator that generates and manages game
-content ideas, level designs, character concepts, and gameplay mechanics.
-Acts as a creative assistant that helps game designers brainstorm and
-prototype across all design disciplines.
-
-Core capabilities:
-  - Design project management with genre and platform targeting
-  - Idea generation with categorization by design discipline
-  - Iterative idea refinement with version tracking
-  - Creative prompt generation for brainstorming sessions
-  - Feedback collection and aggregation per idea
-  - Design element template library for reusable patterns
-  - Mechanic combination exploration
-  - Design document export for structured output
-
-Architecture:
-  AgentCreativeDirector (Singleton)
-    |-- DesignIdea (dataclass)
-    |-- DesignProject (dataclass)
-    |-- DesignElementTemplate (dataclass)
-    |-- DesignSession (dataclass)
-    |-- DesignFeedback (dataclass)
-    |-- DesignInspiration (dataclass)
-    |-- create_project()
-    |-- create_idea()
-    |-- iterate_idea()
-    |-- generate_prompts()
-    |-- export_design_doc()
-"""
+SparkLabs Agent - Creative Director"""
 
 from __future__ import annotations
 

@@ -1,26 +1,5 @@
 """
-SparkAI Agent - Context Compression Engine
-
-Pluggable context compression system that reduces token usage
-by summarizing older conversation turns while preserving
-recent context. The compression strategy is swappable,
-allowing different approaches for different use cases.
-
-Architecture:
-  ContextCompressionEngine
-    |-- CompressionStrategy (pluggable interface)
-    |-- DefaultCompressor (head-tail preservation + middle summary)
-    |-- RelevanceCompressor (importance-scored selection)
-    |-- IterationBudget (token-aware iteration control)
-
-Compression Flow:
-  1. Check if compression is needed (token threshold)
-  2. Select compression strategy
-  3. Identify head (system prompt) and tail (recent turns)
-  4. Compress middle turns into structured summary
-  5. Inject continuation framing
-  6. Return compressed context
-"""
+SparkAI Agent - Context Compression Engine"""
 
 from __future__ import annotations
 

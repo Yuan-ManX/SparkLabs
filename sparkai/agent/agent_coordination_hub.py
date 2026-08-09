@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Coordination Hub
-
-The AgentCoordinationHub is the unifying cognitive layer that connects
-all AI agent modules into a single coherent intelligence. It sits above
-the individual modules (BridgeOrchestrator, AgentEngineFusionLoop,
-CreativeAutonomyDirector) and coordinates their inputs and outputs
-through the AgentKernel.
-
-Architecture:
-  Player Telemetry  -->  BridgeOrchestrator  -----\
-  Engine State      -->  AgentEngineFusionLoop  ---+--> CoordinationHub --> AgentKernel
-  Gameplay Patterns -->  CreativeAutonomyDirector -/         |
-                                                                |
-  Unified Decisions <-- AgentKernel <--------------------------/
-
-The hub runs a coordination cycle:
-  1. COLLECT  - Gather insights from all three modules
-  2. SYNTHESIZE - Merge insights into a unified cognitive context
-  3. PRIORITIZE - Rank insights by urgency and impact
-  4. DISPATCH - Send prioritized insights to AgentKernel
-  5. EXECUTE  - Kernel makes unified decision and executes
-  6. FEEDBACK - Results fed back to source modules
-
-This eliminates the problem of three independent AI modules making
-contradictory decisions. The hub ensures all decisions are coherent
-and mutually reinforcing.
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Coordination Hub"""
 
 from __future__ import annotations
 

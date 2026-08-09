@@ -1,18 +1,5 @@
 """
-Context Engine - Intelligent context window management for lengthy agent sessions.
-
-Architecture:
-    ContextEngine/
-    |-- ContextStrategy (management strategy enumeration)
-    |-- ContextWindow (bounded message buffer dataclass)
-    |-- MessageSegment (token-aware message slice dataclass)
-    |-- ContextSummary (compressed context snapshot dataclass)
-    |-- ContextEngine (global context orchestration)
-
-Manages the context window passed to LLMs during game development sessions.
-Supports message pruning, summarization, importance scoring, and token counting
-to keep agent conversations within model limits while preserving relevant context.
-"""
+Context Engine - Intelligent context window management for lengthy agent sessions."""
 
 from __future__ import annotations
 

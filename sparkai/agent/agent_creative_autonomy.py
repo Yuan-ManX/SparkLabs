@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Creative Autonomy Layer
-
-The proactive creative intelligence that generates autonomous goals during
-live gameplay. Unlike the BridgeOrchestrator (reactive, per-frame) and
-the AgentEngineFusionLoop (engine optimization), this module focuses on
-long-term gameplay experience through creative content decisions.
-
-The Creative Autonomy Layer:
-  1. Monitors long-term gameplay patterns across minutes of play
-  2. Detects creative opportunities (stagnation, flat difficulty, unexplored content)
-  3. Generates proactive creative goals (introduce mechanic, create narrative event,
-     rebalance difficulty curve, reveal hidden area)
-  4. Plans multi-step intervention sequences that unfold over time
-  5. Predicts intervention outcomes using the causality graph
-  6. Learns which creative interventions improve player experience
-
-Architecture:
-  CreativeAutonomyDirector (Singleton)
-    |-- GameplayPatternMonitor  -> tracks engagement/challenge/variety timelines
-    |-- CreativeGoalGenerator   -> synthesizes creative goals from patterns
-    |-- InterventionPlanner     -> plans multi-step intervention sequences
-    |-- OutcomePredictor        -> forecasts intervention impact
-    |-- CreativeMemory          -> stores effective creative patterns
-
-Creative Goal Types:
-  INTRODUCE_MECHANIC  - Teach the player a new gameplay mechanic
-  NARRATIVE_EVENT     - Trigger a story beat or world event
-  DIFFICULTY_CURVE    - Reshape the difficulty curve over time
-  REVEAL_CONTENT      - Unveil hidden or unexplored content
-  SOCIAL_DYNAMIC      - Introduce NPC interaction or faction event
-  ENVIRONMENTAL_SHIFT - Transform the environment dynamically
-  PROGRESSION_GATE    - Create a meaningful progression checkpoint
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Creative Autonomy Layer"""
 
 from __future__ import annotations
 

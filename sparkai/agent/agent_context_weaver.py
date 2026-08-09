@@ -1,25 +1,5 @@
 """
-ContextWeaver - Project-level context file manager for AI interactions.
-
-Manages context documents, file references, and project conventions that
-shape how the AI agent understands and responds to developer requests within
-the SparkLabs game editor. Every context document contributes a layer of
-guidance that is woven into agent prompts before they reach the LLM.
-
-Architecture:
-    ContextWeaver (singleton)
-        |-- ContextDocument (named content block with type/scope/format)
-        |-- ContextBinding (maps documents to projects/scenes/features)
-        |-- WeaveResult (output of a context weaving operation)
-        |-- Enum catalog (ContextType, ContextScope, ContextFormat, WeaveStrategy)
-
-Weaving Flow:
-    1. Receive a user query with optional project/scene/feature targeting
-    2. Collect GLOBAL documents plus bindings matching the target scope
-    3. Filter to only active documents, sorted by priority descending
-    4. Apply the selected WeaveStrategy to combine document content
-    5. Track the operation in weave_history for diagnostics
-"""
+ContextWeaver - Project-level context file manager for AI interactions."""
 
 from __future__ import annotations
 

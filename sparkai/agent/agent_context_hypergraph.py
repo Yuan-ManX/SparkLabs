@@ -1,36 +1,5 @@
 """
-SparkLabs Agent - Context Hypergraph Engine
-
-Hypergraph-based context representation for multi-modal agent reasoning.
-Extends traditional graph representations with hyperedges that connect
-multiple nodes simultaneously, enabling richer context modeling for
-game world understanding and agent decision-making.
-
-Architecture:
-  ContextHypergraphEngine (Singleton)
-    |-- HyperNode (context entity with multi-dimensional attributes)
-    |-- HyperEdge (n-ary relationship connecting multiple nodes)
-    |-- ContextLayer (semantic grouping of related nodes and edges)
-    |-- ContextQuery (structured query against the hypergraph)
-    |-- ContextInference (reasoning over the hypergraph structure)
-
-Context Layers:
-  - ENTITY: game objects, characters, items
-  - TEMPORAL: time-based relationships and events
-  - SPATIAL: spatial relationships and positioning
-  - CAUSAL: cause-effect relationships
-  - SEMANTIC: abstract concepts and meanings
-  - SOCIAL: relationship networks and social structures
-
-Usage:
-    ch = ContextHypergraphEngine.get_instance()
-    ch.initialize()
-
-    ch.add_node("player_1", ContextLayer.ENTITY, {"type": "player", "position": [0, 0, 0]})
-    ch.add_hyperedge(["player_1", "npc_1", "quest_1"], ContextLayer.CAUSAL, "gives_quest")
-    result = ch.query("player_1", layer=ContextLayer.SOCIAL, depth=3)
-    ch.shutdown()
-"""
+SparkLabs Agent - Context Hypergraph Engine"""
 
 from __future__ import annotations
 

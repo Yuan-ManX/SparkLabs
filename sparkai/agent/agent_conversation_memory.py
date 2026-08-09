@@ -1,23 +1,5 @@
 """
-SparkLabs Agent - Conversation Memory Engine
-
-Persistent multi-turn dialogue management with context threading for AI
-agents within the game engine. Tracks conversation threads across sessions,
-supports summarization strategies, semantic search over historical turns,
-thread merging, archival, and context assembly for downstream reasoning.
-
-Architecture:
-  ConversationMemoryEngine (Singleton)
-    |-- ConversationTurn (individual dialogue turn with role and metadata)
-    |-- ConversationThread (dialogue session with ordered turns)
-    |-- ThreadContext (assembled context window for a thread)
-    |-- MemoryIndex (keyword and thread-level lookup structures)
-
-Context Strategies:
-  SLIDING_WINDOW - most recent N turns
-  SUMMARY - compressed natural language summary of the thread
-  RELEVANCE - turns ranked by keyword overlap with the current query
-"""
+SparkLabs Agent - Conversation Memory Engine"""
 
 from __future__ import annotations
 
