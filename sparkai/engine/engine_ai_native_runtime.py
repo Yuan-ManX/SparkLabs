@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - AI-Native Game Runtime Core
-
-The core game runtime that ties all engine subsystems together for AI-native
-game execution. This module provides a unified runtime that agents can control
-programmatically, enabling autonomous game creation, execution, analysis, and
-optimization without human intervention.
-
-The runtime implements a complete game loop with:
-- Scene management and lifecycle
-- Entity-Component-System (ECS) architecture
-- Physics and collision detection
-- Rendering pipeline management
-- Audio system control
-- Input handling and mapping
-- Resource streaming and management
-- Performance monitoring and optimization
-- State serialization and persistence
-
-Architecture:
-  AINativeGameRuntime (Singleton)
-    |-- SceneManager (scene loading, unloading, transitions)
-    |-- ECSWorld (entity creation, component management, system scheduling)
-    |-- PhysicsEngine (collision detection, rigid body dynamics)
-    |-- RenderPipeline (rendering passes, post-processing, GPU management)
-    |-- AudioEngine (spatial audio, synthesis, layering)
-    |-- InputSystem (input mapping, gesture recognition, action binding)
-    |-- ResourceManager (asset loading, streaming, caching)
-    |-- PerformanceMonitor (profiling, metrics, optimization)
-    |-- StateManager (serialization, snapshots, rollback)
-"""
+SparkLabs Engine - AI-Native Game Runtime Core"""
 
 from __future__ import annotations
 

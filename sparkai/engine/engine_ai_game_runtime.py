@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - AI Game Runtime
-
-An AI-native game runtime system that embeds agent intelligence directly into
-the game loop, allowing AI agents to observe, modify, and optimize game state
-in real-time during gameplay. Agents register hooks at specific lifecycle
-points and respond with actions that are applied back to the game state.
-
-Architecture:
-  AIGameRuntime (singleton)
-    |-- RuntimeAgent (registered AI agent with hook subscriptions)
-    |-- RuntimeHook (bound hook at a specific lifecycle point)
-    |-- AgentObservation (time-stamped game state snapshot for an agent)
-    |-- AgentAction (action proposed by an agent to modify game state)
-    |-- RuntimeHook (lifecycle interception points)
-    |-- HookPriority (execution ordering within a hook phase)
-
-Lifecycle:
-  Game Loop Tick
-    -> PRE_UPDATE hooks execute
-    -> Game systems update
-    -> POST_UPDATE hooks execute
-    -> PRE_PHYSICS hooks execute
-    -> Physics simulation
-    -> POST_PHYSICS hooks execute
-    -> PRE_RENDER hooks execute
-    -> Rendering
-    -> POST_RENDER hooks execute
-
-Agents submit actions after observing state; actions are batched and applied
-in priority order. Events and state changes trigger ON_EVENT and ON_STATE_CHANGE
-hooks respectively.
-"""
+SparkLabs Engine - AI Game Runtime"""
 
 from __future__ import annotations
 

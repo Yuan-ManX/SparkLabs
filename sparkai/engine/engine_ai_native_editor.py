@@ -1,57 +1,5 @@
 """
-SparkLabs Engine - AI-Native Game Editor Engine
-
-The editor-side engine that powers the AI-native game editor, providing
-real-time AI-assisted game editing, procedural content generation, smart
-asset management, and intelligent scene composition. This engine bridges
-the editor UI with the underlying engine subsystems, enabling AI agents
-to assist in every aspect of game creation.
-
-Architecture:
-  EngineAINativeEditor (Singleton)
-    |-- SceneEditor — AI-assisted scene composition and layout
-    |-- AssetManager — Smart asset import, generation, and optimization
-    |-- CodeEditor — AI-assisted code generation and refactoring
-    |-- LevelDesigner — Procedural level generation and editing
-    |-- AnimationEditor — Visual animation creation and blending
-    |-- PhysicsEditor — Physics body setup and simulation
-    |-- UILayoutEditor — UI element creation and layout design
-    |-- RealTimePreview — Live game preview with hot reload
-
-Integrated Engine Subsystems:
-  - EngineVisualScripting (visual scripting runtime)
-  - EngineCrossPlatformBuilder (platform build and export)
-  - EngineProceduralAnimation (procedural animation system)
-  - EngineTileMap (tile map and auto-tiling)
-  - EnginePrefabSystem (prefab library and instantiation)
-  - EngineInputActionSystem (input action mapping)
-  - EngineShaderMaterial (shader and material management)
-  - EngineResourceStreaming (resource loading and streaming)
-  - EngineStateReconciliation (state synchronization)
-  - EngineEventBus (event communication)
-  - EngineSceneTree (scene graph hierarchy)
-  - EngineComponentSystem (component-based architecture)
-  - EngineServerRegistry (engine subsystem registry)
-
-Usage:
-    editor = EngineAINativeEditor.get_instance()
-    editor.initialize()
-
-    # AI-assisted scene creation
-    scene = editor.scene.create_scene_from_description(
-        "A dark forest with a castle in the distance"
-    )
-
-    # Smart asset management
-    asset = editor.assets.import_asset("character.png", auto_process=True)
-
-    # AI code generation
-    script = editor.code.generate_script(
-        "Create a player controller with double jump"
-    )
-
-    editor.shutdown()
-"""
+SparkLabs Engine - AI-Native Game Editor Engine"""
 
 from __future__ import annotations
 

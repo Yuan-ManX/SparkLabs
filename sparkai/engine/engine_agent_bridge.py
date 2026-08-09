@@ -1,28 +1,5 @@
 """
-SparkLabs Bridge - Agent-Engine Deep Integration Bridge
-
-The bidirectional communication bridge between the AI Agent layer and the
-Game Engine layer. This module enables real-time, synchronized interaction
-between the cognitive agent brain and the game runtime, allowing agents to
-perceive, reason about, and control game worlds programmatically.
-
-The bridge implements:
-- Command dispatch from agents to the engine
-- State query from agents to the engine
-- Event streaming from the engine to agents
-- Real-time perception data streaming
-- Synchronized action execution with feedback
-- Performance monitoring and optimization bridging
-
-Architecture:
-  AgentEngineBridge (Singleton)
-    |-- CommandChannel (agent -> engine commands)
-    |-- QueryChannel (agent -> engine state queries)
-    |-- EventChannel (engine -> agent event streaming)
-    |-- PerceptionChannel (engine -> agent sensory data)
-    |-- ActionChannel (agent -> engine action execution)
-    |-- SyncManager (synchronization between agent and engine)
-"""
+SparkLabs Bridge - Agent-Engine Deep Integration Bridge"""
 
 from __future__ import annotations
 

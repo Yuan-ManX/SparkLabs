@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - AI Capability Surface
-
-Exposes engine subsystem capabilities to AI agents in a uniform,
-introspectable way. Each capability declares its target system,
-operation name, parameter schema, return description, and optional
-runtime handler. Agents can query the surface to discover what the
-engine can do, invoke capabilities by name, and subscribe to
-capability change events.
-
-The surface is the canonical entry point for any AI-driven engine
-mutation: rather than ad-hoc per-subsystem hooks, agents consult
-the capability surface to learn the available operations and dispatch
-through a single unified channel.
-
-Architecture:
-  AICapabilitySurface (Singleton)
-    |-- CapabilityDescriptor (declares one engine operation)
-    |-- CapabilityInvocation (one execution of a capability)
-    |-- CapabilitySubscription (observer for change events)
-    |-- CapabilitySnapshot (point-in-time state capture)
-
-Capabilities are registered either explicitly (via register_capability)
-or in batches via register_system. The surface validates invocations
-against the declared parameter schema and emits structured events
-before and after each invocation.
-"""
+SparkLabs Engine - AI Capability Surface"""
 
 from __future__ import annotations
 

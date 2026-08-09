@@ -1,21 +1,5 @@
 """
-SparkLabs - AI-Native Engine Conductor
-
-A unified conductor that bridges the cognitive kernel with the engine's
-physics, rendering, and scene subsystems. The conductor translates brain
-directives and kernel decisions into concrete engine adjustments, closing
-the loop between cognition and runtime.
-
-Core responsibilities:
-  1. Physics Conductor - predict, tune, and resolve physics scenarios using
-     the kernel's reasoning engine and the brain's player model.
-  2. Render Conductor - adaptively adjust rendering quality, effects, and
-     post-processing based on player state, pacing, and performance headroom.
-  3. Scene Conductor - dynamically compose, modify, and orchestrate scenes
-     based on narrative beats, emergence signals, and player progression.
-  4. Conductor Cycle - a single tick that runs observe → analyze → adjust →
-     verify, producing a ConductorDecision with applied adjustments.
-"""
+SparkLabs - AI-Native Engine Conductor"""
 
 from __future__ import annotations
 

@@ -1,10 +1,5 @@
 """
-SparkLabs ECS - Entity
-
-Entities are lightweight containers with unique IDs.
-They hold references to components but contain no logic themselves.
-AI agents compose entities by adding/removing components dynamically.
-"""
+SparkLabs ECS - Entity"""
 
 from __future__ import annotations
 

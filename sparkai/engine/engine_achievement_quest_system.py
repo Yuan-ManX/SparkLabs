@@ -1,10 +1,5 @@
 """
-SparkLabs Engine - Achievement & Quest System
-
-Provides achievement tracking, quest chains, daily/weekly quests, quest rewards,
-progress tracking, and achievement categories. Designed as a self-contained
-singleton system with seed data for immediate integration testing.
-"""
+SparkLabs Engine - Achievement & Quest System"""
 
 from __future__ import annotations
 

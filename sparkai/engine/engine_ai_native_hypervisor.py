@@ -1,42 +1,5 @@
 """
-SparkLabs Engine - AI-Native Engine Hypervisor
-
-The definitive AI-native game engine hypervisor that deeply integrates all engine
-subsystems into a single unified control plane. This module serves as the highest
-orchestration layer, providing a comprehensive hypervisor that agents can command
-to assemble, execute, monitor, and optimize entire game experiences.
-
-This hypervisor bridges the UnifiedGameEngine, AINativeGameRuntime, and all engine
-subsystems, providing:
-- Complete end-to-end game assembly workflow
-- Configurable game loop with phased execution
-- Scene lifecycle management (create, load, unload, transition)
-- Entity-Component system with full CRUD operations
-- Physics simulation with collision detection
-- Rendering pipeline management with quality tiers
-- Audio system with spatial audio
-- Input system with action mapping
-- Resource management with streaming
-- Performance monitoring with real-time metrics
-- State serialization for save/load
-- Agent bridge for bidirectional communication
-- World generation (procedural terrain, biomes, structures)
-- Weather system with day/night cycle
-- Particle system management
-- Animation system
-- Camera control system
-- Pathfinding and navigation
-- Self-diagnostic and health checking
-
-Architecture:
-  AINativeEngineHypervisor (Singleton)
-    |-- UnifiedGameEngine (subsystem integration)
-    |-- AINativeGameRuntime (game loop orchestration)
-    |-- All Engine Subsystems (lazy-loaded via try/except)
-    |-- Agent Bridge (bidirectional command/event channel)
-    |-- Assembly Pipeline (end-to-end game creation)
-    |-- Health Monitor (self-diagnostic routines)
-"""
+SparkLabs Engine - AI-Native Engine Hypervisor"""
 
 from __future__ import annotations
 

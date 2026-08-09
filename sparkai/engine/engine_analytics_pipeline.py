@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Analytics Pipeline
-
-An AI-driven analytics pipeline for the AI-native game engine that
-collects, processes, analyzes, and visualizes game telemetry data to
-provide actionable insights. The pipeline supports real-time metric
-tracking, statistical anomaly detection, trend forecasting, player
-and session summaries, and a live dashboard of key performance indicators.
-
-Architecture:
-  AnalyticsPipelineEngine (singleton)
-    |-- TelemetryEvent (atomic unit of telemetry data)
-    |-- AnalyticsQuery (parameterized metric aggregation request)
-    |-- AnalyticsReport (generated report with insights and recommendations)
-    |-- PerformanceAlert (threshold-based alert with severity)
-    |-- MetricType (20 gameplay and performance metric categories)
-    |-- AggregationType (8 aggregation strategies for metric queries)
-    |-- SeverityLevel (4 alert severity tiers)
-
-Core Capabilities:
-  - track_event: Record a single telemetry event with context
-  - track_batch: Ingest a batch of events in a single atomic operation
-  - query_metrics: Run parameterized aggregation queries across time ranges
-  - generate_report: Auto-generate analytic reports with insights and recommendations
-  - set_alert / check_alerts: Configure and evaluate threshold-based alerts
-  - get_realtime_dashboard: Snapshot of all current key metrics
-  - get_player_summary / get_session_summary: Per-player and per-session breakdowns
-  - detect_anomalies: Statistical outlier detection using z-score and IQR methods
-  - predict_trends: Simple linear regression forecasting from historical data
-"""
+SparkLabs Engine - Analytics Pipeline"""
 
 from __future__ import annotations
 

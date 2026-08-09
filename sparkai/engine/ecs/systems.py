@@ -1,18 +1,5 @@
 """
-SparkLabs ECS - Built-in Systems
-
-Core systems that process entities with specific component combinations:
-- TransformSystem: Hierarchical transform propagation
-- PhysicsSystem: Rigid body simulation
-- RenderSystem: Visual rendering pipeline
-- AnimationSystem: Animator state machine
-- AudioSystem: Sound playback management
-- InputSystem: Input event dispatch
-- AISystem: AI brain decision processing
-- TweenSystem: Tween animation interpolation
-- ScriptSystem: Custom script execution
-- CollisionSystem: Collision detection
-"""
+SparkLabs ECS - Built-in Systems"""
 
 from __future__ import annotations
 

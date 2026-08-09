@@ -1,43 +1,5 @@
 """
-SparkLabs Engine - Accessibility System Engine
-
-A runtime accessibility system for the SparkLabs AI-native game engine.
-It manages per-player accessibility profiles with colorblind modes, subtitle
-configuration, input remapping, text scaling, contrast modes, motion
-reduction, and audio descriptions. The engine is designed to run alongside
-the game loop, allowing settings to be mutated at runtime and validated
-against a set of heuristics that catch common misconfigurations.
-
-Architecture:
-  AccessibilitySystemEngine (thread-safe singleton)
-    |-- AccessibilityProfile     (per-player accessibility configuration)
-    |-- AccessibilityPreset      (reusable bundle of accessibility settings)
-    |-- SubtitleConfig           (subtitle rendering configuration)
-    |-- InputRemap               (single input action remapping record)
-    |-- TextScalingConfig        (per-surface text scaling configuration)
-    |-- AudioDescription         (audio narration configuration)
-    |-- ValidationResult         (output of profile validation)
-    |-- ValidationIssue          (single validation finding)
-    |-- AccessibilityStats       (aggregate engine statistics)
-    |-- AccessibilitySnapshot    (immutable point-in-time state capture)
-    |-- AccessibilityEvent       (audit log entry)
-
-Core Capabilities:
-  - create_profile: Register a new per-player accessibility profile
-  - set_colorblind_mode / set_contrast_mode / set_motion_reduction:
-        Toggle visual accessibility modes on a profile
-  - set_subtitle_config / set_text_scaling / set_audio_description:
-        Fine-tune per-surface accessibility configuration
-  - remap_input / remove_input_remap / list_input_remaps:
-        Manage input action remappings per profile
-  - create_preset / apply_preset: Build and apply reusable setting bundles
-  - validate_profile: Run heuristics that detect conflicting settings
-  - list_events / get_stats / get_status / get_snapshot: Observability
-
-Thread-safety:
-  All public mutators and accessors acquire the engine-wide reentrant lock.
-  Use get_accessibility_system() to obtain the singleton instance.
-"""
+SparkLabs Engine - Accessibility System Engine"""
 
 from __future__ import annotations
 

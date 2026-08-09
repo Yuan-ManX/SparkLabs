@@ -1,21 +1,5 @@
 """
-SparkLabs Engine - Animation Controller
-
-An animation state machine system providing clip playback, blend
-transitions, condition-based state flow, and runtime animation
-instances for skeletal and sprite animations.
-
-Architecture:
-  EngineAnimationController (Singleton)
-    |-- AnimationClip        — frame data with timing and playback mode
-    |-- AnimationState       — named state referencing a clip with blend mode
-    |-- AnimationParameter   — typed runtime parameter for transitions
-    |-- AnimationTransition  — condition-gated transition between states
-    |-- TransitionConditionData — single condition within a transition
-    |-- AnimationInstance    — live playback instance tracking elapsed time
-    |-- StateMachine         — state graph with parameters and transitions
-    |-- AnimationEvent       — frame-anchored event trigger
-"""
+SparkLabs Engine - Animation Controller"""
 
 from __future__ import annotations
 

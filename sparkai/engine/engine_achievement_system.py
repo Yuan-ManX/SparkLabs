@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - Achievement System Engine
-
-An AI-driven achievement system for the AI-native game engine that
-designs achievements, tracks player progress, unlocks rewards, and
-generates achievement-based engagement. Supports category-based
-generation, personalized recommendations, milestone creation, and
-leaderboard compilation.
-
-Architecture:
-  AchievementSystemEngine (singleton)
-    |-- AchievementDefinition (template for an unlockable achievement)
-    |-- PlayerAchievement (per-player progress tracking record)
-    |-- AchievementNotification (unlock event with reward details)
-    |-- AchievementCategory (10 thematic achievement categories)
-    |-- AchievementRarity (6 rarity tiers from common to mythic)
-    |-- AchievementStatus (lifecycle: locked -> in_progress -> unlocked -> claimed)
-
-Core Capabilities:
-  - create_achievement: Define a new achievement with rewards and conditions
-  - update_progress: Increment a player's progress toward a specific achievement
-  - check_unlocks: Evaluate all in-progress achievements for new completions
-  - claim_reward: Collect the reward for an unlocked but unclaimed achievement
-  - get_player_achievements: Retrieve all achievement records for a player
-  - get_player_stats: Aggregate stats and completion metrics for a player
-  - generate_achievements_for_category: AI-driven batch creation per category
-  - recommend_achievements: Suggest achievements the player is close to finishing
-  - generate_milestone_achievements: Create personalized milestone challenges
-  - get_leaderboard: Rank players by achievement points within a category
-  - get_stats: Global engine statistics and health summary
-"""
+SparkLabs Engine - Achievement System Engine"""
 
 from __future__ import annotations
 

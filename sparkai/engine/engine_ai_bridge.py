@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - AI Bridge
-
-A bidirectional communication bridge connecting the Agent intelligence layer
-with the Engine runtime layer. The AI Bridge enables real-time agent decisions
-to influence game state, and game events to trigger agent reasoning.
-
-Architecture:
-  AIBridge
-    |-- AgentCommandChannel (agent-to-engine command dispatch)
-    |-- EngineEventChannel (engine-to-agent event notification)
-    |-- StateSynchronizer (bidirectional state mirroring)
-    |-- DecisionDispatcher (routes agent decisions to engine systems)
-    |-- FeedbackCollector (gathers game metrics for agent analysis)
-
-Capabilities:
-  - Real-time agent command injection into running game scenes
-  - Game event streaming to agent intelligence systems
-  - Bidirectional state synchronization between agent world model and engine
-  - Decision routing from agents to specific engine subsystems
-  - Gameplay metrics collection for agent feedback loops
-"""
+SparkLabs Engine - AI Bridge"""
 
 from __future__ import annotations
 

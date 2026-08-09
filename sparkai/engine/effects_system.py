@@ -1,19 +1,5 @@
 """
-Effects System - Visual post-processing pipeline for layers and game objects.
-
-Architecture:
-    EffectsSystem/
-    |-- EffectType (bloom, blur, vignette, color-grading, etc.)
-    |-- EffectBlend (compositing blend mode enumeration)
-    |-- EffectConfig (effect parameter configuration dataclass)
-    |-- EffectInstance (active effect on a target dataclass)
-    |-- EffectStack (ordered render chain dataclass)
-    |-- EffectsSystem (global effects orchestration)
-
-Manages a configurable post-processing stack that the AI game editor can
-compose and configure. Supports per-layer and per-object effect chains with
-parameter animation, enable/disable toggling, and shader-based rendering.
-"""
+Effects System - Visual post-processing pipeline for layers and game objects."""
 
 from __future__ import annotations
 

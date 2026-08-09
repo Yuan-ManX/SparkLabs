@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Adaptive Content System
-
-A comprehensive adaptive game content engine that dynamically adjusts
-game content based on real-time player behavior analysis, archetype
-classification, performance metrics, and engagement prediction. Provides
-personalized content variant selection with difficulty scaling and
-economy balancing for optimal player experience.
-
-Core Capabilities:
-  - Player archetype classification from behavioral fingerprints
-  - Real-time difficulty adjustment through performance curve analysis
-  - Content variant selection optimized for player skill and preference
-  - Reward curve modulation based on challenge-to-skill ratio
-  - Adaptive encounter generation tailored to individual playstyles
-  - Player engagement forecasting with churn risk detection
-  - In-game economy balancing through dynamic content scaling
-
-Architecture:
-  EngineAdaptiveContent (Singleton)
-    |-- ContentProfile (player behavioral archetype and preferences)
-    |-- AdaptiveDifficulty (dynamic difficulty state and history)
-    |-- ContentVariant (optimized content selection for player)
-    |-- PlayerArchetype (behavioral classification enum)
-    |-- ContentType (game content category enum)
-    |-- DifficultyTier (adaptive difficulty levels)
-"""
+SparkLabs Engine - Adaptive Content System"""
 
 from __future__ import annotations
 

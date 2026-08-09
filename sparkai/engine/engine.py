@@ -1,11 +1,5 @@
 """
-SparkAI Engine - Python Engine Interface
-
-The SparkEngine integrates the ECS World with scene management,
-providing a unified game engine API. AI agents interact with
-the engine through this interface to create worlds, spawn entities,
-and control the simulation loop.
-"""
+SparkAI Engine - Python Engine Interface"""
 
 from __future__ import annotations
 

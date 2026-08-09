@@ -1,10 +1,5 @@
 """
-SparkLabs ECS - Resource Management
-
-Handles loading, caching, and lifecycle of game resources
-such as images, audio, scripts, and data files.
-AI agents can query available resources and load new ones at runtime.
-"""
+SparkLabs ECS - Resource Management"""
 
 from __future__ import annotations
 

@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - AI-Native Game Engine Core
-
-The central nervous system of the SparkLabs AI-native game engine. This module
-bridges all engine subsystems with the agent layer, providing a unified runtime
-that can be programmatically controlled, introspected, and optimized by AI agents.
-
-This engine core implements a bidirectional bridge between game execution and
-agent intelligence, enabling agents to create, modify, run, analyze, and optimize
-games in real-time without human intervention.
-
-Architecture:
-  AINativeEngineCore (Singleton)
-    |-- Runtime Orchestrator (game loop, scene lifecycle, physics, rendering)
-    |-- Agent Bridge (command channel, state query, event stream)
-    |-- Creation Pipeline (procedural generation, asset synthesis, code generation)
-    |-- Analysis Engine (performance profiling, gameplay analysis, quality evaluation)
-    |-- Optimization Engine (adaptive rendering, physics tuning, resource management)
-    |-- Simulation Engine (world simulation, AI behavior, emergent systems)
-"""
+SparkLabs Engine - AI-Native Game Engine Core"""
 
 from __future__ import annotations
 

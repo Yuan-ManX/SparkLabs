@@ -1,43 +1,5 @@
 """
-SparkLabs Engine - Adaptive Physics Director
-
-An AI director specialized in real-time physics parameter tuning.
-Monitors player behavior signals (movement, deaths, jumps, wall-touches)
-and dynamically adjusts physics parameters to keep the player in the
-flow channel - the zone where challenge matches skill.
-
-Original SparkLabs design:
-  1. Flow Channel Model - Player skill is estimated from behavior
-     signals. The director targets a difficulty slightly above the
-     estimated skill, producing the "flow" state described by
-     Csikszentmihalyi: neither anxiety (too hard) nor boredom (too easy).
-  2. Physics Parameter Surface - Exposes tunable parameters with
-     safe bounds: gravity, friction, restitution, wall_slide_speed,
-     jump_strength, move_speed_max, air_control, coyote_time.
-  3. Signal Aggregation - Player behavior signals are aggregated
-     over a sliding window (last N ticks) to smooth noise:
-       - death_rate: deaths per minute
-       - jump_frequency: jumps per minute
-       - wall_touch_rate: wall contacts per minute
-       - avg_speed: average horizontal velocity
-       - stall_ratio: fraction of ticks with near-zero velocity
-  4. PID-style Adjustment - Each parameter has its own controller
-     that computes a correction based on the gap between current
-     skill estimate and target difficulty. Corrections are bounded
-     to prevent oscillation.
-  5. Physics Profiles - Successful parameter sets are persisted as
-     "physics profiles" keyed by genre + flow state. Profiles enable
-     fast convergence on subsequent sessions.
-  6. Wall-Slide Intelligence - The director recognizes when a player
-     is in a wall-slide context (parkour/platformer) and adjusts
-     wall_slide_speed and wall_jump_kickback separately from the
-     main physics surface.
-
-This director complements the CognitiveGameEngine's TUNE_PHYSICS
-action by providing continuous, fine-grained parameter control
-between cognitive ticks. It runs at a higher frequency than the
-cognitive tick (e.g., every 10 ticks) for smooth adaptation.
-"""
+SparkLabs Engine - Adaptive Physics Director"""
 
 from __future__ import annotations
 

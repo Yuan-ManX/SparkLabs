@@ -1,24 +1,5 @@
 """
-SparkLabs - AI-Native Integration Layer
-
-Synchronizes the cognitive architect, AI-native conductor, game brain, and
-runtime bridge with the existing KernelEngineIntegrator. This layer closes
-the feedback loop between high-level reasoning and live engine state:
-
-  Engine tick -> KernelEngineIntegrator perceives state
-              -> AINativeIntegration broadcasts to architect/conductor/brain
-              -> CognitiveArchitect reasons and emits directives
-              -> AINativeConductor adjusts physics/render/scene parameters
-              -> GameBrain translates directives into player-facing decisions
-              -> AIRuntimeBridge captures outcomes for the next build cycle
-
-The integration runs on a single cadence so that cognitive, conductorial, and
-directorial decisions stay coherent. Each participant exposes a uniform
-``observe()`` / ``decide()`` / ``apply()`` surface so the integration layer
-can drive them without knowing their internals.
-
-Original SparkLabs design - unified AI-native synchronization substrate.
-"""
+SparkLabs - AI-Native Integration Layer"""
 
 from __future__ import annotations
 

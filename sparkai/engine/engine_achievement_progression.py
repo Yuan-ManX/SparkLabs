@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Achievement Progression System
-
-A comprehensive achievement and progression system for the SparkLabs
-AI-native game engine. Provides achievement tracking, player progression,
-unlockable content, statistics tracking, and reward management.
-
-Architecture:
-    AchievementProgressionSystem (singleton)
-    |-- Achievement (single achievement definition)
-    |-- AchievementProgress (per-player achievement progress)
-    |-- ProgressionTrack (progression track e.g. level, skill)
-    |-- PlayerProgression (complete player progression data)
-    |-- Reward (reward definition)
-    |-- Statistic (tracked statistic)
-    |-- AchievementSnapshot (complete system snapshot)
-
-Core Capabilities:
-    - register_achievement: Register a new achievement definition
-    - update_progress: Update a player's progress on an achievement
-    - check_unlocks: Evaluate and unlock newly completed achievements
-    - grant_reward: Grant a reward to a player
-    - add_experience: Add experience points to a progression track
-    - track_statistic: Track a player statistic value
-    - get_player_progress: Retrieve complete player progression data
-    - get_achievements: Get all achievements for a player
-    - get_status: Get achievement system status
-    - shutdown: Graceful shutdown of the system
-"""
+SparkLabs Engine - Achievement Progression System"""
 
 from __future__ import annotations
 

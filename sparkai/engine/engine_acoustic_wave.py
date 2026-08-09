@@ -1,54 +1,5 @@
 """
-SparkLabs Engine - Acoustic Wave Propagation System
-
-A physics-grade acoustic simulation for the SparkLabs AI-native game
-engine. It models sound sources, listeners, occluding barriers, and
-reverberant echo zones, then propagates spherical wavefronts through
-the scene to support stealth mechanics, AI hearing, sonar, echolocation,
-and acoustic puzzles.
-
-The system implements the canonical acoustic formulas:
-  - Sound speed in air: c = 343 m/s (at 20 degrees Celsius).
-  - Inverse square law: I = I0 / (4 * pi * r^2).
-  - Geometric spreading attenuation: dL = 20 * log10(r1 / r2).
-  - Doppler shift: f' = f * (c +/- v_listener) / (c +/- v_source).
-  - Barrier transmission loss: L_tx = L_src - transmission_loss_db.
-  - Absorption: A = absorption_coefficient * incident_intensity.
-  - Sabine reverberation: T60 = 0.161 * V / (sum(Si * alpha_i)).
-  - Sound pressure level: SPL = 20 * log10(p / p_ref), p_ref = 20 uPa.
-
-Architecture:
-  _AcousticWaveSystem (Singleton)
-    |-- AcousticSource, AcousticListener, SoundBarrier, EchoZone
-    |-- Wavefront, PropagationPath, DopplerShift, AcousticStats
-    |-- AcousticConfig, AcousticSnapshot, AcousticEvent
-    |-- SourceType, WaveStatus, BarrierMaterial, AcousticEventKind
-
-Core Capabilities:
-  - register_source / remove_source / get_source / list_sources
-  - register_listener / remove_listener / get_listener / list_listeners
-  - register_barrier / remove_barrier / get_barrier / list_barriers
-  - register_echo_zone / remove_echo_zone / get_echo_zone / list_echo_zones
-  - emit_wave / get_wavefront / list_wavefronts
-  - compute_propagation / compute_attenuation / compute_doppler
-  - check_hearing / get_audible_sources / compute_sound_level
-  - check_occlusion / find_reflection_path
-  - ai_predict_detection / ai_optimize_barrier_placement / ai_assess_stealth
-  - get_sound_map / get_visualization_data
-  - reset_sources / list_events / tick
-  - get_stats / get_snapshot / get_status / get_config / set_config
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`_AcousticWaveSystem.get_instance` or the module-level
-:func:`get_acoustic_wave_system` factory.
-
-Usage:
-    aw = get_acoustic_wave_system()
-    ok, msg, source = aw.register_source("src_footstep", (10.0, 5.0, 0.0), 60.0, "footstep")
-    ok, msg, audible = aw.check_hearing("listener_guard_01", "src_footstep")
-    ok, msg, doppler = aw.compute_doppler("src_vehicle", "listener_player")
-"""
+SparkLabs Engine - Acoustic Wave Propagation System"""
 
 from __future__ import annotations
 

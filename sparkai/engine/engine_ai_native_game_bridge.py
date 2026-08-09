@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - AI-Native Game Bridge
-
-The bidirectional bridge that connects live HTML5 games running in the
-browser to the server-side CognitiveGameEngine. This is the capstone
-that makes SparkLabs games truly AI-native: not only are they generated
-by AI, but the AI observes player behavior in real time and adapts the
-running game through directives.
-
-Architecture:
-  AiNativeGameBridge (Singleton)
-    |-- BridgeSession         -> one active game session
-    |-- TelemetryFrame        -> player state snapshot from the client
-    |-- BridgeDirective       -> adaptation instruction sent to the client
-    |-- BridgeMetrics         -> aggregated session metrics
-    |-- CognitiveEngineLink   -> feeds telemetry to CognitiveGameEngine
-    |-- DirectiveComposer     -> translates engine actions to client directives
-
-Flow per frame:
-  1. Client POSTs a TelemetryFrame (player pos, events, metrics)
-  2. Bridge feeds the frame to CognitiveGameEngine.cognitive_tick()
-  3. Engine runs PERCEIVE -> REASON -> PLAN -> ACT -> REFLECT -> LEARN
-  4. Bridge composer translates planned actions to BridgeDirectives
-  5. Client GETs pending directives and applies them to the live game
-  6. Bridge updates session metrics and flow state
-
-The bridge supports multiple concurrent sessions, each with its own
-cognitive engine context. Sessions auto-expire after a configurable
-idle timeout to reclaim memory.
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - AI-Native Game Bridge"""
 
 from __future__ import annotations
 

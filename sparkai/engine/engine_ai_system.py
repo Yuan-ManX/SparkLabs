@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - AI System
-
-Central AI intelligence module for the SparkLabs AI-native game engine.
-Provides navigation mesh generation, pathfinding, behavior tree execution,
-AI perception, finite state machines, and centralized AI agent management.
-
-Architecture:
-  GameAISystem (singleton)
-    |-- NavMeshGenerator      — navigation mesh construction and optimization
-    |-- PathfindingEngine     — A* pathfinding with steering behaviors
-    |-- BehaviorTreeRuntime   — behavior tree execution with blackboard
-    |-- AIPerceptionSystem    — vision, hearing, memory, threat assessment
-    |-- StateMachineAI        — finite state machine with nesting
-    |-- AIAgent               — managed AI entity with lifecycle
-    |-- AIProfile             — reusable AI configuration preset
-    |-- NavMeshAreaType       — traversal area classification enum
-    |-- PathfindHeuristic     — A* distance heuristic enum
-    |-- BehaviorNodeKind      — behavior tree node type enum
-    |-- DecoratorKind         — behavior tree decorator type enum
-    |-- PerceptionSense       — sensory modality enum
-    |-- AIStatePhase          — state machine lifecycle phase enum
-
-Usage:
-    ai = get_ai_system()
-    agent_id = ai.spawn_agent("guard_01", profile_id="patrol")
-    mesh_id = ai.navmesh_generator.build_navmesh("level1", geometry)
-    path = ai.pathfinding_engine.find_path(mesh_id, start, end)
-    tree_id = ai.behavior_runtime.create_tree("patrol_tree")
-    ai.perception_system.register_agent(agent_id, vision_cone=90, vision_range=50)
-    sm_id = ai.state_machine.create_state_machine("combat_fsm")
-"""
+SparkLabs Engine - AI System"""
 
 from __future__ import annotations
 

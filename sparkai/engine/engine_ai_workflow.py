@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - AI Workflow
-
-The EngineAIWorkflow is a declarative workflow engine that chains AI agent
-actions based on trigger conditions. It lets users define rules like:
-
-    WHEN player_frustration > 0.7
-    THEN deploy_plot(REUNION) AND tune_parameter(difficulty, -0.2)
-
-This is the connective tissue that makes all AI modules work together
-automatically, without manual intervention.
-
-Architecture:
-  Conditions (game state, metrics, signals)
-       |
-       v
-  EVALUATE --> MATCH --> DISPATCH --> EXECUTE --> FEEDBACK
-                (rules)  (actions)   (agents)    (results)
-
-Each rule has:
-  - A trigger condition (metric + operator + threshold)
-  - One or more actions (agent module + method + params)
-  - Cooldown and priority
-  - Enable/disable toggle
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - AI Workflow"""
 
 from __future__ import annotations
 

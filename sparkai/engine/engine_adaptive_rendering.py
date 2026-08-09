@@ -1,10 +1,5 @@
 """
-SparkAI Adaptive Rendering Engine - Intelligent rendering optimization system.
-
-Provides adaptive rendering capabilities that dynamically adjust quality
-settings based on performance metrics, device capabilities, and scene
-complexity to maintain optimal frame rates.
-"""
+SparkAI Adaptive Rendering Engine - Intelligent rendering optimization system."""
 
 from __future__ import annotations
 

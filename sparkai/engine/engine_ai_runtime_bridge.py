@@ -1,26 +1,5 @@
 """
-SparkLabs - AI Runtime Bridge
-
-Connects the cognitive layer (architect, conductor, brain) to the actual
-game generation pipeline (GameRuntime). The bridge makes generated games
-truly AI-native by:
-
-  1. Pre-build reasoning - the architect reasons about the prompt to derive
-     AI-driven parameters (difficulty target, pacing curve, narrative beats).
-  2. Config adaptation - the AIConfigAdapter merges AI parameters into the
-     GameConfig, adjusting gravity, enemy speed, collectible count, etc.
-  3. Telemetry injection - the AITelemetryInjector embeds a JavaScript bridge
-     that reports player events to the parent window for the conductor.
-  4. Adaptive difficulty injection - the AdaptiveDifficultyInjector embeds
-     a JavaScript controller that adjusts game parameters in real-time based
-     on player performance signals (deaths, collectibles, time, progress).
-  5. Build wrapping - the AIRuntimeBridge wraps GameRuntime.build_from_gdd
-     with the full AI pipeline, producing an AIRuntimeResult.
-
-The injected JavaScript is self-contained and runs entirely in the browser,
-communicating with the AI layer via window.postMessage. This design keeps
-the game executable offline while still reflecting AI-driven adaptation.
-"""
+SparkLabs - AI Runtime Bridge"""
 
 from __future__ import annotations
 

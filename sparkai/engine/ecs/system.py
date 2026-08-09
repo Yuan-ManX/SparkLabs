@@ -1,12 +1,5 @@
 """
-SparkLabs ECS - System Base, Registry, and Scheduler
-
-Systems contain the logic that operates on entities with specific
-component combinations. They implement the "behavior" of the game.
-
-AI agents can create custom systems at runtime, enabling dynamic
-gameplay behavior generation.
-"""
+SparkLabs ECS - System Base, Registry, and Scheduler"""
 
 from __future__ import annotations
 

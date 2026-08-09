@@ -1,13 +1,5 @@
 """
-SparkLabs ECS - World
-
-The World is the top-level container for an ECS instance.
-It holds the EntityManager, SystemScheduler, and provides
-the game loop that drives all systems.
-
-AI agents interact with the World to create/destroy entities,
-add/remove systems, and control the simulation.
-"""
+SparkLabs ECS - World"""
 
 from __future__ import annotations
 
