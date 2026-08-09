@@ -1,13 +1,5 @@
 """
-SparkAI Agent - Template Skill
-
-Template Skills grow a library of project skeletons from experience.
-They enable agents to scaffold stable game architectures by reusing
-proven patterns rather than building from scratch each time.
-
-Template types include game genres, engine configurations,
-and project structures that evolve as the agent gains experience.
-"""
+SparkAI Agent - Template Skill"""
 
 from __future__ import annotations
 

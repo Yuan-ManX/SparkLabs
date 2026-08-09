@@ -1,15 +1,5 @@
 """
-SparkAI Agent - Studio Hierarchy
-
-A coordinated team of specialized game development agents
-organized into a studio hierarchy with three tiers:
-  Tier 1 - Directors: Strategic vision and coordination
-  Tier 2 - Leads: Domain ownership and team management
-  Tier 3 - Specialists: Focused execution in specific domains
-
-Each agent has defined responsibilities, quality gates,
-and escalation paths within the studio structure.
-"""
+SparkAI Agent - Studio Hierarchy"""
 
 from sparkai.agent.studio.directors import (
     CreativeDirector,

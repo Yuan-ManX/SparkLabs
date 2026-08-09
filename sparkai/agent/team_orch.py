@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Team Orchestration
-
-Coordinated multi-agent workflows for game development.
-Teams of agents work together on complex features with
-defined roles, communication channels, and quality gates.
-
-Team Types:
-  - combat: Gameplay + AI + Animation + Audio
-  - narrative: Story + NPC + Quest + Dialogue
-  - ui: UX + Art + Programming
-  - level: World + Level + AI + Physics
-  - audio: Sound + Music + Voice
-  - release: QA + Performance + DevOps
-  - polish: Art + Animation + VFX + Audio
-"""
+SparkAI Agent - Team Orchestration"""
 
 from __future__ import annotations
 

@@ -1,13 +1,5 @@
 """
-SparkAI Agent - Game Template Library
-
-Rich template library for game project scaffolding. Each template
-defines the file structure, default systems, entity templates,
-and configuration for a specific game genre.
-
-Templates are organized by genre and support progressive maturity
-levels: seed -> validated -> production.
-"""
+SparkAI Agent - Game Template Library"""
 
 from __future__ import annotations
 

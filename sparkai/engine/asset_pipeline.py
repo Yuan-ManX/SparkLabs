@@ -1,19 +1,5 @@
 """
-Asset Pipeline - Game asset import, management, and export pipeline.
-
-Architecture:
-    AssetPipeline/
-    |-- AssetCategory (sprite, audio, font, shader enumeration)
-    |-- AssetFormat (file format enumeration)
-    |-- AssetMetadata (asset descriptor dataclass)
-    |-- ImportResult (import outcome dataclass)
-    |-- AssetBundle (grouped asset collection dataclass)
-    |-- AssetPipeline (global pipeline orchestration)
-
-Manages the full asset lifecycle for AI-generated games. Handles asset
-registration, metadata tracking, format validation, bundling, and provides
-the AI agent with a clear view of all available game assets.
-"""
+Asset Pipeline - Game asset import, management, and export pipeline."""
 
 from __future__ import annotations
 

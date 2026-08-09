@@ -1,10 +1,5 @@
 """
-SparkAI Agent - Game Runtime Orchestrator
-
-Manages the full lifecycle of game instances: creation, launching,
-runtime control, pausing, resuming, stopping, and cleanup.
-Supports multiple concurrent game sessions with WebSocket broadcast.
-"""
+SparkAI Agent - Game Runtime Orchestrator"""
 
 from __future__ import annotations
 

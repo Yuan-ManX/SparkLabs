@@ -1,36 +1,5 @@
 """
-SparkAI Agent - Studio Coordinator
-
-Full studio hierarchy coordination system that mirrors a real game
-studio's organizational structure. The StudioCoordinator manages
-agent assignment, task delegation, and cross-department coordination
-across the complete game development lifecycle.
-
-Architecture:
-  StudioCoordinator
-    |-- StudioHierarchy (3-tier agent organization)
-    |-- DepartmentRegistry (department definitions and agents)
-    |-- TaskRouter (intelligent task-to-agent routing)
-    |-- CoordinationLog (cross-department coordination history)
-
-Studio Hierarchy:
-  Tier 1 - Directors (strategic vision, cross-domain coordination)
-    Creative Director, Technical Director, Producer
-
-  Tier 2 - Department Leads (domain coordination, specialist delegation)
-    Game Designer, Lead Programmer, Art Director,
-    Audio Director, Narrative Director, QA Lead
-
-  Tier 3 - Specialists (focused execution on single domain)
-    Gameplay Programmer, Engine Programmer, AI Programmer,
-    Level Designer, World Builder, Sound Designer,
-    Writer, QA Tester, Technical Artist, UX Designer
-
-Coordination Patterns:
-  - Vertical: Director -> Lead -> Specialist (chain of command)
-  - Horizontal: Lead <-> Lead (cross-department sync)
-  - Ad-hoc: Specialist <-> Specialist (peer collaboration)
-"""
+SparkAI Agent - Studio Coordinator"""
 
 from __future__ import annotations
 

@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Animation System
-
-Keyframe-based animation engine with tween interpolation, sprite sheet
-animation, and property track evaluation. Implements AnimationPlayer
-concepts: keyframe tracks spanning position, rotation, scale, color,
-float, bool, and string properties; tween-based property animation;
-and sprite sheet frame sequencing.
-
-Architecture:
-    AnimationSystem (singleton orchestrator)
-    |-- Keyframe (single point on a track with value, easing, interpolation)
-    |-- AnimationTrack (property path with ordered keyframes)
-    |-- AnimationClip (collection of tracks played as a unit)
-    |-- SpriteFrame (single frame rect and duration)
-    |-- SpriteAnimation (frame sequence with loop control)
-    |-- TweenState (active property interpolation at runtime)
-    |-- EasingType / LoopMode / TrackType (domain enumerations)
-
-Easing functions: linear, quad-in/out/in-out, cubic-in/out/in-out,
-sine-in/out/in-out, bounce-out, elastic-out, back-out, expo-out.
-"""
+SparkLabs Engine - Animation System"""
 
 from __future__ import annotations
 

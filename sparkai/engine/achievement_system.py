@@ -1,18 +1,5 @@
 """
-Achievement System - Achievement tracking and unlocking engine.
-
-Architecture:
-    AchievementSystem/
-    |-- AchievementCategory (achievement classification)
-    |-- AchievementState (unlock lifecycle states)
-    |-- AchievementCondition (unlock criteria definition)
-    |-- Achievement (achievement definition with rewards)
-    |-- PlayerStats (cumulative stat tracking)
-    |-- AchievementSystem (unified achievement orchestrator)
-
-Tracks player progress, evaluates unlock conditions, grants rewards,
-and manages the complete achievement lifecycle across game sessions.
-"""
+Achievement System - Achievement tracking and unlocking engine."""
 
 from __future__ import annotations
 

@@ -1,16 +1,5 @@
 """
-SparkAI Agent - Trajectory Recorder and Action Timeline
-
-Records the full agent decision/action sequence as a structured
-timeline. Each entry captures: input, output, affected objects,
-before/after state, validation results, and rollback support.
-
-The timeline serves as an audit spine enabling:
-- Per-op undo/rollback
-- Re-validation of past operations
-- Export as training data for model fine-tuning
-- Debug bundle generation for failure analysis
-"""
+SparkAI Agent - Trajectory Recorder and Action Timeline"""
 
 from __future__ import annotations
 

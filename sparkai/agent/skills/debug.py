@@ -1,13 +1,5 @@
 """
-SparkAI Agent - Debug Skill
-
-Debug Skills maintain a living protocol of verified fixes.
-They enable agents to systematically repair integration errors
-rather than patching isolated syntax bugs.
-
-The debug protocol records error patterns, verified solutions,
-and builds a knowledge base that improves over time.
-"""
+SparkAI Agent - Debug Skill"""
 
 from __future__ import annotations
 

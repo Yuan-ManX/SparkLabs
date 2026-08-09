@@ -1,22 +1,5 @@
 """
-SparkAI Agent - Skill Forge
-
-Dynamic skill creation, evolution, and learning system.
-The forge enables agents to create new skills from experience,
-evolve existing skills based on success/failure patterns, and
-compose complex skills from simpler building blocks.
-
-Forge architecture:
-  - Skill Blueprint: Template for creating new skills
-  - Skill Evolution: Track skill performance and adapt over time
-  - Skill Composition: Combine skills into multi-step workflows
-  - Skill Library: Curated collection of proven skills
-  - Forge Operations: Create, evolve, compose, validate, export
-
-The forge learns from every skill execution, building a growing
-library of game development expertise that becomes more reliable
-over time.
-"""
+SparkAI Agent - Skill Forge"""
 
 from __future__ import annotations
 

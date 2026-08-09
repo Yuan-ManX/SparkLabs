@@ -1,42 +1,5 @@
 """
-SparkAI Core - Agent-Engine Orchestrator
-
-UNIFIED AI GAME ORCHESTRATION PIPELINE — the central bridge between the
-Agent Intelligence layer and the Game Engine layer. Provides end-to-end
-game creation workflows, combining multiple AI and engine subsystems
-into coherent pipelines.
-
-Architecture:
-  AgentEngineOrchestrator (Singleton)
-    |-- PipelineWorkflow (multi-stage development pipeline)
-    |-- PipelineTask (individual task within a pipeline stage)
-    |-- GameProject (tracked game project with all workflows)
-    |-- OrchestrationEvent (cross-module communication events)
-    |-- PipelineMetrics (execution and performance tracking)
-
-Pipeline Stages:
-  IDEATION -> DESIGN -> GENERATION -> TESTING -> DEPLOYMENT -> ITERATION
-
-Workflow Types:
-  GAME_FROM_SCRATCH, FEATURE_ADDITION, BALANCE_TUNING,
-  BUG_FIXING, CONTENT_EXPANSION
-
-Orchestration Modes:
-  SEQUENTIAL (one task after another)
-  PARALLEL (concurrent independent tasks)
-  ADAPTIVE (AI-driven decision making)
-  INTERACTIVE (human-in-the-loop)
-
-Usage:
-    orchestrator = get_agent_engine_orchestrator()
-    project = orchestrator.create_game_from_description(
-        "A sci-fi RPG with procedurally generated planets",
-        "Sci-Fi RPG",
-        "PC"
-    )
-    workflow = orchestrator.execute_workflow(project.workflows[0])
-    report = orchestrator.generate_summary(workflow.workflow_id)
-"""
+SparkAI Core - Agent-Engine Orchestrator"""
 
 from __future__ import annotations
 

@@ -1,24 +1,5 @@
 """
-SparkAI Agent - LLM Router
-
-Intelligent routing of LLM requests based on task type, provider
-capability, cost, and latency requirements. The router selects the
-optimal LLM provider for each request, enabling multi-model strategies.
-
-Routing strategy:
-  1. Classify the task type from the prompt
-  2. Match task type to provider capabilities
-  3. Select the best available provider (cost/latency/quality)
-  4. Fall back to next provider on failure
-  5. Track routing decisions for optimization
-
-Task types and their optimal providers:
-  - Code generation: High-capability models (GPT-4, Claude)
-  - Creative writing: Creative-tuned models
-  - Analysis: Fast models with good reasoning
-  - Quick decisions: Low-latency models
-  - Embedding: Specialized embedding models
-"""
+SparkAI Agent - LLM Router"""
 
 from __future__ import annotations
 

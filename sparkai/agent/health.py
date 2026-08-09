@@ -1,24 +1,5 @@
 """
-SparkAI Agent - Health Check
-
-Runtime diagnostics and subsystem verification for the SparkLabs
-AI-Native Game Engine. Provides comprehensive health checking
-for all engine subsystems, configuration validation, and
-connectivity verification.
-
-Health check categories:
-  - System: Runtime state, memory, uptime
-  - Subsystems: Each registered subsystem's status
-  - Connectivity: API endpoints, WebSocket, LLM providers
-  - Configuration: Settings validation and consistency
-  - Performance: Latency, throughput, cache efficiency
-  - Integrity: Data consistency, session validity
-
-Usage:
-    health = HealthChecker(runtime)
-    report = health.check_all()
-    print(report.summary)
-"""
+SparkAI Agent - Health Check"""
 
 from __future__ import annotations
 

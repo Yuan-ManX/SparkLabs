@@ -1,10 +1,5 @@
 """
-SparkAI Agent - Studio Leads (Tier 2)
-
-Leads own their domain and coordinate specialists within it.
-They can delegate to Tier 3 specialists and escalate to
-Tier 1 directors when cross-domain coordination is needed.
-"""
+SparkAI Agent - Studio Leads (Tier 2)"""
 
 from sparkai.agent.base import SparkAgent, AgentCapability, AgentRole
 

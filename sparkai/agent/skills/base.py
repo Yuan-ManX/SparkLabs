@@ -1,10 +1,5 @@
 """
-SparkAI Agent - Skill Base and Registry
-
-Skills are reusable knowledge modules that agents load on demand.
-Each skill defines a domain of expertise, instructions, and
-optional scripts/templates for execution.
-"""
+SparkAI Agent - Skill Base and Registry"""
 
 from __future__ import annotations
 

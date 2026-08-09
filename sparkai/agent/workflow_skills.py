@@ -1,28 +1,5 @@
 """
-SparkAI Agent - Workflow Skills
-
-Structured game development workflow commands that guide the creative
-and technical process from concept to release. Each workflow skill
-encapsulates a complete development workflow with defined inputs,
-outputs, steps, and quality checkpoints.
-
-Architecture:
-  WorkflowSkillSystem
-    |-- SkillRegistry (workflow skill definitions)
-    |-- SkillExecutor (executes workflow steps)
-    |-- WorkflowPipeline (chains skills into development pipelines)
-
-Workflow Categories:
-  Design - brainstorm, system design, UX design
-  Development - scaffold, implement, integrate
-  Review - code review, design review, balance check
-  Testing - smoke test, regression, playtest
-  Production - milestone review, release checklist
-  Creative - prototype, localize, asset creation
-
-Each workflow skill follows a consistent execution pattern:
-  Prepare -> Execute -> Validate -> Report
-"""
+SparkAI Agent - Workflow Skills"""
 
 from __future__ import annotations
 

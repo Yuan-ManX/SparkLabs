@@ -1,21 +1,5 @@
 """
-SparkAI Agent - Studio Command System
-
-Comprehensive slash command system for game development workflows.
-Organized into categories covering the full game development lifecycle
-from concept through release.
-
-Command categories:
-  - Onboarding: project setup and navigation
-  - Design: game design and brainstorming
-  - Development: coding and implementation
-  - Art: visual assets and style
-  - Audio: sound and music
-  - Narrative: story and dialogue
-  - QA: testing and quality
-  - Production: project management
-  - Release: deployment and distribution
-"""
+SparkAI Agent - Studio Command System"""
 
 from __future__ import annotations
 

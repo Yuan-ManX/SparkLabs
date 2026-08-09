@@ -1,33 +1,5 @@
 """
-SparkAI Agent - Game Skill
-
-Reusable, evolving game development capabilities that grow from experience.
-The GameSkill system provides two complementary skill types:
-
-  TemplateSkill - Grows a library of project skeletons from experience.
-    Each template captures the architecture, file structure, and patterns
-    of a successful game project. Templates evolve as more projects are
-    built, accumulating proven patterns and discarding failed approaches.
-
-  DebugSkill - Maintains a living protocol of verified fixes.
-    Each debug entry captures an error, its diagnosis, the fix applied,
-    and the verification that confirmed the fix works. Over time, this
-    builds a knowledge base of common game development pitfalls and
-    their solutions.
-
-Architecture:
-  GameSkillSystem
-    |-- TemplateSkillRegistry (project skeleton library)
-    |-- DebugProtocol (verified fix knowledge base)
-    |-- SkillEvolutionEngine (skill growth and adaptation)
-    |-- SkillComposer (combine skills for complex workflows)
-
-Skill Lifecycle:
-  Create -> Apply -> Validate -> Evolve -> Compose
-
-The GameSkill system integrates with the AgentRuntime to provide
-agents with growing, adaptive capabilities for game development.
-"""
+SparkAI Agent - Game Skill"""
 
 from __future__ import annotations
 

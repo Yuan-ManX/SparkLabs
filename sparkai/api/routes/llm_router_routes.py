@@ -1,10 +1,5 @@
 """
-SparkLabs API - LLM Router Routes
-
-API endpoints for the LLM Router module. Exposes router status,
-provider and model catalogs, request routing, routing strategies,
-statistics, and cache management.
-"""
+SparkLabs API - LLM Router Routes"""
 
 from typing import Any, Dict, List, Optional
 

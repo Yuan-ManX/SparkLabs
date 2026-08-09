@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Hooks System
-
-Automated event-driven validation and lifecycle management.
-Hooks fire on agent events and can validate, transform, or block actions.
-
-Hook Types:
-  - pre_act: Validate before tool execution
-  - post_act: Validate after tool execution
-  - pre_think: Intercept before LLM reasoning
-  - post_think: Validate after LLM response
-  - on_error: Handle agent errors
-  - on_commit: Validate on state changes
-  - on_session_start: Initialize session state
-  - on_session_end: Finalize session state
-"""
+SparkAI Agent - Hooks System"""
 
 from __future__ import annotations
 

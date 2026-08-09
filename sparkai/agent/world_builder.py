@@ -1,25 +1,5 @@
 """
-SparkAI Agent - World Builder
-
-Procedural world generation system that creates complete game worlds
-from natural language descriptions. The WorldBuilder generates terrain,
-environments, entity placements, biome distributions, and atmospheric
-settings to produce rich, playable game worlds.
-
-Architecture:
-  WorldBuilder
-    |-- TerrainGenerator (heightmaps, biomes, vegetation zones)
-    |-- EnvironmentDesigner (sky, weather, lighting, atmosphere)
-    |-- EntityPlacer (strategic entity placement with constraints)
-    |-- StructureGenerator (buildings, dungeons, landmarks)
-    |-- WorldComposer (assembles all layers into a coherent world)
-
-World Generation Pipeline:
-  Parse -> Terrain -> Environment -> Structures -> Populate -> Compose
-
-The WorldBuilder integrates with GameContext to persist generated worlds
-and with the AgentRuntime for LLM-powered creative decisions.
-"""
+SparkAI Agent - World Builder"""
 
 from __future__ import annotations
 

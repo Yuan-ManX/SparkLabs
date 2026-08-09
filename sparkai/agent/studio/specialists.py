@@ -1,10 +1,5 @@
 """
-SparkAI Agent - Studio Specialists (Tier 3)
-
-Specialists execute focused work within their domain.
-They cannot delegate further and report results to their
-assigned Lead or Director.
-"""
+SparkAI Agent - Studio Specialists (Tier 3)"""
 
 from sparkai.agent.base import SparkAgent, AgentCapability, AgentRole
 

@@ -1,16 +1,5 @@
 """
-SparkAI Agent - Tool Registry, Execution, and Composable Toolsets
-
-Tools are the action interface for agents. Each tool defines a
-name, parameters, and an async handler. Tools are organized into
-composable toolsets that can be loaded per agent role.
-
-Toolset composition enables:
-  - Role-based tool loading (directors get orchestration tools)
-  - Domain-specific tool bundles (engine, asset, npc, narrative)
-  - Dynamic tool registration at runtime
-  - Tool chaining and pipeline execution
-"""
+SparkAI Agent - Tool Registry, Execution, and Composable Toolsets"""
 
 from __future__ import annotations
 
@@ -332,6 +321,32 @@ def create_engine_toolset() -> Toolset:
             "status": "listed",
         }
 
+    async def add_logic_event(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("add_logic_event")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
+        return {
+            "action": "add_logic_event",
+            "event_name": (params.get("event") or {}).get("name", "Untitled"),
+            "status": "registered",
+        }
+
+    async def list_logic_events(params: Dict[str, Any]) -> Dict[str, Any]:
+        handler = _engine_handlers.get("list_logic_events")
+        if handler:
+            try:
+                return await handler(params)
+            except Exception:
+                pass
+        return {
+            "action": "list_logic_events",
+            "events": [],
+            "status": "listed",
+        }
+
     return Toolset("engine", "Core engine tools for world and entity management").add(Tool(
         name="create_world",
         description="Create a new ECS world",
@@ -418,6 +433,20 @@ def create_engine_toolset() -> Toolset:
         category="engine",
         parameters=[],
         handler=list_checkpoints,
+    )).add(Tool(
+        name="add_logic_event",
+        description="Register a structured game rule (GameLogicIR event) so the built game responds to world state",
+        category="engine",
+        parameters=[
+            ToolParameter(name="event", type="object", description="Event dict with name, variable_path, condition_operator, value, action_type, target, params"),
+        ],
+        handler=add_logic_event,
+    )).add(Tool(
+        name="list_logic_events",
+        description="List all registered game rules (logic events)",
+        category="engine",
+        parameters=[],
+        handler=list_logic_events,
     ))
 
 

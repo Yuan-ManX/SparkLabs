@@ -1,12 +1,5 @@
 """
-SparkAI Agent - Studio Directors (Tier 1)
-
-Directors guard the creative and technical vision of the game.
-They coordinate across departments and make strategic decisions.
-
-Tier 1 agents have the broadest scope and can delegate to
-any Tier 2 or Tier 3 agent.
-"""
+SparkAI Agent - Studio Directors (Tier 1)"""
 
 from sparkai.agent.base import SparkAgent, AgentCapability, AgentRole
 

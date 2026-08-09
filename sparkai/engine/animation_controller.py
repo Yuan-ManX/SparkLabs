@@ -1,22 +1,5 @@
 """
-SparkLabs Engine - Animation Controller
-
-Animation state machine and blend tree system for the
-SparkLabs AI-native game engine. Provides a node-based
-animation controller with state transitions, parameter-driven
-blending, and layered animation masks. AI agents can define
-complex animation behaviors through a declarative graph API
-that maps game state to animation output.
-
-Architecture:
-  AnimationController
-    |-- AnimState (named state with clip + transition rules)
-    |-- Transition (condition-based state switching)
-    |-- BlendTree (parameter-driven pose blending)
-    |-- AnimLayer (weighted animation layering with masks)
-    |-- AnimParameter (float, int, bool, trigger types)
-    |-- AnimClip (named animation with loop/ping-pong modes)
-"""
+SparkLabs Engine - Animation Controller"""
 
 from __future__ import annotations
 
