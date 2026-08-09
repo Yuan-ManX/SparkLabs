@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Game Physics
-
-A server-side 2D physics engine that mirrors the client-side JavaScript
-physics in generated games. This enables the cognitive layer to simulate
-game states, predict action outcomes, and test parameter changes before
-applying them to live games.
-
-Original SparkLabs design:
-  1. Rigid Body Dynamics - Each body has position, velocity, acceleration,
-     mass, restitution (bounciness), and friction coefficient. Forces
-     are integrated using semi-implicit Euler for stability.
-  2. AABB Collision - Axis-aligned bounding box collision detection
-     with signed-distance resolution. Resolution separates bodies along
-     the minimum penetration axis to avoid jitter.
-  3. Wall-Slide - When a body touches a wall while falling, vertical
-     velocity is capped to a wall-slide speed, enabling controlled
-     descent. The body's facing direction tracks the wall side.
-  4. Wall-Jump - A body that is wall-sliding can launch off the wall
-     with a velocity vector pointing away from the wall and upward.
-     A short input lock prevents the held direction from immediately
-     canceling the wall-jump's outbound velocity.
-  5. Coyote Time - A grace period after leaving a ledge during which
-     the body can still jump, simulating forgiving game feel.
-  6. Jump Buffer - A grace period before landing during which a jump
-     press is queued and executed on landing.
-  7. Variable Jump Height - Holding the jump key produces a taller jump;
-     releasing it early cuts the upward velocity short.
-  8. Deterministic - Given the same initial state and input sequence,
-     the simulation produces identical results, enabling replay.
-
-The physics engine is intentionally simple (no rotation, no joints) to
-match the scope of 2D platformer/parkour/top-down games that SparkLabs
-generates. It runs at a fixed timestep (default 1/60s) for determinism.
-"""
+SparkLabs Engine - Game Physics"""
 
 from __future__ import annotations
 

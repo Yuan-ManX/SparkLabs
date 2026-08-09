@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Multi-Export Pipeline
-
-One-click multi-platform game export system supporting web (HTML5/WebGL),
-desktop (Windows/macOS/Linux), and mobile (iOS/Android) targets with
-asset optimization and packaging. Orchestrates the full export lifecycle
-from asset preparation through platform-specific packaging and signing.
-
-Architecture:
-  MultiExportPipeline
-    |-- ProfileManager (target-specific export configurations)
-    |-- AssetOptimizer (texture/audio/model compression and format conversion)
-    |-- StageRunner (sequential pipeline stage execution)
-    |-- PlatformConfigurator (per-platform SDK, signing, and packaging rules)
-    |-- SizeEstimator (pre-export size prediction and breakdown)
-
-Export Features:
-  - MULTI_TARGET: unified workflow for web, desktop, mobile, and console
-  - STAGES: prepare → optimize → compile → package → sign → upload → verify
-  - OPTIMIZATION: atlas generation, audio transcoding, model format conversion
-  - PROFILES: persistent export configurations with resolution and quality settings
-  - ESTIMATION: pre-export size prediction with per-asset-type breakdown
-"""
+SparkLabs Engine - Multi-Export Pipeline"""
 
 from __future__ import annotations
 

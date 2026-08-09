@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Event-Driven Game Logic System
-
-A visual event system where game logic is expressed as condition-action
-rules. Designers define events, attach conditions, and bind actions; the
-runtime evaluates every rule once per tick and fires actions whose
-conditions evaluate to true.
-
-Core concepts:
-  GameEvent/Condition/ConditionGroup/Action/EventRule - rule building blocks
-  Variable/Timer/TriggerVolume/InputBinding - state and input
-  EventBus/RuleTrace - dispatch and debugging
-
-Thread safety:
-  All mutating operations acquire an internal lock so the system can be
-  ticked from a simulation thread while a scripting thread mutates rules.
-"""
+SparkLabs Engine - Event-Driven Game Logic System"""
 
 from __future__ import annotations
 

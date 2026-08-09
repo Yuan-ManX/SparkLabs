@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Floating Text System
-
-A world-anchored floating text and combat feedback system for the SparkLabs
-AI-native game engine. This system manages transient text popups — damage
-numbers, healing values, critical hit callouts, combo counters, experience
-gains, loot notifications, status effect labels, and custom messages — that
-rise from a world position, animate according to their kind, and fade out
-after a configurable lifetime.
-
-The system is distinct from the game feel director (which handles screen
-shake, hit pause, and time scaling) and the HUD system (which manages
-persistent UI elements). Floating text is transient, world-anchored, and
-combines with combo tracking to reward sustained player performance.
-
-Architecture:
-  FloatingTextSystem (singleton)
-    |-- FloatingTextEntry, ComboState, FloatKindConfig, FloatingTextConfig,
-       FloatingTextStats, FloatingTextSnapshot, FloatingTextEvent
-    |-- TextKind, AnimationStyle, FloatingTextEventKind
-
-Core Capabilities:
-  - spawn_text: create a floating text entry at a world position with a
-    numeric value, kind, and optional color override.
-  - spawn_damage / spawn_heal / spawn_crit / spawn_miss / spawn_experience:
-    convenience methods for common combat feedback.
-  - get_text / list_active / remove_text: lifecycle for individual entries.
-  - register_combo / get_combo / break_combo: combo tracking with multiplier
-    growth, timeout decay, and kind filtering.
-  - merge_stacks: combine nearby entries of the same kind within a merge
-    radius into a single accumulated value.
-  - set_kind_config / get_kind_config: per-kind tuning for color, font size,
-    animation style, lifetime, and rise speed.
-  - tick: advance the simulation — update positions, apply animations,
-    expire lifetime, decay combos.
-  - set_config / get_config: global tuning for max active entries, default
-    lifetime, merge radius, and combo timeout.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`FloatingTextSystem.get_instance` or the module-level
-:func:`get_floating_text_system` factory.
-"""
+SparkLabs Engine - Floating Text System"""
 
 from __future__ import annotations
 

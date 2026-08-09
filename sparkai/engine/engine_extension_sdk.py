@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Extension SDK
-
-Plugin framework that enables dynamic loading of engine extensions.
-Extensions can provide new object types, behaviors, actions, conditions,
-and expressions. Each extension has a declarative IDE definition and a
-runtime implementation with full lifecycle management.
-
-Architecture:
-  ExtensionSDK
-    |-- ExtensionManifest (metadata, authorship, versioning, status)
-    |-- ExtensionCapability (declared features with scope and parameters)
-    |-- ExtensionAPI (programmatic interface endpoints and schema)
-    |-- SDKConfig (global SDK configuration and policy controls)
-
-SDK Features:
-  - REGISTER: add new extensions with manifest and capability declarations
-  - LOAD/UNLOAD: dynamic runtime lifecycle management
-  - ENABLE/DISABLE: toggle extension activation without unloading
-  - CAPABILITIES: query available features by scope or extension type
-  - SEARCH: discover extensions by query, category, or source
-  - INSTALL: install extensions from package files with dependency checks
-  - CREATE: scaffold new extension projects from templates
-  - VALIDATE: integrity verification and schema validation
-  - EXPORT: package extensions for distribution and sharing
-"""
+SparkLabs Engine - Extension SDK"""
 
 from __future__ import annotations
 

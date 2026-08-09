@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Entity Component System Core
-
-A lightweight, high-performance Entity Component System (ECS) implementation
-with sparse-set component storage, typed component queries, and dependency-aware
-system scheduling. Entities are pure identifiers, components are plain data
-containers, and systems encapsulate all behavior.
-
-Architecture:
-  EntityComponentEngine (Singleton)
-    |-- Entity             — lightweight identifier with tags and active state
-    |-- Component          — base class for all component data
-    |-- System             — processing logic with query/filter capabilities
-    |-- ComponentManager   — sparse-set storage for O(1) lookup
-    |-- SystemManager      — dependency-ordered system execution
-    |-- QueryResult        — filtered view of entities matching a component set
-
-Component Storage:
-  Uses sparse-set layout where each component type has a dense packed array
-  and a sparse mapping from entity index to dense array index. This provides
-  O(1) add/remove/get and cache-friendly iteration over all entities with
-  a given component type.
-
-Usage:
-    engine = get_entity_component_engine()
-    entity = engine.create_entity(name="Player", tags=["player", "hero"])
-    engine.add_component(entity.id, HealthComponent(health=100))
-    engine.add_system(HealthSystem(), priority=50)
-    engine.update(delta_time)
-"""
+SparkLabs Engine - Entity Component System Core"""
 
 from __future__ import annotations
 

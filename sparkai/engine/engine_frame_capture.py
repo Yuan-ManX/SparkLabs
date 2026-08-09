@@ -1,17 +1,5 @@
 """
-SparkLabs Engine - Frame Capture
-
-Render frame capture subsystem that acquires rendered frames as pixel data
-and exposes them through structured queries for AI agent perception. The
-subsystem maintains a ring buffer of recent frames for temporal analysis,
-supports region and point sampling for targeted inspection, and provides
-downsampling to lower resolutions for efficient AI consumption.
-
-Frame sources are pluggable: a synthetic generator is provided for testing,
-and external renderers can register a frame supplier callback to feed real
-pixel data into the capture pipeline. The captured frames are stored as
-RGBA byte arrays with associated metadata (timestamp, dimensions, source).
-"""
+SparkLabs Engine - Frame Capture"""
 
 from __future__ import annotations
 

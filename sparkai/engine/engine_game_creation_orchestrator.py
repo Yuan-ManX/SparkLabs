@@ -1,27 +1,5 @@
 """
-SparkLabs - Game Creation Orchestrator
-
-Provides a single unified entry point that coordinates the full AI-native
-game creation pipeline. The orchestrator wires together the cognitive
-architect, the AI-native conductor, the runtime bridge, and the integration
-layer so a natural-language prompt becomes a playable game with full AI
-reasoning, parameter tuning, and outcome learning attached.
-
-Pipeline phases:
-  1. REASON   - CognitiveArchitect reasons about the prompt (genre, mechanics,
-                world, narrative) and produces a design conclusion.
-  2. CONDUCT  - AINativeConductor tunes physics/render/scene parameters for
-                the reasoned genre and player skill profile.
-  3. BUILD    - AIRuntimeBridge assembles the playable HTML game, applying
-                architect conclusions and conductor adjustments as overrides.
-  4. CAPTURE  - AINativeIntegration runs a tick to capture the build outcome
-                and feed lessons back into the architect's knowledge base.
-
-The orchestrator is a thread-safe singleton so both the REST API and the
-WebSocket layer can drive it concurrently.
-
-Original SparkLabs design - unified AI-native game creation entry point.
-"""
+SparkLabs - Game Creation Orchestrator"""
 
 from __future__ import annotations
 

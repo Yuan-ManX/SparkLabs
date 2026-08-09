@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Game Assembler
-
-A unified game assembly system that combines engine components, scene data,
-and runtime configurations into complete, runnable games. The Game Assembler
-orchestrates the full build pipeline from individual assets to packaged
-executables.
-
-Architecture:
-  GameAssembler
-    |-- ComponentRegistry (catalog of available engine components)
-    |-- SceneCompiler (transforms scene data into runtime-ready format)
-    |-- AssetLinker (resolves and bundles all asset dependencies)
-    |-- RuntimeComposer (assembles components into executable configuration)
-    |-- BuildPipeline (compilation, optimization, packaging)
-
-Capabilities:
-  - Component-based game assembly from modular engine parts
-  - Scene compilation with dependency resolution
-  - Asset bundling and linking with format optimization
-  - Runtime configuration generation for target platforms
-  - Build pipeline with quality checks and optimization
-"""
+SparkLabs Engine - Game Assembler"""
 
 from __future__ import annotations
 

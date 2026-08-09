@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Visual Event Scripting System
-
-Visual event scripting system for authoring game logic through declarative
-event sheets composed of conditions and actions. Creators define event-driven
-behavior by assembling condition→action pairs into named sheets that the
-runtime evaluates against live game state each tick.
-
-Architecture:
-  EngineEventScripting
-    |-- EventSheet (named collection of event definitions with metadata)
-    |-- EventCondition (evaluable predicate with operators and sub-conditions)
-    |-- EventAction (executable operation with parameters and ordering)
-    |-- EventLink (inter-sheet linking for composition and inheritance)
-    |-- EventVariable (scoped variable with type, default, and runtime value)
-
-Sheet Features:
-  - DECLARATIVE: events defined by condition→action rule pairs
-  - HIERARCHICAL: sub-conditions and sub-actions for nested logic
-  - LINKED: sheets can include, reference, inherit, extend, or override
-  - COMPILABLE: sheets compile to Python, JavaScript, or Lua source code
-  - IMPORT/EXPORT: JSON serialization for sheet portability
-
-Usage:
-    es = get_engine_event_scripting()
-    sheet = es.create_event_sheet("gameplay_core", "Core gameplay logic")
-    event_id = es.add_event_to_sheet(sheet.sheet_id, conditions, actions, "on_start")
-    es.execute_sheet(sheet.sheet_id, {"player_x": 0, "player_y": 0})
-"""
+SparkLabs Engine - Visual Event Scripting System"""
 
 from __future__ import annotations
 

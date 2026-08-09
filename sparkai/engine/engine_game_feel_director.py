@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Game Feel Director
-
-A game feel system for the SparkLabs AI-native game engine. It orchestrates
-tactile feedback layers - screen shake, hit pause, camera kick, particle
-bursts, audio stings, color flashes, and time scaling - that make games
-feel responsive and satisfying. The director composes multi-layer feel
-responses triggered by gameplay moments such as impacts, celebrations,
-danger cues, and discoveries.
-
-Architecture:
-  GameFeelDirector (singleton)
-    |-- FeelProfile, FeelLayer, FeelMoment, FeelResponse,
-       FeelStats, FeelSnapshot, FeelEvent
-    |-- FeelLayerType, MomentCategory, FeelIntensity, FeelEventKind
-
-Core Capabilities:
-  - register_profile / get_profile / list_profiles / update_profile /
-    delete_profile: feel profile lifecycle management.
-  - register_layer / get_layer / list_layers / remove_layer: individual
-    feedback layer definitions with type, intensity, and duration.
-  - trigger_moment / get_moment / list_moments: trigger a feel moment
-    that composes all matching layers into a feel response.
-  - set_default_profile / get_default_profile: designate a profile as
-    the fallback for unprofiled moment categories.
-  - compose_response: produce a composite feel response for a given
-    moment category and intensity.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`GameFeelDirector.get_instance` or the module-level
-:func:`get_game_feel_director` factory.
-"""
+SparkLabs Engine - Game Feel Director"""
 
 from __future__ import annotations
 

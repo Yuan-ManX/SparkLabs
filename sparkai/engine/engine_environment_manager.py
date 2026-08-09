@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Environment Manager
-
-Engine-level runtime environment lifecycle management for the
-AI-native game engine. Handles environment provisioning, platform
-configuration, resource allocation, dependency resolution, and
-sandbox isolation for engine subsystems.
-
-Architecture:
-  EngineEnvironmentManager
-    |-- EnvironmentProfile (per-platform runtime configuration)
-    |-- ResourceAllocator (CPU/memory/GPU budget management)
-    |-- DependencyResolver (plugin/module dependency graph)
-    |-- SandboxController (isolated subsystem execution)
-    |-- PlatformDetector (OS/hardware capability detection)
-    |-- EnvVariableStore (environment variable management)
-"""
+SparkLabs Engine - Environment Manager"""
 
 from __future__ import annotations
 

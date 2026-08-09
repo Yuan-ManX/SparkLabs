@@ -1,21 +1,5 @@
 """
-SparkLabs Engine - Entity Component System
-
-High-performance, flexible Entity Component System (ECS) architecture
-for game object management. Entities are lightweight identifiers that
-gain behavior through composable components. Systems process entities
-that possess matching component sets, enabling fully data-driven
-gameplay logic with strict separation of data and behavior.
-
-Architecture:
-  EngineEntityComponentSystem
-    |-- Entity (lightweight identifier with component map)
-    |-- Component (typed data container with lifecycle phase)
-    |-- ComponentBlueprint (reusable component template)
-    |-- System (processing logic targeting matching entities)
-    |-- EntityArchetype (predefined entity composition template)
-    |-- World (container managing entities, systems, and hierarchy)
-"""
+SparkLabs Engine - Entity Component System"""
 
 from __future__ import annotations
 

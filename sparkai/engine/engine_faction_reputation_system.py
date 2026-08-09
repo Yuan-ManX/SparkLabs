@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Faction & Reputation System
-
-Manages NPC factions, player reputation standings, faction relationships,
-and reputation-based gameplay consequences. Players build or lose standing
-with factions through quests, kills, donations, and diplomatic actions.
-Reputation tiers unlock rewards, change NPC hostility states, and gate
-access to faction-specific content.
-
-Architecture:
-  FactionReputationSystem (singleton)
-    |-- FactionTier, FactionAttitude, FactionRelation, ReputationEventKind
-    |-- FactionDefinition, FactionReward, PlayerReputation, ReputationEntry,
-       DiplomaticAction, FactionWar, FactionReputationConfig, FactionStats,
-       FactionSnapshot, FactionEvent
-    |-- get_faction_reputation_system
-
-Core Capabilities:
-  - register_faction / remove_faction / get_faction / list_factions
-  - register_reward / remove_reward / get_reward / list_rewards
-  - gain_reputation / lose_reputation / set_reputation / get_reputation
-  - list_player_reputations / get_reputation_tier
-  - register_relation / get_relation / list_relations
-  - create_diplomatic_action / accept_diplomatic_action / reject_diplomatic_action
-  - declare_war / end_war / get_war / list_wars
-  - check_hostility / get_available_rewards / claim_reward
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`FactionReputationSystem.get_instance` or the module-level
-:func:`get_faction_reputation_system` factory.
-"""
+SparkLabs Engine - Faction & Reputation System"""
 
 from __future__ import annotations
 

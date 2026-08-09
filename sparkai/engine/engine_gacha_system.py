@@ -1,45 +1,5 @@
 """
-SparkLabs Engine - Gacha System
-
-A lottery-style reward acquisition system for the SparkLabs AI-native game
-engine. Manages summon pools, rarity tiers, rate-up banners, pity mechanics,
-pull history tracking, duplicate handling, and currency consumption.
-
-Each gacha banner defines a pool of obtainable items with weighted drop
-rates, optional rate-up entries, pity counter thresholds for guaranteed
-high-rarity drops, and spark currency accumulation for exchange mechanics.
-Designed for character summon gachas, weapon banners, cosmetic loot boxes,
-and seasonal reward draws.
-
-Architecture:
-  GachaSystem (singleton)
-    |-- BannerType, PullResult, RarityTier, GachaEventKind
-    |-- GachaItem, RateUpEntry, PityState, GachaBanner,
-       PullRecord, SparkExchange, GachaConfig, GachaStats,
-       GachaSnapshot, GachaEvent
-    |-- get_gacha_system
-
-Core Capabilities:
-  - register_banner / remove_banner / get_banner / list_banners: manage
-    summon pool banners with item pools, rates, and pity rules.
-  - activate_banner / deactivate_banner: control which banner is active.
-  - pull / multi_pull: execute single or multi-pull draws with weighted
-    random selection, pity enforcement, and rate-up adjustments.
-  - get_pity / reset_pity: track and manage pity counters per banner.
-  - get_pull_history: retrieve past pull records for a player.
-  - register_spark_exchange / list_spark_exchanges / redeem_spark: manage
-    spark currency accumulation and item exchange.
-  - set_config / get_config: global tuning for max banners, pity limits,
-    and spark accumulation rates.
-  - tick: advance the simulation, handling banner rotation and timers.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`GachaSystem.get_instance` or the module-level
-:func:`get_gacha_system` factory.
-"""
+SparkLabs Engine - Gacha System"""
 
 from __future__ import annotations
 

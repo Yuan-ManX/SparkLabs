@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Flow State Monitor Engine
-
-A real-time flow state detection and monitoring engine based on
-Csikszentmihalyi's flow theory. Monitors the challenge-skill balance
-to detect and maintain player "flow" state, aggregating gameplay
-signals into flow readings and producing adaptation suggestions that
-keep players within the flow channel.
-
-Architecture:
-  FlowStateMonitorEngine (singleton)
-    |-- PlayerSignal (atomic gameplay signal from a player)
-    |-- FlowReading (computed flow state snapshot for a player)
-    |-- FlowHistory (aggregated flow readings over a tick range)
-    |-- AdaptationSuggestion (parameter change recommendation)
-    |-- FlowProfile (per-player long-term flow characteristics)
-    |-- FlowState (8 flow channels from flow theory)
-    |-- ChallengeLevel (5 challenge tiers)
-    |-- SkillLevel (6 skill tiers)
-    |-- SignalType (6 gameplay signal categories)
-
-Core Capabilities:
-  - register_player: Create a flow profile for a new player
-  - record_signal: Capture a gameplay signal for flow analysis
-  - calculate_flow_state: Compute the current flow state from recent signals
-  - get_flow_history: Aggregate flow readings over a tick range
-  - suggest_adaptation: Recommend game parameter changes to maintain flow
-  - update_skill_level: Adjust a player's skill tier
-  - get_flow_profile / get_current_reading: Per-player queries
-  - analyze_flow_patterns: Detect patterns in flow state transitions
-  - get_players_in_state: Find all players in a specific flow state
-  - get_stats: Global engine statistics and health summary
-"""
+SparkLabs Engine - Flow State Monitor Engine"""
 
 from __future__ import annotations
 

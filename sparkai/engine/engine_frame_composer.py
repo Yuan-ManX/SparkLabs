@@ -1,10 +1,5 @@
 """
-FrameComposer - Frame-based render scheduling with priority-based draw call batching.
-
-Manages draw commands across render passes, sorts by priority, batches similar
-draw calls using configurable strategies, and tracks frame budgets for the
-SparkLabs game engine rendering pipeline.
-"""
+FrameComposer - Frame-based render scheduling with priority-based draw call batching."""
 
 import threading
 import time

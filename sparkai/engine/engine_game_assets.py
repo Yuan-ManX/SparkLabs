@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Genre Asset Profiles
-
-Provides per-genre overrides for audio, visual styling, and particle effects
-so each generated game has a distinct sensory identity instead of sharing
-one universal asset palette.
-
-Each GenreAssetProfile produces three self-contained JavaScript/CSS snippets:
-  1. build_css()              -> genre-specific CSS (canvas filters, overlays)
-  2. build_audio_overrides()  -> JS that redefines sfx* functions per genre
-  3. build_effect_overrides() -> JS that redefines particle spawn functions
-  4. build_post_process_js()  -> JS canvas post-processing per frame
-
-The overrides run AFTER the base FxInjector definitions, so redefining a
-function name cleanly replaces the shared default. Games without a profile
-fall back to the base AudioSynth/ParticleEngine behavior.
-
-Genre identities (original SparkLabs design):
-  - platformer : cartoon bouncy, bright saturated, dust puffs
-  - shooter    : sci-fi vector, CRT scanlines, neon laser zaps
-  - parkour    : motion speed, speed-lines, whooshes, afterimage
-  - tank_battle: military pixelated, smoke debris, low cannon booms
-  - puzzle     : neon crystal, chimes bells, bloom glow, ripple cascade
-  - boss_battle: epic cinematic, dramatic stings, shockwave embers
-"""
+SparkLabs Engine - Genre Asset Profiles"""
 
 from __future__ import annotations
 

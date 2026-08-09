@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - Game Bridge Client
-
-Generates the JavaScript bridge client snippet that gets injected into
-generated HTML5 games. This client connects the running browser game to
-the server-side AI-Native Game Bridge, enabling real-time AI observation
-and adaptation of the generated game.
-
-The client is designed to be:
-  - Self-contained (no external dependencies beyond fetch API)
-  - Non-blocking (async HTTP, never stalls the game loop)
-  - Gracefully degrading (bridge unavailable = game still works)
-  - Safe (validates directives before applying them)
-  - Origin-aware (auto-detects bridge URL from window.location)
-  - Resilient (retries session creation with exponential backoff)
-  - Bi-directional (reports applied directives back to the server)
-
-Flow:
-  1. On game start, client POSTs to create a bridge session
-  2. Every N frames, client collects telemetry and POSTs it
-  3. Every M frames, client GETs pending directives from the server
-  4. Client applies directives to the running game
-  5. Client POSTs acknowledgment for applied directives
-  6. On game end or page unload, client ends the session
-
-Integration points in the generated game:
-  - window.initBridge(url, title, genre)  -> call once on game start
-  - window.bridgeTick()                   -> call once per frame
-  - window.trackBridgeEvent(name)         -> call on jump/death/collect/etc.
-  - window.endBridge()                    -> call on game over
-"""
+SparkLabs Engine - Game Bridge Client"""
 
 from __future__ import annotations
 

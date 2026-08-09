@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Event Bus System
-
-Bidirectional event communication framework that bridges the AI agent layer
-and the game engine runtime. Provides a publish-subscribe event architecture
-with priority-based routing, event filtering, and cross-system event
-propagation between agents, engine subsystems, and the game world.
-
-Architecture:
-  EngineEventBus (Singleton)
-    |-- EventChannel (named communication channel with subscribers)
-    |-- EventPublisher (emits events with priority and routing)
-    |-- EventSubscriber (receives and filters events by type)
-    |-- EventRouter (routes events between agent and engine layers)
-    |-- EventBuffer (queues events for ordered delivery)
-
-Event Categories:
-  - AGENT: agent decisions, state changes, learning events
-  - ENGINE: render, physics, audio, input events
-  - GAME: entity lifecycle, collision, scoring events
-  - WORLD: weather, time, terrain, ecosystem events
-  - UI: interface events, user input, display updates
-  - SYSTEM: initialization, shutdown, error events
-
-Usage:
-    eb = get_engine_event_bus()
-    eb.initialize()
-
-    # Subscribe to agent events
-    eb.subscribe("agent_decisions", handle_agent_decision, EventCategory.AGENT)
-
-    # Publish an event
-    eb.publish(EngineEvent(
-        event_type="entity_spawned",
-        category=EventCategory.GAME,
-        data={"entity_id": "e123", "position": (100, 200)},
-    ))
-
-    # Route events between agent and engine
-    eb.route_agent_to_engine(agent_event)
-"""
+SparkLabs Engine - Event Bus System"""
 
 from __future__ import annotations
 

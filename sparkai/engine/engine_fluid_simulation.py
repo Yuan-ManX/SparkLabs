@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - Fluid Simulation Engine
-
-Real-time 2D fluid dynamics using grid-based Navier-Stokes simulation.
-Supports velocity fields, density advection, diffusion, external forces,
-and particle-based visualization.
-
-Architecture:
-  FluidSimulationEngine (Singleton)
-    |-- FluidGrid       — grid-based velocity, density, and pressure fields
-    |-- FluidParticle   — Lagrangian particles for visualization
-    |-- FluidSource     — continuous emission of density and velocity
-    |-- FluidObstacle   — solid boundaries affecting flow
-
-Simulation Pipeline (Stam-style):
-  1. Add Forces    — apply external forces (gravity, wind, user input)
-  2. Advect        — transport velocity and density along the velocity field
-  3. Diffuse       — simulate viscous diffusion
-  4. Project       — enforce incompressibility via pressure solve
-  5. Emit Particles — generate Lagrangian particles for rendering
-"""
+SparkLabs Engine - Fluid Simulation Engine"""
 
 from __future__ import annotations
 

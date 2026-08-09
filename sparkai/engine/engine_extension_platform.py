@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Extension Platform
-
-A comprehensive plugin extension system for the SparkLabs game engine that
-manages the full lifecycle of engine extensions: registration, discovery,
-dependency resolution, version compatibility checking, loading, activation,
-and unloading. Extensions can contribute new behaviors, object types,
-conditions, actions, and visual effects to the engine.
-
-Architecture:
-  EngineExtensionPlatform (Singleton)
-    |-- ExtensionManifest      — metadata, authorship, compatibility declarations
-    |-- ExtensionInstance      — runtime state of a loaded extension
-    |-- RegisteredBehavior     — reusable behavior definition from an extension
-    |-- RegisteredObject       — custom game object type from an extension
-    |-- RegisteredCondition    — event condition contributed by an extension
-    |-- RegisteredAction       — event action contributed by an extension
-    |-- RegisteredEffect       — visual effect contributed by an extension
-    |-- ExtensionDependency    — declared dependency on another extension
-    |-- ExtensionCategoryEntry — metadata for extension categories
-
-Platform Features:
-  - REGISTRY:  register, discover, and query extensions by category or state
-  - LIFECYCLE: install, load, initialize, activate, deactivate, unload, uninstall
-  - BEHAVIORS: reusable behavior scripts that attach to game objects
-  - OBJECTS:   custom game object types with properties and rendering
-  - EVENTS:    custom conditions and actions for the event scripting system
-  - EFFECTS:   visual effects like particles, screen shake, post-processing
-  - DEPS:      dependency declaration and resolution with version constraints
-  - VERSION:   semantic versioning with engine compatibility checks
-  - MARKETPLACE: available, installed, and community extension metadata
-
-Usage:
-    eep = get_engine_extension_platform()
-    manifest = ExtensionManifest(name="Platformer Kit", version="1.0.0",
-        category=ExtensionCategory.BEHAVIOR)
-    eep.register_extension(manifest)
-    eep.load_extension(manifest.extension_id)
-    eep.activate_extension(manifest.extension_id)
-    status = eep.get_status()
-"""
+SparkLabs Engine - Extension Platform"""
 
 from __future__ import annotations
 

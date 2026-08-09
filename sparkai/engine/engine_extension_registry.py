@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Extension Registry
-
-Modular extension ecosystem that manages behaviors, object types,
-and feature extensions with versioning, dependency resolution, and
-marketplace-style discovery. Provides a unified system for publishing,
-installing, updating, and querying extensions across the engine.
-
-Architecture:
-  ExtensionRegistry
-    |-- ExtensionDefinition (metadata, authorship, marketplace info)
-    |-- ExtensionVersion (semantic versioning with changelogs)
-    |-- BehaviorModule (reusable behavior scripts and parameters)
-    |-- ObjectTypeModule (custom object types with properties)
-    |-- ExtensionDependency (declared inter-extension requirements)
-
-Registry Features:
-  - PUBLISH: register new extensions with versioning and tags
-  - INSTALL: install from marketplace, local, URL, repository, or bundled
-  - RESOLVE: dependency graph traversal and conflict detection
-  - COMPATIBILITY: engine version compatibility checks
-  - SEARCH: query extensions by type, tags, or free-text
-  - STATS: aggregate metrics on installed and published extensions
-"""
+SparkLabs Engine - Extension Registry"""
 
 from __future__ import annotations
 

@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - Event-to-Code Transpilation System
-
-Transpiles visual event sheets (conditions + actions) into executable code
-in multiple target languages. Events are the core game logic authoring
-paradigm — they describe "when X happens, do Y" rules. This system
-converts those declarative rules into well-structured, commented source
-code that can be executed directly in the target runtime.
-
-Architecture:
-  EngineEventCodegen (Singleton)
-    |-- EventSheet          — container of events, variables, and metadata
-    |-- GameEvent           — single condition→actions rule with sub-events
-    |-- EventCondition      — trigger predicate (collision, timer, input, etc.)
-    |-- EventAction         — executable operation (move, spawn, play_sound, etc.)
-    |-- GeneratedCode       — output of transpilation (language, source, deps)
-    |-- CodeTemplate        — pre-built event patterns for common game logic
-    |-- ValidationResult    — logical consistency check outcome
-    |-- OptimizationReport  — merge/reorder/removal statistics
-
-Code Generation Pipeline:
-  1. Parse event sheet into intermediate representation
-  2. Validate events for logical consistency
-  3. Optimize event ordering and merge compatible events
-  4. Emit target-language source with header comments and imports
-  5. Return GeneratedCode with entry point and dependency list
-
-Supported Languages:
-  - Python  (generate_python)
-  - JavaScript (generate_javascript)
-  - Lua      (generate_lua)
-
-Event Templates:
-  - PLATFORMER_MOVEMENT  — horizontal input + jump + gravity
-  - COLLISION_RESPONSE   — overlap detection + bounce/collect
-  - TIMER_SPAWNING       — interval-based object creation
-  - UI_BUTTON_HANDLING   — hover/click/press state transitions
-"""
+SparkLabs Engine - Event-to-Code Transpilation System"""
 
 from __future__ import annotations
 

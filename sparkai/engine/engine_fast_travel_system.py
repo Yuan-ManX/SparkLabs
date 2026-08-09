@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Fast Travel System
-
-Manages fast travel networks that allow players to instantly traverse
-between discovered locations in a game world. Each travel point can
-belong to one or more networks, has discovery requirements, and may
-charge a travel cost (currency, items, or cooldown). The system tracks
-per-player discovery state, travel history, and enforces travel
-restrictions such as locked destinations, hostile area blocking, or
-cooldown timers.
-
-Architecture:
-  FastTravelSystem (singleton)
-    |-- TravelPoint, TravelNetwork, TravelConnection, TravelCost,
-    |   TravelRequirement, DiscoveryRecord, TravelRecord, TravelCooldown,
-    |   TravelStats, TravelSnapshot, TravelEvent
-    |-- PointStatus, TravelMode, CostType, RequirementType,
-        TravelEventKind
-
-Core Capabilities:
-  - register_point / update_point / get_point / list_points /
-    delete_point: travel point catalog with coordinates, status, and
-    network membership.
-  - create_network / update_network / get_network / list_networks:
-    group travel points into named networks (e.g. "overworld",
-    "underground").
-  - connect / disconnect / list_connections: define directed or
-    bidirectional connections between travel points.
-  - discover / undiscover / is_discovered / list_discoveries: per-player
-    discovery tracking with optional requirements check.
-  - travel / can_travel / get_travel_cost: attempt travel between two
-    points, enforcing discovery, requirements, cooldowns, and cost.
-  - list_travel_history / list_cooldowns: query recent travel activity
-    and active cooldowns for a player.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Engine - Fast Travel System"""
 
 from __future__ import annotations
 

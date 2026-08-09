@@ -1,19 +1,5 @@
 """
-SparkLabs Engine - Event Sheet Runtime
-
-Visual event-based programming runtime for defining game logic through
-graphical sheets. Creators arrange conditions, actions, and sub-events
-in hierarchical sheets that compile into executable runtime sequences.
-No textual scripting required — the entire logic surface is visual.
-
-Architecture:
-  EventSheetRuntime
-    |-- SheetLayoutEngine (validates sheet structure and resolves references)
-    |-- ConditionEvaluator (runtime evaluation of condition blocks)
-    |-- ActionDispatcher (executes action blocks with parameter binding)
-    |-- SubEventProcessor (recursive sub-event traversal and branching)
-    |-- StateResolver (captures game state for trigger detection)
-"""
+SparkLabs Engine - Event Sheet Runtime"""
 
 from __future__ import annotations
 

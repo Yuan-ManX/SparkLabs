@@ -1,15 +1,5 @@
 """
-SparkLabs Engine - Game Feature Injector
-
-Injects tilemap rendering, save/load, achievements, screen shake, smooth camera,
-and minimap into the generated HTML5 game runtime. Each feature is independently
-toggleable and integrates with the existing HtmlAssembler output.
-
-The injector produces JavaScript snippets that are inserted into the game template:
-  - build_header_js(): Feature system definitions
-  - build_loop_patch_js(): Update/render hooks called each frame
-  - build_init_call_js(): Initialization calls for game start
-"""
+SparkLabs Engine - Game Feature Injector"""
 
 from __future__ import annotations
 

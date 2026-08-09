@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Fluid Dynamics Simulation System
-
-A particle-based fluid simulation engine using Smoothed Particle Hydrodynamics
-(SPH) for realistic water, lava, slime, honey, gas, and custom fluid effects.
-Provides density computation via Poly6 kernels, pressure forces via Spiky
-kernels, viscosity via the XSPH method, surface tension via color-field
-gradients, and spatial hashing for efficient neighbor searches.
-
-Architecture:
-  EngineFluidDynamics (Singleton)
-    |-- FluidParticle      — individual SPH particle with physical state
-    |-- FluidConfig        — simulation configuration and fluid properties
-    |-- FluidSimulation    — complete simulation state container
-    |-- FluidInteraction   — interaction rules between fluid types
-    |-- FluidBoundary      — domain boundary definition
-    |-- SimulationStats    — per-frame performance and quality metrics
-
-Supported Solvers:
-  - SPH   (classic Smoothed Particle Hydrodynamics)
-  - PBF   (Position Based Fluids)
-  - IISPH (Implicit Incompressible SPH)
-  - FLIP  (Fluid Implicit Particle)
-  - APIC  (Affine Particle-In-Cell)
-
-Kernel Functions:
-  - Poly6      — density interpolation
-  - Spiky      — pressure gradient forces
-  - Viscosity  — viscous force Laplacian
-"""
+SparkLabs Engine - Fluid Dynamics Simulation System"""
 
 from __future__ import annotations
 

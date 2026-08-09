@@ -1,46 +1,5 @@
 """
-SparkLabs Engine - Formation System
-
-Manages group movement formations for RPG and RTS gameplay inside the
-SparkLabs AI-native game engine. The system lets designers register
-formation templates (line, column, wedge, circle, phalanx, square, and
-many more), spawn live formation instances, assign units to tactical
-slots, issue movement orders, transition between formation shapes, and
-analyze terrain to pick the best layout. A deterministic tick loop
-advances marching formations toward their targets and updates slot
-positions every frame.
-
-Architecture:
-  FormationSystem (singleton)
-    |-- FormationType, FormationRole, FormationStatus, UnitType,
-       MovementMode, SpacingMode, FormationFacing, TransitionType,
-       FormationEventKind
-    |-- FormationSlot, FormationTemplate, FormationInstance,
-       FormationTransition, UnitAssignment, FormationConfig,
-       FormationStats, FormationSnapshot, FormationEvent,
-       FormationOrders, TerrainAnalysis
-    |-- get_formation_system
-
-Core Capabilities:
-  - register_template / get_template / list_templates / remove_template
-  - create_formation / get_formation / list_formations / remove_formation
-  - assign_unit / unassign_unit / get_assignment / list_assignments /
-    auto_assign_slots
-  - set_formation_facing / set_formation_spacing / move_formation /
-    stop_formation / activate_formation / disband_formation
-  - create_transition / get_transition / update_transition /
-    complete_transition / remove_transition
-  - issue_order / get_order / list_orders / execute_order
-  - analyze_terrain / get_terrain_analysis / suggest_formation /
-    optimize_spacing
-  - get_formation_info / get_status / get_stats / get_snapshot /
-    get_config / set_config / tick / reset / list_events
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`FormationSystem.get_instance` or the module-level
-:func:`get_formation_system` factory.
-"""
+SparkLabs Engine - Formation System"""
 
 from __future__ import annotations
 

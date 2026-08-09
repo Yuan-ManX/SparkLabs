@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Game Runtime Extensions
-
-Original SparkLabs modules that extend the base GameRuntime with:
-  - AudioSynth: procedural Web Audio API sound effects (no asset files)
-  - ParticleEngine: multi-emitter particle system (trails, bursts, sparkles)
-  - PhysicsKit: friction, slopes, moving platforms, bounce pads, knockback
-  - EntityKit: projectiles, hazards, powerups, checkpoints, bounce pads,
-               moving platforms, teleporters
-  - FxInjector: assembles the above into JavaScript snippets that the
-                HtmlAssembler embeds into the generated game document
-
-Design goals:
-  - Zero external assets: every sound is synthesized at runtime via the
-    browser's AudioContext; every particle is drawn with canvas primitives.
-  - Drop-in integration: FxInjector produces self-contained JS strings that
-    the existing HtmlAssembler can splice into its output without restructuring.
-  - Genre aware: effects adapt to the compiled GameConfig (gravity, genre,
-    palette) so each game gets a fitting sensory layer.
-
-Pattern integration (original SparkLabs design):
-  - Procedural asset generation (procedural audio streams)
-  - Particle emitter graph (multi-emitter particle system)
-  - Component-based entity composition (ECS roots)
-  - Fixed-timestep deterministic updates for replayability
-"""
+SparkLabs Engine - Game Runtime Extensions"""
 
 from __future__ import annotations
 

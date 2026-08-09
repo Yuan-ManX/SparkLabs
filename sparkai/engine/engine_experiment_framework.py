@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Experiment Framework
-
-Designs, assigns and analyzes A/B/n experiments for game features.
-An ``Experiment`` defines one or more ``Variant`` configurations (a
-control plus treatment arms), a targeting rule set, a sample ratio, and
-a lifecycle that moves from ``DRAFT`` to ``RUNNING`` to ``COMPLETED``.
-
-Players are assigned to variants through a deterministic hash-based
-``VariantAssignment`` that stays stable across sessions. As players
-interact with the game, the engine collects ``MetricSample`` entries
-per variant, and ``ExperimentResult`` snapshots summarize conversion
-rates, means and statistical significance so the AI can decide whether
-to ship a treatment arm to the entire population.
-
-Architecture:
-  ExperimentFramework (singleton)
-    |-- Experiment, Variant, TargetingRule, MetricDefinition
-    |-- VariantAssignment, MetricSample, ExperimentResult,
-        VariantStatistic, SignificanceTest
-    |-- ExperimentStats, ExperimentSnapshot, ExperimentEvent
-    |-- ExperimentStatus, VariantType, MetricType, AllocationStrategy,
-        SignificanceLevel
-
-Core Capabilities:
-  - create_experiment / update_experiment / delete_experiment:
-    lifecycle management for experiments.
-  - add_variant / remove_variant: variant composition.
-  - add_metric / remove_metric: metric definition.
-  - start_experiment / pause_experiment / complete_experiment:
-    lifecycle transitions.
-  - assign_variant / get_assignment / bulk_assign: deterministic
-    hash-based player-to-variant assignment.
-  - record_metric / record_conversion: metric sample collection.
-  - get_results / compute_significance: statistical analysis.
-  - list_experiments / list_assignments / list_events:
-    observability helpers.
-  - get_stats / get_status / get_snapshot / reset: standard
-    engine observability.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`ExperimentFramework.get_instance` or the module-level
-:func:`get_experiment_framework` factory.
-"""
+SparkLabs Engine - Experiment Framework"""
 
 from __future__ import annotations
 

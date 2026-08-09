@@ -1,14 +1,5 @@
 """
-SparkAI Engine - Frame Timer System
-
-Precision frame timing and pacing system for game loop
-synchronization. Provides high-resolution delta time calculation,
-frame rate smoothing, fixed timestep accumulation, and performance
-profiling with min/max/avg frame time tracking.
-
-Supports adaptive frame pacing, VSync emulation, and configurable
-target frame rates for consistent game simulation across hardware.
-"""
+SparkAI Engine - Frame Timer System"""
 
 from __future__ import annotations
 
