@@ -1,34 +1,5 @@
 """
-SparkAI Agent - Mixture of Agents
-
-Multi-model reasoning system that generates diverse perspectives
-from multiple reference models and synthesizes them into a
-unified high-quality response. When facing genuinely difficult
-problems requiring diverse viewpoints, the system dispatches
-the same prompt to multiple models in parallel and aggregates
-their responses.
-
-Architecture:
-  MixtureOfAgentsEngine
-    |-- ReferenceLayer (parallel diverse response generation)
-    |-- AggregationLayer (synthesis of best elements)
-    |-- ModelPool (available model registry)
-    |-- ResponseScorer (quality assessment)
-
-Flow:
-  1. Receive complex query
-  2. Dispatch to N reference models in parallel
-  3. Collect diverse responses (tolerate partial failures)
-  4. Score each response for relevance and quality
-  5. Aggregate best elements into final response
-  6. Return synthesized result
-
-Design Principles:
-  - Model diversity for robustness
-  - Failure tolerance (minimum 1 successful reference)
-  - Exponential backoff per model on failure
-  - Quality-weighted aggregation
-"""
+SparkAI Agent - Mixture of Agents"""
 
 from __future__ import annotations
 

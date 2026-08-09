@@ -1,45 +1,5 @@
 """
-SparkLabs Agent - AI Netcode Director
-
-A runtime fusion module that optimizes multiplayer netcode by fusing live
-network telemetry with strategy selection, lag compensation tuning, and
-region-aware recommendations. The director ingests latency and bandwidth
-samples per session, classifies connection quality, detects anomalies such
-as lag spikes and packet loss bursts, and issues strategy changes that
-keep gameplay responsive across heterogeneous networks.
-
-This module embodies the AI-native principle: netcode is not a fixed
-transport layer but an intelligent agent that observes per-player
-conditions, reasons about tradeoffs between client authority, server
-authority, rollback, and prediction, and adapts sync mode, bandwidth
-profile, and lag compensation in real time.
-
-Architecture:
-  NetcodeDirector (singleton)
-    |-- LatencySample, BandwidthMeasurement, NetcodeSession,
-        LagCompensationConfig, RegionProfile, NetcodeRecommendation,
-        NetcodeAnomaly, NetcodeStats, NetcodeSnapshot, NetcodeEvent
-    |-- NetcodeStrategy, LatencyTier, SyncMode, BandwidthProfile,
-        LagCompensation, RegionCode, NetcodeEventKind
-
-Core Capabilities:
-  - create_session / get_session / list_sessions / update_session /
-    close_session: session lifecycle management with strategy metadata.
-  - record_latency / list_latency_samples: per-player RTT, jitter, and
-    packet loss ingestion used to classify connection quality.
-  - record_bandwidth / list_bandwidth_measurements: throughput and
-    compression telemetry tracking across active sessions.
-  - tune_lag_compensation / get_lag_compensation: backward reconciliation,
-    forward prediction, and hybrid compensation configuration.
-  - register_region / get_region / list_regions: region capacity and
-    latency profiling for placement decisions.
-  - analyze_session / list_recommendations: strategy recommendation
-    engine that reasons over current telemetry and session profile.
-  - detect_anomalies / list_anomalies: anomaly detection for lag spikes,
-    packet loss bursts, and bandwidth compression regressions.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Agent - AI Netcode Director"""
 
 from __future__ import annotations
 

@@ -1,65 +1,6 @@
 """
 SparkLabs Agent - Narrative Memory Engine
-=========================================
-
-Episodic narrative memory and character-arc tracking for AI agents operating
-inside the SparkLabs AI-native game engine.
-
-This module implements a narrative memory engine that stores episodic
-memories of story events -- plot points, character interactions, world
-changes, twists, revelations -- and tracks how characters evolve across the
-course of a narrative. It provides rich retrieval by story arc, character,
-chronology, and dramatic significance so that downstream storytelling agents
-can recall what has happened, to whom, and why it mattered.
-
-Core concepts
--------------
-
-1. **Story Events** -- ``StoryEvent`` records are the atomic unit of
-   narrative memory. Each event captures a title, description, type
-   (PLOT_POINT, CONFLICT, TWIST, ...), the story arc it belongs to, the
-   characters that participated, a narrative timestamp, a dramatic weight
-   in [0, 1], an emotional tone, and arbitrary tags. Events are the raw
-   material from which timelines and character journeys are constructed.
-
-2. **Character Arcs** -- ``CharacterArc`` tracks how a single character
-   evolves through the narrative. Each arc records the character's role
-   (PROTAGONIST, ANTAGONIST, ...), current stage (SETUP -> RISING_ACTION
-   -> CLIMAX -> FALLING_ACTION -> RESOLUTION -> EPILOGUE), status
-   (DORMANT, ACTIVE, PAUSED, COMPLETED, ABANDONED), a prose summary, the
-   key events that shaped the arc, a full stage-transition history, and a
-   relationship map linking to other characters.
-
-3. **Plot Threads** -- ``PlotThread`` represents an open narrative
-   question or ongoing storyline (e.g. "The Ancient Prophecy"). Threads
-   link related events across arcs, carry a priority, and move through
-   OPEN -> RESOLVED / DROPPED states.
-
-4. **Timelines** -- ``NarrativeTimeline`` orders the events of a story
-   arc chronologically by narrative time, providing the backbone for
-   chronological retrieval and narrative-density analysis.
-
-5. **Narrative Density** -- ``compute_narrative_density`` aggregates
-   events per arc stage, dramatic-weight distribution, and emotional-tone
-   distribution so callers can understand the shape and pacing of a
-   story.
-
-Architecture
-------------
-
-NarrativeMemoryEngine (Singleton, double-checked locking with threading.RLock)
-  |-- StoryEvent                -- a single recorded narrative story event
-  |-- CharacterArc              -- a character's evolving arc through the story
-  |-- PlotThread                -- an open or resolved narrative storyline
-  |-- NarrativeTimeline         -- a chronologically ordered event sequence
-  |-- NarrativeMemoryStats      -- aggregate engine statistics
-  |-- NarrativeMemorySnapshot   -- complete engine state snapshot
-  |-- NarrativeMemoryEvent      -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the engine
-is safe to call from multiple agent threads. Bounded in-memory stores use
-FIFO eviction when their capacity constants are exceeded.
-"""
+========================================="""
 
 from __future__ import annotations
 

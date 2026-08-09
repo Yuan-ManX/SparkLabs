@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Music Conductor
-
-The AgentMusicConductor is the adaptive music intelligence of the AI-native
-game engine. It listens to scene context, narrative tension, player emotions,
-and frame architect directives to generate real-time music directives:
-tempo, key, mode, intensity, layer activation, and transition style.
-
-Architecture:
-  Scene Signals --> LISTEN --> ASSESS --> COMPOSE --> DIRECT --> TRANSITION
-  (narrative,     (gather     (evaluate    (select       (emit music     (manage
-   intensity,      signals)    emotional   music          directives)     layer
-   emotion,                    context)    strategy)                      fades)
-
-The conductor manages:
-  - Tempo (60-180 BPM) based on scene intensity
-  - Musical key and mode (major/minor/-modal) based on emotion
-  - Dynamic layering: base, rhythm, melody, tension, stinger
-  - Intensity curves that follow pacing rhythm
-  - Smooth transitions between musical states
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Music Conductor"""
 
 from __future__ import annotations
 

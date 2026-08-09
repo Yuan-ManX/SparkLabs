@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Multi-Agent Orchestration Engine
-
-Coordinates specialized agent teams with role-based task assignment,
-consensus-driven decision making, and parallel execution management.
-Enables complex multi-agent workflows for AI-native game creation.
-
-Architecture:
-  MultiAgentOrchestrator
-    |-- AgentTask (unit of work with role requirements)
-    |-- OrchestrationSession (task collection with agent roster)
-    |-- TaskDispatcher (role-matching assignment logic)
-    |-- ConsensusEngine (agreement detection and resolution)
-    |-- ProgressTracker (session state and milestone tracking)
-    |-- DependencyResolver (task ordering and deadlock prevention)
-
-Orchestration Roles:
-  - COORDINATOR: manages workflow, assigns tasks
-  - ANALYZER: inspects problems, identifies patterns
-  - GENERATOR: produces creative output, code, assets
-  - REVIEWER: validates quality, catches issues
-  - TESTER: verifies behavior, runs checks
-  - DEBUGGER: diagnoses and fixes problems
-  - OPTIMIZER: improves performance, reduces waste
-  - TRANSLATOR: converts between formats, bridges systems
-"""
+SparkLabs Agent - Multi-Agent Orchestration Engine"""
 
 from __future__ import annotations
 

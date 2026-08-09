@@ -1,20 +1,5 @@
 """
-Observability System - Distributed tracing, metrics, and logging for agent operations.
-
-Architecture:
-    ObservabilitySystem/
-    |-- SpanKind (operation type enumeration)
-    |-- MetricType (counter, gauge, histogram enumeration)
-    |-- TraceSpan (timed operation span dataclass)
-    |-- MetricSnapshot (metric data point dataclass)
-    |-- LogEntry (structured log dataclass)
-    |-- MetricRegistry (named metric collection)
-    |-- ObservabilitySystem (global observability orchestration)
-
-Provides end-to-end visibility into agent behavior for the AI-native game engine.
-Tracks LLM calls, tool invocations, game engine operations, and editor interactions
-with support for span hierarchies, metric aggregation, and structured logging.
-"""
+Observability System - Distributed tracing, metrics, and logging for agent operations."""
 
 from __future__ import annotations
 

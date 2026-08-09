@@ -1,42 +1,5 @@
 """
-SparkLabs Agent - AI Modding Assistant
-
-A modding assistant agent for the SparkLabs AI-native game engine. It helps
-modders create, validate, and publish mods by generating mod templates,
-checking structural integrity, verifying compatibility with the host game
-version, and suggesting improvements. The assistant maintains a registry
-of mod definitions, a catalog of reusable templates, and a validation
-pipeline that catches common modding pitfalls before publication.
-
-Architecture:
-  ModdingAssistant (singleton)
-    |-- ModDefinition, ModTemplate, ModValidation, CompatibilityReport,
-       AssistantStats, AssistantSnapshot, AssistantEvent
-    |-- ModCategory, ModStatus, ValidationSeverity, TemplateKind,
-       AssistantEventKind
-
-Core Capabilities:
-  - register_mod / get_mod / list_mods / update_mod / remove_mod: mod
-    definition lifecycle management.
-  - register_template / get_template / list_templates / remove_template:
-    reusable mod templates that scaffold new mod creation.
-  - instantiate_template: create a mod definition from a template with
-    parameter substitution.
-  - validate_mod: run a multi-check validation pipeline covering
-    structure, dependencies, metadata, and resource references.
-  - check_compatibility: verify a mod against a target game version and
-    installed mod set, surfacing conflicts and missing dependencies.
-  - suggest_improvements: generate AI-driven suggestions for improving
-    a mod's structure, compatibility, or metadata.
-  - publish_mod / unpublish_mod: lifecycle transitions for mod release.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`ModdingAssistant.get_instance` or the module-level
-:func:`get_modding_assistant` factory.
-"""
+SparkLabs Agent - AI Modding Assistant"""
 
 from __future__ import annotations
 

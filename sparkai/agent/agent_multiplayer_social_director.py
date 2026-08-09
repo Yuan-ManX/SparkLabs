@@ -1,49 +1,5 @@
 """
-SparkLabs Agent - AI Multiplayer Social Director
-
-A runtime fusion module that orchestrates live multiplayer experiences by
-fusing skill rating, social graph analysis, and real-time engagement
-signals. The director maintains player skill profiles, builds and
-traverses the social graph (friendships, guilds, rivalries), runs
-skill-aware and social-aware matchmaking, composes balanced teams,
-and triggers live social events (tournaments, guild wars, community
-challenges) based on population health and engagement trends.
-
-This module embodies the AI-native principle: multiplayer is not a
-static lobby system but an intelligent agent that continuously reasons
-about population dynamics, social cohesion, and competitive balance
-to deliver the right match to the right player at the right time.
-
-Architecture:
-  MultiplayerSocialDirector (singleton)
-    |-- SkillProfile, SocialEdge, SocialCluster, MatchmakingTicket,
-        MatchResult, TeamComposition, SocialEvent, MultiplayerStats,
-        MultiplayerSnapshot, MultiplayerEvent
-    |-- SkillTier, SocialRelation, MatchmakingStrategy, TeamRole,
-        MatchOutcome, SocialEventType, EventStatus,
-        MultiplayerEventKind
-
-Core Capabilities:
-  - register_player / update_player / get_player / list_players /
-    delete_player: skill profile management with rating and tier.
-  - add_relation / remove_relation / get_relation / list_relations /
-    get_social_graph: social graph management with relation types.
-  - detect_clusters / get_cluster / list_clusters: social cluster
-    detection grouping players by connectivity and proximity.
-  - create_ticket / get_ticket / list_tickets / cancel_ticket:
-    matchmaking ticket lifecycle with strategy selection.
-  - find_match / get_match / list_matches: skill-aware and
-    social-aware matchmaking with team composition.
-  - compose_teams / get_team: balanced team composition by role
-    and skill distribution.
-  - record_result / get_result / list_results: match outcome
-    tracking with skill rating updates.
-  - create_social_event / update_social_event / launch_social_event /
-    complete_social_event / list_social_events: live social event
-    lifecycle (tournaments, guild wars, community challenges).
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Agent - AI Multiplayer Social Director"""
 
 from __future__ import annotations
 

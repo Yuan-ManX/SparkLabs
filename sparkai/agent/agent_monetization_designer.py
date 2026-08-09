@@ -1,32 +1,5 @@
 """
-SparkLabs Agent - Monetization Designer
-
-Comprehensive game monetization design intelligence that creates
-balanced revenue strategies, configures optimal pricing structures,
-maintains healthy virtual economies, and audits monetization fairness.
-Supports multiple revenue models across diverse game genres with
-real-time forecasting and conversion funnel optimization.
-
-Architecture:
-  AgentMonetizationDesigner (Singleton)
-    |-- RevenueModel (monetization strategy blueprint)
-    |-- PricingStrategy (price points and regional adjustments)
-    |-- EconomyBalance (currency flows and wealth distribution)
-    |-- IAPDesign (in-app purchase catalog with tiered offerings)
-    |-- MonetizationAudit (fairness and compliance evaluation)
-
-Revenue Model Types:
-  PREMIUM, FREEMIUM, SUBSCRIPTION, BATTLE_PASS, COSMETIC, DLC
-
-Currency Types:
-  SOFT, HARD, PREMIUM, SEASONAL, GUILD, EVENT, REPUTATION
-
-Monetization Tiers:
-  BUDGET, STANDARD, DELUXE, ULTIMATE, WHALE
-
-Supported Game Genres:
-  RPG, FPS, MOBA, STRATEGY, CASUAL, SIMULATION, SPORTS, BATTLE_ROYALE
-"""
+SparkLabs Agent - Monetization Designer"""
 
 from __future__ import annotations
 

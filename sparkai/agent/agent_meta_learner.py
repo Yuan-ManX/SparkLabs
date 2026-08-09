@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - Meta-Learner Engine
-
-A meta-learning system that enables AI agents to learn HOW to learn more
-effectively. Rather than learning individual tasks, the MetaLearnerEngine
-tracks which learning strategies work best for different categories of
-tasks, adapts learning rates based on observed performance, and builds a
-meta-knowledge base of learning effectiveness. This is "learning to learn."
-
-The system observes learning episodes (one attempt at a task with a
-particular strategy), aggregates them into strategy profiles (how well a
-strategy works for a task category), maintains per-agent adaptive learning
-rates with momentum, and stores reusable meta-knowledge that can transfer
-across tasks. It also detects convergence plateaus and estimates transfer
-potential between task categories.
-
-Architecture:
-  MetaLearnerEngine (Singleton)
-    |-- LearningEpisode (single learning attempt record)
-    |-- StrategyProfile (per strategy+category effectiveness aggregate)
-    |-- MetaKnowledge (reusable cross-task learning insights)
-    |-- AdaptiveRate (per agent+category learning rate with momentum)
-    |-- MetaLearningEvent (observable system events)
-    |-- Event Handlers (pluggable observers for learning lifecycle)
-
-Core Capabilities:
-  - Track and complete learning episodes with performance deltas
-  - Aggregate episodes into strategy effectiveness profiles
-  - Adapt learning rates using momentum and variance of past gains
-  - Select the best strategy for a task category based on history
-  - Store and retrieve reusable meta-knowledge entries
-  - Detect convergence vs plateau vs regression over a window
-  - Estimate transfer potential between task categories
-  - Emit observable events for episode and strategy lifecycle
-"""
+SparkLabs Agent - Meta-Learner Engine"""
 
 from __future__ import annotations
 

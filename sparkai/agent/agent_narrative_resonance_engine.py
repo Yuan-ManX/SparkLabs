@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Narrative Resonance Engine
-
-The AgentNarrativeResonanceEngine measures and orchestrates harmonic
-resonance between narrative beats and the player's emotional state.
-Just as musical notes can harmonize or dissonate, narrative beats have
-emotional frequencies that either resonate with the player's current
-state (creating immersion) or clash (creating tension or alienation).
-
-The engine treats narrative as a wave function:
-  - Each beat has an emotional frequency (joy, sorrow, tension, wonder)
-  - The player has a current emotional frequency (measured from telemetry)
-  - Resonance occurs when frequencies align (deep immersion)
-  - Dissonance occurs when they clash (productive tension or jarring)
-
-The director uses resonance to decide WHEN to deploy which narrative
-content for maximum emotional impact.
-
-Architecture:
-  TUNE  ->  LISTEN  ->  RESONATE  ->  AMPLIFY  ->  HARMONIZE
-  (calibrate  (measure   (compute       (boost         (blend
-   frequency    player     resonance     resonant       conflicting
-   palette)     state)     score per     beats, damp    frequencies
-                           candidate)    dissonant)     smoothly)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Narrative Resonance Engine"""
 
 from __future__ import annotations
 

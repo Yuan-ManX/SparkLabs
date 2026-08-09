@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Narrative Branch System
-
-Generates branching storylines with consistency checking for game narratives,
-dialogues, and quests. Manages narrative nodes, character profiles, dialogue
-lines, and validates story coherence across branching paths.
-
-Architecture:
-  NarrativeBranchSystem
-    |-- BranchBuilder (constructs branching narrative trees)
-    |-- ConsistencyValidator (cross-references characters, locations, events)
-    |-- ConflictResolver (automatic plot hole and contradiction resolution)
-    |-- DialogueManager (character dialogue with emotional states)
-    |-- ConsequenceTracker (cause-effect chain mapping)
-
-Narrative Operations:
-  - BRANCH_CREATION: starting new narrative arcs from nodes
-  - CONSISTENCY_CHECK: detecting contradictions across branches
-  - AUTO_RESOLVE: automatic conflict resolution where possible
-  - CHARACTER_GENERATION: creating NPCs with traits and motivations
-  - DIALOGUE_ADDITION: injecting dialogue with emotional context
-  - BRANCH_MERGE: combining divergent story paths
-"""
+SparkLabs Agent - Narrative Branch System"""
 
 from __future__ import annotations
 

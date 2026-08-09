@@ -1,41 +1,5 @@
 """
-SparkLabs Agent - Nemesis Director
-
-An AI antagonist director for the SparkLabs AI-native game engine. It spawns
-recurring adaptive rivals that learn player weaknesses, evolve through a rank
-hierarchy, form political relationships with each other, and resurface after
-defeat with new traits. The director fuses emergent narrative, threat
-modeling, and player-profile learning into a single intelligent surface that
-choreographs signature antagonist arcs without manual scripting.
-
-Architecture:
-  NemesisDirector (singleton)
-    |-- NemesisProfile, NemesisRelationship, NemesisWeakness,
-       NemesisEncounter, NemesisStats, NemesisSnapshot, NemesisEvent
-    |-- NemesisRank, NemesisStatus, NemesisTrait, NemesisRelationKind,
-       NemesisEventKind
-
-Core Capabilities:
-  - spawn_nemesis / get_nemesis / list_nemesis / update_nemesis /
-    remove_nemesis: antagonist lifecycle with rank, traits, strengths.
-  - promote_nemesis / defeat_nemesis / resurrect_nemesis / exile_nemesis:
-    rank transitions and fate orchestration.
-  - register_relationship / get_relationship / list_relationships /
-    remove_relationship: political graph between antagonists.
-  - register_weakness / get_weakness / list_weaknesses: exploitable
-    weaknesses discovered by the player.
-  - log_encounter / list_encounters: combat history that feeds learning.
-  - learn_weakness: infer a new weakness from encounter telemetry.
-  - suggest_nemesis_for_player: pick a fitting rival for a player profile.
-  - assess_threat: score the threat a nemesis poses to a player.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`NemesisDirector.get_instance` or the module-level
-:func:`get_nemesis_director` factory.
-"""
+SparkLabs Agent - Nemesis Director"""
 
 from __future__ import annotations
 

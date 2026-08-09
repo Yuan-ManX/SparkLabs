@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Narrative Composer
-
-Intelligent story construction agent that generates coherent game narratives —
-complete with characters, branching dialogue trees, plot arcs, and world lore.
-The composer maintains internal consistency across all narrative elements and
-adapts to the game's genre, tone, and scope defined by the Game Director.
-
-Architecture:
-  NarrativeComposer
-    |-- PlotArchitect (story structure: acts, beats, turning points)
-    |-- CharacterForge (NPC personalities, backstories, motivations)
-    |-- DialogueWeaver (branching conversation trees with consequence tracking)
-    |-- LoreKeeper (world history, factions, artifacts, mythology)
-    |-- ConsistencyEngine (cross-references characters, locations, events)
-
-Narrative Elements:
-  - PLOT: main storyline, side quests, world events, faction conflicts
-  - CHARACTER: protagonists, antagonists, supporting cast, NPC templates
-  - DIALOGUE: branching trees with conditions, tone variants, consequence flags
-  - LORE: world history, mythology, factions, locations, item descriptions
-"""
+SparkLabs Agent - Narrative Composer"""
 
 from __future__ import annotations
 

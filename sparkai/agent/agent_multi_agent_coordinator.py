@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Multi-Agent Coordinator
-
-AI-driven multi-agent coordination system for complex game scenarios.
-Manages agent teams, role assignments, communication channels, task
-allocation, synergy networks, and tactical formation positioning.
-
-Architecture:
-  AgentMultiAgentCoordinator
-    |-- AgentTeam (squad composition with formation patterns)
-    |-- TeamMember (individual agent role within a team)
-    |-- CoordinationEvent (inter-agent messaging event)
-    |-- TaskAllocation (capability-driven task distribution)
-    |-- CapabilityMatrix (agent skill vector assessment)
-    |-- SynergyNetwork (pair-wise agent synergy graph)
-
-Coordination Modes:
-  - HIERARCHICAL: top-down command from team leader
-  - CONSENSUS: unanimous agreement among team members
-  - AUCTION: bid-based task claiming
-  - VOTING: democratic decision by majority
-  - SWARM: emergent behavior from simple rules
-  - COMMAND_CHAIN: sequential delegated authority
-  - ROLE_BASED: role-determined action routing
-  - AUCTION_MARKET: resource-allocated bidding
-"""
+SparkLabs Agent - Multi-Agent Coordinator"""
 
 from __future__ import annotations
 

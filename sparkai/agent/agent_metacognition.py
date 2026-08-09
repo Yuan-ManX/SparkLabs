@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Metacognition System
-
-A self-reflective reasoning layer that enables agents to monitor, evaluate,
-and adapt their own cognitive processes. The metacognition system provides
-confidence calibration, uncertainty quantification, cognitive load management,
-and self-improvement tracking -- allowing the AI game engine to reason about
-its own reasoning.
-
-Architecture:
-  AgentMetacognition (Singleton)
-    |-- ConfidenceProfile (per-task confidence tracking)
-    |-- CognitiveLoadMonitor (load-aware throttling)
-    |-- UncertaintyQuantifier (Bayesian uncertainty estimation)
-    |-- SelfAssessmentLog (improvement trajectory tracking)
-    |-- CalibrationCurve (confidence vs accuracy mapping)
-    |-- ReflectionCycle (periodic self-review process)
-
-Core Capabilities:
-  - Calibrate confidence scores against actual outcomes
-  - Monitor and manage cognitive load across agent subsystems
-  - Quantify uncertainty with calibrated probability distributions
-  - Track self-improvement over time with learning curves
-  - Generate reflective insights for decision optimization
-  - Detect and mitigate overconfidence and underconfidence
-"""
+SparkLabs Agent - Metacognition System"""
 
 from __future__ import annotations
 

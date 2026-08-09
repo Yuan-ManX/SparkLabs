@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Multi-Modal Agent
-
-Multi-modal capabilities for the AI game engine agent.
-Powers image understanding for asset review, sprite analysis,
-game screenshot evaluation, and visual quality inspection.
-The agent can see and analyze game visuals to provide
-intelligent feedback on art, layout, and UI design.
-
-Architecture:
-  MultiModalAgent
-    |-- ImageAnalyzer (sprite evaluation, asset compatibility)
-    |-- ScreenshotReviewer (game frame analysis, UI layout check)
-    |-- StyleComparator (visual consistency across assets)
-    |-- CompositionAdvisor (spatial layout recommendations)
-    |-- AccessibilityChecker (contrast, readability analysis)
-
-Analysis Domains:
-  - SPRITE: character art, tiles, item icons
-  - UI: buttons, panels, HUD elements
-  - SCENE: full game screenshots, level layouts
-  - ANIMATION: sprite sheet frame analysis
-"""
+SparkLabs Agent - Multi-Modal Agent"""
 
 from __future__ import annotations
 

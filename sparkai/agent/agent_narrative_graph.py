@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Narrative Graph Engine
-
-Branching story design system for AI-native game creation.
-Manages narrative nodes, conditional paths, choice trees,
-and graph validation to enable complex interactive storytelling.
-
-Architecture:
-  NarrativeGraphEngine
-    |-- NarrativeNode (individual story beat or branch point)
-    |-- NarrativeGraph (complete branching story structure)
-    |-- PathTraverser (pathfinding through narrative space)
-    |-- ConditionEvaluator (runtime condition checking)
-    |-- GraphValidator (structural integrity and dead-end detection)
-
-Graph Types:
-  - Linear: single path with no branching
-  - Branching: multiple paths from choice points
-  - Convergent: branches that merge back to main line
-  - Network: fully interconnected narrative web
-"""
+SparkLabs Agent - Narrative Graph Engine"""
 
 from __future__ import annotations
 

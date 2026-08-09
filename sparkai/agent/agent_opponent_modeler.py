@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Opponent Modeler Engine
-
-Opponent modeling system for competitive game AI. Builds behavioral
-profiles of opponents from observed actions, predicts their strategies
-and next moves, detects exploitable weaknesses, tracks strategy
-adaptation, and generates counter-strategies.
-
-Architecture:
-  OpponentModelerEngine (Singleton)
-    |-- OpponentAction (an observed action with phase and confidence)
-    |-- StrategyProfile (archetype, strategies, metrics, weaknesses)
-    |-- MovePrediction (forecasted move with probability and horizon)
-    |-- WeaknessReport (exploitable pattern with severity)
-    |-- CounterStrategy (suggested response to a weakness)
-    |-- AdaptationEvent (recorded strategy change)
-
-Core Capabilities:
-  - Register opponents and record their observed actions
-  - Classify opponents into player archetypes (aggressive, turtle, etc.)
-  - Identify the active strategy of each opponent
-  - Forecast the next moves using recency-weighted frequency analysis
-  - Detect exploitable weaknesses in opponent behavior
-  - Suggest counter-strategies tailored to each weakness
-  - Track when opponents adapt and change strategy
-  - Score prediction confidence from sample size and consistency
-"""
+SparkLabs Agent - Opponent Modeler Engine"""
 
 from __future__ import annotations
 

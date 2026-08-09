@@ -1,40 +1,5 @@
 """
-SparkLabs Agent - Multi-Objective Optimizer
-
-Pareto optimization engine for game design that handles multiple conflicting
-objectives simultaneously. Supports weighted sum scalarization, Pareto frontier
-computation, lexicographic ordering, goal programming, constraint satisfaction,
-and evolutionary multi-objective algorithms. Provides trade-off analysis,
-sensitivity analysis, and solution selection with preference weighting.
-
-Architecture:
-  AgentMultiObjectiveOptimizer (Singleton)
-    |-- OptimizationObjective (individual objective with direction and weight)
-    |-- OptimizationConstraint (hard/soft/budget constraints on variables)
-    |-- ParetoSolution (candidate solution on the Pareto frontier)
-    |-- OptimizationProblem (complete problem definition per domain)
-    |-- TradeOffAnalysis (correlation and substitution between objectives)
-
-Core Algorithms:
-  - Non-dominated sorting (Pareto ranking with crowding distance)
-  - Weighted sum scalarization for preference-based optimization
-  - Genetic algorithm with tournament selection and crossover
-  - Trade-off analysis with correlation computation
-  - Sensitivity analysis via variable perturbation
-
-Optimization Strategies:
-  WEIGHTED_SUM, PARETO_FRONTIER, LEXICOGRAPHIC,
-  GOAL_PROGRAMMING, CONSTRAINT_SATISFACTION, EVOLUTIONARY
-
-Usage:
-    opt = get_agent_multi_objective_optimizer()
-    problem = opt.define_problem("rpg_balance", objectives, constraints, variables)
-    solutions = opt.solve("rpg_balance", strategy=OptimizationStrategy.EVOLUTIONARY)
-    frontier = opt.compute_pareto_frontier("rpg_balance")
-    tradeoff = opt.analyze_trade_offs("rpg_balance", "damage", "survivability")
-    best = opt.select_solution("rpg_balance", {"damage": 0.7, "survivability": 0.3})
-    sensitivity = opt.compute_sensitivity("rpg_balance", "attack_power", 0.1)
-"""
+SparkLabs Agent - Multi-Objective Optimizer"""
 
 from __future__ import annotations
 

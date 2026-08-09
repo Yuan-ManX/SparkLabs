@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Orchestrator Engine
-
-A unified agent orchestration layer that coordinates all agents in the
-SparkLabs AI-native game engine. Manages agent lifecycle, task routing,
-inter-agent communication, and provides a single entry point for
-complex multi-agent workflows.
-
-Architecture:
-  OrchestratorEngine
-    |-- AgentDescriptor (agent capability registry)
-    |-- OrchestratedTask (multi-agent task with routing)
-    |-- AgentChannel (inter-agent message passing)
-    |-- WorkflowPlan (multi-step agent workflow)
-    |-- RoutingStrategy (task-to-agent assignment logic)
-"""
+SparkAI Agent - Orchestrator Engine"""
 
 from __future__ import annotations
 

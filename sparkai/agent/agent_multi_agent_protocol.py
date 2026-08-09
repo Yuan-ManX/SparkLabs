@@ -1,54 +1,5 @@
 """
-SparkLabs Agent - Multi-Agent Protocol
-
-Enables advanced collaboration between multiple AI agents through structured
-communication protocols, role negotiation, task delegation, and consensus
-building. Provides a unified framework for multi-agent communication patterns
-including request-response, publish-subscribe, broadcast, negotiation,
-delegation, and consensus-based coordination.
-
-Architecture:
-    MultiAgentProtocolEngine (singleton per name)
-      |-- AgentIdentity (registered agent with role and capabilities)
-      |-- ProtocolMessage (typed inter-agent communication)
-      |-- TaskDelegation (delegated work with lifecycle tracking)
-      |-- ConsensusProposal (voting-based agreement mechanism)
-      |-- CollaborationSession (multi-agent workspace)
-      |-- Negotiation (bilateral agreement protocol)
-
-Agent Roles:
-    - COORDINATOR: orchestrates workflow and assigns tasks
-    - WORKER: executes delegated tasks and produces output
-    - OBSERVER: monitors communication without active participation
-    - MEDIATOR: resolves conflicts and facilitates agreement
-    - SPECIALIST: provides domain-specific expertise
-    - FACILITATOR: manages group processes and collaboration
-
-Protocol Types:
-    - REQUEST_RESPONSE: point-to-point synchronous request/reply
-    - PUBLISH_SUBSCRIBE: topic-based event distribution
-    - BROADCAST: one-to-all message propagation
-    - NEGOTIATION: bilateral offer/counter-offer exchange
-    - DELEGATION: task assignment with acceptance workflow
-    - CONSENSUS: multi-party voting and agreement
-
-Usage:
-    protocol = get_multi_agent_protocol("game_studio")
-    agent = protocol.register_agent("designer_1", AgentRole.COORDINATOR,
-                                     ["game_design", "level_design"])
-    msg = protocol.send_message(ProtocolType.REQUEST_RESPONSE,
-                                "designer_1", "designer_2",
-                                "Review Level Layout", "Please review the boss arena design")
-    delegation = protocol.create_delegation("Implement boss AI behavior tree",
-                                            "designer_1", "programmer_1",
-                                            ["ai", "behavior_tree"], 3600)
-    proposal = protocol.propose_consensus("Should we use procedural generation?",
-                                          "designer_1",
-                                          ConsensusAlgorithm.MAJORITY_VOTE,
-                                          ["procedural", "handcrafted", "hybrid"])
-    negotiation = protocol.start_negotiation("designer_1", "programmer_1",
-                                             "Boss HP Balance")
-"""
+SparkLabs Agent - Multi-Agent Protocol"""
 
 from __future__ import annotations
 

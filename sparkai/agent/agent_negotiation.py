@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Agent Negotiation
-
-Multi-agent negotiation protocol for the SparkLabs AI-native game engine.
-Enables multiple specialized AI agents (designer, programmer, artist) to
-negotiate design decisions, resolve conflicts, and reach consensus on game
-development choices. Supports proposal-counterproposal cycles, voting
-mechanisms, and tie-breaking arbitration.
-
-Architecture:
-  AgentNegotiation
-    |-- NegotiationSession (topic, participants, proposals, outcome)
-    |-- Proposal (what is proposed, by whom, with justification)
-    |-- Vote (agent stance on a proposal with reasoning)
-    |-- ConsensusResult (agreed outcome or deadlock detection)
-    |-- ArbitrationRule (tie-breaking and deadlock resolution)
-"""
+SparkLabs Agent - Agent Negotiation"""
 
 from __future__ import annotations
 
