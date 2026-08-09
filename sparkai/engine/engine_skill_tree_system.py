@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Skill Tree System
-
-A graph-based skill tree system for the SparkLabs AI-native game engine.
-It models branching skill nodes with prerequisites, point spending,
-tier gating, mutually exclusive branches, and per-actor progression
-state. The system supports tech trees, talent trees, ascendency trees,
-and any directed-graph progression structure.
-
-Architecture:
-  SkillTreeSystem (singleton)
-    |-- SkillNode, SkillEdge, SkillTree, ActorProgression,
-       SkillAllocation, SkillTreeStats, SkillTreeSnapshot,
-       SkillTreeEvent
-    |-- NodeCategory, NodeTier, NodeState, AllocationPolicy,
-       SkillTreeEventKind
-
-Core Capabilities:
-  - register_tree / get_tree / list_trees / update_tree / delete_tree:
-    skill tree lifecycle with root nodes and metadata.
-  - register_node / get_node / list_nodes / update_node / remove_node:
-    node lifecycle with category, tier, cost, and effects.
-  - add_edge / list_edges / remove_edge: prerequisite edges between
-    nodes with optional minimum state requirements.
-  - allocate_point / deallocate_point / reset_progression: per-actor
-    point spending with prerequisite validation and refund logic.
-  - get_progression / list_progressions: per-actor skill state.
-  - set_node_state / get_node_state: node state machine control for
-    locked / unlocked / learned / mastered transitions.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`SkillTreeSystem.get_instance` or the module-level
-:func:`get_skill_tree_system` factory.
-"""
+SparkLabs Engine - Skill Tree System"""
 
 from __future__ import annotations
 

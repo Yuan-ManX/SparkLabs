@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Stat System
-
-A foundational stat and attribute director for the SparkLabs AI-native game
-engine. It manages base attributes (strength, dexterity, intellect, etc.),
-derived stats (max_hp, crit_chance, armor, move_speed), modifier stacking
-from equipment/buffs/level-ups, and stat pools with clamping and recalculation.
-The system is the single source of truth for RPG-style numeric progression
-and feeds combat, UI, and save systems through a clean query interface.
-
-Architecture:
-  StatSystem (singleton)
-    |-- StatDefinition, StatBlock, StatModifier,
-       StatStats, StatSnapshot, StatEvent
-    |-- StatKind, StatOp, StatEventKind
-
-Core Capabilities:
-  - register_definition / get_definition / list_definitions /
-    remove_definition: stat type lifecycle with kind, formula, and bounds.
-  - register_stat_block / get_stat_block / list_stat_blocks /
-    update_stat_block / remove_stat_block: per-actor attribute blocks with
-    base values and growth curves.
-  - apply_modifier / get_modifier / list_modifiers / remove_modifier:
-    transient or persistent modifiers with stacking operations.
-  - recompute_derived: recalculate derived stats from base + modifiers.
-  - get_stat / get_pool / set_pool / refill_pool: query and mutate stat
-    values with clamping.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`StatSystem.get_instance` or the module-level :func:`get_stat_system`
-factory.
-"""
+SparkLabs Engine - Stat System"""
 
 from __future__ import annotations
 

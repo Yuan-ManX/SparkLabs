@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Spatiotemporal Rhythm Sequencer
-
-The EngineSpatiotemporalRhythmSequencer sequences rhythmic events across
-both space and time. A game world has many overlapping rhythms: the
-day/night cycle, the market's bustle, the tide, the NPC patrol beats,
-the festival calendar. This engine treats each rhythm as a wave with a
-period, a phase, and an amplitude, then layers them so that events fire
-when waves crest together in a region. Where rhythms constructively
-interfere, the world feels alive and synchronized; where they
-destructively interfere, the world feels sparse. The output is a
-per-region, per-moment event schedule that downstream systems (audio,
-spawning, lighting) can follow.
-
-Architecture:
-  REGISTER  ->  LAYER    ->  DETECT    ->  SCHEDULE  ->  SETTLE
-  (accept      (superpose    (find         (emit timed    (dampen jitter,
-   rhythm       all active    crests and    events at      smooth the
-   definitions  rhythms per   troughs in    crests and     schedule,
-   and          region into   the near-     mark troughs   record the
-   validate     a composite   future        as rest         settled rhythm
-   them)        waveform)     window)       moments)       map)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Spatiotemporal Rhythm Sequencer"""
 
 from __future__ import annotations
 

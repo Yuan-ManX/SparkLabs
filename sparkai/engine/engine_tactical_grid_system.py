@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Tactical Grid Combat System
-
-A grid-based tactical combat engine for the SparkLabs AI-native game
-engine. Provides turn-based tactical combat on square, hex, offset, and
-isometric grids for tactical gameplay. Manages grid
-terrain, unit deployment, movement with pathfinding-aware ranges,
-attack resolution with terrain and elevation modifiers, fog of war,
-faction turn order, and battle lifecycle from setup through victory or
-defeat.
-
-The system supports multiple concurrent battles, each bound to a grid
-and a set of factions. Units belong to factions, occupy grid cells,
-and act during their faction's turn. Combat resolution accounts for
-terrain type, elevation advantage, cover, flanking, counter attacks,
-and unit class statistics. A configurable ruleset controls whether
-friendly fire, fog of war, terrain bonuses, elevation bonuses, and
-flanking bonuses are active.
-
-Architecture:
-  TacticalGridSystem (singleton)
-    |-- GridType, TerrainType, UnitClass, MoveType, AttackType,
-       FacingDirection, UnitStatus, CombatPhase, TacticalGridEventKind
-    |-- GridCell, TacticalUnit, TacticalGrid, BattleState, Faction,
-       TerrainModifier, TacticalGridConfig, TacticalGridStats,
-       TacticalGridSnapshot, TacticalGridEvent
-    |-- get_tactical_grid_system
-
-Core Capabilities:
-  - register_grid / get_grid / list_grids / remove_grid
-  - set_terrain / get_cell / get_cells_in_range
-  - register_unit / get_unit / list_units / remove_unit
-  - deploy_unit / move_unit / attack_unit
-  - calculate_damage / calculate_move_range / calculate_attack_range
-  - register_faction / get_faction / list_factions
-  - create_battle / get_battle / list_battles
-  - end_turn / set_fog_of_war / reveal_area
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`TacticalGridSystem.get_instance` or the module-level
-:func:`get_tactical_grid_system` factory.
-"""
+SparkLabs Engine - Tactical Grid Combat System"""
 
 from __future__ import annotations
 

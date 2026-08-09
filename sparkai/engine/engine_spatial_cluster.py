@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Spatial Cluster
-
-Spatial partitioning system for physics simulation optimization.
-Divides the game world into manageable clusters (grid cells, octree nodes),
-groups physics bodies by spatial locality, and enables efficient collision
-detection by only checking bodies within the same or adjacent clusters.
-
-Architecture:
-  SpatialCluster (singleton)
-    |-- Uniform Grid Partitioning (default strategy)
-    |-- Spatial Body Registry (registration, update, removal)
-    |-- Cluster Cell Management (activation, neighbor tracking)
-    |-- Spatial Query Engine (AABB, sphere, ray, nearest neighbor)
-    |-- Collision Candidate Resolution (same and adjacent clusters)
-
-Strategies:
-  - UNIFORM_GRID: fixed-size 3D grid cells
-  - OCTREE: adaptive 3D hierarchical subdivision
-  - QUADTREE: adaptive 2D hierarchical subdivision
-  - KDTREE: binary space partitioning tree
-  - BVH: bounding volume hierarchy
-
-Query Types:
-  - AABB_OVERLAP: axis-aligned bounding box overlap test
-  - SPHERE_RADIUS: spherical radius overlap test
-  - RAY_CAST: ray intersection along a direction
-  - NEAREST_NEIGHBOR: k-nearest neighbor search
-"""
+SparkLabs Engine - Spatial Cluster"""
 
 from __future__ import annotations
 

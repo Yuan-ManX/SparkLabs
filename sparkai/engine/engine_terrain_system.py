@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Terrain Generation & Management System
-
-Comprehensive terrain generation and management system providing procedural
-landscape generation with heightmaps, texture splatting, chunk-based streaming,
-erosion simulation, and editing tools.
-
-Architecture:
-  EngineTerrainSystem (Singleton)
-    |-- TerrainConfig   — configuration for a terrain instance
-    |-- TerrainChunk    — a single chunk of terrain with height data
-    |-- ErosionSettings — parameters for erosion simulation
-    |-- BiomeLayer      — biome definition for texture/vegetation
-    |-- TerrainStats    — runtime statistics snapshot
-
-Terrain Pipeline:
-  1. Create a TerrainConfig with size, seed, and algorithm parameters
-  2. Generate terrain chunks with height data via the selected algorithm
-  3. Apply erosion, biome layers, or manual editing tools
-  4. Stream chunks in/out based on camera position and LOD
-  5. Export heightmaps to various formats
-"""
+SparkLabs Engine - Terrain Generation & Management System"""
 
 from __future__ import annotations
 

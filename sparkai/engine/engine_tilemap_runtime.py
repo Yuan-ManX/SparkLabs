@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - TileMap Runtime System
-
-Comprehensive 2D tilemap rendering and management system for grid-based
-game worlds. Provides tile definitions, tileset loading, multi-layer
-tilemap composition, brush-based painting with presets, auto-tiling
-with 8-neighbor rule matching, collision detection, and export/serialization
-utilities. Manages the full lifecycle of tile-based world data.
-
-Architecture:
-  EngineTileMapRuntime (Singleton)
-    |-- TileDefinition        — individual tile properties and collision
-    |-- Tileset               — source image and tile layout metadata
-    |-- TileLayer             — single grid plane with opacity and parallax
-    |-- TileMap               — aggregate of layers and tilesets
-    |-- TileBrush             — shape-based painting tool with presets
-    |-- AutoTileConfig        — 8-neighbor matching rules for auto-tiling
-    |-- TileLayerType (enum)  — semantic layer classification
-    |-- TileCollisionShape    — collision geometry per tile
-    |-- TileAnimationMode     — per-tile animation behavior
-    |-- RenderOrder           — draw order strategy for overlapping tiles
-
-Collision Presets:
-  Predefined tile collider configurations for common 2D platformer and
-  top-down game scenarios including full blocks, slopes, half-blocks,
-  and one-way platforms.
-
-Brush Presets:
-  Ready-to-use brush configurations for terrain painting, decoration
-  placement, and pattern stamping with SINGLE, RECTANGLE, CIRCLE, and
-  PATTERN brush types.
-
-AutoTiling Rules:
-  Built-in 8-neighbor rule sets for terrain blending, edge matching,
-  and transition tile generation using bitmask-based matching.
-"""
+SparkLabs Engine - TileMap Runtime System"""
 
 from __future__ import annotations
 

@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - State Reconciliation Engine
-
-Deterministic state reconciliation system for multiplayer and networked
-game scenarios. Provides authoritative state management with client-side
-prediction, rollback, and interpolation. Designed for lockstep and
-rollback netcode architectures.
-
-Architecture:
-  StateReconciliationEngine (Singleton)
-    |-- StateSnapshot (captured game state at a point in time)
-    |-- StateDelta (difference between two state snapshots)
-    |-- ReconciliationBuffer (ring buffer of recent states)
-    |-- PredictionValidator (validates client predictions)
-    |-- ConflictResolver (resolves state conflicts between peers)
-
-Reconciliation Modes:
-  - LOCKSTEP: deterministic simulation with input synchronization
-  - ROLLBACK: client prediction with server rollback
-  - INTERPOLATION: smooth interpolation between authoritative states
-  - HYBRID: combination of prediction and interpolation
-
-Usage:
-    sr = StateReconciliationEngine.get_instance()
-    sr.initialize()
-
-    snapshot = sr.capture_snapshot("game_world", {"entities": [...], "time": 1.0})
-    delta = sr.compute_delta("snapshot_1", "snapshot_2")
-    sr.apply_delta("current_state", delta)
-    sr.shutdown()
-"""
+SparkLabs Engine - State Reconciliation Engine"""
 
 from __future__ import annotations
 

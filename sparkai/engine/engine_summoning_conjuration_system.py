@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Summoning & Conjuration System
-
-Manages summonable entities conjured through rituals, contracts, and
-focusing artifacts. Summoners bind templates into active servants via
-rituals that consume mana and reagents, then deploy them in combat,
-harvesting, or scouting scenarios. Contracts gate how often a summoner
-may conjure a given template, while focuses amplify power, reduce mana
-cost, and bias the resulting rarity.
-
-Architecture:
-  SummoningConjurationSystem (singleton)
-    |-- SummonType, SummonRarity, ContractStatus, SummonState,
-       SummoningEventKind
-    |-- SummonTemplate, SummonContract, ActiveSummon, SummoningRitual,
-       SummoningFocus, SummoningStats, SummoningConfig, SummoningSnapshot,
-       SummoningEvent
-    |-- get_summoning_conjuration_system
-
-Core Capabilities:
-  - register_summon_template / get_summon_template / list_summon_templates /
-    remove_summon_template
-  - register_ritual / get_ritual / list_rituals / remove_ritual
-  - register_focus / get_focus / list_focuses / remove_focus
-  - create_contract / get_contract / list_contracts / break_contract
-  - perform_summoning (summon using contract + ritual + focus)
-  - banish_summon / get_active_summon / list_active_summons
-  - calculate_summon_power / get_summon_abilities
-  - tick / set_config / get_config / list_events / get_stats
-  - get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`SummoningConjurationSystem.get_instance` or the module-level
-:func:`get_summoning_conjuration_system` factory.
-"""
+SparkLabs Engine - Summoning & Conjuration System"""
 
 from __future__ import annotations
 

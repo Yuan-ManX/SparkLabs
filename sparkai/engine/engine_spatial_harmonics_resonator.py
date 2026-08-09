@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Spatial Harmonics Resonator
-
-The EngineSpatialHarmonicsResonator models spatial relationships as
-harmonic resonance fields. Each location in the game world vibrates at
-characteristic frequencies that attract or repel certain types of events.
-Like geographic feng shui made algorithmic and dynamic.
-
-Locations have frequency profiles across multiple harmonic bands:
-  - TENSION     : attracts conflict, danger, combat
-  - SERENITY    : attracts rest, healing, reflection
-  - MYSTERY     : attracts discovery, secrets, transformation
-  - PROSPERITY  : attracts trade, fortune, growth
-  - DECAY       : attracts loss, ruin, corruption
-
-When a location's frequency aligns with an event type, that event
-resonates there (more likely to occur and more impactful). When
-frequencies conflict, interference patterns emerge: constructive
-interference amplifies, destructive interference suppresses.
-
-Architecture:
-  HARMONIZE  ->  MEASURE  ->  RESONATE  ->  INTERFERE  ->  ATTUNE
-  (establish    (measure     (identify      (handle          (adjust
-   field map     current      locations      conflicting      field
-   for world)    resonance    where events   frequencies)     based on
-                 levels)      should occur)                   events)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Spatial Harmonics Resonator"""
 
 from __future__ import annotations
 

@@ -1,11 +1,5 @@
 """
-SparkLabs Engine - Tilemap System
-
-2D grid-based tilemap system with multi-layer support and collision data.
-Provides tilemap creation, tileset management, tile painting, object
-placement, coordinate conversion, and collision querying for grid-based
-game worlds.
-"""
+SparkLabs Engine - Tilemap System"""
 
 from __future__ import annotations
 

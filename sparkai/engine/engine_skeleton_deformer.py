@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Skeleton Deformer System
-
-Skeletal mesh deformation, skinning, and pose computation for animated
-characters and rigged geometry. Provides joint hierarchy management,
-multiple skinning algorithms (linear blend, dual quaternion, spherical
-blend, heat diffusion), pose blending with layered composition, and
-inverse kinematics chain solvers for runtime pose adjustment.
-
-Architecture:
-  SkeletonDeformerSystem
-    |-- SkeletonJoint (hierarchical bone with local/world transform)
-    |-- SkeletonRig (named collection of joints forming a skeleton)
-    |-- SkinningData (per-vertex bone weights and method selection)
-    |-- PoseSnapshot (captured joint transforms for a specific pose)
-    |-- DeformResult (output of skinning: vertex positions and normals)
-"""
+SparkLabs Engine - Skeleton Deformer System"""
 
 from __future__ import annotations
 

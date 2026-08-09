@@ -1,54 +1,5 @@
 """
-SparkLabs Engine - Tension Topology Cartographer
-
-The EngineTensionTopologyCartographer models how dramatic tension forms
-topological surfaces across the narrative landscape. Rather than treating
-tension as a single scalar value that goes up and down, the cartographer
-maps tension as a terrain - with peaks of climax, valleys of calm, ridges
-of sustained suspense, cliffs of sudden shock, and plateaus of simmering
-unease.
-
-Dramatic tension is not a line; it is a landscape. A story does not simply
-"get more tense" - it develops a tension topology where some subplots form
-soaring peaks while others create gentle valleys, where a ridge of suspense
-connects two climactic peaks, and where a sudden cliff drops the audience
-from calm into chaos. The shape of this topology - not just its height -
-is what gives a story its dramatic texture.
-
-The cartographer models five forces:
-  - Surveying: tension points are surveyed across the narrative landscape,
-    each with a position (where in the story) and elevation (how tense)
-  - Contouring: surveyed points are connected into contour lines that
-    reveal the shape of the tension terrain
-  - Gradient: the steepness of tension change is computed - gentle slopes
-    build suspense, steep cliffs create shock
-  - Peaking: the highest tension points form dramatic peaks that serve
-    as narrative climaxes
-  - Erosion: tension erodes over time - peaks flatten, ridges lower,
-    and the terrain gradually returns to baseline
-
-This produces a narrative where tension has genuine shape - where the
-audience can feel the difference between approaching a peak (rising
-anticipation), crossing a ridge (sustained suspense), or standing on a
-plateau (simmering tension) - and where the dramatic landscape itself
-becomes a character in the story.
-
-Architecture:
-  SURVEY   ->  CONTOUR  ->  GRADIENT  ->  PEAK    ->  ERODE
-  (tension  (points      (steepness   (highest    (tension
-   points   connected    of tension   points      erodes:
-   surveyed into contour  change      form       peaks flatten,
-   across    lines        computed -  dramatic   ridges lower,
-   the       revealing    gentle      peaks      terrain
-   narrative the shape    slopes =    serving     returns to
-   landscape of the       suspense,   as          baseline)
-   with      tension      steep       climaxes)
-   position  terrain)     cliffs =
-   and                    shock)
-   elevation)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Tension Topology Cartographer"""
 
 from __future__ import annotations
 

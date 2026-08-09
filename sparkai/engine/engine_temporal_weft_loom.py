@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - Temporal Weft Loom
-
-The EngineTemporalWeftLoom models time as a woven fabric where different
-threads can flow at different rates, tangle with each other, or align
-into synchronized moments. In a game world, time is not a single uniform
-river - it is a loom with many threads, and the weaver (the engine) must
-manage their tension, alignment, and occasional unraveling.
-
-Each region, character, and subsystem can have its own temporal thread.
-A mystical forest might flow slower than the bustling city. A time-lost
-ruin might run backwards. Two bonded characters might experience aligned
-time, where moments of importance happen simultaneously for both. When
-threads tangle, cause and effect can loop or reverse - the engine must
-detect and either resolve or embrace these tangles.
-
-The loom also models temporal tension: the pull between different time
-rates. High tension can cause "temporal fraying" where events become
-unstable, or "temporal darning" where the engine repairs the fabric by
-pulling threads back into alignment. This creates a dynamic temporal
-landscape where time itself is a gameplay element.
-
-Architecture:
-  WARP     ->  WEFT      ->  TENSION    ->  DARN     ->  UNRAVEL
-  (thread    (cross-       (measure       (repair      (allow old
-   the       thread        and adjust     frayed       threads to
-   vertical  connections   tension        sections     come loose
-   time      between       between        by pulling   and dissolve
-   threads   threads)      threads)       them tight)   into potential)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Temporal Weft Loom"""
 
 from __future__ import annotations
 

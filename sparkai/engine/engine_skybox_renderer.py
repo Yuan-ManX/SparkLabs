@@ -1,11 +1,6 @@
 """
 SkyboxRenderer - Dynamic procedural skybox rendering with time-of-day gradients,
-star fields, cloud layers, and atmospheric scattering for the SparkLabs game engine.
-
-Manages skybox configurations with preset support, smooth colour interpolation
-across the day-night cycle, procedural star field generation, multi-layer cloud
-rendering, and Rayleigh/Mie atmospheric scattering simulation.
-"""
+star fields, cloud layers, and atmospheric scattering for the SparkLabs game engine."""
 
 import math
 import random

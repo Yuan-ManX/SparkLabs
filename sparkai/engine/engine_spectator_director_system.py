@@ -1,54 +1,5 @@
 """
-SparkLabs Engine - Spectator Director System
-
-Manages live spectator viewing of in-progress games. The system owns the full
-camera graph for every spectated match, tracks each connected spectator
-session, lays out viewports for multi-camera compositions, and drives an
-automated director that selects cameras, records highlight moments, and
-switches the active feed based on match activity.
-
-The director can run in manual, automated, hybrid, or fully AI-directed
-modes. Highlight moments capture noteworthy match events together with the
-camera state that observed them, enabling instant replay and rewind. Camera
-presets bundle a camera mode, transform, field of view, and transition so
-that operators or the auto-director can recall a framing in one call.
-
-Architecture:
-  SpectatorDirectorSystem (singleton)
-    |-- CameraMode, DirectorMode, SpectatorStatus, ViewportLayout,
-       HighlightType, CameraPreset, TransitionType
-    |-- CameraState, SpectatorSession, ViewportConfig, CameraPresetConfig,
-       HighlightMoment, DirectorDecision, SpectatorConfig, SpectatorStats,
-       SpectatorSnapshot, SpectatorEvent
-    |-- get_spectator_director_system
-
-Core Capabilities:
-  - register_match / remove_match: create and tear down a spectating context
-    for a live match.
-  - register_camera / get_camera / list_cameras / remove_camera /
-    update_camera / set_camera_mode / follow_entity: manage the camera graph
-    for a match and steer individual cameras.
-  - register_session / get_session / list_sessions / remove_session /
-    switch_camera / set_viewport_layout: manage spectator sessions and the
-    camera each session is currently watching.
-  - create_viewport / get_viewport / list_viewports / remove_viewport:
-    compose multi-camera layouts (picture-in-picture, split, quad).
-  - register_preset / get_preset / list_presets / apply_preset /
-    remove_preset: recallable camera framing presets.
-  - record_highlight / get_highlight / list_highlights / remove_highlight:
-    capture and query noteworthy match moments with their camera state.
-  - start_rewind / stop_rewind: scrub a session back through the rewind
-    buffer and resume live viewing.
-  - auto_director_tick / list_director_decisions / set_director_mode:
-    automated camera selection and director audit trail.
-  - list_events / get_stats / get_status / get_snapshot / get_config /
-    set_config / tick / reset: observability, tuning, and lifecycle control.
-
-The class implements the singleton pattern with double-checked locking using
-``threading.RLock``; consumers should obtain the instance through
-:meth:`SpectatorDirectorSystem.get_instance` or the module-level
-:func:`get_spectator_director_system` factory.
-"""
+SparkLabs Engine - Spectator Director System"""
 
 from __future__ import annotations
 

@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Spatial Audio System
-
-A complete 3D spatial audio engine providing positional audio sources,
-listener-based spatialization, ray-traced occlusion modeling, convolution
-reverb zones, Doppler effect simulation, and multi-channel audio mixing.
-
-Architecture:
-  SpatialAudioEngine (Singleton)
-    |-- AudioSource3D         — positional sound emitter with velocity
-    |-- AudioListener         — listener position and orientation
-    |-- AudioOcclusionModel   — ray-traced audio occlusion
-    |-- AudioReverbZone       — convolution reverb spatial region
-    |-- DopplerEffect         — frequency shift calculator
-    |-- AudioMixer            — multi-channel routing and gain staging
-
-Spatial Pipeline:
-  1. Source/Listener transform → world-relative position and velocity
-  2. Distance attenuation → rolloff curve based on min/max distance
-  3. Occlusion → raycast from source to listener for obstruction
-  4. Reverb → convolution with zone impulse response
-  5. Doppler → frequency shift from relative velocity
-  6. Mixer → pan, gain, and route to output channels
-
-Usage:
-    engine = get_spatial_audio_engine()
-    source = engine.create_source(position=(10.0, 0.0, 5.0))
-    engine.set_listener_position((0.0, 0.0, 0.0))
-    engine.update(delta_time)
-"""
+SparkLabs Engine - Spatial Audio System"""
 
 from __future__ import annotations
 

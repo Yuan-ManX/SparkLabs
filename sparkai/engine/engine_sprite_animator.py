@@ -1,11 +1,5 @@
 """
-SpriteAnimator - State-driven sprite animation with blend transitions and frame events.
-
-Manages animation clips, playback states, and transition blending for 2D sprite
-entities in the SparkLabs game engine. Supports multiple playback modes, crossfade
-transitions between clips, per-frame event callbacks, and layered animation stacking
-via AnimationLayer.
-"""
+SpriteAnimator - State-driven sprite animation with blend transitions and frame events."""
 
 import threading
 import time

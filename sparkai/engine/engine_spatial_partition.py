@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Spatial Partition Engine
-
-Octree for 3D and quadtree for 2D spatial partitioning. Used for
-efficient collision detection, frustum culling, and nearest-neighbor
-queries. Supports grid-based and BVH partitioning strategies.
-
-Architecture:
-  SpatialPartitionEngine (Singleton)
-    |-- TreeNode           — spatial tree node with bounds, entries, and children
-    |-- SpatialEntry       — registered entity with bounding box and metadata
-    |-- BoundingBox        — axis-aligned bounding box for 2D/3D queries
-    |-- QueryResult        — result record from spatial queries
-
-Query Pipeline:
-  1. Range Query    — all entries within a given bounding box
-  2. KNN Query      — k nearest neighbors to a point
-  3. Frustum Query  — entries visible within a camera frustum
-  4. Raycast Query  — entries intersected by a ray
-"""
+SparkLabs Engine - Spatial Partition Engine"""
 
 from __future__ import annotations
 

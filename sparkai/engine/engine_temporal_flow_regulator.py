@@ -1,51 +1,5 @@
 """
-SparkLabs Engine - Temporal Flow Regulator
-
-The EngineTemporalFlowRegulator models game time as a fluid medium that
-can flow at different rates in different regions, pool in slow zones,
-rush through fast corridors, and freeze entirely in stasis fields.
-
-This fluid metaphor captures how game time actually feels to players:
-time isn't a uniform tick rate - it pools during cutscenes, rushes
-during combat, freezes during pause menus, and eddies when the player
-is uncertain. A boss arena might have "dense" time where every frame
-matters, while a scenic overlook has "thin" time where the world
-barely moves.
-
-Core concepts:
-  - FLOW RATE     : how fast time passes in a region (0.0 = frozen, 1.0 = normal)
-  - VISCOSITY     : resistance to temporal change (high = stable, low = volatile)
-  - PRESSURE      : temporal pressure differential between regions
-  - CURRENT       : directional flow of time between connected regions
-  - DENSITY       : how "thick" time feels (affects simulation detail)
-  - EDDY          : circular time flow creating localized loops
-  - STASIS        : complete temporal freeze
-  - RAPID         : accelerated time flow
-
-Temporal region types:
-  NORMAL    : flow rate = 1.0, standard game time
-  DILATED   : flow rate < 1.0, slow-motion (bullet time)
-  COMPRESSED: flow rate > 1.0, fast-forward
-  STASIS    : flow rate = 0.0, frozen time
-  EDDY      : circular flow, time loops within the region
-  RAPID     : flow rate >> 1.0, time rushes past
-
-Temporal events:
-  FREEZE       : a region drops to stasis
-  THAW         : a region returns to normal flow
-  SURGE        : flow rate spikes upward
-  RECED        : flow rate drops
-  BREACH       : temporal pressure causes a cascade between regions
-  VORTEX_FORM  : an eddy forms creating a time loop
-
-Architecture:
-  FLOW      ->  MEASURE    ->  REGULATE   ->  DISTORT    ->  STABILIZE
-  (time flows  (measure flow  (adjust flow  (temporal      (viscosity
-   through      rates and      rates toward  distortions    dampens
-   regions)     pressures)     targets)      cascade)       extremes)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Temporal Flow Regulator"""
 
 from __future__ import annotations
 

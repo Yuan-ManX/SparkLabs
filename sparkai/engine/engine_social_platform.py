@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Social Platform Layer
-
-Provides the social platform layer for multiplayer games: friends lists,
-parties, clans, lobbies, invites, and player presence. This is the social
-graph layer that Steam, PlayStation Network, and Xbox Live expose.
-
-Architecture:
-  SocialPlatformSystem (singleton)
-    |-- FriendRecord, Party, Clan, Lobby, Invite, PresenceState,
-        SocialPlatformStats, SocialPlatformSnapshot, SocialPlatformEvent
-    |-- FriendStatus, PartyType, ClanRole, LobbyState, InviteStatus,
-        InviteType, PresenceType, SocialPlatformEventKind
-
-Core Capabilities:
-  - add_friend / remove_friend / get_friend / list_friends /
-    block_player / unblock_player: friend and block list management.
-  - create_party / get_party / list_parties / disband_party /
-    invite_to_party / kick_from_party: party lifecycle.
-  - create_clan / update_clan / get_clan / list_clans / disband_clan /
-    invite_to_clan / kick_from_clan / set_clan_role: clan management.
-  - create_lobby / get_lobby / list_lobbies / delete_lobby /
-    join_lobby / leave_lobby / set_lobby_state: lobby lifecycle.
-  - send_invite / accept_invite / decline_invite / get_invite /
-    list_invites: cross-system invite workflow.
-  - update_presence / get_presence: player online status tracking.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`SocialPlatformSystem.get_instance` or the module-level
-:func:`get_social_platform_system` factory.
-"""
+SparkLabs Engine - Social Platform Layer"""
 
 from __future__ import annotations
 

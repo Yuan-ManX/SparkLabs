@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Skeletal Animation Blending System
-
-A comprehensive skeletal animation system providing bone hierarchy management,
-inverse kinematics solving, animation blending with smooth transitions,
-additive animation layering, and procedural animation generation. Powers
-character animation, creature movement, and dynamic object deformation
-in the SparkLabs game engine.
-
-Architecture:
-  EngineSkeletalBlending (Singleton)
-    |-- SkeletonHierarchy (bone tree structure)
-    |-- AnimationClip (keyframe animation data)
-    |-- BlendSpace (1D/2D parameterized animation blending)
-    |-- IKChain (inverse kinematics solver chain)
-    |-- AnimationLayer (additive animation layering)
-    |-- ProceduralAnimator (runtime procedural animation)
-    |-- BoneTransform (per-bone transform state)
-
-Core Capabilities:
-  - Hierarchical bone transform propagation
-  - Multi-clip animation blending with smooth transitions
-  - 1D and 2D parameterized blend spaces
-  - FABRIK-based inverse kinematics solving
-  - Additive animation layering for detail stacking
-  - Procedural animation for runtime-generated motion
-  - Animation state machine integration
-"""
+SparkLabs Engine - Skeletal Animation Blending System"""
 
 from __future__ import annotations
 

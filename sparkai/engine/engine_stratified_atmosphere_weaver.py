@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Stratified Atmosphere Weaver
-
-The EngineStratifiedAtmosphereWeaver builds atmosphere as a stack of
-distinct layers rather than a single global mood. Surface, wind, light,
-sound, and social strata each carry their own contribution. The weaver
-collects those contributions, arranges them into a vertical stratified
-structure, mediates between layers where they pull against one another,
-blends the mediated strata toward a coherent whole, and lets the whole
-settle over the world.
-
-A flat atmospheric state tends to feel painted on; a stratified one,
-where each layer can be heard separately before they merge, tends to
-feel like the world actually has air in it - one stratum can shift
-while the others hold, and the relationship between them does the work.
-
-Architecture:
-  LAYER     ->  STRATIFY  ->  MEDIATE  ->  BLEND  ->  SETTLE
-  (each       (arrange the   (where      (blend the  (let the
-   layer      layers into     layers      stratified  blended
-   reports    a vertical      conflict,   layers      atmosphere
-   its        stratified      mediate     toward a    settle
-   contrib-   structure)      between     coherent    over the
-   ution)                     them)       whole)      world)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Stratified Atmosphere Weaver"""
 
 from __future__ import annotations
 

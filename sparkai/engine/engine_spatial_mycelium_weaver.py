@@ -1,55 +1,5 @@
 """
-SparkLabs Engine - Spatial Mycelium Weaver
-
-The EngineSpatialMyceliumWeaver models spatial connectivity and pathfinding
-as a mycelium network growing through the game world. Rather than treating
-navigation as a static navmesh or waypoint graph, it treats spatial
-knowledge as a living fungal network: hyphae probe outward from nodes,
-fuse when they meet (anastomosis), distribute nutrients (resources and
-agents) through the network, fruit at ripe locations (spawn points), and
-decompose unused paths to recycle their resources.
-
-This mycelial metaphor captures how spatial understanding actually works
-in living worlds: paths do not appear fully formed, they grow organically
-toward interesting locations. Connections do not remain fixed, they
-strengthen with use and atrophy without it. Dead ends do not persist
-forever, they decompose and their resources feed new exploration. When
-two growing fronts meet, they fuse into a loop, creating redundancy and
-resilience in the network.
-
-Core concepts:
-  - NODE          : a location in the game world (anchor point)
-  - HYPHA         : a thread connecting two nodes, carrying flow
-  - FLOW          : nutrient/resource throughput along a hypha (0.0-1.0)
-  - VITALITY      : health of a hypha, decays without use (0.0-1.0)
-  - ANASTOMOSIS   : two hyphae fuse, creating a network loop
-  - FRUITING BODY : a spawn point / waypoint that emerges from dense network
-
-Hypha types:
-  EXPLORATORY   : pathfinding probes, fast-growing, thin, low vitality
-  TRANSPORT     : logistics corridors, thick, efficient, high vitality
-  NUTRIENT      : resource distribution lines, medium growth and vitality
-  DEFENSE       : border patrol routes, slow but very durable
-  REPRODUCTIVE  : spawn point generation, fruits into waypoints
-
-Mycelium events:
-  GERMINATION       : a new hypha sprouts from a node
-  HYPHAL_EXTENSION  : a hypha extends toward a target node
-  ANASTOMOSIS       : two hyphae fuse into a loop
-  FRUITING          : a fruiting body (waypoint) emerges
-  DECOMPOSITION     : an unused hypha decays and is removed
-  NUTRIENT_SURGE    : flow spikes along a transport hypha
-  NETWORK_PRUNING   : dead-end hyphae are pruned
-
-Architecture:
-  GERMINATE  ->  EXTEND   ->  ANASTOMOSE  ->  FRUIT      ->  DECOMPOSE
-  (spores      (hyphae      (growing        (dense          (unused
-   sprout       extend       fronts meet     network        hyphae
-   from         toward       and fuse        regions        decay and
-   nodes)       targets)     into loops)     fruit)         recycle)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Spatial Mycelium Weaver"""
 
 from __future__ import annotations
 

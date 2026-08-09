@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Telluric Gradient Mapper
-
-The TelluricGradientMapper charts the earth-current gradients that flow unseen
-beneath the game world. Subterranean voltage differentials arise wherever
-conductive strata, electrolytic pore water, and geomagnetic induction meet;
-the mapper samples these differentials at probe stations, derives the local
-gradient vector field, traces iso-voltage contours across the terrain, flags
-anomalous surges that betray ore bodies, fault slip, or buried artifacts, and
-finally emits a telluric map the editor can render as a flowing topographic
-overlay of voltage shells and current streamlines.
-
-This is original SparkLabs work. Telluric gradients are first-class entities:
-their sample values, contour shapes, and anomaly signatures are recomputed
-each cycle, and the editor previews them as a layered current-flow map so
-designers can sculpt the hidden electrical geography of the world.
-
-Architecture:
-  SAMPLE_VOLTAGE    ->  COMPUTE_GRADIENT  ->  TRACE_CONTOURS  ->  DETECT_ANOMALIES  ->  EMIT_TELLURIC_MAP
-  (sample voltage    (derive the local    (trace iso-voltage  (flag anomalous       (emit the full
-   differentials     gradient vector      contours across     surges that betray    telluric map with
-   at each probe     field from the       the terrain)        ore, fault, or        probe stations,
-   station)          samples)                                  artifact)             gradients,
-                                                                       contours, anomalies)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Telluric Gradient Mapper"""
 
 from __future__ import annotations
 

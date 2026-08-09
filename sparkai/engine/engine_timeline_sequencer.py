@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Timeline Sequencer
-
-This module provides a scripted sequence playback engine for creating and
-running cutscenes, tutorials, cinematic sequences, and timed game events.
-It models a timeline as a collection of tracks, each containing keyframes
-that fire at specific timestamps during playback. Tracks are typed by the
-kind of content they drive: camera movements, dialogue lines, animation
-triggers, audio cues, and arbitrary game events.
-
-The sequencer supports standard playback controls (play, pause, stop,
-seek, loop) and emits observable events as keyframes are reached during
-playback. A simulation tick drives the timeline forward; the caller is
-responsible for invoking ``tick(delta_time)`` from the game loop.
-
-Architecture:
-  TimelineSequencer (Singleton, double-checked locking, threading.RLock)
-    |-- Sequence        -- a complete scripted timeline with tracks
-    |-- TimelineTrack   -- a typed track containing keyframes
-    |-- Keyframe        -- a single timed event on a track
-    |-- PlaybackState   -- the live state of a sequence playback
-    |-- SequencerStats  -- aggregate sequencer statistics
-    |-- SequencerEvent  -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the
-sequencer is safe to call from multiple threads. Bounded in-memory stores
-use FIFO eviction when their capacity constants are exceeded.
-"""
+SparkLabs Engine - Timeline Sequencer"""
 
 from __future__ import annotations
 

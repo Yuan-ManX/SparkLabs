@@ -1,53 +1,5 @@
 """
-SparkLabs Engine - Soft Body Deformation Physics System
-
-A volumetric soft body deformation runtime for the SparkLabs AI-native game
-engine. Bodies are represented as tetrahedral meshes with spring constraints
-connecting vertices. The system handles elastic and plastic deformation,
-tearing, fracture mechanics, and volume preservation. An AI assessment layer
-analyzes stress distribution and tunes material parameters at runtime.
-
-Architecture:
-  SoftBodyDeformationSystem (singleton)
-    |-- Tetrahedron, SoftBodyVertex, SpringConstraint, MaterialProperties
-    |-- SoftBody, DeformationResult, TearRecord, FractureRecord
-    |-- AIAssessment, SoftBodyStats, SoftBodyConfig, SoftBodySnapshot, SoftBodyEvent
-    |-- DeformationType, MaterialBehavior, BodyStatus, TearMode
-    |-- FracturePattern, SoftBodyEventKind, SolverMethod, VolumePreservation
-
-Core Capabilities:
-  - register_material / remove_material / get_material / list_materials:
-    material lifecycle with Young's modulus, Poisson ratio, yield strength,
-    ultimate strength, tear threshold, and fracture toughness.
-  - register_body / remove_body / get_body / list_bodies: soft body lifecycle
-    with vertices, tetrahedra, and spring constraints.
-  - apply_force / apply_pressure / apply_impact / apply_twist / apply_bend:
-    deformation drivers producing DeformationResult records.
-  - compute_stress / compute_strain / check_yield: per-vertex stress and
-    per-spring strain with yield-point detection.
-  - apply_plastic_flow: convert elastic deformation into permanent set by
-    updating spring rest lengths beyond the plastic threshold.
-  - check_tear / propagate_tear: detect and extend tears when strain exceeds
-    the material tear threshold.
-  - check_fracture / fracture_body: detect and create fractures when
-    accumulated damage exceeds fracture toughness.
-  - pin_vertex / unpin_vertex / set_vertex_position / get_vertex /
-    list_vertices: vertex-level manipulation.
-  - ai_assess_body / ai_tune_material / ai_tune_global: AI-driven stress
-    analysis, stability scoring, and material parameter tuning.
-  - compute_volume / preserve_volume: tetrahedral volume computation and
-    correction toward the rest volume.
-  - reset_deformation / get_deformation_summary / get_stress_report /
-    get_visualization_data: inspection and reset utilities.
-  - get_stats / get_snapshot / get_status / get_config / set_config:
-    observability and configuration management.
-  - list_events / tick: event log and per-frame simulation step.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`SoftBodyDeformationSystem.get_instance` or the module-level
-:func:`get_soft_body_deformation_system` factory.
-"""
+SparkLabs Engine - Soft Body Deformation Physics System"""
 
 from __future__ import annotations
 

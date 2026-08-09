@@ -1,57 +1,5 @@
 """
-SparkLabs Engine - Temporal Crystal Resonator
-
-The EngineTemporalCrystalResonator models game time as a crystal lattice
-through which temporal events propagate as phonon vibrations. Rather than
-treating time as a uniform line or a simple tree of branches, it treats
-time as a crystalline medium: events create vibrations that travel along
-lattice axes, refract at zone boundaries, dampen over distance, and
-ultimately anneal into the crystal's permanent structure.
-
-This crystal metaphor captures how time actually flows in living game
-worlds: time is not a metronome, it is a medium with structure. Different
-regions have different temporal densities (anisotropic time flow). Events
-do not simply happen and vanish, they vibrate through the medium and
-affect neighboring moments. Past and future are not isolated, they are
-coupled through standing waves. And history does not freeze, it anneals,
-locking stable patterns while healing micro-fractures.
-
-Core concepts:
-  - LATTICE   : a temporal crystal lattice with its own structure
-  - PHONON    : a vibration traveling through the temporal lattice
-  - FREQUENCY : the oscillation rate of a phonon
-  - AMPLITUDE : the strength of a temporal vibration
-  - AXIS      : a directional axis along which phonons propagate
-  - FRACTURE  : a micro-fracture in the lattice from accumulated stress
-  - ZONE      : a region of the lattice with distinct temporal properties
-
-Lattice types:
-  CHRONO    : linear time crystal, uniform propagation, stable
-  CYCLIC    : cyclic time crystal, standing waves, recurring events
-  BRANCHED  : branching time crystal, multi-axis propagation
-  ENTROPIC  : entropic time crystal, decay-driven, high dampening
-  RESONANT  : resonant time crystal, harmonic amplification
-
-Temporal events:
-  PHONON_BORN       : a new vibration is born in the lattice
-  PROPAGATION       : a phonon propagates along an axis
-  REFRACTION        : a phonon refracts at a zone boundary
-  STANDING_WAVE     : a phonon forms a standing wave pattern
-  DAMPING           : a phonon dampens below perceptibility
-  MICRO_FRACTURE    : accumulated stress creates a lattice fracture
-  ANNEAL_LOCK       : a stable vibration is annealed into the lattice
-
-Architecture:
-  VIBRATE  ->  PROPAGATE  ->  REFRACT  ->  DAMP  ->  ANNEAL
-  (events  (phonons travel (vibrations   (phonons  (stable
-   create  along lattice   refract at     dampen    patterns
-   phonon  axes to reach   zone           over      anneal
-   vibrat- neighboring     boundaries)    distance)  into the
-   ions)   moments)                       permanent
-                                             lattice)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Temporal Crystal Resonator"""
 
 from __future__ import annotations
 

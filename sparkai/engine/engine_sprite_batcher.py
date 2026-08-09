@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Sprite Batcher
-
-A high-performance 2D sprite batching system that optimizes draw calls by
-grouping sprites with similar render states into unified GPU batches.
-The batcher uses texture atlases, dynamic geometry merging, and
-z-order-preserving batch generation to maximize throughput for
-sprite-heavy 2D game scenes.
-
-The batcher operates on a command-buffer model: game systems submit draw
-commands throughout the frame, and the batcher processes them into optimized
-GPU batches at render time, automatically handling texture switching,
-blend mode transitions, and layer ordering.
-
-Architecture:
-  EngineSpriteBatcher (Singleton)
-    |-- SpriteDrawCommand (individual sprite render request)
-    |-- SpriteBatch (merged GPU batch of similar sprites)
-    |-- TextureAtlas (packed texture regions for batch compatibility)
-    |-- AtlasRegion (sub-region within a texture atlas)
-    |-- BatchKey (hashing key for batch grouping)
-    |-- BlendMode (supported blending operations)
-    |-- BatchStrategy (optimization strategy selection)
-    |-- SortMode (z-order sorting behavior)
-
-Core Capabilities:
-  - submit_sprite: Queue a sprite draw command
-  - flush_batches: Process queued commands into optimized GPU batches
-  - create_texture_atlas: Pack multiple textures into a single atlas
-  - set_batch_strategy: Choose optimization strategy
-  - get_render_stats: Retrieve batching performance metrics
-  - clear_frame: Reset command buffer for the next frame
-"""
+SparkLabs Engine - Sprite Batcher"""
 
 from __future__ import annotations
 

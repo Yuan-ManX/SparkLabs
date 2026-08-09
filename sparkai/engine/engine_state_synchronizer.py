@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - Game State Synchronizer
-
-Deterministic state synchronization for replay systems, netplay, and save/load
-with state hashing and delta compression. Provides snapshot-based history,
-incremental delta computation, and replay session recording with playback.
-
-Architecture:
-    GameStateSynchronizer
-      |-- StateSnapshot (full state capture at a point in time with hash verification)
-      |-- StateDelta (field-level difference between two snapshots)
-      |-- SyncConfig (synchronization mode, format, and interval settings)
-      |-- ReplayFrame (single frame of recorded input and state data)
-      |-- ReplaySession (ordered collection of replay frames with playback control)
-
-Synchronization Features:
-    - FULL_SNAPSHOT: periodic complete state captures
-    - DELTA_COMPRESSION: incremental field-level differences between states
-    - DETERMINISTIC_REPLAY: input-based replay with hash verification
-    - CHECKPOINT_BASED: keyframe-style checkpointing for rollback
-"""
+SparkLabs Engine - Game State Synchronizer"""
 
 from __future__ import annotations
 

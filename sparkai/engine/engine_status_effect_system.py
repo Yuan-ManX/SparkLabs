@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Status Effect and Resistance System
-
-A comprehensive Status Effect, Resistance, and Immunity system for the
-SparkLabs AI-native game engine. Manages status effect definitions,
-elemental resistances and immunities, effect stacking policies, effect
-chains, and per-entity effect application with full resistance and
-susceptibility calculations.
-
-Architecture:
-  StatusEffectSystemEngine (singleton)
-    |-- StatusEffectDefinition   — registered effect template
-    |-- ActiveEffect             — effect instance applied to an entity
-    |-- ResistanceProfile        — per-entity resistances/immunities/susceptibility
-    |-- EffectChain              — triggered follow-up effect sequence
-    |-- StatusEffectStats        — aggregate counters
-    |-- StatusEffectSnapshot     — immutable state snapshot
-    |-- StatusEffectEvent        — audit log entry
-    |-- EffectCategory           — 4 effect categories
-    |-- EffectElement            — 15 elemental schools
-    |-- StackingPolicy           — 6 stacking behaviors
-    |-- DispelType               — 7 dispel classifications
-    |-- EffectSeverity           — 5 severity tiers
-    |-- ResistanceTier           — 6 resistance classifications
-    |-- StatusEffectEventKind    — 10 audit event kinds
-
-Core Capabilities:
-  - register_effect / list_effects / get_effect: effect registry management
-  - create_resistance_profile / set_resistance / set_immunity / set_susceptibility
-  - apply_effect: immunity checks, resistance mitigation, stacking resolution
-  - tick_effects: advance durations, process damage/heal ticks, expire + chain
-  - dispel_effect / dispel_by_category / dispel_by_element / refresh_effect
-  - register_chain / trigger_chain: chained follow-up effects
-  - get_stats / get_status / get_snapshot / list_events: observability
-"""
+SparkLabs Engine - Status Effect and Resistance System"""
 
 from __future__ import annotations
 

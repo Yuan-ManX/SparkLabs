@@ -1,46 +1,5 @@
 """
-SparkLabs Engine - Surface Profile System
-
-A cross-domain surface material mapper for the SparkLabs AI-native game
-engine. Each surface profile binds a named surface kind (metal, wood,
-stone, grass, water, sand, ice, glass, flesh, fabric, dirt, concrete,
-snow, lava, slime) to properties across four domains:
-
-  - Physics: friction, restitution, density
-  - Audio: footstep sound id, impact sound id, roll sound id
-  - Particles: impact effect id, footprint effect id, dust effect id
-  - Gameplay: damage multiplier, movement speed modifier, slipperiness
-
-This is distinct from the physics material library (which only handles
-friction and restitution) and the rendering material system (which
-handles shaders and textures). Surface profiles are the single source
-of truth for "what happens when something touches this surface" across
-all engine subsystems.
-
-Architecture:
-  SurfaceProfileSystem (singleton)
-    |-- SurfaceProfile, SurfaceImpact, SurfaceStats, SurfaceSnapshot,
-       SurfaceEvent
-    |-- SurfaceKind, SurfaceEventKind
-
-Core Capabilities:
-  - register_profile / get_profile / list_profiles / update_profile /
-    remove_profile: surface profile lifecycle.
-  - resolve_surface: look up a profile by kind, returning full
-    cross-domain property set.
-  - compute_footstep: compute footstep audio and particle effect for a
-    surface kind, scaled by speed and weight.
-  - compute_impact: compute impact audio, particle effect, damage
-    multiplier, and decal for a surface kind, scaled by impact speed
-    and mass.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`SurfaceProfileSystem.get_instance` or the module-level
-:func:`get_surface_profile` factory.
-"""
+SparkLabs Engine - Surface Profile System"""
 
 from __future__ import annotations
 

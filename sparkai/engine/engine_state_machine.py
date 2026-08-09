@@ -1,21 +1,5 @@
 """
-SparkLabs Engine - State Machine Engine
-
-A comprehensive hierarchical finite state machine system for game
-entity behavior, animation control, AI decision-making, and
-gameplay logic. Supports nested states, parallel sub-states,
-parameterized transitions, and visual debug output.
-
-Architecture:
-  EngineStateMachine (Singleton)
-    |-- State Definition (entry/update/exit callbacks with conditions)
-    |-- Transition System (conditional, timed, event-driven transitions)
-    |-- Hierarchical States (parent-child state nesting)
-    |-- Parallel Sub-States (concurrent state execution)
-    |-- State History (deep/shallow history pseudo-states)
-    |-- Parameter System (typed parameters for transition conditions)
-    |-- Visual Debugger (state graph export and active state tracking)
-"""
+SparkLabs Engine - State Machine Engine"""
 
 from __future__ import annotations
 

@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Talent Constellation System
-
-Manages a star-map themed talent tree system where players allocate talent
-points into constellations made of interconnected nodes. Each constellation
-belongs to a thematic category, nodes are linked by paths, and activating
-nodes of matching resonance types unlocks stacking resonance bonuses.
-
-Architecture:
-  TalentConstellationSystem (singleton)
-    |-- ConstellationCategory, TalentNodeType, ResonanceType, NodeState,
-       TalentConstellationEventKind
-    |-- Constellation, TalentNode, TalentPath, PlayerConstellationProgress,
-       ResonanceBonus, TalentConstellationConfig, TalentConstellationStats,
-       TalentConstellationSnapshot, TalentConstellationEvent
-    |-- get_talent_constellation_system
-
-Core Capabilities:
-  - register_constellation / get_constellation / list_constellations / remove_constellation
-  - register_talent_node / get_talent_node / list_talent_nodes / remove_talent_node
-  - register_path / get_path / list_paths / remove_path
-  - register_resonance_bonus / get_resonance_bonus / list_resonance_bonuses
-  - allocate_point / remove_point
-  - get_player_progress / list_player_progress
-  - check_requirements / calculate_resonance / get_active_bonuses
-  - respec_all / tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`TalentConstellationSystem.get_instance` or the module-level
-:func:`get_talent_constellation_system` factory.
-"""
+SparkLabs Engine - Talent Constellation System"""
 
 from __future__ import annotations
 
