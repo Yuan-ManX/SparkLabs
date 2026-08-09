@@ -1,18 +1,5 @@
 """
-Skill Discovery - Dynamic tool and capability discovery bridging agent and engine.
-
-Architecture:
-    SkillDiscovery/
-    |-- CapabilityDomain (functional domain enumeration)
-    |-- SkillDescriptor (discoverable skill metadata dataclass)
-    |-- DiscoveryCache (TTL-cached capability index)
-    |-- SkillDiscovery (global discovery orchestration)
-
-Enables the agent to dynamically discover available game engine APIs, tools,
-behaviors, and editor capabilities at runtime. Maintains an indexed registry
-of discoverable skills with semantic tagging and domain classification for
-intelligent tool selection during game development.
-"""
+Skill Discovery - Dynamic tool and capability discovery bridging agent and engine."""
 
 from __future__ import annotations
 

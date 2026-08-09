@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Skill Forge
-
-An autonomous skill creation and procedural memory system 
-L4 Skills layer. The SkillForge enables dynamic discovery,
-creation, improvement, execution, and consolidation of procedural skills
-across all game development domains.
-
-Architecture:
-  SkillForge (singleton)
-    |-- SkillTemplate (procedural skill blueprint with versioned steps)
-    |-- SkillSession (execution/creation session tracking)
-    |-- SkillCategory (domain taxonomy: GAME_LOGIC, AI_BEHAVIOR, etc.)
-    |-- SkillStatus (lifecycle: CREATED -> IMPROVING -> STABLE -> DEPRECATED)
-
-Core Capabilities:
-  - create_skill: Synthesize a new procedural skill from task description and result
-  - improve_skill: Evolve a skill based on usage patterns and success metrics
-  - execute_skill: Run a stored multi-step workflow against a game context
-  - discover_skills: Search and rank skills by contextual relevance
-  - get_skill_stats: Aggregate analytics across the skill ecosystem
-  - consolidate_skills: Merge semantically similar skills to reduce fragmentation
-
-The forge maintains a growing library of domain-specific procedural knowledge
-that becomes more reliable and efficient with each execution cycle.
-"""
+SparkLabs Agent - Skill Forge"""
 
 from __future__ import annotations
 

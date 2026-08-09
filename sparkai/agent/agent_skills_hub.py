@@ -1,24 +1,6 @@
 """
 Skills Hub - Open skills registry and marketplace for discovering, sharing,
-and installing agent skills within SparkLabs AI game development studio.
-
-Architecture:
-    SkillsHub/
-    |-- SkillCategory (CODE_GEN, GAME_DESIGN, ART, AUDIO, PHYSICS,
-    |                  NETWORKING, NARRATIVE, UTILITY enumeration)
-    |-- SkillStatus (PUBLISHED, DRAFT, DEPRECATED, INSTALLED enumeration)
-    |-- LicenseType (MIT, APACHE, PROPRIETARY, CC_BY enumeration)
-    |-- SkillPackage (published skill artifact dataclass)
-    |-- SkillVersion (versioned release record dataclass)
-    |-- SkillReview (community rating and feedback dataclass)
-    |-- DependencyRequirement (skill dependency descriptor dataclass)
-    |-- InstallRecord (local installation tracking dataclass)
-    |-- SkillsHub (global registry and marketplace orchestration)
-
-Provides a community-driven skill ecosystem where developers publish,
-discover, rate, and install agent skills. Each skill is versioned with
-dependency resolution, license tracking, and install provenance.
-"""
+and installing agent skills within SparkLabs AI game development studio."""
 
 from __future__ import annotations
 

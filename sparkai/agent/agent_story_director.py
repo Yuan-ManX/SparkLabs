@@ -1,36 +1,5 @@
 """
-SparkLabs Agent - Story Director
-
-The AgentStoryDirector is the narrative intelligence of the AI-native game
-engine. It creates, manages, and adapts story content in real-time based on
-game state, player behavior, and world events.
-
-Unlike traditional narrative systems that use static scripts, the Story
-Director treats story as a living, breathing entity that evolves with the
-player's journey. It maintains:
-
-  1. STORY ARCS - Multi-act narrative structures with branching paths.
-     Each arc has a theme, tension curve, and resolution conditions.
-  2. CHARACTER GRAPH - A relationship network where characters have
-     dispositions, goals, secrets, and evolving dynamics.
-  3. PLOT POINTS - Discrete narrative events that can be triggered by
-     game state changes, player actions, or director initiative.
-  4. TENSION MODEL - A real-time tension curve that paces story beats
-     for maximum engagement (calm -> rising -> climax -> resolution).
-  5. NARRATIVE MEMORY - Remembers what the player has experienced,
-     preventing repetition and enabling callbacks.
-
-The director runs a narrative cycle every 5 seconds:
-  ASSESS -> SELECT -> COMPOSE -> DISPATCH -> TRACK
-
-It uses the cognitive mesh to:
-  - Receive ANOMALY signals when narrative breaks occur
-  - Emit DECISION signals when story changes are needed
-  - Listen to TELEMETRY for player engagement metrics
-  - Request OPPORTUNITY signals for creative story moments
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Story Director"""
 
 from __future__ import annotations
 

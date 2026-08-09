@@ -1,40 +1,5 @@
 """
-SparkLabs Agent - State Synchronization Mesh
-
-Bidirectional state synchronization between the AI agent's memory
-model and the live game engine. Ensures the agent's mental model of
-game state stays coherent with actual engine objects — critical for
-AI-driven game editing where stale assumptions produce bad code.
-
-Architecture:
-  StateSyncMesh
-    |-- SyncChannel (one per domain: objects, scripts, assets, scenes)
-    |-- DriftDetector (compares agent memory ↔ engine snapshot)
-    |-- ReconciliationEngine (resolves conflicts with merge strategies)
-    |-- SyncTrigger (event-based: on_create, on_modify, on_delete)
-    |-- SnapshotStore (periodic full-state dumps for diff comparison)
-
-Reconciliation Strategies:
-  - AGENT_WINS: agent's view overrides engine (for design intent)
-  - ENGINE_WINS: engine state is authoritative (for runtime facts)
-  - MERGE: attempt field-level merging with conflict reporting
-  - DEFER: flag conflict for human/AI resolution later
-
-Sync Domains:
-  - OBJECTS: game entities, positions, components
-  - SCRIPTS: attached behavior scripts and their parameters
-  - ASSETS: registered assets and their metadata
-  - SCENES: scene hierarchy and active scene stack
-  - SETTINGS: global engine settings and configurations
-
-Usage:
-    mesh = StateSyncMesh()
-    mesh.register_engine(engine_instance)
-    mesh.register_agent_memory(agent_memory)
-    channel = mesh.open_channel("objects", strategy="ENGINE_WINS")
-    channel.on_drift(lambda domain, diffs: agent.resolve_conflicts(diffs))
-    mesh.sync_all()
-"""
+SparkLabs Agent - State Synchronization Mesh"""
 
 from __future__ import annotations
 

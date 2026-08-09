@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Skill Evolution Engine
-
-A skill evolution system for the AI-native game engine that learns from
-experience, maintains evolving skill templates, and builds a living
-protocol of verified fixes. Skills grow over time through usage,
-feedback, and adaptation.
-
-Architecture:
-  SkillEvolutionEngine
-    |-- SkillTemplate (reusable capability pattern)
-    |-- DebugProtocol (verified fix protocol)
-    |-- SkillExecution (execution record with feedback)
-    |-- EvolutionCycle (skill adaptation cycle)
-    |-- SkillLineage (skill ancestry tracking)
-"""
+SparkAI Agent - Skill Evolution Engine"""
 
 from __future__ import annotations
 

@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Social Cognition System
-
-A social cognition system that models how agents understand and interact
-with other agents in a social environment. Includes theory of mind for
-modeling others' beliefs, relationship graphs for tracking social bonds,
-reputation systems for agent credibility, social norm reasoning, and
-coalition formation dynamics.
-
-Architecture:
-  SocialCognitionSystem (Singleton)
-    |-- TheoryOfMind (modeling other agents' beliefs and intentions)
-    |-- RelationshipGraph (social relationship tracking)
-    |-- ReputationSystem (agent credibility and trust)
-    |-- SocialNormEngine (norm reasoning and compliance)
-    |-- AllianceFormation (coalition dynamics)
-"""
+SparkLabs Agent - Social Cognition System"""
 
 from __future__ import annotations
 

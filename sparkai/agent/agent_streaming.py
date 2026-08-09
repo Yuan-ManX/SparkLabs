@@ -1,35 +1,5 @@
 """
-SparkLabs Agent - Streaming Response Manager
-
-Real-time streaming response infrastructure for the AI-native game
-engine. Manages chunked LLM output assembly, token-budget-aware
-interruption, partial result rendering, and streaming-aware
-tool call interception — enabling live game generation feedback.
-
-Architecture:
-  StreamingManager
-    |-- StreamBuffer (chunk assembly with boundary detection)
-    |-- StreamController (start/pause/resume/cancel lifecycle)
-    |-- ToolCallInterceptor (mid-stream tool detection + extraction)
-    |-- PartialRenderer (incremental UI updates during streaming)
-
-Stream States:
-  - IDLE: no active stream
-  - STREAMING: actively receiving chunks
-  - PAUSED: output buffering, LLM still running
-  - COMPLETING: final chunks being flushed
-  - INTERRUPTED: user or system cancelled
-
-Usage:
-    sm = StreamingManager(token_budget=4096)
-    async with sm.open_stream() as stream:
-        async for chunk in stream:
-            if sm.should_interrupt():
-                sm.cancel()
-                break
-            ui.render_partial(chunk)
-    full_response = sm.assemble()
-"""
+SparkLabs Agent - Streaming Response Manager"""
 from __future__ import annotations
 
 import asyncio

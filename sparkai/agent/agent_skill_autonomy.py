@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Skill Autonomy Engine
-
-Autonomous skill creation system that extracts reusable capability
-patterns from agent interaction history. Observes session turns,
-identifies successful action sequences, and codifies them into
-versioned, searchable AutonomousSkill records with maturity tracking.
-
-Architecture:
-  SkillAutonomyEngine
-    |-- Session Observer (extract patterns from interaction turns)
-    |-- Skill Synthesizer (codify patterns into structured skills)
-    |-- Skill Search Engine (semantic lookup by domain and query)
-    |-- Outcome Tracker (success/failure feedback loop for maturity)
-    |-- Evolution Engine (iterative improvement of existing skills)
-
-Skill domains cover game mechanics, AI behavior, UI patterns,
-asset generation, performance tuning, and networking.
-"""
+SparkLabs Agent - Skill Autonomy Engine"""
 
 from __future__ import annotations
 

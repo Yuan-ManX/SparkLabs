@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Spatial Reasoning Engine
-
-Spatial cognition for AI agents: reasoning about 2D/3D space,
-relative positioning, containment, distance semantics, visibility,
-reachability, and spatial problem-solving.
-
-Agents use this module to answer questions like "is the player within
-reach?", "where should I take cover?", "can the player see me?", and
-to reason about layout for level design and tactical AI.
-
-Architecture:
-  SpatialReasoningEngine (Singleton, double-checked locking)
-    |-- SpatialRelation     -- topological relations between entities
-    |-- SpatialEntity       -- a positioned object in space
-    |-- SpatialRegion       -- a bounded area/volume
-    |-- SpatialConstraint   -- a spatial constraint between entities
-    |-- SpatialReasoningSnapshot -- complete engine snapshot
-
-Subsystems:
-  1. Entity Placement -- register entities with positions and dimensions
-  2. Topological Ops  -- compute containment, adjacency, overlap relations
-  3. Distance Metrics -- Euclidean, Manhattan, Chebyshev distance
-  4. Visibility       -- line-of-sight checks with obstacle occlusion
-  5. Reachability    -- whether one entity can reach another
-  6. Spatial Queries -- find nearest, within range, in region, along ray
-"""
+SparkLabs Agent - Spatial Reasoning Engine"""
 
 from __future__ import annotations
 

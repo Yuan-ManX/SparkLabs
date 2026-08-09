@@ -1,18 +1,5 @@
 """
-SparkAI Agent - Agent Swarm
-
-Collective intelligence system where multiple agents collaborate
-through swarm coordination, emergent consensus, and distributed
-problem decomposition.
-
-Architecture:
-  AgentSwarm
-    |-- SwarmNode (individual agent in the swarm)
-    |-- SwarmTask (decomposed work unit)
-    |-- ConsensusEngine (agreement detection)
-    |-- SwarmMemory (shared knowledge pool)
-    |-- DecompositionStrategy (task splitting logic)
-"""
+SparkAI Agent - Agent Swarm"""
 
 from __future__ import annotations
 

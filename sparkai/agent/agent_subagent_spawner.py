@@ -1,10 +1,5 @@
 """
-SparkAI Agent - Subagent Spawner Engine
-
-Provides hierarchical subagent spawning with isolated context,
-restricted toolsets, depth bounds, and result collection.
-Prevents unbounded recursive delegation and resource exhaustion.
-"""
+SparkAI Agent - Subagent Spawner Engine"""
 
 import asyncio
 import time

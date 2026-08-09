@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Skill Generator
-
-AI-driven autonomous skill generation system for the SparkLabs AI-native
-game engine. Generates complete skill definitions with parameters, dependencies,
-compositions, and evolution pathways. Produces skill trees, decomposes complex
-skills, adapts existing skills to new contexts, and evaluates skill viability
-across diverse game design scenarios.
-
-Architecture:
-  AgentSkillGenerator (Singleton)
-    |-- Skill Synthesizer (generate novel skills from game context)
-    |-- Template Engine (create reusable skill blueprints)
-    |-- Composition Engine (merge component skills into compound skills)
-    |-- Decomposition Engine (break complex skills into sub-skills)
-    |-- Evaluation Engine (score skill viability and synergy)
-    |-- Adaptation Engine (evolve skills for new contexts)
-    |-- Skill Tree Generator (hierarchical skill progression graphs)
-"""
+SparkLabs Agent - Skill Generator"""
 
 from __future__ import annotations
 

@@ -1,10 +1,5 @@
 """
-SparkAI Strategic Synthesis Agent - Advanced multi-step reasoning and planning engine.
-
-This module provides a unified strategic reasoning framework that combines
-chain-of-thought decomposition, hypothesis-driven exploration, and adaptive
-decision-making for complex game design and development tasks.
-"""
+SparkAI Strategic Synthesis Agent - Advanced multi-step reasoning and planning engine."""
 
 from __future__ import annotations
 

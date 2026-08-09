@@ -1,42 +1,5 @@
 """
-SparkLabs Agent - AI Cross-Modal Style Conductor
-
-A style conductor agent for the SparkLabs AI-native game engine. It
-maintains a unified aesthetic identity across visual, audio, narrative,
-and mechanical dimensions. The conductor defines style profiles, checks
-coherence across modalities, suggests harmonization adjustments, and
-tracks style drift over the course of game development so that every
-generated asset, scene, soundscape, and mechanic shares a coherent
-aesthetic DNA.
-
-Architecture:
-  StyleConductor (singleton)
-    |-- StyleProfile, StyleDimension, CoherenceCheck, HarmonizationSuggestion,
-       StyleDriftReport, ConductorStats, ConductorSnapshot, ConductorEvent
-    |-- StyleModality, StyleMood, CoherenceLevel, DriftDirection,
-       ConductorEventKind
-
-Core Capabilities:
-  - register_profile / get_profile / list_profiles / update_profile /
-    delete_profile: style profile lifecycle management.
-  - register_dimension / get_dimension / list_dimensions / remove_dimension:
-    per-modality style dimension definitions.
-  - check_coherence / get_check / list_checks: cross-modal coherence
-    assessment with per-modality scoring.
-  - suggest_harmonization / get_suggestion / list_suggestions: actionable
-    harmonization adjustments derived from coherence checks.
-  - record_drift / get_drift_report / list_drift_reports: style drift
-    tracking over time with direction and magnitude.
-  - set_active_profile / get_active_profile: designate the current
-    governing style profile.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`StyleConductor.get_instance` or the module-level
-:func:`get_style_conductor` factory.
-"""
+SparkLabs Agent - AI Cross-Modal Style Conductor"""
 
 from __future__ import annotations
 

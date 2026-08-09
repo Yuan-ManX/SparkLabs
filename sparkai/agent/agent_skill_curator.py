@@ -1,28 +1,5 @@
 """
-SparkAI Agent - Skill Curator
-
-Autonomous skill lifecycle management system. Periodically reviews
-agent-created game skills, detects staleness, triggers archival,
-and orchestrates background review/consolidation operations.
-
-The curator runs as a background process within the agent runtime,
-maintaining persistent state through a dotfile-based registry.
-It supports consolidation strategies that merge overlapping skills
-and provides detailed reports on skill ecosystem health.
-
-Architecture:
-  SkillCurator
-    |-- SkillRegistry (persistent skill tracking)
-    |-- ReviewScheduler (interval-based review triggers)
-    |-- ConsolidationEngine (skill merging/dedup)
-    |-- StalenessDetector (inactivity-based decay)
-    |-- ReportGenerator (ecosystem health reports)
-
-Lifecycle States:
-  active -> stale (after inactivity window)
-  stale -> archived (after extended inactivity)
-  archived -> re-activated (on manual restore)
-"""
+SparkAI Agent - Skill Curator"""
 
 from __future__ import annotations
 

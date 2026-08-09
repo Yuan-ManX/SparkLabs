@@ -1,32 +1,5 @@
 """
-SparkLabs Agent - Strategic Planner
-
-Hierarchical task decomposition engine for game generation pipelines.
-Breaks high-level game creation goals into ordered sub-tasks with
-dependencies, estimated effort, and execution strategies. Enables
-agents to plan multi-step game building workflows.
-
-Architecture:
-  StrategicPlanner
-    |-- TaskGraph (DAG of tasks with prerequisites)
-    |-- EffortEstimator (token/time estimate per task)
-    |-- ExecutionStrategy (SEQUENTIAL, PARALLEL, CONDITIONAL)
-    |-- PlanValidator (cycle detection, completeness check)
-
-Decomposition Levels:
-  - epic: multi-session project goal (build a complete game)
-  - feature: single-session objective (create player controller)
-  - task: individual agent action (write movement script)
-  - step: atomic operation (set entity property)
-
-Usage:
-    planner = StrategicPlanner()
-    plan = planner.decompose("Build a 2D platformer with 3 levels")
-    for task in plan.tasks:
-        print(f"[{task.priority}] {task.description}")
-        for dep in task.depends_on:
-            print(f"  depends on: {dep}")
-"""
+SparkLabs Agent - Strategic Planner"""
 
 from __future__ import annotations
 

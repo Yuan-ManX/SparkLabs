@@ -1,34 +1,5 @@
 """
-SparkLabs Agent - Skill Lifecycle Engine
-
-A self-improving skill lifecycle management system. Skills are created
-from experience, refined during use, persisted across sessions, and
-shared across domains. This is an original SparkLabs design for
-autonomous skill evolution.
-
-The engine treats every skill as a living artifact that moves through
-distinct lifecycle phases, accumulates execution experiences, and is
-periodically refined by heuristic strategies. Refined knowledge is
-captured as artifacts (procedures, patterns, heuristics, rules) that
-travel with the skill when it is shared or persisted.
-
-Architecture:
-  SkillLifecycleEngine
-    |-- SkillPhase (lifecycle stage of a skill)
-    |-- RefinementStrategy (tuning approach applied during refinement)
-    |-- PersistenceState (durability tier of skill data)
-    |-- SkillOrigin (provenance of a skill)
-    |-- ArtifactContentType (kind of knowledge captured in an artifact)
-    |-- SkillMetadata (canonical skill record)
-    |-- SkillExperience (single execution observation)
-    |-- RefinementCycle (one refinement iteration result)
-    |-- SkillArtifact (reusable knowledge fragment)
-    |-- LifecycleEvent (phase transition audit record)
-
-Lifecycle Flow:
-  EMBRYONIC -> DEVELOPING -> MATURE -> REFINING -> MATURE (loop)
-  any active phase -> DEPRECATED -> ARCHIVED
-"""
+SparkLabs Agent - Skill Lifecycle Engine"""
 
 from __future__ import annotations
 

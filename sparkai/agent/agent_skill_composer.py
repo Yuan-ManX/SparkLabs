@@ -1,18 +1,5 @@
 """
-SparkLabs Agent - Skill Composition Engine
-
-Composes and chains game development skills into automated workflows.
-Each skill chain is an ordered or parallel sequence of SkillSteps that
-represent individual capability invocations across agent subsystems.
-Chains can be saved as reusable SkillTemplates and instantiated on demand.
-
-Architecture:
-  SkillComposer
-    |-- SkillStep (single capability invocation with I/O spec)
-    |-- SkillChain (ordered or parallel step sequence)
-    |-- SkillTemplate (reusable chain blueprint)
-    |-- Chain execution (sequential or parallel with result chaining)
-"""
+SparkLabs Agent - Skill Composition Engine"""
 
 from __future__ import annotations
 

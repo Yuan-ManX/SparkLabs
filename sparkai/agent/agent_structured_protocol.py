@@ -1,36 +1,5 @@
 """
-SparkAI Agent - Structured Communication Protocol
-
-Schema-validated inter-agent messaging system that enforces
-message contracts, provides dead letter queues for failed
-deliveries, and implements backpressure for message flooding.
-
-Architecture:
-  StructuredProtocol
-    |-- MessageSchema (typed payload validation)
-    |-- DeadLetterQueue (failed message recovery)
-    |-- BackpressureController (rate limiting and throttling)
-    |-- MessageAuditor (delivery tracking and verification)
-
-Message Flow:
-  1. Sender creates message with type and payload
-  2. Schema validation against registered contract
-  3. Backpressure check (rate limit per sender)
-  4. Route to recipients
-  5. Deliver with confirmation tracking
-  6. Failed deliveries go to dead letter queue
-  7. Audit log records all operations
-
-Schema Types:
-  - task_assignment: Agent task delegation
-  - task_result: Task completion notification
-  - status_update: Agent state change
-  - coordination: Multi-agent coordination
-  - approval_request: Human-in-the-loop gate
-  - approval_response: Approval decision
-  - error_report: Error notification
-  - knowledge_share: Inter-agent knowledge transfer
-"""
+SparkAI Agent - Structured Communication Protocol"""
 
 from __future__ import annotations
 

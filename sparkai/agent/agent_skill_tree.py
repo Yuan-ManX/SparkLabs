@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Skill Tree Engine
-
-AI-driven skill tree and progression system for the AI-native game engine.
-Designs skill trees, ability progression paths, unlock requirements, and
-character build optimization. Generates class-specific skill trees, evaluates
-build viability, and finds optimal skill allocations for given point budgets.
-
-Architecture:
-  SkillTreeEngine (Singleton)
-    |-- SkillNode (individual skill node in the tree)
-    |-- SkillTree (complete skill tree for a character class)
-    |-- BuildOptimization (optimized skill allocation result)
-    |-- ClassTemplate (predefined archetype configurations)
-    |-- SynergyEvaluator (node-to-node synergy scoring)
-    |-- GreedyOptimizer (point-budget allocation algorithm)
-"""
+SparkLabs Agent - Skill Tree Engine"""
 
 from __future__ import annotations
 

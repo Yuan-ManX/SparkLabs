@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Social Dynamics Engine
-
-Sociodynamic simulation engine for autonomous agent populations.
-Models personality-driven interactions, emotional states, relationship
-networks, and emergent social behavior in game worlds.
-
-Architecture:
-  AgentSocialDynamics (Singleton)
-    |-- Personality Matrix (trait-based agent personalities)
-    |-- Emotion Engine (valence-arousal emotional modeling)
-    |-- Relationship Graph (weighted social network)
-    |-- Interaction Director (context-aware social interaction)
-    |-- Group Dynamics (crowd/group behavior modeling)
-    |-- Social Memory (interaction history and reputation)
-    |-- Rumor Engine (information propagation through networks)
-"""
+SparkLabs Agent - Social Dynamics Engine"""
 
 from __future__ import annotations
 

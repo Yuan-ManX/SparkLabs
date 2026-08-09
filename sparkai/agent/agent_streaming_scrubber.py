@@ -1,40 +1,5 @@
 """
-SparkLabs Agent - Streaming Content Scrubber
-
-State-machine-based content filter that processes streaming LLM output
-to strip internal context blocks — including memory context, security scans,
-and system instructions — from the visible stream while preserving them
-for downstream processing and audit logging. Prevents sensitive agent
-internals from leaking to end-user UI during real-time streaming.
-
-Architecture:
-  StreamingScrubber
-    |-- ScrubSession (per-connection state machine with buffer tracking)
-    |-- ScrubberRule (fence-pair definitions with visibility policies)
-    |-- ChunkResult (processed chunk output with scrubbing metadata)
-    |-- ScrubberConfig (named rule-set presets for rapid activation)
-
-Scrub States:
-  - IDLE: normal output, scanning for fence openings
-  - FENCE_SEEN: partial opening fence detected, confirming match
-  - INSIDE_BLOCK: confirmed inside a scrubbable block, accumulating content
-  - CLOSING_SEEN: partial closing fence detected while inside a block
-  - BUFFERING: transitional content buffering mid-chunk
-
-Scrubber Modes:
-  - STRICT: aggressively removes all scrubbed blocks, zero leakage
-  - LENIENT: removes known blocks, allows unrecognized fences through
-  - PASSIVE: logs but does not remove any content from the stream
-
-Usage:
-    scrubber = get_streaming_scrubber()
-    scrubber.add_rule(BlockType.MEMORY_CONTEXT, "<memory>", "</memory>",
-                      VisibilityMode.SCRUBBED, "[memory redacted]")
-    sid = scrubber.create_session(mode="strict")
-    result = scrubber.process_chunk(sid, "Hello <memory>secret</memory> world")
-    print(result.processed_chunk)  # "Hello  world"
-    print(scrubber.get_remaining_content(sid))  # [("memory_context", "secret")]
-"""
+SparkLabs Agent - Streaming Content Scrubber"""
 from __future__ import annotations
 
 import time

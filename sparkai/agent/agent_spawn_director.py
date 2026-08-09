@@ -1,45 +1,5 @@
 """
-SparkLabs Agent - AI Spawn Director
-
-An AI spawn director for the SparkLabs AI-native game engine. It manages
-enemy and NPC spawning in real-time by selecting spawn points based on
-player proximity, line-of-sight avoidance, and spawn budget; composing
-waves with enemy mixes and timing; and scaling difficulty based on
-player performance. Unlike scripted spawn tables, this agent makes
-continuous spawn decisions that fuse AI judgment with engine entity
-lifecycle, producing emergent combat encounters that adapt to player
-skill and pacing.
-
-Architecture:
-  SpawnDirector (singleton)
-    |-- SpawnPoint, SpawnWave, SpawnGroup, SpawnBudget,
-       SpawnDirectorStats, SpawnDirectorSnapshot, SpawnDirectorEvent
-    |-- SpawnKind, SpawnPriority, SpawnEventKind
-
-Core Capabilities:
-  - register_spawn_point / get_spawn_point / list_spawn_points /
-    remove_spawn_point: spawn point lifecycle with position, capacity,
-    cooldown, and team.
-  - register_wave / get_wave / list_waves / remove_wave: wave definitions
-    with enemy groups, timing, and trigger conditions.
-  - register_group / get_group / list_groups / remove_group: enemy group
-    templates with member composition and budget cost.
-  - set_budget / get_budget: spawn budget management (concurrent entity
-    cap, cost per spawn).
-  - select_spawn_point: AI-driven spawn point selection based on player
-    position, distance preference, and availability.
-  - evaluate_wave: check if a wave's trigger conditions are met.
-  - trigger_wave: activate a wave, spawning its groups over time.
-  - tick: advance the spawn simulation, processing active waves and
-    cooldowns.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`SpawnDirector.get_instance` or the module-level
-:func:`get_spawn_director` factory.
-"""
+SparkLabs Agent - AI Spawn Director"""
 
 from __future__ import annotations
 

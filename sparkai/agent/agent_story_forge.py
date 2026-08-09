@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Story Forge
-
-AI-driven narrative generation system for dynamic storytelling.
-Generates story arcs, character arcs, plot twists, and multi-branching
-narratives with thematic coherence and emotional progression.
-
-Architecture:
-  AgentStoryForge (Singleton)
-    |-- Story Arc Generator (three-act structure, hero's journey)
-    |-- Character Arc Weaver (character growth and transformation)
-    |-- Plot Twist Injector (surprise events and reversals)
-    |-- Theme Manager (narrative themes and motifs)
-    |-- Branching Engine (choice-based narrative branches)
-    |-- Scene Sequencer (scene ordering and pacing)
-    |-- Narrative Coherence Checker (internal consistency validation)
-"""
+SparkLabs Agent - Story Forge"""
 
 from __future__ import annotations
 

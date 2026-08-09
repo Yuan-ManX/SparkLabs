@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Style Transfer Engine
-
-Cross-domain style transfer for game assets and narrative content.
-Enables transformation of visual, textual, and mechanical styles
-between game elements, maintaining structural integrity while
-adapting aesthetic and tonal qualities.
-
-Architecture:
-  StyleTransferEngine
-    |-- StyleRegistry (catalog of registered style profiles)
-    |-- TransferPipeline (multi-stage style application)
-    |-- CoherenceValidator (post-transfer integrity checks)
-    |-- AdaptationMatrix (cross-domain mapping rules)
-
-Domains:
-  - VISUAL: sprite, texture, color palette transformation
-  - NARRATIVE: tone, voice, genre adaptation
-  - MECHANICAL: rule system stylistic reinterpretation
-  - AUDITORY: sound profile, music genre mapping
-"""
+SparkLabs Agent - Style Transfer Engine"""
 
 from __future__ import annotations
 

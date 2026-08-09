@@ -1,18 +1,5 @@
 """
-SparkLabs Agent - Skill Learning and Refinement System
-
-A skill acquisition and refinement system that models how agents learn
-new capabilities through experience. Skills are defined as templates with
-preconditions and effects, stored in a library, refined through usage,
-and composed into complex behavior chains.
-
-Architecture:
-  SkillLearningSystem (Singleton)
-    |-- SkillTemplate (preconditions, effects, parameters)
-    |-- SkillLibrary (storage and retrieval of known skills)
-    |-- SkillRefinementEngine (experience-based skill improvement)
-    |-- SkillCompositionEngine (combining skills into chains)
-"""
+SparkLabs Agent - Skill Learning and Refinement System"""
 
 from __future__ import annotations
 

@@ -1,58 +1,5 @@
 """
-SparkLabs Agent - Cross-Domain Skill Transfer Engine
-
-Cross-domain skill transfer system for AI agents operating inside the
-SparkLabs game engine. Agents migrate learned procedural knowledge from
-one game domain/context to another by identifying common structural
-patterns between distinct game contexts. This mirrors how humans transfer
-learning across contexts (e.g., learning to drive helps with piloting).
-
-The engine treats skills as transferable artifacts. It maintains a
-registry of agent skills, a library of inter-domain mappings, and a
-lifecycle of transfer tasks that progress from PENDING through ANALYZING
-to TRANSFERRED, ADAPTED, or FAILED. Transfers are driven by four
-strategies: ANALOGY, MAPPING, ABSTRACTION, and DECOMPOSITION.
-
-Architecture:
-  SkillTransferEngine (Singleton)
-    |-- SkillRecord (a learned skill owned by an agent)
-    |-- DomainMapping (structural bridge between two game domains)
-    |-- TransferTask (a single cross-domain transfer lifecycle)
-    |-- TransferStats / TransferSnapshot (aggregate observability)
-    |-- TransferEvent (auditable event stream for handler dispatch)
-
-Core Capabilities:
-  - register_skill / get_skill / list_skills / remove_skill
-  - create_mapping / get_mapping / list_mappings / remove_mapping
-  - compute_similarity (estimate structural overlap between domains)
-  - start_transfer / complete_transfer / fail_transfer (lifecycle)
-  - get_transfer / list_transfers / get_transfer_history
-  - register_event_handler / unregister_event_handler / list_events
-  - get_stats / get_status / get_snapshot / reset
-
-Usage:
-    engine = get_skill_transfer()
-    skill = engine.register_skill(
-        agent_id="agent_alpha",
-        name="Sword Combat",
-        domain=DomainType.COMBAT.value,
-        proficiency=0.85,
-    )
-    engine.create_mapping(
-        source_domain=DomainType.COMBAT.value,
-        target_domain=DomainType.STRATEGY.value,
-        similarity_score=0.72,
-        shared_patterns=["timing", "resource_management"],
-        strategy=TransferStrategy.MAPPING.value,
-    )
-    task = engine.start_transfer(
-        agent_id="agent_alpha",
-        source_skill_id=skill.id,
-        target_domain=DomainType.STRATEGY.value,
-        strategy=TransferStrategy.MAPPING.value,
-    )
-    completed = engine.complete_transfer(task.id, "Tactical Coordination")
-"""
+SparkLabs Agent - Cross-Domain Skill Transfer Engine"""
 
 from __future__ import annotations
 

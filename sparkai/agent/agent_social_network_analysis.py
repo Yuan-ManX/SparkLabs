@@ -1,56 +1,5 @@
 """
-SparkLabs Agent - Social Network Analysis Engine
-
-This module implements graph-theoretic analysis on top of the social
-relationship model used by AI agents operating inside the SparkLabs AI-native
-game engine. While :mod:`agent_social_relationship` tracks per-pair
-relationship state, this engine provides whole-graph analytical capabilities:
-centrality measures, community detection, clique analysis, and aggregate
-network metrics.
-
-Core concepts:
-
-  1. Centrality Measures
-       The engine computes four classic node-importance scores for every
-       agent: degree, betweenness, closeness, and eigenvector centrality.
-       PageRank is also available for influence-aware ranking. All scores are
-       normalised into [0.0, 1.0] and accompanied by a rank within the graph.
-
-  2. Community Detection
-       Three complementary algorithms are provided: Louvain-style greedy
-       modularity optimisation, asynchronous label propagation, and clique
-       percolation. Each produces :class:`Community` records with member
-       sets, internal/external edge counts, density, and the modularity
-       contribution reported by the algorithm.
-
-  3. Clique Analysis
-       The engine enumerates maximal, maximum, and k-cliques. The resulting
-       :class:`Clique` records carry member sets, edge counts, and density,
-       which is useful for identifying tightly-cohesive subgroups.
-
-  4. Network Metrics
-       Whole-graph properties (density, diameter, average path length,
-       clustering coefficient, and degree assortativity) are computed on
-       demand and cached as :class:`NetworkMetricReport` instances.
-
-Architecture:
-  SocialNetworkAnalysisEngine (Singleton, double-checked locking with
-                               threading.RLock)
-    |-- NetworkAgent                -- a node in the social graph
-    |-- NetworkEdge                 -- a (possibly bidirectional) link
-    |-- CentralityScore             -- one centrality reading for one agent
-    |-- Community                   -- a detected community
-    |-- Clique                      -- a maximal/maximum/k-clique
-    |-- NetworkMetricReport         -- one graph-level metric
-    |-- InfluenceProfile            -- combined influence reading
-    |-- SocialNetworkStats          -- aggregate engine statistics
-    |-- SocialNetworkSnapshot       -- complete engine state snapshot
-    |-- SocialNetworkEvent          -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the engine
-is safe to call from multiple agent threads. Bounded in-memory stores use
-FIFO eviction when their capacity constants are exceeded.
-"""
+SparkLabs Agent - Social Network Analysis Engine"""
 
 from __future__ import annotations
 

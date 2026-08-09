@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Skill Synthesizer
-
-Autonomous closed learning loop that observes agent execution patterns across
-sessions, identifies repeated successful strategies, and crystallizes them
-into reusable skill documents. The synthesizer forms the backbone of SparkLabs'
-self-improving agent fabric, enabling the engine to grow its own capability
-surface without human intervention.
-
-Architecture:
-  SkillSynthesizer (Singleton)
-    |-- ExecutionPattern (observed strategy repetition)
-    |-- SkillDocument (reusable capability blueprint)
-    |-- SynthesisSession (observation-to-skill lifecycle)
-    |-- SkillCondition (applicability constraints)
-
-Synthesis Cycle:
-  OBSERVING -> IDENTIFYING -> GENERATING -> REVIEWING -> PUBLISHED
-
-Usage:
-    synth = get_skill_synthesizer()
-    synth.observe_trajectory("sess_01", ["tool_a", "tool_b", "tool_c"], True, {})
-    patterns = synth.analyze_patterns(min_occurrences=3)
-    for pid in patterns:
-        skill = synth.synthesize_skill(pid)
-    catalog = synth.get_skill_catalog(category=PatternCategory.GAME_LOGIC)
-"""
+SparkLabs Agent - Skill Synthesizer"""
 
 from __future__ import annotations
 

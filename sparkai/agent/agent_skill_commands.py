@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Skill Commands
-
-Structured skill command system for the AI game engine agent.
-Provides a slash-command interface that AI agents and users
-can issue to trigger specific game development operations.
-Commands span generation, analysis, building, and deployment
-tasks — giving the agent a consistent action vocabulary.
-
-Architecture:
-  SkillCommandRegistry
-    |-- CommandDef (name, description, category, parameters)
-    |-- CommandHandler (validation + execution pipeline)
-    |-- CommandRouter (parse text → resolve command → dispatch)
-    |-- ParameterValidator (type checking, range validation)
-    |-- CommandHistory (recent commands with results)
-
-Command Categories:
-  - GENERATE: /generate-sprite, /generate-level, /generate-code
-  - ANALYZE: /analyze-scene, /analyze-performance, /analyze-assets
-  - BUILD: /build-game, /build-asset, /build-scene
-  - DEPLOY: /deploy-web, /deploy-mobile, /deploy-desktop
-  - EDIT: /edit-object, /edit-scene, /edit-script
-  - UTILITY: /help, /status, /clear, /undo, /redo
-"""
+SparkLabs Agent - Skill Commands"""
 
 from __future__ import annotations
 

@@ -1,17 +1,5 @@
 """
-Skill Preprocessor - Pre-execution validation and parameter normalization.
-
-Architecture:
-    SkillPreprocessor/
-    |-- ValidationResult (validation outcome classification)
-    |-- ParamConstraint (parameter validation rules)
-    |-- SkillSpec (complete skill specification)
-    |-- ValidationReport (detailed validation output)
-    |-- SkillPreprocessor (unified preprocessing engine)
-
-Validates skill invocation parameters before execution, applies type coercion,
-checks preconditions, and normalizes inputs for consistent agent behavior.
-"""
+Skill Preprocessor - Pre-execution validation and parameter normalization."""
 
 from __future__ import annotations
 
