@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - Curiosity Engine
-
-Intrinsic motivation system that drives AI agents to explore unknown areas,
-discover new patterns, and self-direct their learning through multiple
-curiosity strategies. The Curiosity Engine computes novelty scores, surprise
-metrics, and information-gain estimates to generate exploration goals that
-keep agents autonomously engaged with their environment.
-
-Architecture:
-  AgentCuriosityEngine (Singleton)
-    |-- CuriosityProfile Manager (per-agent motivation parameters)
-    |-- Goal Generator (multi-strategy exploration goal synthesis)
-    |-- Discovery Tracker (novelty-weighted discovery records)
-    |-- Knowledge Zone Manager (spatial knowledge partitioning)
-    |-- Phase Controller (SURVEY/FOCUS/EXPLOIT/REFRESH transitions)
-    |-- Exploration Analyzer (efficiency scoring and reporting)
-
-Curiosity Strategies:
-  - NOVELTY_SEEKING: target least-explored regions
-  - SURPRISE_MAXIMIZATION: target boundaries between known/unknown
-  - UNCERTAINTY_REDUCTION: target low-confidence zones
-  - INFORMATION_GAIN: target high-density, low-coverage areas
-  - COMPETENCE_BUILDING: target zones matching agent skill level
-
-Usage:
-    engine = get_curiosity_engine()
-    profile = engine.create_curiosity_profile("agent_42",
-        dominant_strategy=CuriosityStrategy.NOVELTY_SEEKING)
-    goal = engine.generate_exploration_goal("agent_42",
-        world_bounds=(0, 0, 1000, 1000), known_zones=[...])
-    engine.record_discovery("agent_42", DiscoveryType.OBJECT,
-        (128, 256), "Ancient artifact found in ruins")
-    report = engine.evaluate_exploration_efficiency("agent_42")
-"""
+SparkLabs Agent - Curiosity Engine"""
 
 from __future__ import annotations
 

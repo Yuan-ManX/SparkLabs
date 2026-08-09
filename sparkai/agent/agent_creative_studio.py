@@ -1,34 +1,5 @@
 """
-SparkLabs Agent - AI Creative Studio
-
-This module implements the AI Creative Studio for AI agents operating inside
-the SparkLabs AI-native game engine. The studio coordinates multi-role
-collaborative production of game content (concept art, characters, levels,
-narrative, music, animation, mechanics) by simulating a small in-house
-creative team.
-
-The studio models a project through its lifecycle (IDEATION, DRAFTING,
-REVIEW, REFINEMENT, FINALIZATION, PUBLISHING), tracks asset requests and
-deliverables, gathers peer review verdicts, schedules milestones, and
-records an observable event stream that downstream subsystems (game
-intelligence hub, world synthesizer, content synthesis) can subscribe to.
-
-Architecture:
-  CreativeStudioEngine (Singleton, double-checked locking, threading.RLock)
-    |-- CreativeProject       -- a multi-asset production project
-    |-- AssetRequest          -- a single ask from one role for one asset
-    |-- CreativeDeliverable   -- a delivered asset with versioning + score
-    |-- ReviewRecord          -- a reviewer's verdict on a deliverable
-    |-- Milestone             -- a dated checkpoint inside a project
-    |-- StudioState           -- per-project state summary
-    |-- StudioStats           -- aggregate studio statistics
-    |-- StudioSnapshot        -- full engine snapshot
-    |-- StudioEvent           -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the
-engine is safe to call from multiple agent threads. Bounded in-memory
-stores use FIFO eviction when their capacity constants are exceeded.
-"""
+SparkLabs Agent - AI Creative Studio"""
 
 from __future__ import annotations
 

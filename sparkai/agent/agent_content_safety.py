@@ -1,18 +1,5 @@
 """
-Content Safety System - Output filtering and redaction engine.
-
-Architecture:
-    ContentSafety/
-    |-- SensitivityLevel (sensitivity classification)
-    |-- RedactionRule (pattern-based content filtering)
-    |-- ContentSafetyConfig (configuration management)
-    |-- ContentSafety (unified safety scanning engine)
-    |-- PII_PATTERNS (predefined detection patterns)
-    |-- UNSAFE_PATTERNS (predefined unsafe content patterns)
-
-Handles real-time scanning of agent outputs for PII, unsafe content,
-and sensitive information with configurable redaction and blocking rules.
-"""
+Content Safety System - Output filtering and redaction engine."""
 
 from __future__ import annotations
 

@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Conflict Resolution Engine
-
-Intelligent mediation for resolving contradictory outputs across
-multiple agent subsystems. When competing agents propose conflicting
-game design choices, asset modifications, or engine configurations,
-the resolution engine employs negotiation strategies to converge
-on coherent AI-native game development decisions.
-
-Architecture:
-  ConflictResolutionEngine
-    |-- ConflictDetector (identifying contradictory agent outputs)
-    |-- ResolutionStrategy (mediation approach selection)
-    |-- PriorityResolver (agent authority-weighted arbitration)
-    |-- MergeEngine (combining compatible partial solutions)
-    |-- EscalationManager (unresolvable conflict handling)
-    |-- ResolutionLog (audit trail of decisions made)
-
-Strategies:
-  - PRIORITY: higher-priority agent wins
-  - MERGE: combine non-overlapping portions of proposals
-  - VOTE: democratic resolution via consensus call
-  - ROLLBACK: revert to last known consistent state
-  - DEFER: escalate to human operator
-"""
+SparkLabs Agent - Conflict Resolution Engine"""
 
 from __future__ import annotations
 

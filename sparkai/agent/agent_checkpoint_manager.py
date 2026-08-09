@@ -1,31 +1,5 @@
 """
-SparkLabs Agent - Checkpoint Manager
-
-Session state snapshot and rollback system for agent sessions.
-Creates automatic state snapshots before agent operations,
-enabling rollback to any previous checkpoint. Supports full-session
-and per-entity snapshots with incremental deltas.
-
-Architecture:
-  CheckpointManager
-    |-- SessionCheckpoint (full state snapshot at point in time)
-    |-- DeltaTracker (incremental changes between checkpoints)
-    |-- RollbackEngine (restores session to checkpoint state)
-    |-- PrunePolicy (retention-based cleanup of old checkpoints)
-
-Checkpoint Operations:
-  - create: snapshot current session state
-  - list: enumerate available checkpoints
-  - diff: show changes between checkpoint and current state
-  - rollback: restore session to checkpoint state
-  - prune: remove old checkpoints beyond retention limit
-
-Usage:
-    cm = CheckpointManager(max_checkpoints=50)
-    checkpoint_id = cm.create_checkpoint(session_id, {"reason": "before major change"})
-    checkpoints = cm.list_checkpoints(session_id)
-    cm.rollback(session_id, checkpoint_id)
-"""
+SparkLabs Agent - Checkpoint Manager"""
 
 from __future__ import annotations
 

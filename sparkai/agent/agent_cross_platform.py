@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Cross-Platform Adaptation Engine
-
-Intelligent platform-specific game configuration and asset
-adaptation for AI-native multi-platform deployment. Analyzes
-target platform constraints (screen resolution, input method,
-performance budget, storage limits) and generates optimized
-configurations, control mappings, and UI layouts for seamless
-cross-platform game delivery.
-
-Architecture:
-  CrossPlatformEngine
-    |-- PlatformProfiler (capability assessment per platform)
-    |-- InputAdapter (keyboard/mouse to touch/controller mapping)
-    |-- ResolutionScaler (DPI-aware UI and asset scaling)
-    |-- PerformanceBudgeter (platform-specific resource limits)
-    |-- BuildConfigGenerator (per-platform build configurations)
-    |-- PlatformValidator (minimum specs compliance checking)
-
-Platforms:
-  - DESKTOP: Windows, macOS, Linux (high perf, keyboard+mouse)
-  - MOBILE: iOS, Android (limited perf, touchscreen)
-  - WEB: browser-based (variable perf, keyboard+mouse+touch)
-  - CONSOLE: PlayStation, Xbox, Switch (fixed perf, controller)
-"""
+SparkLabs Agent - Cross-Platform Adaptation Engine"""
 
 from __future__ import annotations
 

@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Cinematographer
-
-An AI cinematographer for the SparkLabs AI-native game engine. It performs
-live, dynamic camera framing during gameplay by selecting shots, composing
-sequences, rating dramatic tension, and shifting mood in real time. Unlike
-scripted cutscene systems, this agent makes continuous cinematographic
-decisions that fuse AI judgment with engine camera control, producing a
-cinematic experience that adapts to emergent gameplay.
-
-Architecture:
-  Cinematographer (singleton)
-    |-- CinemaShot, CinemaSequence, CinemaStats, CinemaSnapshot, CinemaEvent
-    |-- CinemaShotType, CinemaFrameSize, CinemaMovement, CinemaMood,
-       CinemaEventKind
-
-Core Capabilities:
-  - register_shot / get_shot / list_shots / update_shot / remove_shot:
-    shot lifecycle management with type, frame size, movement, mood.
-  - compose_sequence / get_sequence / list_sequences / remove_sequence:
-    multi-shot cinematic sequences with looping and mood anchoring.
-  - select_shot: AI-driven shot selection based on context (mood, action
-    intensity, entity priority, scene phase).
-  - transition_to: transition the active shot to a new one with blend.
-  - rate_dramatic_tension: score the dramatic tension of a live scene.
-  - shift_mood: shift the cinematographer mood, influencing shot selection.
-  - set_focus: set the focus entity for framing decisions.
-  - clear_queue: clear the pending shot queue.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`Cinematographer.get_instance` or the module-level
-:func:`get_cinematographer` factory.
-"""
+SparkLabs Agent - Cinematographer"""
 
 from __future__ import annotations
 

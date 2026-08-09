@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Concurrency Manager
-
-Manages multiple concurrent agent tasks with rate limiting, prioritization,
-and queue management. Orchestrates task execution across agent subsystems
-with configurable concurrency strategies and throughput monitoring.
-
-Architecture:
-  AgentConcurrencyManager
-    |-- TaskScheduler (priority-based task dispatch with deadlines)
-    |-- RateLimiter (multi-strategy rate limiting for API/resource calls)
-    |-- QueueManager (task queue lifecycle and concurrency control)
-    |-- StatsCollector (throughput, latency, and queue depth metrics)
-    |-- ConcurrencyPolicy (parallel, sequential, pipeline, round-robin)
-
-Concurrency Strategies:
-  - PARALLEL: execute tasks concurrently (GPU-style parallelism)
-  - SEQUENTIAL: ordered execution with dependency chains
-  - PIPELINE: stage-based processing with intermediate queues
-  - ROUND_ROBIN: fair distribution across agent queues
-  - PRIORITY_QUEUE: critical tasks preempt lower-priority work
-"""
+SparkLabs Agent - Concurrency Manager"""
 
 from __future__ import annotations
 

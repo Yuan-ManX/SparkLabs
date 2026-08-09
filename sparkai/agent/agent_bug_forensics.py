@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Bug Forensics Engine
-
-AI-driven crash log analysis and fix suggestion system for game engine
-issues. Analyzes stack traces, classifies error patterns, reproduces
-failure scenarios, and generates targeted fix recommendations.
-
-Architecture:
-  BugForensics (singleton)
-    |-- Crash ingestion and classification
-    |-- Pattern-based error categorization
-    |-- Root cause analysis via stack trace decomposition
-    |-- Reproduction step synthesis
-    |-- Fix suggestion generation
-    |-- Cross-report relationship mapping
-
-Workflow:
-  1. submit_crash() - ingest a crash report
-  2. analyze_crash() - classify error, identify root cause
-  3. suggest_fix() - generate fix recommendation
-  4. find_related_issues() - discover related crash reports
-"""
+SparkLabs Agent - Bug Forensics Engine"""
 
 from __future__ import annotations
 

@@ -1,34 +1,5 @@
 """
-SparkLabs Agent - Concept Drift Engine
-
-This module implements a Concept Drift Engine for AI agents operating inside
-the SparkLabs AI-native game engine. It tracks how each agent's concepts
-(meanings, categories, and vocabulary) evolve over time as the agent
-experiences new events, observes new data, and refines its understanding
-of the world.
-
-The Concept Drift Engine complements the Self-Model and Metacognition
-subsystems by focusing specifically on the agent's internal vocabulary:
-how concepts are first learned, how they are used, how they drift, how
-they cluster, how they merge or split, and how they are eventually
-retired.
-
-Architecture:
-  ConceptDriftEngine (Singleton, double-checked locking, threading.RLock)
-    |-- Concept                -- a named concept/word the agent knows
-    |-- ConceptOccurrence      -- a single use/observation of a concept
-    |-- ConceptVersion         -- a historical version of a concept
-    |-- ConceptCluster         -- a cluster of related concepts
-    |-- DriftEvent             -- a recorded drift occurrence
-    |-- AgentConceptState      -- per-agent aggregation of the above
-    |-- ConceptDriftStats      -- aggregate engine statistics
-    |-- ConceptDriftSnapshot   -- complete engine state snapshot
-    |-- ConceptDriftEvent      -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the
-engine is safe to call from multiple agent threads. Bounded in-memory
-stores use FIFO eviction when their capacity constants are exceeded.
-"""
+SparkLabs Agent - Concept Drift Engine"""
 
 from __future__ import annotations
 

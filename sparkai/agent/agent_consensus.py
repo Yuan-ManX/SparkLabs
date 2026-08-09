@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Consensus Engine
-
-Multi-agent deliberation and consensus building for collaborative
-game design decisions. Enables teams of specialized agents to
-propose, debate, and converge on optimal design choices through
-structured voting and weighted opinion aggregation.
-
-Architecture:
-  AgentConsensus
-    |-- ConsensusProtocol (voting strategy selection)
-    |-- OpinionRegistry (agent position tracking)
-    |-- DeliberationRound (structured debate cycle)
-    |-- VoteTally (weighted opinion aggregation)
-    |-- ConsensusResolver (tie-breaking and deadlock detection)
-
-Protocols:
-  - MAJORITY: simple majority wins
-  - WEIGHTED: agent expertise weights influence votes
-  - UNANIMOUS: full agreement required
-  - RANKED_CHOICE: preferential voting with elimination
-"""
+SparkLabs Agent - Consensus Engine"""
 
 from __future__ import annotations
 

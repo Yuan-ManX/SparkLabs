@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Circuit Breaker
-
-API resilience system with circuit breaking, rate limiting, and
-adaptive backoff for external service calls. Protects agent
-operations from cascading failures when downstream APIs degrade.
-
-Architecture:
-  CircuitBreaker
-    |-- BreakerState (CLOSED, OPEN, HALF_OPEN)
-    |-- FailureTracker (sliding window failure counting)
-    |-- BackoffStrategy (exponential/jittered retry delay)
-    |-- RateLimiter (token bucket per service endpoint)
-
-States:
-  - CLOSED: Normal operation — requests pass through
-  - OPEN: Circuit tripped — requests fail fast
-  - HALF_OPEN: Probing — limited requests test recovery
-
-Usage:
-    cb = CircuitBreaker(failure_threshold=5, recovery_timeout=30.0)
-    
-    # Wrap an API call
-    result = cb.call(
-        service="openai",
-        func=lambda: client.chat.completions.create(...),
-    )
-    if result is None:
-        print(f"Circuit open for openai: {cb.get_status('openai')}")
-"""
+SparkLabs Agent - Circuit Breaker"""
 
 from __future__ import annotations
 

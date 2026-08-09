@@ -1,15 +1,5 @@
 """
-SparkAI Agent - Cross-Platform Communication Gateway
-
-Unified multi-platform messaging gateway that enables the SparkAI Agent
-to communicate across Telegram, Discord, Slack, Web, and CLI interfaces
-through a single gateway process. Supports conversation continuity,
-cross-platform message routing, and platform-specific delivery.
-
-Provides a unified abstraction layer over multiple messaging platforms
-with consistent message formatting, command handling, and session
-management across all connected platforms.
-"""
+SparkAI Agent - Cross-Platform Communication Gateway"""
 
 from __future__ import annotations
 

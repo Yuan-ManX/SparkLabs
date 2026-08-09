@@ -1,22 +1,5 @@
 """
-SparkLabs Agent - Character Creator
-
-AI-driven character creation system for the SparkLabs AI-native game engine.
-Generates player characters, NPCs, enemies, bosses with complete attributes,
-backstories, abilities, and visual descriptions. Supports intelligent stat
-allocation based on class, race bonuses, role-appropriate equipment, and
-thematic design for bosses with unique mechanics and multiple phases.
-
-Architecture:
-  CharacterCreatorEngine (Singleton)
-    |-- CharacterRole (narrative role categorization)
-    |-- CharacterClass (combat archetype classification)
-    |-- CharacterRace (species and heritage definition)
-    |-- Alignment (moral and ethical compass)
-    |-- CharacterAttribute (individual stat with bounds)
-    |-- CharacterAbility (action or spell definition)
-    |-- CharacterProfile (complete character data model)
-"""
+SparkLabs Agent - Character Creator"""
 
 from __future__ import annotations
 

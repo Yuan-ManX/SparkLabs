@@ -1,19 +1,5 @@
 """
-Budget Tracker - Token and cost budget management for AI-native game development.
-
-Architecture:
-    BudgetTracker/
-    |-- BudgetScope (per-session, daily, monthly enumeration)
-    |-- BudgetLimit (threshold configuration dataclass)
-    |-- BudgetUsage (consumed resources dataclass)
-    |-- BudgetAlert (warning/block configuration dataclass)
-    |-- BudgetTracker (global budget orchestration)
-
-Tracks LLM token consumption and estimated costs during game development
-sessions. Enforces configurable budgets with warning thresholds and hard
-caps to prevent runaway spending. Supports per-session, daily, and total
-budget scopes.
-"""
+Budget Tracker - Token and cost budget management for AI-native game development."""
 
 from __future__ import annotations
 

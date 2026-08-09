@@ -1,41 +1,5 @@
 """
-SparkLabs Agent - Causal Reasoning Engine
-
-Advanced causal inference system that enables agents to discover and
-reason about cause-effect relationships in game worlds. The Causal
-Reasoning Engine builds structural causal models, performs do-calculus
-interventions, and evaluates counterfactual scenarios to understand
-the underlying mechanics governing game behavior.
-
-Architecture:
-  AgentCausalReasoning (Singleton)
-    |-- CausalGraph Manager (DAG-based causal relationship modeling)
-    |-- Intervention Simulator (do-operator, structural equation evaluation)
-    |-- Counterfactual Evaluator (what-if scenario analysis)
-    |-- Confounder Detector (unobserved variable identification)
-    |-- Mediation Analyzer (direct/indirect effect decomposition)
-    |-- Causal Discovery Engine (constraint-based structure learning from observational patterns)
-
-Core Capabilities:
-  - discover_causal_graph: Infer causal DAG from observational data
-  - simulate_intervention: Apply do-operator and propagate effects
-  - evaluate_counterfactual: Compute counterfactual outcomes
-  - detect_confounders: Identify potential unobserved confounders
-  - analyze_mediation: Decompose total effects into direct/indirect paths
-  - compute_average_treatment_effect: Estimate causal treatment effects
-  - get_status: Real-time causal model health snapshot
-
-Usage:
-    engine = get_causal_reasoning()
-    graph = engine.discover_causal_graph("game_economy",
-        variables=["supply", "demand", "price", "quality"],
-        observations=historical_data)
-    outcome = engine.simulate_intervention("game_economy",
-        intervention={"price": 50.0}, target="demand")
-    cf = engine.evaluate_counterfactual("game_economy",
-        factual={"price": 30, "demand": 100},
-        hypothetical={"price": 60})
-"""
+SparkLabs Agent - Causal Reasoning Engine"""
 
 from __future__ import annotations
 

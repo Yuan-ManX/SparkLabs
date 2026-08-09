@@ -1,52 +1,5 @@
 """
-SparkLabs Agent - AI Causality Graph Engine
-
-An AI-native causality graph that tracks cause-and-effect relationships
-across every event in the game world. The engine builds a directed acyclic
-graph (DAG) of causal chains, surfaces butterfly-effect storylines where
-small causes cascade into large outcomes, predicts downstream consequences,
-and checks narrative consistency across linked event sequences.
-
-Architecture:
-  _CausalityGraphEngine (singleton)
-    |-- CausalEvent (a single node in the causal DAG)
-    |-- CausalLink (a directed edge from a cause to an effect)
-    |-- CausalChain (an ordered thread of linked events)
-    |-- ButterflyEffect (a small cause with large downstream spread)
-    |-- ConsequencePrediction (a forecast of future effects)
-    |-- ConsistencyReport (a narrative coherence check result)
-    |-- CausalitySnapshot (full state snapshot for persistence)
-    |-- CausalityStats (aggregate activity counters)
-    |-- CausalityEvent (audit log entry on the engine timeline)
-
-Core Capabilities:
-  - register_event / get_event / list_events / remove_event / update_event:
-    causal event node lifecycle management across every event category.
-  - register_link / get_link / list_links / remove_link / verify_link:
-    directed edge management with DAG cycle prevention and verification.
-  - register_chain / get_chain / list_chains / remove_chain / extend_chain /
-    resolve_chain / get_chain_events / get_chain_summary: causal chain
-    threading with status transitions and ordered event linkage.
-  - register_butterfly_effect / get_butterfly_effect / list_butterfly_effects /
-    remove_butterfly_effect / detect_butterfly_effects: butterfly effect
-    tracking with automatic detection of small causes and large effects.
-  - trace_causes / trace_effects / find_path / get_root_causes /
-    get_terminal_effects / compute_centrality / get_causal_neighborhood:
-    graph traversal and structural analysis over the causal DAG.
-  - ai_predict_consequences / ai_check_consistency / ai_generate_butterfly /
-    ai_suggest_intervention: deterministic AI-driven analysis that forecasts
-    outcomes, checks coherence, generates scenarios, and proposes levers.
-  - get_consequence_prediction / list_consequence_predictions /
-    get_consistency_report / list_consistency_reports: prediction and report
-    retrieval.
-  - get_status / get_stats / get_snapshot / get_config / set_config /
-    list_events_log / tick: observability, tuning, and time progression.
-
-Thread safety:
-  All public methods acquire a reentrant instance lock. Singleton creation
-  uses module-level double-checked locking with a dedicated init lock so
-  re-entrancy during reset cannot double-seed the canonical dataset.
-"""
+SparkLabs Agent - AI Causality Graph Engine"""
 
 from __future__ import annotations
 

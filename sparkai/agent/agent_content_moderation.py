@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Content Moderation Engine
-
-Real-time filtering and review pipeline for AI-generated and
-user-submitted game content. Screens text, dialogue, level names,
-asset descriptions, and community content against configurable
-policy tiers. Supports multilingual profanity detection, toxicity
-scoring, and cultural sensitivity review with human-in-the-loop
-escalation for borderline content.
-
-Architecture:
-  ContentModerationEngine
-    |-- TextScreener (profanity, toxicity, hate speech detection)
-    |-- ImageScreener (NSFW detection, gore assessment)
-    |-- CulturalReviewer (locale-specific sensitivity analysis)
-    |-- PolicyEngine (configurable moderation rule sets)
-    |-- EscalationManager (human review queue for borderline cases)
-    |-- AuditTrail (compliance logging for all moderation decisions)
-
-Policy Tiers:
-  - FAMILY: strictest filtering, suitable for all ages
-  - TEEN: moderate filtering, allows mild content
-  - MATURE: minimal filtering, content warnings only
-  - UNRESTRICTED: no automated filtering, developer assumes responsibility
-"""
+SparkLabs Agent - Content Moderation Engine"""
 
 from __future__ import annotations
 

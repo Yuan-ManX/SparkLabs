@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Game Conductor
-
-The top-level orchestrator that unifies the GameDirector, GameIntelligenceEngine,
-and GameDesignReasoner into a single intelligent game creation pipeline.
-
-Architecture:
-  GameConductor (Singleton)
-    |-- GameDirector           -> produces a playable game with quality metrics
-    |-- GameIntelligenceEngine -> analyzes design patterns, player experience, balance
-    |-- GameDesignReasoner     -> mathematical balance and difficulty curve analysis
-
-The conductor runs the director's creation pipeline, then layers rich intelligence
-analysis on top of the produced game to produce a ConductorResult with both the
-playable artifact and a deep IntelligenceReport.
-
-Usage:
-    conductor = GameConductor.get_instance()
-    conductor.initialize()
-    result = conductor.conduct("Design a platformer with double-jump and gem collection")
-    # result.html contains the playable game
-    # result.intelligence contains the analysis report
-"""
+SparkLabs Agent - Game Conductor"""
 
 from __future__ import annotations
 

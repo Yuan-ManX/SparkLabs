@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Capability Registry
-
-Dynamic agent capability discovery, registration, and matching system.
-Provides the core infrastructure for agents to advertise what they can do,
-discover capabilities in the agent ecosystem, and intelligently match
-agents to tasks based on their declared proficiencies.
-
-The registry powers agent-to-agent collaboration by enabling runtime
-capability lookup: when one agent needs a particular skill (e.g. shader
-authoring, physics tuning, narrative design), the registry finds the
-best-matched agent available. This is the foundation for the multi-agent
-orchestration layer in the SparkLabs AI-native game engine.
-
-Architecture:
-  CapabilityRegistryEngine
-    |-- Capability (single atomic skill with type, scope, proficiency)
-    |-- AgentCapabilityProfile (all capabilities owned by one agent)
-    |-- CapabilityQuery (search criteria for finding capabilities)
-    |-- MatchResult (scored match between query and capability)
-"""
+SparkLabs Agent - Capability Registry"""
 
 from __future__ import annotations
 

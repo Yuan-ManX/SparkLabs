@@ -1,18 +1,5 @@
 """
-SparkLabs Agent - Chain-of-Thought Engine
-
-A structured reasoning system that traces step-by-step logic chains
-for agent decision-making in the SparkLabs AI-native game engine.
-Models reasoning as a traversable thought tree where each node captures
-a discrete cognitive step with confidence scoring, evidence linking,
-and branching support for alternative reasoning paths.
-
-Architecture:
-  ChainOfThoughtEngine
-    |-- ThoughtChain (full reasoning session anchored to a question)
-    |-- ReasoningNode (single cognitive step in the thought tree)
-    |-- ReasoningTrace (serializable record of the reasoning path)
-"""
+SparkLabs Agent - Chain-of-Thought Engine"""
 
 from __future__ import annotations
 

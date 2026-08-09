@@ -1,23 +1,5 @@
 """
-SparkLabs Agent - AI-Powered Multi-Platform Build Orchestrator
-
-Intelligent build pipeline orchestrator for cross-platform game deployment.
-Manages build configurations, queues and executes builds across multiple
-target platforms with configurable optimization levels, compression modes,
-and quality settings. Provides build history tracking, artifact management,
-and build size estimation powered by AI heuristics.
-
-Architecture:
-  BuildOrchestrator
-    |-- Config Manager (create and manage per-platform build configurations)
-    |-- Build Queue (FIFO scheduling with priority support)
-    |-- Build Executor (async build task execution with progress tracking)
-    |-- Artifact Manager (artifact URL generation and cache management)
-    |-- Size Estimator (AI-driven build size prediction per platform/quality)
-    |-- Stats Reporter (aggregate metrics across all build history)
-
-Supports 9 target platforms with sensible defaults for each.
-"""
+SparkLabs Agent - AI-Powered Multi-Platform Build Orchestrator"""
 
 from __future__ import annotations
 

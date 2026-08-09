@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Bridge Orchestrator
-
-The BridgeOrchestrator is the cognitive layer that sits between the
-AiNativeGameBridge (which collects telemetry) and the directive
-composition (which tells the running game how to adapt). It transforms
-raw player behavior signals into purposeful game adaptation decisions.
-
-Original SparkLabs design:
-  1. Player Modeling - Builds a running model of the player's skill,
-     engagement, frustration, and mastery from telemetry frames.
-  2. Intent Inference - Infers what the player is trying to achieve
-     (explore, speedrun, complete objective, etc.) from movement
-     patterns and event sequences.
-  3. Strategy Selection - Picks an adaptation strategy based on the
-     player model and current flow state:
-       - nurture: help a struggling player
-       - challenge: push a bored player
-       - reward: celebrate mastery
-       - redirect: nudge a stuck player
-       - observe: no intervention, gather more data
-  4. Directive Authoring - Composes a coherent set of directives that
-     execute the chosen strategy. Avoids contradictory directives
-     (e.g., simultaneously making the game easier and harder).
-  5. Coherence Check - Validates that new directives don't conflict
-     with recently issued directives. Applies a cooldown to avoid
-     directive flooding.
-  6. Outcome Tracking - Records the outcome of each directive (did
-     the player's state improve?) for future strategy selection.
-
-The orchestrator is intentionally lightweight (no LLM calls per frame)
-and uses heuristic reasoning informed by the existing agent ecosystem.
-It runs at the bridge tick frequency (~60Hz) so decisions must be fast.
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Bridge Orchestrator"""
 
 from __future__ import annotations
 

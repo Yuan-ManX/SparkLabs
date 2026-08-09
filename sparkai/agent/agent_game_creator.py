@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Game Creator Engine
-
-Natural Language Game Creation module for the SparkLabs AI-native game engine.
-Enables users to create complete games by describing them in natural language.
-The engine parses descriptions into structured specifications, assembles game
-components, generates project scaffolding, and orchestrates a phased creation
-pipeline from concept to playable game.
-
-Architecture:
-  GameCreatorEngine (Singleton)
-    |-- GameSpecParser (parses NL descriptions into structured specs)
-    |-- GameAssembler (assembles scenes, entities, rules, UI, assets)
-    |-- GameBlueprint (structured game specification data model)
-    |-- CreationPipeline (phased creation pipeline orchestrator)
-
-Core Capabilities:
-  - Parse natural language descriptions into game specifications
-  - Detect genre, mechanics, visual style, story, platform, and complexity
-  - Generate complete game blueprints from descriptions
-  - Assemble scenes, characters, rules, UI layouts, and asset requirements
-  - Track creation progress through six phases
-  - Support iterative refinement based on feedback
-"""
+SparkLabs Agent - Game Creator Engine"""
 
 from __future__ import annotations
 

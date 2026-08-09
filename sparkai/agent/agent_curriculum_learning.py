@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Curriculum Learning Engine
-
-Progressive difficulty orchestration for player skill development.
-Constructs adaptive learning paths that dynamically adjust challenge
-levels based on player performance, ensuring optimal engagement
-through scaffolding and spaced repetition principles.
-
-Architecture:
-  CurriculumLearningEngine
-    |-- SkillGraph (interconnected skill dependency network)
-    |-- DifficultyOptimizer (performance-based challenge tuning)
-    |-- SessionPlanner (multi-session progression scheduling)
-    |-- MilestoneTracker (competency checkpoint evaluation)
-    |-- AdaptationController (real-time difficulty modulation)
-
-Strategies:
-  - SCAFFOLDED: guided progression with explicit support
-  - EXPLORATORY: open-ended discovery with gradual unlocks
-  - MASTERY: competency-gated advancement thresholds
-"""
+SparkLabs Agent - Curriculum Learning Engine"""
 
 from __future__ import annotations
 

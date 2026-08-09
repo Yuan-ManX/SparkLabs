@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Cron Scheduler
-
-Scheduled autonomous agent task execution with cron-like expression
-evaluation, task dependency chains, retry logic, and multi-agent
-coordination. Provides a centralized scheduling engine that evaluates
-time-based execution rules, respects dependency ordering, applies
-configurable retry strategies, and coordinates task dispatch across
-multiple agent instances.
-
-Architecture:
-  AgentCronScheduler
-    |-- ScheduleRule (cron expression definition and evaluation)
-    |-- CronTask (scheduled task with state and retry tracking)
-    |-- TaskExecution (per-run execution record with timing metrics)
-    |-- TaskDependency (dependency chain definition and validation)
-    |-- RetryManager (backoff strategy computation and apply logic)
-
-Scheduling Features:
-  - FREQUENCY: once, minutley, hourly, daily, weekly, monthly, custom cron
-  - DEPENDENCIES: chain tasks with prerequisite completion requirements
-  - PRIORITIES: low, normal, high, critical execution ordering
-  - RETRIES: linear, exponential, fixed, and none backoff strategies
-  - COORDINATION: multi-agent task dispatch with state synchronization
-"""
+SparkLabs Agent - Cron Scheduler"""
 
 from __future__ import annotations
 

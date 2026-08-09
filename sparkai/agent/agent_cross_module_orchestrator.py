@@ -1,55 +1,5 @@
 """
-SparkLabs Agent - Cross-Module Orchestrator
-
-Orchestration system that coordinates all SparkLabs agent subsystems
-across module boundaries. Manages pipeline execution, module contracts,
-circuit breaking, and health monitoring for distributed agent workflows.
-
-Architecture:
-  AgentCrossModuleOrchestrator
-    |-- ModulePipeline (ordered sequence of module executions)
-    |-- ModuleContract (data contracts and validation between modules)
-    |-- OrchestrationTask (tracked execution of a pipeline)
-    |-- CircuitBreaker (failure isolation for module-to-module calls)
-    |-- ModuleHealthReport (real-time module status and metrics)
-
-Module States:
-  - IDLE: Module registered but not executing tasks
-  - RUNNING: Module actively processing tasks
-  - DEGRADED: Module operating with reduced capacity
-  - ERROR: Module encountered an unrecoverable failure
-  - RECOVERING: Module transitioning back from ERROR to RUNNING
-  - OFFLINE: Module unregistered or unavailable
-
-Pipeline Statuses:
-  - PENDING: Pipeline defined but not yet started
-  - IN_PROGRESS: Pipeline actively executing through module sequence
-  - PAUSED: Pipeline execution suspended
-  - COMPLETED: Pipeline finished all modules successfully
-  - FAILED: Pipeline terminated due to error
-  - PARTIALLY_COMPLETED: Some modules finished, others failed or skipped
-  - CANCELLED: Pipeline explicitly cancelled by user
-
-Circuit Breaker States:
-  - CLOSED: Normal operation — cross-module calls pass through
-  - OPEN: Failure threshold exceeded — calls are rejected
-  - HALF_OPEN: Probing state — limited calls test recovery
-
-Usage:
-    orchestrator = get_cross_module_orchestrator()
-    module_id = orchestrator.register_module(
-        "GameDesignAgent", "designer",
-        ["level_design", "mechanic_balancing"],
-        ["AssetGenerator", "PhysicsEngine"],
-    )
-    pipeline = orchestrator.create_pipeline(
-        "Level Generation",
-        ["GameDesignAgent", "AssetGenerator", "PhysicsEngine"],
-        entry_condition={"mode": "procedural"},
-        exit_condition={"quality_score": 0.8},
-    )
-    task = orchestrator.execute_pipeline(pipeline.pipeline_id, {"theme": "dungeon"})
-"""
+SparkLabs Agent - Cross-Module Orchestrator"""
 
 from __future__ import annotations
 

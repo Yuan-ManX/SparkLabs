@@ -1,54 +1,6 @@
 """
 SparkLabs AI-Native Game Engine - Agent Creativity Engine
-=========================================================
-
-Divergent thinking, combinatorial creativity, and novelty assessment for
-AI agents in the SparkLabs AI-native game engine.
-
-This module equips agents with the ability to generate original game ideas,
-mechanics, narratives, characters, levels, and solutions. Rather than
-recombining fixed templates, the Creativity Engine models the cognitive
-processes that underlie human creativity: divergent exploration of a
-solution space, combinatorial blending of distant concepts, and principled
-novelty assessment that separates genuinely original ideas from minor
-variations of existing work.
-
-Creative Cognition Model
-------------------------
-The engine implements four interlocking capabilities:
-
-1. **Divergent Thinking** -- Agents enumerate many candidate ideas within a
-   creative domain, deliberately widening the search before any pruning
-   happens. Each ``ThinkingMode`` (DIVERGENT, LATERAL, BISOCIATIVE, ...)
-   biases the generation process toward a different exploration pattern.
-
-2. **Combinatorial Creativity** -- Novelty frequently emerges at the
-   intersection of two unrelated ideas. ``combine_ideas`` fuses source
-   ideas into a new result whose novelty is boosted by the diversity of
-   its parents (different domains, thinking modes, and tag spaces).
-
-3. **Novelty Assessment** -- Every idea receives a ``novelty_score`` in
-   [0, 1] computed from token overlap with existing ideas in the same
-   domain plus tag rarity. The score is mapped to a qualitative
-   ``NoveltyLevel`` ranging from MUNDANE to RADICAL.
-
-4. **Creative Domains** -- The engine partitions the creative output
-   space into domains (MECHANIC, NARRATIVE, CHARACTER, ...) so that
-   novelty is judged relative to prior art within the same domain.
-
-Inspirations (NATURE, MYTHOLOGY, SCIENCE, ART, ...) seed the creative
-process. Each idea is created as a DRAFT, then optionally evaluated.
-Evaluation records an evaluator's judgment of novelty, usefulness, and
-surprise, updates the idea's combined score, and transitions the idea to
-EVALUATED status. Refinement creates a derivative idea with
-``refined_from`` pointing back to its ancestor.
-
-The engine is a process-wide singleton accessed via ``get_instance()`` or
-the module-level ``get_creativity_engine()`` helper. All public methods
-are guarded by a reentrant lock for thread safety. In-memory stores are
-bounded by capacity constants and use FIFO eviction so the engine never
-grows without limit.
-"""
+========================================================="""
 
 from __future__ import annotations
 

@@ -1,18 +1,5 @@
 """
-Checkpoint System - Agent operation checkpointing with rollback and restore.
-
-Architecture:
-    CheckpointSystem/
-    |-- CheckpointScope (full or incremental enumeration)
-    |-- Checkpoint (saved state snapshot dataclass)
-    |-- CheckpointChain (linear history of checkpoints dataclass)
-    |-- CheckpointSystem (global checkpoint orchestration)
-
-Enables the AI agent to save its complete operational state at key moments
-during game development, with the ability to roll back to previous states
-when generated content needs revision. Supports incremental diff-based
-and full snapshot checkpoint strategies.
-"""
+Checkpoint System - Agent operation checkpointing with rollback and restore."""
 
 from __future__ import annotations
 

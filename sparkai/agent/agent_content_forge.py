@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Content Forge
-
-A unified content generation system that combines asset synthesis,
-procedural content generation, and content quality pipelines into a
-single creative forge. Generates game-ready assets, levels, and
-content with AI-driven quality assurance.
-
-Architecture:
-  ContentForge
-    |-- AssetGenerator (sprites, audio, UI elements, textures)
-    |-- LevelGenerator (procedural levels, room layouts, world maps)
-    |-- ContentPipeline (generation, validation, optimization, integration)
-    |-- QualityAssessor (content quality scoring, consistency checks)
-    |-- ContentLibrary (organized catalog of generated content)
-
-Capabilities:
-  - Multi-modal asset generation (2D, 3D, audio, UI)
-  - Procedural level and world generation with configurable parameters
-  - Content quality pipeline with automated validation
-  - Content library with search, tagging, and versioning
-  - Style-consistent generation across all content types
-"""
+SparkLabs Agent - Content Forge"""
 
 from __future__ import annotations
 

@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Class Registry
-
-Meta-object reflection system for game entity types.
-Enables AI agents to discover entity types, their properties,
-methods, and inheritance relationships at runtime. Powers
-intelligent code generation, validation, and auto-completion
-by giving the agent a complete catalog of available game types.
-
-Architecture:
-  ClassRegistry
-    |-- TypeDescriptor (name, properties, methods, base type)
-    |-- PropertyDescriptor (name, dtype, default, constraints)
-    |-- MethodDescriptor (name, params, return type)
-    |-- InheritanceGraph (type hierarchy navigation)
-    |-- TypeValidator (type compatibility checking)
-
-Design mirrors the introspection capabilities found in
-game engines where reflection enables editors, serialization,
-and scripting bindings to work with any type dynamically.
-"""
+SparkLabs Agent - Class Registry"""
 
 from __future__ import annotations
 

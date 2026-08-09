@@ -1,25 +1,5 @@
 """
-SparkAI Agent - Credential Manager
-
-Secure credential management system with key pooling, rotation,
-and access auditing. Manages API keys and tokens for LLM
-providers, ensuring keys are never exposed in logs or API
-responses and supporting automatic rotation.
-
-Architecture:
-  CredentialManager
-    |-- KeyVault (encrypted key storage)
-    |-- KeyPool (round-robin key selection with rate limits)
-    |-- RotationScheduler (automatic key rotation)
-    |-- AccessAuditor (credential usage tracking)
-
-Security Principles:
-  - Keys are never stored in plaintext in memory
-  - Keys are masked in all API responses and logs
-  - Key rotation is automatic based on usage or time
-  - Access auditing tracks every credential use
-  - Failed authentication triggers key suspension
-"""
+SparkAI Agent - Credential Manager"""
 
 from __future__ import annotations
 

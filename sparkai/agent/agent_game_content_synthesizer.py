@@ -1,51 +1,5 @@
 """
-SparkLabs Agent - Game Content Synthesizer
-
-The central content generation intelligence that transforms natural-language
-game descriptions into structured, playable game content. This module is the
-creative engine behind SparkLabs' AI-native game creation pipeline.
-
-It integrates multiple AI agent paradigms into a unified content generation
-system:
-
-- Generative Persona Engine: Creates NPCs with individual personalities,
-  memory streams, daily schedules, and social relationship webs. Each NPC
-  has a persistent identity that evolves through game interactions.
-
-- World Simulation Core: Generates living worlds with interconnected
-  biomes, settlement networks, economic systems, faction politics, and
-  ecological dynamics that continue evolving whether the player is
-  present or not.
-
-- Narrative Weaving System: Produces branching storylines with causal
-  graphs, emotional arcs, pacing curves, and adaptive plot threads that
-  respond to player choices and world state changes.
-
-- Game Content Pipeline: Orchestrates the full content creation workflow
-  from concept analysis through design documents, world building,
-  character creation, quest generation, mechanic balancing, and level
-  design — producing a complete game design specification.
-
-- Adaptive Quality System: Continuously evaluates generated content
-  against design principles, fun metrics, and coherence constraints,
-  iterating until quality thresholds are met.
-
-The synthesizer uses the LLM Router for AI-powered generation when API
-keys are configured, and falls back to a sophisticated procedural
-generation system that produces rich, varied content without external
-dependencies.
-
-Architecture:
-  GameContentSynthesizer (Singleton)
-    |-- PromptAnalyzer (intent detection, genre classification, scope estimation)
-    |-- DesignDocumentGenerator (game pillars, core loops, progression systems)
-    |-- WorldContentBuilder (biomes, structures, resources, weather, ecology)
-    |-- PersonaFactory (NPC personas with memories, schedules, relationships)
-    |-- NarrativeWeaver (story arcs, quest chains, dialogue trees, branching)
-    |-- MechanicSynthesizer (gameplay rules, balance curves, progression math)
-    |-- LevelArchitect (level layouts, difficulty curves, pacing, flow)
-    |-- ContentValidator (coherence checking, quality scoring, gap detection)
-"""
+SparkLabs Agent - Game Content Synthesizer"""
 
 from __future__ import annotations
 

@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Code Execution Sandbox
-
-Secure sandboxed execution environment for game scripting within the
-AI-native game engine. Agents generate game logic code that runs in
-isolated namespaces with resource limits and timeout enforcement.
-
-Architecture:
-  CodeExecutionSandbox
-    |-- ExecutionNamespace (isolated globals/locals per run)
-    |-- ResourceMonitor (memory/time/CPU limits)
-    |-- SafetyFilter (AST-based code validation)
-    |-- OutputCapture (stdout/stderr collection)
-
-Execution Modes:
-  - SAFE: restricted builtins, no imports, 100ms timeout
-  - GAME: game engine API access, file I/O allowed within project
-  - FULL: unrestricted (requires approval engine grant)
-
-Usage:
-    sandbox = CodeExecutionSandbox()
-    code = "entity.transform.x += speed * dt"
-    result = sandbox.execute(code, mode=ExecutionMode.GAME, context={"entity": player_entity})
-"""
+SparkLabs Agent - Code Execution Sandbox"""
 
 from __future__ import annotations
 

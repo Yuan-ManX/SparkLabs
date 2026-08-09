@@ -1,21 +1,5 @@
 """
-SparkLabs Agent - Creative Synthesis Engine
-
-A multi-domain creative synthesis engine that combines multiple creative
-inputs into unified outputs. Supports narrative, visual, audio, gameplay,
-character, level, mechanic, and theme domains, and provides idea
-generation, style combination, and creativity evaluation.
-
-Architecture:
-  CreativeSynthesisEngine (Singleton)
-    |-- CreativeDomain (typed creative domain)
-    |-- CreativeInput (a single weighted contribution to a synthesis)
-    |-- CreativeOutput (the unified result of a synthesis)
-    |-- CreativeSynthesisSnapshot (point-in-time state capture)
-
-The engine supports pluggable per-domain handlers so callers can override
-idea generation for specific creative domains.
-"""
+SparkLabs Agent - Creative Synthesis Engine"""
 
 from __future__ import annotations
 
