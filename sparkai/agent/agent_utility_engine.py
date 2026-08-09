@@ -1,18 +1,5 @@
 """
-SparkLabs Agent - Utility Calculation Engine
-
-A multi-criteria utility calculation engine for AI agent decision-making.
-Provides configurable utility curves, aggregation strategies, and
-context-dependent modifiers. The engine supports rational choice theory
-with bounded rationality adaptations for game AI environments.
-
-Architecture:
-  UtilityEngine (Singleton)
-    |-- UtilityFunction (multi-criteria evaluation)
-    |-- UtilityCurve (linear, exponential, logarithmic, sigmoid)
-    |-- UtilityAggregator (weighted and non-linear combination)
-    |-- ContextualUtilityModifier (context-dependent adjustments)
-"""
+SparkLabs Agent - Utility Calculation Engine"""
 
 from __future__ import annotations
 

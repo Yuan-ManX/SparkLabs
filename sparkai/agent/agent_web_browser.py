@@ -1,18 +1,5 @@
 """
-Web Browser - URL fetching and web content extraction agent.
-
-Architecture:
-    WebBrowser/
-    |-- FetchMethod (HTTP method enumeration)
-    |-- FetchResult (response container with metadata)
-    |-- DomainPolicy (allowlist/denylist management)
-    |-- ExtractionRule (content extraction configuration)
-    |-- WebBrowser (unified web interaction orchestration)
-
-Provides controlled URL fetching, content extraction (HTML→text),
-domain safety filtering, result caching, and structured web access
-for agent operations that require external information retrieval.
-"""
+Web Browser - URL fetching and web content extraction agent."""
 
 from __future__ import annotations
 

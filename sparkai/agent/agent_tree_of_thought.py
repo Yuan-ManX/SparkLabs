@@ -1,32 +1,5 @@
 """
-SparkLabs Agent - Tree-of-Thought Reasoning Engine
-
-Multi-branch cognitive reasoning system for the SparkLabs AI-native
-game engine. Models thought exploration as a traversable tree where
-each node represents a partial solution, branches represent lines of
-reasoning, and sessions orchestrate the search through problem space.
-
-Architecture:
-  TreeOfThought
-    |-- ThinkingSession (orchestrated exploration with traversal strategy)
-    |-- ReasoningBranch (linear chain of thought nodes)
-    |-- ThoughtNode (single reasoning step with scoring)
-    |-- HeuristicScoringEngine (relevance, feasibility, creativity, completeness)
-
-Supports BFS, DFS, best-first, and beam-search traversal strategies
-across game design, code architecture, level design, narrative,
-mechanics, balancing, puzzle design, and AI behavior domains.
-
-Usage:
-    tot = get_tree_of_thought()
-    session = tot.create_session(
-        problem_statement="Design a boss fight for Act 3",
-        domain=ThoughtDomain.GAME_DESIGN,
-        strategy=TraversalStrategy.BFS,
-    )
-    tot.expand(session.id, session.branches["root"].id, "Phase-based dragon with elemental attacks")
-    tot.evaluate_node(session.id, "node-2")
-"""
+SparkLabs Agent - Tree-of-Thought Reasoning Engine"""
 
 from __future__ import annotations
 

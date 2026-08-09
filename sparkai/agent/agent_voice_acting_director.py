@@ -1,51 +1,5 @@
 """
-SparkLabs Agent - AI Voice Acting Director
-
-Orchestrates the entire voiceover production pipeline for a game. The
-director manages a roster of voice actors, casts them against character
-roles, schedules recording sessions, provides emotional delivery
-direction with line-by-line performance cues, coordinates lip-sync
-markers, and reviews recorded takes to select the best performances.
-
-Architecture:
-  VoiceActingDirector (singleton)
-    |-- VoiceActor, CharacterRole, VoiceLine, DeliveryDirection,
-        RecordingTake, LipSyncMarker, CastingSession, ReviewNote,
-        VoiceoverProject, DirectorStats, DirectorSnapshot, DirectorEvent
-    |-- VoiceGender, VoiceAgeRange, EmotionType, TakeStatus,
-        SessionStatus, ProjectStatus, LipSyncStatus, ReviewVerdict,
-        DirectorEventKind
-
-Core Capabilities:
-  - register_actor / update_actor / get_actor / list_actors /
-    delete_actor: voice actor roster management with vocal range,
-    language proficiency, and availability tracking.
-  - create_character / update_character / get_character / list_characters:
-    character role definitions with voice profile requirements.
-  - cast_actor / uncast_actor / get_casting: assign actors to characters
-    with match scoring and audition notes.
-  - create_line / update_line / get_line / list_lines: script lines with
-    emotion, intensity, pacing, and pronunciation guides.
-  - add_direction / get_direction: per-line delivery direction with
-    emotional cues, emphasis markers, and breathing instructions.
-  - record_take / review_take / select_take / list_takes: recording
-    session workflow with take quality scoring and selection.
-  - add_lip_sync / get_lip_sync / list_lip_sync: viseme and timing
-    markers for lip-sync animation coordination.
-  - create_session / start_session / complete_session / list_sessions:
-    recording session lifecycle management.
-  - create_project / update_project / get_project / list_projects:
-    voiceover project tracking across game builds.
-  - generate_report / get_report / list_reports: comprehensive
-    production reports with coverage analysis.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`VoiceActingDirector.get_instance` or the module-level
-:func:`get_voice_acting_director` factory.
-"""
+SparkLabs Agent - AI Voice Acting Director"""
 
 from __future__ import annotations
 

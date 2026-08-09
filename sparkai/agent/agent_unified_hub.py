@@ -1,23 +1,5 @@
 """
-SparkLabs Agent - Unified Agent Orchestration Hub
-
-The central coordination layer for all agent capabilities in the SparkLabs
-AI-native ecosystem. This hub ties together all agent subsystems - learning loops,
-team factories, world simulators, intelligence cores, and game creation pipelines -
-into a single unified orchestration framework that agents can use to autonomously
-design, develop, test, and optimize complete games.
-
-Architecture:
-  AgentUnifiedHub (Singleton)
-    |-- Intelligence Core (reasoning, planning, strategy)
-    |-- Learning Loop (self-improvement, skill evolution)
-    |-- Team Factory (multi-agent collaboration)
-    |-- World Simulator (autonomous world simulation)
-    |-- Game Creator (end-to-end game generation)
-    |-- Engine Bridge (bidirectional engine communication)
-    |-- Quality Gate (automated testing and validation)
-    |-- Performance Optimizer (runtime optimization)
-"""
+SparkLabs Agent - Unified Agent Orchestration Hub"""
 
 from __future__ import annotations
 

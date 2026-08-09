@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Unified Orchestration Core
-
-A central coordination engine that integrates all agent subsystems into a
-single, coherent orchestration framework. The Unified Orchestration Core
-manages multi-agent collaboration, task dispatching, context sharing, and
-cross-subsystem coordination for the AI-native game development pipeline.
-
-Architecture:
-  UnifiedOrchestrationCore (Singleton)
-    |-- TaskDispatcher (intelligent task routing based on agent capabilities)
-    |-- ContextAggregator (cross-subsystem context collection and sharing)
-    |-- CollaborationManager (multi-agent collaboration protocol management)
-    |-- PipelineCoordinator (end-to-end pipeline workflow orchestration)
-    |-- ResourceAllocator (dynamic resource allocation across subsystems)
-    |-- HealthMonitor (real-time subsystem health tracking and recovery)
-"""
+SparkLabs Agent - Unified Orchestration Core"""
 
 from __future__ import annotations
 

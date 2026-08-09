@@ -1,21 +1,5 @@
 """
-SparkLabs Agent - Tutorial Orchestrator
-
-A singleton system that observes developer behavior patterns and
-generates adaptive interactive tutorials. Tracks feature usage,
-identifies knowledge gaps, and creates personalized learning paths
-for the AI-native game engine.
-
-Architecture:
-  TutorialOrchestrator (singleton)
-    |-- LearnerProfile (per-developer skill model and progress)
-    |-- TutorialSession (active interactive learning experience)
-    |-- TutorialStep (individual instructional unit)
-    |-- Behavior Tracker (observes tool/feature usage patterns)
-    |-- Gap Detector (identifies missing knowledge from behavior)
-    |-- Tutorial Generator (produces adaptive tutorial content)
-    |-- Skill Assessor (estimates current competence level)
-"""
+SparkLabs Agent - Tutorial Orchestrator"""
 
 from __future__ import annotations
 

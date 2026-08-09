@@ -1,40 +1,5 @@
 """
-SparkLabs Agent - Verification Pipeline
-
-Multi-stage verification system that validates agent outputs before execution
-in the game engine. Runs artifacts through a configurable pipeline of static
-analysis, security scanning, game rule validation, performance prediction,
-sandbox execution, and user approval stages.
-
-Architecture:
-  AgentVerificationPipeline (Singleton)
-    |-- VerificationConfig (pipeline stage configuration)
-    |-- VerificationRule (individual check definition)
-    |-- VerificationReport (per-artifact pipeline result)
-    |-- VerificationIssue (individual finding)
-
-Verification Stages:
-  - SYNTAX_CHECK: validates game script syntax (SparkScript/SparkCS/Lua)
-  - TYPE_CHECK: type system consistency verification
-  - SANITY_CHECK: logical coherence and completeness
-  - SECURITY_SCAN: detects dangerous operations and patterns
-  - GAME_RULES_CHECK: validates against game engine constraints
-  - PERFORMANCE_CHECK: estimates runtime performance impact
-  - INTEGRATION_TEST: sandbox execution in isolated environment
-  - USER_APPROVAL: manual review gate for critical artifacts
-
-Verification Results: PASSED, FAILED, WARNING, BLOCKED, PENDING
-Severity Levels: INFO, WARNING, ERROR, CRITICAL
-Check Types: STATIC_ANALYSIS, RUNTIME_CHECK, HEURISTIC_RULE, CONSTRAINT_VALIDATION, REFERENCE_CHECK
-
-Usage:
-    pipeline = get_verification_pipeline()
-    config = pipeline.create_pipeline_config("Standard Pipeline",
-        [VerificationStage.SYNTAX_CHECK, VerificationStage.SECURITY_SCAN, VerificationStage.GAME_RULES_CHECK])
-    pipeline.add_rule(config.id, VerificationStage.SECURITY_SCAN,
-        "no_file_access", "result.is_dangerous == False", Severity.CRITICAL)
-    report = pipeline.verify_artifact("script_001", source_code, "sparkscript", config.id)
-"""
+SparkLabs Agent - Verification Pipeline"""
 
 from __future__ import annotations
 

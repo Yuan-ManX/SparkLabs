@@ -1,45 +1,5 @@
 """
-SparkLabs Agent - Unified Agent Core
-
-The definitive unified agent core for the SparkLabs AI-native game engine.
-Integrates cognitive architecture, intelligence reasoning, multi-agent orchestration,
-game creation pipelines, world simulation, learning evolution, memory systems,
-and tool coordination into a single cohesive framework.
-
-This module serves as the central nervous system for all autonomous game creation,
-execution, optimization, and evolution within the SparkLabs ecosystem.
-
-Architecture:
-  UnifiedAgentCore (Singleton)
-    |-- Cognitive Layer (perception, reasoning, planning, action, metacognition)
-    |-- Intelligence Layer (strategic analysis, creative synthesis, game design)
-    |-- Memory Layer (episodic, semantic, procedural, working, hierarchical)
-    |-- Learning Layer (self-reflection, skill evolution, adaptive improvement)
-    |-- World Layer (simulation, generation, evolution, perception)
-    |-- Creation Layer (game forge, code generation, asset synthesis, level design)
-    |-- Team Layer (multi-agent coordination, swarm intelligence, delegation)
-    |-- Tool Layer (tool discovery, orchestration, execution, composition)
-    |-- Gateway Layer (request routing, provider selection, lifecycle management)
-    |-- Bridge Layer (engine bidirectional communication, state synchronization)
-
-Usage:
-    core = UnifiedAgentCore.get_instance()
-    core.initialize()
-
-    # Create a complete game from natural language
-    game = core.create_game("A 2D metroidvania with time manipulation mechanics")
-
-    # Generate and simulate a world
-    world = core.generate_world("cyberpunk megalopolis", 4096, 4096)
-
-    # Run a multi-agent team to solve a complex task
-    result = core.orchestrate_team("Design and implement a boss battle system")
-
-    # Self-evolve and learn from experience
-    core.learn_from_experience(game_id)
-
-    core.shutdown()
-"""
+SparkLabs Agent - Unified Agent Core"""
 
 from __future__ import annotations
 

@@ -1,23 +1,5 @@
 """
-SparkLabs Agent - UI Designer
-
-AI-driven UI/UX layout generation system for game interfaces.
-Provides automated generation of complete UI layouts including
-element placement, theming, responsive variants, and validation
-for in-game HUDs, menus, dialogs, and interactive panels.
-
-Architecture:
-  UIDesigner
-    |-- Session Manager (design workflow lifecycle tracking)
-    |-- Layout Generator (intelligent element placement per layout type)
-    |-- Theme Engine (theme variant application and recalculation)
-    |-- Auto-Layout Solver (responsive repositioning for any resolution)
-    |-- Responsive Variant Generator (mobile/tablet/desktop scaling)
-    |-- Layout Validator (overlap, bounds, and accessibility checks)
-
-Supports 12 layout types, 13 widget types, 7 theme variants,
-and 10 alignment modes for complete UI composition.
-"""
+SparkLabs Agent - UI Designer"""
 
 from __future__ import annotations
 

@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Voice Bridge
-
-Voice-to-intent pipeline that enables hands-free game development within
-SparkLabs. Processes voice commands through transcription, intent
-classification, and routing to the appropriate action. Supports multiple
-listening modes, customizable command templates, and session tracking.
-
-Architecture:
-  VoiceBridge (Singleton)
-    |-- CommandTemplate (user-defined trigger phrase → intent mappings)
-    |-- VoiceCommandResult (pipeline output with confidence scoring)
-    |-- VoiceSession (per-listening-session state and metrics)
-    |-- Intent Classifier (fuzzy keyword matching with parameter extraction)
-
-Listening Modes:
-  - CONTINUOUS_LISTENING: always-on microphone processing
-  - PUSH_TO_TALK: manual activation per utterance
-  - WAKE_WORD: trigger-based activation with configurable wake words
-
-Pipeline:
-  Audio Input → Transcription (simulated) → Intent Classification → VoiceCommandResult
-
-Usage:
-    bridge = VoiceBridge.get_instance()
-    session = bridge.start_session(mode=BridgeMode.PUSH_TO_TALK)
-    result = bridge.process_text("create a red cube at position 5, 0, 5")
-    print(result.command, result.confidence, result.parameters)
-    bridge.end_session(session.id)
-"""
+SparkLabs Agent - Voice Bridge"""
 
 from __future__ import annotations
 

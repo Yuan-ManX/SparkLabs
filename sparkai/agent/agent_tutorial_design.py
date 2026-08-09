@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Tutorial Design Engine
-
-Adaptive tutorial content generation for game mechanics onboarding.
-Creates context-sensitive, progressively complex tutorial sequences
-that respond to player behavior, ensuring mechanics are introduced
-at the optimal moment with appropriate scaffolding.
-
-Architecture:
-  TutorialDesignEngine
-    |-- MechanicsCatalog (structured game mechanic definitions)
-    |-- TutorialSequencer (dependency-aware ordering of lessons)
-    |-- ScaffoldingGenerator (progressive hint and guidance tiers)
-    |-- ComprehensionValidator (player understanding assessment)
-    |-- AdaptivePacer (pace adjustment based on player performance)
-
-Scaffolding Tiers:
-  - DISCOVERY: minimal guidance, encourage exploration
-  - GUIDED: contextual hints and optional prompts
-  - DIRECTED: explicit step-by-step instruction
-  - PRACTICE: repeated exercises with feedback loops
-"""
+SparkLabs Agent - Tutorial Design Engine"""
 
 from __future__ import annotations
 

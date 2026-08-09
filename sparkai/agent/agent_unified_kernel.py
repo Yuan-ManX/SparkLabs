@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Unified Cognitive Kernel
-
-The foundational cognitive architecture that consolidates planning, memory,
-reasoning, tool orchestration, reflection, and self-evolution into a single
-coherent system. The kernel provides the substrate upon which all higher-level
-game agents operate.
-
-Architecture:
-  AgentKernel (Singleton)
-    |-- PerceptionLayer   -> ingests prompts, telemetry, world state
-    |-- MemoryHierarchy   -> working / episodic / semantic / procedural layers
-    |-- ReasoningEngine   -> chain-of-thought, tree-of-thought, meta-reasoning
-    |-- PlanningCore      -> HTN decomposition, task graphs, contingency plans
-    |-- ToolOrchestrator  -> composition, permission gating, parallel dispatch
-    |-- ReflectionLoop    -> self-evaluation, blame attribution, lesson capture
-    |-- SkillEvolver      -> trajectory learning, skill synthesis, transfer
-
-Cognitive Cycle (per tick):
-  perceive -> encode -> reason -> plan -> act -> observe -> reflect -> learn
-
-The kernel is designed to be genre-agnostic and can drive any game agent
-role from creative direction to live ops. It exposes a single `cycle()`
-entry point that advances the agent one cognitive step.
-
-Original SparkLabs design - unified cognitive substrate for AI-native games.
-"""
+SparkLabs Agent - Unified Cognitive Kernel"""
 
 from __future__ import annotations
 

@@ -1,23 +1,5 @@
 """
-SparkLabs Agent - Variable Introspection Engine
-
-Multi-scope variable system providing AI agents with structured
-awareness of game state. Manages variable definitions across
-global, scene, object, temporary, and persistent scopes with
-typed value tracking, versioned snapshots, and diff computation.
-
-Architecture:
-  VariableIntrospectionEngine
-    |-- Registry (variable definition catalog with scope indexing)
-    |-- Instance Store (per-scope value instances with versioning)
-    |-- AI Context Builder (scope-filtered human-readable state dumps)
-    |-- Snapshot Engine (point-in-time state capture and diffing)
-    |-- Watch System (callback registration for value changes)
-
-Variable kinds span numbers, strings, booleans, structures,
-arrays, references, colors, and vector types to cover all
-common game engine data representations.
-"""
+SparkLabs Agent - Variable Introspection Engine"""
 
 from __future__ import annotations
 

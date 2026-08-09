@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Validator Engine
-
-A comprehensive validation system for the AI-native game engine that
-checks code quality, asset integrity, game rules, and configuration
-consistency. Provides rule-based and pattern-based validation with
-detailed reports and auto-fix suggestions.
-
-Architecture:
-  ValidatorEngine
-    |-- ValidationRule (individual validation check)
-    |-- ValidationReport (comprehensive validation results)
-    |-- ValidationIssue (individual issue with severity and fix)
-    |-- RuleSet (grouped validation rules)
-    |-- AutoFixer (automatic issue resolution)
-"""
+SparkAI Agent - Validator Engine"""
 
 from __future__ import annotations
 

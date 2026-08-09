@@ -1,17 +1,5 @@
 """
-SparkLabs Agent - World Composer
-
-A singleton system for AI-driven procedural world generation. Composes
-entire game worlds — terrain, biomes, ecosystems, settlements, and
-traversal routes — from high-level semantic descriptions and design
-constraints.
-
-Architecture:
-  WorldComposer (singleton)
-    |-- BiomeTemplate (climate, flora, fauna, terrain style definition)
-    |-- TerrainLayer (elevation, moisture, temperature raster datasheet)
-    |-- WorldRegion (named sub-region with biome, settlements, routes)
-"""
+SparkLabs Agent - World Composer"""
 
 from __future__ import annotations
 

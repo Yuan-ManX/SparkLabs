@@ -1,42 +1,5 @@
 """
-SparkLabs Agent - Unified Cognitive Core
-
-A single coherent "mind" for game AI agents that orchestrates multiple
-cognitive subsystems into one layered cognition model. The core unifies
-BDI (Belief-Desire-Intention) reasoning, HTN (Hierarchical Task Network)
-planning, curiosity-driven exploration, self-reflection, meta-reasoning,
-emotional affect, and social cognition behind a thread-safe singleton
-facade.
-
-Layered cognition model implemented here:
-
-  1. Perception Layer   - sensory input processing, attention filtering,
-                          salience detection
-  2. Belief Layer        - BDI beliefs about world state, other agents, self
-  3. Desire Layer        - goals, motivations, needs, drives arranged on a
-                          tiered desire hierarchy
-  4. Intention Layer     - committed goals, action plans, commitment mgmt
-  5. Planning Layer      - HTN decomposition, means-ends reasoning, repair
-  6. Reflection Layer    - self-model, performance evaluation, adaptation
-  7. Meta-Reasoning Layer- thinking about thinking, resource allocation
-  8. Emotion Layer       - affective state, appraisal, emotional influence
-  9. Social Layer        - theory of mind, relationships, coalitions
- 10. Action Layer        - action selection, execution monitoring, outcomes
-
-Each registered agent owns an independent CognitiveState holding its
-beliefs, desires, intentions, plans, emotional state, meta-cognition and
-social relations. The core runs a cognitive cycle through tick() that
-advances every registered agent one step along the pipeline.
-
-Thread safety:
-  - A class-level _init_lock guards singleton creation with double-checked
-    locking.
-  - An instance-level _lock (threading.RLock) guards every mutation so the
-    core can be driven safely from multiple game threads.
-  - A _seeded flag ensures seed data is populated exactly once.
-
-The module exposes get_unified_cognitive_core() as the canonical factory.
-"""
+SparkLabs Agent - Unified Cognitive Core"""
 
 from __future__ import annotations
 

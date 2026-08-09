@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Tutorial Designer Engine
-
-AI-driven tutorial design system for the AI-native game engine.
-Creates adaptive tutorials that respond to player skill level,
-learning pace, and behavior patterns. Generates personalized
-learning sequences with dynamic step ordering, difficulty
-calibration, and comprehension-aware scaffolding.
-
-Architecture:
-  TutorialDesignerEngine
-    |-- SkillAssessor (latent skill estimation from gameplay)
-    |-- StyleDetector (learning style inference from behavior)
-    |-- ModuleComposer (step sequence generation with prerequisites)
-    |-- ProgressTracker (per-player tutorial state management)
-    |-- AdaptationEngine (in-flight difficulty and pace adjustment)
-
-Design Goals:
-  - Minimize tutorial friction for experienced players
-  - Provide extra scaffolding when player struggles are detected
-  - Respect individual learning style preferences
-  - Enable partial tutorial replay for targeted skill gaps
-"""
+SparkLabs Agent - Tutorial Designer Engine"""
 
 from __future__ import annotations
 

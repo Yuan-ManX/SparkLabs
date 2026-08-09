@@ -1,17 +1,5 @@
 """
-SparkLabs Agent - World Architect
-
-A one-sentence world creation system: describe a world in natural language
-and the architect generates a complete, structured game world blueprint with
-locations, characters, factions, rules, history, and environmental systems.
-
-Architecture:
-  AgentWorldArchitect (singleton)
-    |-- WorldBlueprint (complete world definition with substructures)
-    |-- CharacterTemplate (NPC and player character archetypes)
-    |-- WorldRuleSet (interaction, progression, and conflict rules)
-    |-- GenerationStage (tracked stages of world generation pipeline)
-"""
+SparkLabs Agent - World Architect"""
 
 from __future__ import annotations
 

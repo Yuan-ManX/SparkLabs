@@ -1,16 +1,5 @@
 """
-Trajectory Recorder - Records agent sessions into replayable action timelines.
-
-Architecture:
-    TrajectoryRecorder/
-    |-- TrajectoryEvent (single action record dataclass)
-    |-- TrajectorySession (complete session timeline dataclass)
-    |-- TrajectoryRecorder (global recording orchestration)
-
-Captures the full sequence of agent actions, tool calls, and LLM exchanges
-during AI-native game development sessions. Stores structured event timelines
-for debugging, replay, analysis, and training data generation.
-"""
+Trajectory Recorder - Records agent sessions into replayable action timelines."""
 
 from __future__ import annotations
 

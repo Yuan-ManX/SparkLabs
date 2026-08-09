@@ -1,36 +1,5 @@
 """
-SparkLabs Agent - World Conductor
-
-A singleton orchestration agent that coordinates ALL engine systems into
-a unified living world. The World Conductor executes cross-system ticks,
-propagates events between systems, detects emergent opportunities, and
-provides a single dashboard for world state awareness.
-
-The conductor fuses AI agent reasoning with game engine coordination:
-  - Unified tick across all engine subsystems
-  - Cross-system event propagation (weather affects photography, cooking, etc.)
-  - Emergent opportunity detection (golden hour photography, seasonal recipes)
-  - Priority-based system scheduling
-  - World state aggregation and health monitoring
-  - AI-driven world event generation spanning multiple systems
-
-Architecture:
-  WorldConductor (singleton)
-    |-- ConductorPriority, SystemHealth, CrossSystemEventKind, OpportunityKind
-    |-- SystemRegistration, CrossSystemEvent, WorldOpportunity, ConductorConfig,
-       ConductorStats, ConductorSnapshot, ConductorEvent
-    |-- get_world_conductor
-
-Core Capabilities:
-  - register_system / unregister_system / get_system / list_systems
-  - tick_all / tick_system / get_unified_status
-  - emit_cross_system_event / subscribe_to_event / list_cross_system_events
-  - detect_opportunities / get_opportunities / dismiss_opportunity
-  - get_world_dashboard / get_system_health / get_tick_schedule
-  - set_priority / get_priority
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-"""
+SparkLabs Agent - World Conductor"""
 
 from __future__ import annotations
 

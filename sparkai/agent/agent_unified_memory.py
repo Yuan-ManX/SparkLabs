@@ -1,21 +1,5 @@
 """
-SparkLabs Agent - Unified Memory System
-
-A unified memory system that provides
-four distinct memory stores with automatic consolidation across layers.
-The system models human-like memory processes: working memory for active
-reasoning, episodic memory for experiential records, semantic memory for
-factual knowledge, and procedural memory for learned skills.
-
-Architecture:
-  UnifiedMemorySystem (Singleton)
-    |-- WorkingMemory (highly active, capacity-limited scratchpad)
-    |-- EpisodicMemory (time-indexed experience records)
-    |-- SemanticMemory (structured knowledge graph)
-    |-- ProceduralMemory (skill and procedure storage)
-    |-- MemoryConsolidationEngine (cross-layer consolidation)
-    |-- MemoryRetrievalEngine (similarity-based multi-store retrieval)
-"""
+SparkLabs Agent - Unified Memory System"""
 
 from __future__ import annotations
 

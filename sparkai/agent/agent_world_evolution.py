@@ -1,14 +1,5 @@
 """
-SparkAI Agent - World Evolution System
-
-Autonomous multi-day world evolution engine that drives continuous
-world progression through natural cycles: day/night, seasons, resource
-flows, population dynamics, and emergent storyline progression.
-
-The system manages time advancement, triggers evolution events, tracks
-world state across cycles, and ensures coherent world progression
-without explicit scripting.
-"""
+SparkAI Agent - World Evolution System"""
 
 from __future__ import annotations
 

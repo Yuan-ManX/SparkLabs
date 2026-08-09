@@ -1,50 +1,5 @@
 """
-SparkLabs Agent - Value Alignment, Reward Shaping, and Lifelong Learning Engine
-
-A unified engine that ensures AI agents operating inside the SparkLabs
-AI-native game engine behave in accordance with human values while
-continuously improving across the tasks they encounter.
-
-The engine combines three tightly coupled capabilities:
-
-  1. Value Alignment
-       Agents learn and adhere to a configurable set of value principles
-       (honesty, fairness, autonomy, safety, ...) through structured human
-       and peer feedback.  Each piece of feedback is tied to a value category
-       and either reinforces or corrects agent behavior.
-
-  2. Reward Shaping
-       Rather than passing raw environmental rewards directly into a learning
-       loop, the engine augments them with strategy-based bonuses (curiosity,
-       mastery, alignment, safety penalty, ...).  This guides exploration
-       toward aligned behavior and away from harmful trajectories.
-
-  3. Lifelong Learning
-       Agents accumulate knowledge units across many tasks and domains.  The
-       engine tracks a per-agent lifelong learning record (current phase,
-       tasks completed, knowledge count, transfer count, forgetting events)
-       and supports transfer of knowledge between domains with effectiveness
-       estimation, so that learned skill does not catastrophically vanish
-       when the agent moves to a new task.
-
-Architecture:
-  ValueAlignmentEngine (Singleton, double-checked locking)
-    |-- ValuePrinciple       -- a human value the agent should uphold
-    |-- FeedbackRecord       -- a single piece of human / peer feedback
-    |-- RewardSignal         -- the result of shaping a base reward
-    |-- ShapingConfig        -- per-strategy shaping configuration
-    |-- KnowledgeUnit        -- a single unit of accumulated knowledge
-    |-- LifelongRecord       -- per-agent lifelong learning state
-    |-- TransferRecord       -- a single knowledge transfer event
-    |-- AlignmentAssessment  -- a full alignment evaluation for an agent
-    |-- AlignmentStats       -- aggregate engine statistics
-    |-- AlignmentSnapshot    -- complete engine state snapshot
-    |-- AlignmentEvent       -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the engine
-is safe to call from multiple agent threads.  Bounded in-memory stores use
-FIFO eviction when their capacity constants are exceeded.
-"""
+SparkLabs Agent - Value Alignment, Reward Shaping, and Lifelong Learning Engine"""
 
 from __future__ import annotations
 

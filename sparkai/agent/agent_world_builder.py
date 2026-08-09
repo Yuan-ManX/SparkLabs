@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - World Builder
-
-AI-driven world building system for the AI-native game engine.
-Generates game worlds with biomes, terrain, points of interest,
-population distribution, and environmental storytelling.
-
-The WorldBuilderEngine creates diverse, interconnected worlds
-with logical biome placement, appropriate terrain features,
-population distribution based on habitability, and danger level
-progression across regions.
-
-Architecture:
-  WorldBuilderEngine (Singleton)
-    |-- BiomeType (16 distinct biome categories)
-    |-- TerrainFeature (15 terrain feature types)
-    |-- PointOfInterestType (16 POI categories)
-    |-- WorldRegion (individual region data model)
-    |-- PointOfInterest (location data model)
-    |-- WorldMap (complete world data model)
-"""
+SparkLabs Agent - World Builder"""
 
 from __future__ import annotations
 
