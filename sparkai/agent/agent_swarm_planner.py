@@ -1,17 +1,5 @@
 """
-SparkLabs Agent - Swarm Planner
-
-A singleton system for multi-agent coordination, flocking, formation
-tactics, and emergent group behaviors. Plans and executes coordinated
-NPC group movements, combat formations, and tactical maneuvers across
-the game world.
-
-Architecture:
-  SwarmPlanner (singleton)
-    |-- SwarmFormation (formation geometry with agent slots)
-    |-- FlockParams (boid-style flocking rule weights)
-    |-- SwarmTactic (tactical behavior scripts for groups)
-"""
+SparkLabs Agent - Swarm Planner"""
 
 from __future__ import annotations
 

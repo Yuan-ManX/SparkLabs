@@ -1,23 +1,6 @@
 """
 Session Snapshot - Per-session JSON persistence for agent state recovery
-and cross-session continuity within SparkLabs AI game development studio.
-
-Architecture:
-    SessionSnapshotSystem/
-    |-- SnapshotMode (FULL, DELTA, CHECKPOINT enumeration)
-    |-- SnapshotState (ACTIVE, ARCHIVED, CORRUPT enumeration)
-    |-- CompressionType (NONE, GZIP, ZSTD enumeration)
-    |-- SessionSnapshot (complete state capture dataclass)
-    |-- SnapshotDelta (incremental change record dataclass)
-    |-- RecoveryPoint (automatic safe-state marker dataclass)
-    |-- SessionMetadata (session context descriptor dataclass)
-    |-- SessionSnapshotSystem (global snapshot orchestration)
-
-Captures agent operational state at arbitrary granularity for hot-reload
-recovery, cross-session handoff, and multi-agent workspace continuity.
-Supports full snapshots, delta-based incremental saves, and labeled
-checkpoints for iterative game development workflows.
-"""
+and cross-session continuity within SparkLabs AI game development studio."""
 
 from __future__ import annotations
 

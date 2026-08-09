@@ -1,37 +1,5 @@
 """
-SparkLabs Agent - Self Evaluator
-
-Autonomous quality assessment system for agent-generated game content.
-Evaluates agent outputs — game designs, world structures, entity
-configurations, generated code — against configurable quality criteria
-and produces structured feedback for iterative improvement.
-
-Architecture:
-  SelfEvaluator
-    |-- QualityDimension (scored aspect: correctness, completeness, creativity, etc.)
-    |-- EvaluationRubric (weighted scoring schema per output type)
-    |-- ScoringEngine (dimension-level scoring with evidence)
-    |-- FeedbackGenerator (actionable suggestions from evaluation)
-
-Output Types:
-  - game_design: high-level game concept evaluation
-  - world_layout: level design and spatial arrangement
-  - entity_config: entity properties and behaviors
-  - generated_code: sandbox code quality assessment
-  - narrative_dialogue: story coherence and character voice
-  - asset_description: visual/audio asset fitness
-
-Usage:
-    evaluator = SelfEvaluator()
-    result = evaluator.evaluate(
-        content=generated_game_design,
-        output_type="game_design",
-        context={"target_genre": "platformer", "audience": "casual"},
-    )
-    if result.overall_score < 0.7:
-        for suggestion in result.suggestions:
-            print(f"Improve: {suggestion}")
-"""
+SparkLabs Agent - Self Evaluator"""
 
 from __future__ import annotations
 

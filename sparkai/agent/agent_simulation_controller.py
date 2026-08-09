@@ -1,42 +1,5 @@
 """
-SparkLabs Agent - Simulation Controller
-
-AI-driven real-time world simulation controller for the SparkLabs
-AI-native game engine. Manages autonomous agent populations, world
-state evolution, simulation ticks, event broadcasting, and emergent
-interaction observation.
-
-Architecture:
-  AgentSimulationController (Singleton)
-    |-- AutonomousAgent (AI agent in the simulation world)
-    |-- WorldState (overall world state snapshot)
-    |-- SimulationTick (single tick of simulation processing)
-    |-- AgentState (IDLE, EXPLORING, INTERACTING, CRAFTING, COMBATING, RESTING, TRAVELING, TRADING)
-    |-- TimeOfDay (DAWN, MORNING, AFTERNOON, DUSK, NIGHT, MIDNIGHT)
-    |-- WeatherType (CLEAR, CLOUDY, RAIN, STORM, SNOW, FOG, HEATWAVE)
-
-Agent States:
-  IDLE, EXPLORING, INTERACTING, CRAFTING, COMBATING,
-  RESTING, TRAVELING, TRADING
-
-Time of Day:
-  DAWN, MORNING, AFTERNOON, DUSK, NIGHT, MIDNIGHT
-
-Weather Types:
-  CLEAR, CLOUDY, RAIN, STORM, SNOW, FOG, HEATWAVE
-
-Usage:
-    ctrl = get_simulation_controller()
-    agent = ctrl.create_agent(name="Guardian", personality_profile="guardian")
-    ctrl.update_agent_state(agent.agent_id, AgentState.EXPLORING)
-    tick = ctrl.simulate_tick()
-    ctrl.advance_world_state()
-    ctrl.broadcast_event("meteor_strike", {"region": "north"})
-    interactions = ctrl.observe_agent_interactions()
-    snapshot = ctrl.get_world_snapshot()
-    relationships = ctrl.get_agent_relationships(agent.agent_id)
-    population = ctrl.spawn_agent_population(count=100)
-"""
+SparkLabs Agent - Simulation Controller"""
 
 from __future__ import annotations
 

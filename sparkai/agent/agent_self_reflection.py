@@ -1,54 +1,5 @@
 """
-SparkLabs Agent - Self-Reflection Engine
-
-Autonomous self-reflection and self-improvement system that enables agents
-to analyze their own performance, identify patterns, and generate improvement
-strategies. Implements a continuous improvement loop where agents observe
-their own behavior, evaluate outcomes, reflect on what worked and what didn't,
-and adapt their strategies accordingly.
-
-Architecture:
-  SelfReflectionEngine (Singleton)
-    |-- ReflectionSession (individual reflection cycle with phases)
-    |-- PerformanceTrace (recorded execution with metrics)
-    |-- InsightGenerator (extracts patterns and lessons from traces)
-    |-- StrategyAdapter (generates and applies improvement strategies)
-    |-- MetaEvaluator (evaluates the quality of reflections themselves)
-
-Reflection Phases:
-  - OBSERVE: Collect execution traces and performance data
-  - ANALYZE: Identify patterns, bottlenecks, and anomalies
-  - REFLECT: Generate insights about what worked and why
-  - ADAPT: Create and apply improvement strategies
-  - VERIFY: Validate that adaptations improved performance
-
-Strategy Types:
-  - BEHAVIORAL: Change how actions are selected and executed
-  - COGNITIVE: Modify reasoning, planning, and decision-making
-  - MEMORY: Adjust memory storage, retrieval, and consolidation
-  - LEARNING: Update skill library and knowledge base
-  - TOOL_USE: Refine tool selection and parameter optimization
-
-Usage:
-    sr = get_self_reflection()
-    sr.initialize()
-
-    # Start a reflection session
-    session = sr.start_session("Improve NPC dialogue generation quality")
-
-    # Record execution traces
-    sr.record_trace(session.session_id, PerformanceTrace(
-        task="generate_npc_dialogue",
-        outcome="partial_success",
-        metrics={"response_time_ms": 350, "quality_score": 0.72},
-    ))
-
-    # Generate insights and adapt
-    insights = sr.reflect(session.session_id)
-    adaptations = sr.adapt(session.session_id)
-
-    sr.shutdown()
-"""
+SparkLabs Agent - Self-Reflection Engine"""
 
 from __future__ import annotations
 

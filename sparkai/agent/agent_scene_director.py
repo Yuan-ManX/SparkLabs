@@ -1,11 +1,5 @@
 """
-SparkLabs Agent Scene Director
-
-AI-powered scene orchestration system that coordinates cameras, NPCs,
-narrative elements, lighting, and events to create cinematic game scenes.
-The director manages scene composition, actor blocking, camera direction,
-and emotional pacing to deliver immersive gameplay experiences.
-"""
+SparkLabs Agent Scene Director"""
 
 from __future__ import annotations
 

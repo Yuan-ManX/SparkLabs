@@ -1,18 +1,5 @@
 """
-SparkLabs Agent Skill Accumulator
-
-Provides procedural skill accumulation that transforms successful
-execution patterns into reusable, persistent skills. The accumulator
-organizes skills into domains, tracks version histories, and supports
-skill composition for complex task execution.
-
-Core architecture:
-  - Skill Capture: Extracts reusable patterns from execution traces
-  - Skill Organization: Categorizes skills by domain and maturity
-  - Skill Composition: Chains multiple skills into composite workflows
-  - Skill Refinement: Iteratively improves skills through usage feedback
-  - Skill Discovery: Surfaces relevant skills based on task context
-"""
+SparkLabs Agent Skill Accumulator"""
 
 import threading
 import time

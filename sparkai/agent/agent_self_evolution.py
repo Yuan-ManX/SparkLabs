@@ -1,18 +1,5 @@
 """
-SparkLabs Agent Self-Evolution Engine
-
-Provides autonomous self-improvement capabilities for AI game agents.
-The engine captures execution traces, analyzes performance patterns,
-generates optimized behavioral strategies, and refines decision-making
-through iterative evolution cycles.
-
-Core architecture:
-  - Trace Capture: Records agent execution traces with outcome metadata
-  - Pattern Analysis: Identifies success/failure patterns from traces
-  - Strategy Evolution: Generates improved behavioral strategies
-  - Refinement Loop: Iteratively validates and refines strategies
-  - Knowledge Consolidation: Persists proven strategies for reuse
-"""
+SparkLabs Agent Self-Evolution Engine"""
 
 import threading
 import time

@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Simulation Runner
-
-Batch simulation runner for agent behavior validation and testing.
-Executes scenarios across multiple simulation modes to validate agent outputs
-against assertions, measure performance, and ensure safety and quality thresholds.
-Supports single runs, batch execution, Monte Carlo sampling, stress testing,
-and A/B comparison modes.
-
-Architecture:
-  AgentSimulationRunner (Singleton)
-    |-- SimulationScenario (execution scenario definition)
-    |-- SimulationAssertion (validation rule)
-    |-- SimulationRun (execution instance with results)
-    |-- SimulationReport (aggregated evaluation report)
-
-Simulation Modes: SINGLE_RUN, BATCH, MONTE_CARLO, STRESS_TEST, A_B_TEST
-Simulation States: QUEUED, RUNNING, COMPLETED, FAILED, CANCELLED
-Assertion Types: OUTPUT_MATCH, PERFORMANCE_BOUND, SAFETY_CHECK, QUALITY_THRESHOLD
-
-Usage:
-    runner = get_simulation_runner()
-    scenario = runner.define_scenario("Behavior test", agent_config={})
-    runner.add_assertion(scenario.id, "output_match", {"expected": "..."})
-    run = runner.run_simulation(scenario.id, mode="single_run")
-    report = runner.evaluate_results(run.id)
-"""
+SparkLabs Agent - Simulation Runner"""
 from __future__ import annotations
 
 import math

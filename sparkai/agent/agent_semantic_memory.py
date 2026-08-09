@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Semantic Memory
-
-Vector-based semantic memory system for AI agents in the game
-engine. Stores knowledge embeddings with cosine similarity
-retrieval, enabling context-aware recall of game design patterns,
-code solutions, level layouts, and debugging techniques.
-
-Architecture:
-  SemanticMemory
-    |-- MemoryVector (embedding vector with metadata)
-    |-- SimilarityIndex (cosine/dot-product search)
-    |-- ContextWindow (time-decaying relevance scoring)
-    |-- MemoryConsolidator (merge related memories)
-    |-- QueryProcessor (natural language to embedding query)
-
-Memory Categories:
-  - GAME_PATTERN: reusable game design patterns
-  - CODE_SNIPPET: generated code with context
-  - ERROR_SOLUTION: debug fix history
-  - LEVEL_LAYOUT: spatial design decisions
-  - PLAYER_FEEDBACK: user testing insights
-"""
+SparkLabs Agent - Semantic Memory"""
 
 from __future__ import annotations
 

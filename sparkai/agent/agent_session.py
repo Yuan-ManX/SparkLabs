@@ -1,29 +1,5 @@
 """
-SparkAI Agent - Agent Session
-
-Deep session management system that provides persistent, resumable
-conversations with full context threading, checkpoint/restore, and
-multi-turn dialogue tracking. The AgentSession system enables agents
-to maintain coherent long-running interactions with state preservation.
-
-Architecture:
-  AgentSessionManager
-    |-- SessionStore (persistent session storage)
-    |-- ConversationThread (multi-turn dialogue tracking)
-    |-- ContextWindow (rolling context with priority scoring)
-    |-- CheckpointManager (session state snapshots for resume)
-    |-- SessionAnalytics (usage patterns and session metrics)
-
-Session Lifecycle:
-  Create -> Active -> Idle -> Suspended -> Resumed -> Closed
-
-Features:
-  - Conversation threading with parent/child relationships
-  - Context window management with token budgeting
-  - Checkpoint/restore for session persistence
-  - Session branching for exploring alternative paths
-  - Automatic session expiration and cleanup
-"""
+SparkAI Agent - Agent Session"""
 
 from __future__ import annotations
 

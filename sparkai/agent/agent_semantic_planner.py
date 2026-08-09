@@ -1,36 +1,5 @@
 """
-SparkLabs Agent - Semantic Planner
-
-Semantic planning system that bridges high-level natural language goals with
-structured action sequences. Combines world model understanding, task decomposition,
-and semantic reasoning to generate executable plans for AI-driven game development.
-
-Architecture:
-  AgentSemanticPlanner (Singleton)
-    |-- SemanticParser (natural language to structured intent)
-    |-- WorldModelIntegrator (context-aware goal grounding)
-    |-- PlanGenerator (multi-strategy plan synthesis)
-    |-- PlanValidator (feasibility and constraint checking)
-    |-- PlanExecutor (step-by-step plan execution with monitoring)
-    |-- PlanOptimizer (post-generation plan refinement)
-
-Planning Strategies:
-  - HIERARCHICAL: top-down decomposition from abstract to concrete
-  - OPPORTUNISTIC: dynamically adapts based on world state changes
-  - CASE_BASED: retrieves and adapts similar historical plans
-  - CONSTRAINT_BASED: satisfies hard constraints first, then optimizes
-  - HYBRID: combines multiple strategies for optimal results
-
-Usage:
-    sp = AgentSemanticPlanner.get_instance()
-    sp.initialize()
-
-    plan = sp.generate_plan("Create a 2D platformer with 5 levels", context)
-    validated = sp.validate_plan(plan)
-    if validated.is_valid:
-        result = sp.execute_plan(plan)
-    sp.shutdown()
-"""
+SparkLabs Agent - Semantic Planner"""
 
 from __future__ import annotations
 

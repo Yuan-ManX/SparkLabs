@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Swarm Intelligence Engine
-
-Collective intelligence fabric where autonomous agents converge,
-share discoveries, and synthesize solutions through distributed
-cognition. The engine orchestrates emergent swarm behavior across
-the game creation pipeline, enabling agents to self-organize around
-problems, build consensus, and amplify individual capabilities
-through shared knowledge and coordinated action.
-
-Architecture:
-  SwarmIntelligenceEngine (singleton)
-    |-- SwarmAgent (autonomous participant with identity and reputation)
-    |-- ConsensusCompiler (consensus-based collective decision making)
-    |-- TaskDisperser (capability-aware work distribution)
-    |-- InsightReservoir (versioned, decaying shared knowledge)
-    |-- PatternOracle (emergent behavior detection and serendipity logging)
-
-Knowledge Flow:
-  Agent observes → contributes to InsightReservoir → TaskDisperser
-  matches work → SwarmAgent executes → ConsensusCompiler resolves
-  disagreements → PatternOracle detects novelties → feedback loop
-  refines agent reputations and knowledge confidence.
-"""
+SparkLabs Agent - Swarm Intelligence Engine"""
 
 from __future__ import annotations
 

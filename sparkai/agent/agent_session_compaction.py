@@ -1,26 +1,5 @@
 """
-SparkAI Agent - Session Compaction Engine
-
-Manages agent session context windows with automatic compaction,
-session persistence, forking, and health probing. When context
-approaches token limits, the engine compresses older messages
-while preserving recent context and verifying session integrity.
-
-Architecture:
-  SessionCompactionEngine
-    |-- CompactionStrategy (pluggable compression)
-    |-- SessionStore (persistence layer)
-    |-- HealthProbe (post-compaction integrity verification)
-    |-- SessionFork (branching for parallel exploration)
-
-Compaction Flow:
-  1. Monitor token usage across active sessions
-  2. When threshold exceeded, select compaction strategy
-  3. Compress older messages into summary
-  4. Inject continuation message for seamless context
-  5. Run health probe to verify session integrity
-  6. Persist compacted session to disk
-"""
+SparkAI Agent - Session Compaction Engine"""
 
 from __future__ import annotations
 

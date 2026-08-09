@@ -1,19 +1,5 @@
 """
-Shell Hooks - Sandboxed shell command execution with hook system.
-
-Architecture:
-    ShellHooks/
-    |-- ShellPermission (access control levels)
-    |-- ShellCommand (command specification)
-    |-- ShellResult (execution result container)
-    |-- CommandHook (pre/post execution hook definition)
-    |-- ShellHookManager (unified command execution orchestration)
-    |-- BUILTIN_ALLOWLIST (safe command defaults)
-    |-- BUILTIN_DENYLIST (dangerous command defaults)
-
-Provides controlled shell command execution for agents with
-pre/post hooks, allowlist/denylist enforcement, and resource limits.
-"""
+Shell Hooks - Sandboxed shell command execution with hook system."""
 
 from __future__ import annotations
 

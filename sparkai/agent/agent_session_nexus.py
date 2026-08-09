@@ -1,25 +1,5 @@
 """
-SessionNexus - Conversation continuity across editor sessions and platforms.
-
-Provides a singleton bridge that preserves full conversation state so
-developers can start work on one device or platform and seamlessly
-continue on another within the SparkLabs ecosystem.
-
-Architecture:
-    SessionNexus (singleton)
-      |-- EditorSession (per-device/platform session tracking)
-      |-- SessionBridge (cross-session transfer artifacts)
-      |-- ContinuityCheckpoint (full-state snapshots for resume)
-
-Lifecycle:
-    Create Session -> Active -> Pause/Resume -> Bridge -> Accept -> Close
-
-Features:
-  - Cross-platform session bridging with encrypted transfer tokens
-  - Continuity checkpoints for full state preservation and restore
-  - Multiple continuity modes (EXACT_RESUME, SUMMARIZED_RESUME, PICK_UP_HINT)
-  - Active session discovery and lifecycle management
-"""
+SessionNexus - Conversation continuity across editor sessions and platforms."""
 
 from __future__ import annotations
 

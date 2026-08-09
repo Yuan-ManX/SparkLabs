@@ -1,35 +1,5 @@
 """
-SparkAI Agent - Policy Engine
-
-Declarative rule-based automation engine that evaluates conditions
-against the current system context and triggers automated actions.
-Rules are sorted by priority and matched against lane context to
-determine what should happen next without human intervention.
-
-Architecture:
-  PolicyEngine
-    |-- PolicyRule (condition -> action mapping)
-    |-- PolicyCondition (AND/OR/NOT composable predicates)
-    |-- PolicyAction (automated response types)
-    |-- PolicyContext (current system state snapshot)
-
-Supported Actions:
-  - Route task to specific agent role
-  - Escalate to human with reason
-  - Merge/forward work between agents
-  - Block operation with reason
-  - Recover from failure automatically
-  - Notify via channel
-  - Chain multiple actions sequentially
-
-Condition Types:
-  - Complexity threshold
-  - Confidence level
-  - Agent workload
-  - Failure count
-  - Time elapsed
-  - Custom predicate evaluation
-"""
+SparkAI Agent - Policy Engine"""
 
 from __future__ import annotations
 

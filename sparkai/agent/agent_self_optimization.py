@@ -1,35 +1,5 @@
 """
-SparkLabs Agent - Self-Optimization Engine
-
-Automated behavioral calibration and prompt refinement for game
-development agents. Tracks optimization profiles, runs phased
-calibration sessions, records performance metrics, and selects
-the best prompt variants based on accumulated evidence.
-
-Architecture:
-  SelfOptimizationEngine
-    |-- OptimizationProfile (per-agent target configuration)
-    |-- CalibrationRun (benchmark/adjust/validate/lock cycle)
-    |-- PerformanceMetric (quantitative feedback record)
-    |-- PromptVariant (competing prompt configuration)
-
-Calibration Flow:
-  1. Create an optimization profile with target dimensions
-  2. Start a benchmark calibration run to establish baseline
-  3. Record accuracy, latency, conciseness, creativity, and
-     user satisfaction metrics against the current prompt
-  4. Generate prompt variants with alternative adjustments
-  5. Run adjust/validate phases to score each variant
-  6. Select the best variant and lock the optimization
-  7. Compare profile performance across agent instances
-
-Targets:
-  - PROMPT_STRUCTURE: layout, sectioning, instruction ordering
-  - RESPONSE_STYLE: tone, verbosity, formatting conventions
-  - TOOL_USAGE: tool selection, invocation sequencing
-  - REASONING_DEPTH: chain-of-thought granularity
-  - CREATIVITY: novelty, divergence, idea generation breadth
-"""
+SparkLabs Agent - Self-Optimization Engine"""
 
 from __future__ import annotations
 

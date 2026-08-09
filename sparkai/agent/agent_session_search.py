@@ -1,16 +1,5 @@
 """
-Session Search - Semantic and keyword search across agent sessions.
-
-Architecture:
-    SessionSearch/
-    |-- SearchIndex (in-memory inverted index)
-    |-- SearchQuery (structured query parameters)
-    |-- SearchResult (ranked result with metadata)
-    |-- SessionSearch (unified session search engine)
-
-Enables full-text and structured search across agent conversation
-sessions, with time-range filtering, relevance scoring, and result pagination.
-"""
+Session Search - Semantic and keyword search across agent sessions."""
 
 from __future__ import annotations
 

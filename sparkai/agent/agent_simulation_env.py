@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Simulation Environment
-
-Sandboxed simulation harness for testing agent behavior before
-production deployment in the game engine. Provides deterministic
-environments, scenario replay, and behavioral analysis to ensure
-agent actions produce expected outcomes in game contexts.
-
-Architecture:
-  SimulationEnv
-    |-- SimulationWorld (isolated game state container)
-    |-- ScenarioRunner (replayable test scenarios)
-    |-- ActionSimulator (predict agent action outcomes)
-    |-- BehavioralMetrics (track success/failure/latency)
-    |-- DeterministicSeed (reproducible simulation runs)
-
-Simulation Modes:
-  - DRY_RUN: execute agent plan without mutating real state
-  - WHAT_IF: explore alternative action paths
-  - REPLAY: replay recorded agent session for debugging
-  - STRESS_TEST: push agent with edge-case scenarios
-"""
+SparkLabs Agent - Simulation Environment"""
 
 from __future__ import annotations
 

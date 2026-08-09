@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Session Persistence
-
-Persistent session storage with search and retrieval.
-Maintains session history across agent restarts using
-a lightweight embedded store. Enables the agent to
-reference past game development sessions, resume work,
-and search across all historical interactions.
-
-Architecture:
-  SessionStore
-    |-- SessionRecord (id, project, timestamp, summary, tags)
-    |-- SessionIndex (in-memory index with full-text search)
-    |-- SessionArchive (JSON-based persistent storage)
-    |-- SessionSearch (keyword, tag, date-range queries)
-    |-- SessionExport (individual or batch export)
-"""
+SparkLabs Agent - Session Persistence"""
 
 from __future__ import annotations
 

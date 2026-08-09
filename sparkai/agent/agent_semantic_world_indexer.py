@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Semantic World Indexer
-
-The AgentSemanticWorldIndexer bridges spatial engine data with semantic AI
-reasoning. Instead of only knowing "object at (x, y, z)", it builds a semantic
-graph that captures meaning: "the sword is on the table, the table is in the
-tavern, the tavern is owned by the merchant, the merchant fears the king".
-
-AI agents query the world in human-like terms:
-  - "find all weapons within reach of the player"
-  - "who has a motive to harm the king"
-  - "what objects could block the exit"
-  - "which NPCs are allied with each other"
-
-Architecture:
-  INGEST  ->  INDEX  ->  LINK  ->  QUERY  ->  EVOLVE
-  (register   (tag and   (build      (answer      (decay stale
-   entities)  classify)  relation    semantic     relations,
-                         graph)      queries)     merge nodes)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Semantic World Indexer"""
 
 from __future__ import annotations
 

@@ -1,21 +1,5 @@
 """
-SparkLabs Agent - Shader Advisor Engine
-
-AI-driven shader selection, generation, and performance analysis system
-for real-time rendering pipelines. Maintains a library of shader presets
-across domains and techniques, provides natural-language-to-shader
-generation, scene-based recommendations, and compile-time validation.
-
-Architecture:
-  ShaderAdvisor
-    |-- ShaderPreset (reusable shader template with code and metadata)
-    |-- Preset Library (organized by domain, language, technique)
-    |-- AI Generator (natural language description to shader code)
-    |-- Scene Recommender (context-aware shader suggestions)
-    |-- Performance Analyzer (score-based shader evaluation)
-    |-- Compile Checker (syntax validation against target language)
-    |-- Preset Exporter (serialize preset to portable format)
-"""
+SparkLabs Agent - Shader Advisor Engine"""
 
 from __future__ import annotations
 

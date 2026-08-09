@@ -1,37 +1,5 @@
 """
-SparkLabs Agent - Security Scanner
-
-Comprehensive security scanning subsystem that inspects all content
-entering the agent's system prompt for prompt injection, data exfiltration
-patterns, hidden content, role confusion, command injection, and other
-AI-specific threats. Designed as the first line of defense in the agent
-pipeline, scanning content before it reaches the LLM context assembly.
-
-Architecture:
-  SecurityScanner
-    |-- RuleRegistry (manages detection rule lifecycle)
-    |-- PatternMatcher (regex-based threat pattern detection)
-    |-- HiddenContentDetector (zero-width chars, base64, steganography)
-    |-- SanitizationEngine (threat-aware content cleaning)
-    |-- QuarantineStore (isolated storage for flagged content)
-    |-- ReportGenerator (detailed scan report exports)
-
-Scan Pipeline:
-  PRE_CHECK -> PATTERN_MATCH -> HIDDEN_CONTENT -> RESULT_AGGREGATE -> ACTION
-       |              |               |
-       v              v               v
-  injection_risk  threat_rules   hidden_content
-
-Content Sources:
-  - USER_INPUT: direct user text input
-  - GAME_ASSET: game asset content
-  - EXTERNAL_API: data from external API calls
-  - FILE_UPLOAD: uploaded file content
-  - NPC_DIALOGUE: NPC dialogue text
-  - PLAYER_NAME: player name strings
-  - LEVEL_DATA: level/scene data
-  - MOD_SCRIPT: mod/script content
-"""
+SparkLabs Agent - Security Scanner"""
 
 from __future__ import annotations
 

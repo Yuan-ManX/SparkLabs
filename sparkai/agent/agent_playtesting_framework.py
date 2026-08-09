@@ -1,35 +1,5 @@
 """
-SparkLabs Agent - Autonomous AI Playtesting Framework
-
-AI-driven playtesting system that simulates gameplay through autonomous agents
-to discover bugs, evaluate balance, measure fun factor, and assess difficulty
-curves for the AI-native game engine. Supports multiple test types and generates
-comprehensive playtest reports with actionable recommendations.
-
-Architecture:
-  PlaytestingFramework (Singleton)
-    |-- PlaytestSession (active testing session lifecycle)
-    |-- TestCase (individual test definition and execution)
-    |-- BugReport (discovered issue with reproduction steps)
-    |-- PlaytestReport (aggregated session metrics and analysis)
-
-Test Types:
-  - FUNCTIONAL: entity spawning, collision, triggers, scene transitions
-  - BALANCE: combat encounters, win/loss ratios, resource economy
-  - PERFORMANCE: stress testing with many entities, frame drop measurement
-  - COMPLETION: level progression verification, softlock detection
-  - EXPLORATORY: random walk simulation, edge case discovery
-  - STRESS: resource limit and boundary condition testing
-  - REGRESSION: comparison against previous baselines
-  - USABILITY: player experience and interaction flow evaluation
-
-Usage:
-    framework = get_playtesting_framework()
-    session = framework.create_session("game_001", [TestType.FUNCTIONAL],
-        game_config={"levels": 5, "entities": ["player", "enemy", "npc"]})
-    framework.run_full_test_suite(session.session_id)
-    report = framework.generate_report(session.session_id)
-"""
+SparkLabs Agent - Autonomous AI Playtesting Framework"""
 
 from __future__ import annotations
 
