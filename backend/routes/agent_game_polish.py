@@ -1,14 +1,5 @@
 """
-SparkLabs Backend - Game Polish API Routes
-
-REST API endpoints for the AI Game Polish agent that applies
-production-ready polish to game HTML.
-
-Endpoints:
-  GET  /game-polish/status   - Polish agent status
-  GET  /game-polish/history  - Recent polish results
-  POST /game-polish/apply    - Apply production-ready polish to game HTML
-"""
+SparkLabs Backend - Game Polish API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

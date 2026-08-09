@@ -1,15 +1,5 @@
 """
-SparkLabs Backend - Game Healer API Routes
-
-REST API endpoints for the AI Game Healer that automatically repairs
-game quality issues by injecting JavaScript patches for missing features.
-
-Endpoints:
-  GET  /game-healer/status    - Healer status
-  GET  /game-healer/stats     - Aggregate statistics
-  GET  /game-healer/history   - Recent healing sessions
-  POST /game-healer/heal      - Heal a game from HTML
-"""
+SparkLabs Backend - Game Healer API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

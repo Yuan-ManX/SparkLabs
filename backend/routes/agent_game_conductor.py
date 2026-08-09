@@ -1,18 +1,5 @@
 """
-SparkLabs Backend - Agent Game Conductor API Routes
-
-REST API endpoints for the AI Game Conductor system.
-The conductor unifies the GameDirector, GameIntelligenceEngine, and
-GameDesignReasoner into a single intelligent creation pipeline that
-produces both a playable game and a rich intelligence report.
-
-Endpoints:
-  GET  /game-conductor/status        - Pipeline status and recent sessions
-  GET  /game-conductor/capabilities  - Conductor capabilities and subsystems
-  POST /game-conductor/conduct       - Run the full conductor pipeline on a prompt
-  GET  /game-conductor/history       - List recent conductor sessions
-  GET  /game-conductor/result/{sid}  - Retrieve a cached conductor result
-"""
+SparkLabs Backend - Agent Game Conductor API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

@@ -1,16 +1,5 @@
 """
-SparkLabs Backend - Game Evolver API Routes
-
-REST API endpoints for the AI Game Evolver that optimizes games through
-evolutionary iteration using mutation + critique as fitness function.
-
-Endpoints:
-  GET  /game-evolver/status    - Evolver status
-  GET  /game-evolver/stats     - Aggregate statistics
-  GET  /game-evolver/history   - Recent evolution runs
-  GET  /game-evolver/strategies - List default strategies
-  POST /game-evolver/evolve    - Evolve a game from HTML
-"""
+SparkLabs Backend - Game Evolver API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

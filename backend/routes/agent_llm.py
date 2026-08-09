@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Agent LLM Pipeline Routes
-
-API endpoints for LLM-powered text generation, reasoning,
-provider management, prompt templates, response parsing,
-and usage statistics.
-"""
+SparkLabs Backend - Agent LLM Pipeline Routes"""
 
 import uuid
 from datetime import datetime

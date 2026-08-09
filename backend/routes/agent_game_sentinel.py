@@ -1,14 +1,5 @@
 """
-SparkLabs Backend - Game Sentinel API Routes
-
-REST API endpoints for the AI Game Sentinel agent that validates,
-repairs, and instruments game HTML with runtime telemetry.
-
-Endpoints:
-  GET  /game-sentinel/status    - Sentinel agent status
-  GET  /game-sentinel/history   - Recent guard results
-  POST /game-sentinel/guard     - Validate and repair game HTML
-"""
+SparkLabs Backend - Game Sentinel API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

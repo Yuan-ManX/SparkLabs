@@ -1,18 +1,5 @@
 """
-SparkLabs Backend - Agent Game Synthesizer API Routes
-
-REST API endpoints that bridge the GameContentSynthesizer (AI content
-generation) with the GameRuntime (playable HTML production). This is
-the canonical "describe a game, get a playable game" pipeline.
-
-Endpoints:
-  GET  /game-synthesizer/status         -> pipeline status
-  POST /game-synthesizer/synthesize     -> produce a GameDesignDocument (JSON)
-  POST /game-synthesizer/generate       -> full pipeline: prompt -> playable HTML
-  POST /game-synthesizer/build          -> build HTML from an existing result_id
-  GET  /game-synthesizer/genres         -> list supported genres
-  GET  /game-synthesizer/result/{id}    -> fetch a previous synthesis result
-"""
+SparkLabs Backend - Agent Game Synthesizer API Routes"""
 
 from __future__ import annotations
 

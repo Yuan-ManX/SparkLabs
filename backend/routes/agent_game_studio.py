@@ -1,17 +1,5 @@
 """
-SparkLabs Backend - Agent Game Studio API Routes
-
-REST API endpoints for the multi-agent Game Studio system.
-The studio orchestrates specialist agents (Designer, Programmer, Artist,
-Tester, Composer) that collaborate to produce a consolidated game blueprint.
-
-Endpoints:
-  GET  /game-studio/status        - Studio status and recent sessions
-  GET  /game-studio/agents        - List studio agents and their roles
-  POST /game-studio/collaborate   - Run a collaboration session on a prompt
-  GET  /game-studio/history       - List recent studio sessions
-  GET  /game-studio/result/{sid}  - Retrieve a cached studio result
-"""
+SparkLabs Backend - Agent Game Studio API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

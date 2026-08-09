@@ -1,15 +1,5 @@
 """
-SparkLabs Backend - Game Tournament API Routes
-
-REST API endpoints for the AI Game Tournament that runs competitive
-brackets between game variants, evaluating each through the Game Critic
-and Game Analytics to crown a champion.
-
-Endpoints:
-  GET  /game-tournament/status   - Tournament agent status
-  GET  /game-tournament/history  - Recent tournament results
-  POST /game-tournament/run      - Run a tournament with game variants
-"""
+SparkLabs Backend - Game Tournament API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

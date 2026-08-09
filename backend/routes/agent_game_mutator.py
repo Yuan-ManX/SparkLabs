@@ -1,16 +1,5 @@
 """
-SparkLabs Backend - Game Mutation Engine API Routes
-
-REST API endpoints for the Game Mutation Engine that creates
-controlled variations of generated games.
-
-Endpoints:
-  GET  /game-mutator/status       - Mutator status and strategy count
-  GET  /game-mutator/strategies    - List all mutation strategies
-  POST /game-mutator/mutate        - Apply a mutation strategy to game HTML
-  POST /game-mutator/mutate-batch  - Apply multiple strategies to the same HTML
-  GET  /game-mutator/history       - List recent mutation sessions
-"""
+SparkLabs Backend - Game Mutation Engine API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

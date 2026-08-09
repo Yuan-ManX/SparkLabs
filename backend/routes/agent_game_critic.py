@@ -1,35 +1,5 @@
 """
-SparkLabs Backend - Game Critic API Routes
-
-REST API endpoints for the AI Game Critic that automatically
-evaluates game quality across 10 dimensions and produces
-professional review reports with findings and recommendations.
-
-Endpoints:
-  GET    /game-critic/status                       - Critic status
-  GET    /game-critic/stats                        - Aggregate statistics
-  GET    /game-critic/snapshot                     - Point-in-time snapshot
-  GET    /game-critic/sessions                     - List review sessions
-  POST   /game-critic/sessions                     - Create a review session
-  GET    /game-critic/sessions/{session_id}        - Get a session
-  PATCH  /game-critic/sessions/{session_id}        - Update a session
-  POST   /game-critic/sessions/{session_id}/complete - Complete a session
-  POST   /game-critic/sessions/{session_id}/scores - Score a dimension
-  GET    /game-critic/sessions/{session_id}/scores - List scores
-  GET    /game-critic/sessions/{session_id}/overall-score - Overall score
-  POST   /game-critic/sessions/{session_id}/findings - Add a finding
-  GET    /game-critic/sessions/{session_id}/findings - List findings
-  POST   /game-critic/sessions/{session_id}/recommendations - Add recommendation
-  GET    /game-critic/sessions/{session_id}/recommendations - List recommendations
-  POST   /game-critic/sessions/{session_id}/report - Generate a report
-  GET    /game-critic/reports                      - List reports
-  GET    /game-critic/reports/{report_id}          - Get a report
-  POST   /game-critic/comparisons                  - Compare two sessions
-  GET    /game-critic/comparisons                  - List comparisons
-  GET    /game-critic/events                       - List audit events
-  POST   /game-critic/reset                        - Reset to seed state
-  POST   /game-critic/critique                     - Auto-critique HTML game
-"""
+SparkLabs Backend - Game Critic API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

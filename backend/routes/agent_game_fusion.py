@@ -1,14 +1,5 @@
 """
-SparkLabs Backend - Game Fusion API Routes
-
-REST API endpoints for the AI Game Fusion agent that merges the
-strengths of multiple game variants into a single superior game.
-
-Endpoints:
-  GET  /game-fusion/status   - Fusion agent status
-  GET  /game-fusion/history  - Recent fusion results
-  POST /game-fusion/fuse     - Fuse multiple game variants
-"""
+SparkLabs Backend - Game Fusion API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

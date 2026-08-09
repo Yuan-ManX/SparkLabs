@@ -1,17 +1,5 @@
 """
-SparkLabs Backend - Agent Game Director API Routes
-
-REST API endpoints for the AI Game Director system.
-The director orchestrates synthesis, runtime building, playtest simulation,
-quality evaluation, and iterative refinement into a single creation pipeline.
-
-Endpoints:
-  GET  /game-director/status        - Pipeline status and recent sessions
-  GET  /game-director/capabilities  - Supported genres, quality dimensions, tools
-  POST /game-director/direct        - Run the full director pipeline on a prompt
-  GET  /game-director/history       - List recent director sessions
-  GET  /game-director/result/{sid}  - Retrieve a cached director result
-"""
+SparkLabs Backend - Agent Game Director API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

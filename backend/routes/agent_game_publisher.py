@@ -1,14 +1,5 @@
 """
-SparkLabs Backend - Game Publisher API Routes
-
-REST API endpoints for the AI Game Publisher agent that turns
-polished game HTML into a deployment-ready package.
-
-Endpoints:
-  GET  /game-publisher/status    - Publisher agent status
-  GET  /game-publisher/history   - Recent publish results
-  POST /game-publisher/publish   - Publish game HTML to a deployable package
-"""
+SparkLabs Backend - Game Publisher API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
