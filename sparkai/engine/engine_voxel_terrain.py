@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Voxel Terrain System
-
-A voxel-based terrain engine for the SparkLabs AI-native game engine.
-The world is represented as a 3D grid of voxels partitioned into chunks
-for streaming and meshing. Each voxel carries a type, color, and hardness.
-Chunks progress through a lifecycle from UNLOADED to MESHED and may be
-marked DIRTY when their contents change.
-
-The engine provides procedural terrain generation built on value noise and
-fractal Brownian motion, three meshing strategies (NAIVE, CULLING, GREEDY),
-DDA voxel raycasting, sunlight propagation with ambient occlusion, AABB
-collision queries against voxel data, region export/import serialization,
-and a small event bus for voxel lifecycle notifications.
-
-All public state is guarded by a reentrant lock and the engine follows the
-project singleton pattern with a module-level ``get_voxel_terrain()`` factory.
-
-Architecture:
-  VoxelTerrainEngine (Singleton)
-    |-- Voxel           (one cell of the world grid)
-    |-- VoxelChunk      (a cubic block of voxels)
-    |-- ChunkMesh       (vertex/index buffer for one chunk)
-    |-- VoxelRegion     (an axis-aligned sub-volume of the world)
-    |-- TerrainConfig   (generation and runtime parameters)
-    |-- VoxelStats      (aggregated runtime counters)
-    |-- VoxelEvent      (an emitted voxel lifecycle event)
-    |-- VoxelSnapshot   (point-in-time engine summary)
-
-Usage:
-    engine = get_voxel_terrain()
-    engine.set_voxel(10, 20, 10, VoxelType.STONE)
-    mesh = engine.mesh_chunk(0, 0, 0)
-    hit = engine.raycast((0.5, 30.0, 0.5), (0.0, -1.0, 0.0), 64.0)
-"""
+SparkLabs Engine - Voxel Terrain System"""
 
 from __future__ import annotations
 

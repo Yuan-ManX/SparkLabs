@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Expression Engine
-
-Runtime expression parser and evaluator for game scripting, dialogue
-conditions, quest triggers, and dynamic content generation. Supports
-arithmetic, comparison, logical, and string operations with custom
-function registration and variable binding.
-
-Architecture:
-  ExpressionEngine
-    |-- Tokenizer (lexical analysis into tokens)
-    |-- Parser (syntax validation and AST building)
-    |-- Evaluator (expression execution with context)
-    |-- Function Registry (user-defined callable functions)
-    |-- Variable Binder (runtime variable injection)
-
-Supported Operations:
-  - Arithmetic: +, -, *, /, %, **
-  - Comparison: ==, !=, >, <, >=, <=
-  - Logical: &&, ||, !
-  - String: ++ (concatenation)
-"""
+SparkLabs Engine - Expression Engine"""
 
 from __future__ import annotations
 

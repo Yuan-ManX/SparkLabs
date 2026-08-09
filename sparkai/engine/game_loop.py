@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Game Loop
-
-Core game loop with time management, frame stepping, and execution
-phases. Drives the simulation with configurable time scaling and
-fixed/variable timestep support. Orchestrates the processing order:
-input gathering, behavior updates, physics, rendering, and AI.
-
-Architecture:
-  GameLoop
-    |-- TimeManager (delta time, time scale, fixed step)
-    |-- ExecutionPhases (ordered processing stages)
-    |-- FrameStats (FPS, frame time, draw calls)
-    |-- LifecycleHooks (start/stop/pause/resume/single-step)
-
-Execution Phases (ordered per frame):
-  1. INPUT    - gather input events
-  2. PRE_STEP - pre-behavior processing
-  3. STEP     - main behavior/physics tick
-  4. POST_STEP- post-behavior processing
-  5. RENDER   - render to display buffers
-  6. AI       - agent observation/decision
-  7. CLEANUP  - garbage collection, event cleanup
-"""
+SparkLabs Engine - Game Loop"""
 
 from __future__ import annotations
 

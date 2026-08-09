@@ -1,15 +1,5 @@
 """
-SparkLabs Engine - Vehicle Physics System
-
-Simulates wheeled vehicle dynamics with suspension, engine torque,
-steering, drift, surface friction, and collision response. Supports
-cars, trucks, motorcycles, and tanks with configurable axle layouts,
-drive types, and tire models.
-
-Designed for racing games, open-world driving, vehicular combat, and
-simulation experiences. Integrates with the physics dynamics core,
-surface profile system, and wind field for aerodynamic effects.
-"""
+SparkLabs Engine - Vehicle Physics System"""
 
 from __future__ import annotations
 

@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Visual Scene Composition Engine
-
-A drag-and-drop visual scene building system for the SparkLabs AI-native
-game engine. Enables layer management, object placement, property editing,
-and real-time preview with node-based scene composition.
-
-The engine provides a unified visual composition workflow:
-  - LayerManager: Z-ordered layer management for organizing scene objects
-  - SceneCanvas: Virtual canvas with pan/zoom that holds all scene objects
-  - ObjectLibrary: Catalog of placeable objects (sprites, tiles, particles, etc.)
-  - PropertyEditor: Real-time property editing with type-aware controls
-  - SceneSerializer: JSON-based scene serialization/deserialization
-  - PreviewRenderer: Real-time scene preview rendering
-  - SelectionManager: Multi-object selection, grouping, alignment
-
-Architecture:
-  EngineVisualComposer (Singleton)
-    |-- LayerManager: z-order layer management
-    |-- SceneCanvas: virtual canvas with pan/zoom
-    |-- ObjectLibrary: catalog of placeable objects
-    |-- PropertyEditor: type-aware property editing
-    |-- SceneSerializer: JSON scene save/load
-    |-- PreviewRenderer: real-time preview
-    |-- SelectionManager: selection and manipulation
-
-Usage:
-    vc = get_visual_composer()
-    scene = vc.create_scene("MyScene", 1920, 1080)
-    layer = vc.add_layer(scene.id, "Background", 0)
-    obj = vc.place_object(scene.id, "sprite_player", 100, 200, layer.id)
-    vc.select_objects(scene.id, [obj.id])
-    data = vc.save_scene(scene.id)
-    status = vc.get_status()
-"""
+SparkLabs Engine - Visual Scene Composition Engine"""
 
 from __future__ import annotations
 

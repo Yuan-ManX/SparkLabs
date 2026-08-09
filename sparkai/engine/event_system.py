@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Event System
-
-Declarative event sheet and signal/slot engine combining
-visual event-driven programming with decoupled signal-based
-communication. Event sheets are ordered lists of conditions and
-actions evaluated top-down each frame. The signal bus provides
-decoupled node-to-node communication via named signals.
-
-Architecture:
-  EventSystem
-    |-- EventSheet (ordered collection of game events)
-    |-- GameEvent (conditions + actions + optional sub-events)
-    |-- EventCondition (predicate evaluated against game context)
-    |-- EventAction (operation executed when conditions are met)
-    |-- SignalSlot (emitter-to-receiver connection with data passing)
-
-Condition Types:
-  - COLLISION, INPUT, TIMER, COMPARISON, VARIABLE, TRIGGER, ALWAYS,
-    DISTANCE, STATE
-
-Action Types:
-  - MOVE, ROTATE, SCALE, SPAWN, DESTROY, PLAY_SOUND, CHANGE_SCENE,
-    SET_VARIABLE, EMIT_SIGNAL, ANIMATE, APPLY_FORCE, TELEPORT,
-    TOGGLE_VISIBILITY, SET_TEXT, SET_COLOR
-
-Event Flow:
-  1. evaluate_sheet(sheet_id, context) — top-down pass
-  2. For each event, evaluate_event(event_id, context)
-  3. If conditions pass, execute_event(event_id, context)
-  4. Sub-events are evaluated recursively when parent fires
-  5. Signal emissions are dispatched to connected slots
-"""
+SparkLabs Engine - Event System"""
 
 from __future__ import annotations
 

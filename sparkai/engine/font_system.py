@@ -1,19 +1,5 @@
 """
-Font System - Font resource management, glyph metrics, and text layout.
-
-Architecture:
-    FontSystem/
-    |-- FontType (bitmap, truetype, system enumeration)
-    |-- FontWeight (weight classification enumeration)
-    |-- TextStyle (rendering style configuration dataclass)
-    |-- FontResource (font definition and metrics dataclass)
-    |-- GlyphInfo (per-character layout dataclass)
-    |-- TextBlock (measured text layout result dataclass)
-    |-- FontSystem (global font orchestration)
-
-Manages font resources with character metrics, text measurement, line wrapping,
-and styled text block layout. Supports fallback font chains and bitmap font import.
-"""
+Font System - Font resource management, glyph metrics, and text layout."""
 
 from __future__ import annotations
 

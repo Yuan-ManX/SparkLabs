@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Voxel World Building System
-
-Block-based world construction, destruction, and procedural generation.
-Manages voxel materials, 3D chunks, individual blocks, stampable
-structures, reversible modifications, and biome-driven terrain
-generation. Designed for the SparkLabs AI-native game engine.
-
-Architecture:
-  VoxelWorldSystem (singleton)
-    |-- VoxelMaterialType, ChunkState, StructureType, BiomeType,
-       ModificationType, VoxelWorldEventKind
-    |-- VoxelMaterial, VoxelBlock, VoxelChunk, VoxelStructure,
-       VoxelModification, BiomeConfig, VoxelWorldConfig,
-       VoxelWorldStats, VoxelWorldSnapshot, VoxelWorldEvent
-    |-- get_voxel_world_system
-
-Core Capabilities:
-  - register_material / get_material / list_materials / remove_material
-  - register_biome / get_biome / list_biomes / remove_biome
-  - get_chunk / list_chunks / generate_chunk / unload_chunk
-  - get_block / set_block / remove_block / fill_area / clear_area
-  - register_structure / get_structure / list_structures
-  - place_structure / remove_structure
-  - get_modifications / undo_modification
-  - get_blocks_in_range / count_blocks_by_material
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`VoxelWorldSystem.get_instance` or the module-level
-:func:`get_voxel_world_system` factory.
-"""
+SparkLabs Engine - Voxel World Building System"""
 
 from __future__ import annotations
 

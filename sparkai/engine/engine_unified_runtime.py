@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Unified Game Runtime
-
-A comprehensive runtime engine that integrates all engine subsystems into a
-single, coherent game execution framework. The Unified Game Runtime manages
-game loop orchestration, scene lifecycle, physics simulation, rendering
-pipeline, audio processing, input handling, and cross-subsystem coordination
-for the AI-native game engine.
-
-Architecture:
-  UnifiedGameRuntime (Singleton)
-    |-- GameLoopOrchestrator (frame-based game loop with fixed/variable timestep)
-    |-- SceneLifecycleManager (scene loading, activation, transition, unloading)
-    |-- PhysicsCoordinator (physics simulation step coordination)
-    |-- RenderPipelineManager (render pass orchestration and frame composition)
-    |-- AudioMixer (audio source management and spatial audio mixing)
-    |-- InputAggregator (multi-device input collection and mapping)
-    |-- EntityCoordinator (cross-system entity lifecycle and state sync)
-    |-- PerformanceProfiler (real-time performance metrics and bottleneck detection)
-"""
+SparkLabs Engine - Unified Game Runtime"""
 
 from __future__ import annotations
 

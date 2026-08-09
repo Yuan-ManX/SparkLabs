@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Visual Event Sheet System
-
-A visual scripting system that enables game logic creation through
-condition-action event sheets. Each sheet contains events with trigger
-conditions and corresponding action sequences, allowing designers and
-agents to compose game behavior without writing traditional code.
-
-The event sheet runtime evaluates conditions each frame and executes
-matched action sequences, supporting nested sub-events, event groups,
-variable scoping, and event linking for complex game logic flows.
-
-Architecture:
-  EngineVisualEventSheet (Singleton)
-    |-- EventSheet (container of events with metadata)
-    |-- GameEvent (single condition→actions rule)
-    |-- EventCondition (trigger predicate)
-    |-- EventAction (executable operation)
-    |-- SubEvent (nested conditional event)
-    |-- EventGroup (logically grouped events)
-    |-- ConditionOperator (comparison operators)
-    |-- ActionType (action categories)
-    |-- EventScope (visibility and lifetime scope)
-
-Core Capabilities:
-  - create_sheet: Create a new event sheet with metadata
-  - add_event: Add a condition→actions event to a sheet
-  - add_sub_event: Nest a sub-event under a parent event
-  - evaluate_sheet: Process all events in a sheet for the current frame
-  - link_events: Enable/disable events based on conditions
-  - clone_sheet: Deep-copy an event sheet
-  - validate_sheet: Check sheet for logical errors
-  - compile_sheet: Pre-compile sheet for runtime efficiency
-"""
+SparkLabs Engine - Visual Event Sheet System"""
 
 from __future__ import annotations
 

@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Volumetric Rendering System
-
-A comprehensive volumetric rendering system for atmospheric effects,
-fog, light scattering, and volumetric clouds in the game engine.
-Provides real-time ray marching, participating media simulation,
-Beer-Lambert transmittance calculations, and physically-based phase
-function evaluation for Rayleigh and Mie scattering.
-
-Architecture:
-  EngineVolumetricRendering (Singleton)
-    |-- VolumetricFogConfig     — fog density, falloff, and color parameters
-    |-- VolumetricLightConfig   — volumetric light shafts and god rays
-    |-- VolumetricCloudConfig   — procedural volumetric cloud layers
-    |-- ParticipatingMedia      — participating media properties
-    |-- RayMarchResult          — ray marching integration output
-    |-- VolumetricRenderPass    — render pass configuration
-
-Key Features:
-  - Physically-based Rayleigh and Mie scattering phase functions
-  - Beer-Lambert law for light transmittance through participating media
-  - Ray marching with adaptive step sizing
-  - In-scattering integration for volumetric light effects
-  - Quality presets affecting sample counts and resolution scale
-  - Temporal accumulation and denoising for render passes
-"""
+SparkLabs Engine - Volumetric Rendering System"""
 
 from __future__ import annotations
 

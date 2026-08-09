@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Game Modes System
-
-Game mode state machine for defining and transitioning between
-distinct gameplay phases. Supports mode lifecycle hooks, mode-specific
-configuration, and conditional transitions for AI-native games.
-
-Architecture:
-  GameModeSystem
-    |-- ModeDefinition (state configuration with hooks)
-    |-- ModeStack (hierarchical mode overlay)
-    |-- TransitionEngine (condition-based mode switching)
-    |-- ModeConfig (per-mode game rule parameters)
-    |-- ModeEventBus (mode-change notifications)
-
-Built-in Game Modes:
-  - MAIN_MENU: title screen and settings
-  - PLAYING: active gameplay
-  - PAUSED: pause menu overlay
-  - GAME_OVER: defeat or victory screen
-  - CUTSCENE: cinematic sequence
-  - EDITOR: level/scene editing
-  - LOADING: asset loading transition
-"""
+SparkLabs Engine - Game Modes System"""
 
 from __future__ import annotations
 

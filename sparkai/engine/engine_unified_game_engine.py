@@ -1,42 +1,5 @@
 """
-SparkLabs Engine - Unified Game Engine Core
-
-The definitive unified game engine core for the SparkLabs AI-native ecosystem.
-Integrates rendering, physics, scene management, audio, ECS, animation,
-world systems, input/UI, performance diagnostics, and resource pipelines
-into a single cohesive runtime controlled by AI agents.
-
-This module serves as the runtime backbone for all game creation, execution,
-analysis, and optimization within the SparkLabs ecosystem.
-
-Architecture:
-  UnifiedGameEngine (Singleton)
-    |-- RenderingPipeline (render passes, post-processing, GPU, shadows, lighting, skybox, decals, sprites, trails, particles, materials, shaders)
-    |-- PhysicsWorld (dynamics, collision, constraints, vehicles, water, cloth, ragdoll)
-    |-- SceneGraph (scene manager, tree, stack, transitions, streaming, prefabs)
-    |-- AudioEngine (synthesis, spatial, layering, interactive, procedural, dynamic music)
-    |-- ECSWorld (entity-component-system, component assembler, blueprints, custom types)
-    |-- AnimationSystem (curves, trees, controllers, skeleton, IK, camera shake, camera controller)
-    |-- WorldSystems (terrain, biome generation, procedural world, dungeon, tilemap, weather, day/night)
-    |-- InputUISystem (input mapping, events, abstraction, gesture, UI system, UI layout)
-    |-- PerformanceMonitor (profiler, performance overlay, frame timer, debug draw, console, telemetry)
-    |-- ResourceManager (resource loader, asset pipeline, bundler, streamer, texture atlas, serialization)
-    |-- AgentBridge (bidirectional command/event channel with agent layer)
-
-Usage:
-    engine = UnifiedGameEngine.get_instance()
-    engine.initialize()
-
-    # Create and run a scene
-    scene = engine.create_scene("Level1", 1920, 1080)
-    engine.spawn_entity(scene_id, "player", 100, 200)
-    engine.run()
-
-    # Process agent commands
-    engine.process_agent_commands()
-
-    engine.shutdown()
-"""
+SparkLabs Engine - Unified Game Engine Core"""
 
 from __future__ import annotations
 

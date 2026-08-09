@@ -1,56 +1,5 @@
 """
-SparkLabs Engine - VFX Graph System
-
-A node-based composable visual effects (VFX) graph engine for the
-SparkLabs AI-native game engine. VFX graphs are directed acyclic graphs
-(DAGs) of nodes where each node represents an operation (emitter,
-modifier, renderer, etc.) and the connections between nodes define the
-data flow. This enables designers to compose complex visual effects by
-connecting nodes together in a visual editor.
-
-Architecture:
-  VFXGraphEngine (singleton)
-    |-- VFXPin             -- a connection point on a node (input/output/inout)
-    |-- VFXNode            -- a single operation within a graph
-    |-- VFXConnection      -- a typed edge linking two pins
-    |-- VFXParameter       -- an exposed, tunable graph parameter
-    |-- VFXGraph           -- a complete DAG of nodes and connections
-    |-- VFXGraphInstance   -- a runtime instantiation of a compiled graph
-    |-- VFXCompileResult   -- the outcome of validating/compiling a graph
-    |-- VFXGraphStats      -- aggregate counters describing the engine state
-    |-- VFXGraphSnapshot   -- immutable snapshot of the whole engine
-    |-- VFXGraphEvent      -- audit log entry for lifecycle changes
-    |-- VFXNodeType        -- 15 node operation classifications
-    |-- VFXPinKind         -- input / output / inout
-    |-- VFXDataType        -- 8 pin data classifications
-    |-- GraphStatus        -- draft / compiled / active / error
-    |-- RenderSpace        -- world / local / screen
-    |-- BlendMode          -- additive / alpha / multiplicative / subtractive
-    |-- SortingMode        -- by distance / age / index / unsorted
-    |-- VFXEventKind       -- 10 audit event kinds
-
-Core Capabilities:
-  - create_graph / list_graphs / get_graph / update_graph / delete_graph:
-    graph registry management with FIFO eviction.
-  - add_node / get_node / list_nodes / update_node / remove_node: node
-    management with automatic default-pin creation based on node type.
-  - connect / disconnect / list_connections: typed pin connections with
-    cycle detection and data-type compatibility validation.
-  - add_parameter / set_parameter / list_parameters: exposed graph
-    parameters with min/max clamping.
-  - compile_graph: validate the graph (cycles, type mismatches,
-    unconnected pins) and set the status to COMPILED or ERROR.
-  - instantiate_graph / get_instance / list_instances / stop_instance:
-    runtime instance management for compiled graphs.
-  - list_events / get_stats / get_status / get_snapshot: observability.
-  - reset: clear all stores and re-seed with default data.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`VFXGraphEngine.get_instance` or the module-level
-:func:`get_vfx_graph` factory. All public methods are guarded by the
-re-entrant lock.
-"""
+SparkLabs Engine - VFX Graph System"""
 
 from __future__ import annotations
 

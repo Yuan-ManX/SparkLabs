@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Visual Scripting Engine
-
-Node-based visual scripting system that enables no-code game logic creation
-through a graph-based event and action system. Nodes represent game events,
-conditions, and actions that can be connected visually to define game behavior
-without writing code. Designed for the AI-native game editor.
-
-Architecture:
-  EngineVisualScripting (Singleton)
-    |-- ScriptGraph (node graph with event/condition/action nodes)
-    |-- NodeLibrary (catalog of available script nodes)
-    |-- ScriptInterpreter (runtime execution of visual scripts)
-    |-- GraphOptimizer (dead code elimination, node merging)
-    |-- ScriptSerializer (import/export visual scripts)
-
-Node Categories:
-  - EVENT: triggers (collision, input, timer, custom)
-  - CONDITION: logical checks (comparison, state, distance)
-  - ACTION: game operations (move, spawn, animate, destroy)
-  - VARIABLE: data manipulation (set, get, calculate)
-  - CONTROL: flow control (loop, branch, wait, sequence)
-
-Usage:
-    vs = EngineVisualScripting.get_instance()
-    vs.initialize()
-
-    graph = vs.create_graph("PlayerController")
-    start = vs.add_node(graph.graph_id, "OnStart", NodeCategory.EVENT)
-    check = vs.add_node(graph.graph_id, "IsGrounded", NodeCategory.CONDITION)
-    jump = vs.add_node(graph.graph_id, "ApplyForce", NodeCategory.ACTION)
-    vs.connect_nodes(graph.graph_id, start.node_id, check.node_id)
-    vs.connect_nodes(graph.graph_id, check.node_id, jump.node_id, "true")
-    vs.execute_graph(graph.graph_id, {"entity_id": "player_1"})
-    vs.shutdown()
-"""
+SparkLabs Engine - Visual Scripting Engine"""
 
 from __future__ import annotations
 

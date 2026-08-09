@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Fog of War System
-
-Grid-based visibility and exploration system for strategy and RPG games.
-Manages per-layer fog cells with multiple reveal methods, persistent
-exploration memory, and observer-driven visibility updates.
-
-Architecture:
-  FogOfWarSystem
-    |-- FogLayer (named visibility grid with configurable appearance)
-    |-- FogCell (individual grid cell with state and reveal tracking)
-    |-- Observer Manager (position-based visibility calculation)
-    |-- Reveal Processor (circular, LOS, sector, proximity, global modes)
-
-Cell States:
-  - HIDDEN: never seen — fully obscured
-  - EXPLORED: previously seen but not currently visible — dimmed
-  - VISIBLE: currently within an observer's range — fully lit
-  - PERMANENTLY_VISIBLE: always visible regardless of observers
-"""
+SparkLabs Engine - Fog of War System"""
 
 from __future__ import annotations
 

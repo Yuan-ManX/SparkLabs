@@ -1,10 +1,5 @@
 """
-SparkLabs Engine World Streamer
-
-Advanced world streaming system for large open worlds with chunk-based
-loading and unloading. Manages spatial partitioning, LOD transitions,
-and asynchronous asset loading to enable seamless open-world experiences.
-"""
+SparkLabs Engine World Streamer"""
 
 from __future__ import annotations
 

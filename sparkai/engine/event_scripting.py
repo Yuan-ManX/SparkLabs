@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - Event Scripting System
-
-Visual event-based scripting system using a declarative
-event-driven architecture. Enables no-code game logic creation
-through conditions, actions, and sub-events — making AI-generated
-game behavior accessible through a structured, composable model.
-
-Architecture:
-  EventScriptingSystem
-    |-- EventSheet (ordered list of events with conditions/actions)
-    |-- Condition (evaluable predicate testing game state)
-    |-- Action (executable operation modifying game state)
-    |-- Trigger (event that activates when condition becomes true)
-
-Condition Types:
-  - COMPARISON: numeric/string comparison between expressions
-  - STATE_CHECK: boolean check of entity/scene/variable state
-  - COLLISION: entity overlap or proximity detection
-  - INPUT: key press, mouse, or touch detection
-  - TIMER: time-based conditions (elapsed, interval)
-
-Action Types:
-  - TRANSFORM: position/rotation/scale modification
-  - PROPERTY: set entity or scene property
-  - VARIABLE: assign/increment/toggle variable
-  - SPAWN: create or destroy entities
-  - TRANSITION: scene change, camera transition
-  - AUDIO: play sound, set volume, stop music
-
-Usage:
-    es = EventScriptingSystem()
-    sheet = es.create_sheet("player_controls")
-    evt = sheet.add_event("Move Right")
-    evt.add_condition("input", key="ArrowRight", state="pressed")
-    evt.add_action("transform", entity="player", property="x", operation="add", value=5)
-    es.run_sheet("player_controls", dt)
-"""
+SparkLabs Engine - Event Scripting System"""
 from __future__ import annotations
 
 import time

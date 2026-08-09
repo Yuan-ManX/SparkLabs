@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Dynamic Weather and Environment System
-
-A runtime weather and environment simulation module for the AI-native game
-engine. Manages weather patterns, day/night cycles, atmospheric effects,
-particle-based weather rendering, and gameplay-impacting environmental
-conditions with smooth transitions and probabilistic forecasting.
-
-Architecture:
-  WeatherSystemEngine (Singleton)
-    |-- WeatherCondition   — current or predicted weather state snapshot
-    |-- DayNightCycle      — diurnal cycle with ambient and sky parameters
-    |-- WeatherEffect      — visual particle effect tied to weather types
-    |-- WeatherIntensity   — severity scaling (LIGHT through EXTREME)
-    |-- TimeOfDay          — discrete phase within the day/night cycle
-    |-- Season             — seasonal modulation of weather probabilities
-
-Usage:
-    ws = get_weather_system()
-    ws.set_weather(WeatherType.RAIN, WeatherIntensity.MODERATE, 120.0, 0.0)
-    ws.set_day_night_cycle(86400.0, 21600.0, 64800.0)
-    ws.advance_time(60.0)
-    modifiers = ws.get_gameplay_modifiers()
-"""
+SparkLabs Engine - Dynamic Weather and Environment System"""
 
 from __future__ import annotations
 

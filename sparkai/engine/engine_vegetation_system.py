@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - Vegetation & Foliage Placement System
-
-Procedural vegetation distribution system that manages the placement,
-density, and rendering of foliage across game terrain, integrated with the
-AI-native SparkLabs engine.
-
-Core capabilities:
-  - Species registry for trees, grass, bushes, flowers, rocks, and more
-  - Biome-based distribution rules with configurable density
-  - Patch management for coherent clusters of vegetation instances
-  - Level-of-detail (LOD) selection driven by camera distance
-  - Wind animation parameters per species and global gust settings
-  - Seasonal variation with smooth transition blending
-  - Distribution pattern sampling (clustered, scattered, uniform,
-    dense patches, and linear arrangements)
-  - Event log for auditing species and patch lifecycle changes
-
-Architecture:
-  VegetationSystemEngine (Singleton)
-    |-- VegetationSpecies  -- a flora prototype (mesh, biome, density)
-    |-- VegetationPatch    -- a placed cluster of instances in the world
-    |-- WindSettings       -- global wind direction and gust parameters
-    |-- SeasonState        -- current season and transition progress
-    |-- VegetationStats    -- aggregate runtime statistics
-    |-- VegetationSnapshot -- immutable point-in-time state capture
-    |-- VegetationEvent    -- audit record for lifecycle changes
-
-All public methods are thread-safe. Obtain the singleton through
-``VegetationSystemEngine.get_instance()`` or the module-level
-``get_vegetation_system()`` helper.
-"""
+SparkLabs Engine - Vegetation & Foliage Placement System"""
 
 from __future__ import annotations
 

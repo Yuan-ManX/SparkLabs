@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Extension Runtime
-
-Plugin and extension management system for the AI-native game engine.
-Handles loading, unloading, enabling, disabling, and sandboxed execution
-of third-party extensions with permission-based access control.
-
-Architecture:
-  ExtensionRuntime
-    |-- Manifest Parser (validates extension metadata)
-    |-- Loader (dynamic module import with sandboxing)
-    |-- Lifecycle Manager (load/unload/enable/disable/error states)
-    |-- Permission Guard (scope-based access control)
-    |-- Discovery (filesystem scanning for extensions)
-
-Extension Scopes:
-  - GLOBAL: engine-wide extension affecting all scenes
-  - SCENE: per-scene extension with isolated state
-  - OBJECT: per-game-object extension (e.g., component plugins)
-"""
+SparkLabs Engine - Extension Runtime"""
 
 from __future__ import annotations
 

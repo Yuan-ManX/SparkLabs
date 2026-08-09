@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Visual Script Runtime
-
-Node-graph based visual programming runtime that transpiles node graphs
-into executable game code. Logic is represented as typed node trees and
-transpiled to target languages rather than interpreted at runtime.
-
-Architecture:
-  VisualScriptRuntime
-    |-- ScriptGraph (node graph container with connections and validation)
-    |-- ScriptNode (typed node with parameters, children, position)
-    |-- NodeParameter (typed parameter with default and description)
-    |-- NodeConnection (directed edge between node ports)
-    |-- ValidationIssue (structural and semantic graph problems)
-"""
+SparkLabs Engine - Visual Script Runtime"""
 
 from __future__ import annotations
 
