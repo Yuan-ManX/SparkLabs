@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Profile Loader
-
-Data-driven game configuration system for the SparkLabs
-AI-native game engine. Manages per-level settings, per-mode
-configurations, difficulty presets, and platform-specific overrides
-using a hierarchical profile system where child profiles inherit
-from parents and can override specific values.
-
-Architecture:
-  ProfileLoader (singleton)
-    |-- ConfigProfile (named configuration collections with inheritance)
-    |-- ConfigEntry (individual key/value configuration entries)
-    |-- ResolvedConfig (flattened inheritance chain resolution)
-    |-- ProfileScope (GLOBAL, PROJECT, LEVEL, GAME_MODE, etc.)
-    |-- ProfileMergeStrategy (OVERRIDE, MERGE_DEEP, APPEND_LISTS, etc.)
-
-Usage:
-  loader = get_profile_loader()
-  profile = loader.create_profile("levels/world1-1", ProfileScope.LEVEL)
-  loader.add_entry(profile.id, "gravity", 9.8, ValueType.FLOAT, "Gravity constant")
-  resolved = loader.resolve_profile(profile.id)
-  gravity = loader.get_value(profile.id, "gravity", default=10.0)
-"""
+SparkLabs Engine - Profile Loader"""
 
 from __future__ import annotations
 

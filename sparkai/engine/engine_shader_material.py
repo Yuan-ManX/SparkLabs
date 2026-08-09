@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Shader Material System
-
-Advanced shader and material system for creating, managing, and optimizing
-visual materials in the AI-native game engine. Provides a node-based shader
-graph, material templates, and AI-driven shader generation and optimization.
-
-Architecture:
-  ShaderMaterialSystem (Singleton)
-    |-- ShaderProgram (compiled shader with vertex/fragment stages)
-    |-- MaterialDefinition (material with shader and property bindings)
-    |-- ShaderGraph (node-based visual shader editor graph)
-    |-- ShaderNode (individual node in a shader graph)
-    |-- MaterialLibrary (organized collection of materials)
-    |-- ShaderOptimizer (AI-driven shader performance optimization)
-
-Material Features:
-  - Node-based shader graph editor
-  - PBR (Physically Based Rendering) material support
-  - Material variants and inheritance
-  - Runtime material property editing
-  - Shader compilation and caching
-  - AI-driven material generation from descriptions
-  - Performance profiling and optimization
-
-Usage:
-    sms = get_shader_material_system()
-    sms.initialize()
-
-    # Create a material
-    material = sms.create_material("glowing_crystal", {
-        "shader": "pbr_standard",
-        "properties": {"albedo": "#00FFFF", "emission": "#00FFAA", "emission_strength": 2.0},
-    })
-
-    # Generate shader from description
-    sms.generate_shader("Create a water shader with caustics and refraction")
-
-    # Apply material to entity
-    sms.apply_material("entity_123", "glowing_crystal")
-"""
+SparkLabs Engine - Shader Material System"""
 
 from __future__ import annotations
 

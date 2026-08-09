@@ -1,46 +1,5 @@
 """
-SparkLabs Engine - Game Object Lifecycle Model
-
-Full lifecycle manager for game entities with a component-based
-architecture. Every GameObject goes through Awake → Start → Update
-→ LateUpdate → Destroy phases, enabling AI agents to create and
-manage game entities predictably.
-
-Architecture:
-  GameObject
-    |-- Transform (position, rotation, scale in scene)
-    |-- Component (attachable behaviors with lifecycle hooks)
-    |-- Scene (parent scene reference for hierarchy)
-    |-- Tags (string tags for group lookup and filtering)
-    |-- Children (parent-child transform hierarchy)
-    |-- Lifecycle (state machine: INACTIVE → AWAKE → ACTIVE → DESTROYED)
-
-GameObject Lifecycle:
-  INACTIVE   → entity registered but not yet initialized
-  AWAKE      → Awake() called when scene loads / first frame
-  ACTIVE     → Update() every frame, LateUpdate() after physics
-  PAUSED     → entity still exists but does not receive Update
-  DESTROYED  → OnDestroy() called, removed from scene, marked for GC
-
-Component Lifecycle (parallel):
-  Awake()       → called once on object spawn (INACTIVE → AWAKE)
-  Start()       → called next frame after Awake (AWAKE → ACTIVE)
-  Update(dt)    → called every frame while ACTIVE
-  LateUpdate(dt)→ called every frame after Update, for camera/follow
-  OnDisable()   → when component disabled
-  OnDestroy()   → cleanup before removal
-
-Usage:
-    go = GameObject("Player", tags=["player", "character"])
-    go.transform.position = (100, 200)
-    go.add_component(SpriteRenderer)
-    go.add_component(PlatformerController)
-    go.start()
-    # ... per frame:
-    go.update(dt)
-    go.late_update(dt)
-    go.destroy()
-"""
+SparkLabs Engine - Game Object Lifecycle Model"""
 
 from __future__ import annotations
 

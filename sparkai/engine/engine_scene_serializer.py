@@ -1,18 +1,5 @@
 """
-SparkLabs Engine Scene Serializer
-
-Provides scene serialization and deserialization with versioning support.
-Scenes can be saved, loaded, diffed, and merged. Supports incremental
-saving with delta compression and backward compatibility.
-
-Core architecture:
-  - Scene Serialization: JSON/YAML scene export with binary asset references
-  - Scene Deserialization: Scene reconstruction from serialized data
-  - Versioning: Scene format version tracking with migration support
-  - Delta Compression: Incremental save with change tracking
-  - Scene Diffing: Compare two scene versions
-  - Scene Merging: Merge scene changes from multiple sources
-"""
+SparkLabs Engine Scene Serializer"""
 
 import threading
 import time

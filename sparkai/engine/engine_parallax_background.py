@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Parallax Background System
-
-Multi-layer parallax scrolling system with auto-tiling, camera tracking,
-and smooth scene transitions. Each parallax layer scrolls at independent
-rates relative to the camera, creating depth illusion in 2D scenes.
-Supports auto-scrolling layers, tint/tint opacity, and configurable
-tiling modes with seamless repetition.
-
-Architecture:
-  ParallaxBackgroundSystem
-    |-- ParallaxLayer (texture-backed layer with scroll/tile params)
-    |-- ParallaxScene (collection of ordered layers + camera binding)
-    |-- ParallaxConfig (global parallax settings and smoothing)
-
-Scroll Pipeline:
-  1. Receive camera position from the active scene's camera entity
-  2. For each enabled layer, compute parallax offset
-  3. Apply auto-scroll delta if configured
-  4. Generate tile UV offsets for the current viewport
-  5. Perform cross-scene transition interpolation when active
-"""
+SparkLabs Engine - Parallax Background System"""
 
 from __future__ import annotations
 

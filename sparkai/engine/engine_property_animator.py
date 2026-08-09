@@ -1,42 +1,5 @@
 """
-SparkLabs Engine - Property Animator
-
-Universal property animator that can animate any property of any object.
-Animation clips compose one or more tracks, each binding a target object
-and property name to a start/end value over a duration. A library of
-interpolation curves and loop modes is provided.
-
-Architecture:
-  PropertyAnimator (Singleton)
-    |-- AnimationCurve (interpolation curves)
-    |-- AnimationLoop  (looping modes)
-    |-- AnimationTrack (a single animated property binding)
-    |-- AnimationClip  (a collection of tracks played together)
-    |-- PropertyAnimatorSnapshot (immutable snapshot of system state)
-
-Lifecycle:
-  1. create_clip(name) -> AnimationClip
-  2. add_track(clip_id, track) -> AnimationTrack
-  3. play(clip_id) -> bool / pause(clip_id) / stop(clip_id)
-  4. update(delta_time) -> List[str] (completed clip ids)
-  5. get_snapshot() -> PropertyAnimatorSnapshot
-  6. reset() -> None
-
-Usage:
-    animator = get_property_animator()
-    clip = animator.create_clip("fade_in")
-    track = AnimationTrack(
-        target_object=my_sprite,
-        property_name="alpha",
-        start_value=0.0,
-        end_value=1.0,
-        duration=2.0,
-        curve=AnimationCurve.EASE_IN_OUT,
-    )
-    animator.add_track(clip.clip_id, track)
-    animator.play(clip.clip_id)
-    completed = animator.update(0.016)
-"""
+SparkLabs Engine - Property Animator"""
 
 from __future__ import annotations
 

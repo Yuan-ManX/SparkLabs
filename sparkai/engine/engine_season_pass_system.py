@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Season Pass System
-
-Manages seasonal progression tracks with free and premium reward paths,
-daily/weekly challenges, tier-based unlocks, XP earning, and season
-metadata. Players earn season XP through gameplay and challenges to
-progress through tiers, unlocking cosmetic and gameplay rewards.
-
-Architecture:
-  SeasonPassSystem (singleton)
-    |-- SeasonTrack, ChallengeType, ChallengeStatus, SeasonStatus,
-       SeasonEventKind
-    |-- SeasonReward, SeasonTier, SeasonChallenge, PlayerSeasonProgress,
-       ChallengeCompletion, SeasonDefinition, SeasonConfig, SeasonStats,
-       SeasonSnapshot, SeasonEvent
-    |-- get_season_pass_system
-
-Core Capabilities:
-  - register_season / remove_season / get_season / list_seasons
-  - start_season / end_season / get_active_season
-  - register_tier / get_tier / list_tiers
-  - register_reward / remove_reward / get_reward / list_rewards
-  - register_challenge / remove_challenge / get_challenge / list_challenges
-  - register_player / get_player_progress / list_player_progress
-  - add_season_xp / claim_tier_reward / claim_challenge_reward
-  - complete_challenge / reset_challenge_progress
-  - purchase_premium / get_premium_status
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`SeasonPassSystem.get_instance` or the module-level
-:func:`get_season_pass_system` factory.
-"""
+SparkLabs Engine - Season Pass System"""
 
 from __future__ import annotations
 

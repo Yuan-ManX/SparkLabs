@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Game Telemetry
-
-Analytics and telemetry collection system for AI-native game
-engine. Tracks player behavior, performance metrics, gameplay
-events, and session data to enable data-driven game design
-decisions and AI-powered adaptation.
-
-Architecture:
-  TelemetryEngine
-    |-- EventTracker (capture gameplay events with context)
-    |-- SessionRecorder (per-player session data collection)
-    |-- PerformanceMonitor (FPS, memory, load times)
-    |-- AggregationPipeline (batch aggregate events for analysis)
-    |-- HeatmapGenerator (spatial player activity mapping)
-
-Event Categories:
-  - PLAYER: movement, actions, item usage
-  - COMBAT: damage dealt, kills, deaths
-  - PROGRESSION: level ups, quest completion, unlocks
-  - ECONOMY: currency earn/spend, trade, purchases
-  - SYSTEM: errors, crashes, performance drops
-"""
+SparkLabs Engine - Game Telemetry"""
 
 from __future__ import annotations
 

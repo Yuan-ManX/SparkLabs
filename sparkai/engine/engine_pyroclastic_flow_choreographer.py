@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Pyroclastic Flow Choreographer
-
-The PyroclasticFlowChoreographer treats a volcanic eruption as a choreographed
-dance of fragment flows. Each flow is a performer: ash columns rise and stage,
-lava bombs arc along ballistic trajectories, and surge currents route downhill
-as turbulent density currents. The choreographer assigns each flow a timing, a
-stage position, and a trajectory; reconciles where they intersect; and emits
-the full choreography so the editor can preview the eruption as a coordinated
-sequence of fragment-flow motions.
-
-This is original SparkLabs work. Pyroclastic fragment flows are first-class
-choreographed performers: their column heights, ballistic arcs, surge runouts,
-and intersections are computed each cycle, and the editor previews them as a
-staged eruption sequence.
-
-Architecture:
-  STAGE_ASH_COLUMN        ->  PLAN_LAVA_BOMB_ARCS  ->  ROUTE_SURGE_CURRENTS  ->  RECONCILE_TRAJECTORIES  ->  EMIT_CHOREOGRAPHY
-  (stage ash columns        (plan ballistic lava-    (route pyroclastic        (reconcile intersecting     (emit the full
-   from mass flux and       bomb arcs: launch        density currents          trajectories; detect        choreography map
-   buoyancy; mark           angle, muzzle velocity,  downhill: runout,         collisions and merging      with staged flows,
-   collapse candidates)     apex, range)             velocity, class)          dispersal)                  arcs, routes, timing)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Pyroclastic Flow Choreographer"""
 
 from __future__ import annotations
 

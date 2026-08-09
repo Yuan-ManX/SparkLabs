@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Quantum Superposition Resolver
-
-The QuantumSuperpositionResolver models game-world states as quantum-like
-superpositions that collapse probabilistically upon observation. Locations,
-NPC intents, and item properties remain indeterminate until interaction
-forces collapse. A locked chest might be (empty | trapped | treasure) until
-opened; the resolver decides what it becomes only at the moment of
-observation.
-
-Two superposed states can interfere - constructively amplifying probability
-or destructively canceling it. Each eigenstate carries a complex amplitude;
-its squared magnitude is the probability of that outcome. Coherence decays
-over cycles so superpositions eventually decohere on their own, but an
-explicit observation forces immediate collapse.
-
-This is original SparkLabs work. Superpositions are first-class citizens
-of the world state: they are not placeholders to be filled later, they
-are the actual indeterminate fabric of the world until something looks.
-
-Architecture:
-  REGISTER_SUPERPOSITION  ->  EVOLVE  ->  INTERFERE  ->  COLLAPSE  ->  EMIT
-  (register superposition   (drift     (compute       (probabilistically  (emit resolved
-   fields for fresh          amplitudes interference      pick an           eigenstates
-   entities, normalize       toward     between           eigenstate        with their
-   amplitudes)               eigenstates overlapping        weighted by       probabilities)
-                            or maintain superpositions)    probability)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Quantum Superposition Resolver"""
 
 from __future__ import annotations
 

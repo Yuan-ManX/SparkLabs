@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Signal Bus
-
-Decoupled signal/event communication system providing a unified
-signal bus and observer pattern communication layer. Game systems
-communicate via typed signals without direct references, using
-namespace-isolated signal definitions, priority-ordered listener
-connections, and multiple emission strategies including synchronous,
-asynchronous, and batched atomic delivery.
-
-Architecture:
-  SignalBus
-    |-- SignalDefinition (typed signal metadata with parameter schema)
-    |-- SignalConnection (listener binding with priority and lifecycle)
-    |-- SignalEmission (discrete emission record with payload tracking)
-    |-- NamespaceRegistry (isolated signal spaces for modularity)
-    |-- EmissionRouter (priority-sorted, one-shot-aware delivery engine)
-
-Signal Flow:
-  1. define_signal(name, parameters, category, namespace) → signal_id
-  2. connect(signal_id, listener_id, callback, priority) → connection_id
-  3. emit(signal_id, payload, emitted_by) → delivery to all listeners
-  4. One-shot connections auto-disconnect after first successful delivery
-  5. emit_async dispatches non-blocking emission on a worker thread
-  6. batch_emit delivers multiple signals atomically under a single lock
-"""
+SparkLabs Engine - Signal Bus"""
 
 from __future__ import annotations
 

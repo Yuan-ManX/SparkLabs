@@ -1,10 +1,5 @@
 """
-SparkAI Physics Optimizer Engine - Advanced physics simulation optimization.
-
-Provides intelligent physics optimization including adaptive timestep
-control, collision detection optimization, spatial partitioning strategies,
-and constraint solver tuning for optimal physics performance.
-"""
+SparkAI Physics Optimizer Engine - Advanced physics simulation optimization."""
 
 from __future__ import annotations
 

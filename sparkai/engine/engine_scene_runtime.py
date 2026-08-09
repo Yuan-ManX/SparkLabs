@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Advanced Scene Runtime
-
-A comprehensive scene runtime system providing scene stack management,
-full lifecycle hooks, animated transitions, background preloading,
-pause/resume with state restoration, render layers, scene grouping,
-and scene state save/restore for the SparkLabs AI-native game engine.
-
-Architecture:
-  EngineSceneRuntime (Singleton)
-    |-- SceneDescriptor     — scene metadata with loading progress and stats
-    |-- SceneTransition     — animated transition between scenes
-    |-- SceneLayer          — render layer with camera and visibility
-    |-- SceneGroup          — logical grouping of related scenes
-    |-- SceneState          — serializable scene snapshot
-    |-- SceneStackEntry     — single entry in the scene stack
-    |-- SceneLifecycle (enum)    — full lifecycle state machine
-    |-- TransitionType (enum)    — visual transition effect types
-    |-- EasingType (enum)        — interpolation easing curves
-
-Scene Lifecycle:
-  UNLOADED → LOADING → LOADED → INITIALIZING → RUNNING
-  RUNNING → PAUSED → RESUMING → RUNNING
-  RUNNING/PAUSED → STOPPING → UNLOADING → UNLOADED
-
-Usage:
-    rt = get_engine_scene_runtime()
-    rt.register_scene("level_1", "scenes/level1.json")
-    rt.load_scene(desc_id)
-    rt.push_scene(desc_id, TransitionType.FADE)
-    rt.pause_scene()
-    rt.resume_scene()
-    rt.pop_scene(TransitionType.SLIDE_LEFT)
-"""
+SparkLabs Engine - Advanced Scene Runtime"""
 
 from __future__ import annotations
 

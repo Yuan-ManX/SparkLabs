@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Pathfinding Engine
-
-A comprehensive pathfinding and navigation system integrating multiple
-search algorithms, dynamic obstacle avoidance, hierarchical path
-planning, and flow field generation for crowd simulation.
-
-Architecture:
-  EnginePathfinding (Singleton)
-    |-- Grid A* (weighted tile-based A* with heap optimization)
-    |-- NavMesh Pathfinder (polygon-based navigation mesh routing)
-    |-- Flow Field Generator (Dijkstra-based vector fields for crowds)
-    |-- Hierarchical Planner (coarse-to-fine multi-resolution paths)
-    |-- Dynamic Obstacle Manager (runtime obstacle avoidance)
-    |-- Path Smoother (Catmull-Rom spline path post-processing)
-    |-- Steering Pipeline (seek/flee/arrive/wander behaviors)
-"""
+SparkLabs Engine - Pathfinding Engine"""
 
 from __future__ import annotations
 

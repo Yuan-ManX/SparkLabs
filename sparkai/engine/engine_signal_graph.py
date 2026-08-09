@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Signal Graph
-
-First-class signal/event graph system with introspectable connections.
-Provides a structured graph representation of signal sources, targets, and
-the connections that bind them. The graph is fully introspectable so that
-tooling (editors, LLM agents, debuggers) can query the topology of signal
-flow without inspecting individual participant internals.
-
-Architecture:
-  SignalGraph (Singleton)
-    |-- SignalNode        (a participant that may emit or receive signals)
-    |-- SignalConnection  (a directed link between a source and a target)
-    |-- SignalGraphSnapshot (immutable snapshot of the entire graph)
-
-Lifecycle:
-  1. register_node(node_id, node_name, signals) -> SignalNode
-  2. connect(source, signal, target, callback) -> SignalConnection
-  3. emit(source, signal, args) -> int (number of listeners notified)
-  4. disconnect(connection_id) -> bool
-  5. get_snapshot() -> SignalGraphSnapshot
-  6. reset() -> None
-
-Usage:
-    graph = get_signal_graph()
-    graph.register_node("player", "Player", ["moved", "damaged"])
-    graph.register_node("hud", "HUD", [])
-    graph.connect("player", "damaged", "hud", "on_player_damaged")
-    graph.emit("player", "damaged", {"amount": 25})
-"""
+SparkLabs Engine - Signal Graph"""
 
 from __future__ import annotations
 

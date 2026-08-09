@@ -1,52 +1,5 @@
 """
-SparkLabs Engine - Physics Joint and Constraint System
-
-A comprehensive physics joint and constraint management layer for the
-SparkLabs AI-native game engine. It provides a rich library of joint
-types (hinge, spring, piston, ball-socket, fixed, slider, cone-twist,
-custom), an integrated motor system with configurable torque and
-target velocity, damped spring behavior, angular and linear limits,
-breakable constraints that fail under configurable stress thresholds,
-joint chains for ragdolls, ropes, and mechanical linkages, an AI-driven
-parameter tuning pipeline for realistic physics, a configurable
-constraint solver, debug visualization data, and per-joint stress
-tracking for breakage detection.
-
-Architecture:
-  PhysicsJointConstraintSystem (Singleton)
-    |-- JointType / ConstraintType / JointStatus
-    |-- MotorMode / BreakCondition / JointAxis
-    |-- SolverType / JointEventKind
-    |-- JointAnchor / JointLimit / MotorConfig
-    |-- SpringConfig / BreakThreshold / JointBody
-    |-- PhysicsJoint / JointChain / JointConfig
-    |-- JointStats / JointSnapshot / JointEvent
-
-Design notes:
-  - Thread-safe singleton using double-checked locking with an RLock.
-  - All public mutating operations return structured tuples so callers
-    can branch on success without raising exceptions for expected
-    failures.
-  - Data structures serialize to plain dicts via to_dict() so they can
-    be handed to the AI narrative layer or persisted to save files.
-  - Seed data is loaded on first initialization so the engine has a
-    usable starting set of joint types, sample joints, and joint chains
-    available out of the box.
-  - AI parameter tuning uses a deterministic heuristic optimizer that
-    adjusts stiffness, damping, motor torque, and spring rest lengths
-    based on observed stress and stability metrics.
-
-Usage:
-    system = get_physics_joint_constraint_system()
-    joint = system.register_joint(
-        name="door_hinge",
-        joint_type=JointType.HINGE,
-        body_a_id="wall_01",
-        body_b_id="door_01",
-    )
-    report = system.tick(0.016)
-    system.ai_tune_parameters(joint.joint_id)
-"""
+SparkLabs Engine - Physics Joint and Constraint System"""
 
 from __future__ import annotations
 

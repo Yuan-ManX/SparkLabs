@@ -1,55 +1,5 @@
 """
-SparkLabs Engine - Quantum Entanglement Field
-
-The EngineQuantumEntanglementField models engine state as a field of
-quantum-entangled particles. Rather than treating game state as a
-deterministic set of variables that change discretely, it treats state
-as superpositions of possibilities that propagate correlations through
-entanglement, collapse into definite outcomes when measured, and
-decohere back into classical uncertainty over time.
-
-This quantum metaphor captures how game state actually behaves in
-living worlds: many outcomes coexist as possibilities until something
-forces a decision. Changes do not stay local, they ripple through
-entangled partners instantly. Decisions do not produce single outcomes,
-they produce probability distributions. And entanglement does not last
-forever, it decoheres as the world drifts back toward classical
-behavior, requiring fresh entanglement to maintain coherence.
-
-Core concepts:
-  - PARTICLE     : a quantum state holder in the engine field
-  - SUPERPOSITION: the probability amplitudes of possible states
-  - ENTANGLEMENT : a coupling where measuring one particle affects another
-  - COHERENCE    : how quantum-like the particle still is (0.0-1.0)
-  - MEASUREMENT  : an observation that collapses superposition
-  - DECOHERENCE  : the gradual loss of quantum properties over time
-
-Particle types:
-  QUBIT       : binary state particle, two-state superposition
-  QUTRIT      : ternary state particle, three-state superposition
-  OSCILLATOR  : wave-like particle, continuous phase superposition
-  ENTANGLER   : coupling particle, mediates entanglement between others
-  ANCHOR      : measurement anchor, stable particle that resists collapse
-
-Quantum events:
-  PARTICLE_BIRTH    : a new particle is added to the field
-  SUPERPOSITION_SET : a particle's superposition amplitudes are configured
-  ENTANGLEMENT_FORM : two particles become entangled
-  MEASUREMENT_EVENT : a particle is measured, collapsing its superposition
-  COLLAPSE_PROPAGATE: a collapse propagates to entangled partners
-  DECOHERENCE_DECAY : a particle loses coherence over time
-  FIELD_RECOHERE    : the field re-establishes coherence through entanglement
-
-Architecture:
-  SUPERPOSE  ->  ENTANGLE  ->  MEASURE  ->  COLLAPSE  ->  DECOHERE
-  (particles   (particles    (observing  (collapsed    (coherence
-   prepare     become         forces a    state         decays back
-   their       entangled      definite    propagates    toward
-   states)     through        outcome)    to partners)  classical
-               coupling)                                uncertainty)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Quantum Entanglement Field"""
 
 from __future__ import annotations
 

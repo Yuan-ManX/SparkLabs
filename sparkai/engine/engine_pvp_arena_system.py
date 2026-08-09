@@ -1,49 +1,5 @@
 """
-SparkLabs Engine - PvP Arena System
-
-A competitive PvP arena and duel system for the SparkLabs AI-native game
-engine. Manages arena sessions, matchmaking, ranked duels, tournaments,
-spectator mode, and seasonal rankings. Supports 1v1 duels, team battles,
-free-for-all skirmishes, and tournament brackets with seed-based matching.
-
-Each arena session is a timed combat instance between two or more players.
-The system tracks player ratings (Elo-style), win/loss records, kill/death
-stats, streaks, and seasonal ranking tiers. Matchmaking pairs players by
-rating proximity with configurable tolerance and wait-time widening.
-
-Architecture:
-  PvPArenaSystem (singleton)
-    |-- ArenaMode, ArenaState, MatchOutcome, ArenaEventKind
-    |-- ArenaPlayer, ArenaMatch, ArenaRound, ArenaSeason,
-       ArenaReward, TournamentBracket, BracketEntry, ArenaConfig,
-       ArenaStats, ArenaSnapshot, ArenaEvent
-    |-- get_pvp_arena_system
-
-Core Capabilities:
-  - register_player / remove_player / get_player / list_players: manage
-    arena participant profiles with ratings and records.
-  - create_match / cancel_match / get_match / list_matches: manage arena
-    combat sessions with modes (duel, team, ffa).
-  - start_match / end_match / submit_result: control match lifecycle and
-    record outcomes with rating adjustments.
-  - start_round / get_round: manage individual rounds within a match.
-  - find_match: matchmaking by rating proximity and mode preference.
-  - register_season / activate_season / end_season / get_season: manage
-    ranked seasons with tier definitions and reward tracks.
-  - register_tournament / start_tournament / advance_tournament: manage
-    bracket-style tournaments with seed entries.
-  - register_tournament_entry / remove_tournament_entry: add or remove
-    participants from a tournament bracket.
-  - tick: advance match timers, matchmaking queues, and season timers.
-  - set_config / get_config: global tuning for max matches, players, etc.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`PvPArenaSystem.get_instance` or the module-level
-:func:`get_pvp_arena_system` factory.
-"""
+SparkLabs Engine - PvP Arena System"""
 
 from __future__ import annotations
 

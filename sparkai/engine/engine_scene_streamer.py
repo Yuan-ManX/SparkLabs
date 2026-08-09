@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Scene Streamer
-
-Dynamic world streaming system that partitions large game worlds into
-manageable chunks and loads/unloads them based on camera proximity.
-Supports priority-based loading, preloading prediction, and smooth
-level-of-detail transitions for seamless open-world experiences.
-
-Architecture:
-  SceneStreamer
-    |-- ChunkManager (chunk lifecycle and memory management)
-    |-- LoadBalancer (prioritized async chunk loading)
-    |-- ProximityTracker (distance-based load/unload decisions)
-    |-- LODController (detail level transitions)
-    |-- PredictionEngine (predictive preloading based on movement)
-
-Streaming Policies:
-  - DISTANCE_BASED: load within radius, unload beyond
-  - PRIORITY_BASED: load high-priority chunks first
-  - PREDICTIVE: preload chunks ahead of camera direction
-  - LOD_BASED: load high-detail near, low-detail far
-"""
+SparkLabs Engine - Scene Streamer"""
 
 from __future__ import annotations
 

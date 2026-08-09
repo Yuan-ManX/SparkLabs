@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Pivot System
-
-Pivot point management for transform operations, supporting custom pivot
-positions, pivot snapping, multi-point pivots, and pivot-based animation
-anchors. Provides a unified interface for controlling how objects rotate,
-scale, and translate relative to configurable reference points.
-
-Architecture:
-  PivotSystem
-    |-- PivotPoint (per-node pivot definition with mode and space)
-    |-- PivotHandle (visual/interaction handle offset from pivot center)
-    |-- AnchorBinding (pivot-to-anchor linkage for skeletal/hierarchical setups)
-    |-- PivotGroup (multi-node pivots with shared transform application)
-
-Pivot Features:
-  - MODES: center, corners, edges, custom, and anchor-point positioning
-  - SPACES: local and global coordinate systems for pivot placement
-  - SNAPPING: automatic pivot repositioning to predefined target modes
-  - HANDLES: offset handles for visual manipulation with color and size
-  - ANCHORS: binding pivots to bones, handles, or custom attachments
-  - GROUPS: multi-selection pivots with synchronized transform application
-  - CONSTRAINTS: free, horizontal, vertical, and axial movement constraints
-"""
+SparkLabs Engine - Pivot System"""
 
 from __future__ import annotations
 

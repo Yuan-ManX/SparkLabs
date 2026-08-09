@@ -1,37 +1,5 @@
 """
-SparkLabs Engine - Projectile System
-
-A runtime projectile simulation core for the SparkLabs AI-native game engine.
-It manages projectile types (bullets, arrows, spell bolts, thrown items) with
-trajectory patterns ranging from linear and ballistic gravity-drop to homing
-and spiral paths. The system handles piercing, ricochet, splash-damage falloff,
-team-affiliation filtering, lifecycle expiry, and per-projectile object pooling.
-Designed for high-volume combat scenes without per-frame allocation churn.
-
-Architecture:
-  ProjectileSystem (singleton)
-    |-- ProjectileType, ProjectileInstance, SplashFalloff,
-       ProjectileStats, ProjectileSnapshot, ProjectileEvent
-    |-- ProjectileTrajectory, ProjectileStatus, ProjectileEventKind
-
-Core Capabilities:
-  - register_type / get_type / list_types / update_type / remove_type:
-    projectile type lifecycle with speed, drag, gravity, and payload.
-  - spawn_projectile / get_projectile / list_projectiles / remove_projectile:
-    instance lifecycle with owner, team, and target.
-  - tick: advance simulation by a delta time, integrating trajectories and
-    resolving collisions, pierce counts, and expiry.
-  - set_target / clear_target: runtime homing target assignment.
-  - register_splash_falloff / get_splash_falloff / list_splash_falloffs:
-    splash-damage curves keyed by projectile type.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`ProjectileSystem.get_instance` or the module-level
-:func:`get_projectile_system` factory.
-"""
+SparkLabs Engine - Projectile System"""
 
 from __future__ import annotations
 

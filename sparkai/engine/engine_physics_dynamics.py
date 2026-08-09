@@ -1,10 +1,5 @@
 """
-SparkLabs Engine Physics Dynamics
-
-2D rigidbody physics system with impulse-based dynamics, collision detection,
-and constraint solving. Supports gravity, friction, and continuous collision
-resolution.
-"""
+SparkLabs Engine Physics Dynamics"""
 
 from __future__ import annotations
 

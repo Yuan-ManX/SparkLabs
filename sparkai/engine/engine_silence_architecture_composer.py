@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Silence Architecture Composer
-
-The EngineSilenceArchitectureComposer models silence and pauses as
-structural meaning rather than the absence of meaning. In speech and in
-action, what is not said carries weight; what is not done carries intent.
-A pause is not a gap - it is a load-bearing element of the architecture
-of communication.
-
-Each silence has a type (a caesura, a hesitation, a reverence, a grief)
-and a function (structural, emotional, rhetorical, regulative, symbolic).
-When a silence enters an agent's acoustic space it suspends the current
-flow, resonates with interpretation, either dissolves back into sound or
-persists as absence, and finally accrues into the agent's voice
-architecture - shaping how the agent pauses in the future.
-
-Architecture:
-  HUSH      ->  SUSPEND    ->  RESONATE   ->  DISSOLVE  ->  ACCRUE
-  (a silence  (the silence   (the silence   (the silence  (accrued
-   enters the  suspends the   resonates      dissolves     silence
-   agent's     current flow,  with meaning,  back into     shapes the
-   acoustic    opening a      interpreted    sound or      agent's
-   space)      structural     by its          persists as    voice
-               gap)           function)      absence)       architecture)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Silence Architecture Composer"""
 
 from __future__ import annotations
 

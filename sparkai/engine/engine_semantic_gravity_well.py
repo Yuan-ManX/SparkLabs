@@ -1,45 +1,5 @@
 """
-SparkLabs Engine - Semantic Gravity Well
-
-The EngineSemanticGravityWell models how meaning creates gravitational
-fields in the game world. Rather than treating semantics as labels
-attached to objects, the well treats meaning as a physical force: dense
-clusters of related meaning create gravity wells that attract related
-concepts, pull in wandering narrative fragments, and repel contradictory
-meanings that stray too close.
-
-Meaning in a game world is not inert - it exerts force. A tavern is not
-just a building labeled "tavern"; it is a gravity well of social meaning
-that attracts rumors, encounters, and sleep-seeking travelers. A dragon's
-lair is a gravity well of danger-meaning that repels the cautious and
-attracts the greedy. The well models this: each semantic mass creates a
-field that shapes the flow of narrative, the placement of encounters,
-and the drift of player attention.
-
-The well models three forces:
-  - Attraction: semantically related masses pull toward each other,
-    forming clusters (a tavern attracts rumors, a forest attracts mystery)
-  - Repulsion: semantically contradictory masses push apart (safety
-    repels danger, order repels chaos)
-  - Tidal Force: when two large wells pass near each other, tidal forces
-    stretch smaller masses between them (a village between a dragon's
-    lair and a holy temple is torn between fear and faith)
-
-This produces a game world where meaning is genuinely physical - where
-the geography of significance shapes itself through gravitational
-interaction, and where the player's movement through the world is
-constantly shaped by the pull of meaning.
-
-Architecture:
-  MASS     ->  ATTRACT  ->  REPEL    ->  TIDAL    ->  COLLAPSE
-  (semantic (related    (contradict- (large wells (over-dense
-   masses   masses pull ictory       stretch       wells collapse
-   form     toward each  masses push small masses  into singular-
-   gravity  other)       apart)       between them) ities, shedding
-   wells)                                           excess meaning)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Semantic Gravity Well"""
 
 from __future__ import annotations
 

@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Scene Tree System
-
-Hierarchical scene graph management for the SparkLabs AI-native game
-engine. Provides node parenting, scene lifecycle, node group management,
-and scene switching. The architecture uses a flat-dict node storage
-model and parent-child ID references.
-
-Architecture:
-  SceneTree (singleton, thread-safe)
-    |-- SceneNode (dataclass) — individual node in the tree
-    |-- NodeType (enum) — node classification
-    |-- NodeLifecycle (enum) — node lifecycle state machine
-    |-- Root node → children form the full scene graph
-
-Usage:
-    st = get_scene_tree()
-    st.initialize()
-    player = st.create_node("Player", NodeType.ENTITY, st.get_root().id)
-    st.add_tag(player.id, "player")
-    st.move_node(player.id, {"x": 10.0, "y": 0.0, "z": 5.0})
-    tree = st.get_scene_graph()
-    st.shutdown()
-"""
+SparkLabs Engine - Scene Tree System"""
 
 from __future__ import annotations
 

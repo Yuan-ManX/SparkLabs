@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Game Server Architecture
-
-Dedicated server process pool managing isolated server instances for
-rendering, physics, audio, networking, and AI subsystems. Provides
-server lifecycle orchestration, health monitoring, load-aware
-allocation, elastic scaling policies, and inter-server communication
-coordination.
-
-Architecture:
-  GameServerPool
-    |-- ServerInstance (individual server node representation)
-    |-- ServerProcess (OS-level process tracking and binding)
-    |-- HealthCheck (periodic resource and performance monitoring)
-    |-- LoadBalancer (per-role auto-scaling and distribution logic)
-
-Pool Features:
-  - SPAWN: dedicate server processes per subsystem role
-  - HEALTH: cpu, memory, latency, and throughput pulse checks
-  - ALLOCATE: capacity-aware server selection for incoming work
-  - SCALE: fixed, elastic, on-demand, and predictive scaling policies
-  - MONITOR: cluster-wide status overview and statistics
-  - RECOVER: automated restart, drain, and crash handling
-"""
+SparkLabs Engine - Game Server Architecture"""
 
 from __future__ import annotations
 

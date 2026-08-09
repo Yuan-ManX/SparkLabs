@@ -3,31 +3,7 @@ SparkLabs Engine - 2D Physics Simulation World
 Complete 2D physics simulation system with rigid body dynamics,
 collision detection, force application, and constraint solving.
 Supports multiple body types, collision shapes, material properties,
-and physics joints for constrained motion between bodies.
-
-Architecture:
-  EnginePhysicsWorld2D (singleton)
-    |-- PhysicsWorld2D (isolated simulation world)
-    |   |-- RigidBody2D (individual rigid body)
-    |   |-- PhysicsJoint (constraint between bodies)
-    |   |-- CollisionEvent (collision contact information)
-    |   |-- RayCastResult (ray intersection query result)
-    |-- Broad-phase spatial partitioning
-    |-- Narrow-phase collision detection
-    |-- Impulse-based collision resolution
-    |-- Sequential impulse constraint solving
-
-Features:
-  - Multiple body types (static, dynamic, kinematic, trigger)
-  - Multiple collision shapes (box, circle, polygon, capsule, etc.)
-  - Collision filtering via category/mask system
-  - Various force modes (impulse, constant, acceleration, velocity change)
-  - Predefined physics materials with friction and restitution
-  - Built-in collision matrix presets for common game object types
-  - Continuous collision detection for fast-moving objects
-  - Sleeping optimization for inactive bodies
-  - Performance metrics collection and reporting
-"""
+and physics joints for constrained motion between bodies."""
 
 from __future__ import annotations
 

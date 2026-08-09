@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Physics World Simulation System
-
-A complete physics simulation engine for the AI-native game engine.
-Provides rigid body dynamics, force application, collision detection
-and resolution, constraint solving, and particle physics. Supports
-broad-phase spatial hashing and narrow-phase shape intersection tests
-for efficient collision handling.
-
-Architecture:
-  PhysicsWorldEngine (Singleton)
-    |-- PhysicsBody       — rigid body with position, rotation, velocity, mass
-    |-- PhysicsForce      — global force field definition
-    |-- PhysicsConstraint — joint/constraint between two bodies
-    |-- CollisionEvent    — recorded collision data per event
-
-Collision Pipeline:
-  1. Broad Phase  — spatial hash grid culling
-  2. Narrow Phase — shape-specific intersection tests
-  3. Resolution   — impulse-based contact resolution
-  4. Constraints  — joint iteration after collision response
-"""
+SparkLabs Engine - Physics World Simulation System"""
 
 from __future__ import annotations
 

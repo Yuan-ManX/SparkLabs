@@ -1,11 +1,5 @@
 """
-SparkLabs Engine - Profession & Class System
-
-Provides character class definitions with abilities, talent trees,
-class switching, profession mastery, and crafting profession specializations.
-Designed as a self-contained singleton system with seed data for
-immediate integration testing.
-"""
+SparkLabs Engine - Profession & Class System"""
 
 from __future__ import annotations
 

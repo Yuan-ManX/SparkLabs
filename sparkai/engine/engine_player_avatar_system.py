@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Player Avatar System
-
-AI-native player avatar customization engine for the SparkLabs game platform.
-The system lets players assemble richly customizable avatars from modular
-parts, apply curated outfits, drive idle and emotive animations, strike
-poses, save reusable presets, and share their creations across social and
-export channels. A procedural thumbnail generator produces deterministic
-preview imagery so avatars can be rendered without a live GPU pipeline.
-
-Architecture:
-  PlayerAvatarSystem (singleton)
-    |-- AvatarPart, AvatarOutfit, PlayerAvatar, AvatarAnimation, AvatarPose,
-        AvatarPreset, AvatarShareLink, AvatarSystemConfig, AvatarSystemStats,
-        AvatarSystemSnapshot, AvatarSystemEvent
-    |-- AvatarPartType, AvatarCategory, AnimationType, PoseType, RarityTier,
-        ColorScheme, AvatarStatus, SharePlatform
-
-Core Capabilities:
-  - register_part / get_part / list_parts / update_part / remove_part: manage
-    the catalog of modular avatar components (heads, hair, bodies, accessories,
-    backgrounds, frames, effects) with rarity, color scheme, and unlock rules.
-  - create_outfit / get_outfit / list_outfits / update_outfit / remove_outfit:
-    curate named bundles of parts that players can apply in a single step.
-  - create_avatar / get_avatar / list_avatars / update_avatar / remove_avatar:
-    assemble and maintain per-player avatars with parts, outfit, animation,
-    pose, background, frame, status, and metadata.
-  - register_animation / get_animation / list_animations / remove_animation:
-    maintain the library of avatar animations (idle, wave, dance, jump, etc.).
-  - register_pose / get_pose / list_poses / remove_pose: maintain static pose
-    definitions with bone data for skeletal rendering.
-  - create_preset / get_preset / list_presets / apply_preset / remove_preset:
-    save reusable avatar configurations and instantiate avatars from them.
-  - set_avatar_part / remove_avatar_part / set_avatar_animation /
-    set_avatar_pose: fine-grained avatar mutation endpoints.
-  - share_avatar / get_share_link / list_share_links / revoke_share: create
-    expiring share links for social media, image export, video export, embed,
-    and internal channels.
-  - feature_avatar / unfeature_avatar: promote or demote avatars to featured
-    status for community showcases.
-  - generate_thumbnail: produce a deterministic procedural thumbnail for an
-    avatar without requiring a rendering backend.
-  - list_events / get_status / get_stats / get_snapshot / get_config /
-    set_config / tick / reset: observability, tuning, and lifecycle control.
-"""
+SparkLabs Engine - Player Avatar System"""
 
 from __future__ import annotations
 

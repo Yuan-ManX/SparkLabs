@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - GPU-Friendly Particle Emitter System
-
-A GPU-friendly particle emitter system that manages the full lifecycle of
-particle emitters, individual particle simulation, and frame-by-frame
-updates. Supports multiple emission shapes, blend modes, simulation spaces,
-and emitter lifetime modes for building explosions, trails, ambient effects,
-and custom visual phenomena.
-
-Architecture:
-  EngineParticleSystem (Singleton)
-    |-- Particle           — per-particle state (position, velocity, color, size)
-    |-- EmitterConfig      — emission configuration (shape, rate, lifetime, blend)
-    |-- EmitterState       — runtime emitter tracking
-    |-- ParticleReport     — aggregate statistics snapshot
-
-Usage:
-    ps = get_particle_system()
-    config = EmitterConfig(name="fire", emission_shape=EmissionShape.CONE,
-        emission_rate=80.0, max_particles=400)
-    state = ps.create_emitter(config, 100.0, 200.0)
-    all_particles = ps.update_all(0.016)
-"""
+SparkLabs Engine - GPU-Friendly Particle Emitter System"""
 
 from __future__ import annotations
 

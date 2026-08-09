@@ -1,43 +1,5 @@
 """
-SparkLabs Engine - Player Journey Engine
-
-Tracks and analyzes the journeys that players take through a game. A
-"journey" is a chronologically ordered sequence of ``JourneyStage``
-visits, ``TouchPoint`` interactions, ``EngagementLevel`` readings,
-``EmotionSignal`` snapshots and ``FunnelPhase`` transitions recorded
-for a single play session. The engine records everything as
-``JourneyEvent`` audit entries, computes aggregate ``JourneyStats``
-and supports snapshotting the entire state for offline analysis or
-time-travel debugging of the player experience.
-
-Architecture:
-  PlayerJourneyEngine (singleton)
-    |-- JourneySession, StageTransition, TouchpointEvent,
-        EngagementReading, EmotionSnapshot, FunnelState,
-        JourneyStats, JourneySnapshot, JourneyEvent
-    |-- JourneyStage, TouchPoint, EngagementLevel, FunnelPhase,
-        EmotionSignal, DropOffReason, JourneyEventKind
-
-Core Capabilities:
-  - start_session / end_session: lifecycle management for play
-    sessions, with an optional drop-off stage on end.
-  - record_stage_transition / record_touchpoint / record_engagement /
-    record_emotion: per-session data capture.
-  - create_funnel / advance_funnel / complete_funnel /
-    record_drop_off: marketing-style funnels with phase transitions.
-  - get_sessions / get_session / get_transitions / get_touchpoints /
-    get_engagement_readings / get_emotion_snapshots / get_funnels:
-    accessor helpers that return copies of the underlying stores.
-  - list_events / get_stats / get_status / get_snapshot:
-    observability and serialization.
-  - reset: clear all stores and re-seed with default data.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`PlayerJourneyEngine.get_instance` or the module-level
-:func:`get_player_journey` factory. All public methods are guarded by
-the re-entrant lock.
-"""
+SparkLabs Engine - Player Journey Engine"""
 
 from __future__ import annotations
 

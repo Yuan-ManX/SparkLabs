@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Physics Material Library
-
-Surface-based collision response and interaction properties system.
-Defines physical surface types, pairwise material interactions,
-contact response computation, and material templating for rapid
-prototyping of physics behaviors.
-
-Architecture:
-  PhysicsMaterialLibrary
-    |-- MaterialRegistry (catalog of named surface materials)
-    |-- InteractionMatrix (pairwise material-to-material response curves)
-    |-- ContactSolver (impact response computation from material pairs)
-    |-- TemplateManager (material presets with override application)
-    |-- FrictionEngine (model-aware friction coefficient calculation)
-
-Material Properties:
-  - DENSITY: mass per unit volume (kg/m^3)
-  - FRICTION: coefficient of friction (0.0 to 1.0+)
-  - RESTITUTION: bounciness coefficient (0.0 to 1.0)
-  - ROUGHNESS: surface micro-texture scale
-  - HARDNESS: resistance to deformation
-"""
+SparkLabs Engine - Physics Material Library"""
 
 from __future__ import annotations
 

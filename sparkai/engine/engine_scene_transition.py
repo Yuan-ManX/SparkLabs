@@ -1,19 +1,5 @@
 """
-SparkLabs Engine - Scene Transition System
-
-A scene loading and unloading system providing transition effects,
-easing curves, resource lifecycle management, and additive scene
-compositing for seamless gameplay flow.
-
-Architecture:
-  EngineSceneTransition (Singleton)
-    |-- TransitionConfig  — effect, duration, easing, and direction
-    |-- SceneDescriptor   — scene metadata with dependencies and load mode
-    |-- SceneInstance     — runtime scene state with loading progress
-    |-- TransitionState   — active transition tracking elapsed and progress
-    |-- TransitionResult  — outcome of a completed transition
-    |-- SceneStats        — aggregate telemetry across all scenes
-"""
+SparkLabs Engine - Scene Transition System"""
 
 from __future__ import annotations
 

@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Quantum State Projector
-
-The EngineQuantumStateProjector models game objects as existing in quantum
-superposition - multiple potential states simultaneously - until an
-observation collapses the wave function into a definite state.
-
-This quantum metaphor enables genuinely unpredictable but coherent game
-worlds: a treasure chest exists in a superposition of (empty, trapped,
-filled) until a player opens it; an NPC exists in a superposition of
-(friendly, hostile, neutral) until the player engages in conversation;
-a door exists in a superposition of (locked, unlocked, broken) until
-someone tries to open it.
-
-Quantum entanglement links object states: two entangled chests will
-always yield opposite results when opened, regardless of distance.
-Quantum tunneling allows objects to probabilistically transition between
-states without passing through intermediate states. Decoherence causes
-superpositions to naturally decay toward definite states over time.
-
-Architecture:
-  SUPERPOSE  ->  ENTANGLE  ->  EVOLVE   ->  DECOHERE  ->  COLLAPSE
-  (objects       (link object    (wave       (natural        (observations
-   enter          states so        functions   decoherence     collapse wave
-   superposition) collapsing      evolve      toward definite  functions into
-                   one affects      over time) states)         definite states)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Quantum State Projector"""
 
 from __future__ import annotations
 

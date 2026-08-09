@@ -1,17 +1,5 @@
 """
-SparkLabs Engine - Scene Stack
-
-A singleton scene management system for the SparkLabs game engine.
-Provides hierarchical scene loading, unloading, persistence,
-transition effects, and a scene stack for overlay/popup navigation.
-Supports async scene streaming for seamless level transitions.
-
-Architecture:
-  SceneStack (singleton)
-    |-- SceneNode (individual scene with entity tree and state)
-    |-- SceneTransition (crossfade, wipe, zoom transition config)
-    |-- SceneSnapshot (serializable scene state for save/load)
-"""
+SparkLabs Engine - Scene Stack"""
 
 from __future__ import annotations
 

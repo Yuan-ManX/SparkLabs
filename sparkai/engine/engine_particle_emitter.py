@@ -1,17 +1,5 @@
 """
-SparkLabs Engine - Particle Emitter
-
-A singleton GPU-optimized particle system for the SparkLabs game
-engine. Provides billboarded sprite particles with configurable
-emitters, force fields, and a library of preset visual effects.
-Uses object pooling for minimal allocation overhead.
-
-Architecture:
-  ParticleEmitter (singleton)
-    |-- Particle (individual particle state: position, velocity, life)
-    |-- EmitterConfig (spawn rate, shape, color gradients, lifetime)
-    |-- ParticlePool (pre-allocated particle buffer with recycling)
-"""
+SparkLabs Engine - Particle Emitter"""
 
 from __future__ import annotations
 

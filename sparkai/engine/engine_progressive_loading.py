@@ -1,42 +1,5 @@
 """
-SparkLabs Engine - Progressive World Loading and Streaming System
-
-Advanced progressive world loading engine that dynamically streams terrain
-chunks, game objects, and asset data into the runtime environment. Utilizes
-spatial priority-based scheduling, view-frustum culling, predictive trajectory
-preloading, memory budget enforcement, and smooth LOD transitions to deliver
-seamless open-world experiences at any scale.
-
-Core capabilities:
-  - Spatial chunk partitioning with grid-based world decomposition
-  - Priority-driven asynchronous chunk loading and unloading
-  - View-frustum and occlusion-based visibility computation
-  - Camera trajectory prediction for anticipatory preloading
-  - Memory budget management with intelligent eviction policies
-  - Smooth level-of-detail transitions with configurable fade parameters
-  - Predefined streaming presets for performance, balanced, and quality modes
-
-Architecture:
-  EngineProgressiveLoading (Singleton)
-    |-- WorldChunk (dataclass)        — individual world partition unit
-    |-- LoadingQueue (dataclass)       — prioritized load operation queue
-    |-- StreamingConfig (dataclass)    — tunable streaming parameters
-    |-- LODTransition (dataclass)      — detail level transition descriptor
-    |-- ChunkState (enum)              — chunk lifecycle states
-    |-- PriorityLevel (enum)           — loading urgency tiers
-    |-- load_chunk() / unload_chunk()
-    |-- prioritize_chunks()
-    |-- compute_chunk_visibility()
-    |-- manage_memory_budget()
-    |-- smooth_lod_transition()
-    |-- preload_predicted_chunks()
-    |-- get_stats()
-
-Streaming Presets:
-  - PERFORMANCE: low view distance, aggressive memory limits, fast loads
-  - BALANCED: moderate settings for consistent frame rates
-  - QUALITY: extended view distance, high detail, larger memory budget
-"""
+SparkLabs Engine - Progressive World Loading and Streaming System"""
 
 from __future__ import annotations
 

@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Player Housing System
-
-Manages player housing plots, house construction, furniture placement,
-room customization, visitor management, neighborhood communities, and
-housing rating systems. Players acquire plots, build houses, decorate
-interiors with furniture, invite visitors, and participate in housing
-communities with scoring and leaderboards.
-
-Architecture:
-  PlayerHousingSystem (singleton)
-    |-- PlotSize, HouseStyle, FurnitureCategory, FurniturePlacement,
-       VisitorStatus, PermissionLevel, HousingEventKind
-    |-- FurnitureItem, HouseTemplate, HousingPlot, PlacedFurniture,
-       RoomCustomization, VisitorEntry, PlayerHousing, Neighborhood,
-       HousingConfig, HousingStats, HousingSnapshot, HousingEvent
-    |-- get_player_housing_system
-
-Core Capabilities:
-  - register_plot_template / remove_plot_template / get_plot_template / list_plot_templates
-  - register_house_template / remove_house_template / get_house_template / list_house_templates
-  - register_furniture / remove_furniture / get_furniture / list_furniture
-  - acquire_plot / release_plot / get_plot / list_player_plots
-  - build_house / demolish_house / upgrade_house
-  - place_furniture / remove_furniture_from_plot / move_furniture
-  - customize_room / get_room_customization
-  - invite_visitor / remove_visitor / list_visitors / set_permission
-  - register_neighborhood / join_neighborhood / leave_neighborhood
-  - rate_housing / get_rating / list_top_rated
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`PlayerHousingSystem.get_instance` or the module-level
-:func:`get_player_housing_system` factory.
-"""
+SparkLabs Engine - Player Housing System"""
 
 from __future__ import annotations
 

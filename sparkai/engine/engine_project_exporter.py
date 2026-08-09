@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Project Exporter
-
-Multi-platform game export pipeline that packages complete game projects
-for distribution. Handles asset optimization, code bundling, platform-
-specific configuration, and produces ready-to-distribute packages.
-
-Architecture:
-  ProjectExporter
-    |-- PlatformConfigurator (target-specific settings)
-    |-- AssetBundler (texture/audio/model optimization and packaging)
-    |-- CodeBundler (script compilation and minification)
-    |-- PackageAssembler (final executable/package creation)
-    |-- ValidationChecker (pre-export integrity verification)
-
-Export Targets:
-  - WEB: HTML5/WebGL browser deployment
-  - WINDOWS: native Windows executable
-  - MACOS: native macOS application bundle
-  - LINUX: native Linux binary
-  - ANDROID: Android APK/AAB package
-  - IOS: iOS application archive
-"""
+SparkLabs Engine - Project Exporter"""
 
 from __future__ import annotations
 

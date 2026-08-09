@@ -1,42 +1,5 @@
 """
-SparkLabs Engine - Quantum Reality Forge
-
-The EngineQuantumRealityForge models how game reality is forged from a
-quantum foam of possibilities. Rather than treating the game world as a
-single deterministic state, the forge treats it as a superposition of
-competing possibility-states that entangle, anneal, and collapse into
-the experienced reality.
-
-Reality in a game world is not a single thread of "what is" - it is a
-field of "what could be" that the engine constantly forges into "what
-is now." Each region, each NPC, each event exists as a cloud of
-possibility amplitudes that interfere, entangle, and eventually collapse
-into the actual game state the player experiences.
-
-The forge models four quantum operations:
-  - Superposition: maintain multiple possibility-states for one entity
-  - Entanglement: link two entities so collapsing one affects the other
-  - Annealing: gradually cool the field, letting high-energy
-    impossibilities fade while stable possibilities strengthen
-  - Collapse: when an observer (player, narrative event) probes a
-    region, the superposition collapses into a single experienced state
-
-This produces a game world that is genuinely alive with potential - where
-unvisited regions exist as probability clouds, where distant events can
-be entangled so that resolving one shapes the other, and where the act
-of observation (player attention) literally forges reality.
-
-Architecture:
-  SUPERPOSE  ->  ENTANGLE  ->  ANNEAL   ->  COLLAPSE  ->  FORGE
-  (generate  (link related (cool the    (observer     (solidify
-   multiple   possibilities field, let  probes and    collapsed
-   possible   so they        unstable    collapses     states into
-   states     shape each     states      superposition experienced
-   for each   other)         fade)       into one)     game reality)
-   entity)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Quantum Reality Forge"""
 
 from __future__ import annotations
 

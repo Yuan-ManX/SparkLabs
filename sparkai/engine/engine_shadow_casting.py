@@ -1,21 +1,5 @@
 """
-Shadow Casting System - Real-time 2D shadow projection and light occlusion for game rendering.
-
-Architecture:
-    ShadowCastingSystem/
-    |-- LightType (point, directional, spot, ambient enumeration)
-    |-- ShadowQuality (low, medium, high, ultra enumeration)
-    |-- ShadowAlgorithm (ray_casting, shadow_map, projection enumeration)
-    |-- ShadowLight (light source with shadow configuration)
-    |-- Occluder (geometry that blocks light rays)
-    |-- ShadowRegion (computed shadow area from light/occluder pair)
-    |-- ShadowCastResult (aggregate shadow computation output)
-
-Manages dynamic 2D shadows via ray casting from point lights against occluder
-geometry. Computes shadow polygons, penumbra regions, and generates occlusion
-maps for rendering. Supports multiple light types, quality presets, and
-configurable shadow algorithms.
-"""
+Shadow Casting System - Real-time 2D shadow projection and light occlusion for game rendering."""
 
 from __future__ import annotations
 

@@ -1,14 +1,5 @@
 """
-SparkAI Engine - Platform Abstraction Layer
-
-Cross-platform abstraction providing unified interfaces for
-hardware-accelerated rendering, input handling, audio output,
-filesystem access, and display management across desktop,
-mobile, and web targets.
-
-Supports automatic backend detection and runtime switching with
-consistent API surface regardless of underlying platform.
-"""
+SparkAI Engine - Platform Abstraction Layer"""
 
 from __future__ import annotations
 

@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Server Orchestrator
-
-Central orchestration system for all engine subsystem servers. Manages server lifecycle, command queuing, resource
-allocation, health monitoring, dependency discovery, and inter-server
-communication coordination.
-
-Architecture:
-  EngineServerOrchestrator (Singleton)
-    |-- ServerInstance (individual engine subsystem server)
-    |-- CommandQueue (per-server FIFO command pipeline)
-    |-- ResourceHandle (tracked resource allocation)
-    |-- ServerHealthMetric (periodic health snapshot)
-    |-- ServerType / ServerStatus / CommandPriority / ResourceType (enums)
-
-Capabilities:
-  - REGISTER: bring up isolated subsystem servers per type
-  - LIFECYCLE: init, start, pause, resume, graceful/force shutdown
-  - COMMAND: submit, query, cancel, drain per-server command queues
-  - RESOURCE: allocate, release, lock, unlock server-scoped resources
-  - HEALTH: per-server and cluster-wide health snapshots
-  - DISCOVER: resolve inter-server dependency graph
-  - OPTIMIZE: recommend thread pool and queue sizing per server
-  - RECOVER: intelligent failure handling with impact analysis
-  - BROADCAST: fan-out messages to server type groups
-  - HEARTBEAT: periodic liveness checks across all servers
-"""
+SparkLabs Engine - Server Orchestrator"""
 
 from __future__ import annotations
 

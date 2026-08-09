@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Server Registry
-
-Central registry that manages all engine subsystems as independent
-servers. Each server represents a core engine subsystem (rendering,
-physics, audio, etc.) that can be started, stopped, paused, resumed,
-and monitored independently using the server architecture
-pattern for modular engine subsystems.
-
-Architecture:
-  ServerRegistry (Singleton)
-    |-- ServerConfig (per-server configuration presets)
-    |-- ServerInfo (runtime state and statistics per server)
-    |-- ServerType / ServerStatus / ServerPriority (enums)
-
-Registry Features:
-  - REGISTER: add engine subsystem servers with configuration
-  - LIFECYCLE: start, stop, pause, resume individual or all servers
-  - MONITOR: per-server runtime statistics and error tracking
-  - TICK: simulate per-frame processing for each server
-  - SHUTDOWN: clean teardown of all registered servers
-  - STATUS: aggregate registry-wide health overview
-"""
+SparkLabs Engine - Server Registry"""
 
 from __future__ import annotations
 

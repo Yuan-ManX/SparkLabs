@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - GUI System
-
-Retained-mode GUI widget system for the SparkLabs AI-native
-game engine. Provides a hierarchical widget tree with layout,
-styling, and event handling. AI agents can construct game UIs
-programmatically through a declarative widget API including
-containers, buttons, labels, sliders, and input fields.
-
-Architecture:
-  GUISystem
-    |-- Widget (base class with rect, visibility, z-order)
-    |-- Container (stacks children with layout policy)
-    |-- Label (text rendering with alignment options)
-    |-- Button (clickable with hover/press states)
-    |-- Slider (value bar with drag interaction)
-    |-- TextInput (keyboard-capturing text field)
-    |-- Image (sprite-based display widget)
-    |-- LayoutEngine (auto-sizing and constraint resolution)
-    |-- ThemeManager (shared color/font/style presets)
-"""
+SparkLabs Engine - GUI System"""
 
 from __future__ import annotations
 
