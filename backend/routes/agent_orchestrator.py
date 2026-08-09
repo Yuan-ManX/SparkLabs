@@ -1,10 +1,5 @@
 """
-SparkLabs API Routes for AI-Native Game Agent Orchestrator.
-
-Provides endpoints for the ultimate AI-native game agent orchestrator
-that integrates all agent subsystems for autonomous game creation,
-execution, world simulation, quality assurance, and deployment.
-"""
+SparkLabs API Routes for AI-Native Game Agent Orchestrator."""
 
 from fastapi import APIRouter, Request, Query
 from fastapi.responses import JSONResponse

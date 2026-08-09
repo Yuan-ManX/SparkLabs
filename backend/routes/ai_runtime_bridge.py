@@ -1,18 +1,5 @@
 """
-SparkLabs Backend - AI Runtime Bridge API Routes
-
-REST API endpoints for the AI runtime bridge that connects the cognitive
-layer to the game generation pipeline. The bridge wraps GameRuntime with
-AI-driven pre-build reasoning, config adaptation, and post-build telemetry
-and adaptive difficulty injection.
-
-Endpoints:
-  GET  /ai-bridge/status          - Bridge status and build history
-  POST /ai-bridge/build-from-gdd  - Build a game from a GDD with AI adaptation
-  POST /ai-bridge/build-from-prompt - Build a game from a prompt with AI adaptation
-  GET  /ai-bridge/last-overrides  - Get the last AI-derived parameter overrides
-  POST /ai-bridge/reset           - Reset the bridge state
-"""
+SparkLabs Backend - AI Runtime Bridge API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

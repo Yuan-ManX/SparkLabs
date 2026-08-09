@@ -1,21 +1,5 @@
 """
-SparkLabs Backend - Cognitive Game Engine API Routes
-
-REST API endpoints for the unified cognitive game engine where agent
-cognition and engine execution share a single tick. Each call to
-/tick runs perceive -> reason -> plan -> act -> reflect -> learn.
-
-Endpoints:
-  GET  /cognitive-engine/status    - Engine status and last tick summary
-  POST /cognitive-engine/tick      - Run one cognitive tick
-  POST /cognitive-engine/tick-batch - Run N cognitive ticks in sequence
-  POST /cognitive-engine/start     - Start the engine (initializes if cold)
-  POST /cognitive-engine/pause     - Pause the engine
-  POST /cognitive-engine/resume    - Resume a paused engine
-  POST /cognitive-engine/reset     - Reset the engine to cold state
-  GET  /cognitive-engine/history   - List recent tick results
-  GET  /cognitive-engine/memory    - Query the memory bank
-"""
+SparkLabs Backend - Cognitive Game Engine API Routes"""
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

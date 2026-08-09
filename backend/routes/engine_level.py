@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Level Streaming Routes
-
-API endpoints for level streaming including
-cell management, level loading/unloading,
-and streaming status monitoring.
-"""
+SparkLabs Backend - Level Streaming Routes"""
 
 import uuid
 from datetime import datetime

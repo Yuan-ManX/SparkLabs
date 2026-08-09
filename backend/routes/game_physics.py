@@ -1,26 +1,5 @@
 """
-SparkLabs Backend - Game Physics API Routes
-
-REST API endpoints for the server-side 2D physics engine. The physics
-world mirrors the client-side physics in generated games, enabling the
-cognitive layer to simulate game states, predict action outcomes, and
-test parameter changes before applying them to live games.
-
-Endpoints:
-  GET  /game-physics/status       - Physics world status and body list
-  POST /game-physics/step         - Step the physics world by one timestep
-  POST /game-physics/step-batch   - Step the physics world N times
-  POST /game-physics/simulate     - Run a batch simulation and return trajectory
-  POST /game-physics/predict      - Predict the outcome of an action
-  POST /game-physics/start        - Start the physics world
-  POST /game-physics/pause        - Pause the physics world
-  POST /game-physics/resume       - Resume a paused physics world
-  POST /game-physics/reset        - Reset the physics world to default scene
-  GET  /game-physics/bodies       - List all physics bodies
-  GET  /game-physics/collisions   - List recent collision events
-  POST /game-physics/config       - Update physics configuration
-  POST /game-physics/scene        - Load a scene preset (platformer, parkour, etc.)
-"""
+SparkLabs Backend - Game Physics API Routes"""
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

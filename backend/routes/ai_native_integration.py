@@ -1,16 +1,5 @@
 """
-SparkLabs Backend - AI-Native Integration API Routes
-
-REST API endpoints for the AI-native integration layer that synchronizes
-the cognitive architect, AI-native conductor, game brain, and runtime
-bridge with the existing KernelEngineIntegrator.
-
-Endpoints:
-  GET  /ai-integration/status    - Integration status and participant stats
-  POST /ai-integration/tick      - Run a single integration tick
-  GET  /ai-integration/history   - Get recent tick history
-  POST /ai-integration/reset     - Reset integration state
-"""
+SparkLabs Backend - AI-Native Integration API Routes"""
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

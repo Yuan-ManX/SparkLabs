@@ -1,25 +1,5 @@
 """
-SparkLabs Backend - Cognitive Simulation API Routes
-
-REST API endpoints for the CognitiveSimulationRunner. The simulation
-runner creates a self-playing game where a virtual player navigates a
-level while the cognitive engine observes and adapts the game in
-real-time. This demonstrates the full AI-native game engine in action.
-
-Endpoints:
-  POST /cognitive-simulation/configure - Configure simulation parameters
-  POST /cognitive-simulation/start     - Start a new simulation run
-  POST /cognitive-simulation/step      - Run one simulation frame
-  POST /cognitive-simulation/step-batch - Run N simulation frames
-  POST /cognitive-simulation/pause     - Pause the simulation
-  POST /cognitive-simulation/resume    - Resume a paused simulation
-  POST /cognitive-simulation/stop      - Stop and return final result
-  POST /cognitive-simulation/reset     - Reset to idle state
-  GET  /cognitive-simulation/status    - Get current simulation status
-  GET  /cognitive-simulation/history   - Get recent simulation frames
-  GET  /cognitive-simulation/trajectory - Get full player trajectory
-  GET  /cognitive-simulation/result    - Get last completed result
-"""
+SparkLabs Backend - Cognitive Simulation API Routes"""
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

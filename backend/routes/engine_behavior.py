@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Engine Behavior Routes
-
-API endpoints for behavior composer and asset compiler
-engines including behavior template management,
-instance creation, composition, and asset compilation.
-"""
+SparkLabs Backend - Engine Behavior Routes"""
 
 import uuid
 from datetime import datetime

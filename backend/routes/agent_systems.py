@@ -237,3 +237,44 @@ async def agent_context_compress():
         })
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+class BuildGameRequest(BaseModel):
+    concept: str
+    agent_name: str = "SparkAgent"
+
+
+@router.post("/systems/build-game")
+async def agent_build_game(req: BuildGameRequest):
+    """
+    Build a runnable game world from a natural-language concept.
+
+    Uses the shared agent's environment (memory, trajectory, engine
+    toolset) plus the Game Build Director to construct a scene, entities,
+    and GameLogicIR rules, then confirms behavior via verification.
+    Returns the built world summary for the web editor.
+    """
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        from sparkai.agent.agent_game_builder import get_game_build_director
+        director = get_game_build_director()
+        result = director.build(req.concept).to_dict()
+
+        # Record the build on the agent's trajectory + memory for auditability
+        await agent.observe(
+            f"Built game for concept: {req.concept}",
+            importance=0.8,
+        )
+        agent.emit("game_build_complete", {
+            "concept": req.concept,
+            "scene_id": result.get("scene_id"),
+            "status": result.get("status"),
+        })
+
+        return JSONResponse({
+            "status": "success",
+            "data": result,
+            "agent_name": req.agent_name,
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)

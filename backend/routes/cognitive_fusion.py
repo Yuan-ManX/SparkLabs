@@ -1,32 +1,5 @@
 """
-SparkLabs Backend - Cognitive Fusion API Routes
-
-REST API endpoints for the cognitive fusion layer that integrates
-the CognitiveGameEngine, CognitiveSkillForge, and AdaptivePhysicsDirector.
-
-Endpoints:
-  GET  /cognitive-fusion/status       - Combined status of all three modules
-  POST /cognitive-fusion/tick         - Run one fused cognitive tick
-  POST /cognitive-fusion/tick-batch   - Run N fused ticks in sequence
-  POST /cognitive-fusion/start        - Start the fusion layer
-  POST /cognitive-fusion/pause        - Pause the fusion layer
-  POST /cognitive-fusion/resume       - Resume the fusion layer
-  POST /cognitive-fusion/reset        - Reset all three modules
-  GET  /cognitive-fusion/history      - List recent fusion tick results
-  GET  /cognitive-fusion/full         - Full status of all three subsystems
-
-  # Skill Forge endpoints
-  GET  /cognitive-fusion/skills       - List skills (filterable by tier/status)
-  GET  /cognitive-fusion/skills/{id}  - Get a single skill by ID
-  POST /cognitive-fusion/skills/reset - Reset the skill forge
-
-  # Physics Director endpoints
-  GET  /cognitive-fusion/physics      - Physics director status
-  GET  /cognitive-fusion/physics/history - Physics adjustment history
-  GET  /cognitive-fusion/physics/profiles - List persisted physics profiles
-  POST /cognitive-fusion/physics/genre - Set the current genre
-  POST /cognitive-fusion/physics/reset - Reset the physics director
-"""
+SparkLabs Backend - Cognitive Fusion API Routes"""
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

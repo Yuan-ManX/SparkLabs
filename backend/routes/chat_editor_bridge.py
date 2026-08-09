@@ -1,33 +1,5 @@
 """
-SparkLabs Backend - Chat-to-Editor Bridge
-
-Connects the agent chat to the game editor, enabling users to control
-the editor through natural language. The bridge classifies chat messages
-into editor actions, routes through the LLM router for model responses,
-and executes the corresponding editor operations.
-
-This is the capstone that makes the AI-native editor truly conversational:
-users can say "create a platformer level with moving platforms" and the
-bridge will route the request to the optimal model, parse the response,
-and execute the editor action.
-
-Editor Actions:
-  create_game     - Create a full playable game from a description
-  create_entity   - Create a single entity (character, enemy, item, etc.)
-  create_scene    - Create a scene from a natural language description
-  generate_code   - Generate game code or scripts
-  generate_asset  - Generate an image, 3D model, or audio asset
-  analyze_bug     - Analyze and diagnose a bug from description
-  balance_game    - Balance game difficulty and metrics
-  list_scene      - List entities in the current scene
-  editor_status   - Get the current editor state
-
-Endpoints:
-  POST /chat-editor/execute   - Execute a chat-driven editor action
-  GET  /chat-editor/actions   - List available editor actions
-  GET  /chat-editor/status    - Get bridge status
-  POST /chat-editor/reset     - Reset the bridge state
-"""
+SparkLabs Backend - Chat-to-Editor Bridge"""
 
 from __future__ import annotations
 

@@ -1,30 +1,5 @@
 """
-SparkLabs Backend - AI-Native Game Bridge API Routes
-
-REST API endpoints for the AiNativeGameBridge. The bridge connects live
-HTML5 games running in the browser to the server-side CognitiveGameEngine,
-enabling real-time AI observation and adaptation of running games.
-
-Endpoints:
-  POST /game-bridge/sessions            - Start a new bridge session
-  GET  /game-bridge/sessions            - List active sessions
-  GET  /game-bridge/sessions/{id}       - Get session status
-  POST /game-bridge/sessions/{id}/telemetry - Receive a telemetry frame
-  GET  /game-bridge/sessions/{id}/directives - Get pending directives
-  POST /game-bridge/sessions/{id}/directives/ack - Acknowledge applied directives
-  GET  /game-bridge/sessions/{id}/history    - Get frame history
-  GET  /game-bridge/sessions/{id}/player     - Get player model
-  GET  /game-bridge/sessions/{id}/insights   - Get session insights (cross-session learning data)
-  GET  /game-bridge/sessions/{id}/preferences - Get player preference profile
-  POST /game-bridge/sessions/{id}/pause - Pause a session
-  POST /game-bridge/sessions/{id}/resume - Resume a session
-  POST /game-bridge/sessions/{id}/end   - End a session
-  DELETE /game-bridge/sessions/{id}     - Delete a session
-  GET  /game-bridge/status              - Get bridge status
-  GET  /game-bridge/orchestrator        - Get orchestrator status
-  POST /game-bridge/reset               - Reset the bridge
-  POST /game-bridge/simulate            - Simulate a telemetry stream
-"""
+SparkLabs Backend - AI-Native Game Bridge API Routes"""
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

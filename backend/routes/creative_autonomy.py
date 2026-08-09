@@ -1,21 +1,5 @@
 """
-SparkLabs Backend - Creative Autonomy API Routes
-
-REST API endpoints for the CreativeAutonomyDirector that generates
-proactive creative goals during live gameplay.
-
-Endpoints:
-  GET  /creative/status           - Director status and statistics
-  POST /creative/snapshot          - Record a gameplay snapshot
-  POST /creative/check             - Check for patterns and generate goals
-  GET  /creative/goals             - Get active creative goals
-  GET  /creative/goals/completed   - Get completed creative goals
-  GET  /creative/steps/pending     - Get pending intervention steps
-  POST /creative/steps/execute     - Mark a step as executed
-  POST /creative/evaluate          - Evaluate a completed goal
-  POST /creative/reset             - Reset the director state
-  POST /creative/simulate          - Run a full simulation cycle
-"""
+SparkLabs Backend - Creative Autonomy API Routes"""
 
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse

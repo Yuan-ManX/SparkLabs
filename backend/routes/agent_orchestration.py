@@ -1,11 +1,5 @@
 """
-SparkLabs Backend - Unified Orchestration & Runtime Routes
-
-API endpoints for the unified orchestration core (task management,
-pipeline coordination, subsystem health, resource allocation) and
-the unified game runtime (game loop control, scene management,
-rendering, physics, audio, input, and entity coordination).
-"""
+SparkLabs Backend - Unified Orchestration & Runtime Routes"""
 
 import uuid
 from datetime import datetime

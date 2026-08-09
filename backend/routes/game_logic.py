@@ -1,14 +1,5 @@
 """
-SparkLabs Backend - Game Logic IR API Routes
-
-REST API for managing structured game logic: events, conditions,
-actions, and the runtime logic execution engine.
-
-When the SparkEngine is importable, the API delegates to the engine's
-own GameLogicRuntime so that events registered through the API actually
-fire inside the running simulation. Otherwise it falls back to a
-standalone runtime (useful for offline tests / pre-flight validation).
-"""
+SparkLabs Backend - Game Logic IR API Routes"""
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

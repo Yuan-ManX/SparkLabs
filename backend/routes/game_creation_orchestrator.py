@@ -1,17 +1,5 @@
 """
-SparkLabs Backend - Game Creation Orchestrator API Routes
-
-REST API endpoints for the unified game creation pipeline that coordinates
-the cognitive architect, AI-native conductor, runtime bridge, and
-integration layer to produce playable games from natural-language prompts.
-
-Endpoints:
-  GET  /creation-pipeline/status        - Orchestrator status and last run
-  POST /creation-pipeline/create        - Create a game from a prompt
-  GET  /creation-pipeline/history       - List recent creation runs
-  GET  /creation-pipeline/run/{run_id}  - Get a specific run (includes HTML)
-  POST /creation-pipeline/reset         - Clear run history
-"""
+SparkLabs Backend - Game Creation Orchestrator API Routes"""
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse

@@ -1,11 +1,5 @@
 """
-SparkLabs Backend - Engine Checkpoint & Predictive Simulation API
-
-REST API for the world-checkpointing and sandbox predictive-simulation
-service. Enables the web editor and AI agents to snapshot world state,
-step the engine forward in a sandbox, inspect predicted outcomes, and
-roll back or commit.
-"""
+SparkLabs Backend - Engine Checkpoint & Predictive Simulation API"""
 
 from __future__ import annotations
 

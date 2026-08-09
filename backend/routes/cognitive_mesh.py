@@ -1,32 +1,5 @@
 """
-SparkLabs Backend - Cognitive Mesh Routes
-
-REST API for the AgentCognitiveMesh and EngineIntelligenceSurface.
-These two modules form the bidirectional intelligence fabric between
-the AI agent layer and the game engine layer.
-
-Routes:
-  Cognitive Mesh (/api/agent/cognitive-mesh/...):
-    GET  /status              - Get mesh status
-    GET  /nodes               - List all mesh nodes
-    GET  /signals             - Get recent signals
-    POST /emit                - Emit a cognitive signal
-    POST /cycle               - Run a single cognitive cycle
-    POST /simulate            - Simulate traffic for testing
-    GET  /intelligence        - Get learned routing intelligence
-    POST /routing-rules       - Add a routing rule
-    DELETE /routing-rules/{id} - Remove a routing rule
-    POST /reset               - Reset the mesh
-
-  Intelligence Surface (/api/agent/intelligence-surface/...):
-    GET  /surface/status      - Get surface status
-    GET  /surface/capabilities - List engine capabilities
-    GET  /surface/capabilities/{id} - Get a specific capability
-    POST /surface/intent      - Submit a semantic intent
-    GET  /surface/intents     - Get recent intents
-    POST /surface/simulate    - Simulate intents for testing
-    POST /surface/reset       - Reset the surface
-"""
+SparkLabs Backend - Cognitive Mesh Routes"""
 
 from __future__ import annotations
 

@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Social Cognition Routes
-
-API endpoints for social cognition including
-relationship management, reputation tracking,
-and theory of mind simulation.
-"""
+SparkLabs Backend - Social Cognition Routes"""
 
 import uuid
 from datetime import datetime

@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Agent Coordination Hub Routes
-
-REST API endpoints for the AgentCoordinationHub that unifies all AI agent
-modules (BridgeOrchestrator, AgentEngineFusionLoop, CreativeAutonomyDirector)
-into a single coherent intelligence.
-"""
+SparkLabs Backend - Agent Coordination Hub Routes"""
 
 from __future__ import annotations
 

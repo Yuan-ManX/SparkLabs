@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Agent Swarm Intelligence Routes
-
-API endpoints for swarm-based multi-agent coordination including
-agent registration, consensus protocols, task distribution,
-shared knowledge management, and emergent behavior detection.
-"""
+SparkLabs Backend - Agent Swarm Intelligence Routes"""
 
 import uuid
 from datetime import datetime

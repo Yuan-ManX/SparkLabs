@@ -1,12 +1,5 @@
 """
-SparkLabs Backend - Frame Architect & AI Workflow Routes
-
-REST API endpoints for:
-  - AgentFrameArchitect: real-time cinematographic frame composition
-  - EngineAIWorkflow: declarative AI agent action chaining
-
-Routes use /frame-architect/ and /ai-workflow/ prefixes.
-"""
+SparkLabs Backend - Frame Architect & AI Workflow Routes"""
 
 from __future__ import annotations
 

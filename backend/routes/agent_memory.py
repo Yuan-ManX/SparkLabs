@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Agent Memory Routes
-
-API endpoints for agent memory systems including
-working memory, episodic memory, semantic memory,
-similarity retrieval, and memory consolidation.
-"""
+SparkLabs Backend - Agent Memory Routes"""
 
 import uuid
 from datetime import datetime
