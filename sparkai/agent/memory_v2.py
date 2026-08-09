@@ -1,18 +1,5 @@
 """
-SparkAI Agent - Memory System
-
-Multi-layered agent memory with episodic, semantic, and procedural layers.
-
-Memory Layers:
-  - Episodic: Records of specific events and interactions
-  - Semantic: General knowledge and facts about the game world
-  - Procedural: Learned skills and action patterns
-
-Memory enables agents to:
-  - Recall past interactions and decisions
-  - Build knowledge about the game project
-  - Learn from experience and improve over time
-"""
+SparkAI Agent - Memory System"""
 
 from __future__ import annotations
 

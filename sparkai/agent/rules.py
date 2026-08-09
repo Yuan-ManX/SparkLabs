@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Rules System
-
-Path-scoped coding standards and behavioral constraints.
-Rules define what agents can and cannot do in specific contexts.
-
-Rule Scopes:
-  - global: Apply to all agent operations
-  - gameplay: Apply when editing gameplay code
-  - engine: Apply when editing engine internals
-  - ai: Apply when editing AI/behavior code
-  - ui: Apply when editing UI/HUD code
-  - network: Apply when editing network code
-  - asset: Apply when generating assets
-  - narrative: Apply when generating stories
-"""
+SparkAI Agent - Rules System"""
 
 from __future__ import annotations
 

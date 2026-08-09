@@ -1,15 +1,5 @@
 """
-SparkAI Agent - Perception-Menu-Decision Pipeline
-
-Three-stage pipeline for game agent decision making:
-1. Perception: Build a filtered, lossy view of the game world state
-2. Action Menu: Construct enumerated action choices from perception
-3. Decision: Select an action using LLM with structured output
-
-This approach avoids free-form generation unreliability by giving
-the LLM enumerated choices rather than open-ended prompts. Fuzzy
-ID resolution maps LLM outputs back to canonical entity IDs.
-"""
+SparkAI Agent - Perception-Menu-Decision Pipeline"""
 
 from __future__ import annotations
 

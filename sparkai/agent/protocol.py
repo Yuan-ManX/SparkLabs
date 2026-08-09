@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Protocol
-
-Structured communication protocol for inter-agent messaging.
-Defines message types, routing rules, verification steps, and
-conversation threading for reliable multi-agent coordination.
-
-Protocol design:
-  - Typed messages with mandatory fields and optional payloads
-  - Request-Response pattern with correlation IDs
-  - Publish-Subscribe for broadcast notifications
-  - Conversation threading for multi-turn agent dialogues
-  - Delivery guarantees: at-least-once with deduplication
-  - Priority-based message ordering
-  - Timeout and retry policies per message type
-"""
+SparkAI Agent - Protocol"""
 
 from __future__ import annotations
 

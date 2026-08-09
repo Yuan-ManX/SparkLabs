@@ -1,15 +1,5 @@
 """
-SparkAI Agent - Session Manager
-
-Persistent agent sessions with conversation history,
-context management, and state persistence.
-
-Sessions enable:
-  - Multi-turn conversations with agents
-  - Persistent context across interactions
-  - Session state save/restore
-  - Session health monitoring
-"""
+SparkAI Agent - Session Manager"""
 
 from __future__ import annotations
 

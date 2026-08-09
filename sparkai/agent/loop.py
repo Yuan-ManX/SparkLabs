@@ -1,18 +1,5 @@
 """
-SparkAI Agent - Loop Engine
-
-Iterative agent loop with tool execution and reasoning chain.
-The loop drives the core agent behavior:
-
-  1. Receive input (user prompt or system observation)
-  2. Think: LLM generates reasoning and decides on action
-  3. Act: Execute a tool or delegate to a sub-agent
-  4. Observe: Process the result and update context
-  5. Repeat until goal is met or max iterations reached
-
-The loop maintains a reasoning chain that tracks every
-thought-action-observation triple for transparency and debugging.
-"""
+SparkAI Agent - Loop Engine"""
 
 from __future__ import annotations
 

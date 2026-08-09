@@ -1,21 +1,5 @@
 """
-SparkAI Agent - Mesh
-
-Dynamic collaboration network for multi-agent coordination.
-The mesh enables agents to discover each other, form ad-hoc
-collaboration groups, share context, and coordinate on complex tasks.
-
-Mesh architecture:
-  - Agent Node: An agent registered in the mesh with capabilities
-  - Connection: A bidirectional link between two agents
-  - Cluster: A group of agents collaborating on a shared goal
-  - Mesh Topology: The overall network structure
-  - Discovery: Finding agents by capability, role, or availability
-  - Load Balancing: Distributing tasks across available agents
-
-The mesh adapts dynamically as agents join, leave, and change state,
-ensuring optimal task distribution and minimal coordination overhead.
-"""
+SparkAI Agent - Mesh"""
 
 from __future__ import annotations
 

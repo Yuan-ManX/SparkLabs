@@ -1,15 +1,5 @@
 """
-SparkAI Agent - Multi-Agent Orchestrator
-
-Hierarchical orchestration system with depth-bounded delegation.
-Supports event-driven coordination and contract-based verification.
-
-Agent Hierarchy:
-  Director -> Lead -> Specialist -> Worker
-
-Each level has restricted permissions and focused responsibilities.
-Delegation depth is bounded to prevent unbounded recursion.
-"""
+SparkAI Agent - Multi-Agent Orchestrator"""
 
 from __future__ import annotations
 

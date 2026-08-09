@@ -1,29 +1,5 @@
 """
-SparkAI Agent - Quality Gate
-
-Automated quality verification system that enforces standards at each
-stage of the game development pipeline. Quality gates provide structured
-checkpoints that validate game builds, code quality, performance metrics,
-and design consistency before proceeding to the next phase.
-
-Architecture:
-  QualityGateSystem
-    |-- GateRegistry (gate definitions and configurations)
-    |-- GateEvaluator (executes gate checks and collects results)
-    |-- GatePipeline (ordered sequence of gates for a workflow)
-    |-- QualityReport (aggregated quality metrics and verdicts)
-
-Gate Categories:
-  Build Health - compilation, linking, runtime errors
-  Visual Quality - rendering, assets, UI consistency
-  Performance - frame rate, memory, load times
-  Design Consistency - game design document alignment
-  Code Quality - patterns, complexity, test coverage
-  Playability - controls, difficulty, progression
-
-Each gate produces a Pass/Fail/Warning verdict with detailed metrics.
-Gates can be configured with thresholds and custom check functions.
-"""
+SparkAI Agent - Quality Gate"""
 
 from __future__ import annotations
 

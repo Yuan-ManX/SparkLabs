@@ -1,20 +1,5 @@
 """
-Provider dispatcher for real LLM API calls.
-
-Implements actual HTTP API calls to major LLM providers including text,
-vision, image generation, audio synthesis, and multimodal endpoints.
-Supports OpenAI, Anthropic, Google Gemini, HuggingFace, Ollama, Together AI,
-Groq, Stability AI, ElevenLabs, Replicate, xAI, Perplexity, AI21 Labs,
-Fal.ai, DeepInfra, Fireworks AI, NVIDIA NIM, and Cerebras.
-
-Additional providers: Amazon Bedrock, Azure OpenAI, OpenRouter, Zhipu AI,
-Moonshot, MiniMax, ByteDance Doubao, Baidu ERNIE, StepFun, Lambda Labs,
-AssemblyAI, Deepgram, PlayHT, and Cartesia.
-
-Each dispatcher returns a standardized ModelResponse-compatible dict that the
-LLMRouter can consume. When a provider API key is missing or the call fails,
-the dispatcher raises a RuntimeError so the router fallback chain can engage.
-"""
+Provider dispatcher for real LLM API calls."""
 
 from __future__ import annotations
 

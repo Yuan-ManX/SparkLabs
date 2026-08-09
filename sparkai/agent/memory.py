@@ -1,11 +1,5 @@
 """
-SparkAI Agent - Hierarchical Memory System
-
-Supports three-factor retrieval (recency x relevance x importance)
-with a reflection DAG that enables recursive reflection-on-reflection.
-Memories are nodes in a provenance graph where reflection nodes point
-back to the observations that inspired them.
-"""
+SparkAI Agent - Hierarchical Memory System"""
 
 from __future__ import annotations
 
