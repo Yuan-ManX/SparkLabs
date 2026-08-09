@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Scene Inheritance
-
-Scene inheritance and prefab derivation system. Templates can be created
-with a hierarchy of root nodes, derived from parent templates with property
-overrides, and instantiated into runtime scene instances. The system
-preserves derivation chains so that changes to a parent template can be
-propagated to derived templates and instances.
-
-Architecture:
-  SceneInheritanceSystem (Singleton)
-    |-- SceneNode      (a single node within a scene tree)
-    |-- SceneTemplate  (a reusable, derivable scene definition)
-    |-- SceneInstance  (a runtime instantiation of a template)
-    |-- SceneInheritanceSnapshot (immutable snapshot of system state)
-
-Lifecycle:
-  1. create_template(name, root_nodes, overrides) -> SceneTemplate
-  2. derive_template(parent_id, name, overrides) -> SceneTemplate
-  3. instantiate(template_id) -> SceneInstance
-  4. apply_overrides(instance, overrides) -> SceneInstance
-  5. get_snapshot() -> SceneInheritanceSnapshot
-  6. reset() -> None
-
-Usage:
-    system = get_scene_inheritance_system()
-    parent = system.create_template("base_enemy", [SceneNode("n1", "root", "enemy")])
-    derived = system.derive_template(parent.template_id, "fast_enemy", {"n1": {"speed": 10}})
-    instance = system.instantiate(derived.template_id)
-"""
+SparkLabs Engine - Scene Inheritance"""
 
 from __future__ import annotations
 

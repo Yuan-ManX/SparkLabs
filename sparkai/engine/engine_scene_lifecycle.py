@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Scene Lifecycle Engine
-
-Scene management with AI-assisted transitions, scene graph hierarchy,
-and lifecycle hooks. Provides complete scene lifecycle orchestration,
-hierarchical node management with world-space transform calculation,
-transition system with progress tracking and easing, and node pooling
-for runtime performance.
-
-Architecture:
-  SceneLifecycleEngine (Singleton)
-    |-- Scene              — full scene descriptor with nodes, hooks, and data
-    |-- SceneNode          — hierarchical node with transform, layer, and tags
-    |-- SceneTransition    — animated transition between two scenes
-    |-- SceneStatus (enum) — lifecycle state machine for scenes
-    |-- SceneLayer (enum)  — rendering layer classification
-    |-- TransitionType (enum) — visual transition effect identifiers
-    |-- NodeType (enum)    — semantic classification of scene graph nodes
-    |-- LifecycleHook (enum) — hook points in the scene lifecycle
-"""
+SparkLabs Engine - Scene Lifecycle Engine"""
 
 from __future__ import annotations
 

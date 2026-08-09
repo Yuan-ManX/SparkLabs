@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - Resource System
-
-Serializable resource system with a type registry. Resources of any
-registered type (textures, materials, meshes, audio, scripts, prefabs,
-animations, fonts, shaders, or custom types) can be created, loaded,
-saved, referenced, and released. A type registry captures the schema and
-validator for each known resource type so that resources remain
-introspectable and verifiable.
-
-Architecture:
-  ResourceSystem (Singleton)
-    |-- ResourceType      (built-in resource categories)
-    |-- Resource          (a single resource instance)
-    |-- ResourceTypeEntry (a registered type with schema and validator)
-    |-- ResourceSystemSnapshot (immutable snapshot of system state)
-
-Lifecycle:
-  1. register_type(type_name, schema) -> bool
-  2. create_resource(name, resource_type, data) -> Resource
-  3. load_resource(path) -> Resource / save_resource(resource_id, path) -> bool
-  4. reference_resource(resource_id) -> int / release_resource(resource_id) -> int
-  5. get_snapshot() -> ResourceSystemSnapshot
-  6. reset() -> None
-
-Usage:
-    system = get_resource_system()
-    system.register_type("texture", {"width": int, "height": int})
-    res = system.create_resource("hero_diffuse", ResourceType.TEXTURE, {"width": 256})
-    system.reference_resource(res.resource_id)
-"""
+SparkLabs Engine - Resource System"""
 
 from __future__ import annotations
 

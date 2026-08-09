@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - 3D Rigid Body Dynamics
-
-A 3D rigid body simulation core for the SparkLabs AI-native game engine.
-It maintains 6-DOF bodies with quaternion rotation, diagonal inertia tensors,
-sphere/box/capsule/convex-hull collision shapes, configurable joints, and a
-sequential-impulse integration loop. The system is designed to feed high-body-count
-3D physics scenes without per-frame allocation churn and exposes a clean
-observability surface for AI directors to reason about contact graphs.
-
-Architecture:
-  EngineRigidBody3D (singleton)
-    |-- RigidBody3D, Joint3D, Contact3D, PhysicsScene3D,
-       RigidStats3D, RigidSnapshot3D, RigidEvent3D
-    |-- BodyMotionType3D, ShapeKind3D, JointKind3D,
-       SolverPhase3D, EngineEvent3DKind
-
-Core Capabilities:
-  - register_body / get_body / list_bodies / update_body /
-    remove_body: 3D rigid body lifecycle with mass, inertia, and shape.
-  - register_joint / get_joint / list_joints / remove_joint: articulated
-    body connections with configurable limits and motors.
-  - register_scene / get_scene / list_scenes / remove_scene: scene-level
-    grouping with gravity and solver iteration counts.
-  - detect_contacts: broadphase AABB overlap + narrowphase shape queries
-    producing contact manifolds.
-  - step_simulation: integrate velocities, apply forces/impulses, solve
-    constraints, and resolve penetrations for a single timestep.
-  - apply_impulse / apply_force / set_linear_velocity / set_angular_velocity:
-    direct body manipulation hooks.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`EngineRigidBody3D.get_instance` or the module-level
-:func:`get_rigid_body_3d` factory.
-"""
+SparkLabs Engine - 3D Rigid Body Dynamics"""
 
 from __future__ import annotations
 

@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Save Data Encryption & Integrity System
-
-Self-contained save data encryption, integrity verification, version
-migration, and tamper detection for the SparkLabs game engine. Provides
-symmetric encryption simulation, checksum-based integrity checks, key
-rotation, backup/restore, and a full audit trail.
-
-Architecture:
-  SaveEncryptionSystem (singleton)
-    |-- EncryptedSave        — a single encrypted save entry
-    |-- EncryptionKey        — a derivation key with rotation lifecycle
-    |-- IntegrityReport      — result of an integrity verification pass
-    |-- MigrationRecord      — outcome of a version migration
-    |-- BackupEntry          — a restorable backup of a save
-    |-- AuditEntry           — an auditable action record
-    |-- EncryptionStats      — aggregate operational metrics
-    |-- EncryptionSnapshot   — full subsystem state snapshot
-    |-- EncryptionLogEvent   — internal log event for observability
-
-Core Capabilities:
-  - encrypt_save / decrypt_save: simulate symmetric encryption of save
-    data by computing a checksum and recording data sizes.
-  - generate_key / rotate_key: derive keys from a password with a random
-    salt and rotate them on demand.
-  - verify_integrity: recompute the save checksum and flag tampering or
-    corruption.
-  - migrate_save: advance a save from one version to another, creating a
-    backup before applying the migration.
-  - create_backup / restore_backup: snapshot a save and roll it back.
-  - log_audit / list_audit_log / list_events: maintain a traceable
-    history of every action.
-  - get_stats / get_status / get_snapshot / reset: observability and
-    lifecycle management.
-"""
+SparkLabs Engine - Save Data Encryption & Integrity System"""
 
 from __future__ import annotations
 

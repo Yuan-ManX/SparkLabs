@@ -2,37 +2,7 @@
 
 Simulates radioactive decay, radiation propagation, contamination spread,
 shielding attenuation, and dosimetry for gameplay mechanics in sci-fi,
-survival, and post-apocalyptic game scenarios.
-
-The system models four fundamental radiation categories (alpha, beta,
-gamma, neutron), exponential radioactive decay, parent/daughter isotope
-chains, inverse-square intensity falloff, material attenuation with
-half-value layers, absorbed/equivalent/effective dose computation, and
-dynamic surface/volume contamination zones that spread over time. It is
-intended for gameplay tuning rather than regulatory accuracy; physics
-constants are simplified but internally consistent so designers can
-author convincing radioactive hazards, fallout fields, reactor meltdowns,
-and shielding puzzles.
-
-Thread safety
--------------
-The system is implemented as a singleton guarded by ``threading.RLock``.
-The class-level ``_init_lock`` guards singleton creation and one-time
-seeding; the instance-level ``_lock`` guards every mutating operation to
-keep the internal dictionaries consistent. Consumers should obtain the
-instance through :meth:`_RadiationFieldSystem.get_instance` or the
-module-level :func:`get_radiation_field_system` factory.
-
-Physics summary
----------------
-- Activity: ``A(t) = A0 * exp(-lambda * t)``, ``lambda = ln(2) / T_half``
-- Inverse-square intensity: ``I(r) = I0 / (4 * pi * r^2)``
-- Linear attenuation: ``I = I0 * exp(-mu * x)``
-- Half-value layer: ``HVL = ln(2) / mu``
-- Absorbed dose (Gray): ``D = E_absorbed / mass``
-- Equivalent dose (Sievert): ``H = D * QF``
-- Quality factors: alpha=20, beta=1, gamma=1, neutron=5..20
-"""
+survival, and post-apocalyptic game scenarios."""
 
 from __future__ import annotations
 

@@ -1,15 +1,5 @@
 """
-SparkLabs Engine - Ragdoll Physics System
-
-Simulates articulated character bodies as connected rigid segments
-linked by constrained joints. Activated on death, impact, or scripted
-events to produce natural falling and slumping motion.
-
-Each ragdoll consists of bone segments (head, torso, limbs) connected
-by joints with angular limits, gravity response, ground collision,
-and external impulse application. Designed for character death
-sequences, impact reactions, and physical comedy effects.
-"""
+SparkLabs Engine - Ragdoll Physics System"""
 
 from __future__ import annotations
 

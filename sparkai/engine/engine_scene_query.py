@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Scene Query
-
-Declarative query language for scene state. Allows AI agents and tools to
-query the scene graph through a unified interface without knowledge of its
-internal structure. Supports component-based predicates, tag lookups,
-spatial region queries, and compound expressions with AND/OR/NOT logic.
-
-The query engine maintains an in-memory index of entities, their components,
-tags, and spatial positions. External systems register entities through
-the upsert API; queries are evaluated against this index. Results are
-returned as a list of matching entity records with their relevant components.
-
-Query expressions can be constructed programmatically through the dataclass
-API or parsed from a simple text syntax for natural integration with
-agent intent systems.
-
-Architecture:
-  SceneQueryEngine (Singleton)
-    |-- ComponentPredicate  (one component property comparison)
-    |-- SpatialRegion       (aabb / sphere / point / radius shape)
-    |-- QueryClause          (one atomic match condition)
-    |-- QueryExpression      (recursive AND/OR/NOT tree of clauses)
-    |-- QueryOrder           (ordering directive for results)
-    |-- Query                (top-level query description)
-    |-- EntityRecord         (one indexed entity)
-    |-- QueryResult          (one query execution outcome)
-    |-- SceneQuerySnapshot   (point-in-time index summary)
-"""
+SparkLabs Engine - Scene Query"""
 
 from __future__ import annotations
 

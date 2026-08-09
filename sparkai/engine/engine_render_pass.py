@@ -1,11 +1,5 @@
 """
-RenderPass - Multi-pass rendering pipeline orchestration system.
-
-Manages render passes for depth prepass, shadow maps, deferred shading,
-post-processing, and final composition. Provides pass configuration,
-priority-ordered execution, pipeline profiling, and bottleneck analysis
-for the SparkLabs game engine rendering pipeline.
-"""
+RenderPass - Multi-pass rendering pipeline orchestration system."""
 
 import threading
 import time

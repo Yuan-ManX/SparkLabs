@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - Render Layer System
-
-Z-order layer management with per-layer render effects, sorting strategies,
-and layer groups for organizing entity rendering pipelines.
-
-Architecture:
-    RenderLayerSystem
-      |-- RenderLayer (z-ordered renderable container with effects and visibility)
-      |-- LayerGroup (named collection of layers with collapse/lock state)
-      |-- RenderSortRule (property-based sorting configuration per layer)
-      |-- LayerConfig (scene-wide layer configuration with defaults)
-
-Layer Features:
-    - BY_Z_ORDER: sort entities by their assigned z-index value
-    - BY_Y_POSITION: sort by world-space Y-coordinate for isometric/perspective
-    - BY_DEPTH: sort by depth buffer or distance from camera
-    - CUSTOM_COMPARATOR: user-defined comparison function
-    - Per-layer post-processing effects (tint, blur, pixelate, outline, etc.)
-    - Group-based layer organization with collapse and lock toggles
-"""
+SparkLabs Engine - Render Layer System"""
 
 from __future__ import annotations
 

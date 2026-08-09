@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Render Orchestrator
-
-A unified rendering orchestration system that manages the complete rendering
-pipeline across multiple rendering passes, post-processing effects, and
-output targets. Coordinates GPU resources, manages render order, and
-optimizes draw calls for maximum performance.
-
-Architecture:
-  RenderOrchestrator
-    |-- RenderPassManager (organize and sequence render passes)
-    |-- GPUResourceManager (texture, buffer, shader allocation and caching)
-    |-- DrawCallOptimizer (batching, instancing, culling)
-    |-- PostProcessingChain (screen-space effects pipeline)
-    |-- FrameComposer (final frame assembly and output)
-
-Capabilities:
-  - Render pass organization with dependency-aware ordering
-  - GPU resource management with smart caching and eviction
-  - Draw call optimization through batching, instancing, and culling
-  - Post-processing effect chain with configurable ordering
-  - Frame composition with multiple output targets
-  - Performance monitoring and automatic quality adjustment
-"""
+SparkLabs Engine - Render Orchestrator"""
 
 from __future__ import annotations
 

@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Reality Bubble Projector
-
-The EngineRealityBubbleProjector maintains a high-fidelity "reality bubble"
-around the player while keeping distant entities in a probabilistic
-superposition state. As the player moves, the bubble moves with them:
-entities entering the bubble collapse into concrete, fully-simulated
-states; entities leaving the bubble dissolve back into probability
-distributions.
-
-This is ontological stream-of-consciousness for the game world. Instead of
-simulating everything at full fidelity (expensive) or nothing outside view
-(pop-in glitches), the engine maintains a layered reality:
-
-  CORE BUBBLE    - full physics, AI, animation, audio (player + nearby)
-  SHADOW ZONE    - lightweight simulation, state preserved as distributions
-  DEEP SUPERPOSITION - entities exist only as probability clouds
-
-Architecture:
-  PROJECT  ->  OBSERVE  ->  COLLAPSE  ->  DISSOLVE  ->  PROPAGATE
-  (position  (classify    (materialize    (dematerialize    (update
-   bubble)   entities     superposed      concrete ->        distant
-             by zone)     -> concrete)     superposed)       probabilities)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Reality Bubble Projector"""
 
 from __future__ import annotations
 

@@ -1,10 +1,5 @@
 """
-SparkLabs AI-Native Game Engine — Runtime Executor
-
-Provides a standalone execution environment for running, testing, and profiling
-AI-generated games without requiring a full game engine setup.  Serves as the
-bridge between game creation and game execution.
-"""
+SparkLabs AI-Native Game Engine — Runtime Executor"""
 
 from __future__ import annotations
 

@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - Resource Streaming Engine
-
-Asynchronous resource streaming system that enables large-scale game worlds
-to load and unload resources dynamically based on player position and
-visibility. Supports priority-based loading, preloading zones, and
-graceful degradation for memory-constrained environments.
-
-Architecture:
-  ResourceStreamingEngine (Singleton)
-    |-- StreamingZone (spatial region with associated resources)
-    |-- ResourceRequest (load/unload request with priority)
-    |-- StreamingScheduler (manages request queue and execution)
-    |-- MemoryBudget (tracks and enforces memory limits)
-    |-- PreloadPredictor (anticipates future resource needs)
-
-Streaming Policies:
-  - PROXIMITY: load based on distance from camera/player
-  - VISIBILITY: load only visible resources
-  - PRIORITY: load by resource priority
-  - PREDICTIVE: preload based on movement prediction
-  - BUDGETED: load within memory budget constraints
-
-Usage:
-    rs = ResourceStreamingEngine.get_instance()
-    rs.initialize()
-
-    rs.register_zone("zone_forest", bounds=(0, 0, 100, 100), resources=["tree_1", "rock_3"])
-    rs.update_player_position("player_1", (50, 50))
-    rs.process_frame()
-    rs.shutdown()
-"""
+SparkLabs Engine - Resource Streaming Engine"""
 
 from __future__ import annotations
 

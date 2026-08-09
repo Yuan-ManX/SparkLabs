@@ -1,14 +1,5 @@
 """
-SparkAI Engine - Resource ID Allocator
-
-Efficient Resource ID (RID) allocation system providing lightweight
-handle-based resource management. Each resource is identified by a
-compact integer handle rather than direct object pointers, enabling
-safe dereferencing, validation, and lifetime management.
-
-Supports multiple resource types, ownership tracking, reference counting,
-and bulk operations for maximum allocation throughput.
-"""
+SparkAI Engine - Resource ID Allocator"""
 
 from __future__ import annotations
 

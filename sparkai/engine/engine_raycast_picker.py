@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - Raycast Picking System
-
-A screen-to-world raycasting and object picking runtime for the SparkLabs
-AI-native game engine. This system is distinct from the general physics
-collision system: it operates on pickable object registries with layer
-filtering, screen-to-world ray generation, and multi-mode selection queries
-(point ray, box, sphere, frustum). It is the precise subsystem that game
-editors require for object selection, hover highlighting, and
-editor interaction.
-
-Architecture:
-  RaycastPicker (singleton)
-    |-- Pickable, RaycastHit, BoxPickResult, SpherePickResult,
-       FrustumPickResult, PickerStats, PickerSnapshot, PickerEvent
-    |-- PickMode, PickerEventKind, CameraMode
-
-Core Capabilities:
-  - register_pickable / get_pickable / list_pickables / remove_pickable:
-    lifecycle for pickable objects with AABB bounds and layer membership.
-  - set_camera / get_camera: configure the screen-to-world camera matrix
-    for converting mouse coordinates into world-space rays.
-  - screen_to_ray: convert a screen-space (x, y) point into a world-space
-    ray (origin, direction).
-  - raycast: cast a ray and return sorted hit results with distance, point,
-    and normal, filtered by layer mask.
-  - box_pick / sphere_pick / frustum_pick: area-based selection queries
-    returning all pickables within the specified volume.
-  - hover / select / deselect: interaction state management for editor
-    highlighting and multi-select workflows.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`RaycastPicker.get_instance` or the module-level
-:func:`get_raycast_picker` factory.
-"""
+SparkLabs Engine - Raycast Picking System"""
 
 from __future__ import annotations
 

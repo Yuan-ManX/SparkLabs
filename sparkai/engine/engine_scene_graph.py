@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Hierarchical Scene Graph
-
-Node-based scene hierarchy with parent-child transform relationships,
-supporting both 2D and 3D scenes. Provides the structural backbone for
-AI-generated game worlds.
-
-Architecture:
-  SceneGraphSystem
-    |-- SceneNode (transform, bounds, components, layer)
-    |-- NodeTransform (local + cached world transform)
-    |-- Component (mesh, light, camera, collider, particle, audio, ...)
-    |-- Scene (named collection of nodes with a root)
-    |-- Prefab (reusable scene template)
-    |-- BoundingVolume (AABB with tree propagation)
-    |-- Layer (visibility + collision filtering)
-    |-- SignalHandler (node and scene level events)
-
-Usage:
-    sgs = SceneGraphSystem()
-    sgs.initialize()
-    root = sgs.create_node("Root", NodeType.ROOT)
-    player = sgs.create_node("Player", NodeType.MESH, parent_id=root)
-    sgs.set_local_transform(player, position=(0.0, 0.0, 5.0))
-    sgs.tick(0.016)
-    visible = sgs.frustum_cull(frustum_planes)
-"""
+SparkLabs Engine - Hierarchical Scene Graph"""
 from __future__ import annotations
 
 import json

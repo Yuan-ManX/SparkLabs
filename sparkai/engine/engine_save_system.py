@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Save System Engine
-
-Game save/load serialization with versioning, compression, cloud sync
-support, and backwards compatibility. Provides save slot management,
-checksum verification, and export/import functionality.
-
-Architecture:
-  SaveSystemEngine (Singleton)
-    |-- SaveSlot         — named save slot with history and metadata
-    |-- SaveData         — serialized game state with entity and variable data
-    |-- SaveMetadata     — descriptive metadata for each save entry
-
-Save Pipeline:
-  1. Save     — serialize game state, compute checksum, store in slot
-  2. Load     — verify integrity, deserialize, apply state
-  3. Verify   — validate checksum and data structure
-  4. Export   — serialize to portable format
-  5. Import   — deserialize from portable format with version migration
-"""
+SparkLabs Engine - Save System Engine"""
 
 from __future__ import annotations
 

@@ -1,50 +1,5 @@
 """
-SparkLabs Engine - Replay System
-
-A gameplay recording and playback system for the SparkLabs AI-native game
-engine. Captures entity transforms, input events, and game state snapshots
-into replay buffers that can be scrubbed, played back, exported, and
-spectated. Supports highlight marking, timeline navigation, multi-camera
-playback, and deterministic reproduction of recorded sessions.
-
-Each replay recording stores a sequence of keyframes (entity positions,
-rotations, velocities) and input events (button presses, analog sticks,
-touch gestures) sampled at a configurable capture rate. Designed for
-esports replay systems, content creation tools, anti-cheat verification,
-and gameplay analysis.
-
-Architecture:
-  ReplaySystem (singleton)
-    |-- ReplayState, ReplayEventKind, HighlightType
-    |-- EntityKeyframe, InputEvent, ReplayRecording, HighlightMarker,
-       ReplayPlayback, ReplayConfig, ReplayStats, ReplaySnapshot,
-       ReplayEvent
-    |-- get_replay_system
-
-Core Capabilities:
-  - start_recording / stop_recording / pause_recording / resume_recording:
-    control live gameplay capture into a replay buffer.
-  - get_recording / list_recordings / remove_recording: manage stored
-    replay recordings.
-  - add_keyframe / add_input_event: inject captured data points during
-    recording.
-  - start_playback / stop_playback / seek_playback / set_playback_speed:
-    control replay playback with timeline scrubbing and speed adjustment.
-  - get_playback / get_playback_state: retrieve current playback position
-    and state.
-  - add_highlight / remove_highlight / list_highlights: mark and manage
-    highlight moments within a recording.
-  - tick: advance recording capture and playback simulation.
-  - set_config / get_config: global tuning for max recordings, capture
-    rate, and buffer sizes.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`ReplaySystem.get_instance` or the module-level
-:func:`get_replay_system` factory.
-"""
+SparkLabs Engine - Replay System"""
 
 from __future__ import annotations
 

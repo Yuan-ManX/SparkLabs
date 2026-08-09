@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Scene Manager
-
-Comprehensive scene-based architecture with a transitions system for
-the SparkLabs game engine. Provides scene definitions, layered scene
-composition, transition orchestration between scenes, and lifecycle
-management for the full scene graph. Supports loading, unloading,
-switching, and updating scenes with configurable transition effects
-and easing curves.
-
-Architecture:
-  EngineSceneManager (Singleton)
-    |-- SceneDefinition    — full scene descriptor with layers, entities, cameras
-    |-- SceneTransition    — transition config between two scenes
-    |-- SceneLayer         — render layer with z-ordering, parallax, and filters
-    |-- SceneType (enum)   — semantic classification of scene purposes
-    |-- TransitionType (enum) — visual transition effect identifiers
-    |-- EasingType (enum)  — interpolation curve prescriptions
-
-Scene Lifecycle:
-  1. create_scene(name, scene_type) → scene definition created
-  2. create_layer(name, z_index) → layer definition created
-  3. add_layer_to_scene(scene_id, layer_id) → layer attached to scene
-  4. define_transition(from_scene, to_scene, type, duration) → transition
-  5. switch_scene(to_scene_id) → active transition begins
-  6. load_scene / unload_scene → manage scene resource lifecycle
-  7. update_scene(scene_id, delta) → per-frame scene tick
-"""
+SparkLabs Engine - Scene Manager"""
 
 from __future__ import annotations
 

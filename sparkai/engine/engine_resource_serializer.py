@@ -1,19 +1,5 @@
 """
-SparkLabs Engine - Resource Serializer
-
-Portable resource serialization system for game assets with versioning,
-dependency tracking, and cross-project sharing. Resources are serialized
-into self-describing bundles that carry their full dependency graph,
-enabling reliable import/export across separate SparkLabs projects.
-
-Architecture:
-  ResourceSerializer
-    |-- DescriptorRegistry (catalog of all known resources and their metadata)
-    |-- FormatEncoder (JSON, binary, and YAML encoding strategies)
-    |-- DependencySolver (topological ordering and cycle detection)
-    |-- BundlePackager (create and parse portable resource bundles)
-    |-- IntegrityValidator (hash verification and corruption detection)
-"""
+SparkLabs Engine - Resource Serializer"""
 
 from __future__ import annotations
 

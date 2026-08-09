@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Render Pipeline
-
-Complete rendering pipeline for the SparkLabs AI-native game engine.
-Orchestrates multi-pass rendering, material management, shader compilation,
-draw call queuing, scene lighting, and post-processing effects for both
-2D and 3D rendering.
-
-Architecture:
-  RenderPipeline (Singleton)
-    |-- MaterialLibrary    — material definitions, instances, and caching
-    |-- ShaderCompiler     — shader source management, compilation, and hot-reload
-    |-- RenderQueue        — draw call sorting, batching, and LOD selection
-    |-- LightManager       — scene lights, shadow maps, and light probes
-    |-- PostProcessStack   — screen-space effect chain with quality presets
-    |-- RenderPass         — individual render pass configuration
-    |-- FrameTracker       — per-frame statistics and profiling
-
-Render Pass Types:
-  FORWARD    — standard forward rendering pass
-  DEFERRED   — deferred shading G-buffer pass
-  SHADOW     — shadow map generation pass
-  POST       — post-processing compositing pass
-  UI         — screen-space user interface pass
-  SKYBOX     — skybox and environment pass
-  CUSTOM     — user-defined rendering pass
-
-Pass Execution Order:
-  1. Shadow map passes (per-light shadow atlases)
-  2. Skybox pass (background rendering)
-  3. Deferred G-buffer pass (albedo, normal, depth, material)
-  4. Forward pass (transparent, unlit, particles)
-  5. Post-process pass (bloom, DOF, SSAO, tonemapping)
-  6. UI pass (HUD, menus, overlays)
-"""
+SparkLabs Engine - Render Pipeline"""
 
 from __future__ import annotations
 

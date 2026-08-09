@@ -1,10 +1,5 @@
 """
-SparkLabs Engine - Raid, Bounty & Expedition System
-
-Provides PvE raid encounters with boss mechanics, bounty hunting contracts,
-and expedition adventures. Designed as a self-contained singleton system
-with seed data for immediate integration testing.
-"""
+SparkLabs Engine - Raid, Bounty & Expedition System"""
 
 from __future__ import annotations
 

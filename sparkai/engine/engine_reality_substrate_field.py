@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Reality Substrate Field
-
-The EngineRealitySubstrateField is the foundational coherence layer beneath
-all engine and cognition subsystems. Every subsystem (physics, narrative,
-emotion, memory, etc.) plugs into the substrate as a "resonator" with a
-natural frequency. The substrate measures how aligned these resonators are
-and detects when the world falls into or out of coherence.
-
-When subsystems are coherent, the world feels "real" - events cascade
-smoothly between physics, emotion, and narrative. When coherence breaks
-down, the substrate raises "reality stress" signals that directors can
-respond to, preventing the world from feeling disjointed or arbitrary.
-
-The substrate also propagates "reality pulses" - periodic waves that
-synchronize subsystems. A pulse emitted by the narrative system can
-trigger sympathetic resonance in emotion and physics, creating emergent
-moments where everything in the world aligns around a single beat.
-
-Architecture:
-  COHERE     ->  RESONATE     ->  HARMONIZE     ->  STABILIZE   ->  DECOHERE
-  (register      (emit and       (subsystems      (lock in          (allow
-   resonators    propagate       align to a       coherent state    controlled
-   and measure   pulses across   shared phase)    and damp noise)   drift to
-   baseline)     substrate)                                       avoid rigidity)
-
-Resonator properties:
-  - frequency    : natural oscillation rate (rad/cycle)
-  - amplitude    : current energy of the resonator (0.0-1.0)
-  - phase        : current phase offset (0.0-2*pi)
-  - damping      : how quickly the resonator loses energy
-  - coupling     : how strongly it influences neighbors
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Reality Substrate Field"""
 
 from __future__ import annotations
 
