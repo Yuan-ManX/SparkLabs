@@ -1,57 +1,5 @@
 """
-SparkLabs Agent - Inter-Agent Goal Negotiation Engine with Commitment Ledger
-
-This module implements a structured goal negotiation system that allows AI
-agents operating inside the SparkLabs AI-native game engine to propose,
-debate, pledge resources, and formally commit to shared goals. Unlike the
-general-purpose voting-focused negotiation module, this engine is
-specifically designed for goal-oriented multi-agent collaboration, tracking
-explicit pledges and commitments throughout the negotiation lifecycle.
-
-Core concepts:
-
-  1. Goal Proposals with Priority
-       Every goal begins as a :class:`GoalProposal` issued by a proposer
-       agent. Each proposal carries a :class:`GoalPriority` rating and a
-       list of required participants who must be involved to achieve it.
-
-  2. Phased Negotiation Lifecycle
-       Negotiations move through discrete :class:`NegotiationPhase` values
-       (PROPOSAL -> COUNTER -> ACCEPT/REJECT -> COMMIT) so that the
-       structure of debate is observable and auditable.
-
-  3. Explicit Pledges
-       During a negotiation, participants make :class:`Pledge` entries of
-       various :class:`PledgeType` values (RESOURCE, ACTION, TIMELINE,
-       COOPERATION, BLOCKING). Pledges have a commitment strength in [0, 1]
-       and progress through ACTIVE -> FULFILLED / BROKEN / RELEASED states.
-
-  4. Formal Commitments
-       Agents may convert their pledges into a :class:`Commitment` which
-       carries an aggregate commitment score and is registered against a
-       goal. Commitments are the auditable record of who is on the hook.
-
-  5. Progress Tracking
-       Each goal has an associated :class:`GoalProgress` record capturing
-       current progress, blockers, and estimated completion. Progress feeds
-       the engine's statistics and success-rate calculation.
-
-Architecture:
-  GoalNegotiationLedgerEngine (Singleton, double-checked locking with threading.RLock)
-    |-- GoalProposal            -- an initial goal proposal
-    |-- Pledge                  -- a specific commitment of resource/action
-    |-- Negotiation             -- a structured multi-agent debate
-    |-- Commitment              -- a formal, registered commitment
-    |-- GoalProgress            -- progress and blockers for a goal
-    |-- GoalRecord              -- aggregate record for a goal
-    |-- NegotiationStats        -- aggregate engine statistics
-    |-- GoalNegotiationSnapshot -- complete engine state snapshot
-    |-- GoalNegotiationEvent    -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the
-engine is safe to call from multiple agent threads. Bounded in-memory
-stores use FIFO eviction when their capacity constants are exceeded.
-"""
+SparkLabs Agent - Inter-Agent Goal Negotiation Engine with Commitment Ledger"""
 
 from __future__ import annotations
 

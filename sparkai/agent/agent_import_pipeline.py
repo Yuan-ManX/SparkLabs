@@ -1,23 +1,5 @@
 """
-SparkLabs Agent - Import Pipeline Engine
-
-AI-assisted asset import pipeline with format detection,
-preset management, batch processing, and AI-driven recommendations.
-Handles textures, models, audio, fonts, spritesheets, animations,
-tilemaps, and shaders with configurable compression presets.
-
-Architecture:
-  ImportPipelineEngine
-    |-- Preset Manager (create and manage import configurations)
-    |-- AI Recommender (suggest optimal presets from file analysis)
-    |-- Queue Engine (single-file and batch import scheduling)
-    |-- Progress Tracker (per-task status monitoring)
-    |-- Import Validator (post-import integrity verification)
-
-Compression presets range from lossless through custom, supporting
-mipmap generation, collision mesh generation, resolution limits,
-and texture filter mode configuration.
-"""
+SparkLabs Agent - Import Pipeline Engine"""
 
 from __future__ import annotations
 

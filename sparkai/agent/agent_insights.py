@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Session Insights Engine
-
-Analyzes game development session history to produce comprehensive
-usage insights — token consumption, cost estimates, task completion
-patterns, tool usage trends, and development productivity metrics.
-
-Architecture:
-  InsightsEngine
-    |-- SessionCollector (gathers session data from trajectory records)
-    |-- TokenAnalyzer (token input/output breakdown by model)
-    |-- CostEstimator (USD cost estimates with pricing tiers)
-    |-- ToolAnalyzer (tool call frequency and latency patterns)
-    |-- TaskAnalyzer (task completion rates and iteration counts)
-    |-- TrendBuilder (daily/weekly activity visualization)
-    |-- ReportFormatter (JSON + terminal-friendly summary output)
-
-Usage:
-    engine = InsightsEngine()
-    engine.feed_session(session_id, trajectory_events)
-    report = engine.generate(days=30)
-    print(engine.format_summary(report))
-"""
+SparkLabs Agent - Session Insights Engine"""
 
 from __future__ import annotations
 

@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Guard System
-
-Security guard for agent-generated skills, code, and assets within the
-game engine. Scans externally-sourced content before integration into
-the project using regex-based static analysis and structural validation.
-
-Architecture:
-  GuardSystem
-    |-- ThreatScanner (regex pattern matching for known-bad patterns)
-    |-- StructureValidator (file count/size/binary checks)
-    |-- TrustResolver (maps source identifiers to trust levels)
-    |-- PolicyEngine (install policy based on trust level + verdict)
-
-Trust Levels:
-  - builtin: Core SparkLabs subsystems. Never scanned, always trusted.
-  - trusted: Official SparkLabs ecosystem content.
-  - community: User/community contributed content. Full scanning.
-
-Usage:
-    guard = GuardSystem()
-    result = guard.scan_content(skill_path, source="community")
-    allowed, reason = guard.should_allow(result)
-    if allowed:
-        install_skill(result)
-"""
+SparkLabs Agent - Guard System"""
 
 from __future__ import annotations
 

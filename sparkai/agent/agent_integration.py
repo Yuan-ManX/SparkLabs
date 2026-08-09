@@ -1,10 +1,5 @@
 """
-SparkLabs Subsystem Integration Layer
-
-Connects all agent subsystems (Protocol, Studio, Swarm, Skills, Memory)
-into a unified operational fabric. Enables cross-subsystem communication,
-shared knowledge, and coordinated task execution.
-"""
+SparkLabs Subsystem Integration Layer"""
 
 from __future__ import annotations
 

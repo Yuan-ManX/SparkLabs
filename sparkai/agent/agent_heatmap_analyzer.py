@@ -1,37 +1,5 @@
 """
-SparkLabs Agent - Heatmap Analyzer
-
-AI-driven player behavior heatmap analysis system for AI-native game design.
-Processes player position data, identifies hotspots, dead zones, pathing
-patterns, and generates actionable design insights from spatial telemetry.
-
-Architecture:
-  HeatmapAnalyzer (Singleton)
-    |-- HeatmapGrid (spatial grid with weighted cell data)
-    |-- HotspotDetection (identified cluster of interest)
-    |-- DesignInsight (actionable design recommendation)
-
-Heatmap Types:
-  POSITION, DEATH, DAMAGE_TAKEN, DAMAGE_DEALT, ITEM_PICKUP, INTERACTION,
-  PLAYER_PATH
-
-Grid Resolutions:
-  COARSE (16x16 cells), STANDARD (32x32), FINE (64x64), ULTRA_FINE (128x128)
-
-Hotspot Categories:
-  DANGER_ZONE, SAFE_ZONE, TRAFFIC_HUB, UNDISCOVERED, OVERPOPULATED, IDEAL_BALANCE
-
-Analysis Modes:
-  REAL_TIME, RETROSPECTIVE, COMPARATIVE, PREDICTIVE
-
-Usage:
-    analyzer = get_heatmap_analyzer()
-    grid = analyzer.create_grid("level_01", HeatmapType.POSITION, GridResolution.STANDARD, 100, 100)
-    analyzer.record_event(grid.id, 42.5, 67.3, 1.0)
-    hotspots = analyzer.detect_hotspots(grid.id)
-    insights = analyzer.generate_insights(grid.id)
-    stats = analyzer.get_stats()
-"""
+SparkLabs Agent - Heatmap Analyzer"""
 
 from __future__ import annotations
 

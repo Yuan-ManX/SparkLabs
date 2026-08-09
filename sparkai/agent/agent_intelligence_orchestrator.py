@@ -1,48 +1,5 @@
 """
-SparkLabs Agent - Intelligence Orchestrator
-
-The central AI orchestration module for the SparkLabs AI-native game engine.
-Coordinates all AI agents, manages cognitive pipelines, and provides a unified
-intelligence layer that bridges game design intent with runtime execution.
-
-Architecture:
-  IntelligenceOrchestrator (singleton)
-    |-- PipelineStage (cognitive pipeline phase enumeration)
-    |-- InsightType (knowledge node categorization)
-    |-- PipelineStatus (lifecycle state of a pipeline)
-    |-- CognitiveDomain (domain classification for insights)
-    |-- CognitiveContext (shared context flowing through the pipeline)
-    |-- InsightNode (AI-generated knowledge about game design)
-    |-- StageResult (outcome of a single pipeline stage execution)
-    |-- IntelligencePipeline (multi-stage cognitive processing chain)
-
-Core Capabilities:
-  - create_pipeline: Instantiate a new cognitive processing pipeline
-  - execute_stage: Process one stage of the cognitive pipeline
-  - inject_insight: Add an AI-generated insight to a pipeline
-  - query_insights: Search the global insight graph with filters
-  - get_pipeline_status: Real-time status snapshot of a pipeline
-  - get_stats: Aggregate statistics across all pipelines
-  - synthesize_knowledge: Cross-pipeline knowledge synthesis by domain
-
-Pipeline Flow:
-  ANALYZE -> DESIGN -> IMPLEMENT -> TEST -> DEPLOY -> ITERATE
-  Each stage consumes the CognitiveContext, transforms it, and generates
-  insights that accumulate into a growing knowledge graph.
-
-Usage:
-    orchestrator = get_intelligence_orchestrator()
-    pid = orchestrator.create_pipeline('combat_design', [
-        PipelineStage.ANALYZE, PipelineStage.DESIGN,
-        PipelineStage.IMPLEMENT, PipelineStage.TEST,
-    ])
-    result = orchestrator.execute_stage(pid, PipelineStage.ANALYZE,
-        {'game_type': 'rpg', 'target_audience': 'casual'})
-    insight = orchestrator.inject_insight(pid, 'design_pattern',
-        'Players respond well to risk-reward combat loops', 0.85)
-    knowledge = orchestrator.synthesize_knowledge('combat')
-    stats = orchestrator.get_stats()
-"""
+SparkLabs Agent - Intelligence Orchestrator"""
 
 from __future__ import annotations
 

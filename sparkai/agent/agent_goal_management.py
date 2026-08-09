@@ -1,18 +1,5 @@
 """
-SparkLabs Agent - Goal Management System
-
-A hierarchical goal management system that enables agents to decompose
-complex objectives into manageable sub-goals, track progress, and select
-the most valuable goals based on utility calculations. The system supports
-dynamic goal prioritization, dependency tracking, and progress monitoring.
-
-Architecture:
-  GoalManagementSystem (Singleton)
-    |-- GoalNode (individual goal with priority and dependencies)
-    |-- GoalTree (hierarchical decomposition of goals)
-    |-- GoalSelectionStrategy (utility-based goal selection)
-    |-- GoalMonitor (real-time progress tracking)
-"""
+SparkLabs Agent - Goal Management System"""
 
 from __future__ import annotations
 

@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - LLM Interaction Pipeline
-
-Comprehensive LLM interaction pipeline for the SparkLabs AI-native game
-engine. Orchestrates the entire lifecycle of LLM calls from prompt
-construction through response parsing and logging.
-
-Architecture:
-  LLMPipelineEngine (singleton orchestrator)
-    |-- PromptTemplateEngine (template management and composition)
-    |-- ChainOfThoughtRouter (reasoning strategy routing)
-    |-- MultiModelOrchestrator (provider orchestration and load balancing)
-    |-- ContextAssemblyEngine (dynamic context window assembly)
-    |-- ResponseParser (structured output extraction and validation)
-    |-- LLMInteractionLogger (interaction tracking and cost monitoring)
-
-The pipeline provides a unified interface for all LLM-powered agent
-operations, enabling intelligent prompt construction, multi-strategy
-reasoning, provider-aware routing, context-aware assembly, structured
-response parsing, and comprehensive logging.
-"""
+SparkLabs Agent - LLM Interaction Pipeline"""
 
 from __future__ import annotations
 

@@ -1,42 +1,5 @@
 """
-SparkLabs Agent - AI Innovation Forge
-
-An innovation forge agent for the SparkLabs AI-native game engine. It
-forges novel game concepts by fusing elements from disparate design
-domains, applying analogical reasoning, creative mutation, and
-cross-pollination to produce original mechanics, narratives, and
-experiences. The forge maintains a lineage graph of every concept it
-produces so that creative provenance is always traceable.
-
-Architecture:
-  InnovationForge (singleton)
-    |-- GameConcept, ConceptElement, FusionRecipe, InnovationResult,
-       InnovationLineage, InnovationScore, InnovationStats,
-       InnovationSnapshot, InnovationEvent
-    |-- InnovationDomain, FusionMethod, InnovationTier, InnovationStatus,
-       InnovationEventKind, MutationStrategy
-
-Core Capabilities:
-  - register_concept / get_concept / list_concepts / update_concept:
-    concept lifecycle management with domain tagging and tier grading.
-  - forge_fusion: fuse two or more concepts into a novel hybrid using
-    intersection, union, abstraction, analogy, or cross-pollination.
-  - mutate_concept: apply structured mutations (inversion, escalation,
-    simplification, reframing, hybridization) to produce variants.
-  - evaluate_innovation: score a concept on novelty, feasibility,
-    cohesion, and surprise dimensions.
-  - trace_lineage: walk the parent-child graph of any concept to
-    reveal its full creative provenance.
-  - recommend_fusions: suggest promising concept pairings based on
-    domain distance and compatibility scoring.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`InnovationForge.get_instance` or the module-level
-:func:`get_innovation_forge` factory.
-"""
+SparkLabs Agent - AI Innovation Forge"""
 
 from __future__ import annotations
 

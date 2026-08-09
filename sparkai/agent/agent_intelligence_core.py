@@ -1,10 +1,5 @@
 """
-SparkLabs Agent Intelligence Core - Unified Agent Reasoning & Execution Framework
-
-Central intelligence hub that orchestrates all agent capabilities through
-a unified reasoning architecture, combining strategic synthesis, learning loops,
-team coordination, and world simulation into a cohesive AI-native system.
-"""
+SparkLabs Agent Intelligence Core - Unified Agent Reasoning & Execution Framework"""
 
 from __future__ import annotations
 

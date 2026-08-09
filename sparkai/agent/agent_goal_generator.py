@@ -1,52 +1,5 @@
 """
-SparkLabs Agent - Goal Generator
-
-An autonomous goal generation and intrinsic motivation system for AI agents
-in the SparkLabs game engine. Agents do not merely react to external stimuli -
-they autonomously generate their own goals based on intrinsic motivation
-drives (curiosity, mastery, social connection, autonomy, competence). The
-engine evaluates an agent's current motivational state, identifies gaps
-between desired and actual competence, and generates actionable goals with
-priority, difficulty, and deadline.
-
-The system marries two ideas:
-
-  1. Intrinsic motivation - each agent carries a set of motivational drives
-     (curiosity, mastery, social, autonomy, competence, relatedness), each
-     with a ``level`` (how much the agent wants it, 0.0-1.0) and a
-     ``satisfaction`` (how fulfilled it currently is, 0.0-1.0). The gap
-     between level and satisfaction is the *deficit* that drives goal
-     generation.
-
-  2. Goal lifecycle - goals progress through a state machine (PROPOSED ->
-     ACTIVE -> COMPLETED/ABANDONED/FAILED, with PAUSED as a side state).
-     Goals can form hierarchical trees through parent/sub-goal links, carry
-     priority and difficulty, and report fractional progress.
-
-Architecture:
-  GoalGeneratorEngine (Singleton)
-    |-- MotivationDrive (intrinsic motivation drives)
-    |-- GoalStatus (goal lifecycle state machine)
-    |-- GoalCategory (domain classification of goals)
-    |-- GoalPriority (priority tier for goal ordering)
-    |-- GoalDifficulty (scaling tier for goal complexity)
-    |-- GoalEventKind (observable system events)
-    |-- MotivationState (per agent+drive motivational state)
-    |-- Goal (individual goal with progress and lifecycle)
-    |-- GoalTemplate (reusable goal archetype)
-    |-- GoalStats (aggregate engine statistics)
-    |-- GoalSnapshot (point-in-time state snapshot)
-    |-- GoalEvent (observable event record)
-    |-- Event Handlers (pluggable observers for goal lifecycle)
-
-Core Capabilities:
-  - Track per-agent motivational drives with level and satisfaction
-  - Generate goals manually or autonomously from unsatisfied drives
-  - Manage the full goal lifecycle (activate, pause, complete, abandon, fail)
-  - Build hierarchical goal trees via parent/sub-goal relationships
-  - Re-evaluate and reprioritize active goals from drive deficits
-  - Emit observable events for the goal and motivation lifecycle
-"""
+SparkLabs Agent - Goal Generator"""
 
 from __future__ import annotations
 

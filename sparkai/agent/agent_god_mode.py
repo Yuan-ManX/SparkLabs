@@ -1,42 +1,5 @@
 """
-SparkLabs Agent - God Mode Controller
-
-Runtime intervention system for the SparkLabs AI-native game engine.
-Provides god-mode capabilities allowing developers to intervene in running
-game simulations at runtime — editing agent memories, modifying personalities,
-injecting world events, observing world state, and overriding agent conversations.
-
-Architecture:
-  GodModeController (Singleton)
-    |-- GodModeSession (active intervention session bound to a world)
-    |-- GodModeCommand (individual intervention command with execution tracking)
-    |-- AgentMemoryEdit (memory manipulation record)
-    |-- AgentPersonalityEdit (personality trait modification record)
-    |-- WorldEventInjection (injected world event with propagation)
-
-Intervention Types:
-  MEMORY_EDIT, PERSONALITY_EDIT, EVENT_INJECT, STATE_OVERRIDE,
-  CONVERSATION_OVERRIDE, WORLD_EDIT, OBSERVE
-
-Intervention Scopes:
-  SINGLE_AGENT, AGENT_GROUP, ALL_AGENTS, WORLD, SCENE
-
-Memory Operations:
-  ADD, REMOVE, UPDATE
-
-Usage:
-    gm = get_god_mode_controller()
-    gm.initialize()
-    session = gm.start_session("world_01", {"created_by": "developer"})
-    gm.edit_agent_memory("agent_42", "childhood_trauma", "Saved by a stranger", "UPDATE")
-    gm.edit_agent_personality("agent_42", "extraversion", 0.8)
-    gm.inject_world_event("METEOR_STRIKE", "A meteor crashes into the village",
-                          "village_square", ["agent_42", "agent_99"], 0.9, 30.0)
-    obs = gm.observe_agent("agent_42")
-    world_state = gm.observe_world("world_01")
-    gm.end_session(session.id)
-    gm.shutdown()
-"""
+SparkLabs Agent - God Mode Controller"""
 
 from __future__ import annotations
 

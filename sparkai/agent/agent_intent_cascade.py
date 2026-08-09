@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Intent Cascade
-
-Multi-level intent resolution system that cascades through exact match,
-fuzzy matching, generative interpretation, and delegation strategies
-to resolve developer intents in the AI-native game engine.
-
-Architecture:
-  IntentCascade (singleton)
-    |-- IntentSignal (raw intent capture with domain classification)
-    |-- ResolutionResult (resolution outcome with alternatives)
-    |-- CascadeRecord (traceable chain of resolution attempts)
-    |-- Exact Matcher (registered rule lookup)
-    |-- Fuzzy Matcher (approximate text matching with scoring)
-    |-- Generative Interpreter (simulated generative resolution)
-    |-- Delegation Router (routes to domain-specific handlers)
-"""
+SparkLabs Agent - Intent Cascade"""
 
 from __future__ import annotations
 

@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Insights Generator
-
-Cross-session analytics engine that derives operational insights from
-agent activity patterns across the SparkLabs game development platform.
-Collects metrics, detects anomalies, analyzes trends, and produces
-structured reports on agent behavior and productivity.
-
-Architecture:
-  InsightsGenerator
-    |-- AgentInsight (single derived insight with confidence scoring)
-    |-- InsightReport (multi-insight collection with formatting)
-    |-- ActivityMetric (quantified activity measurement over time)
-    |-- TrendLine (metric evolution across time windows)
-    |-- AnomalyAlert (statistical deviation detection and alerting)
-
-Insight Types:
-  - PERFORMANCE: throughput, latency, resource efficiency
-  - BEHAVIOR: interaction patterns, task preferences, response styles
-  - USAGE: tool invocation frequency, model selection habits
-  - TREND: directional shifts in activity over time
-  - ANOMALY: statistical outliers and unexpected patterns
-  - OPPORTUNITY: optimization suggestions and improvement areas
-
-Usage:
-    ig = get_insights_generator()
-    ig.collect_metrics("agent_001", time_range_days=7)
-    insights = ig.generate_insights("agent_001", types=[InsightType.PERFORMANCE])
-    report = ig.create_report("agent_001", format=ReportFormat.MARKDOWN)
-"""
+SparkLabs Agent - Insights Generator"""
 from __future__ import annotations
 
 import math

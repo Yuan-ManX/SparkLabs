@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Intent Classifier
-
-Intent classification engine that determines the user's game
-development goal from natural language input. Routes to the
-appropriate agent, tool chain, or workflow based on classified
-intent type, confidence score, and domain specificity.
-
-Architecture:
-  IntentClassifier
-    |-- IntentMatcher (keyword + pattern-based matching)
-    |-- IntentConfidence (score ranking for ambiguous queries)
-    |-- DomainRouter (route to specialized agent by domain)
-    |-- IntentHistory (learn from repeated user patterns)
-    |-- DisambiguationResolver (handle multi-intent inputs)
-
-Intent Domains (Game Development specific):
-  - CREATE: generate new game content (level, character, asset)
-  - MODIFY: alter existing game content
-  - QUERY: ask about game state or design
-  - DEBUG: find and fix game issues
-  - OPTIMIZE: improve game performance
-  - DEPLOY: build, package, or publish game
-"""
+SparkLabs Agent - Intent Classifier"""
 
 from __future__ import annotations
 
