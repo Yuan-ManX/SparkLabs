@@ -1,45 +1,5 @@
 """
-SparkLabs Agent - AI Persistence Architect
-
-A runtime module that designs save-system layouts and orchestrates cloud
-sync for the SparkLabs AI-native game engine. The architect manages save
-slots across local, cloud, hybrid, and distributed storage tiers, drives
-upload/download sync operations, detects and resolves version conflicts,
-runs schema migrations with rollback checkpoints, tracks cloud endpoint
-health, and produces point-in-time snapshots for backup and restore.
-
-This module embodies the AI-native principle: persistence is not a static
-file writer but an intelligent agent that reasons about storage placement,
-sync state, conflict resolution strategy, and migration safety while
-players are in-session.
-
-Architecture:
-  PersistenceArchitect (singleton)
-    |-- SaveSlot, SaveSchema, SyncOperation, ConflictRecord,
-        MigrationTask, CloudEndpoint, SnapshotManifest,
-        PersistenceStats, PersistenceSnapshot, PersistenceEvent
-    |-- SaveFormat, SyncState, ConflictResolution, StorageTier,
-        MigrationStatus, DataCategory, PersistenceEventKind,
-        SyncDirection
-
-Core Capabilities:
-  - create_save_slot / get_save_slot / list_save_slots / update_save_slot /
-    delete_save_slot: full CRUD over save slot definitions.
-  - register_schema / get_schema / list_schemas: versioned save schema
-    management with migration lineage tracking.
-  - start_sync / get_sync_operation / list_sync_operations / complete_sync:
-    cloud sync orchestration with upload/download direction tracking.
-  - detect_conflict / resolve_conflict / list_conflicts: version conflict
-    detection and resolution across local and remote copies.
-  - create_migration / get_migration / list_migrations / complete_migration:
-    schema migration execution with rollback checkpoints.
-  - register_endpoint / get_endpoint / list_endpoints / check_endpoint_health:
-    cloud storage endpoint registration and health probing.
-  - create_snapshot / get_snapshot_manifest / list_snapshot_manifests /
-    restore_snapshot: point-in-time backup manifests and restoration.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-"""
+SparkLabs Agent - AI Persistence Architect"""
 
 from __future__ import annotations
 

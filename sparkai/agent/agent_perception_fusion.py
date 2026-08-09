@@ -1,19 +1,5 @@
 """
-SparkLabs Agent - Multi-Modal Perception Fusion System
-
-A perception fusion system that combines multiple sensory modalities
-into a unified percept. Models how agents perceive their environment
-through visual, auditory, spatial, social, and temporal channels,
-with attention mechanisms to prioritize the most salient inputs.
-
-Architecture:
-  PerceptionFusionSystem (Singleton)
-    |-- PerceptionSource (visual, auditory, spatial, social, temporal)
-    |-- PerceptionFrame (snapshot at a moment in time)
-    |-- SensorFusionEngine (multi-modal combination)
-    |-- AttentionSystem (percept prioritization)
-    |-- SaliencyMap (spatial attention distribution)
-"""
+SparkLabs Agent - Multi-Modal Perception Fusion System"""
 
 from __future__ import annotations
 

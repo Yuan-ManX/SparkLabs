@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Pipeline
-
-Multi-stage agent workflow pipeline system for orchestrating
-complex game development operations through sequenced stages
-with conditional branching, parallel execution, and rollback.
-
-Architecture:
-  AgentPipeline
-    |-- PipelineStage (discrete operation with input/output contract)
-    |-- PipelineContext (shared state flowing through stages)
-    |-- StageRouter (conditional next-stage selection)
-    |-- ParallelFanout (concurrent stage execution)
-    |-- PipelineMonitor (progress tracking and stage timing)
-    |-- RollbackManager (reversal on stage failure)
-
-Pipeline Templates:
-  - GENERATE_GAME: design → code → assets → test → publish
-  - REFACTOR: analyze → plan → transform → validate → commit
-  - DEBUG: reproduce → diagnose → fix → verify → document
-  - REVIEW: scan → categorize → suggest → approve → apply
-"""
+SparkLabs Agent - Pipeline"""
 
 from __future__ import annotations
 

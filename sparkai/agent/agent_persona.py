@@ -1,33 +1,5 @@
 """
-SparkLabs Agent - Persona System
-
-Role-based agent persona profiles for specialized game engine tasks.
-Assigns distinct behavior configurations to agents based on their
-responsibility domain — level designer, systems engineer, narrative
-director, asset curator. Each persona defines tool access, prompt
-style, and behavioral constraints.
-
-Architecture:
-  PersonaSystem
-    |-- AgentPersona (name, role, tools, style, constraints)
-    |-- PersonaRegistry (predefined and custom persona profiles)
-    |-- ToolGrant (per-persona tool access permissions)
-    |-- BehaviorProfile (tone, verbosity, creativity parameters)
-
-Persona Profiles:
-  - game_designer: high-level concept and mechanics design
-  - systems_engineer: code generation and engine integration
-  - level_architect: scene layout and spatial design
-  - narrative_director: story, dialogue, character arcs
-  - asset_curator: visual/audio asset definition and placement
-  - quality_tester: gameplay testing and balance evaluation
-
-Usage:
-    ps = PersonaSystem()
-    persona = ps.get_persona("systems_engineer")
-    print(persona.role_description)
-    print(persona.tool_grants)
-"""
+SparkLabs Agent - Persona System"""
 
 from __future__ import annotations
 

@@ -1,20 +1,5 @@
 """
-SparkLabs Agent - Physics Parameter Tuner
-
-AI-assisted physics parameter tuning engine for the SparkLabs AI-native
-game engine. Provides automated analysis and optimization of physics
-parameters across multiple domains including gravity, collision, joints,
-ragdoll, vehicle, cloth, fluid, and soft-body physics. Generates
-domain-specific presets, records tuning sessions for traceability, and
-supports AI-driven parameter suggestions based on entity characteristics.
-
-Architecture:
-  PhysicsTuner
-    |-- PhysicsParameter (individual tunable physics value)
-    |-- TunerPreset (named collection of parameter values)
-    |-- TuningSession (recorded before/after tuning snapshots)
-    |-- PresetComparison (structured comparison between presets)
-"""
+SparkLabs Agent - Physics Parameter Tuner"""
 
 from __future__ import annotations
 

@@ -1,16 +1,5 @@
 """
-SparkLabs Agent - AI Photo Director
-
-An AI-native cinematic capture system that judges photo composition,
-selects focal points, recommends angles and filters, and schedules
-captures at dramatic moments. Fuses AI aesthetic judgment with engine
-camera control to produce share-worthy screenshots automatically.
-
-Designed for integration with the camera controller, cinematographer,
-and frame capture system. The AI evaluates scene composition using
-rule-of-thirds, golden ratio, leading lines, depth-of-field, and
-dramatic tension to recommend optimal capture moments.
-"""
+SparkLabs Agent - AI Photo Director"""
 
 from __future__ import annotations
 

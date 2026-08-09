@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Performance Optimizer
-
-AI-driven performance optimization engine for the SparkLabs AI-native
-game engine. Monitors game runtime performance metrics across multiple
-domains (frame rate, memory, CPU, GPU, network, I/O, physics, AI,
-rendering, audio), detects bottlenecks, and generates optimization
-recommendations using AI-driven analysis.
-
-Architecture:
-  PerformanceOptimizerEngine
-    |-- Metric Recorder (collect per-domain performance metrics)
-    |-- Bottleneck Detector (identify constraints via threshold analysis)
-    |-- Suggestion Generator (AI-driven optimization recommendations)
-    |-- Snapshot Engine (point-in-time performance snapshots)
-    |-- Report Generator (comprehensive optimization reports)
-
-Bottleneck types span CPU-bound, GPU-bound, memory-bound, I/O-bound,
-and network-bound categories, each with severity ratings from critical
-to info. Optimization strategies include batch processing, object
-pooling, LOD optimization, culling, memory compaction, load balancing,
-cache optimization, and async operation patterns.
-"""
+SparkLabs Agent - Performance Optimizer"""
 
 from __future__ import annotations
 

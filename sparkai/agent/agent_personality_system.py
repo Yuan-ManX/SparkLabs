@@ -1,45 +1,5 @@
 """
-SparkLabs Agent - Personality System
-
-Configurable agent personality profiles that shape interaction style,
-decision-making patterns, and creative output across the game engine
-development lifecycle. Supports weighted trait blending, profile cloning,
-multi-profile blending, tone evaluation, and scenario-based suggestions.
-
-Architecture:
-  PersonalitySystem
-    |-- PersonalityProfile (core profile with trait weights and archetype)
-    |-- TraitWeight (per-trait numerical weight with justification)
-    |-- InteractionConfig (style/tone/pace configuration)
-    |-- RoleDefinition (archetype-specific role scaffolding)
-    |-- StyleSample (example interaction snippets for tone calibration)
-
-Personality Traits:
-  - CREATIVE: generative ideation, novel approaches
-  - ANALYTICAL: data-driven reasoning, logic chains
-  - PLAYFUL: lighthearted framing, humor injection
-  - SERIOUS: formal tone, precision-oriented
-  - CONCISE: minimal output, high signal-to-noise
-  - ELABORATE: detailed exposition, thorough coverage
-  - CAUTIOUS: risk-aware, edge-case conscious
-  - BOLD: confident assertions, decisive recommendations
-
-Role Archetypes:
-  - GENERALIST: broad-spectrum game development reasoning
-  - LEVEL_DESIGNER: spatial layout and environmental flow thinking
-  - NARRATIVE_DESIGNER: story, dialogue, and character arc thinking
-  - SYSTEMS_DESIGNER: mechanics, rules, and engine architecture thinking
-  - ART_DIRECTOR: visual style and asset cohesion thinking
-  - QA_TESTER: quality, balance, and edge-case thinking
-
-Usage:
-    ps = get_personality_system()
-    profile = ps.create_profile("Design Mentor", "A creative yet structured design guide",
-                                [("CREATIVE", 0.8), ("ELABORATE", 0.6), ("BOLD", 0.5)],
-                                archetype=RoleArchetype.LEVEL_DESIGNER,
-                                style=InteractionStyle.MENTOR)
-    prompt = ps.generate_prompt_prefix(profile.id)
-"""
+SparkLabs Agent - Personality System"""
 from __future__ import annotations
 
 import math

@@ -1,16 +1,5 @@
 """
-SparkLabs Agent - AI Pacing Director
-
-Orchstrates the rhythm of player experience by tuning intensity curves,
-action/lull cycles, and engagement feedback. Prevents burnout from
-sustained high intensity and boredom from prolonged lulls, steering the
-player toward a sustained flow state.
-
-Consumes gameplay telemetry (kills, deaths, objectives, movement,
-resource changes) and emits pacing directives (spawn enemies, dial
-difficulty, trigger narrative beats, suggest rests) that other engine
-subsystems can consume.
-"""
+SparkLabs Agent - AI Pacing Director"""
 
 from __future__ import annotations
 

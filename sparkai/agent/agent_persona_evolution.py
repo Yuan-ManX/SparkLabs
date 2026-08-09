@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Persona Evolution Engine
-
-This module models how an AI agent's personality traits drift, reinforce,
-and evolve over time based on lived experience. While the PersonalitySystem
-holds a static trait profile, this engine records the trajectory of trait
-changes: each significant experience (a success, a failure, a social
-encounter, a creative breakthrough) exerts pressure on one or more traits,
-nudging them in a direction. Over many experiences the trait landscape
-shifts, producing an agent whose personality is shaped by its history.
-
-The engine maintains:
-  - A trait timeline (every trait change is recorded with timestamp,
-    cause, and magnitude)
-  - Reinforcement curves (traits that are repeatedly exercised grow
-    stronger; neglected traits atrophy)
-  - Mutation events (rare, high-impact experiences that can cause sudden
-    trait shifts)
-  - Evolution snapshots (periodic captures of the full trait landscape
-    for comparison)
-
-Architecture:
-  PersonaEvolutionEngine (Singleton, double-checked locking, threading.RLock)
-    |-- TraitPressure        -- a directional force on a trait
-    |-- ExperienceRecord     -- a lived experience that shaped the agent
-    |-- TraitChange          -- a single recorded trait value change
-    |-- MutationEvent        -- a rare high-impact personality shift
-    |-- EvolutionSnapshot    -- a periodic capture of all trait values
-    |-- EvolutionStats       -- aggregate evolution statistics
-    |-- EvolutionSnapshot2   -- full engine snapshot
-    |-- EvolutionEvent       -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the
-engine is safe to call from multiple agent threads. Bounded in-memory
-stores use FIFO eviction when their capacity constants are exceeded.
-"""
+SparkLabs Agent - Persona Evolution Engine"""
 
 from __future__ import annotations
 

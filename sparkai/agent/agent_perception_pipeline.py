@@ -1,42 +1,5 @@
 """
-SparkLabs Agent - Perception Pipeline
-
-Multi-modal perception pipeline that enables agents to observe, interpret,
-and understand their game world environment through multiple sensory channels.
-Processes raw game state data into structured percepts that feed into the
-agent's decision-making and world model.
-
-Architecture:
-  PerceptionPipeline (Singleton)
-    |-- SensoryChannel (abstract base for perception modalities)
-    |   |-- VisualChannel (game object detection, spatial awareness)
-    |   |-- SpatialChannel (position, distance, navigation)
-    |   |-- SocialChannel (agent relationships, group dynamics)
-    |   |-- EventChannel (world events, state changes)
-    |-- PerceptFusion (combines multi-channel percepts into unified view)
-    |-- AttentionManager (prioritizes percepts by relevance)
-
-Perception Channels:
-  - VISUAL: what the agent can see in the game world
-  - SPATIAL: spatial relationships and navigation data
-  - SOCIAL: social dynamics and relationship information
-  - EVENT: world events and state transitions
-  - AUDITORY: audio cues and environmental sounds
-  - TACTILE: collision and physics-based perception
-
-Usage:
-    pp = get_perception_pipeline()
-    pp.initialize()
-
-    percepts = pp.perceive(
-        agent_id="agent_42",
-        world_state=current_world_state,
-        channels=[PerceptionChannel.VISUAL, PerceptionChannel.SPATIAL],
-    )
-
-    attention = pp.get_attention_focus("agent_42")
-    pp.shutdown()
-"""
+SparkLabs Agent - Perception Pipeline"""
 
 from __future__ import annotations
 

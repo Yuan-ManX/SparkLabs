@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Persona Lifecycle Manager
-
-The AgentPersonaLifecycleManager governs the complete existence arc of
-NPC personas from germination through legacy. Unlike static personality
-profiles, this module treats each persona as a living entity with a
-dynamic life script that can be rewritten by experience.
-
-A persona's lifecycle moves through five stages:
-  GERMINATE -> FORM -> FLOURISH -> FALTER -> LEGACY
-
-  GERMINATE : the persona is seeded with core traits and a life theme
-  FORM      : formative events shape beliefs, skills, and relationships
-  FLOURISH  : peak agency, the persona actively pursues goals
-  FALTER    : crisis, decline, or transformation challenges the persona
-  LEGACY    : the persona's story concludes, leaving enduring impact
-
-The manager runs a 5-phase cycle that advances each persona through
-their lifecycle, applying life events, checking for stage transitions,
-and ensuring that NPCs grow and change rather than remaining static.
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Persona Lifecycle Manager"""
 
 from __future__ import annotations
 

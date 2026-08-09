@@ -1,33 +1,5 @@
 """
-SparkAI Agent - Memory Persistence Engine
-
-Disk-based persistence layer for agent memory, sessions, and
-game context. Provides automatic checkpointing, state recovery
-on restart, and configurable storage backends.
-
-Architecture:
-  MemoryPersistenceEngine
-    |-- StorageBackend (pluggable storage interface)
-    |-- FileBackend (JSON-based file storage)
-    |-- CheckpointManager (automatic state snapshots)
-    |-- RecoveryManager (state restoration on restart)
-
-Persistence Scope:
-  - Agent memory (short-term, long-term, episodic, semantic, working)
-  - Session state (active sessions, compaction history)
-  - Game context (project info, entities, scenes, assets)
-  - Reasoning chains (loop execution history)
-  - Skill evolution history
-
-Storage Layout:
-  .sparkai/
-    persistence/
-      memory/{agent_id}.json
-      sessions/{session_id}.json
-      context/{project_id}.json
-      chains/{chain_id}.json
-      checkpoints/{timestamp}.json
-"""
+SparkAI Agent - Memory Persistence Engine"""
 
 from __future__ import annotations
 

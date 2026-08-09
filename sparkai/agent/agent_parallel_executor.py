@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Parallel Execution Engine
-
-Multi-provider parallel LLM execution with intelligent provider
-selection and fallback. Routes tasks across available LLM
-backends simultaneously, merges results, and handles provider
-failures gracefully — maximizing throughput for game generation.
-
-Architecture:
-  ParallelExecutor
-    |-- ProviderRouter (selects best provider per task type)
-    |-- TaskBatcher (groups compatible tasks for parallel dispatch)
-    |-- ResultMerger (consensus/aggregation across parallel outputs)
-    |-- FallbackChain (ordered provider fallback on failure)
-
-Provider Selection Strategy:
-  - auto: best available based on task complexity
-  - cheapest: lowest-cost provider (auxiliary tasks)
-  - fastest: lowest-latency provider
-  - specific: named provider override
-
-Task Types determine routing:
-  - generation/code: main LLM provider
-  - summarization/compression: auxiliary (cheap/fast) provider
-  - classification/extraction: cheapest available
-  - vision/multimodal: provider with vision support
-
-Usage:
-    pe = ParallelExecutor()
-    results = await pe.dispatch([
-        ("generate_player", "Write player controller script"),
-        ("design_level", "Design level 1 layout with platforms"),
-        ("summarize_lore", "Summarize the game's backstory"),
-    ])
-    merged = await pe.merge_results(results)
-"""
+SparkLabs Agent - Parallel Execution Engine"""
 from __future__ import annotations
 
 import asyncio

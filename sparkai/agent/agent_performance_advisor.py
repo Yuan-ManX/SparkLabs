@@ -1,24 +1,5 @@
 """
-SparkLabs Agent - Performance Advisor
-
-AI-driven performance analysis and optimization advisor for game
-engines. Records frame-level performance snapshots across rendering,
-physics, AI, memory, loading, network, scripting, and audio domains,
-then generates prioritized optimization suggestions with code fix
-templates and estimated improvement percentages.
-
-Architecture:
-  PerformanceAdvisor
-    |-- Snapshot Recorder (capture per-domain performance metrics)
-    |-- Bottleneck Analyzer (identify top constraints across domains)
-    |-- AI Diagnostician (natural language queries against snapshots)
-    |-- Suggestion Applicator (apply code fix templates to project)
-    |-- Snapshot Comparator (diff two snapshots for regression detection)
-    |-- Domain Summarizer (aggregate statistics per performance domain)
-
-Bottleneck severities range from critical through info, each with
-estimated improvement percentage and implementation difficulty rating.
-"""
+SparkLabs Agent - Performance Advisor"""
 
 from __future__ import annotations
 

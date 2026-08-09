@@ -1,29 +1,5 @@
 """
-PersonaVault - Downloadable, shareable AI persona manager for SparkLabs.
-
-Manages prefabricated AI behavior profiles that game developers can
-switch between for different development tasks such as level design,
-bug hunting, performance optimization, and narrative writing. Each
-persona encapsulates a system prompt, behavioral rules, tool preferences,
-and knowledge tags that shape how the agent responds.
-
-The vault is a singleton that maintains a shared catalog of personas,
-tracks swap history across sessions, and supports persona packs for
-grouping related profiles. Personas can be exported as portable
-dictionaries and imported from external sources.
-
-Architecture:
-    PersonaVault (singleton)
-        |-- AIPersona (behavior profile with role, tone, complexity)
-        |-- PersonaSwapLog (activity trail when personas are switched)
-        |-- PersonaPack (named collection of related persona profiles)
-        |-- Enum catalog (PersonaRole, PersonaTone, PersonaComplexity, VaultAction)
-
-Persona Lifecycle:
-    create -> (optional: rate, update) -> activate -> deactivate -> delete
-    export/import enables cross-project persona sharing
-    packs organize personas into themed bundles
-"""
+PersonaVault - Downloadable, shareable AI persona manager for SparkLabs."""
 
 from __future__ import annotations
 

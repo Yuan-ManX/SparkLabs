@@ -1,37 +1,5 @@
 """
-SparkLabs Agent - Perception Engine
-
-A unified game world perception engine that aggregates and processes
-sensory inputs from the game world across multiple modalities. Provides
-AI agents with spatial, entity, event, environmental, social, and temporal
-awareness through a configurable perception pipeline with attention-driven
-focus and memory decay.
-
-Core capabilities:
-  - Unified perception pipeline across six sensory modalities
-  - Spatial perception with zone/distance awareness and ray-casting
-  - Entity perception with visibility, state, and proximity tracking
-  - Event perception with local/global scope and intensity filtering
-  - Environmental perception (terrain, weather, time, threat level)
-  - Perception memory with configurable decay and history retention
-  - Attention system with configurable priority weights and focus tracking
-  - Configurable vision range, hearing range, and tracking limits
-
-Architecture:
-  AgentPerceptionEngine (Singleton)
-    |-- PerceptionSnapshot (full perception frame capture)
-    |-- PerceivedEntity (entity as observed from agent viewpoint)
-    |-- PerceivedObject (interactive world object perception)
-    |-- PerceivedEvent (world event with scope and intensity)
-    |-- EnvironmentalState (terrain, weather, ambient conditions)
-    |-- AttentionFocus (targeted attention with priority and duration)
-    |-- PerceptionConfig (tunable perception parameters)
-    |-- perceive()
-    |-- perceive_spatial() / perceive_entities()
-    |-- perceive_events() / perceive_environment()
-    |-- set_attention_focus() / get_attention_targets()
-    |-- get_perception_history() / get_status() / get_config()
-"""
+SparkLabs Agent - Perception Engine"""
 
 from __future__ import annotations
 
