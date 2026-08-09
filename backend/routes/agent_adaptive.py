@@ -1,14 +1,5 @@
 """
-SparkLabs Backend - Adaptive Difficulty Director API Routes
-
-REST API endpoints for the AI Adaptive Difficulty Director that
-generates real-time player adaptation rules for generated games.
-
-Endpoints:
-  GET  /adaptive/status       - Director status and history count
-  POST /adaptive/generate     - Generate adaptive profile + JS from prompt
-  GET  /adaptive/history      - List recent adaptation sessions
-"""
+SparkLabs Backend - Adaptive Difficulty Director API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - AI-Native Engine Core Routes
-
-API endpoints for the AI-native engine core, providing agent-accessible
-interfaces for engine control, state observation, game creation, and
-performance optimization.
-"""
+SparkLabs Backend - AI-Native Engine Core Routes"""
 
 from fastapi import APIRouter, HTTPException
 from fastapi.responses import JSONResponse

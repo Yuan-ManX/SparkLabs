@@ -1,21 +1,5 @@
 """
-SparkLabs Backend - AI-Native Game Orchestrator Routes
-
-Standalone API endpoints for the AINativeGameOrchestrator. Provides
-complete access to the orchestrator's game creation pipeline, analysis,
-self-evolution, and session management capabilities.
-
-Routes:
-  /orchestrator/initialize          - Initialize the orchestrator
-  /orchestrator/status              - Get orchestrator status
-  /orchestrator/create-game         - Create a complete game
-  /orchestrator/analyze-game/{id}   - Analyze a game project
-  /orchestrator/run-learning-cycle  - Run self-improvement
-  /orchestrator/phase/{name}        - Execute a development phase
-  /orchestrator/sessions            - List all sessions
-  /orchestrator/session/{id}        - Get a specific session
-  /orchestrator/auto-optimize/{id}  - Auto-optimize a game
-"""
+SparkLabs Backend - AI-Native Game Orchestrator Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse

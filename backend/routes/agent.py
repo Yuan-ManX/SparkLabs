@@ -1,10 +1,5 @@
 """
-SparkLabs Backend - Agent Routes
-
-API endpoints for agent creation, management, skills,
-studio hierarchy, toolsets, hooks, rules, teams,
-bench evaluation, and session management.
-"""
+SparkLabs Backend - Agent Routes"""
 
 from fastapi import APIRouter, Query, Request
 from pydantic import BaseModel

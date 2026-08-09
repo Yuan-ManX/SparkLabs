@@ -1,23 +1,5 @@
 """
-SparkLabs Backend - Agent Chat Controller
-
-Connects the frontend agent chat to the LLM router, enabling users to
-chat with the agent and have it route requests to the optimal model for
-each task. The controller classifies the task type from the chat message,
-routes to the best model, executes the request (or simulates when no API
-keys are configured), and returns the response with routing metadata.
-
-Endpoints:
-  POST /chat/message        - Send a chat message and get a model-routed response
-  GET  /chat/models         - List all available models grouped by type
-  GET  /chat/task-types     - List all supported task types
-  GET  /chat/strategies     - List routing strategies
-  POST /chat/strategy       - Set the active routing strategy
-  POST /chat/simulation     - Toggle simulation mode
-  GET  /chat/history        - Get chat history
-  POST /chat/generate       - Generate multimodal content (image/audio/video/3D)
-  GET  /chat/status         - Get router status and simulation mode
-"""
+SparkLabs Backend - Agent Chat Controller"""
 
 from __future__ import annotations
 

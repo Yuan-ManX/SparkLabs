@@ -1,31 +1,5 @@
 """
-SparkLabs Backend - Cognitive Architect & AI-Native Conductor API Routes
-
-REST API endpoints for the unified cognitive architect and the AI-native
-engine conductor. The architect orchestrates multi-modal reasoning, tool
-evolution, and knowledge synthesis. The conductor unifies physics, render,
-and scene adjustments driven by the cognitive kernel and game brain.
-
-Endpoints:
-  # Cognitive Architect
-  GET  /architect/status              - Architect status and subsystem stats
-  POST /architect/reason              - Run a reasoning request
-  POST /architect/forge-tool          - Forge a new tool on demand
-  POST /architect/synthesize          - Synthesize knowledge from episodes
-  GET  /architect/knowledge           - Query the knowledge base
-  POST /architect/collaborate         - Propose a collaboration task
-  POST /architect/cycle               - Run one architect cycle
-  GET  /architect/tools               - List deployed and active tools
-  POST /architect/reset               - Reset the architect state
-
-  # AI-Native Conductor
-  GET  /conductor/status              - Conductor status and subsystem stats
-  POST /conductor/cycle               - Run one conductor cycle
-  POST /conductor/physics             - Submit a manual physics adjustment
-  POST /conductor/render              - Submit a manual render adjustment
-  POST /conductor/scene               - Submit a manual scene adjustment
-  POST /conductor/reset               - Reset the conductor state
-"""
+SparkLabs Backend - Cognitive Architect & AI-Native Conductor API Routes"""
 
 from fastapi import APIRouter, Request
 from fastapi.responses import JSONResponse
