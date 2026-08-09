@@ -1,48 +1,5 @@
 """
-SparkLabs Agent - AI Trailer Director
-
-AI-native game trailer direction engine for the SparkLabs game platform. The
-director ingests gameplay footage clips, selects highlight moments, synchronizes
-them with music, applies cinematic transitions and effects, paces the narrative
-arc of the trailer, and manages render jobs from draft to publication. It models
-the full creative pipeline that a human trailer director would follow, driven by
-quality scoring, genre-aware clip affinity, beat-aligned music synchronization,
-and narrative beat placement.
-
-Architecture:
-  AITrailerDirector (singleton)
-    |-- GameplayClip, TrailerProject, TransitionEffect, MusicSelection,
-        NarrativeArc, RenderJob, TrailerDirectorConfig, TrailerDirectorStats,
-        TrailerDirectorSnapshot, TrailerDirectorEvent
-    |-- TrailerGenre, ClipCategory, TransitionType, PacingMode, MusicSyncMode,
-        TrailerStatus, NarrativeBeat
-
-Core Capabilities:
-  - register_clip / get_clip / list_clips / remove_clip: ingest and manage
-    discrete gameplay footage clips from any recorded session.
-  - create_project / get_project / list_projects / update_project /
-    remove_project: maintain trailer projects that aggregate clips,
-    transitions, music, pacing, and narrative beats into a single creative
-    work product.
-  - add_clip_to_project / remove_clip_from_project / reorder_clips: assemble
-    the ordered clip sequence that forms the trailer timeline.
-  - select_highlights: AI-driven clip selection from a pool that maximizes
-    quality, respects target duration, and preserves category diversity.
-  - add_transition / get_transition / list_transitions / remove_transition:
-    manage cinematic transitions between adjacent clips.
-  - set_music / get_music / list_music / remove_music: maintain the music
-    library and bind a track to a project.
-  - create_narrative_arc / get_narrative_arc / list_narrative_arcs /
-    remove_narrative_arc: define the emotional and pacing shape of a trailer.
-  - set_pacing / auto_pace: assign or auto-derive pacing modes across the
-    trailer timeline.
-  - sync_music: align clip boundaries to music beats for a polished cut.
-  - start_render / get_render_job / list_render_jobs / cancel_render: manage
-    asynchronous render jobs that turn a project into a distributable video.
-  - publish_trailer: promote a completed render to a published trailer.
-  - list_events / get_status / get_stats / get_snapshot / get_config /
-    set_config / tick / reset: observability, tuning, and lifecycle control.
-"""
+SparkLabs Agent - AI Trailer Director"""
 
 from __future__ import annotations
 

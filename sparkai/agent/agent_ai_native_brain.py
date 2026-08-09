@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - AI-Native Cognitive Brain
-
-The core cognitive architecture of the SparkLabs AI-native game engine Agent.
-This module implements a unified agent brain that integrates perception, reasoning,
-planning, action execution, memory, and learning into a single cohesive system.
-
-The brain operates through a continuous Perception-Reasoning-Action-Learning (PRAL)
-loop, enabling agents to autonomously understand, reason about, and interact with
-game worlds in real-time.
-
-Architecture:
-  AINativeBrain (Singleton)
-    |-- PerceptionLayer (multi-modal sensing: visual, spatial, social, event-based)
-    |-- ReasoningLayer (deductive, inductive, abductive, causal, counterfactual)
-    |-- PlanningLayer (HTN, goal-oriented, reactive, deliberative)
-    |-- ActionLayer (action space, execution, validation, feedback)
-    |-- MemoryLayer (episodic, semantic, procedural, working)
-    |-- LearningLayer (self-reflection, skill evolution, pattern recognition)
-    |-- MetacognitionLayer (confidence calibration, self-assessment, strategy selection)
-    |-- WorldModelLayer (state prediction, simulation, causal reasoning)
-"""
+SparkLabs Agent - AI-Native Cognitive Brain"""
 
 from __future__ import annotations
 

@@ -1,46 +1,5 @@
 """
-SparkLabs Agent - AI Encounter Director
-
-A runtime fusion module that designs and orchestrates dynamic boss fights,
-combat scenarios, and adaptive encounters for the SparkLabs AI-native game
-engine. The director treats every encounter as a living system: reusable
-templates are assembled from multi-phase scripts and individual boss
-mechanics, then instantiated into live encounters that track player state,
-phase transitions, mechanic triggers, wipes, and rewards.
-
-This module embodies the AI-native principle: an encounter is not a static
-script but an adaptive construction that scales to party composition and
-skill, reacts to player performance in real time, and records a full event
-timeline that can be replayed, audited, and tuned.
-
-Architecture:
-  AIEncounterDirector (singleton)
-    |-- BossMechanic, EncounterPhase, EncounterTemplate, EncounterInstance,
-        AdaptiveScaling, RewardEntry, RewardTable, EncounterEvent,
-        EncounterConfig, EncounterStats, EncounterSnapshot
-    |-- EncounterType, EncounterPhaseType, MechanicType, EncounterStatus,
-        DifficultyTier, RewardRarity
-
-Core Capabilities:
-  - register_mechanic / get_mechanic / list_mechanics / remove_mechanic:
-    individual boss mechanic library management (dodge, telegraph, adds,
-    shields, enrage, tank swaps, heal checks, chained abilities).
-  - register_phase / get_phase / list_phases / remove_phase: multi-phase
-    encounter script assembly with HP thresholds and enrage timers.
-  - register_template / get_template / list_templates / remove_template:
-    reusable encounter templates binding bosses, phases, mechanics, arenas,
-    and reward tables together.
-  - create_encounter / get_encounter / list_encounters / advance_phase /
-    trigger_mechanic / deal_boss_damage / player_downed / player_revived /
-    complete_encounter / wipe_encounter: live encounter lifecycle control.
-  - calculate_adaptive_scaling: dynamic difficulty scaling derived from
-    party size, average item level, and average skill score.
-  - register_reward_table / get_reward_table / list_reward_tables /
-    roll_rewards / remove_reward_table: loot table management and
-    luck-modified reward rolling.
-  - list_events / get_stats / get_status / get_snapshot / set_config /
-    get_config / tick / reset: observability, tuning, and state management.
-"""
+SparkLabs Agent - AI Encounter Director"""
 
 from __future__ import annotations
 

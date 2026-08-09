@@ -1,53 +1,5 @@
 """
-SparkLabs Agent - AI Quest Generator
-
-An AI-native fusion module that dynamically creates quests, missions, and
-objectives for the SparkLabs game engine. The generator treats quest design
-as a living system: reusable templates are assembled from objective and
-reward blueprints, then instantiated into live quests that carry difficulty
-scaling, branching paths, chain linkage, and deterministic pacing that
-reacts to the live game context and the player's history.
-
-This module embodies the AI-native principle: a quest is not a static asset
-but an adaptive construction that scales to player skill, shifts difficulty
-on the fly as the world state changes, layers branching choices across the
-narrative, and records a full event timeline that can be replayed, audited,
-and tuned.
-
-Architecture:
-  AIQuestGenerator (singleton)
-    |-- QuestObjective, QuestReward, QuestRequirement, QuestBranch,
-        QuestChain, QuestTemplate, QuestInstance, PlayerQuestProfile,
-        QuestGenConfig, QuestGenStats, QuestGenSnapshot, QuestGenEvent
-    |-- QuestType, QuestStatus, QuestDifficulty, ObjectiveType,
-        ObjectiveStatus, QuestCategory, RewardType, QuestPriority,
-        QuestGenEventKind
-
-Core Capabilities:
-  - register_template / get_template / list_templates / remove_template /
-    update_template: quest template library management across every quest
-    type, category, and difficulty.
-  - generate_quest / generate_from_template / generate_chain: deterministic
-    quest and chain generation from templates and themes.
-  - auto_generate_quest / auto_generate_chain: AI-driven personalized quest
-    and chain generation driven by player profile and world context.
-  - get_quest / list_quests / remove_quest / accept_quest / complete_quest /
-    fail_quest / expire_quest / abandon_quest: quest instance lifecycle
-    management with status transitions.
-  - update_objective / get_objective / list_objectives: objective progress
-    tracking with status propagation.
-  - get_chain / list_chains / advance_chain / remove_chain: quest chain
-    management with sequential quest unlocking.
-  - register_player_profile / get_player_profile / update_player_profile /
-    list_player_profiles / remove_player_profile: player profile library
-    with quest history and preference tracking.
-  - create_branch / get_branch / list_branches / remove_branch /
-    choose_branch: branching narrative paths with consequence tracking.
-  - suggest_difficulty / optimize_quest_flow: AI-driven difficulty and
-    pacing analysis driven by player skill and history.
-  - list_events / get_stats / get_status / get_snapshot / set_config /
-    get_config / tick / reset: observability, tuning, and state management.
-"""
+SparkLabs Agent - AI Quest Generator"""
 
 from __future__ import annotations
 

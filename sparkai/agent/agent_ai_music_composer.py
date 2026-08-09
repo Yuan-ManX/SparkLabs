@@ -1,52 +1,5 @@
 """
-SparkLabs Agent - AI Music Composer
-
-An AI-native fusion module that composes adaptive, dynamic music for the
-SparkLabs game engine. The composer treats a game score as a living system:
-reusable themes are assembled from phrases and instrument voices, then
-instantiated into tracks that carry layered dynamic voices, intensity-driven
-mixing, and mood transitions that react to the live game context in real time.
-
-This module embodies the AI-native principle: music is not a static asset
-but an adaptive construction that scales to narrative beats, shifts mood on
-the fly as the game context changes, layers voices in and out based on
-dynamic intensity, and records a full event timeline that can be replayed,
-audited, and tuned.
-
-Architecture:
-  AIMusicComposer (singleton)
-    |-- InstrumentVoice, MusicalPhrase, MusicalTheme, MusicTrack,
-        DynamicLayer, MoodMapping, CompositionSession,
-        MusicComposerConfig, MusicComposerStats, MusicComposerSnapshot,
-        MusicComposerEvent
-    |-- MusicMood, MusicGenre, InstrumentFamily, TrackLayer,
-        CompositionStatus, TransitionType, DynamicIntensity
-
-Core Capabilities:
-  - register_instrument / get_instrument / list_instruments /
-    remove_instrument: instrument voice library management across every
-    instrument family (strings, brass, woodwinds, percussion, keyboard,
-    synth, bass, guitar, vocal).
-  - register_phrase / get_phrase / list_phrases / remove_phrase: melodic
-    and rhythmic phrase library management with note-level data.
-  - register_theme / get_theme / list_themes / remove_theme: reusable
-    theme assembly binding mood, genre, phrases, and instrument sets.
-  - compose_track / get_track / list_tracks / remove_track: track
-    composition from a theme with layered voices and playback state.
-  - add_track_layer / get_track_layer / list_track_layers /
-    remove_track_layer: dynamic voice layer management with intensity
-    triggers.
-  - set_track_intensity / start_track / stop_track / transition_to_mood:
-    live playback control and adaptive mood transitions.
-  - register_mood_mapping / get_mood_mapping / list_mood_mappings /
-    remove_mood_mapping: game-context to mood mapping rules.
-  - create_session / get_session / list_sessions / remove_session /
-    update_session_mood / get_active_track: composition session lifecycle
-    tied to a live game context.
-  - generate_variation: procedural phrase variation generation.
-  - list_events / get_stats / get_status / get_snapshot / set_config /
-    get_config / tick / reset: observability, tuning, and state management.
-"""
+SparkLabs Agent - AI Music Composer"""
 
 from __future__ import annotations
 

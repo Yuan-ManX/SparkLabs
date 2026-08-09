@@ -1,55 +1,5 @@
 """
-SparkLabs Agent - AI Bug Hunter
-
-An autonomous bug detection, reproduction, and classification agent for the
-SparkLabs AI-native game engine. The agent ingests gameplay telemetry,
-player reports, and static code analysis results, then correlates them
-into structured bug reports. It runs reproduction scripts to confirm
-issues, applies AI-driven severity and category classification, surfaces
-duplicate reports, and emits fix suggestions.
-
-The module embodies the AI-native principle: bugs are not passively
-logged, they are actively hunted. Telemetry patterns trigger automatic
-bug creation, reproduction scripts validate hypotheses, and classification
-heuristics triage issues without human intervention.
-
-Architecture:
-  AIBugHunter (singleton)
-    |-- BugReport, ReproductionScript, TelemetryPattern, CodeAnalysisResult,
-        PlayerReport, BugHunterConfig, BugHunterStats, BugHunterSnapshot,
-        BugHunterEvent
-    |-- BugSeverity, BugStatus, BugCategory, DetectionSource,
-        Reproducibility, FixConfidence
-
-Core Capabilities:
-  - register_bug / get_bug / list_bugs / remove_bug /
-    update_bug_status / update_bug_severity / assign_bug: full bug
-    lifecycle management with severity, status, and assignment tracking.
-  - register_reproduction_script / get_reproduction_script /
-    list_reproduction_scripts / remove_reproduction_script /
-    run_reproduction: reproduction script library and simulated execution
-    that updates success rates.
-  - register_telemetry_pattern / get_telemetry_pattern /
-    list_telemetry_patterns / remove_telemetry_pattern / scan_telemetry:
-    telemetry anomaly detection that auto-creates bug reports when
-    metrics cross configured thresholds.
-  - register_player_report / get_player_report / list_player_reports /
-    remove_player_report / link_player_report_to_bug: player-facing
-    report intake and correlation to known bugs.
-  - register_code_analysis / get_code_analysis / list_code_analyses /
-    remove_code_analysis: static analysis result storage tied to bugs.
-  - auto_classify_bug / suggest_fix / find_duplicates / get_bug_summary:
-    AI-driven triage, fix recommendation, duplicate detection, and
-    per-bug summarization.
-  - list_events / get_stats / get_status / get_snapshot / get_config /
-    set_config / tick / reset: observability, tuning, and lifecycle
-    management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`AIBugHunter.get_instance` or the module-level
-:func:`get_ai_bug_hunter` factory.
-"""
+SparkLabs Agent - AI Bug Hunter"""
 
 from __future__ import annotations
 

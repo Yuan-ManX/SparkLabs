@@ -2,42 +2,7 @@
 
 Manages NPC dialogue trees, generates dynamic conversations, analyzes
 player sentiment, and orchestrates branching narratives with AI-driven
-response selection for immersive character interactions.
-
-Architecture:
-  AIDialogDirector (singleton)
-    |-- DialogNode, DialogChoice, DialogCondition, DialogTree,
-        DialogSession, DialogResponse, NPCDialogProfile, DialogContext,
-        SentimentAnalysis, DialogConfig, DialogStats, DialogSnapshot,
-        DialogEvent
-    |-- DialogEventKind, DialogMood, DialogNodeType, DialogRelationship,
-        DialogSentiment, DialogStatus, DialogTopic, DialogTone, VoiceStyle
-
-Core Capabilities:
-  - register_npc_profile / remove_npc_profile / get_npc_profile /
-    list_npc_profiles / update_npc_relationship / update_npc_mood: NPC
-    personality and voice profile management.
-  - create_dialog_tree / remove_dialog_tree / get_dialog_tree /
-    list_dialog_trees: branching dialogue tree lifecycle.
-  - add_node / remove_node / get_node / list_nodes / set_root_node: dialog
-    node graph construction with mood and tone tagging.
-  - add_choice / remove_choice / list_choices: player choice branches with
-    conditional gating.
-  - start_session / end_session / pause_session / resume_session /
-    get_session / list_sessions: live conversation lifecycle control.
-  - get_current_node / get_available_choices / select_choice / say_line /
-    get_session_mood / get_session_relationship: runtime dialog
-    interaction and progression.
-  - analyze_sentiment / update_session_sentiment: keyword-driven player
-    sentiment analysis feeding mood and relationship updates.
-  - auto_generate_response / auto_generate_dialog_tree / suggest_topic /
-    suggest_choice / optimize_dialog_flow: AI-driven content generation
-    and flow tuning.
-  - set_dialog_context / get_dialog_context: contextual world state
-    injection for richer response generation.
-  - get_config / set_config / get_stats / get_snapshot / get_status /
-    list_events / tick / reset: observability, tuning, and lifecycle.
-"""
+response selection for immersive character interactions."""
 
 import hashlib
 import random

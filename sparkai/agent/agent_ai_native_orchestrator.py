@@ -1,41 +1,5 @@
 """
-SparkLabs Agent - AI-Native Game Development Orchestrator
-
-The master orchestrator that deeply integrates all agent subsystems into a single,
-cohesive AI-native game development intelligence. This orchestrator serves as the
-central nervous system for autonomous game creation, execution, optimization,
-and evolution within the SparkLabs ecosystem.
-
-It combines the UnifiedAgentCore, AINativeBrain, and all specialized agent
-modules into a unified decision-making framework that can autonomously:
-- Analyze game design requirements and generate complete game specifications
-- Orchestrate multi-agent teams for complex game development workflows
-- Monitor and optimize game performance in real-time
-- Self-evolve game design patterns based on playtest feedback
-- Generate and validate complete game codebases
-- Simulate and balance game economies and mechanics
-- Create adaptive difficulty systems based on player modeling
-- Generate procedural narratives with branching storylines
-- Manage complete game asset pipelines end-to-end
-
-Architecture:
-  AINativeGameOrchestrator (Singleton)
-    |-- AgentCore (UnifiedAgentCore - cognitive, memory, creation, team, tool, learning, bridge)
-    |-- CognitiveBrain (AINativeBrain - perception, reasoning, planning, metacognition)
-    |-- GameDirector (creative direction, design consistency, milestone tracking)
-    |-- BlueprintEngine (game blueprint generation and refinement)
-    |-- PlaytestEngine (automated playtesting with quality metrics)
-    |-- CodeGenerator (multi-language game code generation)
-    |-- WorldBuilder (procedural world and level generation)
-    |-- BalanceOptimizer (game economy and mechanic balancing)
-    |-- PlayerModeler (player behavior modeling and adaptation)
-    |-- ProceduralStoryteller (dynamic narrative generation)
-    |-- AssetPipeline (end-to-end asset creation and management)
-    |-- KnowledgeGraph (game design patterns and best practices)
-    |-- SkillEvolution (continuous self-improvement cycles)
-    |-- ReflexEngine (real-time monitoring and anomaly detection)
-    |-- ValidatorEngine (quality assurance and gate checking)
-"""
+SparkLabs Agent - AI-Native Game Development Orchestrator"""
 
 from __future__ import annotations
 

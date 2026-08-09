@@ -1,55 +1,5 @@
 """
-SparkLabs Agent - AI Voice Synthesizer
-
-An AI-native fusion module that synthesizes spoken voice lines for the
-SparkLabs game engine. The synthesizer treats NPC and player speech as a
-living system: reusable voice profiles are assembled from acoustic
-parameters, then instantiated into synthesized lines that carry emotion
-colouring, pitch and speed overrides, phoneme and viseme data, and
-deterministic duration modelling that reacts to the live game context.
-
-This module embodies the AI-native principle: voice is not a static asset
-but an adaptive construction that scales to narrative beats, shifts emotion
-on the fly as the game context changes, layers prosody rules across
-speech, and records a full event timeline that can be replayed, audited,
-and tuned.
-
-Architecture:
-  AIVoiceSynthesizer (singleton)
-    |-- VoiceProfile, VoiceLine, SynthesisBatch, VoiceClone,
-        EmotionPreset, VoiceDirection, PhonemeMap, ProsodyRule,
-        VoiceSynthConfig, VoiceSynthStats, VoiceSynthSnapshot,
-        VoiceSynthEvent
-    |-- VoiceGender, VoiceEmotion, VoiceLanguage, VoiceAgeGroup,
-        VoiceAccent, SynthesisStatus, VoiceProfileType, AudioFormat,
-        VoiceSynthEventKind
-
-Core Capabilities:
-  - register_profile / get_profile / list_profiles / remove_profile /
-    update_profile: voice profile library management across every gender,
-    age group, language, and accent.
-  - synthesize_line / get_line / list_lines / remove_line: speech
-    synthesis from text with emotion, pitch, speed, and volume overrides
-    plus deterministic phoneme and viseme generation.
-  - create_batch / get_batch / list_batches / add_line_to_batch /
-    remove_line_from_batch / process_batch / remove_batch: batch synthesis
-    lifecycle management with progress tracking.
-  - clone_voice / get_clone / list_clones / remove_clone: voice cloning
-    from source profile samples with quality scoring.
-  - create_emotion_preset / get_emotion_preset / list_emotion_presets /
-    remove_emotion_preset / apply_emotion: emotion preset library and
-    live emotion application to profiles.
-  - create_direction / get_direction / list_directions / remove_direction:
-    voice direction management tied to scene context.
-  - register_phoneme_map / get_phoneme_map / list_phoneme_maps:
-    language-specific phoneme and viseme set management.
-  - register_prosody_rule / get_prosody_rule / list_prosody_rules /
-    remove_prosody_rule: prosody rule library for speech shaping.
-  - auto_direct / auto_generate_lines / batch_synthesize: AI-driven
-    scene analysis, dialogue generation, and bulk synthesis.
-  - list_events / get_stats / get_status / get_snapshot / set_config /
-    get_config / tick / reset: observability, tuning, and state management.
-"""
+SparkLabs Agent - AI Voice Synthesizer"""
 
 from __future__ import annotations
 

@@ -1,43 +1,5 @@
 """
-SparkLabs Agent - AI Narrative Engine
-
-A singleton AI-powered narrative engine that generates dynamic story arcs,
-branching narratives, character-driven plots, and world events with rich
-narrative context. The engine fuses AI agent reasoning with knowledge graph
-connectivity and character simulation to produce emergent storytelling.
-
-Core design principles:
-  - Story arcs are dynamic, not fixed — they adapt to player choices and world state
-  - Characters drive the narrative through motivations, relationships, and arcs
-  - Plot threads weave together into cohesive story tapestries
-  - Narrative beats emerge from character interactions and world events
-  - Branching choices have meaningful consequences tracked over time
-  - World lore is generated consistently with established canon
-  - Quest narratives are contextualized within larger story frameworks
-
-Architecture:
-  NarrativeEngine (singleton)
-    |-- NarrativeGenre, StoryArcStatus, PlotThreadStatus, CharacterRole,
-       NarrativeBeatType, ChoiceConsequence, LoreCategory
-    |-- StoryArc, PlotThread, NarrativeCharacter, NarrativeBeat,
-       BranchingChoice, WorldLoreEntry, QuestNarrative, NarrativeSnapshot,
-       NarrativeStats, NarrativeConfig, NarrativeEvent
-    |-- get_narrative_engine
-
-Core Capabilities:
-  - create_story_arc / get_story_arc / list_story_arcs / remove_story_arc
-  - advance_story_arc / complete_story_arc / abort_story_arc
-  - register_character / get_character / list_characters / remove_character
-  - advance_character_arc / update_character_relationship
-  - create_plot_thread / get_plot_thread / list_plot_threads / resolve_plot_thread
-  - add_narrative_beat / get_narrative_beat / list_narrative_beats
-  - create_choice / resolve_choice / list_choices
-  - generate_lore / get_lore / list_lore / search_lore
-  - weave_quest_narrative / get_quest_narrative / list_quest_narratives
-  - generate_story_summary / get_narrative_state
-  - tick / set_config / get_config / list_events / get_stats
-  - get_status / get_snapshot / reset
-"""
+SparkLabs Agent - AI Narrative Engine"""
 
 from __future__ import annotations
 
