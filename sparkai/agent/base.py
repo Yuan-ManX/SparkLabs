@@ -1,18 +1,5 @@
 """
-SparkAI Agent - Core Agent Foundation
-
-The SparkAgent implements a four-phase autonomous loop:
-  Observe -> Think -> Act -> Verify
-
-This design enables AI-native game development where agents
-can autonomously create, modify, and reason about game worlds.
-
-Agent Roles:
-  - Director: Strategic planning, delegates to Leads
-  - Lead: Domain coordination, delegates to Specialists
-  - Specialist: Focused execution on a single domain
-  - Worker: Task-level execution with restricted permissions
-"""
+SparkAI Agent - Core Agent Foundation"""
 
 from __future__ import annotations
 

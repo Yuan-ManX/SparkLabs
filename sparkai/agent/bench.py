@@ -1,14 +1,5 @@
 """
-SparkAI Agent - Game Bench Evaluation
-
-Quality scoring pipeline for AI-generated game content.
-Evaluates games across three dimensions:
-  - Build Health: Does the code compile and run?
-  - Visual Usability: Is the game playable and visually coherent?
-  - Intent Alignment: Does the game match the original prompt?
-
-Scores are 0.0-1.0 per dimension, combined into a weighted total.
-"""
+SparkAI Agent - Game Bench Evaluation"""
 
 from __future__ import annotations
 

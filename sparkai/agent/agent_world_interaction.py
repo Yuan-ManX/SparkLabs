@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - World Interaction Layer
-
-A bidirectional agent-game-world interaction system that enables autonomous
-agents to perceive, reason about, and act upon the game world. This is the
-bridge layer that connects the AI cognition plane with the game simulation
-plane, allowing agents to function as intelligent game entities that observe
-world state, form intentions, and execute actions with world feedback.
-
-The interaction loop follows a continuous perceive→reason→act→observe cycle,
-enabling agents to participate in the game simulation as first-class entities
-while maintaining full awareness of their action consequences.
-
-Architecture:
-  AgentWorldInteraction (Singleton)
-    |-- WorldPercept (structured sensory snapshot of game world)
-    |-- AgentIntention (reasoned action plan with priority weighting)
-    |-- WorldAction (concrete action dispatched to the game engine)
-    |-- ActionFeedback (world response to agent action)
-    |-- InteractionCycle (complete perceive→reason→act→observe record)
-    |-- WorldRegion (spatial subdivision for locality-aware agents)
-    |-- InteractionMode (how the agent engages with the world)
-    |-- PerceptChannel (specific sensory modalities)
-    |-- ActionDomain (categorization of agent actions)
-
-Core Capabilities:
-  - perceive_world: Capture structured world snapshot for agent consumption
-  - form_intention: Reason about world state to produce action plans
-  - execute_action: Dispatch intended action to the game engine
-  - receive_feedback: Process world response and update agent state
-  - run_interaction_cycle: Complete perceive→reason→act cycle
-  - get_situational_awareness: Aggregate agent's understanding of context
-  - register_interest_region: Subscribe to spatial world updates
-  - query_world_entities: Query game world entities by type/proximity
-"""
+SparkLabs Agent - World Interaction Layer"""
 
 from __future__ import annotations
 

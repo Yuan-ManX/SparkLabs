@@ -1,21 +1,6 @@
 """
 Trajectory Generator - Records agent decision-making trajectories for
-training future AI models within SparkLabs AI game studio.
-
-Architecture:
-    TrajectoryGenerator/
-    |-- TrajectoryTurn (single interaction turn dataclass)
-    |-- TrajectorySession (full decision-making session dataclass)
-    |-- CompressedTrajectory (compressed trajectory output dataclass)
-    |-- TrajectoryBatch (bundled trajectory collection dataclass)
-    |-- TrajectoryGenerator (global generation orchestration)
-
-Captures the full sequence of observations, thoughts, tool calls, and
-results from agent decision-making sessions. Compresses trajectories by
-removing redundant turns using an auxiliary summary model, preserving
-the essential decision-making structure for efficient storage and
-downstream model training.
-"""
+training future AI models within SparkLabs AI game studio."""
 
 from __future__ import annotations
 

@@ -1,40 +1,5 @@
 """
-SparkLabs Agent - World Synthesizer
-
-AI-driven procedural world generation system that synthesizes complete game
-worlds from high-level descriptions. Combines terrain generation, ecosystem
-simulation, structure placement, and narrative seeding to create coherent,
-playable game environments with integrated world simulation capabilities.
-
-Architecture:
-  AgentWorldSynthesizer (Singleton)
-    |-- TerrainGenerator (heightmap, biome, erosion simulation)
-    |-- EcosystemSimulator (flora, fauna, food chain dynamics)
-    |-- StructurePlacer (settlements, dungeons, landmarks)
-    |-- NarrativeSeeder (quest hooks, lore fragments, world history)
-    |-- WorldValidator (playability checks, balance verification)
-    |-- WorldExporter (engine-ready world data export)
-
-Generation Layers:
-  - TERRAIN: height, water, biomes, climate
-  - ECOLOGY: vegetation, wildlife, resources
-  - CIVILIZATION: settlements, roads, factions
-  - DUNGEON: underground structures, loot distribution
-  - NARRATIVE: story hooks, NPC backstories, world events
-
-Usage:
-    ws = AgentWorldSynthesizer.get_instance()
-    ws.initialize()
-
-    world_config = ws.generate_world_config("fantasy forest with ancient ruins", 2048, 2048)
-    terrain = ws.generate_terrain(world_config)
-    ecosystem = ws.place_ecosystem(terrain, world_config)
-    structures = ws.place_structures(terrain, ecosystem, world_config)
-    narrative = ws.seed_narrative(structures, world_config)
-
-    world_data = ws.export_world(terrain, ecosystem, structures, narrative)
-    ws.shutdown()
-"""
+SparkLabs Agent - World Synthesizer"""
 
 from __future__ import annotations
 

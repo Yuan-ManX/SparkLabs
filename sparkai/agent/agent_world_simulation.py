@@ -1,39 +1,5 @@
 """
-SparkLabs Agent - Autonomous World Simulation Engine
-
-Comprehensive autonomous world simulation system for the SparkLabs
-AI-Native Game Engine. Provides stepped time progression, population
-dynamics, resource economy, emergent event generation, world state
-snapshots, and causal chain tracking for narrative generation.
-
-Architecture:
-  AgentWorldSimulation (Singleton)
-    |-- SimulationClock (stepped time progression with multiple time scales)
-    |-- PopulationManager (NPC lifecycle: spawn, age, migrate, die)
-    |-- ResourceSystem (resource nodes, production, consumption, depletion)
-    |-- EventGenerator (emergent world events from state conditions)
-    |-- WorldStateSnapshot (serializable world state for save/load)
-    |-- CausalChain (track cause-effect relationships between events)
-
-Key Features:
-  - Configurable simulation speed (PAUSED, REAL_TIME, X2, X5, X10, X100)
-  - Day/night cycle, season tracking, year progression
-  - NPC spawning with traits, aging, reproduction, migration, death
-  - Resource nodes with production, consumption, depletion, trade
-  - Emergent events: weather, disasters, discoveries, conflicts
-  - Full world state serialization with snapshot rollback
-  - Causal graph tracking for narrative generation
-
-Usage:
-    sim = get_agent_world_simulation()
-    sim.create_region("Verdant Plains", RegionType.PLAINS)
-    sim.create_entity("Elder Oak", "tree_ent", "region_1")
-    sim.add_resource_node("region_1", ResourceType.FOOD, 500.0)
-    sim.advance_time(ticks=100)
-    snapshot = sim.take_snapshot()
-    events = sim.get_events(since_tick=0)
-    stats = sim.get_stats()
-"""
+SparkLabs Agent - Autonomous World Simulation Engine"""
 
 from __future__ import annotations
 

@@ -1,10 +1,5 @@
 """
-SparkAI Agent - Trajectory Learning Engine
-
-Analyzes saved reasoning chains and execution trajectories
-to extract patterns that improve future task routing,
-tool selection, and error prevention.
-"""
+SparkAI Agent - Trajectory Learning Engine"""
 
 import json
 import os

@@ -1,22 +1,5 @@
 """
-SparkAI Agent - Slash Commands
-
-Executable command system that maps slash commands to agent skills,
-tools, and workflows. Commands provide a structured interface for
-triggering complex agent operations.
-
-Command Categories:
-  - onboarding: /start, /help
-  - game_design: /brainstorm, /design-system, /map-systems
-  - creation: /scaffold, /generate, /create-scene, /create-entity
-  - asset: /generate-asset, /generate-audio, /generate-code
-  - narrative: /write-story, /create-quest, /create-dialogue
-  - npc: /create-npc, /configure-npc, /set-behavior
-  - review: /code-review, /design-review, /balance-check
-  - qa: /diagnose, /validate, /run-tests, /bench
-  - pipeline: /pipeline-run, /loop-run
-  - team: /team-combat, /team-narrative, /team-ui, /team-level
-"""
+SparkAI Agent - Slash Commands"""
 
 from __future__ import annotations
 

@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Trajectory Recorder
-
-Session trajectory recording and replay for the AI game engine agent.
-Captures agent decisions, tool calls, game state snapshots, and user
-interactions during game development sessions. Enables post-mortem
-analysis, quality review, and continuous improvement of the agent's
-game creation capabilities through recorded session data.
-
-Architecture:
-  TrajectoryRecorder
-    |-- TrajectoryStep (timestamp, phase, action, context snapshot)
-    |-- GameStateSnapshot (entity tree, scene graph at point in time)
-    |-- DecisionTrace (prompt → thought → action → result chain)
-    |-- TrajectoryStore (file-based JSONL storage with rotation)
-    |-- ReplayEngine (time-walk through recorded trajectories)
-
-Recording Phases:
-  - OBSERVE: agent reads current game state
-  - THINK: agent formulates plan and reasoning
-  - ACT: agent executes tool calls or code generation
-  - VERIFY: agent checks results, iterates if needed
-  - INTERACT: user provides feedback or new instructions
-"""
+SparkLabs Agent - Trajectory Recorder"""
 
 from __future__ import annotations
 

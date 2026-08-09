@@ -1,32 +1,5 @@
 """
-SparkAI Agent - Game Asset Consistency Engine
-
-Enforces key consistency chains across all game files, ensuring
-that asset keys match between generation, manifest, and code.
-Mismatched keys cause silent runtime crashes, so this engine
-validates the entire chain before and after asset operations.
-
-Architecture:
-  AssetConsistencyEngine
-    |-- KeyChain (asset key lifecycle tracking)
-    |-- ConsistencyRule (validation rules per asset type)
-    |-- ConsistencyReport (validation results)
-    |-- KeyRegistry (central key authority)
-
-Consistency Chain:
-  Generation (key created) -> Manifest (key registered) -> Code (key referenced)
-
-Each link in the chain must use the exact same key. The engine
-validates that no key is orphaned (generated but never referenced)
-or dangling (referenced but never generated).
-
-Validation Rules:
-  - Asset key must exist in manifest before code references it
-  - Code must reference only keys that exist in manifest
-  - Generated assets must be registered in manifest
-  - Tileset keys must match across tilemap and scene code
-  - Animation keys must match across spritesheet and character code
-"""
+SparkAI Agent - Game Asset Consistency Engine"""
 
 from __future__ import annotations
 

@@ -1,23 +1,5 @@
 """
-SparkAI Agent - Game Context
-
-Maintains the complete state of the game being built by the AI engine.
-The game context is the single source of truth for all game artifacts,
-tracking entities, scenes, assets, pipeline progress, and project metadata.
-
-Context architecture:
-  GameContext
-    |-- Project metadata (name, genre, description, version)
-    |-- Entity registry (all game entities with components)
-    |-- Scene graph (scene hierarchy and relationships)
-    |-- Asset library (generated and imported assets)
-    |-- Pipeline state (generation progress and results)
-    |-- World model (game rules, physics, AI parameters)
-    |-- Change history (undo/redo snapshots)
-
-The context enables agents to reason about the current game state
-and make informed decisions about what to create or modify next.
-"""
+SparkAI Agent - Game Context"""
 
 from __future__ import annotations
 

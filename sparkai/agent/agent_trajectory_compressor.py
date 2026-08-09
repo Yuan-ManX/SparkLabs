@@ -1,24 +1,6 @@
 """
 Trajectory Compressor - Compress agent interaction trajectories for efficient
-storage and model training data generation within SparkLabs AI game studio.
-
-Architecture:
-    TrajectoryCompressor/
-    |-- CompressionMode (SUMMARIZE, PRUNE, MERGE enumeration)
-    |-- TrajectoryFormat (CHATML, SHAREGPT, OPENAI enumeration)
-    |-- RelevanceFilter (STRICT, MODERATE, LOOSE enumeration)
-    |-- Trajectory (raw interaction sequence dataclass)
-    |-- CompressedTrajectory (compressed output dataclass)
-    |-- TurnSummary (single interaction turn summary dataclass)
-    |-- CompressionConfig (compression parameter bundle dataclass)
-    |-- TrainingExample (model training sample dataclass)
-    |-- TrajectoryCompressor (global compression orchestration)
-
-Processes agent session recordings into compact representations suitable
-for long-term archival, cross-session context injection, and fine-tuning
-dataset generation. Applies summarization, relevance filtering, and
-multi-trajectory merging strategies.
-"""
+storage and model training data generation within SparkLabs AI game studio."""
 
 from __future__ import annotations
 
