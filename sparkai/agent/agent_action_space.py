@@ -1,50 +1,5 @@
 """
-SparkLabs Agent - Action Space Definition Engine
-
-Comprehensive action space system that defines, validates, and executes
-the full spectrum of actions available to AI agents within the SparkLabs
-game engine. Provides structured action definitions with preconditions,
-effects, costs, and execution contexts for both game development and
-runtime game simulation.
-
-Architecture:
-  ActionSpaceEngine (Singleton)
-    |-- ActionDefinition (typed action with preconditions and effects)
-    |-- ActionDomain (categorized group of related actions)
-    |-- ActionExecutor (validates and executes actions with rollback)
-    |-- ActionPlanner (generates action sequences from goals)
-    |-- ActionValidator (enforces preconditions and constraints)
-
-Action Categories:
-  - ENGINE: render, physics, audio, input, scene management
-  - GAME_LOGIC: entity creation, state changes, event triggers
-  - AI_AGENT: navigation, decision, perception, communication
-  - DEVELOPMENT: code generation, asset creation, testing, deployment
-  - WORLD: terrain, weather, time, ecosystem manipulation
-  - SOCIAL: dialogue, relationship, trade, faction operations
-
-Usage:
-    ae = get_action_space()
-    ae.initialize()
-
-    # Register a custom action
-    ae.register_action(ActionDefinition(
-        name="spawn_entity",
-        category=ActionCategory.GAME_LOGIC,
-        parameters={"entity_type": "str", "position": "tuple"},
-        preconditions=["scene_loaded", "entity_type_valid"],
-        effects=["entity_count_increased"],
-    ))
-
-    # Execute an action
-    result = ae.execute("spawn_entity", {
-        "entity_type": "NPC",
-        "position": (100, 200),
-    })
-
-    # Plan a sequence of actions
-    plan = ae.plan_actions(goal="create_platformer_level", max_steps=10)
-"""
+SparkLabs Agent - Action Space Definition Engine"""
 
 from __future__ import annotations
 

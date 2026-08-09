@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Adaptive Cognition System
-
-A unified cognitive architecture that combines metacognition, curiosity-driven
-exploration, and reinforcement learning into a single adaptive intelligence
-framework. This system enables AI agents to reason about their own reasoning,
-explore novel strategies, and improve through experience.
-
-Architecture:
-  AdaptiveCognition
-    |-- SelfReasoningEngine (introspection, confidence calibration, bias detection)
-    |-- CuriosityDriver (novelty seeking, exploration vs exploitation balance)
-    |-- ExperienceLearner (reinforcement from outcomes, pattern recognition)
-    |-- StrategyOptimizer (multi-armed bandit, policy gradient improvement)
-    |-- CognitiveState (attention, focus, mental energy modeling)
-
-Capabilities:
-  - Self-reflection and reasoning about own decision processes
-  - Curiosity-driven exploration of untested strategies
-  - Experience-based learning from successes and failures
-  - Strategy optimization through multi-armed bandit selection
-  - Cognitive resource management (attention, focus, mental energy)
-"""
+SparkLabs Agent - Adaptive Cognition System"""
 
 from __future__ import annotations
 

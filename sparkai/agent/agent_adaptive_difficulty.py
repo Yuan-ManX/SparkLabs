@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Adaptive Difficulty Engine
-
-Dynamic gameplay parameter modulation based on real-time player
-performance analysis. Continuously adjusts enemy aggression,
-spawn rates, resource availability, puzzle complexity, and
-encounter pacing to maintain optimal challenge-flow balance
-without explicit difficulty selection.
-
-Architecture:
-  AdaptiveDifficultyEngine
-    |-- PerformanceMonitor (latent skill estimation from gameplay)
-    |-- DifficultyScaler (parameter interpolation across challenge bands)
-    |-- FlowOptimizer (targets the optimal arousal-challenge zone)
-    |-- FrustrationDetector (early warning for excessive deaths/failures)
-    |-- BoredomDetector (trivial encounter detection)
-    |-- AdaptationLogger (decision audit trail for tuning review)
-
-Difficulty Bands:
-  - RELAXED: guided experience, generous resources
-  - BALANCED: standard challenge, fair resource distribution
-  - INTENSE: heightened threat, scarce resources
-  - NIGHTMARE: maximum pressure, minimal support
-"""
+SparkLabs Agent - Adaptive Difficulty Engine"""
 
 from __future__ import annotations
 

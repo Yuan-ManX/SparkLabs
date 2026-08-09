@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Agentic Memory System
-
-Tiered memory storage with automated consolidation, embedding-based
-semantic search, and configurable retention policies. Provides agents
-with persistent knowledge across sessions while managing memory decay
-and importance-weighted retrieval.
-
-Architecture:
-  AgenticMemory
-    |-- MemoryEntry (individual memory record with metadata)
-    |-- MemorySearchResult (ranked retrieval result)
-    |-- TierManager (tier promotion and demotion logic)
-    |-- ConsolidationEngine (automatic memory compaction)
-    |-- EmbeddingIndex (vector-based semantic search)
-    |-- RetentionPolicy (time-to-live and access-based eviction)
-
-Memory Tiers:
-  WORKING -> SHORT_TERM -> LONG_TERM -> ARCHIVAL
-                                    -> CORE_IDENTITY
-
-Storage flow:
-  New entries start in WORKING tier, then consolidate upward
-  based on importance, access frequency, and contextual relevance.
-"""
+SparkLabs Agent - Agentic Memory System"""
 
 from __future__ import annotations
 

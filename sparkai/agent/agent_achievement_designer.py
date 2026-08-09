@@ -1,38 +1,5 @@
 """
-SparkLabs Agent - AI Achievement Designer
-
-An AI achievement design agent for the SparkLabs AI-native game engine. It
-designs achievement definitions with categories, reward structures, rarity
-tiers, and difficulty scoring. The designer composes achievement chains,
-generates design suggestions from game context, and tracks the lifecycle
-of achievement proposals from draft through approval.
-
-Architecture:
-  AchievementDesigner (singleton)
-    |-- AchievementDesign, AchievementChain, DifficultyAssessment,
-       DesignSuggestion, DesignerStats, DesignerSnapshot, DesignerEvent
-    |-- AchievementTier, DesignerCategory, DesignerRarity,
-       DesignerStatus, DesignerEventKind
-
-Core Capabilities:
-  - register_design / get_design / list_designs / update_design /
-    remove_design: achievement design lifecycle management.
-  - create_chain / get_chain / list_chains / update_chain / remove_chain:
-    sequential achievement chains with ordered milestones.
-  - add_to_chain / remove_from_chain: add or remove designs from a chain.
-  - assess_difficulty: compute a multi-factor difficulty score for a design
-    based on rarity, time pressure, skill ceiling, and grind factor.
-  - suggest_designs: generate AI design suggestions from a game context
-    payload (genre, themes, mechanics, existing designs).
-  - approve_design / reject_design: lifecycle transitions with rationale.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`AchievementDesigner.get_instance` or the module-level
-:func:`get_achievement_designer` factory.
-"""
+SparkLabs Agent - AI Achievement Designer"""
 
 from __future__ import annotations
 

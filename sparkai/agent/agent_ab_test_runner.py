@@ -1,16 +1,5 @@
 """
-SparkLabs Agent - AB Test Runner
-
-A singleton system for AI-driven A/B testing of game features.
-Designs experiments, splits player cohorts, collects metrics,
-and determines statistical significance for game design decisions.
-
-Architecture:
-  ABTestRunner (singleton)
-    |-- ExperimentConfig (experiment definition and metadata)
-    |-- CohortResult (per-variant aggregated metric data)
-    |-- TestReport (statistical analysis and recommendations)
-"""
+SparkLabs Agent - AB Test Runner"""
 
 from __future__ import annotations
 

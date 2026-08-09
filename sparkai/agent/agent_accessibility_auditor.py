@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Accessibility Auditor
-
-AI-driven game accessibility auditing system. Checks game configurations
-for accessibility compliance, suggests improvements for colorblind modes,
-text readability, control remapping, audio cues, and difficulty accommodations.
-
-Architecture:
-  AccessibilityAuditor (singleton)
-    |-- AccessibilityCategory (accessibility domain classification)
-    |-- ComplianceLevel (WCAG-style compliance grading)
-    |-- AuditSeverity (issue severity ranking)
-    |-- GuidelineSource (accessibility standard origin tracking)
-    |-- AccessibilityCheck (single audit check result)
-    |-- AuditReport (aggregated scene audit summary)
-    |-- ImprovementPlan (prioritized remediation plan)
-
-Accessibility Domains:
-  - VISUAL: color contrast, colorblind support, UI scaling
-  - AUDITORY: audio cues, captions, sound alternatives
-  - MOTOR: control remapping, input sensitivity, hold-to-toggle
-  - COGNITIVE: text readability, complexity reduction, memory aids
-  - LANGUAGE: localization readiness, reading level, text alternatives
-  - DEVICE: platform-specific requirements, input method compatibility
-"""
+SparkLabs Agent - Accessibility Auditor"""
 
 from __future__ import annotations
 

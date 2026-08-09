@@ -360,6 +360,7 @@ import TrajectoryTimelinePanel from './TrajectoryTimelinePanel';
 import MemoryBrowserPanel from './MemoryBrowserPanel';
 import PerceptionVisualizerPanel from './PerceptionVisualizerPanel';
 import PredictiveSimulationPanel from './PredictiveSimulationPanel';
+import AgentBuildPanel from './AgentBuildPanel';
 
 type TransformTool = 'move' | 'rotate' | 'scale';
 
@@ -1029,6 +1030,7 @@ const SparkLabsEditor: React.FC<{ onGoHome?: () => void }> = ({ onGoHome }) => {
       case 'memory-browser': return <MemoryBrowserPanel />;
       case 'perception-visualizer': return <PerceptionVisualizerPanel />;
       case 'predictive-simulation': return <PredictiveSimulationPanel />;
+      case 'agent-build': return <AgentBuildPanel />;
       default: return <WelcomeDashboard onModeSwitch={handleModeSwitch} onAIPrompt={handleAIPrompt} />;
     }
   };

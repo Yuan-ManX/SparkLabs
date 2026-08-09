@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Adaptive Difficulty Director
-
-Monitors player performance in real-time and dynamically adjusts
-game parameters to maintain optimal challenge. Unlike static
-difficulty settings, the Adaptive Director continuously observes
-player behavior — deaths, completion speed, collectible ratio,
-damage taken — and modulates enemy speed, spawn rates, collectible
-placement, and damage values to keep the player in the flow zone.
-
-This module generates adaptation rules as executable JavaScript
-that hooks into the game runtime's update loop, reading from
-window.gameState and writing adjustments back to CONFIG and
-entity properties.
-
-Architecture:
-  AdaptiveDirector (singleton)
-    |-- MetricTracker   -> defines which player metrics to monitor
-    |-- SkillClassifier -> maps metric patterns to skill levels
-    |-- RuleSynthesizer -> generates adaptation rules from game design
-    |-- JsInjector      -> compiles rules to executable browser JS
-"""
+SparkLabs Agent - Adaptive Difficulty Director"""
 
 from __future__ import annotations
 

@@ -1,31 +1,7 @@
 """
 SparkLabs Agent - Agentic Coding Framework
 Autonomous code generation, testing, and debugging cycle for game logic.
-Enables the AI agent to write, test, fix, and refine game code without human intervention.
-
-Architecture:
-  AgenticCodingFramework
-    |-- CodingSession (tracks full autonomous coding iteration)
-    |-- CodeArtifact (manages generated code units with versioning)
-    |-- SandboxCompiler (isolated compilation and validation)
-    |-- TestRunner (automated test execution)
-    |-- ErrorAnalyzer (diagnostic and automated fix generation)
-    |-- PeerReviewer (multi-agent code quality validation)
-    |-- RollbackManager (safe version revert on failure)
-
-Coding Cycle:
-  GENERATE → COMPILE → TEST → DIAGNOSE → FIX → REVIEW → DEPLOY
-  ^                                    |
-  |                                    |
-  └────────────── REPEAT ←────────────┘
-
-Cycle Policies:
-  - MAX_ITERATIONS: maximum fix attempts before human intervention
-  - COMPILE_TIMEOUT: maximum compilation time per attempt
-  - TEST_TIMEOUT: maximum test execution time
-  - QUALITY_THRESHOLD: minimum test coverage to pass
-  - AUTO_ROLLBACK: revert on repeated failures
-"""
+Enables the AI agent to write, test, fix, and refine game code without human intervention."""
 
 from __future__ import annotations
 

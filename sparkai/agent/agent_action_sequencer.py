@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Action Sequencer
-
-Orders and sequences game development operations into optimal
-execution pipelines. Determines the correct ordering of file
-creation, component attachment, asset importing, and code
-generation steps to produce valid, runnable game projects.
-
-Architecture:
-  ActionSequencer
-    |-- DependencyGraph (which operations depend on others)
-    |-- ExecutionPipeline (ordered list of operations to run)
-    |-- ConflictDetector (find ordering conflicts before execution)
-    |-- ParallelOpportunityFinder (identify safe parallel steps)
-    |-- RollbackPlan (undo sequence if any step fails)
-
-Operation Types (game dev specific ordering constraints):
-  - PROJECT_INIT must come before everything
-  - ASSET_IMPORT before SPRITE_REFERENCE
-  - COMPONENT_CREATE before COMPONENT_ATTACH
-  - CODE_GEN before CODE_COMPILE
-  - SCENE_CREATE before ENTITY_SPAWN
-"""
+SparkLabs Agent - Action Sequencer"""
 
 from __future__ import annotations
 

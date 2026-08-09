@@ -48,6 +48,7 @@ export const modeGroups: ModeGroup[] = [
       { id: 'memory-browser', label: 'Memory', icon: 'fa-database' },
       { id: 'perception-visualizer', label: 'Perception', icon: 'fa-eye' },
       { id: 'predictive-simulation', label: 'Simulation', icon: 'fa-flask' },
+      { id: 'agent-build', label: 'Agent Build', icon: 'fa-hammer' },
     ],
   },
   {

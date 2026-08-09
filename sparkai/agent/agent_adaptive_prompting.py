@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Adaptive Prompting Engine
-
-Self-improving prompt generation system that tracks success
-rates per template, auto-tunes prompt parameters, and selects
-optimal prompt strategies for each game development task.
-Implements A/B testing of prompt variants with statistical
-performance tracking.
-
-Architecture:
-  AdaptivePrompting
-    |-- PromptRegistry (template catalog with variants)
-    |-- PerformanceTracker (success/failure metrics per variant)
-    |-- PromptOptimizer (parameter tuning from feedback)
-    |-- VariantSelector (epsilon-greedy best-variant selection)
-    |-- TemplateComposer (context-aware prompt assembly)
-
-Optimization Strategies:
-  - EPSILON_GREEDY: explore new variants with epsilon probability
-  - UCB: upper confidence bound selection for exploration
-  - THOMPSON_SAMPLING: bayesian variant selection
-"""
+SparkLabs Agent - Adaptive Prompting Engine"""
 
 from __future__ import annotations
 
