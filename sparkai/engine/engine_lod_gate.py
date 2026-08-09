@@ -1,17 +1,5 @@
 """
-SparkLabs Engine - LOD Gate
-
-A singleton level-of-detail management system for mesh complexity,
-texture resolution, and draw distance tiers. Provides smooth LOD
-transitions with configurable distance thresholds for optimizing
-rendering performance across hardware tiers.
-
-Architecture:
-  LODGate (singleton)
-    |-- LODLevel (distance thresholds, mesh reduction, texture mip)
-    |-- LODProfile (hardware-tier target configuration)
-    |-- LODGroup (object with multiple LOD variants)
-"""
+SparkLabs Engine - LOD Gate"""
 
 from __future__ import annotations
 

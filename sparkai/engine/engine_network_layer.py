@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Network Layer
-
-AI-optimized networking layer for multiplayer games. Provides state
-synchronization, latency compensation, matchmaking, and session
-management across multiple network topologies. Simulates real-world
-network conditions for development and testing.
-
-Architecture:
-  NetworkLayerEngine (Singleton)
-    |-- NetworkSession           — active game session with topology and sync config
-    |-- PlayerConnection         — per-player connection metadata and health
-    |-- SyncPacket               — individual network packet with reliability flags
-    |-- MatchmakingQuery         — player matchmaking request with preferences
-    |-- NetworkTopology          — server architecture model
-    |-- SyncStrategy             — state synchronization approach
-    |-- ConnectionState          — player connection lifecycle states
-
-Network Topologies:
-  - CLIENT_SERVER: one host relays all traffic
-  - PEER_TO_PEER: each peer communicates directly with others
-  - AUTHORITATIVE_SERVER: server owns game state, clients send inputs
-  - HYBRID: server arbitrates critical state, peers share non-critical
-  - DEDICATED_SERVER: headless server instance runs the simulation
-
-Sync Strategies:
-  - FULL_STATE: transmit complete entity state each tick
-  - DELTA: transmit only changed properties since last sync
-  - INTERPOLATION: smooth between two known snapshots
-  - PREDICTION: client-side extrapolation of state
-  - ROLLBACK: re-simulate on misprediction
-  - SNAPSHOT: periodic full captures with interpolation
-"""
+SparkLabs Engine - Network Layer"""
 
 from __future__ import annotations
 

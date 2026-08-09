@@ -1,46 +1,5 @@
 """
-SparkLabs Engine - Mail & Message System
-
-An in-game mail and message delivery system for the SparkLabs AI-native
-game engine. Manages player-to-player mail with text content, item
-attachments, currency transfers, cash-on-delivery (COD) payments,
-read/unread tracking, expiration timers, bulk mail for system
-announcements, and mail folder organization.
-
-Each mail entry stores sender and recipient IDs, subject and body text,
-optional item attachments with quantities, optional currency amounts,
-COD pricing for paid deliveries, expiration timestamps, read status,
-and folder classification. Designed for MMO mailboxes, reward delivery
-systems, and administrative announcements.
-
-Architecture:
-  MailSystem (singleton)
-    |-- MailFolder, MailPriority, MailEventKind
-    |-- MailAttachment, MailEntry, MailTemplate, MailConfig,
-       MailStats, MailSnapshot, MailEvent
-    |-- get_mail_system
-
-Core Capabilities:
-  - send_mail / remove_mail / get_mail / list_mail: manage individual
-    mail entries between players.
-  - mark_read / mark_unread: control mail read state.
-  - claim_attachment / return_mail: handle item attachments and COD.
-  - send_bulk_mail: broadcast mail to multiple recipients.
-  - register_template / get_template / list_templates: reusable mail
-    templates for system announcements.
-  - move_to_folder: organize mail into folders.
-  - expire_mail: process expired mail and return attachments.
-  - tick: advance expiration timers and auto-cleanup.
-  - set_config / get_config: global tuning for max mail, expiry, and
-    attachment limits.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`MailSystem.get_instance` or the module-level :func:`get_mail_system`
-factory.
-"""
+SparkLabs Engine - Mail & Message System"""
 
 from __future__ import annotations
 

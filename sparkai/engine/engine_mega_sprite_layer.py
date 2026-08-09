@@ -1,15 +1,5 @@
 """
-SparkAI Engine - Mega Sprite Layer System
-
-High-performance GPU batch rendering for massive sprite counts.
-Leveraging GPU-driven rendering architecture, this system
-enables rendering of millions of sprites through single-pass draw
-calls, GPU-resident vertex buffers, and instance-based rendering.
-
-Supports per-sprite animations, scrolling, filtering, and dynamic
-batching strategies for maximum throughput across different hardware
-profiles.
-"""
+SparkAI Engine - Mega Sprite Layer System"""
 
 from __future__ import annotations
 

@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - 2D Lighting Engine
-
-Dynamic 2D lighting system with point lights, spot lights, ambient light,
-shadow casting, and light blending for 2D game scenes. Manages light
-sources organized into layers with configurable blend modes, falloff
-curves, and per-light shadow casting.
-
-Architecture:
-  Lighting2DEngine
-    |-- LightSource (point, spot, directional, ambient, area, pulsating)
-    |-- LightLayer (grouped lights with shared blend/ambient)
-    |-- ShadowCaster2D (occlusion geometry for light rays)
-    |-- LightingConfig (scene-level lighting parameters)
-
-Lighting Pipeline:
-  1. Collect active lights per layer within scene bounds
-  2. For each light, compute attenuation and falloff
-  3. Cast shadow rays against registered shadow casters
-  4. Blend overlapping lights using layer blend mode
-  5. Apply ambient contribution and tonemapping
-"""
+SparkLabs Engine - 2D Lighting Engine"""
 
 from __future__ import annotations
 

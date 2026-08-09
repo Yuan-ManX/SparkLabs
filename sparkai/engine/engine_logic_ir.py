@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - Logic IR
-
-Logic-as-data intermediate representation for LLM-friendly game logic
-authoring. Game logic is expressed as a graph of typed IR nodes (conditions,
-actions, events, variables, functions, branches, loops, assignments) that
-can be validated, serialized, and executed against a runtime context.
-
-Architecture:
-  LogicIRSystem (Singleton)
-    |-- IRNodeType (categories of IR nodes)
-    |-- IRNode    (a single node in the logic graph)
-    |-- IREvent   (a named event with conditions and actions)
-    |-- LogicIR   (a complete logic program composed of events)
-    |-- LogicIRSnapshot (immutable snapshot of system state)
-
-Lifecycle:
-  1. create_ir(name) -> LogicIR
-  2. add_event(ir_id, event) -> IREvent
-  3. validate(ir_id) -> Dict
-  4. execute(ir_id, context) -> Dict
-  5. serialize(ir_id) -> str / deserialize(json_str) -> LogicIR
-  6. get_snapshot() -> LogicIRSnapshot
-  7. reset() -> None
-
-Usage:
-    system = get_logic_ir_system()
-    ir = system.create_ir("player_logic")
-    event = IREvent(name="on_damage", conditions=[], actions=[])
-    system.add_event(ir.ir_id, event)
-    report = system.validate(ir.ir_id)
-"""
+SparkLabs Engine - Logic IR"""
 
 from __future__ import annotations
 

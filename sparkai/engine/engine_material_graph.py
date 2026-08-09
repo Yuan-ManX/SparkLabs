@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - Material Graph System
-
-Node-based material authoring with visual shader code generation.
-Provides a graph-driven editor for composing surface materials
-via connected processing nodes that compile to target shader
-languages for real-time rendering.
-
-Architecture:
-  MaterialGraphSystem
-    |-- MaterialNode (processing units: texture, math, blend, output)
-    |-- NodeConnection (typed links between node input/output ports)
-    |-- MaterialGraph (container for nodes, connections, and metadata)
-    |-- ShaderCode (compiled output for target shading language)
-
-Shader Targets:
-  - GLSL (OpenGL / Vulkan)
-  - HLSL (Direct3D)
-  - Metal (Apple platforms)
-  - WGSL (WebGPU)
-"""
+SparkLabs Engine - Material Graph System"""
 
 from __future__ import annotations
 

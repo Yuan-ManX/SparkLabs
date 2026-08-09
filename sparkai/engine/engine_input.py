@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Input System
-
-Complete input management for keyboard, mouse, touch, and gamepad.
-Handles action mapping, input buffering, gesture recognition, and
-event subscription with thread-safe singleton access.
-
-Architecture:
-  InputEngine (Singleton)
-    |-- InputState     — per-frame snapshot of all device states
-    |-- InputEvent     — timestamped raw input event with metadata
-    |-- InputAction    — named game action with device bindings
-    |-- GestureEvent   — recognized touch/motion gesture result
-    |-- GestureDetector — tap, double-tap, long-press, swipe, pinch, rotate
-
-Input Processing Order per frame:
-  1. Platform feeds raw events via process_event()
-  2. State buffers updated (press/release transitions)
-  3. Action bindings evaluated (raw input → named actions)
-  4. Gesture detection on touch sequences
-  5. Subscriber callbacks dispatched
-  6. update_actions() called to finalize per-frame state
-"""
+SparkLabs Engine - Input System"""
 
 from __future__ import annotations
 

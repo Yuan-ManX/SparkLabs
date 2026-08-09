@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Intelligence Surface
-
-The EngineIntelligenceSurface exposes every engine subsystem's capabilities
-to the AI agent layer through a semantic interface. Instead of the agent
-needing to know implementation details, it queries the surface with semantic
-intent ("optimize physics performance", "generate narrative for scene X"),
-and the surface translates that into the correct engine API calls.
-
-This is the engine-side complement to the AgentCognitiveMesh. Together they
-form a complete bidirectional bridge:
-  - AgentCognitiveMesh: agent -> engine (agent decisions flow to engine)
-  - EngineIntelligenceSurface: engine -> agent (engine capabilities exposed)
-
-The surface maintains a registry of engine capabilities, each with:
-  - A semantic name (e.g., "physics_optimization")
-  - A natural language description
-  - Input/output schema
-  - The engine subsystem that implements it
-  - Current health and performance metrics
-
-Capabilities are organized into domains:
-  - RENDER: rendering, lighting, post-processing, shaders
-  - PHYSICS: collision, rigid body, fluid, cloth, ragdoll
-  - AUDIO: spatial audio, music, sfx, synthesis
-  - GAMEPLAY: combat, economy, quest, dialogue, crafting
-  - WORLD: terrain, weather, biome, procedural generation
-  - ANIMATION: skeletal, procedural, state machine, IK
-  - AI: pathfinding, behavior tree, NPC, spawn director
-  - UI: hud, menu, dialogue ui, notification
-  - NETWORK: replication, rpc, sync, matchmaking
-  - SYSTEM: save, load, settings, localization, analytics
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Intelligence Surface"""
 
 from __future__ import annotations
 

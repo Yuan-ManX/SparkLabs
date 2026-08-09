@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Lightmapping & Baked Global Illumination
-
-A comprehensive lightmapping and baked global illumination system for the
-AI-native game engine. Provides lightmap atlas packing, light probe volume
-placement, baked light registration, and multi-algorithm GI baking with
-asynchronous job execution.
-
-Architecture:
-  LightmappingEngine (Singleton)
-    |-- LightmapAtlas       — packed atlas of lightmap regions
-    |-- LightmapRegion      — a single mesh's lightmap UV region
-    |-- LightProbe          — single irradiance probe with SH coefficients
-    |-- LightProbeVolume    — 3D grid of light probes
-    |-- BakedLight          — a registered light source for baking
-    |-- BakeSettings        — configuration for the bake process
-    |-- BakedScene          — complete scene with atlas, probes, lights, settings
-
-Baking Pipeline:
-  1. create_settings() to define bake quality and parameters
-  2. create_bake_scene() to initialize the scene container
-  3. add_baked_light() and add_mesh_to_bake() to populate the scene
-  4. place_light_probes() to position irradiance probes
-  5. start_bake() to run the selected GI algorithm asynchronously
-  6. sample_lighting() / sample_probe_lighting() for runtime queries
-  7. export_lightmap() to write baked results to disk
-
-Supported GI Algorithms:
-  - PATH_TRACER                — Monte Carlo path tracing with indirect bounces
-  - PHOTON_MAPPING             — two-pass photon emission and gathering
-  - RADIOSITY                  — finite-element form-factor computation
-  - AMBIENT_OCCLUSION_ONLY     — hemisphere sampling for AO only
-"""
+SparkLabs Engine - Lightmapping & Baked Global Illumination"""
 
 from __future__ import annotations
 

@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Loot & Drop System
-
-Manages loot tables, drop chances, item rarity weighting, bonus loot
-rolls, loot sharing rules, and individual/player loot history. Supports
-conditional drops, luck modifiers, loot specialization, and party
-distribution modes for cooperative gameplay.
-
-Architecture:
-  LootDropSystem (singleton)
-    |-- ItemRarity, DropCondition, LootShareMode, LootEventKind
-    |-- LootItem, LootEntry, LootTable, LootRoll, PlayerLuck,
-       PartyLootDistribution, LootConfig, LootStats, LootSnapshot, LootEvent
-    |-- get_loot_drop_system
-
-Core Capabilities:
-  - register_table / remove_table / get_table / list_tables
-  - add_entry / remove_entry / get_entry / list_entries
-  - roll_loot / roll_table / multi_roll
-  - register_player_luck / get_player_luck / update_player_luck
-  - create_distribution / resolve_distribution / get_distribution
-  - get_player_history / get_drop_history
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`LootDropSystem.get_instance` or the module-level
-:func:`get_loot_drop_system` factory.
-"""
+SparkLabs Engine - Loot & Drop System"""
 
 from __future__ import annotations
 

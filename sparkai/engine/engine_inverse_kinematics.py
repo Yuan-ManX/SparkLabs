@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Inverse Kinematics Engine
-
-IK solver for character animation, supporting FABRIK and CCD algorithms.
-Manages bone chains, end-effector positioning, and joint constraints for
-procedural animation and ragdoll posing.
-
-Architecture:
-  InverseKinematicsEngine (Singleton)
-    |-- IKBoneChain      — ordered chain of joints from root to end-effector
-    |-- IKJoint          — single joint with position, rotation, and constraints
-    |-- IKEffector       — target position/rotation for the end of a chain
-    |-- IKSolution       — computed solution with joint positions and rotations
-
-Solver Pipeline:
-  1. FABRIK   — Forward And Backward Reaching Inverse Kinematics
-  2. CCD      — Cyclic Coordinate Descent
-  3. Jacobian — Jacobian transpose method (linear approximation)
-  4. Constraints — angle, distance, and position limits
-"""
+SparkLabs Engine - Inverse Kinematics Engine"""
 
 from __future__ import annotations
 

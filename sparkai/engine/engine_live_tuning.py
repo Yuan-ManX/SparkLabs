@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Live Tuning
-
-Unified surface for live-tuning engine parameters at runtime. Parameters
-are organized by subsystem, have type constraints (min/max/enum values),
-and can be saved into named profiles that can be applied instantly.
-
-The tuning surface enables AI agents to adjust engine behavior in
-real-time without restart. When a parameter changes, registered watchers
-are notified with the old and new values, allowing dependent systems to
-react dynamically. All changes are logged for audit and rollback.
-
-Parameter types supported: INTEGER, FLOAT, BOOLEAN, STRING, ENUM.
-Profiles capture snapshots of parameter values and can be applied,
-diffed, and exported for persistence.
-
-Architecture:
-  LiveTuningEngine (singleton)
-    |-- TunableParameter (a single registered parameter with constraints)
-    |-- ParameterValue (a name/subsystem/value/applied-at tuple)
-    |-- TuningProfile (a named preset capturing parameter values)
-    |-- ParameterChange (an audit-log entry for a parameter modification)
-    |-- ParameterWatcher (a callback subscription for parameter changes)
-    |-- TuningDiff (a single difference between current and profile values)
-    |-- TuningSnapshot (an aggregate snapshot of engine state)
-    |-- ParameterType / ChangeKind / ValidationResult (domain enums)
-"""
+SparkLabs Engine - Live Tuning"""
 
 from __future__ import annotations
 

@@ -1,50 +1,5 @@
 """
-SparkLabs Engine - Kinetic Narrative Forge
-
-The EngineKineticNarrativeForge models how narrative events carry kinetic
-energy - momentum that builds, accelerates, deflects, collides, and
-tempers into coherent story direction. A story is not a static sequence
-of plot points; it is a dynamic system where events have mass and
-velocity, where narrative momentum accumulates and drives the story
-forward, and where the collision of competing story threads produces
-dramatic sparks.
-
-A story with no momentum stalls; a story with too much momentum
-careens out of control. The forge treats narrative as a physical
-system: events have mass (importance/weight), velocity (narrative
-direction), and momentum (mass times velocity). When two story threads
-collide, their momenta interact - they may merge into a stronger
-thread, deflect into new directions, or shatter into fragments.
-
-The forge models five forces:
-  - Igniting: narrative events are ignited with initial kinetic energy,
-    establishing their mass (dramatic weight) and velocity (direction)
-  - Accelerating: as events accumulate, narrative momentum accelerates -
-    the story builds toward climax
-  - Deflecting: when narrative threads encounter obstacles, they
-    deflect - branching into new story directions
-  - Colliding: when two narrative threads meet, they collide -
-    producing dramatic sparks, mergers, or shattering
-  - Tempering: raw narrative momentum is tempered into coherent
-    direction - the story's trajectory stabilizes
-
-This produces stories with genuine narrative physics - where a slow
-build of small events accumulates into unstoppable momentum, where a
-sudden collision of story threads creates explosive dramatic energy,
-and where the story's direction emerges from the interaction of
-competing narrative forces rather than from a predetermined plot.
-
-Architecture:
-  IGNITE     ->  ACCELERATE  ->  DEFLECT   ->  COLLIDE   ->  TEMPER
-  (narrative   (accumulated    (threads      (competing     (raw
-   events       events          encounter     threads        momentum
-   ignited      accelerate      obstacles     collide -      tempered
-   with mass    the story       and branch    mergers,       into
-   and          toward          into new      sparks, or     coherent
-   velocity)    climax)         directions)   shattering)    direction)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Kinetic Narrative Forge"""
 
 from __future__ import annotations
 

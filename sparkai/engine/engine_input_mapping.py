@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - AI-Optimized Input Mapping System
-
-A comprehensive input mapping layer that bridges raw device inputs to
-semantic game actions. Supports device detection, key binding, gesture
-recognition, input buffering, and adaptive control schemes for the
-AI-native game engine.
-
-Architecture:
-  InputMappingEngine (Singleton)
-    |-- InputDevice        — supported hardware input categories
-    |-- InputAction        — semantic game actions (move, jump, attack, etc.)
-    |-- GestureType        — recognized touch/motion gesture categories
-    |-- InputBinding       — single key/button → action mapping
-    |-- ControlScheme      — named collection of bindings for a device
-    |-- GesturePattern     — registered gesture template for detection
-    |-- InputBufferEntry   — timestamped input record in the processing queue
-
-Key Features:
-  - Device-specific default control schemes (keyboard, gamepad, touchscreen)
-  - Dynamic binding with sensitivity, deadzone, and invert support
-  - Gesture pattern registration and runtime detection from point sequences
-  - Input buffering with consumption tracking for frame-ordered processing
-  - Player behavior analysis for adaptive binding recommendations
-"""
+SparkLabs Engine - AI-Optimized Input Mapping System"""
 
 from __future__ import annotations
 

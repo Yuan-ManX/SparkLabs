@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Network Replication System
-
-Multiplayer network state replication providing client-server state
-synchronization with client-side prediction, server reconciliation,
-and interest management. Supports authoritative server architecture
-with bandwidth throttling, matchmaking room management, and simulated
-network conditions for testing.
-
-Architecture:
-  EngineNetworkReplication (Singleton)
-    |-- NetworkIdentity    — uniquely identified entity in the networked world
-    |-- ReplicatedState    — per-entity state snapshot with sequence tracking
-    |-- NetworkEvent       — typed network message with reliability guarantees
-    |-- ClientConnection   — connected client metadata and input buffer
-    |-- NetworkStats       — aggregate telemetry and performance metrics
-
-Capabilities:
-  - Entity registration with authoritative ownership assignment
-  - Frame-by-frame state submission and retrieval with interpolation
-  - Reliable and unreliable event delivery with pending-event queues
-  - Client lifecycle management (connect, heartbeat, disconnect)
-  - Interest management (view-radius-based entity filtering)
-  - RPC-style method invocation queuing
-  - Matchmaking with room creation, join, and leave
-  - Client-side prediction with server state reconciliation
-  - Bandwidth throttling and simulated network degradation
-"""
+SparkLabs Engine - Network Replication System"""
 
 from __future__ import annotations
 

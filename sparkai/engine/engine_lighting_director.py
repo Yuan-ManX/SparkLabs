@@ -1,49 +1,5 @@
 """
-SparkLabs Engine - Lighting Director
-
-Engine-side cinematic lighting director that orchestrates dynamic lighting
-for game scenes. It manages light sources (directional, point, spot, area,
-ambient, hemisphere), light groups, lighting moods/presets, time-of-day
-mood transitions, and shadow casting configuration. This system
-coordinates all light sources to achieve a desired visual atmosphere.
-
-The lighting director maintains a registry of light sources, light groups
-(which reference sets of lights), lighting moods (named presets that pin a
-state onto each referenced light), and mood transitions that blend from
-one mood to another over a duration with an easing curve. Light sources
-progress through the ``LightState`` lifecycle (OFF / ON / FADING_IN /
-FADING_OUT / FLICKERING). When a mood is activated the director applies
-each referenced light's mood-pinned state, optional color overrides, and
-optional intensity multipliers. Mood transitions record a start and
-completion timestamp and drive a progress value from 0.0 to 1.0.
-
-This subsystem focuses on director-level lighting orchestration. Low-level
-GPU light culling, shadow map rendering, and shader integration are
-delegated to the engine's lighting system; this module decides which light
-sources exist, what state they are in, how they are grouped, and which
-mood is currently driving the scene's atmosphere.
-
-Architecture:
-  LightingDirectorEngine (Singleton)
-    |-- LightSource       (a single light source with position/color/state)
-    |-- LightGroup        (a named group of light source ids)
-    |-- LightingMood       (a named preset of per-light state/overrides)
-    |-- MoodTransition     (a timed blend between two moods)
-    |-- LightingStats      (aggregate statistic counters)
-    |-- LightingSnapshot   (immutable snapshot of director state)
-    |-- LightEvent         (an emitted director lifecycle event)
-
-Lifecycle:
-  1. create_light(name, light_type, ...)             -> LightSource
-  2. create_group(name, light_ids, ...)               -> LightGroup
-  3. create_mood(name, mood_type, light_states, ...)   -> LightingMood
-  4. create_mood_transition(from_mood_id, to_mood_id) -> MoodTransition
-  5. set_light_state(light_id, state) / set_light_intensity(...) / set_light_color(...)
-  6. activate_mood(mood_id)                           -> LightingMood
-  7. execute_mood_transition(transition_id)           -> MoodTransition
-  8. compute_lighting(position, radius)               -> Dict
-  9. get_active_lights() / get_snapshot() / get_status() / reset()
-"""
+SparkLabs Engine - Lighting Director"""
 
 from __future__ import annotations
 

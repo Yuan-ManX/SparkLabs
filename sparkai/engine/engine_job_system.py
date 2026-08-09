@@ -1,25 +1,5 @@
 """
-SparkLabs Engine Job System
-
-A parallel job/task scheduling engine for the AI-native game engine.
-Distributes engine operations across multiple worker threads with
-priority-based scheduling, dependency resolution, and work stealing.
-
-Architecture:
-  JobSystemEngine (Singleton)
-    |-- Job              — unit of work with priority, dependencies, retries
-    |-- JobQueue         — prioritized queue with concurrency limits
-    |-- JobResult        — execution outcome with timing and diagnostics
-    |-- WorkerThread     — dedicated thread that executes jobs
-    |-- JobGraph         — directed acyclic graph for dependency ordering
-
-Scheduling Pipeline:
-  1. Submission  — jobs are validated and enqueued with priority
-  2. Scheduling  — workers dequeue based on active scheduling policy
-  3. Execution   — job's data callback is invoked on the worker thread
-  4. Completion  — result is recorded, dependents are unblocked
-  5. Retry       — failed jobs are re-queued up to max_retries
-"""
+SparkLabs Engine Job System"""
 
 from __future__ import annotations
 

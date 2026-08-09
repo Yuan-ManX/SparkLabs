@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - Luminous Narrative Flux
-
-The EngineLuminousNarrativeFlux models narrative meaning as a luminous
-flux that flows through the game world. Story beats are not abstract
-data points; they are photons of meaning that carry luminosity
-(brightness/importance), chromaticity (emotional color), and
-polarization (directional bias toward certain outcomes).
-
-As story beats flow through the narrative medium, they behave like light:
-they can be emitted, absorbed, refracted, and converged. When multiple
-beats converge, they create narrative illumination - moments where the
-story's meaning becomes clear and powerful. When beats conflict, they
-create narrative interference - ambiguous, tension-rich moments.
-
-The flux also models narrative shadows: story elements that are
-conspicuously dark, representing mysteries, secrets, or unexplored
-threads. The interplay of light and shadow creates the dramatic texture
-of the narrative experience.
-
-Architecture:
-  EMIT       ->  FLOW        ->  REFRACT     ->  CONVERGE    ->  ILLUMINATE
-  (story       (beats flow    (beats bend     (multiple      (the flux
-   beats emit  through the    around          beats merge     reaches
-   luminous    narrative      obstacles       into coherent   peak
-   flux into   medium,        and through     patterns)       luminosity,
-   the world)  spreading      different       )               creating
-               meaning)       media)                          illuminated
-                                                              story moments)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Luminous Narrative Flux"""
 
 from __future__ import annotations
 

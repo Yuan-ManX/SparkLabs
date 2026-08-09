@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Navigation System
-
-Comprehensive pathfinding and AI navigation system for the SparkLabs
-game engine. Provides navigation mesh generation from grid data and
-geometry, A*-based pathfinding across polygon graphs, agent movement
-with steering behaviors and local avoidance, off-mesh link traversal,
-path smoothing with corridor constraints, and line-of-sight checks.
-
-Architecture:
-  EngineNavigationSystem (Singleton)
-    |-- NavigationMesh        — polygon-based traversable surface data
-    |-- NavigationPath        — computed path with waypoints and status
-    |-- NavigationAgent       — autonomous moving entity with steering
-    |-- NavigationLink        — off-mesh connections between polygons
-    |-- PathStatus (enum)     — path computation lifecycle states
-    |-- NavigationState (enum)— agent behavioral state machine
-    |-- LinkType (enum)       — off-mesh connection traversal methods
-
-Usage:
-    nav = get_navigation_system()
-    mesh_id = nav.create_navmesh("overworld", cell_size=0.5, agent_radius=0.3)
-    nav.build_navmesh_from_grid(mesh_id, grid_data, 64, 48)
-    path = nav.find_path(mesh_id, (10.0, 0.0, 10.0), (50.0, 0.0, 50.0))
-    agent_id = nav.create_agent(mesh_id, (10.0, 0.0, 10.0), speed=5.0)
-    nav.move_agent(agent_id, (50.0, 0.0, 50.0))
-"""
+SparkLabs Engine - Navigation System"""
 
 from __future__ import annotations
 

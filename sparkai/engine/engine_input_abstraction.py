@@ -1,45 +1,5 @@
 """
-SparkLabs Engine - Input Abstraction Layer
-
-Pluggable input device abstraction layer that maps physical input devices
-(keyboard, mouse, gamepad, touch, VR controllers) to logical game actions.
-Supports remapping, dead zones, sensitivity curves, and multi-device
-aggregation through configurable input profiles.
-
-Architecture:
-  InputAbstraction (singleton)
-    |-- BindingRegistry (catalog of InputBinding entries mapping physical to logical)
-    |-- ProfileManager (named input profiles with activation/deactivation)
-    |-- FrameProcessor (raw input -> processed action values per frame)
-    |-- ActionStateTracker (current/previous frame comparison for edge detection)
-    |-- DeadZoneEngine (radial, axial, scaled-radial dead zone computation)
-    |-- BindingValidator (conflict detection and parameter validation)
-    |-- ProfileSerializer (import/export of profiles and bindings)
-
-Data Flow:
-  1. Physical devices emit raw input dicts
-  2. process_raw_input() receives them each frame
-  3. Active profile bindings match raw inputs to logical actions
-  4. Dead zones, sensitivity, and inversion are applied
-  5. An InputFrame is produced with active_actions mapped to values
-  6. Action state queries (pressed, just_pressed, just_released) compare frames
-
-Binding Types:
-  - Simple: one physical input maps to one logical action
-  - Composite: multiple physical inputs combine to produce one action value
-  - Chord: multiple actions must be simultaneously active (e.g. modifiers)
-
-Dead Zone Strategies:
-  - RADIAL: magnitude below threshold yields zero, above is linearly remapped
-  - AXIAL: per-axis threshold with no remapping; raw above, zero below
-  - SCALED_RADIAL: quadratic remapping above threshold for smooth curves
-  - NONE: raw values pass through unmodified
-
-Sensitivity Curves:
-  - 1.0: linear pass-through (no modification)
-  - < 1.0: accelerated response (more sensitive to small inputs)
-  - > 1.0: dampened response (less sensitive, more granular control)
-"""
+SparkLabs Engine - Input Abstraction Layer"""
 
 from __future__ import annotations
 

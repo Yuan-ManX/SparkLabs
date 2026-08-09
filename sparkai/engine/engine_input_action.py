@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Input Action System
-
-Advanced input action system that maps raw input events to semantic game
-actions with context-aware binding, gesture recognition, and AI-driven
-input optimization. Provides a flexible input abstraction layer that
-decouples game logic from specific input devices.
-
-Architecture:
-  InputActionSystem (Singleton)
-    |-- InputAction (semantic game action with triggers)
-    |-- ActionBinding (maps input events to actions)
-    |-- ControlScheme (organized set of bindings for a context)
-    |-- InputContext (context stack for layered input handling)
-    |-- GestureRecognizer (detects complex input patterns)
-    |-- InputOptimizer (AI-driven input layout optimization)
-
-Input Features:
-  - Multi-device support (keyboard, mouse, gamepad, touch)
-  - Context-sensitive input with priority-based routing
-  - Gesture recognition for complex input patterns
-  - Action buffering for combo detection
-  - Dead zone and sensitivity configuration
-  - AI-assisted control scheme generation
-
-Usage:
-    ias = get_input_action_system()
-    ias.initialize()
-
-    # Define an action
-    ias.register_action(InputAction(
-        name="jump",
-        description="Make the character jump",
-        triggers=[InputTrigger(device=InputDeviceType.KEYBOARD, key="SPACE")],
-    ))
-
-    # Create a control scheme
-    ias.create_scheme("platformer_default", [
-        ActionBinding(action="jump", triggers=[InputTrigger(key="SPACE")]),
-        ActionBinding(action="move_left", triggers=[InputTrigger(key="A"), InputTrigger(key="LEFT")]),
-    ])
-
-    # Push a context
-    ias.push_context("gameplay")
-"""
+SparkLabs Engine - Input Action System"""
 
 from __future__ import annotations
 

@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Kernel Integration Layer
-
-Binds the unified AgentKernel with the SparkLabs engine runtime, creating a
-single coherent surface where cognitive cycles and engine ticks advance in
-lockstep. Higher-level game agents (director, conductor, brain) use this
-layer to perceive live engine state, reason about it, and dispatch actions
-without touching engine internals directly.
-
-Architecture:
-  KernelEngineIntegrator (Singleton)
-    |-- TickCoupler       -> synchronizes kernel cycles with engine ticks
-    |-- PerceptionPipeline -> converts engine events into kernel perceptions
-    |-- ActionPipeline    -> converts kernel task results into engine commands
-    |-- StateProjector    -> snapshots engine state into kernel memory
-    |-- FeedbackBus       -> routes engine telemetry back into kernel reflection
-    |-- SessionRegistry   -> tracks agent-engine sessions and their lifecycle
-
-Data Flow (per tick):
-  Engine emits events -> PerceptionPipeline encodes -> Kernel.perceive()
-  Kernel.cycle() advances -> ActionPipeline drains tasks -> Engine dispatch
-  StateProjector snapshots -> Kernel.memory.write(EPISODIC)
-  FeedbackBus aggregates -> Kernel.reflection.reflect()
-
-Original SparkLabs design - cognitive-engine integration substrate.
-"""
+SparkLabs Engine - Kernel Integration Layer"""
 
 from __future__ import annotations
 

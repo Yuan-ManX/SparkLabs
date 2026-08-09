@@ -1,22 +1,5 @@
 """
-SparkLabs Engine - JavaScript Validator
-
-Validates generated game HTML/JavaScript for syntax integrity before the
-runtime reaches the player. Catches the class of bugs that silently break
-the entire script block (unmatched braces, double-brace artifacts from
-string templating, unclosed string literals, etc.).
-
-The validator runs purely on string analysis — no JS engine required — so
-it works in any Python environment and is fast enough for real-time use
-inside the conductor pipeline.
-
-Check categories:
-  - brace_balance    : {}, (), [] nesting and matching
-  - double_brace     : {{ or }} artifacts from templating bugs
-  - string_integrity : unclosed string literals
-  - script_tags      : <script> open/close pairing
-  - keyword_sanity   : var/let/const without identifier, return outside function
-"""
+SparkLabs Engine - JavaScript Validator"""
 
 from __future__ import annotations
 

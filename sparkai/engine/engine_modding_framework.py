@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Modding Framework
-
-A comprehensive modding framework for the SparkLabs AI-native game engine.
-Provides mod loading, sandboxed execution, version compatibility checking,
-asset replacement, script hooking, and a modding API surface for community
-content creation.
-
-Architecture:
-  ModdingFramework (Singleton)
-    |-- ModConfig              — configuration for mod loading
-    |-- ModDescriptor         — mod metadata descriptor
-    |-- ModDependency         — a declared dependency on another mod
-    |-- ModConflict           — a detected conflict between mods
-    |-- ModAPI                — modding API surface granted to a loaded mod
-    |-- ModdingFrameworkSnapshot — complete modding system snapshot
-
-Framework Features:
-  - REGISTRY:  register, query, and manage community mods
-  - LIFECYCLE: load, unload, enable, disable mods with state machine
-  - ORDERING:  resolve load order based on dependencies and load phases
-  - CONFLICTS: detect asset/script conflicts and resolve with strategies
-  - SANDBOX:   isolated execution context with permission scoping
-  - HOOKS:     script hook registration and invocation pipeline
-  - ASSETS:    asset replacement registry with override precedence
-  - VERSION:   semantic version compatibility checking
-  - API:       stable modding API surface for community content
-
-Usage:
-    fw = get_modding_framework()
-    fw.initialize(ModConfig(mods_directory="mods", sandbox_enabled=True))
-    descriptor = ModDescriptor(mod_id="my_mod", name="My Mod", version="1.0.0")
-    fw.register_mod(descriptor)
-    fw.load_mod("my_mod")
-    fw.enable_mod("my_mod")
-    snapshot = fw.get_status()
-"""
+SparkLabs Engine - Modding Framework"""
 
 from __future__ import annotations
 

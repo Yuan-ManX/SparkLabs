@@ -1,42 +1,5 @@
 """
-SparkLabs Engine - Living World System
-
-A living world simulation engine for the SparkLabs AI-native game
-engine. It models ecosystems, NPC societies, and emergent events that
-evolve independently of player actions, creating a dynamic, responsive
-game environment. The system advances simulation ticks, tracks
-population dynamics, manages faction relationships, and triggers
-contextual world events.
-
-Architecture:
-  LivingWorldSystem (singleton)
-    |-- WorldRegion, EcosystemState, NPCCommunity, FactionRelation,
-       WorldEvent, SimulationTick, LivingWorldStats, LivingWorldSnapshot,
-       LivingWorldEvent
-    |-- BiomeType, PopulationTrend, FactionStance, EventSeverity,
-       EventCategory, LivingWorldEventKind
-
-Core Capabilities:
-  - register_region / get_region / list_regions: spatial partitioning of
-    the world into biomes with carrying capacity and climate data.
-  - register_community / get_community / list_communities: NPC
-    population groups with needs, resources, and mood.
-  - register_faction / set_faction_stance: faction lifecycle and
-    inter-faction relationship management.
-  - advance_tick: advance the simulation by one tick, updating
-    populations, resources, moods, and triggering events.
-  - trigger_event / resolve_event / list_events: world event lifecycle
-    with severity, category, and affected regions.
-  - get_ecosystem / update_ecosystem: per-region ecosystem state
-    tracking with flora, fauna, and weather.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`LivingWorldSystem.get_instance` or the module-level
-:func:`get_living_world_system` factory.
-"""
+SparkLabs Engine - Living World System"""
 
 from __future__ import annotations
 

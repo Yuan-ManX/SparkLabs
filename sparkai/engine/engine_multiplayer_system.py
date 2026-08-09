@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Multiplayer Networking System
-
-Comprehensive multiplayer networking system for the SparkLabs AI-native
-game engine. Provides client-server architecture, peer-to-peer support,
-state synchronization, lag compensation, and matchmaking capabilities
-across multiple network topologies and sync strategies.
-
-Architecture:
-  MultiplayerSystem (Singleton)
-    |-- NetworkConfig          — global network configuration
-    |-- PlayerConnection       — per-player connection metadata and health
-    |-- GameRoom               — match lobby with player list and state
-    |-- NetworkMessage         — typed message with priority and sequencing
-    |-- SyncState              — state synchronization tracking data
-    |-- NetworkStats           — aggregated network performance metrics
-    |-- MultiplayerSnapshot    — complete system state snapshot
-    |-- NetworkTopology (enum) — server architecture model
-    |-- ConnectionState (enum) — player connection lifecycle
-    |-- SyncStrategy (enum)    — state replication approach
-    |-- MatchmakingMode (enum) — matchmaking queue classification
-
-Core Capabilities:
-  - initialize: Bootstrap the multiplayer system with configuration
-  - create_room: Create a new game room from configuration
-  - join_room: Connect a player to an existing room
-  - leave_room: Remove a player from a room
-  - send_message: Dispatch a typed message to room participants
-  - broadcast_message: Fan-out a message to all players in a room
-  - sync_game_state: Synchronize game state with delta compression
-  - handle_disconnect: Gracefully handle player disconnection
-  - start_matchmaking: Enqueue a player into the matchmaking pool
-  - get_room_state: Retrieve the current state of a room
-  - get_status: Aggregate system-wide multiplayer metrics
-  - shutdown: Gracefully tear down all connections and rooms
-"""
+SparkLabs Engine - Multiplayer Networking System"""
 
 from __future__ import annotations
 

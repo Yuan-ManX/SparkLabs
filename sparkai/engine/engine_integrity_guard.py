@@ -1,42 +1,5 @@
 """
-SparkLabs Engine - Anti-Cheat and Game Integrity Verification System
-
-A self-contained integrity layer for the SparkLabs AI-native game engine. It
-scans player memory and behavior, detects speed hacks, memory edits, packet
-manipulation, aim bots, item duplication, and client tampering, then issues
-flags, bans, alerts, and audit reports. All state is held in bounded in-memory
-stores with FIFO eviction so the system stays predictable under load.
-
-Architecture:
-  IntegrityGuardSystem (singleton)
-    |-- IntegrityRule        -- a detection rule bound to a violation type
-    |-- ScanResult           -- one scan lifecycle for a player
-    |-- Violation            -- a confirmed integrity violation
-    |-- PlayerIntegrity      -- per-player integrity standing and risk score
-    |-- IntegrityAlert       -- a manual or auto alert for review
-    |-- IntegrityReport      -- a rolled-up report over a time window
-    |-- IntegrityStats       -- aggregate counters
-    |-- IntegritySnapshot    -- immutable full-state snapshot
-    |-- IntegrityLogEvent    -- audit log entry
-    |-- ViolationType, DetectionMethod, SeverityLevel, ActionTaken,
-        PlayerStatus, IntegrityEventKind
-
-Core Capabilities:
-  - add_rule / get_rule / list_rules / update_rule / remove_rule: rule registry.
-  - start_scan / get_scan / list_scans / complete_scan: scan lifecycle.
-  - record_violation / get_violation / list_violations / resolve_violation:
-    violation capture and resolution workflow.
-  - register_player / get_player / list_players / flag_player / ban_player /
-    clear_player: player standing management with risk scoring.
-  - issue_alert / get_alert / list_alerts / acknowledge_alert: alert workflow.
-  - generate_report / get_report / list_reports: rolled-up integrity reports.
-  - list_events / get_stats / get_status / get_snapshot / reset: observability
-    and state management.
-
-The module is written from scratch for SparkLabs. It depends only on the Python
-standard library and follows the engine-wide singleton + reentrant-lock
-conventions used across the SparkLabs engine modules.
-"""
+SparkLabs Engine - Anti-Cheat and Game Integrity Verification System"""
 
 from __future__ import annotations
 

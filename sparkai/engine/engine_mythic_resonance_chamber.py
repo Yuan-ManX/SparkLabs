@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Mythic Resonance Chamber
-
-The EngineMythicResonanceChamber is the deep pattern layer where archetypal
-narrative structures resonate through the game world. Rather than scripting
-stories, the chamber maintains a set of primordial archetypes (Hero, Shadow,
-Mentor, Trickster, Threshold Guardian, etc.) that vibrate at different
-frequencies depending on current gameplay events.
-
-When player actions align with an archetype's pattern, that archetype's
-resonance increases. As resonance builds, the archetype begins to influence
-the world: the Shadow archetype might strengthen enemies, the Mentor might
-reveal hidden knowledge, the Trickster might introduce chaos. This creates
-emergent narrative meaning that arises naturally from gameplay rather than
-from scripted plot points.
-
-The chamber also detects when multiple archetypes are in tension (e.g., Hero
-vs Shadow) and uses that tension to generate dramatic pressure. When tension
-peaks, it crystallizes into a "mythic moment" - a gameplay beat where the
-narrative significance is amplified.
-
-Architecture:
-  ATTUNE     ->  RESONATE     ->  AMPLIFY     ->  DISSOLVE    ->  CRYSTALLIZE
-  (register     (feed events    (boost the      (let stale      (convert peak
-   archetypes   into chamber    dominant        resonance        resonance into
-   and set      and measure     archetype and    fade to keep     crystallized
-   base freq)   resonance)      suppress)       flow)            mythic moments)
-
-Archetype properties:
-  - frequency     : base vibration rate (how quickly it responds)
-  - resonance     : current activation level (0.0-1.0)
-  - tension       : unresolved dramatic pressure (0.0-1.0)
-  - polarity      : light (positive) / shadow (negative) / neutral
-  - domain        : which gameplay domain it influences
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Mythic Resonance Chamber"""
 
 from __future__ import annotations
 

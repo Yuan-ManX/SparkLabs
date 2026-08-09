@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Interactive Audio Engine
-
-Layered music and sound system where audio stems, playlists, and
-synchronized transitions respond to game state changes. Supports
-dynamic layering, cross-fading, and state-driven transitions for
-adaptive audio experiences.
-
-Architecture:
-  InteractiveAudio
-    |-- AudioStem (individual audio layer with intensity range and musical properties)
-    |-- AudioPlaylist (ordered collection of stems with shuffle and crossfade support)
-    |-- AudioTransition (configured transition between stems triggered by state)
-    |-- AudioStateMap (mapping from game state keys to playlist/transition behavior)
-    |-- AudioConfig (global audio settings: volumes, spatial, doppler)
-
-Audio Features:
-  - LAYERING: multiple simultaneous stems organized by audio layer category
-  - PLAYLISTS: sequential or shuffled stem playback with crossfade transitions
-  - STATE_MAP: game state keys drive playlist selection and intensity changes
-  - TRANSITIONS: crossfade, immediate, gate, beat-matched, bar-aligned transitions
-  - MIXING: per-layer volume control with solo/mute capability
-"""
+SparkLabs Engine - Interactive Audio Engine"""
 
 from __future__ import annotations
 

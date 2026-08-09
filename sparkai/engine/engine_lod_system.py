@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Level-of-Detail System
-
-Level-of-detail mesh selection and transition management system.
-Selects optimal mesh representations based on camera distance, screen
-coverage, and GPU budget constraints. Supports configurable transition
-effects between LOD levels for smooth visual quality adaptation.
-
-Architecture:
-    LODSystem
-      |-- LODGroup (entity-level container holding per-level mesh entries)
-      |-- MeshLODEntry (single LOD level with mesh reference and distance threshold)
-      |-- TransitionConfig (per-group transition behavior: pop, blend, dither, crossfade)
-      |-- LODBudget (global triangle count and draw call limits for budget-based selection)
-
-LOD Features:
-    - DISTANCE_BASED: select LOD by camera-to-object distance
-    - SCREEN_COVERAGE: select LOD by projected screen-space pixel area
-    - BUDGET_BASED: select LOD honoring global triangle/draw-call budget
-    - HYBRID: combines distance and screen coverage for balanced selection
-    - SMOOTH_BLEND: interpolated geometry transition between two LOD levels
-    - DITHER: pixel-level dissolve pattern for LOD transitions
-"""
+SparkLabs Engine - Level-of-Detail System"""
 
 from __future__ import annotations
 

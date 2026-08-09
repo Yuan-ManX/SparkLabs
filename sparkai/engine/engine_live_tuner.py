@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - Live Tuner
-
-The EngineLiveTuner is the autonomic optimization system of the AI-native
-game engine. It continuously monitors engine performance metrics, player
-experience data, and system health indicators, then autonomously tunes
-engine parameters to maintain optimal performance and player experience.
-
-Unlike manual tuning or static configuration, the Live Tuner:
-  1. Monitors real-time metrics from every engine subsystem
-  2. Detects performance degradation and player friction
-  3. Identifies the optimal parameter adjustments
-  4. Applies changes gradually with rollback safety
-  5. Learns which adjustments work for each scenario
-
-Tuning Domains:
-  - PHYSICS: gravity, friction, restitution, substep count
-  - RENDER: draw distance, shadow quality, texture LOD, post-processing
-  - AUDIO: volume levels, doppler factor, reverb, 3D audio distance
-  - GAMEPLAY: difficulty, spawn rate, health regen, XP curve
-  - AI: pathfinding accuracy, behavior tree tick rate, perception range
-  - MEMORY: cache size, pool allocation, GC frequency
-
-The tuner runs a tuning cycle every 3 seconds:
-  MONITOR -> ANALYZE -> DECIDE -> APPLY -> VERIFY
-
-Each parameter has:
-  - A current value
-  - A min/max range
-  - A target value (what the tuner thinks is optimal)
-  - A confidence score (how sure the tuner is)
-  - An adjustment rate (how fast to move toward target)
-  - A rollback threshold (if metrics worsen beyond this, revert)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Live Tuner"""
 
 from __future__ import annotations
 

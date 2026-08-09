@@ -1,55 +1,5 @@
 """
-SparkLabs Engine - Input Replay System
-
-A deterministic input replay system for the SparkLabs AI-native game engine.
-Captures player inputs (keyboard, mouse, gamepad, touch, motion, voice,
-gesture) frame-by-frame with precise timestamps so that gameplay sessions
-can be exactly replayed. Designed for debugging, automated testing, and
-competitive multiplayer validation where frame-perfect input reproduction
-is required.
-
-The system pairs every recorded input frame with an optional checksum of
-the surrounding game state. During playback each frame is verified against
-the stored checksum so that divergences (desyncs) between the recorded
-session and the live simulation are detected immediately. Detected desyncs
-can be logged, corrected by resetting to the expected state, or surfaced
-to anti-cheat and validation pipelines.
-
-Architecture:
-  InputReplaySystem (singleton)
-    |-- InputType, InputAction, RecordingStatus, PlaybackStatus,
-       ReplayMode, ChecksumType, ReplayEventKind, FrameStatus
-    |-- InputFrame, InputSequence, PlaybackState, Checksum, DesyncReport,
-       FrameSnapshot, RecordingSession, InputReplayConfig, InputReplayStats,
-       InputReplaySnapshot, ReplayEvent
-    |-- get_input_replay_system
-
-Core Capabilities:
-  - start_recording / stop_recording / pause_recording / resume_recording:
-    control live input capture into a recording buffer.
-  - record_input: capture a single input event with frame index, timestamp
-    and optional state hash for deterministic verification.
-  - save_sequence / load_sequence / delete_sequence / get_sequence /
-    list_sequences / export_sequence / import_sequence: manage stored input
-    sequences and serialize them for transfer.
-  - start_playback / pause_playback / resume_playback / stop_playback /
-    advance_frame / seek_to_frame / set_playback_speed: drive deterministic
-    playback with frame stepping, seeking and speed control.
-  - compute_checksum / verify_checksum / detect_desync / correct_desync:
-    verify frame-level determinism and recover from divergences.
-  - get_frame / get_frame_range / get_frame_count / get_frame_snapshot:
-    inspect recorded frames.
-  - compare_sequences / analyze_input_pattern / get_input_statistics /
-    suggest_optimal_inputs: analyze captured inputs and produce insights.
-  - tick: advance recording capture and playback simulation each step.
-  - set_config / get_config / get_status / get_stats / get_snapshot /
-    list_events: observability and tuning.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`InputReplaySystem.get_instance` or the module-level
-:func:`get_input_replay_system` factory.
-"""
+SparkLabs Engine - Input Replay System"""
 
 from __future__ import annotations
 

@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Narrative Thermodynamics
-
-The EngineNarrativeThermodynamics models how narrative energy flows and
-transforms through the game world following thermodynamic principles.
-
-Stories are not static texts - they are energetic phenomena. A tense
-battle scene radiates narrative heat that warms nearby scenes. A quiet
-conversation conducts emotional energy between characters. A genre shift
-from comedy to tragedy is a phase transition, like water becoming ice.
-As stories spread and retell, they undergo entropy - the sharp edges
-blur, the specific details generalize, the energy disperses.
-
-The engine models five thermodynamic processes:
-  - RADIATION: story sources radiate narrative energy outward, warming
-    nearby scenes and characters (a dragon's lair radiates danger-heat)
-  - CONDUCTION: adjacent narrative elements conduct energy directly
-    (a hero's grief conducts to their companion through shared scenes)
-  - CONVECTION: genre currents carry energy in bulk flows (a comedic
-    current carries light-energy upward, a tragic current carries
-    heavy-energy downward)
-  - ENTROPY: as stories spread, they lose specificity and gain
-    generality (a specific rumor becomes a generic legend)
-  - PHASE TRANSITION: when narrative energy crosses a threshold, the
-    story undergoes a phase transition (a drama becomes a tragedy,
-    a mystery becomes a horror)
-
-This produces a game world where stories behave like physical systems -
-where narrative heat flows, genres shift like states of matter, and
-the entropy of storytelling shapes what gets remembered vs forgotten.
-
-Architecture:
-  RADIATE  ->  CONDUCT  ->  CONVECT  ->  ENTROPY  ->  PHASE
-  (story     (adjacent   (genre       (stories      (energy
-   sources    elements    currents    spread and    thresholds
-   radiate    conduct     carry       lose          trigger
-   energy     energy      energy in   specificity)  genre phase
-   outward)   directly)   bulk flows)               transitions)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Narrative Thermodynamics"""
 
 from __future__ import annotations
 

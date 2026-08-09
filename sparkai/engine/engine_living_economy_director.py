@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Living Economy Director
-
-The EngineLivingEconomyDirector treats the world economy as a living
-circular ecosystem rather than a vending machine. A vending-machine
-economy sits idle until a player buys something; a living economy
-produces, exchanges, values, redistributes, and equilibrates on its
-own every cycle, with or without the player.
-
-Each cycle the director produces goods from registered producers,
-routes them through exchanges between buyers and sellers, revalues
-every good against current supply and demand, redistributes flow
-where the ecosystem is starving or choking, and equilibrates the
-whole toward a balance where nothing piles up unused and nothing
-starves.
-
-Architecture:
-  PRODUCE  ->  EXCHANGE   ->  VALUATE     ->  REDISTRIBUTE  ->  EQUILIBRATE
-  (producers  (goods flow    (every good   (flow is rerouted  (the whole
-   make goods  between       is revalued   where the system   ecosystem is
-   from their  buyers and    against       is starving or     nudged toward
-   inputs)     sellers)      current       choking)           a working
-                            supply and                        balance)
-                            demand)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Living Economy Director"""
 
 from __future__ import annotations
 

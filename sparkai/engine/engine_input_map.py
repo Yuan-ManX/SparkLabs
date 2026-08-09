@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Input Map System
-
-Configurable input mapping system with action bindings, dead zones,
-axis combinations, and multi-device support. Maps raw hardware input
-events to logical game actions through a layered context stack, enabling
-context-sensitive controls that switch seamlessly between gameplay,
-menu navigation, and editor modes.
-
-Architecture:
-  InputMapSystem
-    |-- ActionRegistry (catalog of logical input actions with bindings)
-    |-- ContextStack (priority-ordered input contexts with push/pop)
-    |-- DeviceManager (multi-device detection, calibration, and profiles)
-    |-- GestureRecognizer (pattern-based gesture detection pipeline)
-    |-- DeadZoneProcessor (configurable dead zone shapes and thresholds)
-"""
+SparkLabs Engine - Input Map System"""
 
 from __future__ import annotations
 

@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Mount & Riding System
-
-Manages rideable mounts that provide movement speed bonuses, flying,
-aquatic traversal, and combat capabilities. Players collect, train,
-customize, and summon mounts for faster world traversal and specialized
-terrain navigation.
-
-Architecture:
-  MountRidingSystem (singleton)
-    |-- MountType, MountTerrain, MountStatus, MountEventKind
-    |-- MountDefinition, PlayerMount, MountSkin, MountEquipment,
-       MountTrainingRecord, MountConfig, MountStats, MountSnapshot,
-       MountEvent
-    |-- get_mount_riding_system
-
-Core Capabilities:
-  - register_mount / remove_mount / get_mount / list_mounts
-  - register_skin / get_skin / list_skins
-  - acquire_mount / get_player_mount / list_player_mounts
-  - summon_mount / dismiss_mount / get_active_mount
-  - train_mount / get_training_record
-  - equip_mount_item / unequip_mount_item
-  - apply_skin / get_mount_skins
-  - calculate_speed / get_speed_bonus
-  - tick / set_config / get_config
-  - list_events / get_stats / get_status / get_snapshot / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`MountRidingSystem.get_instance` or the module-level
-:func:`get_mount_riding_system` factory.
-"""
+SparkLabs Engine - Mount & Riding System"""
 
 from __future__ import annotations
 

@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Live Feedback System
-
-A real-time AI analysis system that monitors the game being built and provides
-intelligent feedback, suggestions, and optimization recommendations during the
-development process for the AI-native game engine.
-
-Architecture:
-  LiveFeedbackEngine (singleton)
-    |-- FeedbackItem (individual feedback entry with categorization)
-    |-- AnalysisSnapshot (time-stamped capture of analysis state)
-    |-- FeedbackRule (configurable heuristic rule for detection)
-    |-- FeedbackCategory / FeedbackSeverity / AnalysisScope (domain enums)
-
-Core Capabilities:
-  - analyze_entity: Per-entity heuristic checks across all categories
-  - analyze_scene: Scene-wide analysis for composition and relationships
-  - analyze_project: Project-level structural and architectural analysis
-  - analyze_runtime: Real-time performance and gameplay metrics analysis
-  - analyze_asset: Asset-level resource and quality validation
-  - register_rule: Extendable rule system for custom feedback detection
-  - apply_fix / dismiss_feedback: Feedback lifecycle management
-  - get_feedback_summary: Aggregated overview of all feedback
-  - get_stats: Operational statistics for the feedback engine
-"""
+SparkLabs Engine - Live Feedback System"""
 
 from __future__ import annotations
 

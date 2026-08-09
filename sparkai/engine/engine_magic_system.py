@@ -1,42 +1,5 @@
 """
-SparkLabs Engine - Magic System
-
-A comprehensive Magic, Spell, and Ability system for the SparkLabs
-AI-native game engine. Manages spell definitions, ability casting with
-cooldowns, mana/energy resource management, spell effects across multiple
-spell schools, casting chains, and status effects produced by spells.
-
-Architecture:
-  MagicSystemEngine (singleton)
-    |-- SpellDefinition     — registered spell template with effects
-    |-- SpellEffect         — atomic effect applied by a spell
-    |-- CastingInstance     — in-flight cast with progress tracking
-    |-- CooldownRecord      — per-caster cooldown tracking
-    |-- ResourcePool        — mana/energy/rage pool with regen
-    |-- CastingChain        — triggered follow-up spell sequence
-    |-- MagicStats          — aggregate counters
-    |-- MagicSnapshot        — immutable state snapshot
-    |-- MagicEvent          — audit log entry
-    |-- SpellSchool         — 15 magical disciplines
-    |-- SpellTier           — 8 power tiers
-    |-- SpellType           — 12 spell categories
-    |-- DamageType          — 11 damage categories
-    |-- TargetType          — 10 targeting modes
-    |-- CastingState        — 6 cast lifecycle phases
-    |-- ResourceType        — 8 resource pools
-    |-- EffectType          — 18 effect categories
-    |-- MagicEventKind      — 10 audit event kinds
-    |-- SpellStatus         — 5 spell lifecycle states
-
-Core Capabilities:
-  - register_spell / learn_spell / equip_spell: spell lifecycle management
-  - cast_spell / cancel_cast / tick_casting: cast execution pipeline
-  - tick_cooldowns: advance and expire cooldowns
-  - create_resource_pool / consume_resource / restore_resource / tick_resources
-  - register_chain / trigger_chain: chained spell sequences
-  - apply_spell_effects: compute and return spell effects
-  - get_stats / get_status / get_snapshot / list_events: observability
-"""
+SparkLabs Engine - Magic System"""
 
 from __future__ import annotations
 

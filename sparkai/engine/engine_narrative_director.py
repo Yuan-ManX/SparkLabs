@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - Narrative Director
-
-Engine-side narrative runtime subsystem that manages active story arcs,
-story beats, branching decision points, and coordinates narrative state
-with quest, dialogue, and cutscene subsystems. Provides a structured canvas
-for agent narrative decisions to execute at runtime.
-
-The narrative director maintains a forest of story arcs, each composed of
-ordered beats with optional branching choices. Beats progress through
-PENDING -> ACTIVE -> COMPLETED (or SKIPPED / CANCELLED) states. When a
-beat completes, the director evaluates gating conditions to determine
-which subsequent beats become available.
-
-This subsystem focuses on runtime state tracking and beat progression.
-Creative narrative generation is delegated to agent-side modules; this
-module executes the resulting narrative structure within the engine.
-
-Architecture:
-  NarrativeDirectorEngine (Singleton)
-    |-- StoryArc                   (a named narrative arc of ordered beats)
-    |-- NarrativeBeat              (a single beat within an arc)
-    |-- NarrativeChoice            (a player-selectable branching option)
-    |-- StoryFlag                  (a named narrative state flag)
-    |-- NarrativeEvent             (an emitted narrative lifecycle event)
-    |-- NarrativeDirectorSnapshot  (immutable snapshot of director state)
-
-Lifecycle:
-  1. register_arc(arc) / create_arc(...)        -> StoryArc
-  2. add_beat(arc_id, beat) / create_beat(...)  -> NarrativeBeat
-  3. start_arc(arc_id)                          -> StoryArc
-  4. activate_beat(beat_id)                     -> NarrativeBeat
-  5. present_choice(beat_id, choice_id)         -> NarrativeChoice
-  6. make_choice(beat_id, choice_id)            -> NarrativeChoice
-  7. complete_beat(beat_id, choice_id=None)     -> NarrativeBeat
-  8. complete_arc(arc_id) / abandon_arc(arc_id) -> StoryArc
-  9. get_snapshot() / get_status() / reset()
-"""
+SparkLabs Engine - Narrative Director"""
 
 from __future__ import annotations
 

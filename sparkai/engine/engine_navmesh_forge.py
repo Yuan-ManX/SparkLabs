@@ -1,17 +1,5 @@
 """
-SparkLabs Engine - NavMesh Forge
-
-A singleton dynamic navigation mesh construction and optimization
-system. Generates navigation meshes from level geometry, applies
-runtime obstacle carving for movable blockers, and computes
-agent-size-aware traversal costs for pathfinding queries.
-
-Architecture:
-  NavMeshForge (singleton)
-    |-- NavMeshRegion (traversable area with cost/flag data)
-    |-- NavObstacle (carved-out blocked region from dynamic object)
-    |-- NavLink (off-mesh connection: jump, ladder, teleport)
-"""
+SparkLabs Engine - NavMesh Forge"""
 
 from __future__ import annotations
 

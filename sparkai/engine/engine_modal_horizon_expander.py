@@ -1,36 +1,5 @@
 """
-SparkLabs Engine - Modal Horizon Expander
-
-The EngineModalHorizonExpander treats the game world as a space of
-possible world-states, not just the actual one. Around every tension
-point in the world there is a fan of candidate alternative worlds the
-world could branch into. Most of those candidates are incoherent
-against the world's constraints; a few cohere, firm up, and open as
-accessible modal horizons - branches the world could step into without
-breaking its own laws. Inconsistent or stale horizons close, so the
-modal fan never becomes an undifferentiated blur.
-
-This is distinct from collapsing possibilities into one (that is the
-work of the possibility collapse theater), from tending the substrate
-field that underlies the world (reality substrate), and from diffusing
-probability across states (probability mist). The expander's job is to
-map and maintain the *reachable modal horizon* - the set of
-consistency-checked alternative world-states the world can branch into
-on its next move.
-
-Architecture:
-  ENUMERATE  ->  PROBE       ->  STABILIZE  ->  OPEN       ->  CLOSE
-  (candidate    (each          (consistent     (sufficiently    (inconsistent
-   possible-     candidate      candidates       stable           or stale
-   worlds are    is probed      firm up;         candidates       horizons are
-   enumerated    against the    unstable ones    are opened as    closed so the
-   from the      world's        weaken)          accessible       modal fan
-   world's       constraints)                    modal horizons)  stays crisp)
-   tension
-   points)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Modal Horizon Expander"""
 
 from __future__ import annotations
 

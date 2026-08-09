@@ -1,48 +1,5 @@
 """
-SparkLabs Engine - Minigame Arcade System
-
-A minigame and arcade system for the SparkLabs AI-native game engine. Manages
-playable minigames, score tracking, token rewards, daily challenges, and
-leaderboards. Supports various minigame types (puzzle, racing, shooting,
-rhythm, card, platformer) with difficulty levels, entry fees, and payout
-structures.
-
-Each minigame session is a self-contained playable instance with a defined
-start, play, and end phase. The system tracks player high scores, total
-plays, token earnings, and daily challenge completion. Tokens can be exchanged
-for rewards through a prize shop.
-
-Architecture:
-  MinigameArcadeSystem (singleton)
-    |-- MinigameType, MinigameState, DifficultyLevel, ArcadeEventKind
-    |-- MinigameDefinition, MinigameSession, ScoreEntry, DailyChallenge,
-       PrizeItem, TokenLedger, ArcadeConfig, ArcadeStats,
-       ArcadeSnapshot, ArcadeEvent
-    |-- get_minigame_arcade_system
-
-Core Capabilities:
-  - register_minigame / remove_minigame / get_minigame / list_minigames:
-    manage the catalog of available minigames.
-  - start_session / end_session / get_session / list_sessions: control
-    individual play sessions with score tracking.
-  - submit_score / get_high_scores / get_player_best: record scores and
-    query leaderboard data.
-  - register_daily_challenge / get_daily_challenge / complete_daily_challenge:
-    manage rotating daily objectives with bonus rewards.
-  - register_prize / remove_prize / list_prizes / redeem_prize: manage the
-    token exchange shop.
-  - award_tokens / spend_tokens / get_token_balance: track player token
-    economy.
-  - tick: advance session timers and daily challenge rotations.
-  - set_config / get_config: global tuning for max sessions, games, etc.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`MinigameArcadeSystem.get_instance` or the module-level
-:func:`get_minigame_arcade_system` factory.
-"""
+SparkLabs Engine - Minigame Arcade System"""
 
 from __future__ import annotations
 

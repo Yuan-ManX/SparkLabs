@@ -1,23 +1,5 @@
 """
-LightCulling - Singleton system for efficient light culling in 2D and 3D scenes.
-
-Uses spatial partitioning to determine which lights affect which objects,
-optimizing the rendering pipeline by only processing lights within range.
-Supports multiple culling strategies including radius check, frustum test,
-tile-based, clustered, and distance-sorted approaches.
-
-Architecture:
-    LightCulling
-        |-- LightSource (registered light with spatial properties)
-        |-- CullingResult (per-frame culling output with statistics)
-        |-- LightAssignment (per-object light binding after culling)
-
-Culling Pipeline:
-    1. Register light sources with spatial properties and importance
-    2. Per frame, run culling strategy against camera frustum
-    3. Assign visible lights to objects based on proximity
-    4. Sort assigned lights by importance for render submission
-"""
+LightCulling - Singleton system for efficient light culling in 2D and 3D scenes."""
 
 import math
 import threading

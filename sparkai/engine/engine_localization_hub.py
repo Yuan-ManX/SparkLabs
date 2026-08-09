@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Localization Hub
-
-A singleton multi-language localization system for the SparkLabs game
-engine. Manages string tables, font fallback chains, pluralization
-rules, cultural formatting, and dynamic text replacement with
-context-aware interpolation.
-
-Architecture:
-  LocalizationHub (singleton)
-    |-- LocalizedString (individual translation entry with metadata)
-    |-- StringTable (per-language collection of translated strings)
-    |-- FormatPattern (locale-specific number/date/currency formatting)
-    |-- TranslationContext (translation request with source/target info)
-"""
+SparkLabs Engine - Localization Hub"""
 
 from __future__ import annotations
 
