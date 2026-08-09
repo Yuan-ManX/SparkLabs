@@ -1,48 +1,5 @@
 """
-SparkLabs Agent - Cognitive Synthesis Engine
-
-A unified cognitive pipeline that orchestrates reasoning, memory retrieval,
-learning, and creative synthesis into a single intelligence framework. The
-Cognitive Synthesis Engine is the central intelligence hub that coordinates
-all agent subsystems through a structured multi-phase synthesis pipeline.
-
-Architecture:
-  CognitiveSynthesisEngine (Singleton)
-    |-- ContextBuilder (raw input enrichment, goal extraction, domain alignment)
-    |-- MemoryRetriever (multi-mode memory access with relevance ranking)
-    |-- ReasoningEngine (multi-step reasoning with depth control and fallback)
-    |-- CreativeSynthesizer (constrained creative variation generation)
-    |-- SynthesisValidator (output validation against constraints and quality metrics)
-
-Core Capabilities:
-  - synthesize: Full pipeline execution from input to validated output
-  - step_synthesis: Single-phase granular execution for fine control
-  - retrieve_memories: Multi-mode memory retrieval with relevance scoring
-  - reason: Multi-step reasoning chain construction with fallback plans
-  - create_variations: Creative synthesis with constraint-aware generation
-  - validate: Output quality assessment against constraints and metrics
-  - get_synthesis_history: Full execution history for audit and analysis
-  - get_performance_metrics: Real-time engine performance snapshot
-
-Usage:
-    engine = get_cognitive_synthesis()
-    report = engine.synthesize(
-        input_text="Design a stealth mechanics system for an open-world game",
-        goal="Generate a complete game design document section",
-        constraints={"format": "markdown", "max_sections": 5, "tone": "professional"},
-        depth=ReasoningDepth.DEEP,
-    )
-    memories = engine.retrieve_memories(
-        query="stealth mechanics game design",
-        mode=MemoryAccessMode.SEMANTIC,
-        limit=10,
-    )
-    chain = engine.reason(
-        problem="How to balance stealth difficulty with player skill progression?",
-        depth=ReasoningDepth.DEEP,
-        context=report.context,
-    )
-"""
+SparkLabs Agent - Cognitive Synthesis Engine"""
 
 from __future__ import annotations
 

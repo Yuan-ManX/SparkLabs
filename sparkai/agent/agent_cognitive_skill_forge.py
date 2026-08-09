@@ -1,36 +1,5 @@
 """
-SparkLabs Agent - Cognitive Skill Forge
-
-A persistent skill library that observes CognitiveGameEngine outcomes,
-extracts successful action sequences as reusable skills, and replays
-them in similar future contexts. Skills evolve through variation and
-selection, producing a self-improving capability surface.
-
-Original SparkLabs design:
-  1. Skill Extraction - When a cognitive tick produces a high-confidence
-     successful outcome, the action sequence is captured as a Skill
-     candidate with its precondition (game state signature) and effect
-     (observed delta).
-  2. Skill Library - Skills are organized in a tiered hierarchy:
-       - atomic: single-action skills (spawn, tune, trigger)
-       - composed: multi-action sequences with ordering constraints
-       - evolved: skills produced by mutation + selection of existing
-         skills that outperformed their parents
-  3. Skill Matching - Given a current PerceptionFrame, the forge finds
-     skills whose preconditions match the current state signature.
-  4. Skill Replay - A matched skill can be replayed by emitting its
-     action sequence back into the CognitiveGameEngine's reasoning
-     layer, biasing the next tick's action selection.
-  5. Skill Evolution - Periodically, low-performing skills are pruned
-     and high-performing skills are mutated (parameter perturbation)
-     to produce evolved candidates. Candidates that outperform their
-     parents replace them; others are discarded.
-  6. Persistence - Skills persist across engine resets, enabling
-     genuine long-term learning rather than per-session adaptation.
-
-The forge does NOT replace the reasoning layer; it supplements it by
-providing a memory of "what worked before in similar situations".
-"""
+SparkLabs Agent - Cognitive Skill Forge"""
 
 from __future__ import annotations
 

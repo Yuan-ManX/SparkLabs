@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Command Console
-
-Unified natural language command console for the AI-native game engine.
-Accepts free-form English text input, classifies intent through pattern
-matching and keyword extraction, routes the parsed intent to the appropriate
-execution channel (slash commands, engine operations, semantic translation,
-or direct capability invocation), and returns a structured response.
-
-The console maintains conversation history for context-aware interpretation,
-supports macro definitions for multi-step command shortcuts, and provides
-autocomplete suggestions based on registered commands and recent activity.
-
-Architecture:
-  CommandConsoleEngine (singleton)
-    |-- IntentParser (normalize + pattern-match free text into ParsedIntent)
-    |-- RouteDispatcher (map parsed intent to a RouteChannel + handler)
-    |-- MacroRegistry (named command sequences with parameter substitution)
-    |-- ConversationLog (rolling transcript of user/assistant/system turns)
-    |-- AutocompleteIndex (scored suggestions from commands, macros, history)
-    |-- ExecutionLog (command history with status and timing)
-    |-- StatsAggregator (counts for total, succeeded, failed, ambiguous)
-"""
+SparkLabs Agent - Command Console"""
 
 from __future__ import annotations
 

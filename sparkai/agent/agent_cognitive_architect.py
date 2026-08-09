@@ -1,23 +1,5 @@
 """
-SparkLabs - Cognitive Architect
-
-A unified cognitive architecture that orchestrates multi-modal reasoning,
-tool evolution, and knowledge synthesis into a single coherent system.
-The architect binds the AgentKernel with engine subsystems to deliver
-original AI-native cognition for game creation and runtime direction.
-
-Core responsibilities:
-  1. Reasoning Orchestration - select and chain reasoning modes (CoT, ToT,
-     meta, causal, analogical) based on task signature and historical success.
-  2. Tool Evolution Pipeline - forge, test, refine, and deploy new tools on
-     demand when the kernel encounters gaps in its capability surface.
-  3. Knowledge Synthesis Engine - consolidate episodic memory into semantic
-     knowledge, build cross-domain indices, and retrieve actionable insight.
-  4. Collaboration Protocol - coordinate multiple cognitive sub-agents
-     through a shared blackboard with conflict resolution and consensus.
-  5. Architect Cycle - a single tick that runs perceive → reason → plan →
-     forge → synthesize → reflect, producing an ArchitectDecision.
-"""
+SparkLabs - Cognitive Architect"""
 
 from __future__ import annotations
 

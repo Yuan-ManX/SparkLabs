@@ -1,50 +1,5 @@
 """
-SparkLabs Agent - AI Companion Director
-
-An AI-driven companion orchestration system for the SparkLabs AI-native game
-engine. This director manages companion entities (pets, followers, summons,
-mounts, mercenaries) that accompany the player through the game world. Each
-companion has a personality model, an affinity relationship with its owner,
-a command queue, and a set of abilities that can be triggered autonomously
-or by player directive.
-
-The system fuses character simulation patterns from genagents with the
-entity-composition approach of GameBlocks and the AI game-agent architecture
-of WorldX. Companions are not passive props — they evaluate the world state,
-choose targets, decide when to use abilities, and evolve their relationship
-with the player over time.
-
-Architecture:
-  CompanionDirector (singleton)
-    |-- CompanionProfile, CompanionAbility, Command, AffinityEvent,
-       CompanionStats, CompanionConfig, CompanionSnapshot,
-       CompanionStatsAggregate, CompanionEvent
-    |-- CompanionKind, PersonalityKind, BehaviorMode, CommandKind,
-       CompanionStatus, AbilityKind, CompanionEventKind
-
-Core Capabilities:
-  - register_companion / get_companion / list_companions / remove_companion:
-    lifecycle for companion entities with kind, personality, and stats.
-  - issue_command / get_command / list_commands / cancel_command: player
-    directive queue with priority, expiration, and execution lifecycle.
-  - set_behavior_mode: switch a companion between passive, defensive,
-    aggressive, and assist stances that govern autonomous decisions.
-  - use_ability: trigger a companion ability with cooldown enforcement.
-  - update_affinity: adjust the companion-owner relationship score based
-    on gameplay events (feeding, combat together, neglect, rescue).
-  - level_up: grow companion stats and unlock new abilities.
-  - tick: advance the simulation — execute commands, decay affinity,
-    evaluate autonomous ability use, expire stale commands.
-  - set_config / get_config: tuning parameters for follow distance, attack
-    range, affinity decay, and population limits.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CompanionDirector.get_instance` or the module-level
-:func:`get_companion_director` factory.
-"""
+SparkLabs Agent - AI Companion Director"""
 
 from __future__ import annotations
 

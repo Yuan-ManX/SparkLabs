@@ -1,19 +1,5 @@
 """
-SparkLabs Cognitive Kernel
-
-A unified cognitive architecture that coordinates perception, attention,
-memory, reasoning, and decision-making for AI agents. The kernel runs a
-continuous cognitive cycle: perceive -> attend -> reason -> decide -> act ->
-reflect, enabling autonomous agents to maintain coherent thought processes
-across long game sessions.
-
-The kernel provides:
-- Cognitive process orchestration with priority scheduling
-- Self-awareness through metacognitive monitoring
-- Attention allocation with configurable focus strategies
-- Cognitive load management to prevent overload
-- Introspective state inspection for debugging and transparency
-"""
+SparkLabs Cognitive Kernel"""
 
 from __future__ import annotations
 

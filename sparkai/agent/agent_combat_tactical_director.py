@@ -1,43 +1,5 @@
 """
-SparkLabs Agent - Combat Tactical Director
-
-A combat and tactical orchestration agent for the SparkLabs AI-native
-game engine. It choreographs boss encounters, tunes NPC combat
-behaviors, designs combo systems, balances PvP engagements, and
-coordinates encounter difficulty in real time. The director fuses
-ability design, threat modeling, and arena choreography to produce
-memorable, fair, and replayable combat encounters.
-
-Architecture:
-  CombatTacticalDirector (singleton)
-    |-- Ability, Encounter, ComboChain, ThreatProfile, ArenaZone,
-       CombatStats, CombatSnapshot, CombatEvent
-    |-- AbilityType, EncounterRole, CombatPhase, ThreatStance,
-       DifficultyTier, CombatEventKind
-
-Core Capabilities:
-  - register_ability / get_ability / list_abilities / update_ability /
-    remove_ability: ability lifecycle with type, damage, cooldown, and tags.
-  - register_encounter / get_encounter / list_encounters / update_encounter:
-    encounter lifecycle with phase graph, participants, and rewards.
-  - add_combo_link / get_combo_chain / list_combo_chains / remove_combo:
-    combo chain composition with branching ability links.
-  - register_threat_profile / get_threat_profile / list_threat_profiles:
-    threat weighting profiles that drive NPC target selection.
-  - register_arena_zone / get_arena_zone / list_arena_zones: spatial
-    partitioning of an arena with hazard and cover metadata.
-  - advance_encounter / set_encounter_phase: encounter phase machine
-    control that triggers ability rotations and adds.
-  - assess_balance / generate_tactics: balance scoring and tactic
-    generation for an encounter.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`CombatTacticalDirector.get_instance` or the module-level
-:func:`get_combat_tactical_director` factory.
-"""
+SparkLabs Agent - Combat Tactical Director"""
 
 from __future__ import annotations
 

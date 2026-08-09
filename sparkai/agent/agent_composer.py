@@ -1,19 +1,5 @@
 """
-SparkAI Agent - Task Composition Engine
-
-Multi-agent task composition system that breaks complex game
-development objectives into structured work graphs. Each composition
-defines dependencies, data flow, and agent assignments across
-the full development lifecycle.
-
-Architecture:
-  ComposerEngine
-    |-- Composition (top-level work graph)
-    |-- CompositionTask (individual work unit with I/O)
-    |-- DataChannel (inter-task data flow)
-    |-- CompositionPlan (execution schedule)
-    |-- CompositionResult (execution outcome)
-"""
+SparkAI Agent - Task Composition Engine"""
 
 from __future__ import annotations
 

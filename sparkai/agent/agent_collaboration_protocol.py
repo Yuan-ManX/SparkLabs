@@ -1,46 +1,5 @@
 """
-SparkLabs Agent - Collaboration Protocol Engine
-
-Structured inter-agent handoff and teamwork coordination for
-AI-native game creation. Manages delegation, consultation,
-escalation, broadcast, and chain-based collaboration between
-specialized agents with formalized handoff records.
-
-Architecture:
-  CollaborationProtocolEngine
-    |-- CollaborationRequest (formal work proposal)
-    |-- TeamFormation (role-based team assembly)
-    |-- HandoffRecord (structured task transfer)
-    |-- CollaborationSession (active teamwork context)
-
-Handoff Types:
-  - DELEGATE: transfer ownership of a task
-  - CONSULT: request expert opinion, retains ownership
-  - ESCALATE: raise issue to coordinator or lead
-  - BROADCAST: notify all team members
-  - CHAIN: sequential handoff through multiple agents
-
-Agent Roles:
-  - LEAD: team direction and final decisions
-  - SPECIALIST: domain expertise execution
-  - REVIEWER: quality validation and feedback
-  - OBSERVER: passive monitoring and reporting
-  - COORDINATOR: workflow management and assignment
-
-Usage:
-    engine = CollaborationProtocolEngine()
-    request = engine.propose_collaboration(
-        "agent_001", "Design the boss fight sequence",
-        required_roles=["specialist", "reviewer"],
-    )
-    team = engine.form_team(request.id, ["agent_002", "agent_003"], "agent_001")
-    handoff = engine.initiate_handoff(
-        team.id, "agent_001", "agent_002",
-        "Create boss AI behavior tree",
-    )
-    engine.accept_handoff(handoff.id, "agent_002")
-    engine.complete_handoff(handoff.id, {"blueprint": "boss_ai_v2"})
-"""
+SparkLabs Agent - Collaboration Protocol Engine"""
 
 from __future__ import annotations
 

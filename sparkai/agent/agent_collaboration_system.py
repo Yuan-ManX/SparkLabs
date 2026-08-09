@@ -1,48 +1,5 @@
 """
-SparkLabs Agent - Multi-Agent Collaboration System
-
-Coordinates multiple specialized AI agents working together simultaneously
-on different aspects of game creation. Manages shared workspaces, task
-delegation protocols, message passing, conflict resolution, and session
-lifecycle across collaborative game development workflows.
-
-Architecture:
-    CollaborationSystem (singleton)
-      |-- CollaborationAgent (specialized worker with role and skills)
-      |-- CollaborationMessage (inter-agent communication)
-      |-- SharedTask (decomposed work unit with dependencies)
-      |-- CollaborationSession (shared workspace with agents, tasks, messages)
-
-Collaboration Modes:
-    - SEQUENTIAL: agents work one after another in a defined order
-    - PARALLEL: agents work simultaneously on independent sub-tasks
-    - ITERATIVE: agents alternate rounds of work and feedback
-    - CONSENSUS: agents vote on proposals before proceeding
-    - LEADER_FOLLOWER: lead agent assigns work to follower agents
-
-Agent Roles:
-    - GAME_DESIGNER: overall game vision, mechanics, and rules
-    - LEVEL_DESIGNER: spatial layout, encounters, and pacing
-    - NARRATIVE_DESIGNER: story arcs, character development, dialogue
-    - SYSTEM_DESIGNER: core systems, economy, progression models
-    - UI_DESIGNER: user interface layout, HUD, menu flows
-    - AUDIO_DESIGNER: sound effects, music, ambient audio
-    - BALANCE_DESIGNER: tuning, difficulty curves, fairness analysis
-    - QA_TESTER: testing, bug reporting, quality validation
-
-Usage:
-    cs = get_collaboration_system()
-    session = cs.create_session("RPG Boss Fight", CollaborationMode.PARALLEL)
-    agent = cs.register_agent(session.session_id, "designer_1",
-                              "Alice", AgentRole.GAME_DESIGNER,
-                              ["combat_design", "boss_mechanics"])
-    task = cs.assign_task(session.session_id, "Design Boss AI",
-                          "Create behavior tree for the dragon boss",
-                          ["designer_1", "designer_2"])
-    msg = cs.send_message(session.session_id, "designer_1", "designer_2",
-                          MessageType.QUESTION, "What phase transitions?")
-    report = cs.generate_collaboration_report(session.session_id)
-"""
+SparkLabs Agent - Multi-Agent Collaboration System"""
 
 from __future__ import annotations
 

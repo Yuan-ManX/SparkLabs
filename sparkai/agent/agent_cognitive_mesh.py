@@ -1,41 +1,5 @@
 """
-SparkLabs Agent - Cognitive Mesh
-
-The AgentCognitiveMesh creates a bidirectional intelligence fabric between
-the AI agent layer and the game engine layer. Every engine subsystem can
-publish cognitive signals (anomalies, opportunities, requests) that the
-mesh routes to the optimal agent module for processing. Conversely, every
-agent decision flows back through the mesh to the correct engine subsystem
-for execution.
-
-This is the unifying nervous system that makes the engine truly AI-native:
-the agent does not sit "beside" the engine — it is woven into every
-subsystem through the cognitive mesh.
-
-Architecture:
-  1. MESH NODES - Each node represents an engine subsystem or agent module
-     registered with the mesh. Nodes have a type, priority, and capability set.
-  2. COGNITIVE SIGNALS - Typed messages that flow through the mesh:
-     - ANOMALY: Something unexpected detected (bug, performance drop, imbalance)
-     - OPPORTUNITY: A creative or optimization opportunity detected
-     - REQUEST: A subsystem requesting AI assistance
-     - DECISION: An agent decision flowing back to the engine
-     - FEEDBACK: Outcome of a previous decision (success/failure)
-  3. SIGNAL ROUTER - Routes signals to the optimal handler based on:
-     - Signal type and category
-     - Node capabilities and current load
-     - Priority and urgency
-     - Historical success rates
-  4. FEEDBACK LOOP - Tracks the outcome of every decision, building a
-     knowledge base of what works for each signal type.
-  5. MESH HEALTH - Monitors the mesh for bottlenecks, dead nodes, and
-     signal storms, automatically rerouting when needed.
-
-The mesh runs a cognitive cycle every 2 seconds:
-  COLLECT -> ROUTE -> DISPATCH -> EXECUTE -> FEEDBACK -> LEARN
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Agent - Cognitive Mesh"""
 
 from __future__ import annotations
 
