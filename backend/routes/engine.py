@@ -6718,6 +6718,167 @@ async def weather_system_predict(request: Request):
     except Exception as e:
         return {"status": "error", "message": str(e)}
 
+# ---------------------------------------------------------------------------
+# Weather Dynamic Interaction Routes
+# ---------------------------------------------------------------------------
+
+@router.post("/weather-system/regions")
+async def weather_system_create_region(request: Request):
+    """Register a spatial weather region."""
+    try:
+        from sparkai.engine.engine_weather_system import ClimateZone, get_weather_system
+        body = await request.json()
+        instance = get_weather_system()
+        zone = ClimateZone(body.get("climate_zone", "temperate"))
+        region = instance.register_region(
+            name=body.get("name", "region"),
+            climate_zone=zone,
+            bounds=body.get("bounds", {}),
+            priority=body.get("priority", 0),
+        )
+        return {"status": "ok", "region": region.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/weather-system/regions")
+async def weather_system_list_regions():
+    """List all registered weather regions."""
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        return {"status": "ok", "regions": [r.to_dict() for r in instance.get_regions()]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.delete("/weather-system/regions/{region_id}")
+async def weather_system_remove_region(region_id: str):
+    """Remove a weather region by id."""
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        removed = instance.unregister_region(region_id)
+        return {"status": "ok", "removed": removed}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/weather-system/regions/{region_id}/climate")
+async def weather_system_set_region_climate(region_id: str, request: Request):
+    """Change a region's climate zone."""
+    try:
+        from sparkai.engine.engine_weather_system import ClimateZone, get_weather_system
+        body = await request.json()
+        instance = get_weather_system()
+        zone = ClimateZone(body.get("climate_zone", "temperate"))
+        region = instance.set_climate(region_id, zone)
+        return {"status": "ok", "region": region.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/weather-system/at")
+async def weather_system_at(x: float = 0.0, y: float = 0.0, z: float = 0.0):
+    """Resolve the effective weather at a world position."""
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        region_id, condition = instance.get_weather_at((x, y, z))
+        return {"status": "ok", "region_id": region_id, "weather": condition.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/weather-system/influence")
+async def weather_system_apply_influence(request: Request):
+    """Push an atmospheric perturbation into a region from a world action."""
+    try:
+        from sparkai.engine.engine_weather_system import InfluenceKind, get_weather_system
+        body = await request.json()
+        instance = get_weather_system()
+        kind = InfluenceKind(body.get("kind", "temperature"))
+        influence = instance.apply_weather_influence(
+            region_id=body.get("region_id", ""),
+            source_id=body.get("source_id", "external"),
+            kind=kind,
+            amount=body.get("amount", 1.0),
+            decay_rate=body.get("decay_rate", 0.05),
+        )
+        return {"status": "ok", "influence": influence.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/weather-system/influences")
+async def weather_system_list_influences(region_id: str = ""):
+    """List active influences for a region (empty = global)."""
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        influences = instance.get_influences(region_id)
+        return {"status": "ok", "influences": [i.to_dict() for i in influences]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.post("/weather-system/events")
+async def weather_system_spawn_event(request: Request):
+    """Spawn a discrete dynamic weather event."""
+    try:
+        from sparkai.engine.engine_weather_system import WeatherEventType, get_weather_system
+        body = await request.json()
+        instance = get_weather_system()
+        etype = WeatherEventType(body.get("event_type", "gust_burst"))
+        event = instance.spawn_weather_event(
+            event_type=etype,
+            region_id=body.get("region_id", ""),
+            position=tuple(body.get("position", [0.0, 0.0, 0.0])),
+            radius=body.get("radius", 5.0),
+            magnitude=body.get("magnitude", 1.0),
+            duration=body.get("duration", 10.0),
+        )
+        return {"status": "ok", "event": event.to_dict()}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/weather-system/events")
+async def weather_system_list_events(region_id: str = ""):
+    """List active weather events for a region (empty = global)."""
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        events = instance.get_active_events(region_id)
+        return {"status": "ok", "events": [e.to_dict() for e in events]}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.delete("/weather-system/events/{event_id}")
+async def weather_system_cancel_event(event_id: str):
+    """Cancel an active weather event by id."""
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        cancelled = instance.cancel_weather_event(event_id)
+        return {"status": "ok", "cancelled": cancelled}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/weather-system/perception")
+async def weather_system_perception(x: float = 0.0, y: float = 0.0, z: float = 0.0, agent_id: str = ""):
+    """Build a weather perception snapshot for an Agent or NPC."""
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        context = instance.get_perception_context((x, y, z), agent_id)
+        return {"status": "ok", "perception": context}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
+@router.get("/weather-system/ir-context")
+async def weather_system_ir_context(region_id: str = ""):
+    """Export weather state as a Game Logic IR condition context."""
+    try:
+        from sparkai.engine.engine_weather_system import get_weather_system
+        instance = get_weather_system()
+        context = instance.to_condition_context(region_id)
+        return {"status": "ok", "context": context}
+    except Exception as e:
+        return {"status": "error", "message": str(e)}
+
 
 # ============================================================
 # Audio System Routes
