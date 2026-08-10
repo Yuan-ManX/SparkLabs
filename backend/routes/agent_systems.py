@@ -278,3 +278,138 @@ async def agent_build_game(req: BuildGameRequest):
         })
     except Exception as e:
         return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+class RefineRequest(BaseModel):
+    failure: str
+    adjustment: str
+    outcome: str = "pending"
+    agent_name: str = "SparkAgent"
+
+
+class RestoreStateRequest(BaseModel):
+    state: dict
+    agent_name: str = "SparkAgent"
+
+
+@router.get("/systems/refinements")
+async def agent_refinements(limit: int = 20, agent_name: str = "SparkAgent"):
+    """Return the agent's experiential refinement history."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "refinements": agent.get_refinements(limit=limit),
+                "total": len(agent.get_refinements()),
+            }
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.post("/systems/refinements")
+async def agent_record_refinement(req: RefineRequest):
+    """Persist a durable refinement lesson from a failure."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        agent.record_refinement(req.failure, req.adjustment, req.outcome)
+        return JSONResponse({
+            "status": "success",
+            "data": {"total": len(agent.get_refinements())},
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.delete("/systems/refinements")
+async def agent_clear_refinements(agent_name: str = "SparkAgent"):
+    """Clear the agent's experiential refinement history."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        removed = agent.clear_refinements()
+        return JSONResponse({"status": "success", "data": {"removed": removed}})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.get("/systems/state")
+async def agent_state(agent_name: str = "SparkAgent"):
+    """Serialize the agent's identity and learned state for continuity."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        return JSONResponse({"status": "success", "data": agent.to_state()})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.post("/systems/state/restore")
+async def agent_restore_state(req: RestoreStateRequest):
+    """Restore the agent from a previously serialized state snapshot."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        ok = agent.restore_state(req.state)
+        if not ok:
+            return JSONResponse({"status": "error", "message": "Invalid state snapshot"}, status_code=400)
+        return JSONResponse({
+            "status": "success",
+            "data": {"restored": True, "refinements": len(agent.get_refinements())},
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+class LearnRequest(BaseModel):
+    goal: str = "autonomous"
+    limit: int = 40
+    agent_name: str = "SparkAgent"
+
+
+class ExecuteSkillRequest(BaseModel):
+    skill_id: str
+    context: dict = {}
+    agent_name: str = "SparkAgent"
+
+
+@router.get("/systems/learning/skills")
+async def agent_accumulated_skills(limit: int = 20, agent_name: str = "SparkAgent"):
+    """Return the agent's accumulated skills derived from trajectory."""
+    try:
+        agent = _get_or_create_agent(agent_name)
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "skills": agent.get_accumulated_skills(limit=limit),
+                "total": len(agent.get_accumulated_skills(limit=500)),
+            }
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.post("/systems/learning/learn")
+async def agent_learn(req: LearnRequest):
+    """Derive reusable skills from the agent's recent trajectory."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        learned = agent.learn_from_trajectory(limit=req.limit, goal=req.goal)
+        return JSONResponse({
+            "status": "success",
+            "data": {
+                "learned": learned,
+                "total_skills": len(agent.get_accumulated_skills(limit=500)),
+            }
+        })
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
+
+
+@router.post("/systems/learning/skills/execute")
+async def agent_execute_skill(req: ExecuteSkillRequest):
+    """Execute an accumulated skill and report the outcome."""
+    try:
+        agent = _get_or_create_agent(req.agent_name)
+        result = agent.execute_accumulated_skill(req.skill_id, req.context)
+        return JSONResponse({"status": "success", "data": result})
+    except Exception as e:
+        return JSONResponse({"status": "error", "message": str(e)}, status_code=500)
