@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Physics System
-
-Rigid body dynamics simulation with forces, joints, and collision
-response. Provides a simplified 2D physics model suitable for
-AI-generated game prototypes — position, velocity, acceleration
-integration with damping and world bounds.
-
-Architecture:
-  PhysicsSystem
-    |-- PhysicsBody (mass, velocity, forces, damping)
-    |-- ForceRegistry (accumulated per-body forces)
-    |-- JointRegistry (distance/revolute/spring constraints)
-    |-- WorldBounds (boundary clamping with bounce)
-
-Integration Modes:
-  - EULER: Simple forward Euler (fast, for prototypes)
-  - VERLET: Velocity Verlet (energy preserving)
-  - RK4: 4th-order Runge-Kutta (accurate, for final builds)
-
-Usage:
-    physics = PhysicsSystem()
-    body = physics.create_body(
-        entity_id="player",
-        mass=1.0, position=(0, 0), velocity=(0, 0),
-    )
-    physics.apply_force("player", (100.0, 0.0))
-    physics.step(0.016)
-"""
+SparkLabs Engine - Physics System"""
 
 from __future__ import annotations
 

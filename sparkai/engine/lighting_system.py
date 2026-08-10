@@ -1,19 +1,5 @@
 """
-Lighting System - 2D dynamic lighting with point lights, ambient light, and masks.
-
-Architecture:
-    LightingSystem/
-    |-- LightType (point, directional, spot enumeration)
-    |-- BlendMode (additive, multiplicative, subtractive enumeration)
-    |-- LightConfig (light source configuration dataclass)
-    |-- LightSource (active light instance dataclass)
-    |-- LightingLayer (render layer with blending dataclass)
-    |-- LightingSystem (global lighting orchestration)
-
-Manages 2D lighting with configurable light sources, ambient lighting,
-blend modes, and layer compositing. Supports light culling, falloff curves,
-and shadow mask integration.
-"""
+Lighting System - 2D dynamic lighting with point lights, ambient light, and masks."""
 
 from __future__ import annotations
 

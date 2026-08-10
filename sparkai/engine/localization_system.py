@@ -1,17 +1,5 @@
 """
-Localization System - Multi-language string table management.
-
-Architecture:
-    LocalizationSystem/
-    |-- Language (supported language enumeration)
-    |-- StringEntry (localized string definition)
-    |-- PluralRule (language-specific pluralization rules)
-    |-- LocalizationTable (per-language string storage)
-    |-- LocalizationSystem (unified translation orchestrator)
-
-Manages multi-language text with fallback chains, pluralization support,
-variable interpolation, and JSON import/export for game localization.
-"""
+Localization System - Multi-language string table management."""
 
 from __future__ import annotations
 

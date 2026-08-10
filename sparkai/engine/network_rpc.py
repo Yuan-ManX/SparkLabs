@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Network RPC
-
-Remote procedure call layer for multiplayer game networking.
-Provides reliable and unreliable RPC invocation across network
-boundaries, with parameter serialization, call routing, and
-return value marshaling for the AI-native game engine.
-
-Architecture:
-  NetworkRPC
-    |-- RPCHandler (server-side procedure registration)
-    |-- RPCClient (client-side call invocation)
-    |-- RPCSerializer (parameter marshaling/unmarshaling)
-    |-- RPCMessageQueue (ordered delivery with priority)
-    |-- RPCTimeoutManager (call timeout and retry logic)
-
-Call Types:
-  - REQUEST: standard request-response call
-  - NOTIFY: fire-and-forget notification
-  - BROADCAST: send to all connected clients
-  - TARGETED: send to specific client/peers
-"""
+SparkLabs Engine - Network RPC"""
 
 from __future__ import annotations
 

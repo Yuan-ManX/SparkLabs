@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Particle System
-
-Particle emitter engine with configurable emission rates, lifetime
-management, and interpolated properties. Designed for visual effects
-in AI-generated games — explosions, trails, weather, magic effects.
-
-Architecture:
-  ParticleSystem
-    |-- ParticleEmitter (emission rate, burst, looping)
-    |-- ParticlePool (object pooling for performance)
-    |-- PropertyCurve (interpolated lifetime properties)
-    |-- RenderBatch (consolidated draw calls)
-
-Particle Properties (per-lifetime curves):
-  - position, velocity, acceleration
-  - size, color (RGBA), rotation
-  - gravity scale, damping
-
-Usage:
-    ps = ParticleSystem(max_particles=5000)
-    emitter = ps.create_emitter("explosion",
-        emission_rate=200, lifetime=1.5, burst=50,
-        start_color=(1.0, 0.8, 0.0, 1.0),
-        end_color=(1.0, 0.0, 0.0, 0.0),
-    )
-    ps.emit("explosion", position=(100, 200), direction=(0, -1))
-    ps.update(0.016)
-"""
+SparkLabs Engine - Particle System"""
 
 from __future__ import annotations
 

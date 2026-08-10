@@ -1,18 +1,5 @@
 """
-Material System - Material creation, property management, and shader compilation.
-
-Architecture:
-    MaterialSystem/
-    |-- MaterialDomain (rendering surface classification)
-    |-- BlendMode (color blending operations)
-    |-- MaterialProperty (typed property with value constraints)
-    |-- MaterialDefinition (full material with shader and texture references)
-    |-- MaterialSystem (unified material lifecycle orchestrator)
-
-Manages material definitions across all rendering domains, handles shader
-compilation and caching, supports material cloning/instancing, and provides
-domain-based material queries for render pipeline integration.
-"""
+Material System - Material creation, property management, and shader compilation."""
 
 from __future__ import annotations
 

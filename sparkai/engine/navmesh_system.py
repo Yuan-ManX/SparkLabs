@@ -1,17 +1,5 @@
 """
-NavMesh System - Navigation mesh generation, pathfinding, and spatial queries.
-
-Architecture:
-    NavMeshSystem/
-    |-- NavArea (traversable surface classification)
-    |-- NavMeshTile (grid-aligned mesh tile with vertex/triangle data)
-    |-- NavMeshQuery (pathfinding query with result caching)
-    |-- NavMeshSystem (unified navigation mesh orchestrator)
-
-Builds and maintains navigation meshes for AI pathfinding. Supports dynamic
-navmesh updates, area-type classification, path smoothing, and raycast-based
-line-of-sight checks for real-time navigation use cases.
-"""
+NavMesh System - Navigation mesh generation, pathfinding, and spatial queries."""
 
 from __future__ import annotations
 

@@ -1,17 +1,5 @@
 """
-Pathfinding System - A* pathfinding on grid and navigation mesh.
-
-Architecture:
-    PathfindingSystem/
-    |-- NavigationGrid (grid-based world representation)
-    |-- NavMesh (triangle-based navigation mesh)
-    |-- PathNode (A* search node)
-    |-- NavigationPath (computed path result)
-
-Provides grid-based A* with multiple heuristic methods and navmesh-based
-triangle-graph pathfinding. Supports path smoothing, caching, and cost
-multiplier per cell for terrain-aware navigation.
-"""
+Pathfinding System - A* pathfinding on grid and navigation mesh."""
 
 from __future__ import annotations
 

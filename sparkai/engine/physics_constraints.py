@@ -1,22 +1,5 @@
 """
-SparkLabs Engine - Physics Constraints
-
-Physics constraint and joint system for the SparkLabs AI-native
-game engine. Provides mechanical constraints (spring, hinge, slider,
-distance, pin, weld) that connect physics bodies and restrict their
-relative motion. AI agents define constraint configurations to
-assemble complex physical structures from simple bodies.
-
-Architecture:
-  PhysicsConstraints
-    |-- Constraint (base: body_a, body_b, anchor points)
-    |-- SpringConstraint (elastic force between two bodies)
-    |-- HingeConstraint (rotational pivot around a point)
-    |-- SliderConstraint (linear motion along an axis)
-    |-- DistanceConstraint (fixed separation distance)
-    |-- WeldConstraint (rigidly fused connection)
-    |-- ConstraintSolver (resolve forces per constraint type)
-"""
+SparkLabs Engine - Physics Constraints"""
 
 from __future__ import annotations
 

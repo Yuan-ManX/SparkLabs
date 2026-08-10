@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Procedural Generation
-
-Procedural content generation system for AI-native game engine.
-Generates terrain, dungeons, loot tables, and environmental
-content using configurable noise functions, cellular automata,
-and grammar-based generation rules.
-
-Architecture:
-  ProceduralGenerator
-    |-- TerrainGenerator (heightmap via Perlin/Simplex noise)
-    |-- DungeonGenerator (room placement with corridor carving)
-    |-- LootTable (weighted random item drops)
-    |-- BiomeMapper (temperature/moisture-based biome zones)
-    |-- VegetationPlacer (rule-based foliage distribution)
-
-Generation Algorithms:
-  - PERLIN: smooth gradient noise for natural terrain
-  - CELLULAR: cellular automata for cave-like structures
-  - BSP: binary space partition for room layouts
-  - L_SYSTEM: Lindenmayer system for organic patterns
-  - WANG_TILES: tile-based constraint satisfaction
-"""
+SparkLabs Engine - Procedural Generation"""
 
 from __future__ import annotations
 

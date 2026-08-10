@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Post Processing System
-
-Real-time screen-space visual effect pipeline for AI-native games.
-Manages composable effect stacks with configurable parameters,
-priority-based ordering, and layer mask filtering for cinematic
-rendering, stylized visuals, and gameplay-driven feedback.
-
-Architecture:
-  PostProcessingSystem
-    |-- EffectStackManager (ordered effect layer composition)
-    |-- ParameterBlender (smooth parameter interpolation)
-    |-- RenderTargetChain (multi-pass render target management)
-    |-- LayerFilter (camera-layer selective effect application)
-
-Effect Types:
-  - BLOOM, VIGNETTE, CHROMATIC_ABERRATION, COLOR_GRADING
-  - MOTION_BLUR, DEPTH_OF_FIELD, AMBIENT_OCCLUSION
-  - FILM_GRAIN, LENS_FLARE, PIXELATION
-"""
+SparkLabs Engine - Post Processing System"""
 
 from __future__ import annotations
 

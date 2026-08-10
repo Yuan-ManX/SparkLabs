@@ -1,18 +1,5 @@
 """
-Node Path System - Path-based node query and resolution for the scene tree.
-
-Architecture:
-    NodePathSystem/
-    |-- PathComponent (single path segment dataclass)
-    |-- NodePath (parsed path expression dataclass)
-    |-- PathQuery (filter criteria dataclass)
-    |-- NodePathSystem (global path orchestration)
-
-Implements a path expression language for navigating the scene tree hierarchy.
-Supports absolute paths (/root/child), relative paths (./sibling, ../parent),
-wildcard selection (//enemies/*), and filter-based node querying. Essential
-for AI-generated games where the agent references objects by path.
-"""
+Node Path System - Path-based node query and resolution for the scene tree."""
 
 from __future__ import annotations
 

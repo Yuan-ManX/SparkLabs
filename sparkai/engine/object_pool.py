@@ -1,18 +1,5 @@
 """
-Object Pool System - Pre-allocated object reuse for performance-critical game objects.
-
-Architecture:
-    ObjectPoolSystem/
-    |-- PoolStrategy (allocation strategy enumeration)
-    |-- PoolConfig (pool configuration dataclass)
-    |-- PooledObject (pool-aware wrapper dataclass)
-    |-- ObjectPool (typed pool with acquire/release lifecycle)
-    |-- ObjectPoolSystem (global pool orchestration)
-
-Manages pools of reusable game objects to eliminate GC pressure from frequent
-instantiation/destruction patterns. Supports auto-expansion, shrink-on-idle,
-and LIFO/FIFO acquisition strategies.
-"""
+Object Pool System - Pre-allocated object reuse for performance-critical game objects."""
 
 from __future__ import annotations
 

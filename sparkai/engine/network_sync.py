@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Network Sync
-
-Multiplayer state synchronization framework for game networking.
-Provides client-server state replication, authoritative server
-model, client interpolation, and lag compensation. Enables
-AI agents to build networked multiplayer games with reliable
-state sharing across peers.
-
-Architecture:
-  NetworkSync
-    |-- SyncAuthority (server-authoritative state management)
-    |-- StateReplicator (delta-based state synchronization)
-    |-- ClientPredictor (client-side prediction with reconciliation)
-    |-- InterpolationBuffer (smooth remote entity rendering)
-    |-- SyncChannel (ordered/unordered reliable/unreliable channels)
-
-Sync Models:
-  - AUTHORITY: server owns state, clients send inputs
-  - REPLICATED: server pushes state deltas to clients
-  - PREDICTED: clients predict, server reconciles
-"""
+SparkLabs Engine - Network Sync"""
 
 from __future__ import annotations
 

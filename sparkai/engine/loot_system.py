@@ -1,22 +1,5 @@
 """
-SparkLabs Engine - Loot System
-
-Procedural loot generation with rarity tiers, affix rolling,
-smart drop tables, and contextual reward distribution. Supports
-weighted random generation, boss-specific loot pools, and
-pseudo-random bad luck protection.
-
-Architecture:
-  LootSystem
-    |-- DropTable (weighted loot pool with conditional entries)
-    |-- RarityEngine (multi-roll rarity determination)
-    |-- AffixGenerator (prefix/suffix stat modification)
-    |-- SmartLoot (class-appropriate and need-based filtering)
-    |-- LootHistory (recent drop tracking for bad luck protection)
-
-Rarity Tiers:
-  - COMMON, UNCOMMON, RARE, EPIC, LEGENDARY, MYTHIC
-"""
+SparkLabs Engine - Loot System"""
 
 from __future__ import annotations
 

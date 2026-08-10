@@ -1,18 +1,5 @@
 """
-Occlusion System - Visibility culling, occlusion queries, and rendering optimization.
-
-Architecture:
-    OcclusionSystem/
-    |-- OcclusionMethod (culling technique classification)
-    |-- CullingLayer (spatial layer hierarchy)
-    |-- OcclusionVolume (spatial occlusion bounding region)
-    |-- OcclusionSystem (unified visibility determination orchestrator)
-
-Provides multiple culling strategies for render optimization: portal-based
-occlusion, PVS precomputation, hardware occlusion queries, distance/LOD culling,
-and frustum-only culling. Manages occlusion volumes and layer-based visibility
-tests across the full render pipeline.
-"""
+Occlusion System - Visibility culling, occlusion queries, and rendering optimization."""
 
 from __future__ import annotations
 

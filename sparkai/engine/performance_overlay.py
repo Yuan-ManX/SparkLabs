@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Performance Debug Overlay System
-
-Real-time performance metrics overlay for the AI-native game engine.
-Tracks frame timing, memory usage, draw calls, object counts, and
-subsystem CPU/GPU budgets. Provides rolling-frame statistics, snapshot
-profiling, threshold-based alerts, and formatted overlay text output
-for on-screen rendering.
-
-Architecture:
-  PerformanceOverlay (singleton)
-    |-- FrameSample (per-frame metrics datum)
-    |-- MetricThreshold (configurable warning/error limit)
-    |-- ProfilingSnapshot (named capture window with stddev stats)
-    |-- Rolling Window (last 300 frames for trend analysis)
-    |-- Threshold Evaluator (OK/WARNING/ERROR per metric)
-
-Usage:
-    po = get_performance_overlay()
-    po.record_frame(16.6, 124, 8432, 156.3, 8.2, 12.1, 3.4, 1.2, 512)
-    fps = po.get_current_fps()
-    text = po.generate_overlay_text([OverlaySection.FPS, OverlaySection.MEMORY])
-    alerts = po.check_thresholds()
-    po.start_snapshot("boss_fight")
-    po.stop_snapshot()
-"""
+SparkLabs Engine - Performance Debug Overlay System"""
 
 from __future__ import annotations
 

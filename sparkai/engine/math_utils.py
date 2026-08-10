@@ -1,22 +1,5 @@
 """
-SparkLabs Engine - Math Utilities
-
-Core math primitives for the SparkLabs AI-native game engine.
-Provides linear algebra, geometry, interpolation, and easing
-functions used across physics, rendering, animation, and AI
-subsystems. Designed as lightweight pure-Python math tools
-that require no external dependencies.
-
-Architecture:
-  MathUtils
-    |-- Vector2 (2D vector with full arithmetic suite)
-    |-- Vector3 (3D vector for spatial operations)
-    |-- Rect2 (axis-aligned bounding box)
-    |-- Transform2D (affine 2D transformation matrix)
-    |-- Easing (12 interpolation curves)
-    |-- Interpolation (lerp, smoothstep, bezier)
-    |-- Geometry2D (point-in-poly, intersection tests)
-"""
+SparkLabs Engine - Math Utilities"""
 
 from __future__ import annotations
 

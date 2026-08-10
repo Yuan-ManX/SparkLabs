@@ -1,20 +1,5 @@
 """
-Plugin System - Extensible plugin architecture for the SparkLabs engine.
-
-Architecture:
-    PluginSystem/
-    |-- PluginState (lifecycle state enumeration)
-    |-- PluginPermission (capability permission enumeration)
-    |-- PluginManifest (plugin metadata dataclass)
-    |-- PluginHook (extension point hook dataclass)
-    |-- PluginInstance (loaded plugin runtime dataclass)
-    |-- PluginRegistry (dependency-aware registration)
-    |-- PluginSystem (global plugin orchestration)
-
-Manages the full plugin lifecycle: discovery, validation, dependency resolution,
-loading, activation, deactivation, and unloading. Supports hook-based extension
-points and sandboxed execution contexts.
-"""
+Plugin System - Extensible plugin architecture for the SparkLabs engine."""
 
 from __future__ import annotations
 
