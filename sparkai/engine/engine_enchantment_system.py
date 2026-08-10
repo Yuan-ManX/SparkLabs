@@ -1,47 +1,5 @@
 """
-SparkLabs Engine - Enchantment System
-
-A gem socketing and item enchantment system for the SparkLabs AI-native game
-engine. Manages enchantable items with socket slots, gem definitions, socket
-insertion/removal, enchantment application/removal, and enchantment tier
-progression. Supports gem rarity tiers, enchantment effect modifiers, socket
-unlocking, and enchantment durability.
-
-Each enchantable item has a fixed number of socket slots (some locked, some
-unlocked). Gems are inserted into unlocked sockets to apply stat modifiers.
-Enchantments are persistent effects applied directly to items, independent
-of gems. The system tracks enchantment durability (degrades with use) and
-tier-based potency scaling.
-
-Architecture:
-  EnchantmentSystem (singleton)
-    |-- GemRarity, EnchantmentTier, SocketState, EnchantEventKind
-    |-- GemDefinition, EnchantmentDefinition, SocketSlot, EnchantableItem,
-       EnchantmentInstance, EnchantConfig, EnchantStats, EnchantSnapshot,
-       EnchantEvent
-    |-- get_enchantment_system
-
-Core Capabilities:
-  - register_gem / remove_gem / get_gem / list_gems: manage the gem catalog.
-  - register_enchantment / remove_enchantment / get_enchantment /
-    list_enchantments: manage the enchantment definition catalog.
-  - register_item / remove_item / get_item / list_items: manage enchantable
-    items with socket slots.
-  - insert_gem / remove_gem_from_socket: socket and unsocket gems.
-  - apply_enchantment / remove_enchantment_from_item: apply and remove
-    persistent enchantments.
-  - unlock_socket: unlock a locked socket slot on an item.
-  - repair_enchantment: restore enchantment durability.
-  - tick: advance durability decay and time-based features.
-  - set_config / get_config: global tuning.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`EnchantmentSystem.get_instance` or the module-level
-:func:`get_enchantment_system` factory.
-"""
+SparkLabs Engine - Enchantment System"""
 
 from __future__ import annotations
 

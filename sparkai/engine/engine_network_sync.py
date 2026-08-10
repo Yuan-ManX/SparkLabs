@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - Network State Synchronization Engine
-
-AI-optimized network state synchronization for multiplayer game state
-management. Provides full-state and delta-based entity synchronization,
-connection lifecycle management, snapshot-based state history, and
-multi-authority session orchestration across server, client, and
-peer-to-peer topologies.
-
-Architecture:
-  NetworkSyncEngine (Singleton)
-    |-- NetworkEntity         — synchronized game entity with ownership and channels
-    |-- SyncMessage           — network message with priority, sequence, and ack
-    |-- ConnectionInfo        — per-peer connection metadata and health
-    |-- SyncSnapshot          — point-in-time capture of entity state
-    |-- SyncSession           — managed sync session with authority and strategy
-    |-- SyncAuthority (enum)  — state ownership model for the session
-    |-- SyncStrategy (enum)   — replication strategy between peers
-    |-- ConnectionState (enum) — connection lifecycle state machine
-    |-- SyncChannel (enum)    — data channel classification
-    |-- MessagePriority (enum) — message urgency tiers
-
-Core Capabilities:
-  - create_session: Create a sync session with authority and strategy
-  - connect: Establish a peer connection with latency/packet-loss tracking
-  - register_entity: Register a game entity for network synchronization
-  - sync_state: Transmit entity state through a sync channel
-  - get_snapshot: Retrieve a point-in-time state snapshot for an entity
-  - get_connections: List all active connections for a session
-  - get_stats: Global engine statistics and health summary
-"""
+SparkLabs Engine - Network State Synchronization Engine"""
 
 from __future__ import annotations
 

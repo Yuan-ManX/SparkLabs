@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Node Composer
-
-A node-based scene composition system that enables hierarchical game
-object construction through a tree of composable nodes. Each node
-represents a functional unit — rendering, physics, audio, logic, or
-transformation — that can be arranged in parent-child hierarchies
-to create complex game scenes with reusable component structures.
-
-The node composer follows a scene-tree architecture where nodes form
-a rooted tree with scene nodes at the top, branch nodes for organization,
-and leaf nodes for concrete game objects. Nodes communicate through
-signals, inherit transforms, and can be dynamically created, moved,
-grouped, and destroyed during runtime.
-
-Architecture:
-  EngineNodeComposer (Singleton)
-    |-- SceneNode (base unit of composition)
-    |-- NodeTree (rooted tree of scene nodes)
-    |-- NodeType (categorization of node functionality)
-    |-- NodeSignal (decoupled inter-node communication)
-    |-- NodePath (hierarchical addressing like filesystem paths)
-    |-- Transform2D (2D position, rotation, scale with inheritance)
-    |-- NodeGroup (logical grouping for batch operations)
-
-Core Capabilities:
-  - create_node: Instantiate a node of a given type
-  - build_tree: Construct a node tree from a scene definition
-  - add_child: Attach a child node with inherited transform
-  - reparent: Move a node to a different parent
-  - send_signal: Emit a signal down/up the tree
-  - query_nodes: Find nodes by type, name, or path
-  - freeze_branch: Pause processing for a sub-tree
-  - export_tree: Serialize a node tree to a portable format
-"""
+SparkLabs Engine - Node Composer"""
 
 from __future__ import annotations
 

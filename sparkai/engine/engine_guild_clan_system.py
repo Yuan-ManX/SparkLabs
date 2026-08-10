@@ -1,10 +1,5 @@
 """
-SparkLabs Engine - Guild & Clan System
-
-Provides guild creation, member management with ranks and permissions,
-guild treasury, guild wars, guild quests, and guild perks. Designed as a
-self-contained singleton system with seed data for immediate integration testing.
-"""
+SparkLabs Engine - Guild & Clan System"""
 
 from __future__ import annotations
 

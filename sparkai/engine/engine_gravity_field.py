@@ -1,15 +1,5 @@
 """
-SparkLabs Engine - Gravity Field System
-
-Models spatial gravity regions with custom directions, magnitudes, and
-fall-off curves. Supports planetary gravity wells, zero-G pockets,
-directional fields for wall-running, and blended overlapping fields
-for smooth transitions between gravity zones.
-
-Designed for platformers, space shooters, puzzle games, and any
-experience that needs non-uniform gravity. Integrates with the physics
-dynamics core, vehicle physics, and character controllers.
-"""
+SparkLabs Engine - Gravity Field System"""
 
 from __future__ import annotations
 
@@ -779,7 +769,7 @@ class GravityFieldSystem:
                 direction = _normalize3(delta)
                 if w.repel:
                     direction = _scale3(direction, -1.0)
-                # Newtonian magnitude with cap
+                # Classical magnitude with cap
                 accel = w.gravitational_constant * w.mass / max(dist * dist, 1e-6)
                 accel = min(accel, w.max_acceleration)
                 # Apply falloff based on normalized distance

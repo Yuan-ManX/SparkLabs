@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Emergent Quest Composer
-
-The EngineEmergentQuestComposer grows quests out of the world-state
-rather than hand-authoring them. A world is a fabric of tensions,
-shortages, debts, and surpluses; when one part of the world shifts,
-the shift propagates outward. Where the propagating pressure crosses
-a threshold it crystalizes into a quest-shaped tension, the quest is
-commissioned to one or more agents, and once the agents act, the
-quest resolves back into the world-state that birthed it.
-
-A quest that the designer drops in from outside tends to feel pasted
-on; a quest that the world grows from its own pressures tends to feel
-inevitable - the player can feel that someone, somewhere, needed this
-done.
-
-Architecture:
-  SENSE       ->  PROPAGATE   ->  CRYSTALIZE  ->  COMMISSION  ->  RESOLVE
-  (the world    (each shift     (where the      (the quest is    (once the
-   reports a    radiates        pressure        handed to        agents act,
-   shift)       outward as      crosses a       agents)          the quest
-                pressure)       threshold it    commission->     folds back
-                                becomes a       resolve->...     into the
-                                quest-shaped    over cycles)     world that
-                                tension)                        birthed it)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Emergent Quest Composer"""
 
 from __future__ import annotations
 

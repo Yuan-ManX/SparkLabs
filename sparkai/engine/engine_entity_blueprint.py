@@ -1,19 +1,5 @@
 """
-SparkLabs Engine - Entity Blueprint System
-
-Templated game entity creation with variant inheritance and composition.
-Provides a data-driven approach to defining reusable entity archetypes
-that can be instantiated with parameter overrides, variant specialization,
-and multi-blueprint composition into hybrid entities.
-
-Architecture:
-  EntityBlueprintSystem
-    |-- BlueprintTemplate (named entity archetype with component definitions)
-    |-- ComponentDefinition (individual component slot with parameters)
-    |-- EntityVariant (parameter override set for a specific blueprint)
-    |-- BlueprintInstance (runtime-spawned entity from a blueprint)
-    |-- Composition Engine (merges blueprints via OVERRIDE/EXTEND/MERGE/REPLACE)
-"""
+SparkLabs Engine - Entity Blueprint System"""
 
 from __future__ import annotations
 

@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Emergent Topology Composer
-
-The EngineEmergentTopologyComposer models how the spatial topology of a
-game world emerges from the flows and interactions that traverse it.
-Rather than treating level layout as a fixed blueprint, the composer
-treats topology as a living fabric that shapes itself around the rivers
-of player movement, narrative gravity, and semantic attraction.
-
-World topology in a game is not just geometry - it is the relationship
-between places, the affordances they offer, and the way they channel
-movement. A village square emerges where paths converge. A hidden grove
-emerges where attention wanes. A dangerous chasm emerges where conflicting
-narratives pull apart. The composer models this emergence: places are
-nodes, flows are edges, and the topology self-organizes around the
-patterns of desire, attention, and conflict that traverse it.
-
-The composer models four forces that shape topology:
-  - Attraction: places that draw flow toward them (narrative gravity)
-  - Repulsion: places that push flow away (danger, taboo)
-  - Convergence: where multiple flows meet, new places crystallize
-  - Divergence: where single flows split, boundaries form
-
-This produces a game world whose layout is genuinely emergent - where
-the geography reflects the lived history of play, not a pre-authored
-map. Players literally shape the world by walking through it.
-
-Architecture:
-  SEED     ->  FLOW     ->  CONVERGE  ->  CRYSTAL   ->  ANNEAL
-  (place   (desire and   (flows meet  (new places  (topology
-   initial  attention     and          crystallize settles into
-   seed     flow along    accumulate   at          stable form,
-   nodes)   edges)        at junctions) convergence) smoothing
-                                                      noise)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Emergent Topology Composer"""
 
 from __future__ import annotations
 

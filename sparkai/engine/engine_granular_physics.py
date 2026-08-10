@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Granular Physics Simulation System
-
-A particle-based granular material simulation engine for sand, snow, gravel,
-dirt, rice, beans, salt, powder, debris, ash, cobble, and dust. The system
-fills a genuine physics gap in the engine: fluid dynamics covers liquids and
-gases, while this module covers the distinct rheology of granular solids.
-
-Physics models implemented:
-  - Particle-based granular dynamics with penalty-based contact resolution
-    and Coulomb friction, integrated with velocity-Verlet.
-  - Mohr-Coulomb yield criterion for shear failure of granular assemblies.
-  - Angle of repose computation and avalanche triggering for cohesive and
-    cohesionless materials.
-  - Percolation and segregation (Brazil nut effect) under vibration.
-  - Beverloo law for hopper and orifice mass flow rates.
-  - Janssen effect for saturated wall pressure in granular columns.
-  - Packing density, terminal velocity, and slope stability analysis.
-
-Architecture:
-  _GranularPhysicsSystem (Singleton)
-    |-- GranularParticle     -- individual granular particle with state
-    |-- GranularPile         -- cohesive pile/cone of particles
-    |-- GranularEmitter      -- continuous particle source
-    |-- GranularObstacle     -- static or moving obstacle
-    |-- GranularConfig       -- simulation configuration
-    |-- GranularStats        -- per-step metrics
-    |-- GranularSnapshot     -- full state for serialization
-    |-- GranularEvent        -- event log entry
-    |-- MaterialProperties   -- per-material physical constants
-
-Threading:
-  Singleton creation is guarded by a class-level ``_init_lock`` using
-  double-checked locking. All mutable state is guarded by an instance-level
-  ``_lock`` (a reentrant lock). A ``_seeded`` flag guarantees the default
-  piles, emitters, and obstacles are created exactly once.
-
-Coordinate system:
-  Three-dimensional, right-handed, with +Y pointing up. Gravity acts in the
-  -Y direction by default. Positions and velocities are 3-tuples of floats.
-"""
+SparkLabs Engine - Granular Physics Simulation System"""
 
 from __future__ import annotations
 
