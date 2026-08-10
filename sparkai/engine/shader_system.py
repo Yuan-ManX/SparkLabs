@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Shader System
-
-2D shader and material management system for visual effects
-in AI-generated games. Manages shader compilation, uniform
-parameters, material instances, and render passes — enabling
-post-processing, sprite effects, and dynamic lighting.
-
-Architecture:
-  ShaderSystem
-    |-- ShaderProgram (vertex + fragment source with compilation)
-    |-- UniformBlock (typed uniform parameters with dirty tracking)
-    |-- Material (shader + uniform values = renderable appearance)
-    |-- RenderPass (ordered pass list for compositing pipeline)
-
-Built-in Shaders:
-  - default_sprite: standard textured quad rendering
-  - outline: silhouette edge detection and rendering
-  - glow: bloom/gaussian blur post-processing
-  - dissolve: noise-based alpha dithering transition
-  - palette_swap: index-based color replacement
-
-Usage:
-    ss = ShaderSystem()
-    outline = ss.compile("outline", {"thickness": 2.0, "color": [1, 0, 0, 1]})
-    mat = ss.create_material("enemy_material", "outline", outline.uniforms)
-    ss.apply_material("enemy_sprite", "enemy_material")
-"""
+SparkLabs Engine - Shader System"""
 from __future__ import annotations
 
 import time

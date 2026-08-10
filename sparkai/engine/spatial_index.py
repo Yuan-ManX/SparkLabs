@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Spatial Index
-
-Spatial partitioning system for the SparkLabs AI-native game engine.
-Provides quadtree and octree-based spatial indexing for fast
-proximity queries, collision broad-phase optimization, and spatial
-grouping of game objects. Reduces O(n^2) spatial queries to O(log n)
-through hierarchical space subdivision.
-
-Architecture:
-  SpatialIndex
-    |-- Quadtree (2D spatial partition with 4 children per node)
-    |-- QuadNode (spatial region with object bucket)
-    |-- Octree (3D spatial partition with 8 children per node)
-    |-- SpatialQuery (range, nearest-N, region queries)
-    |-- SpatialEntry (object reference with bounding box)
-"""
+SparkLabs Engine - Spatial Index"""
 
 from __future__ import annotations
 

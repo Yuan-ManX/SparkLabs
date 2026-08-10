@@ -1,19 +1,5 @@
 """
-Timeline System - Cutscene sequencing, keyframe animation, and cinematic orchestration.
-
-Architecture:
-    TimelineSystem/
-    |-- TrackType (timeline track classification)
-    |-- KeyframeInterpolation (value blending techniques)
-    |-- TimelineKeyframe (single point-in-time value with interpolation)
-    |-- TimelineTrack (sorted collection of keyframes per property/object)
-    |-- TimelineDefinition (full cinematic timeline with multiple tracks)
-    |-- TimelineSystem (unified timeline playback and evaluation orchestrator)
-
-Manages cinematic timelines with multi-track support for animation, audio, camera,
-dialogue, events, property animation, scripts, and markers. Supports looping,
-playback speed control, and precise seeking with interpolation.
-"""
+Timeline System - Cutscene sequencing, keyframe animation, and cinematic orchestration."""
 
 from __future__ import annotations
 

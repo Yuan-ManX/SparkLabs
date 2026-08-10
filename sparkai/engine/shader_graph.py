@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Node-Based Shader Graph
-
-Visual node-graph editor backend for constructing GLSL/HLSL shaders
-without writing code. Supports arithmetic, utility, sampling, and
-math nodes composable into a directed acyclic graph that compiles
-to target shading languages.
-
-Architecture:
-  ShaderGraph
-    |-- ShaderGraphDefinition (named container for nodes and connections)
-    |-- ShaderGraphNode (typed processing unit with input/output pins)
-    |-- GraphPin (typed data port on a node)
-    |-- GraphConnection (directed edge between two pins)
-    |-- ShaderNodeType (enumeration of all supported node types)
-
-Supported Targets:
-  - GLSL 330 (desktop OpenGL)
-  - HLSL SM5 (DirectX 11)
-
-Usage:
-    sg = ShaderGraph()
-    definition = sg.create_graph("MyShader")
-    color_node = sg.add_node(definition.id, ShaderNodeType.COLOR, 100.0, 200.0)
-    output_node = sg.add_node(definition.id, ShaderNodeType.OUTPUT, 400.0, 200.0)
-    sg.add_connection(definition.id, color_node.id, color_node.outputs[0].id,
-                      output_node.id, output_node.inputs[0].id)
-    glsl = sg.compile_to_glsl(definition.id)
-"""
+SparkLabs Engine - Node-Based Shader Graph"""
 
 from __future__ import annotations
 

@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Trigger System
-
-Interactive spatial event triggering for AI-native games.
-Manages volume-based and event-driven triggers with configurable
-activation modes, tag-based filtering, and script binding for
-quest progression, cutscene initiation, and gameplay logic.
-
-Architecture:
-  TriggerSystem
-    |-- TriggerRegistry (trigger definition and spatial map)
-    |-- OverlapDetector (volume-to-entity intersection tests)
-    |-- ActivationController (mode and cooldown state machine)
-    |-- ScriptBinder (on-activate and on-deactivate callbacks)
-
-Trigger Types:
-  - ENTER_ZONE, EXIT_ZONE, INTERACT, PROXIMITY
-  - TIMER, COLLISION, CUSTOM_EVENT, CONDITIONAL
-
-Trigger Shapes:
-  - BOX, SPHERE, CYLINDER, CAPSULE, CONE, MESH
-
-Activation Modes:
-  - ONCE, REPEATABLE, COOLDOWN, TOGGLE
-"""
+SparkLabs Engine - Trigger System"""
 
 from __future__ import annotations
 

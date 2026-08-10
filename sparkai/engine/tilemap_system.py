@@ -1,31 +1,5 @@
 """
-SparkLabs Engine - Tilemap System
-
-Grid-based tile map rendering and collision management for
-AI-generated 2D levels. Supports multi-layer tilemaps with
-per-tile properties, auto-tiling rules, and collision shape
-generation from tile data.
-
-Architecture:
-  TilemapSystem
-    |-- TilemapLayer (named layer with tile grid + visibility)
-    |-- Tileset (collection of tile definitions with properties)
-    |-- Tile (x/y position, tileset index, flip/rotate flags)
-    |-- CollisionExtractor (generates AABB colliders from tile data)
-
-Layer Types:
-  - ground: walkable terrain tiles
-  - wall: blocking collision tiles
-  - decoration: visual-only overlay tiles
-  - object: interactive entity placement tiles
-
-Usage:
-    tm = TilemapSystem(map_width=40, map_height=30, tile_size=32)
-    tm.set_tile("ground", 10, 15, tile_id=3)  # grass tile
-    tm.set_tile("wall", 20, 15, tile_id=12)    # stone wall
-    blocks = tm.get_blocked_cells("wall")
-    tm.render_layer("ground", camera_offset=(0, 0))
-"""
+SparkLabs Engine - Tilemap System"""
 
 from __future__ import annotations
 

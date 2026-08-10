@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - UI Layout System
-
-Anchor-based positioning and container layout system for the
-SparkLabs AI-native game engine. Provides anchor-preset positioning,
-flexbox-style container layouts, grid containers, and responsive
-sizing modes for UI elements.
-
-Architecture:
-  UILayoutSystem (singleton orchestrator)
-    |-- UIAnchor (percentage-based position anchor with pixel margins)
-    |-- UIContainer (box model container with children and layout rect)
-    |-- UILayout (named layout with root container and anchors)
-    |-- ContainerType / AlignmentType / SizeMode / AnchorMode (enums)
-
-Layout Flow:
-  1. Define layout with root container
-  2. Add child containers organized in a tree
-  3. Set anchors for game nodes within parent containers
-  4. Compute final pixel positions through container arrangement
-"""
+SparkLabs Engine - UI Layout System"""
 
 from __future__ import annotations
 

@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Skill Tree System
-
-Hierarchical character progression through branching skill trees.
-Manages node unlocking, point allocation, prerequisites, synergies,
-and specializations with support for multi-class and hybrid builds.
-
-Architecture:
-  SkillTreeSystem
-    |-- TreeRegistry (per-character-class skill tree definitions)
-    |-- NodeUnlocker (prerequisite-aware node activation)
-    |-- PointAllocator (skill point economy and distribution)
-    |-- SynergyDetector (inter-tree and cross-node synergy bonuses)
-    |-- SpecializationTracker (branch depth mastery tracking)
-
-Node Types:
-  - ABILITY: unlocks a new active ability
-  - PASSIVE: permanent statistical improvement
-  - MODIFIER: alters existing ability behavior
-  - GATEWAY: prerequisite-only connector node
-  - MASTERY: ultimate/capstone node
-"""
+SparkLabs Engine - Skill Tree System"""
 
 from __future__ import annotations
 

@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Signal System
-
-Observer pattern implementation for decoupled game communication.
-Enables nodes, components, and AI agents to communicate through
-typed signals without direct references. Supports connecting any
-callable to any signal, parameter passing, deferred emission, and
-one-shot connections that auto-disconnect after first invocation.
-
-Architecture:
-  SignalBus
-    |-- SignalConnection (tracked connection between signal and slot)
-    |-- SignalGroup (related signals grouped by owner)
-    |-- EmissionMode (IMMEDIATE, DEFERRED, QUEUED)
-
-Connection Types:
-  - PERSISTENT: stays connected until manually disconnected
-  - ONE_SHOT: auto-disconnects after first emission
-  - CONDITIONAL: emits only when condition function returns True
-"""
+SparkLabs Engine - Signal System"""
 
 from __future__ import annotations
 

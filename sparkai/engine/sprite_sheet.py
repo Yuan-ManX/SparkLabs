@@ -1,18 +1,5 @@
 """
-Sprite Sheet System - Frame-based sprite animation from sprite sheets and atlases.
-
-Architecture:
-    SpriteSheet/
-    |-- SheetLayout (grid or irregular frame mapping enumeration)
-    |-- FrameDefinition (single frame rect + pivot dataclass)
-    |-- AnimationClip (named sequence of frames dataclass)
-    |-- SpriteSheetResource (loaded sheet data dataclass)
-    |-- SpriteSheetSystem (global sprite sheet orchestration)
-
-Manages sprite sheet resources with frame extraction, animation clip definition,
-and runtime playback state. Designed for AI-generated 2D game assets where the
-agent can describe frame layouts and the engine handles slicing and rendering.
-"""
+Sprite Sheet System - Frame-based sprite animation from sprite sheets and atlases."""
 
 from __future__ import annotations
 

@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - State Machine
-
-Hierarchical finite state machine system for game entity behavior.
-Supports nested states, transitions with conditions, entry/exit
-actions, and parallel sub-states. Designed for AI-generated
-NPC behavior trees and game logic flows.
-
-Architecture:
-  StateMachine
-    |-- State (name, transitions, entry/update/exit actions)
-    |-- Transition (source, target, condition, priority)
-    |-- ParameterContext (typed variables accessible by conditions)
-    |-- TransitionEvaluator (sorted priority-based evaluation)
-
-State Lifecycle:
-  - on_enter: called once when entering the state
-  - on_update: called every frame while active
-  - on_exit: called once when leaving the state
-
-Usage:
-    sm = StateMachine("enemy_ai")
-    sm.add_state("idle", on_update=idle_patrol)
-    sm.add_state("chase", on_enter=start_chase, on_update=chase_player)
-    sm.add_transition("idle", "chase", lambda ctx: ctx.get("player_in_range"))
-    sm.add_transition("chase", "idle", lambda ctx: not ctx.get("player_in_range"))
-    sm.start("idle")
-    sm.update(context={"player_in_range": True})
-"""
+SparkLabs Engine - State Machine"""
 
 from __future__ import annotations
 

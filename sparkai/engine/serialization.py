@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Serialization System
-
-Bi-directional scene and entity serialization for AI-generated
-game content. Supports JSON interchange, binary packing for
-runtime performance, and schema versioning for forward/backward
-compatibility between engine versions.
-
-Architecture:
-  Serializer
-    |-- SceneSerializer (full scene graph with entity hierarchy)
-    |-- EntitySerializer (component data, transforms, properties)
-    |-- AssetSerializer (texture references, audio clips, prefabs)
-    |-- SchemaValidator (version-based field migration)
-
-Serialization Formats:
-  - JSON_READABLE: human-readable, AI-friendly interchange format
-  - JSON_COMPACT: minimal JSON for network transfer
-  - BINARY_BLOB: optimized for runtime loading/saving
-  - YAML_LAYOUT: level design layout format
-
-Usage:
-    ser = Serializer(schema_version=2)
-    json_str = ser.serialize_scene(scene, format="json_readable")
-    loaded_scene = ser.deserialize_scene(json_str)
-    binary_blob = ser.serialize_to_binary(world_data)
-"""
+SparkLabs Engine - Serialization System"""
 from __future__ import annotations
 
 import json

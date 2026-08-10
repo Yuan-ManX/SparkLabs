@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Spline System
-
-Parametric curve pathing for AI-native games. Supports multiple
-interpolation types for smooth camera paths, AI patrol routes,
-track generation, and procedural geometry placement.
-
-Architecture:
-  SplineSystem
-    |-- SplineEvaluator (parametric curve evaluation engine)
-    |-- ControlPointManager (point insertion and removal)
-    |-- LengthCalculator (arc-length parameterization)
-    |-- UniformSampler (evenly spaced point distribution)
-
-Spline Types:
-  - LINEAR, BEZIER, CATMULL_ROM, HERMITE, B_SPLINE
-"""
+SparkLabs Engine - Spline System"""
 
 from __future__ import annotations
 

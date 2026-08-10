@@ -1,34 +1,5 @@
 """
-SparkLabs Engine - UI System
-
-Canvas-based 2D user interface system for game HUDs, menus,
-dialogs, and AI-generated UI layouts. Provides a retained-mode
-widget tree with anchoring, nine-slice scaling, theme support,
-and event bubbling for touch/mouse/controller input.
-
-Architecture:
-  UISystem
-    |-- UICanvas (root container with coordinate space)
-    |-- UIWidget (base: rect, anchor, theme-aware rendering)
-      |-- UILabel (styled text with alignment + overflow modes)
-      |-- UIButton (label + icon, hover/press states, callbacks)
-      |-- UIPanel (nine-slice background with child clipping)
-      |-- UISlider (horizontal/vertical with range + steps)
-      |-- UIProgressBar (fill bar with direction + animation)
-    |-- UITheme (color palette, font, spacing presets)
-
-Event Flow:
-  Input → UISystem._hit_test(root) → deepest widget
-  Widgets bubble unhandled events to parent via on_* handlers.
-
-Usage:
-    ui = UISystem(canvas_width=800, canvas_height=600)
-    panel = ui.create_panel("main_menu", x=200, y=100, w=400, h=400)
-    label = ui.create_label("title", "My Game", 0, 0, 400, 60)
-    panel.add_child(label)
-    play_btn = ui.create_button("play", "PLAY", 50, 200, 300, 50, on_click=lambda: start_game())
-    panel.add_child(play_btn)
-"""
+SparkLabs Engine - UI System"""
 from __future__ import annotations
 
 import uuid

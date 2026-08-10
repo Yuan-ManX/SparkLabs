@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Terrain System
-
-Grid-based terrain editing and generation system for game worlds.
-Provides heightmap manipulation, brush-based sculpting, layer painting,
-and procedural terrain generation with LOD chunking.
-
-Architecture:
-  TerrainSystem
-    |-- TerrainChunk (subdivided terrain regions with LOD)
-    |-- TerrainBrush (sculpting and painting tools)
-    |-- Heightmap Generator (noise-based procedural generation)
-    |-- Layer Painter (multi-layer terrain material blending)
-    |-- Smooth Operator (Gaussian and average-based smoothing)
-
-Terrain Layers:
-  - SOLID: base ground layer
-  - SAND: desert and beach areas
-  - GRASS: vegetation-covered terrain
-  - ROCK: exposed stone and cliffs
-  - SNOW: high-altitude frozen terrain
-  - MUD: wetland and swamp areas
-  - WATER_SURFACE: shallow water covering
-  - LAVA: volcanic terrain
-"""
+SparkLabs Engine - Terrain System"""
 
 from __future__ import annotations
 

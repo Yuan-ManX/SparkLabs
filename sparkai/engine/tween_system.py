@@ -1,18 +1,5 @@
 """
-Tween System - Interpolation animation for smooth property transitions.
-
-Architecture:
-    TweenSystem/
-    |-- EasingType (interpolation curve enumeration)
-    |-- TweenTarget (animated property descriptor dataclass)
-    |-- TweenInstance (active tween with runtime state dataclass)
-    |-- TweenGroup (parallel/sequenced tween collection dataclass)
-    |-- TweenSystem (global tween orchestration)
-
-Provides smooth, frame-rate-independent property animations for AI-generated
-games. Supports position, scale, rotation, color, and custom numeric properties
-with configurable easing curves, looping, and parallel/sequential composition.
-"""
+Tween System - Interpolation animation for smooth property transitions."""
 
 from __future__ import annotations
 
