@@ -454,6 +454,8 @@ export type ViewMode =
   | 'camera-system'
   | 'animation-controller'
   | 'scene-transition'
+  | 'weather-interaction'
+  | 'agent-refinement'
   | 'creative-director'
   | 'live-debugger'
   | 'game-code-generator'
