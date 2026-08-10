@@ -1,46 +1,5 @@
 """
-SparkLabs Engine - Player-to-Player Trading & Auction House System
-
-An original, self-contained commerce layer for the SparkLabs AI-native game
-engine. The system lets players publish item listings (fixed price, want-to-
-sell, want-to-buy, want-to-trade, bundles), negotiate through trade offers,
-and run time-boxed auctions with bids, buyouts, and bid increments. All
-economic activity flows through per-player wallets, and a price-history ledger
-records observed transaction prices per item and currency so that fair-market
-values can be derived.
-
-Architecture:
-  TradingPostSystem (singleton)
-    |-- ItemListing            -- a seller's published item offer
-    |-- TradeOffer             -- a buyer's bid/counter on a listing
-    |-- Auction                -- a timed, competitive bidding container
-    |-- Transaction            -- a settled economic exchange record
-    |-- PlayerWallet           -- per-player multi-currency balances
-    |-- PriceHistory           -- rolling observed-price ledger per item
-    |-- TradingPostStats       -- aggregate counters
-    |-- TradingPostSnapshot    -- immutable full-state snapshot
-    |-- TradingPostEvent       -- audit log entry
-    |-- ListingType, ListingStatus, OfferStatus, RarityTier, CurrencyType,
-        AuctionState, TradingPostEventKind
-
-Core Capabilities:
-  - create_listing / get_listing / list_listings / update_listing /
-    cancel_listing: full listing lifecycle with rarity tiers and currencies.
-  - make_offer / get_offer / list_offers / accept_offer / reject_offer /
-    counter_offer / withdraw_offer: negotiated trade offer workflow.
-  - create_auction / get_auction / list_auctions / place_bid / settle_auction /
-    cancel_auction: timed auctions with minimum increments and buyouts.
-  - get_wallet / adjust_balance / suspend_wallet / reinstate_wallet: per-player
-    multi-currency wallet management with reputation tracking.
-  - get_price_history / record_price: rolling market-price aggregation.
-  - get_transaction / list_transactions: settled-exchange history.
-  - list_events / get_stats / get_status / get_snapshot / reset: observability
-    and state management.
-
-The module is written from scratch for SparkLabs. It depends only on the
-Python standard library and follows the engine-wide singleton + reentrant-lock
-conventions used across the SparkLabs engine modules.
-"""
+SparkLabs Engine - Player-to-Player Trading & Auction House System"""
 
 from __future__ import annotations
 

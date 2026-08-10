@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Game State Analyzer
-
-A comprehensive real-time game state analysis system that provides deep
-understanding of game scenes, entity relationships, gameplay flow metrics,
-and systemic interaction analysis for runtime optimization and debugging.
-
-Architecture:
-  GameStateAnalyzer (singleton)
-    |-- SceneAnalysis (complete breakdown of a game scene)
-    |-- EntityRelationship (typed relationship between game entities)
-    |-- GameplayFlowMetrics (quantitative metrics of gameplay quality)
-    |-- SystemicInteraction (cross-system interaction analysis)
-    |-- AnalysisDomain (categories of game state analysis)
-    |-- SceneState (time-stamped snapshot of scene composition)
-
-Core Capabilities:
-  - analyze_scene: Full breakdown of scene entity composition and relationships
-  - compute_flow_metrics: Quantitative gameplay flow and pacing analysis
-  - detect_bottlenecks: Identify performance and gameplay bottlenecks
-  - analyze_systemic_interactions: Map cross-system entity interactions
-  - compare_scenes: Side-by-side scene comparison for iteration
-  - track_state_changes: Monitor and categorize scene mutations over time
-  - generate_optimization_hints: Suggest targeted scene optimizations
-  - validate_scene_integrity: Check scene against quality and performance rules
-"""
+SparkLabs Engine - Game State Analyzer"""
 
 from __future__ import annotations
 

@@ -1,52 +1,5 @@
 """
-SparkLabs Engine - Tutorial & Guidance System
-
-Designs, sequences and runtime-tracks guided learning experiences for
-players. A ``TutorialCampaign`` is a collection of ``Lesson`` objects,
-each of which is an ordered list of ``GuidanceStep`` entries. Steps are
-atomic guidance actions: highlighting a UI element, displaying a
-tooltip, playing a voice-over line, waiting for the player to perform a
-specific input, gating progress until a condition is met, or branching
-to a different lesson based on player behavior.
-
-The engine also maintains per-player ``TutorialProgress`` records that
-track which campaigns and lessons have been started, completed or
-skipped, along with an adaptive ``HintQueue`` that surfaces contextual
-hints when the player appears stuck. Every state transition is recorded
-as a ``GuidanceEvent`` for analytics and replay debugging.
-
-Architecture:
-  TutorialGuidanceEngine (singleton)
-    |-- TutorialCampaign, Lesson, GuidanceStep, BranchRule
-    |-- TutorialProgress, LessonProgress, HintEntry, GuidanceContext
-    |-- GuidanceStats, GuidanceSnapshot, GuidanceEvent
-    |-- StepType, StepStatus, CampaignStatus, HintPriority,
-        TriggerKind, AudienceTag
-
-Core Capabilities:
-  - create_campaign / update_campaign / delete_campaign: lifecycle
-    management for tutorial campaigns with audience targeting.
-  - add_lesson / remove_lesson / reorder_lessons: lesson composition
-    within a campaign.
-  - add_step / remove_step / update_step: atomic guidance step
-    composition within a lesson, including branch rules.
-  - start_campaign / start_lesson / advance_step / complete_step /
-    skip_step / skip_campaign: runtime progression tracking.
-  - evaluate_branch: dynamic branching based on player context.
-  - enqueue_hint / dequeue_hint / dismiss_hint: contextual hint queue
-    with priority ordering and time-to-live.
-  - get_progress / get_campaign_progress / get_lesson_progress:
-    per-player progress inspection.
-  - list_events / get_stats / get_status / get_snapshot:
-    observability and serialization.
-  - reset: clear all stores and re-seed with default data.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`TutorialGuidanceEngine.get_instance` or the module-level
-:func:`get_tutorial_guidance` factory. All public methods are guarded by
-the re-entrant lock.
-"""
+SparkLabs Engine - Tutorial & Guidance System"""
 
 from __future__ import annotations
 

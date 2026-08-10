@@ -1,10 +1,5 @@
 """
-SparkLabs Engine - Trading & Market System
-
-Provides auction house listings, player shops, trade offers, buy/sell orders,
-price history tracking, and market analytics. Designed as a self-contained
-singleton system with seed data for immediate integration testing.
-"""
+SparkLabs Engine - Trading & Market System"""
 
 from __future__ import annotations
 

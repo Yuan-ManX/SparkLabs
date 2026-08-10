@@ -1,15 +1,5 @@
 """
-SparkLabs Engine - Trigger Volume System
-
-Manages spatial trigger regions that fire events when entities enter,
-exit, or remain inside them. Supports box, sphere, cylinder, and
-capsule shapes with one-shot, repeat, and conditional trigger modes.
-
-Designed for level transitions, cutscene triggers, pressure plates,
-area-based encounters, damage zones, checkpoint activations, and
-interactive object proximity detection. Integrates with the scene
-query system, event bus, and entity component system.
-"""
+SparkLabs Engine - Trigger Volume System"""
 
 from __future__ import annotations
 

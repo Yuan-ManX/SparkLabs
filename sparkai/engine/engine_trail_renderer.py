@@ -1,11 +1,6 @@
 """
 TrailRenderer - Singleton system for rendering ribbon/particle trails behind
-moving objects, projectile paths, sword swings, and motion effects.
-
-Manages trail configurations, active trail instances, point lifecycle (birth,
-fade, culling), and produces visible segment data for the rendering pipeline.
-Supports multiple trail modes, fade curves, materials, and attachment points.
-"""
+moving objects, projectile paths, sword swings, and motion effects."""
 
 import math
 import threading

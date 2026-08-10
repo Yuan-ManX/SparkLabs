@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Tournament & Esports Management System
-
-Manages competitive gaming tournaments across multiple formats including
-single elimination, double elimination, round robin, swiss, group stage,
-and battle royale. Handles participant registration, check-in, seeding,
-bracket generation, match lifecycle (create, start, complete, forfeit,
-advance), prize pools with distribution, live standings, and a full audit
-event log. Designed as a self-contained singleton system with seed data
-for immediate integration testing.
-
-Architecture:
-  TournamentEsportsSystem (singleton)
-    |-- TournamentFormat, TournamentStatus, MatchStatus, BracketType,
-       SeedMethod, PrizeType, PlayerStatus
-    |-- TournamentParticipant, TournamentMatch, PrizeEntry, TournamentBracket,
-       Tournament, TournamentConfig, TournamentStats, TournamentSnapshot,
-       TournamentEvent
-    |-- get_tournament_esports_system
-
-Core Capabilities:
-  - register_tournament / get_tournament / list_tournaments / remove_tournament
-  - register_participant / get_participant / list_participants /
-    remove_participant / check_in_participant
-  - generate_bracket / get_bracket / list_brackets
-  - create_match / get_match / list_matches / start_match / complete_match /
-    forfeit_match / advance_winner
-  - register_prize / get_prize / list_prizes / distribute_prizes
-  - get_standings / calculate_rounds_needed / seed_participants
-  - list_events / get_status / get_stats / get_snapshot / get_config /
-    set_config / tick / reset
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`TournamentEsportsSystem.get_instance` or the module-level
-:func:`get_tournament_esports_system` factory.
-"""
+SparkLabs Engine - Tournament & Esports Management System"""
 
 from __future__ import annotations
 

@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - UI Rendering Pipeline
-
-Comprehensive UI rendering pipeline for the SparkLabs AI-native game engine.
-Handles UI layout composition, draw call batching for UI elements, IMGUI
-integration, widget rendering, and UI-specific post-processing effects.
-
-Architecture:
-  UIRenderingPipeline (Singleton)
-    |-- UIRenderConfig     — configuration for the UI render pipeline
-    |-- Widget             — widget definitions registered with factories
-    |-- LayoutNode          — computed layout tree node with rect & children
-    |-- DrawCall            — single UI draw call (texture, verts, blend)
-    |-- UIBatch             — merged group of UI draw calls sharing state
-    |-- UIRenderStats       — per-frame UI rendering statistics
-    |-- UIRenderSnapshot    — complete UI render system snapshot
-
-Render Pass Order:
-  1. BACKGROUND     — full-screen background panels and gradients
-  2. WIDGETS        — primary widget geometry (buttons, panels, sliders)
-  3. OVERLAY        — overlays and HUD elements above widgets
-  4. TOOLTIP        — floating tooltip widgets
-  5. MODAL          — modal dialogs and blocking overlays
-  6. NOTIFICATION   — toast notifications and transient messages
-  7. DEBUG          — debug overlays and IMGUI windows
-
-Layout Strategies:
-  FLEXBOX, GRID, ABSOLUTE, ANCHOR, FLOW, STACK
-"""
+SparkLabs Engine - UI Rendering Pipeline"""
 
 from __future__ import annotations
 

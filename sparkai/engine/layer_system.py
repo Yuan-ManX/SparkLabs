@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Layer System
-
-Structured rendering layer management for depth ordering,
-parallax scrolling, visibility groups, and composite blend
-modes. Provides the z-ordering infrastructure for complex
-AI-generated 2D scenes with multiple overlapping visual planes.
-
-Architecture:
-  LayerSystem
-    |-- RenderLayer (name, z-order, blend mode, parallax factor)
-    |-- LayerGroup (collection of layers with shared properties)
-    |-- LayerStack (ordered list of layers for composition)
-
-Layer Blend Modes:
-  - NORMAL: standard alpha blending
-  - ADDITIVE: light/screen blending for glow effects
-  - MULTIPLY: darken blending for shadows
-  - MASK: layer acts as a stencil mask
-
-Parallax Modes:
-  - FIXED: stays at screen position (HUD)
-  - SCROLL: moves with camera at parallax_factor (background)
-  - RATIO: moves proportionally (midground)
-
-Usage:
-    ls = LayerSystem()
-    ls.add_layer("bg_far", z=0, parallax=0.1, blend="normal")
-    ls.add_layer("bg_near", z=1, parallax=0.4, blend="normal")
-    ls.add_layer("gameplay", z=10, parallax=1.0, blend="normal")
-    ls.add_layer("foreground", z=50, parallax=1.5, blend="additive")
-    ls.add_layer("hud", z=100, parallax=0.0, blend="normal")
-    ls.hide_layer("hud")
-    render_list = ls.get_sorted_layers()
-"""
+SparkLabs Engine - Layer System"""
 from __future__ import annotations
 
 import uuid

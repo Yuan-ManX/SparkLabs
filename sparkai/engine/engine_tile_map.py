@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Tile Map System
-
-Comprehensive tile map system for creating grid-based 2D game worlds.
-Provides layered tile maps with AI-driven auto-tiling, procedural generation,
-and runtime editing capabilities. Integrates with the agent layer for
-intelligent level design and procedural content generation.
-
-Architecture:
-  TileMapEngine (Singleton)
-    |-- TileMap (complete tile-based world with layers)
-    |-- TileLayer (individual layer with tiles and properties)
-    |-- TileSet (collection of tile definitions with rules)
-    |-- TileBrush (painting tool for tile placement)
-    |-- TileRule (auto-tiling and adjacency rules)
-    |-- TileGenerator (procedural tile map generation)
-
-Tile Features:
-  - Multi-layer tile maps with independent rendering
-  - Auto-tiling with adjacency rules and bitmask patterns
-  - Tile animation with frame-based animation support
-  - Collision shapes per tile for physics integration
-  - Tile properties for custom data and game logic
-  - Procedural generation with noise and rule-based algorithms
-
-Usage:
-    tm = get_tile_map_engine()
-    tm.initialize()
-
-    # Create a tile map
-    tilemap = tm.create_map("level_1", 100, 50, tile_size=32)
-
-    # Add a layer
-    tm.add_layer("level_1", "ground", layer_type=TileLayerType.TILE)
-
-    # Paint tiles
-    tm.paint_tiles("level_1", "ground", [(10, 5, "grass"), (11, 5, "grass")])
-
-    # Generate procedural map
-    tm.generate_map("level_1", algorithm="perlin", config={"seed": 42})
-"""
+SparkLabs Engine - Tile Map System"""
 
 from __future__ import annotations
 

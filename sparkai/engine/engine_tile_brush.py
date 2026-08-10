@@ -1,10 +1,6 @@
 """
 TileBrush - Singleton system for intelligent tile painting with auto-bordering,
-terrain blending, and tile rule matching.
-
-Computes edge tiles based on neighbor analysis for seamless tilemap
-transitions in the SparkLabs game engine.
-"""
+terrain blending, and tile rule matching."""
 
 import threading
 import time

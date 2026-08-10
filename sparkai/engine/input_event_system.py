@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - Input Event System
-
-Event-based input pipeline that captures raw hardware input events
-and dispatches them through priority-ordered listeners. Built on
-action-resolution rather than polling — ideal for AI agents that
-emit structured game input commands.
-
-Architecture:
-  InputEventSystem
-    |-- DeviceHub (keyboard, mouse, touch, gamepad abstraction)
-    |-- EventQueue (priority-ordered input event buffer)
-    |-- ActionMapper (binds input events → named game actions)
-    |-- GestureDetector (tap, swipe, pinch, long-press, drag)
-    |-- DispatchLayer (ordered listener chain with propagation)
-
-Input Event Priority:
-  UI (100) — overlay consumes before gameplay
-  GAME (50)  — standard gameplay processing
-  DEBUG (10) — dev tools, always receives
-
-Gesture Types:
-  - TAP: quick press + release within radius
-  - DOUBLE_TAP: two taps in sequence
-  - LONG_PRESS: press held beyond threshold
-  - SWIPE: directional drag with minimum velocity
-  - PINCH: two-finger scale gesture
-  - DRAG: continuous press + move
-
-Usage:
-    hub = InputEventSystem()
-    hub.register("player_jump", key="Space", dead_zone=0)
-    hub.register("player_move", axis="Horizontal", dead_zone=0.2)
-    def jump_listener(action, value, raw):
-        engine.trigger_action(action, value)
-    hub.subscribe("player_jump", jump_listener, priority=50)
-    hub.dispatch_events(0.016)
-"""
+SparkLabs Engine - Input Event System"""
 
 from __future__ import annotations
 

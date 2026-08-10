@@ -1,20 +1,5 @@
 """
-Inventory System - Item management with categories, stacking, and equipping.
-
-Architecture:
-    InventorySystem/
-    |-- ItemCategory (item classification enumeration)
-    |-- ItemRarity (rarity tier classification)
-    |-- EquipmentSlot (equippable slot positions)
-    |-- Item (item definition dataclass)
-    |-- InventorySlot (slot with item and quantity)
-    |-- Inventory (per-entity inventory container)
-    |-- InventorySystem (global inventory orchestration)
-    |-- TransferResult (cross-inventory transfer outcome)
-
-Manages game items with full lifecycle: creation, stacking, categorization,
-equipping/unequipping, sorting, filtering, and cross-inventory transfers.
-"""
+Inventory System - Item management with categories, stacking, and equipping."""
 
 from __future__ import annotations
 

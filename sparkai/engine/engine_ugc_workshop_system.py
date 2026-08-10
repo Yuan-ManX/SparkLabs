@@ -1,41 +1,5 @@
 """
-SparkLabs Engine - UGC Workshop System
-
-A comprehensive user-generated content workshop that empowers players to create,
-upload, review, rate, subscribe to, and share game content. The system provides
-a complete content lifecycle pipeline from draft creation through moderation,
-publication, discovery, and monetization.
-
-Architecture:
-  UGCWorkshopSystem (Singleton)
-    |-- UGCItem — content entries with type, status, monetization, and stats
-    |-- ItemReview — moderation reviews with verdicts and reviewer notes
-    |-- ItemRating — player ratings with helpfulness voting
-    |-- ItemSubscription — player subscriptions with auto-update tracking
-    |-- ItemCollection — curated collections of items
-    |-- ItemReport — player-submitted reports for moderation
-    |-- MonetizationSplit — revenue distribution between authors and platform
-
-Core Capabilities:
-  - register_item / get_item / list_items / update_item / remove_item: full
-    item lifecycle management with type, status, and author filtering.
-  - submit_for_review / start_review / complete_review / approve_item /
-    reject_item / request_revision: moderation pipeline with verdict tracking.
-  - rate_item / get_rating / list_ratings / remove_rating: player rating system
-    with helpfulness counting.
-  - subscribe / unsubscribe / get_subscription / list_subscriptions:
-    subscription management with auto-update preferences.
-  - create_collection / get_collection / list_collections / add_to_collection /
-    remove_from_collection / remove_collection: curated item collections.
-  - report_item / resolve_report / list_reports / get_report: player reporting
-    and moderation resolution.
-  - set_monetization / get_monetization / process_revenue: monetization splits
-    and revenue processing.
-  - feature_item / unfeature_item / get_featured / discover_items: discovery
-    and featuring with multiple sort modes.
-  - get_status / get_stats / get_snapshot / get_config / set_config / tick /
-    reset / list_events: observability, tuning, and lifecycle control.
-"""
+SparkLabs Engine - UGC Workshop System"""
 
 from __future__ import annotations
 

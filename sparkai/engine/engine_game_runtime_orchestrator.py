@@ -1,31 +1,5 @@
 """
-SparkAI Engine - Game Runtime Orchestrator
-
-The central orchestrator that unifies all engine subsystems into a
-coherent game runtime. It manages scene lifecycle, entity coordination,
-system state transitions, and provides a unified interface for AI agents
-to interact with the running game simulation.
-
-Key capabilities:
-  - Unified system lifecycle management (init, start, update, stop, destroy)
-  - Scene graph management with hierarchical transforms
-  - Entity lifecycle coordination across all subsystems
-  - Frame budget allocation with priority-based time slicing
-  - System dependency resolution with topological execution ordering
-  - State serialization and hot-reload support
-  - AI agent bridge for runtime interaction queries
-  - Performance budgeting with automatic throttling
-
-Architecture:
-  GameRuntimeOrchestrator (Singleton)
-    |-- ManagedSystem descriptor (dataclass)
-    |-- SceneDescriptor (dataclass)
-    |-- FrameBudget (dataclass)
-    |-- register_managed_system()
-    |-- orchestrate_frame()
-    |-- transition_scene()
-    |-- query_runtime_state()
-"""
+SparkAI Engine - Game Runtime Orchestrator"""
 
 from __future__ import annotations
 

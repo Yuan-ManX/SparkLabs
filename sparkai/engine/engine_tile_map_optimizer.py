@@ -1,19 +1,5 @@
 """
-SparkLabs Engine - Tile Map Optimizer
-
-Large tile map rendering optimizer providing spatial chunk partitioning,
-viewport-aware culling, auto-tiling rule application, texture atlas
-generation, and level-of-detail management. Designed for maps with
-hundreds of thousands of tiles rendered efficiently.
-
-Architecture:
-  TileMapOptimizer
-    |-- TileMap (grid-based tile layout with orientation and layer stack)
-    |-- TileLayer (depth-sorted tile planes with opacity and blending)
-    |-- OptimizationChunk (coherent tile subregions for batch rendering)
-    |-- AutoTileBrush (pattern-matching rules for contextual tile placement)
-    |-- DrawCall (batched geometry submission with material and bounds)
-"""
+SparkLabs Engine - Tile Map Optimizer"""
 from __future__ import annotations
 
 import math

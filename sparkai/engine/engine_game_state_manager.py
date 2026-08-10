@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Game State Manager
-
-Unified game state management for the SparkLabs AI-native game engine.
-Provides a single source of truth for save data, scene stacks, runtime
-state snapshots, checkpoint systems, and state diffing for network
-synchronization.
-
-Architecture:
-  GameStateManager (Singleton, double-checked locking)
-    |-- StateConfig          -- configuration for state management
-    |-- GameState            -- complete game state snapshot
-    |-- SceneStackEntry      -- entry in the scene navigation stack
-    |-- Checkpoint           -- named checkpoint with embedded state
-    |-- StateDiff            -- field-level difference between two states
-    |-- StateManagerSnapshot -- complete state manager snapshot
-
-Subsystems:
-  1. Save Slots    -- persistent storage of GameState per SaveSlot
-  2. Checkpoints   -- named rollback points with metadata
-  3. Scene Stack   -- hierarchical scene navigation (push/pop/replace/swap)
-  4. State Diffing -- added/removed/modified field diff for net sync
-"""
+SparkLabs Engine - Game State Manager"""
 
 from __future__ import annotations
 
