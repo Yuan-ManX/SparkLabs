@@ -1,12 +1,5 @@
 """
-SparkLabs Backend - Playtest Simulator Routes
-
-REST API endpoints for the AgentPlaytestSimulator that runs virtual
-playtests on generated games with multiple player archetypes.
-
-Routes use the /playtest-sim/ prefix to avoid conflicts with the legacy
-playtest engine routes in agent.py that use /playtest/.
-"""
+SparkLabs Backend - Playtest Simulator Routes"""
 
 from __future__ import annotations
 
