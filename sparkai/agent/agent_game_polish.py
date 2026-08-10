@@ -1,25 +1,5 @@
 """
-SparkLabs Agent - Game Polish
-
-The final stage of the AI-native pipeline. Takes the fused game HTML and
-applies production-ready polish across five dimensions:
-
-  1. Minification  - strip comments, collapse whitespace in inline JS/CSS
-  2. Accessibility  - audit and auto-inject ARIA labels, keyboard nav, focus
-  3. SEO Metadata   - inject title, description, Open Graph, Twitter Card
-  4. Performance    - inject rAF guards, error boundaries, memory cleanup
-  5. Compatibility  - inject cross-browser polyfills and vendor prefixes
-
-Each dimension produces a list of applied patches and a pass/fail status.
-The final readiness report summarizes the overall production readiness.
-
-Usage:
-    polish = GamePolish.get_instance()
-    polish.initialize()
-    result = polish.polish(html, title="My Game", description="A fun game")
-    # result.html contains the polished, production-ready game
-    # result.report contains the readiness checklist
-"""
+SparkLabs Agent - Game Polish"""
 
 from __future__ import annotations
 

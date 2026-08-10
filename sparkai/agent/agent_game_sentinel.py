@@ -1,30 +1,5 @@
 """
-SparkLabs Agent - Game Sentinel
-
-The 12th stage of the AI-native pipeline. Acts as a runtime guardian that
-validates game integrity, monitors health metrics, and auto-repairs common
-defects before the game reaches the player.
-
-Capabilities:
-  1. Integrity Scan         - validate JS syntax, brace balance, script tag pairing
-  2. Defect Repair           - auto-fix double-brace artifacts, unclosed tags, etc.
-  3. Health Score            - composite score from integrity, complexity, size, structure
-  4. Runtime Telemetry       - inject a lightweight health monitor into the game HTML
-  5. Diagnostic Report       - full issue list with severity, location, and fix status
-  6. Playability Verification - semantic checks for canvas, game loop, input, levels, player
-  7. Improvement Suggestions  - actionable guidance for making the game better
-
-The sentinel bridges the AI agent layer and the engine runtime layer — it
-understands both the generated JavaScript and the Python-side game document
-structure, fusing validation intelligence with automatic correction.
-
-Usage:
-    sentinel = GameSentinel.get_instance()
-    sentinel.initialize()
-    result = sentinel.guard(html)
-    # result.html contains the repaired, telemetry-instrumented game
-    # result.report contains the diagnostic report with health score
-"""
+SparkLabs Agent - Game Sentinel"""
 
 from __future__ import annotations
 

@@ -1,50 +1,5 @@
 """
-SparkLabs Agent - Memory Stream and Reflection System
-
-This module implements a generative memory stream
-for AI agents operating inside the SparkLabs AI-native game engine. The design
-follows the influential Park et al. memory stream model, adapted for game
-agents that must remember observations, reflect on experience, and retrieve
-relevant memories to inform in-the-moment behaviour.
-
-Core concepts:
-
-  1. Observations with Importance Scoring
-       Every recorded memory carries an importance score (1-10) and a derived
-       importance level (TRIVIAL .. CRUCIAL). Higher-importance memories are
-       more likely to be retrieved and less likely to be forgotten.
-
-  2. Recency Decay
-       Each memory's retrieval score is weighted by an exponential recency
-       term, ``exp(-hours_since_creation / _RECENCY_DECAY_HOURS)``, so that
-       fresh experiences dominate retrieval unless outweighed by importance
-       or relevance.
-
-  3. Relevance-based Retrieval
-       Query-to-memory relevance is estimated with a Jaccard token-overlap
-       similarity in [0, 1]. Combined with importance and recency, this yields
-       a ranked retrieval result set.
-
-  4. Reflection Synthesis
-       Periodically a set of source memories is synthesised into a higher-level
-       reflective insight (a \"reflection\") with a confidence score. Reflections
-       are themselves retrievable and provide compressed, generalised knowledge
-       that grows the agent's understanding over time.
-
-Architecture:
-  MemoryStreamEngine (Singleton, double-checked locking with threading.RLock)
-    |-- MemoryObservation       -- a single recorded memory entry
-    |-- ReflectionInsight       -- a synthesised reflective insight
-    |-- RetrievalResult         -- a scored retrieval hit
-    |-- AgentMemoryProfile      -- per-agent memory statistics
-    |-- MemoryStreamStats       -- aggregate engine statistics
-    |-- MemoryStreamSnapshot    -- complete engine state snapshot
-    |-- MemoryStreamEvent       -- observable engine lifecycle event
-
-All public mutating methods are protected by a re-entrant lock so the engine
-is safe to call from multiple agent threads. Bounded in-memory stores use FIFO
-eviction when their capacity constants are exceeded.
-"""
+SparkLabs Agent - Memory Stream and Reflection System"""
 
 from __future__ import annotations
 

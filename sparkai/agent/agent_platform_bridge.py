@@ -1,27 +1,5 @@
 """
-SparkLabs Agent - Platform Bridge
-
-Multi-platform communication adapter for the AI agent.
-Provides a unified interface for the agent to communicate
-across different channels: Web UI, CLI terminal, REST API,
-WebSocket, and messaging platforms. Ensures the agent's
-responses are properly routed and formatted for each platform.
-
-Architecture:
-  PlatformBridge
-    |-- PlatformAdapter (per-platform: web, cli, api, ws)
-    |-- MessageRouter (direct messages to correct platform)
-    |-- FormatTransformer (platform-specific message formatting)
-    |-- StreamManager (SSE, WebSocket streaming per platform)
-    |-- PlatformAuth (per-platform credential resolution)
-
-Platforms:
-  - WEB: browser-based editor interface
-  - CLI: terminal-based interactive session
-  - API: REST API for programmatic access
-  - WS: WebSocket for real-time bidirectional communication
-  - HOOK: webhook-based integration pipeline
-"""
+SparkLabs Agent - Platform Bridge"""
 
 from __future__ import annotations
 

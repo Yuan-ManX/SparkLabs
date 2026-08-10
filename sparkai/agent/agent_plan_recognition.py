@@ -1,31 +1,5 @@
 """
-SparkLabs Agent - Plan Recognition
-
-Infers the goals and plans of other agents or players based on observed
-actions. Maintains a library of known goals with associated action
-sequences, and matches observed action streams against these patterns to
-generate ranked goal hypotheses.
-
-As more actions are observed, confidence in hypotheses is updated: actions
-that align with a hypothesis increase its confidence, while actions that
-contradict it decrease confidence. The system can also detect anomalies
-where observed actions do not fit any known goal pattern.
-
-The module is the inverse of planning: rather than choosing actions to
-achieve a goal, it determines the goal from the actions. This enables
-responsive AI that anticipates player intentions, opponents that adapt
-to observed strategies, and cooperative agents that support teammates.
-
-Architecture:
-  PlanRecognitionEngine (Singleton)
-    |-- GoalPattern (known goal with action sequence)
-    |-- ActionStep (single step within a goal pattern)
-    |-- ObservedAction (recorded action from an entity)
-    |-- GoalHypothesis (ranked guess about an entity's goal)
-    |-- ObservationStream (per-entity observation history)
-    |-- RecognitionEvent (audit trail of recognition operations)
-    |-- PlanRecognitionSnapshot (engine status summary)
-"""
+SparkLabs Agent - Plan Recognition"""
 
 from __future__ import annotations
 

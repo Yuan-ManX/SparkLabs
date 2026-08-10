@@ -1,22 +1,5 @@
 """
-SparkAI Agent - Tool Executor
-
-Execution engine for agent tools with validation, chaining,
-caching, and result processing. The executor bridges the gap
-between tool definitions and actual game engine operations.
-
-Execution pipeline:
-  1. Validate tool parameters against schema
-  2. Check pre-conditions (hooks, rules)
-  3. Execute the tool handler
-  4. Process and validate the result
-  5. Cache the result for future use
-  6. Emit execution events
-  7. Record execution history
-
-Tool chains enable sequential execution of multiple tools
-where each tool's output feeds into the next tool's input.
-"""
+SparkAI Agent - Tool Executor"""
 
 from __future__ import annotations
 

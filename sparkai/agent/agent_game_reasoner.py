@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Game Design Reasoner
-
-Reasoning engine for game balance, difficulty curves, progression systems,
-and mechanics. Analyzes game design decisions and suggests optimizations
-using mathematical modeling, curve fitting, and simulation techniques.
-
-Architecture:
-  GameDesignReasoner
-    |-- DesignAnalyzer (comprehensive design evaluation)
-    |-- BalanceOptimizer (parameter tuning and fairness analysis)
-    |-- CurveModeler (progression and difficulty curve fitting)
-    |-- EconomySimulator (in-game economy flow simulation)
-    |-- DesignComparator (A/B comparison of alternate designs)
-
-Analysis Domains:
-  - BALANCE: fairness, power distribution, counterplay viability
-  - DIFFICULTY: challenge scaling, skill floor/ceiling, player frustration points
-  - PROGRESSION: level-up pacing, unlock distribution, reward timing
-  - ECONOMY: currency flow, sink/faucet ratios, inflation modeling
-  - PACING: tension/reward rhythm, content density, session length
-  - ACCESSIBILITY: difficulty options, input customization, barrier reduction
-  - REPLAYABILITY: procedural variation, emergent mechanics, mastery depth
-  - ENGAGEMENT: flow state modeling, attention curve, retention hooks
-"""
+SparkLabs Agent - Game Design Reasoner"""
 
 from __future__ import annotations
 

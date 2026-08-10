@@ -1,18 +1,5 @@
 """
-Output Limiter - Constrains and sanitizes agent outputs for UI-safe rendering.
-
-Architecture:
-    OutputLimiter/
-    |-- LimitPolicy (truncation strategy enumeration)
-    |-- LimitRule (per-type constraints dataclass)
-    |-- LimitedOutput (processed result dataclass)
-    |-- OutputLimiter (global output control)
-
-Controls the size, format, and safety of agent-produced content before
-it reaches the game editor UI. Prevents UI freezing from oversized tool
-results, truncates long text with context preservation, and ensures
-binary/image content is filtered for editor-safe display.
-"""
+Output Limiter - Constrains and sanitizes agent outputs for UI-safe rendering."""
 
 from __future__ import annotations
 

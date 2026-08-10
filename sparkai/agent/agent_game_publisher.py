@@ -1,28 +1,5 @@
 """
-SparkLabs Agent - Game Publisher
-
-The ship-it stage of the AI-native pipeline. Takes the polished game
-HTML and produces a deployment-ready package:
-
-  1. Manifest       - semantic version, content checksum, size, deps
-  2. Embed Snippets - iframe, direct link, popup widget
-  3. Share Cards    - OpenGraph, Twitter Card, SparkLabs card
-  4. Channels       - web, mobile, embed, social distribution targets
-  5. Live Ops Hooks - remote config injection points for post-launch tuning
-
-The publisher fuses Agent intelligence with editor distribution
-capabilities, turning a polished prototype into a trackable, embeddable,
-remotely-tunable production artifact.
-
-Usage:
-    publisher = GamePublisher.get_instance()
-    publisher.initialize()
-    result = publisher.publish(html, title="My Game", version="1.0.0")
-    # result.manifest      - deployment manifest with checksum
-    # result.embed_snippets - ready-to-paste embed codes
-    # result.share_card     - social share metadata
-    # result.live_ops_hooks - remote config injection points
-"""
+SparkLabs Agent - Game Publisher"""
 
 from __future__ import annotations
 

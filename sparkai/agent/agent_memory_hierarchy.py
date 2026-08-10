@@ -1,19 +1,5 @@
 """
-SparkLabs Agent - Memory Hierarchy
-
-A singleton three-tier memory system for the SparkLabs AI game engine.
-Manages short-term working memory, timestamped episodic records,
-and long-term semantic knowledge with vector embeddings.
-
-Architecture:
-  MemoryHierarchy (singleton)
-    |-- Working Memory  (short-term, limited capacity, current task context)
-    |-- Episodic Memory (timestamped event records, past interactions)
-    |-- Semantic Memory (long-term knowledge, vector embeddings)
-    |-- MemoryEntry     (individual stored memory unit)
-    |-- MemoryQuery     (retrieval request descriptor)
-    |-- MemoryContext   (assembled retrieval result)
-"""
+SparkLabs Agent - Memory Hierarchy"""
 
 from __future__ import annotations
 

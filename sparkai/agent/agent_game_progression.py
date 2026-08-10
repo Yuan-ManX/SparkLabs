@@ -1,21 +1,5 @@
 """
-SparkLabs Agent - Game Progression Engine
-
-Manages difficulty curves, reward pacing, and player journey design
-for AI-native game creation. Provides tools to model progression arcs,
-balance reward distribution, and validate pacing across game phases.
-
-Architecture:
-  GameProgressionEngine
-    |-- ProgressionNode (individual progression checkpoint)
-    |-- ProgressionCurve (complete progression arc definition)
-    |-- DifficultyCurveMapper (curve type-to-parameter mapping)
-    |-- PacingValidator (tension/reward rhythm analysis)
-    |-- RewardBalancer (reward type distribution optimization)
-
-Progression Phases:
-  TUTORIAL -> EARLY -> MID -> LATE -> ENDGAME -> POSTGAME
-"""
+SparkLabs Agent - Game Progression Engine"""
 
 from __future__ import annotations
 
