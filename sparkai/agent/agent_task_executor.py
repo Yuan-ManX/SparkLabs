@@ -1,10 +1,5 @@
 """
-SparkLabs Unified Task Execution Engine
-
-Single execution backend for all coordination systems (Studio, Swarm, Orchestrator).
-Connects task assignment to actual agent execution with context passing,
-result capture, and skill integration.
-"""
+SparkLabs Unified Task Execution Engine"""
 
 from __future__ import annotations
 

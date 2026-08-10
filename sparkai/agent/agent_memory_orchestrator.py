@@ -1,18 +1,5 @@
 """
-SparkLabs Agent - Memory Orchestrator
-
-Orchestrates persistent memory, skill creation, and experiential learning
-across sessions. Maintains agent-curated memory stores with automatic
-knowledge retrieval, skill improvement loops, and cross-session recall.
-
-Architecture:
-  AgentMemoryOrchestrator (Singleton)
-    |-- Memory Store (short-term, long-term, episodic)
-    |-- Skill Registry (creation, improvement, versioning)
-    |-- Experience Learner (pattern extraction, knowledge consolidation)
-    |-- Recall Engine (semantic search, contextual retrieval)
-    |-- Nudge Scheduler (periodic memory reinforcement)
-"""
+SparkLabs Agent - Memory Orchestrator"""
 
 from __future__ import annotations
 

@@ -1,21 +1,5 @@
 """
-SparkAI Agent - Event Bus
-
-Centralized pub/sub communication system for the SparkLabs engine.
-All modules communicate through the event bus, enabling loose coupling
-and reactive architecture.
-
-Event flow:
-  Publisher -> EventBus -> Subscribers (priority-ordered)
-
-Built-in event channels cover the full game engine lifecycle:
-  - Engine lifecycle (start, stop, tick)
-  - Entity operations (create, update, destroy)
-  - Component mutations (add, remove, change)
-  - Agent actions (think, act, verify)
-  - Pipeline progression (stage_start, stage_complete)
-  - Asset lifecycle (generate, import, export)
-"""
+SparkAI Agent - Event Bus"""
 
 from __future__ import annotations
 

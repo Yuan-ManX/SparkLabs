@@ -1,26 +1,5 @@
 """
-SparkLabs Agent - Task Queue
-
-Prioritized task scheduling and execution queue for AI-native
-game development operations. Manages task lifecycle from submission
-through execution, with dependency resolution, retry logic, and
-concurrency control for multi-agent coordination.
-
-Architecture:
-  AgentTaskQueue
-    |-- TaskScheduler (priority-based ordering with deadlines)
-    |-- TaskWorker (concurrent executor with resource limits)
-    |-- TaskDependencyGraph (DAG constraint resolution)
-    |-- TaskMonitor (progress tracking and heartbeat checks)
-    |-- TaskResultCache (idempotent result storage)
-
-Task Categories:
-  - GAME_GENERATION: full game creation workflows
-  - CODE_SYNTHESIS: script and logic generation
-  - ASSET_PROCESSING: sprite, audio, tilemap operations
-  - VALIDATION: quality gate and correctness checks
-  - MAINTENANCE: cleanup, optimization, refactoring
-"""
+SparkLabs Agent - Task Queue"""
 
 from __future__ import annotations
 

@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Asset Manager
-
-A comprehensive asset management pipeline for the SparkLabs game engine.
-Manages the full lifecycle of game assets including registration, loading,
-caching, dependency tracking, bundling, streaming, texture atlas management,
-and validation. Designed as a thread-safe singleton with LRU caching,
-reference counting, and priority-based async loading.
-
-Architecture:
-  EngineAssetManager (Singleton)
-    |-- AssetDescriptor — per-asset metadata and lifecycle state
-    |-- AssetBundle — grouped collection of related assets
-    |-- TextureAtlas — atlas texture with region UV mapping
-    |-- AtlasRegion — rectangular sub-region within an atlas
-    |-- LoadRequest — async loading request with priority and progress
-    |-- AssetCacheEntry — cache entry with LRU eviction data
-    |-- LoadProgress — aggregate loading progress across all requests
-
-Usage:
-    am = get_engine_asset_manager()
-    desc = am.register_asset("player_sprite", AssetType.SPRITE, "assets/player.png")
-    am.load_asset(desc.asset_id, LoadPriority.HIGH)
-    bundle = am.create_bundle("level_1", [desc.asset_id])
-    am.load_bundle(bundle.bundle_id)
-"""
+SparkLabs Engine - Asset Manager"""
 
 from __future__ import annotations
 

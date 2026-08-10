@@ -1,18 +1,5 @@
 """
-SparkLabs Agent - Agent Team Orchestrator
-
-Comprehensive Multi-Agent Team Orchestration module for the SparkLabs
-AI-native game engine. Manages teams of AI agents with defined roles,
-task delegation, dependency-aware scheduling, collaborative messaging,
-voting and consensus, workflow execution, performance monitoring,
-conflict resolution, resource allocation, meeting tracking, and
-adaptive team evolution.
-
-Thread safety: a class-level _init_lock guards singleton creation with
-double-checked locking; an instance-level _lock (threading.Lock) guards
-every mutation; a _seeded flag ensures seed data is populated once.
-The module exposes get_team_orchestrator() as the canonical factory.
-"""
+SparkLabs Agent - Agent Team Orchestrator"""
 
 from __future__ import annotations
 

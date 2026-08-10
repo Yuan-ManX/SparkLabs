@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Animation Tree Runtime
-
-Animation blending state machine providing weighted transitions between
-animation clips and layered animation compositing for simultaneous
-body-part animations on skeletal and sprite-based characters.
-
-Architecture:
-  AnimationTreeRuntime
-    |-- BlendTree (directed acyclic graph of animation nodes and transitions)
-    |-- AnimationNode (nodes with input/output poses and blend parameters)
-    |-- AnimationClip (keyframe data with timing and interpolation)
-    |-- Transition (rule-based movement between animation nodes with easing)
-    |-- AnimationLayer (composited pose layers with blend masks and weights)
-"""
+SparkLabs Engine - Animation Tree Runtime"""
 from __future__ import annotations
 
 import math

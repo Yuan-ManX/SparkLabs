@@ -1,21 +1,5 @@
 """
-Build Pipeline - Multi-platform build pipeline engine for game deployment.
-
-Architecture:
-    BuildPipeline
-    |-- BuildPhase (ordered build stage enumeration)
-    |-- BuildStepStatus (step execution status enumeration)
-    |-- ArtifactFormat (target output format enumeration)
-    |-- BuildStep (individual pipeline step dataclass)
-    |-- BuildArtifact (build output artifact dataclass)
-    |-- BuildPipeline (pipeline orchestration and execution engine)
-
-Provides a complete build pipeline engine that manages multi-stage builds
-across multiple target platforms. Steps progress through ordered phases
-(PREPROCESS -> COMPILE -> LINK -> PACKAGE -> SIGN -> UPLOAD -> VERIFY),
-each tracked with status, output, and timing. Supports pipeline validation,
-script export, and cancellation.
-"""
+Build Pipeline - Multi-platform build pipeline engine for game deployment."""
 
 from __future__ import annotations
 

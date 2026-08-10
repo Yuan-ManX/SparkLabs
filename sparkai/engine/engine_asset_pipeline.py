@@ -1,39 +1,5 @@
 """
-SparkLabs Engine - AI Asset Pipeline
-
-A unified AI-driven game asset generation pipeline that produces consistent,
-stylistically coherent assets across multiple asset types (sprites, audio,
-levels, UI, particles, prefabs). All assets generated under a shared
-StyleProfile maintain visual and thematic consistency through palette
-enforcement, mood-appropriate randomization, and resolution-aware sizing.
-
-Architecture:
-  AssetPipelineEngine (Singleton)
-    |-- StyleProfile — unified style guide for asset generation
-    |-- AssetRequest — queued generation task with status tracking
-    |-- GeneratedAsset — completed asset with type-specific metadata
-    |-- AssetType — supported asset categories
-    |-- AssetStatus — lifecycle states for generation requests
-
-Usage:
-    engine = get_asset_pipeline_engine()
-    profile = engine.create_style_profile(
-        name="pixel_retro",
-        color_palette=["#2b2b2b", "#6b6b6b", "#f0d9b5", "#b58863", "#769656"],
-        theme="dungeon_crawler",
-        mood="dark_atmospheric",
-        art_style="pixel_art_16bit",
-        resolution=(320, 240),
-        pixel_scale=4,
-    )
-    request = engine.request_asset(
-        asset_type=AssetType.SPRITE,
-        name="player_idle",
-        style_profile_id=profile.profile_id,
-        parameters={"variant": "warrior", "size": (32, 32)},
-    )
-    asset = engine.generate_asset(request.request_id)
-"""
+SparkLabs Engine - AI Asset Pipeline"""
 
 from __future__ import annotations
 

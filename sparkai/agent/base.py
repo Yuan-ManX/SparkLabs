@@ -154,6 +154,19 @@ class SparkAgent:
         self._skills: Dict[str, Skill] = {}
         self._loaded_toolsets: List[str] = []
 
+        # Game context injected into prompts (populated via set_game_context)
+        self._game_context: Optional[Any] = None
+
+        # Experiential refinement log: durable lessons from failures that
+        # shape future reasoning. Kept bounded to avoid context bloat.
+        self._refinements: List[Dict[str, Any]] = []
+        self._max_refinements: int = 24
+
+        # Progressive learning: reusable skills derived from successful
+        # trajectory patterns. Backed by the shared SkillAccumulatorEngine
+        # and injected into future prompts so the agent compounds competence.
+        self._skill_accumulator = None
+
         self._load_role_toolsets()
         self._load_role_skills()
 
@@ -546,6 +559,8 @@ class SparkAgent:
         max_iterations: Optional[int] = None,
         reflection_interval: int = 3,
         max_replans: int = 2,
+        verify_each_step: bool = False,
+        self_refine: bool = False,
     ) -> Any:
         """
         Run the full autonomous loop: Plan -> Execute -> Reflect -> Verify.
@@ -553,11 +568,17 @@ class SparkAgent:
         The agent creates an execution plan, iterates through work steps,
         reflects at regular intervals, and verifies each step against criteria.
         Reflection can trigger replanning when confidence is low.
+
+        With verify_each_step=True each step is checked against its own
+        criteria and the recorded confidence reflects that check. With
+        self_refine=True failed steps capture a durable refinement lesson
+        (failure -> adjustment) that informs later reasoning.
         """
         plan = ExecutionPlan(goal=goal, max_iterations=max_iterations or self.max_iterations)
         self._current_plan = plan
         self._iteration_count = 0
         replan_count = 0
+        step_refine_count = 0
 
         self.emit("autonomous_start", {"goal": goal})
 
@@ -615,6 +636,30 @@ class SparkAgent:
                 else:
                     step_entry["confidence"] = 0.6
 
+                # Optional per-step contract verification.
+                if verify_each_step:
+                    criteria = step.get("verification_criteria") or (
+                        f"Step '{step_description}' completed with a valid result."
+                    )
+                    check = await self.verify(criteria, evidence=str(step_result)[:300])
+                    step_entry["verified"] = check.get("verified", False)
+                    step_entry["verification_notes"] = str(check.get("notes", ""))[:120]
+                    step_entry["confidence"] = min(step_entry["confidence"],
+                                                   float(check.get("confidence", 0.5)))
+
+                # Self-refinement: capture a durable lesson on failure.
+                if self_refine and step_entry["confidence"] < 0.5:
+                    step_refine_count += 1
+                    self.record_refinement(
+                        failure=f"Step {self._iteration_count}: {step_description}",
+                        adjustment=(
+                            f"Lower expected confidence for '{step_description}'; "
+                            "validate inputs, narrow scope, or re-attempt with revised plan."
+                        ),
+                        outcome=f"confidence={step_entry['confidence']:.2f}",
+                    )
+                    step_entry["refined"] = True
+
                 results.append(step_entry)
 
                 if (i + 1) % reflection_interval == 0 and i + 1 < len(plan.work_plan):
@@ -657,7 +702,15 @@ class SparkAgent:
             self._plan_history.append(plan)
             self.state = AgentState.COMPLETED
 
-            self.emit("autonomous_complete", {"goal": goal, "iterations": self._iteration_count, "replans": replan_count})
+            # Progressive learning: convert successful trajectory patterns
+            # into reusable skills that feed future reasoning.
+            if self_refine:
+                try:
+                    self.learn_from_trajectory(goal=goal)
+                except Exception as e:
+                    logger.debug("Skill learning skipped: %s", e)
+
+            self.emit("autonomous_complete", {"goal": goal, "iterations": self._iteration_count, "replans": replan_count, "step_refinements": step_refine_count})
             return results
 
         except Exception as e:
@@ -787,6 +840,8 @@ class SparkAgent:
             "skills": list(self._skills.keys()),
             "toolsets": self._loaded_toolsets,
             "tool_count": len(self._tools.list_tools()),
+            "refinements": len(self._refinements),
+            "accumulated_skills": len(self.get_accumulated_skills(limit=200)),
             "context_stats": self._context_mgr.get_statistics(),
             "trajectory_stats": self._trajectory.get_statistics(),
             "perception_enabled": self._perception_pipeline is not None,
@@ -818,6 +873,14 @@ class SparkAgent:
             parts.append(f"Your capabilities: {caps}")
         if memory_context:
             parts.append(memory_context)
+
+        refinement_ctx = self._refinement_context()
+        if refinement_ctx:
+            parts.append(refinement_ctx)
+
+        skill_ctx = self._skill_context()
+        if skill_ctx:
+            parts.append(skill_ctx)
 
         game_ctx = self._get_game_context_summary()
         if game_ctx:
@@ -899,6 +962,252 @@ class SparkAgent:
     def set_game_context(self, context: Any) -> None:
         """Set the game context for automatic prompt injection."""
         self._game_context = context
+
+    # === Experiential Refinement ===
+
+    def record_refinement(self, failure: str, adjustment: str, outcome: str = "pending") -> None:
+        """
+        Persist a durable lesson from a failure.
+
+        Each refinement captures the triggering failure, the corrective
+        adjustment taken, and the eventual outcome. Lessons are bounded
+        (oldest are evicted first) and injected into future prompts so
+        the agent becomes measurably wiser over repeated attempts.
+        """
+        entry = {
+            "failure": failure[:200],
+            "adjustment": adjustment[:200],
+            "outcome": outcome[:200],
+            "timestamp": time.time(),
+        }
+        self._refinements.append(entry)
+        if len(self._refinements) > self._max_refinements:
+            self._refinements = self._refinements[-self._max_refinements:]
+        self._memory.remember(
+            content=f"Refinement: {failure[:80]} -> {adjustment[:80]} (outcome={outcome[:40]})",
+            memory_type=MemoryType.SEMANTIC,
+            importance=0.85,
+        )
+        self.emit("refinement_recorded", entry)
+
+    def _refinement_context(self, limit: int = 6) -> str:
+        """Render recent refinements for prompt injection."""
+        if not self._refinements:
+            return ""
+        recent = self._refinements[-limit:]
+        lines = []
+        for r in recent:
+            lines.append(f"- Failure: {r['failure']}")
+            lines.append(f"  Adjustment: {r['adjustment']}")
+        return "Learned lessons from prior attempts:\n" + "\n".join(lines)
+
+    def get_refinements(self, limit: int = 20) -> List[Dict[str, Any]]:
+        """Return the refinement history (for status/diagnostics)."""
+        return list(self._refinements[-limit:])
+
+    def clear_refinements(self) -> int:
+        """Clear the refinement history; returns the number removed."""
+        count = len(self._refinements)
+        self._refinements.clear()
+        return count
+
+    # === Progressive Learning (Skill Accumulation) ===
+
+    def _get_skill_accumulator(self):
+        """Lazily resolve the shared skill accumulator engine."""
+        if self._skill_accumulator is None:
+            from sparkai.agent.agent_skill_accumulator import get_skill_accumulator_engine
+            self._skill_accumulator = get_skill_accumulator_engine()
+        return self._skill_accumulator
+
+    def learn_from_trajectory(
+        self,
+        limit: int = 40,
+        goal: Optional[str] = None,
+    ) -> List[Dict[str, Any]]:
+        """
+        Derive reusable skills from recent successful trajectory patterns.
+
+        Scans the recorded action timeline, groups successful executions by
+        action, and accumulates a persistent skill for each repeated pattern.
+        This turns past competence into future capability, forming the agent's
+        progressive learning loop.
+        """
+        engine = self._get_skill_accumulator()
+        entries = self._trajectory.get_timeline(limit=limit)
+        learned: List[Dict[str, Any]] = []
+
+        # Group successful actions by name.
+        patterns: Dict[str, List[Dict[str, Any]]] = {}
+        for e in entries:
+            if not isinstance(e, dict):
+                continue
+            action = e.get("action")
+            status = e.get("status")
+            if not action or status not in ("success", "validated"):
+                continue
+            patterns.setdefault(action, []).append(e)
+
+        for action, items in patterns.items():
+            if len(items) < 1:
+                continue
+            # Reuse an existing skill if one already matches this action.
+            existing = engine.discover_skills(limit=100)
+            existing_ids = {s.name for s in existing}
+            skill_name = f"Execute {action.replace('_', ' ').title()}"
+            if skill_name in existing_ids:
+                continue
+
+            sample = items[0]
+            avg_duration = (
+                sum(float(i.get("duration_s", 0.0)) for i in items) / len(items)
+            )
+            skill = engine.accumulate_skill(
+                domain="ai_behavior",
+                name=skill_name,
+                description=(
+                    f"Repeatedly successful pattern from trajectory: "
+                    f"'{action}' (goal: {goal or 'autonomous'})."
+                ),
+                steps=[
+                    {
+                        "description": f"Execute the {action} action",
+                        "action_type": action,
+                        "parameters": sample.get("params", {}),
+                        "expected_output": str(sample.get("result", ""))[:120],
+                        "timeout_ms": max(avg_duration * 1000, 30000.0),
+                    }
+                ],
+                tags=[action, "trajectory", "learned"],
+                postconditions=["Action completed without error"],
+            )
+            learned.append({
+                "skill_id": skill.skill_id,
+                "name": skill.name,
+                "action": action,
+                "occurrences": len(items),
+            })
+            self._memory.remember(
+                content=f"Accumulated skill '{skill.name}' from {len(items)} trajectory executions",
+                memory_type=MemoryType.SEMANTIC,
+                importance=0.8,
+            )
+
+        if learned:
+            self.emit("skills_learned", {"count": len(learned), "skills": learned})
+        return learned
+
+    def get_accumulated_skills(
+        self,
+        domain: Optional[str] = None,
+        limit: int = 20,
+    ) -> List[Dict[str, Any]]:
+        """Return the agent's accumulated skills for diagnostics."""
+        engine = self._get_skill_accumulator()
+        skills = engine.discover_skills(domain=domain, limit=limit)
+        return [
+            {
+                "skill_id": s.skill_id,
+                "name": s.name,
+                "domain": s.domain.value,
+                "description": s.description,
+                "maturity": s.maturity.value,
+                "version": s.version,
+                "usage_count": s.usage_count,
+                "success_count": s.success_count,
+                "tags": s.tags,
+                "steps": [
+                    {"order": st.order, "description": st.description, "action_type": st.action_type}
+                    for st in s.steps
+                ],
+            }
+            for s in skills
+        ]
+
+    def execute_accumulated_skill(
+        self,
+        skill_id: str,
+        context: Optional[Dict[str, Any]] = None,
+    ) -> Dict[str, Any]:
+        """Execute an accumulated skill and record the outcome."""
+        engine = self._get_skill_accumulator()
+        execution = engine.execute_skill(skill_id, context or {})
+        skill = engine.get_skill(skill_id)
+        return {
+            "execution_id": execution.execution_id,
+            "skill_id": skill_id,
+            "skill_name": skill.name if skill else skill_id,
+            "outcome": execution.outcome.value,
+            "duration_ms": execution.duration_ms,
+            "output": execution.output,
+            "error": execution.error_details,
+        }
+
+    def _skill_context(self, limit: int = 4) -> str:
+        """Render the top accumulated skills for prompt injection."""
+        try:
+            skills = self.get_accumulated_skills(limit=limit)
+        except Exception:
+            return ""
+        if not skills:
+            return ""
+        lines = ["Reusable skills from prior successes:"]
+        for s in skills:
+            lines.append(f"- {s['name']} (maturity={s['maturity']}, uses={s['usage_count']})")
+        return "\n".join(lines)
+
+    # === State Persistence ===
+
+    def to_state(self) -> Dict[str, Any]:
+        """Serialize agent identity, capabilities, and learned state.
+
+        Enables session continuity: a restored agent resumes with the same
+        identity, toolset loading, and experiential refinements it had built.
+        """
+        return {
+            "id": self.id,
+            "name": self.name,
+            "role": self.role.value,
+            "capabilities": [c.value for c in self.capabilities],
+            "max_iterations": self.max_iterations,
+            "loaded_toolsets": list(self._loaded_toolsets),
+            "skills": list(self._skills.keys()),
+            "refinements": list(self._refinements),
+            "message_history": [
+                {"role": m.role, "content": m.content[:500], "metadata": m.metadata}
+                for m in self._message_history[-40:]
+            ],
+        }
+
+    def restore_state(self, state: Dict[str, Any]) -> bool:
+        """Restore agent identity and learned state from a serialized snapshot."""
+        if not isinstance(state, dict) or "id" not in state:
+            return False
+        self.id = state.get("id", self.id)
+        self.name = state.get("name", self.name)
+        try:
+            role = AgentRole(state.get("role", self.role.value))
+        except ValueError:
+            role = self.role
+        self.role = role
+        self.max_iterations = int(state.get("max_iterations", self.max_iterations))
+        for cap in state.get("capabilities", []):
+            try:
+                self.add_capability(AgentCapability(cap))
+            except ValueError:
+                pass
+        for ts in state.get("loaded_toolsets", []):
+            self.load_toolset_by_name(ts)
+        self._refinements = [r for r in state.get("refinements", []) if isinstance(r, dict)]
+        self._refinements = self._refinements[-self._max_refinements:]
+        for msg in state.get("message_history", []):
+            self._message_history.append(AgentMessage(
+                role=msg.get("role", "agent"),
+                content=msg.get("content", ""),
+                metadata=msg.get("metadata", {}),
+            ))
+        self.emit("state_restored", {"id": self.id, "refinements": len(self._refinements)})
+        return True
 
     def _fallback_think(self, prompt: str) -> str:
         return f"[{self.name}] Processed: {prompt[:100]}... (LLM not configured)"

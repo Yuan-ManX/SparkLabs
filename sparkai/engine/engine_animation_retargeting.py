@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Animation Retargeting
-
-An original animation retargeting subsystem that transfers motion authored for
-one skeleton onto a different skeleton. Retargeting compensates for differing
-bone hierarchies, limb proportions, and rest-pose orientations so that a clip
-recorded on a source skeleton plays back cleanly on a target skeleton.
-
-The subsystem maintains a registry of skeleton profiles, bone mappings,
-retarget profiles, retarget jobs, and pose correction configurations. A
-profile bundles the retarget method, quality, root-motion and IK toggles, and
-spine correction weight. A job represents one execution of a profile against a
-source clip to produce a converted clip on the target skeleton.
-
-Architecture:
-  AnimationRetargetingSystem (singleton, double-checked locking)
-    |-- BoneNode              (a single bone in a skeleton hierarchy)
-    |-- SkeletonProfile       (a skeleton with bones, roles, lengths, hierarchy)
-    |-- BoneMapping           (a full bone-to-bone table between two skeletons)
-    |-- RetargetProfile       (a reusable retarget configuration)
-    |-- RetargetJob           (a single retarget execution)
-    |-- PoseCorrectionConfig  (a per-bone pose correction entry)
-    |-- RetargetStats         (aggregate statistic counters)
-    |-- RetargetSnapshot      (immutable snapshot of subsystem state)
-    |-- RetargetEvent         (an emitted subsystem lifecycle event)
-    |-- RetargetMethod, BoneMappingType, PoseCorrection, RetargetQuality,
-        RetargetEventKind, JobStatus
-
-Lifecycle:
-  1. register_skeleton(name, skeleton_type, bones)         -> SkeletonProfile
-  2. create_mapping(source, target, mapping_type, entries) -> BoneMapping
-  3. create_profile(...)                                   -> RetargetProfile
-  4. start_retarget(profile_id, source_clip_id, ...)       -> RetargetJob
-  5. complete_job(job_id, target_clip_id, ...)             -> RetargetJob
-  6. fail_job(job_id, error_message)                       -> RetargetJob
-  7. get_stats / get_status / get_snapshot / reset
-
-The module is written from scratch for SparkLabs. It depends only on the
-Python standard library and follows the engine-wide singleton + reentrant-lock
-conventions used across the SparkLabs engine modules.
-"""
+SparkLabs Engine - Animation Retargeting"""
 
 from __future__ import annotations
 

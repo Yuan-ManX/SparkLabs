@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Animation Curve Editor
-
-Bezier curve-based animation interpolation with keyframe editing,
-easing functions, and curve evaluation. Provides a full-featured
-curve editing system with multiple interpolation modes, automatic
-curve fitting, optimization, and sequence playback.
-
-Architecture:
-  AnimationCurveEditor
-    |-- Keyframe (time, value, in/out tangents, interpolation)
-    |-- AnimationCurve (curve with keyframes, easing, wrap mode)
-    |-- CurveTrack (entity property bound to an animation curve)
-    |-- CurveSequence (multiple tracks with playback control)
-"""
+SparkLabs Engine - Animation Curve Editor"""
 
 from __future__ import annotations
 

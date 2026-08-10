@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Asthenospheric Drift Sensor
-
-The AsthenosphericDriftSensor senses ductile-mantle drift vectors within the
-asthenosphere: it tracks plastic deformation of the ductile mantle, follows
-convective-cell displacement across sensing cells, and measures asthenosphere
-creep at each sensing node. Each registered drift vector carries a magnitude
-(cm/yr), an azimuth (radians), and a sensing depth (km). Tight, slow vectors
-mark quasi-static creep; fast, accelerating vectors mark transient or
-rupturing regimes. The editor renders the drift field as a vector field so
-geodynamicists can see, at a glance, the convective shape of the mantle.
-
-This is original SparkLabs work. Ductile-mantle drift vectors are first-class
-sensing entities: their strain, convection, and creep are computed each cycle,
-and the editor previews them as a vector field so geodynamicists can steer the
-mantle's plastic deformation.
-
-Architecture:
-  REGISTER_DRIFT    ->  INTEGRATE_STRAIN  ->  TRACK_CONVECTION  ->  ANALYZE_CREEP  ->  EMIT_DRIFT_FIELD
-  (register ductile- (integrate strain     (track convective    (analyze creep     (emit the full drift
-   mantle drift       tensors from the     cell displacement    regime per drift   field with vectors,
-   vectors with       registered vectors)  across sensing       vector: quasi-     cells, and strain
-   magnitude and                          cells)                static, steady,   records for the
-   azimuth)                                                     transient,        editor)
-                                                                accelerating,
-                                                                rupturing)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Asthenospheric Drift Sensor"""
 
 from __future__ import annotations
 

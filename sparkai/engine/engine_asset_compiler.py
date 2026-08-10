@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Asset Compiler Engine
-
-A comprehensive asset compilation, optimization, and bundling pipeline for
-the SparkLabs game engine. Handles importing various asset formats, compiling
-them into optimized runtime formats, and creating asset bundles for
-distribution. Supports incremental builds via a compilation cache, multi-stage
-compilation pipelines, and multiple bundling strategies.
-
-Architecture:
-  AssetCompilerEngine (Singleton)
-    |-- AssetImporter — imports assets from source files into the project
-    |-- FormatCompiler — compiles assets from source format to runtime format
-    |-- AssetOptimizer — applies optimization passes to compiled assets
-    |-- BundleBuilder — creates asset bundles for distribution
-    |-- CacheManager — manages compilation cache for incremental builds
-    |-- AssetSource — metadata for a source asset file
-    |-- CompileConfig — configuration for a specific asset type compilation
-    |-- CompileResult — result of a single compilation operation
-    |-- AssetBundle — packaged collection of compiled assets
-    |-- CompilePipeline — ordered multi-stage compilation pipeline
-    |-- CompilerStats — aggregate compilation statistics
-
-Usage:
-    engine = get_asset_compiler()
-    source = engine.import_asset("assets/textures/player.png")
-    engine.configure_compilation(AssetType.TEXTURE, config)
-    result = engine.compile_asset(source.source_id)
-    bundle = engine.build_bundle("level_1", [source.source_id])
-"""
+SparkLabs Engine - Asset Compiler Engine"""
 
 from __future__ import annotations
 

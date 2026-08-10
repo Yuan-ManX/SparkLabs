@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Asset Streamer
-
-On-demand asset streaming system for large game worlds. Manages asset
-loading and unloading based on player proximity, priority queues,
-memory budgets, and movement-based prefetching predictions.
-
-Architecture:
-  AssetStreamer
-    |-- StreamedAsset (individual asset with spatial and memory metadata)
-    |-- StreamingZone (named spatial grouping of assets for bulk operations)
-    |-- MemoryReport (aggregate memory usage snapshot)
-    |-- Priority-based load scheduling with distance-to-observer calculations
-
-Streaming Policies:
-  - DISTANCE_BASED: load within load_radius, unload beyond unload_radius
-  - VISIBILITY_BASED: load assets within the camera frustum
-  - PRIORITY_QUEUE: load highest-priority assets first regardless of distance
-  - MANUAL: explicit load/unload requests only, no automatic streaming
-
-Memory Priorities:
-  - ESSENTIAL: must stay loaded at all times (e.g. player character)
-  - HIGH: important for immediate gameplay (e.g. nearby enemies)
-  - NORMAL: standard game assets (e.g. environment props)
-  - LOW: background decoration (e.g. distant terrain detail)
-  - PURGEABLE: first to evict under memory pressure (e.g. cached audio)
-"""
+SparkLabs Engine - Asset Streamer"""
 
 from __future__ import annotations
 

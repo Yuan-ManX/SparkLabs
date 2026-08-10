@@ -1,18 +1,5 @@
 """
-SparkLabs ECS - Built-in Components
-
-Core components that provide fundamental game engine capabilities:
-- Transform: Position, rotation, scale in 2D/3D space
-- Renderable: Visual representation data
-- PhysicsBody: Rigid body physics properties
-- Collider: Collision shape data
-- Camera: View projection
-- AudioSource: Sound playback
-- Animator: Animation state
-- InputReceiver: Input mapping
-- AIBrain: AI agent integration for autonomous entities
-- Script: Custom behavior scripts
-"""
+SparkLabs ECS - Built-in Components"""
 
 from __future__ import annotations
 

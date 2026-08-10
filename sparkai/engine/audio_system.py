@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Audio System
-
-Centralized audio source management with 3D spatial positioning,
-volume control, and playback state tracking. Designed for
-AI-generated game sound effects and background music.
-
-Architecture:
-  AudioSystem
-    |-- AudioSource (clip reference, position, volume, loop)
-    |-- AudioChannel (group volume control: master/sfx/music/voice)
-    |-- SpatialMixer (3D panning based on listener position)
-    |-- PlaybackController (play/pause/stop/resume)
-
-Channels:
-  - master: Overall volume
-  - sfx: Sound effects
-  - music: Background music
-  - voice: Dialogue/narration
-  - ambient: Environmental sounds
-
-Usage:
-    audio = AudioSystem()
-    source_id = audio.create_source("explosion",
-        clip_name="boom.wav", channel="sfx", volume=0.8,
-    )
-    audio.set_listener_position(100, 200)
-    audio.play("explosion")
-    audio.set_master_volume(0.7)
-"""
+SparkLabs Engine - Audio System"""
 
 from __future__ import annotations
 

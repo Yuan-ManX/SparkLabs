@@ -448,6 +448,16 @@ class SparkEngine:
             ExecutionPhase.STEP,
             lambda dt, stats: self._step_simulation(dt),
         )
+        # POST_STEP / CLEANUP handlers are registered once here to avoid
+        # accumulating duplicate registrations on every simulation frame.
+        self._game_loop.register_phase_handler(
+            ExecutionPhase.POST_STEP,
+            lambda dt, stats: self._update_collision_and_animation(dt),
+        )
+        self._game_loop.register_phase_handler(
+            ExecutionPhase.CLEANUP,
+            lambda dt, stats: self._signal_bus.flush_deferred(),
+        )
 
     def _step_simulation(self, dt: float) -> None:
         self._rendering_server.begin_frame()
@@ -466,14 +476,6 @@ class SparkEngine:
         # Evaluate structured game logic (GameLogicIR) against current engine state
         self._tick_game_logic(dt)
         self._rendering_server.end_frame()
-        self._game_loop.register_phase_handler(
-            ExecutionPhase.POST_STEP,
-            lambda dt, stats: self._update_collision_and_animation(dt),
-        )
-        self._game_loop.register_phase_handler(
-            ExecutionPhase.CLEANUP,
-            lambda dt, stats: self._signal_bus.flush_deferred(),
-        )
 
     def _register_default_logic_handlers(self) -> None:
         """

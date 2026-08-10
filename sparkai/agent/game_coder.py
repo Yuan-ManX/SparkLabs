@@ -1,26 +1,5 @@
 """
-SparkAI Agent - Game Coder
-
-End-to-end game code generation system that transforms natural language
-descriptions into complete, runnable game code. The GameCoder orchestrates
-the full lifecycle from prompt analysis through code generation, validation,
-and iterative refinement.
-
-Architecture:
-  GameCoder
-    |-- PromptAnalyzer (intent extraction, genre detection, feature parsing)
-    |-- CodeScaffolder (project structure, entry points, configuration)
-    |-- CodeGenerator (entity, system, scene, and logic code generation)
-    |-- CodeValidator (syntax, semantic, and runtime validation)
-    |-- CodeRefiner (iterative improvement based on validation feedback)
-
-Generation Pipeline:
-  Analyze -> Scaffold -> Generate -> Validate -> Refine -> Package
-
-The GameCoder integrates with the AgentRuntime to leverage LLM routing,
-tool execution, skill forging, and the agent mesh for distributed
-code generation tasks.
-"""
+SparkAI Agent - Game Coder"""
 
 from __future__ import annotations
 

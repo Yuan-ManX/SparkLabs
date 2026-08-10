@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Behavior Tree
-
-Behavior tree AI system for NPC game characters. Enables
-hierarchical, composable decision-making through tree-based
-behavior definitions. AI agents use this to design and tune
-enemy AI, NPC routines, and companion behaviors through
-a modular node-based architecture.
-
-Architecture:
-  BehaviorTree
-    |-- BehaviorNode (base: tick → SUCCESS/FAILURE/RUNNING)
-    |-- Composite Nodes (Sequence, Selector, Parallel)
-    |-- Decorator Nodes (Inverter, Repeater, Timeout, Cooldown)
-    |-- Action Nodes (MoveTo, Attack, Patrol, Flee, UseItem)
-    |-- Condition Nodes (IsNear, HasHealth, CanSee, IsDaytime)
-    |-- Blackboard (shared key-value state between nodes)
-
-Node Lifecycle:
-  Each node has a tick() method returning:
-  - SUCCESS: task completed successfully
-  - FAILURE: task cannot be completed
-  - RUNNING: task still in progress
-"""
+SparkLabs Engine - Behavior Tree"""
 
 from __future__ import annotations
 

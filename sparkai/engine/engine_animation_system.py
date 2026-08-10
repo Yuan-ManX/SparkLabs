@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Animation System
-
-Comprehensive sprite animation, tween, and keyframe system for 2D and
-UI-driven animation workflows. Provides animation clip authoring with
-frame sequencing, tween-based property interpolation with dozens of
-easing functions, and keyframe sequence evaluation. Manages playback
-state, blending, and sprite-sheet-based animation generation.
-
-Architecture:
-  EngineAnimationSystem (Singleton)
-    |-- AnimationFrame       — single frame with texture region, transform, tint, events
-    |-- AnimationClip        — ordered frame sequence with playback control
-    |-- TweenDefinition      — property interpolation with easing, delay, yoyo, callbacks
-    |-- SequenceKeyframe     — individual point on a keyframe sequence
-    |-- KeyframeSequence     — ordered keyframes with interpolation mode
-    |-- AnimationPlayMode    (enum) — once, loop, ping_pong, clamp_forward
-    |-- EasingFunction       (enum) — 16 easing curves for tween/keyframe interpolation
-    |-- InterpolationMode    (enum) — linear, step, bezier, catmull_rom, hermite
-
-Easing Functions:
-  LINEAR, QUAD_IN, QUAD_OUT, QUAD_IN_OUT, CUBIC_IN, CUBIC_OUT,
-  CUBIC_IN_OUT, ELASTIC_IN, ELASTIC_OUT, BOUNCE_OUT, BACK_IN,
-  BACK_OUT, SINE_IN, SINE_OUT, EXPO_IN, EXPO_OUT
-"""
+SparkLabs Engine - Animation System"""
 
 from __future__ import annotations
 

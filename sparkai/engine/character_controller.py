@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Character Controller System
-
-Physics-integrated character movement and control system for
-AI-native game entities. Provides configurable movement modes
-including walking, running, jumping, crouching, and climbing
-with acceleration curves, ground detection, and animation
-state synchronization.
-
-Architecture:
-  CharacterController
-    |-- MovementComponent (velocity, acceleration, drag)
-    |-- JumpComponent (gravity, apex control, double-jump)
-    |-- GroundDetector (raycast, slope handling, step offset)
-    |-- RotationComponent (look direction, turn smoothing)
-    |-- CollisionResponse (push-back, slide against walls)
-
-Movement Modes:
-  - IDLE: stationary
-  - WALK: base movement speed with limited acceleration
-  - RUN: increased speed with higher acceleration
-  - CROUCH: reduced speed, lower collision profile
-  - AIRBORNE: gravity-affected movement with limited control
-  - CLIMBING: vertical surface traversal
-"""
+SparkLabs Engine - Character Controller System"""
 
 from __future__ import annotations
 

@@ -1,18 +1,5 @@
 """
-SparkLabs Engine - Asset Bundler
-
-A singleton asset packaging and streaming system for the SparkLabs
-game engine. Manages asset bundling with compression, dependency
-tracking, streaming priority queues, and incremental patching for
-efficient content delivery.
-
-Architecture:
-  AssetBundler (singleton)
-    |-- AssetEntry (individual asset metadata: path, type, hash, deps)
-    |-- AssetBundle (collection of assets with compression and versioning)
-    |-- StreamingRequest (priority-based streaming queue entry)
-    |-- PatchManifest (delta patch between bundle versions)
-"""
+SparkLabs Engine - Asset Bundler"""
 
 from __future__ import annotations
 

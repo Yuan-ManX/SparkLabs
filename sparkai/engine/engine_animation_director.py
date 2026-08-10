@@ -1,52 +1,5 @@
 """
-SparkLabs Engine - Animation Director
-
-Engine-side animation state machine director that orchestrates skeletal
-animations, blend trees, state transitions, and animation layers for game
-entities. It provides director-level animation control - managing
-animation states, transitions
-between them with gating conditions, parametric blend trees for procedural
-movement, and layered animation for combining upper/lower body clips.
-
-The animation director maintains a registry of animation clips, nodes (state
-instances bound to a clip and layer), transitions between nodes, blend trees
-that interpolate between child nodes based on a parameter, and layers that
-combine animations additively or via override masks. Nodes progress through
-the ``AnimationState`` lifecycle (IDLE -> PLAYING -> PAUSED / BLENDING ->
-TRANSITIONING -> COMPLETED). When an entity enters a node, the director marks
-the node active for that entity; transitions move an entity from one node to
-another after evaluating gating conditions; blend trees recompute child
-weights whenever their driving parameter changes.
-
-This subsystem focuses on director-level state orchestration and blend
-evaluation. Low-level skeletal pose integration and skinning is delegated to
-the engine's animation controller; this module decides which clip is active
-on which layer, how nodes transition, and how blend trees resolve their
-children into weighted contributions.
-
-Architecture:
-  AnimationDirectorEngine (Singleton)
-    |-- AnimationClip        (a skeletal animation clip with frame data)
-    |-- AnimationNode        (a state node bound to a clip and a layer)
-    |-- AnimationTransition  (a conditional blend between two nodes)
-    |-- AnimationLayer       (a layered animation mask with a blend mode)
-    |-- BlendTree            (a parametric blend of child nodes)
-    |-- AnimationStats       (aggregate statistic counters)
-    |-- AnimationSnapshot    (immutable snapshot of director state)
-    |-- AnimationEvent       (an emitted director lifecycle event)
-
-Lifecycle:
-  1. create_clip(...)                          -> AnimationClip
-  2. create_layer(...)                         -> AnimationLayer
-  3. create_node(name, clip_id, layer_id, ...) -> AnimationNode
-  4. create_transition(from, to, ...)          -> AnimationTransition
-  5. create_blend_tree(name, parameter, ...)   -> BlendTree
-  6. enter_state(entity_id, node_id)           -> AnimationNode
-  7. trigger_transition(entity_id, transition_id) -> AnimationTransition
-  8. evaluate_conditions(transition_id, params) -> bool
-  9. update_blend(blend_tree_id, value)        -> Dict
- 10. get_active_nodes(entity_id) / get_snapshot() / get_status() / reset()
-"""
+SparkLabs Engine - Animation Director"""
 
 from __future__ import annotations
 

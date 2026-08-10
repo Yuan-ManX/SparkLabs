@@ -1,30 +1,5 @@
 """
-SparkLabs Engine - Camera System
-
-Dynamic 2D camera with smooth following, dead zones, screen shake,
-zoom transitions, and multi-target framing. Provides the viewport
-transformation layer for AI-generated game scenes.
-
-Architecture:
-  CameraSystem
-    |-- Camera (position, zoom, bounds, shake state)
-    |-- CameraTarget (follow target with offset + dead zone)
-    |-- CameraShake (trauma-based procedural shake)
-    |-- CameraTransition (smooth pan/zoom interpolation)
-
-Camera Modes:
-  - FOLLOW: tracks a target entity with smoothing
-  - FREE: manually positioned via set_position()
-  - FRAME: frames multiple targets within viewport
-  - SCRIPTED: follows a predefined path of keyframes
-
-Usage:
-    cam = CameraSystem(viewport_width=800, viewport_height=600)
-    cam.follow(target_entity, smoothing=0.1, dead_zone=(50, 30))
-    cam.set_bounds(0, 0, 3200, 2400)
-    cam.shake(intensity=0.8, duration=0.5)
-    world_pos = cam.screen_to_world(screen_x, screen_y)
-"""
+SparkLabs Engine - Camera System"""
 from __future__ import annotations
 
 import math

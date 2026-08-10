@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - Camera Shake System
-
-Dynamic 2D camera effects system providing screen shake, smooth
-follow, zoom transitions, and cinematic camera behaviors for
-game feel and player feedback.
-
-Architecture:
-  CameraShakeSystem
-    |-- ShakePreset (trauma-based procedural shake profiles)
-    |-- CameraFollow (smooth tracking with dead zones)
-    |-- ZoomController (animated field-of-view transitions)
-    |-- CameraEffects (composite effect layering)
-    |-- ShakeMixer (multi-source shake blending)
-
-Shake Presets:
-  - EXPLOSION: high trauma, rapid decay, large amplitude
-  - IMPACT: medium trauma, moderate decay
-  - RUMBLE: low trauma, slow decay, continuous
-  - WOBBLE: sinusoidal periodic oscillation
-"""
+SparkLabs Engine - Camera Shake System"""
 
 from __future__ import annotations
 

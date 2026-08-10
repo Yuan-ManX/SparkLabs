@@ -1,10 +1,5 @@
 """
-SparkAI Agent - Engine Bridge
-
-Connects agent tool handlers to the SparkEngine singleton,
-enabling agents to create worlds, entities, scenes, and
-manipulate game state through the tool system.
-"""
+SparkAI Agent - Engine Bridge"""
 
 from __future__ import annotations
 
@@ -349,6 +344,75 @@ async def bridge_list_checkpoints(params: Dict[str, Any]) -> Dict[str, Any]:
     }
 
 
+async def bridge_add_logic_event(params: Dict[str, Any]) -> Dict[str, Any]:
+    """
+    Register a structured GameLogicIR event on the engine runtime.
+
+    `event` is a dict with name, description, enabled, priority,
+    conditions and actions. Registering rules lets the built game
+    respond to world state (e.g. collect coin -> score, reach win).
+    """
+    engine = _get_engine()
+    event_data = params.get("event", {}) or {}
+    try:
+        from sparkai.engine.game_logic_ir import (
+            GameEvent, GameAction, Condition, Expression, ConditionOperator, ActionType,
+        )
+    except Exception as exc:
+        return {"action": "add_logic_event", "status": "error", "error": str(exc)}
+
+    try:
+        op = ConditionOperator(event_data.get("condition_operator", "less_than"))
+    except ValueError:
+        op = ConditionOperator.LESS_THAN
+
+    try:
+        atype = ActionType(event_data.get("action_type", "custom"))
+    except ValueError:
+        atype = ActionType.CUSTOM
+
+    event = GameEvent(
+        name=event_data.get("name", "Untitled Event"),
+        description=event_data.get("description", ""),
+        enabled=event_data.get("enabled", True),
+        priority=event_data.get("priority", 0),
+    )
+    # Condition: left variable vs right literal (default)
+    event.conditions.append(Condition(
+        left=Expression(type="variable", variable_path=event_data.get("variable_path", "game.tick")),
+        operator=op,
+        right=Expression(type="literal", value=event_data.get("value", 0)),
+    ))
+    # Action (default: add score to the target entity)
+    event.actions.append(GameAction(
+        action_type=atype,
+        target=event_data.get("target", ""),
+        params=event_data.get("params", {}),
+    ))
+    try:
+        event_id = engine.add_logic_event(event)
+        return {
+            "action": "add_logic_event",
+            "event_id": event_id,
+            "event_name": event.name,
+            "status": "registered",
+        }
+    except Exception as exc:
+        return {"action": "add_logic_event", "status": "error", "error": str(exc)}
+
+
+async def bridge_list_logic_events(params: Dict[str, Any]) -> Dict[str, Any]:
+    """List all GameLogicIR events registered on the engine runtime."""
+    engine = _get_engine()
+    events = engine.export_logic_events()
+    return {
+        "action": "list_logic_events",
+        "count": len(events),
+        "events": events,
+        "status": "listed",
+    }
+
+
 def get_engine_bridge_handlers() -> Dict[str, Any]:
     return {
         "create_world": bridge_create_world,
@@ -370,4 +434,7 @@ def get_engine_bridge_handlers() -> Dict[str, Any]:
         "create_checkpoint": bridge_create_checkpoint,
         "restore_checkpoint": bridge_restore_checkpoint,
         "list_checkpoints": bridge_list_checkpoints,
+        # GameLogicIR rule authoring
+        "add_logic_event": bridge_add_logic_event,
+        "list_logic_events": bridge_list_logic_events,
     }

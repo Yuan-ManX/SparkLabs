@@ -1,30 +1,5 @@
 """
-SparkAI Agent - Game Pipeline
-
-End-to-end game creation pipeline that orchestrates the complete
-lifecycle from concept to playable game. The GamePipeline provides
-structured stage tracking, build verification, and intent alignment
-scoring across all phases of game development.
-
-Architecture:
-  GamePipelineSystem
-    |-- PipelineDefinition (stage definitions and transitions)
-    |-- PipelineRun (active pipeline execution with stage tracking)
-    |-- BuildVerifier (build health, visual usability, intent alignment)
-    |-- PipelineHistory (completed pipeline runs and metrics)
-
-Pipeline Stages:
-  Concept -> Design -> Scaffold -> Implement -> Integrate -> Verify -> Package
-
-Each stage has defined inputs, outputs, quality gates, and agent assignments.
-The pipeline tracks progress, accumulates context across stages, and
-verifies the final output against the original intent.
-
-Evaluation Dimensions (OpenGame-Bench pattern):
-  Build Health - compilation, linking, runtime stability
-  Visual Usability - rendering quality, UI consistency, asset coherence
-  Intent Alignment - does the output match the original prompt intent
-"""
+SparkAI Agent - Game Pipeline"""
 
 from __future__ import annotations
 

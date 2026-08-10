@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Behavior System
-
-Modular behavior component system for extending game entity
-capabilities. Behaviors are attachable/detachable modules that
-provide specialized logic — physics, pathfinding, AI decision
-making, rendering effects — without modifying the core entity.
-
-Architecture:
-  BehaviorSystem
-    |-- Behavior (base: name, lifecycle hooks, activation)
-    |-- BehaviorHost (entity adapter that manages behaviors)
-    |-- BehaviorScheduler (ordered pre/post-step execution)
-
-Lifecycle Hooks:
-  - on_attach(entity): called when added to an entity
-  - on_detach(entity): called when removed
-  - on_activate(entity): called on activation
-  - on_deactivate(entity): called on deactivation
-  - step_pre(dt, entity): before entity update
-  - step_post(dt, entity): after entity update
-
-Usage:
-    bs = BehaviorSystem()
-    jump_behavior = JumpBehavior(jump_force=500.0)
-    bs.attach("player", jump_behavior)
-    bs.step_pre(0.016)
-    # entity processing happens here
-    bs.step_post(0.016)
-"""
+SparkLabs Engine - Behavior System"""
 
 from __future__ import annotations
 
