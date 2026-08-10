@@ -1,44 +1,5 @@
 """
-SparkLabs Engine - Editor Subsystems
-
-This module extends the AI-native game editor with six additional critical
-editor subsystems. The existing editor (engine_ai_native_editor.py) already
-provides SceneEditor, AssetManager, CodeEditor, LevelDesigner,
-AnimationEditor, and PhysicsEditor. This module adds the remaining pieces
-that complete the editor surface: a material/shader graph editor, a
-terrain sculpting editor, a particle effect designer, a visual script
-node graph editor, an audio mixer editor, and a copilot conversational
-panel.
-
-Architecture:
-  _EditorSubsystemsSystem (singleton)
-    |-- MaterialShaderGraphEditor      -- node-based shader and material editing
-    |-- TerrainSculptingEditor         -- heightmap terrain sculpting and painting
-    |-- ParticleEffectDesigner         -- particle system design and simulation
-    |-- VisualScriptNodeGraphEditor    -- node-based visual scripting for game logic
-    |-- AudioMixerEditor               -- audio bus, channel, and cue mixing
-    |-- CopilotConversationalPanel     -- natural-language design copilot
-
-Thread Safety:
-  The system is a singleton created with double-checked locking. The
-  class-level ``_init_lock`` guards singleton creation and one-time
-  seeding via the ``_seeded`` flag; each subsystem instance owns an
-  ``RLock`` that guards all mutating operations to keep internal
-  dictionaries consistent.
-
-Serialization:
-  Every data class exposes a ``to_dict`` method that returns a
-  JSON-serializable dictionary. Enum fields are returned as their
-  ``.value`` attribute and ``math.inf`` values are returned as ``None``.
-
-Usage:
-    from sparkai.engine.engine_editor_subsystems import get_editor_subsystems
-    system = get_editor_subsystems()
-    materials = system.get_material_editor()
-    mat = materials.create_material("Wet Rock")
-    terrain = system.get_terrain_editor()
-    terrain.create_terrain("Mountain Valley", width=512, height=512)
-"""
+SparkLabs Engine - Editor Subsystems"""
 
 from __future__ import annotations
 

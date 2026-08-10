@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Emergence Pattern Detector
-
-The EngineEmergencePatternDetector monitors the simulation state for
-emergent patterns - complex behaviors that arise from simple rules
-interacting, which were not explicitly programmed. This is the engine's
-capacity for surprise: it watches what actually happens and identifies
-when the system produces something novel.
-
-Emergent patterns the detector recognizes:
-  - FLOCKING        : entities moving together in coordinated groups
-  - SWARMING        : dense chaotic clustering around points of interest
-  - WAVES           : propagating oscillations through entity populations
-  - SPIRALS         : rotational movement patterns around attractors
-  - CLUSTERS        : spatial groupings that persist over time
-  - DIFFUSION       : entities spreading out from concentrated areas
-  - OSCILLATION     : periodic state cycling in entity populations
-  - PHASE_TRANSITION: sudden collective state changes
-  - CASCADE         : chain reactions propagating through the network
-
-Architecture:
-  SAMPLE   ->  DETECT   ->  CLASSIFY  ->  PROPAGATE  ->  CULTIVATE
-  (collect     (run        (identify     (track how       (decide to
-   simulation  pattern     which        patterns spread    encourage or
-   state       detection   emergent     and interact)      dampen each
-   samples)    algorithms  pattern)                        pattern)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Emergence Pattern Detector"""
 
 from __future__ import annotations
 

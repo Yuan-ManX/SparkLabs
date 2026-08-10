@@ -1,29 +1,5 @@
 """
-SparkLabs Agent - Game Playtest Suite
-
-A comprehensive game playtesting intelligence module for the SparkLabs
-AI-native game engine. Provides an autonomous playtesting framework that
-simulates human players, detects design issues, measures game quality
-metrics, and generates actionable improvement reports.
-
-Architecture:
-  GamePlaytestSuite (singleton)
-    |-- PlaytestConfig (session configuration)
-    |-- PlaytestResult (complete playtest results with metrics)
-    |-- DesignIssue (individual design issue found during testing)
-    |-- PlayerSimulation (simulated player playthrough data)
-    |-- QualityReport (comprehensive quality report)
-    |-- PlaytestSnapshot (point-in-time playtest state capture)
-
-Core Capabilities:
-  - run_playtest: Execute a full playtest session across multiple modes
-  - simulate_player: Simulate a player of a given archetype
-  - detect_issues: Discover design issues through automated analysis
-  - measure_fun: Measure fun factor across multiple dimensions
-  - check_balance: Assess game balance and fairness
-  - audit_accessibility: Audit game for accessibility compliance
-  - generate_report: Produce a comprehensive quality report
-"""
+SparkLabs Agent - Game Playtest Suite"""
 
 from __future__ import annotations
 

@@ -1,38 +1,5 @@
 """
-SparkLabs Engine - Emergent Grammar Engine
-
-The EngineEmergentGrammarEngine models how game world rules emerge from the
-interaction of basic elements, forming grammars of possibility that shape what
-can happen in the world. Instead of hardcoded rules, the engine observes what
-elements interact, distills patterns from those interactions, composes
-grammatical rules, validates them against reality, and lets them evolve over
-time.
-
-A world is not a static list of permitted actions - it is a living grammar whose
-rules crystallize from what actually happens when elements meet. Fire meets
-wood and burning emerges; the engine observes this recurrence, distills it into a
-candidate rule, composes it with sibling rules into a grammar of combustion,
-validates that grammar against further observation, and lets it evolve as the
-world reveals edge cases (wet wood, magical flame, doused coals). The grammar is
-never authored - it is discovered.
-
-The engine treats each interaction as a sentence in a language the world speaks.
-Each sentence has a subject (element A), an object (element B), a verb (the
-interaction type), and an outcome (the result). Repeated sentences become
-conventions; conventions become rules; rules compose into grammars; grammars are
-tested against the world and either solidify, mutate, merge, or are pruned.
-
-Architecture:
-  OBSERVE    ->  DISTILL    ->  COMPOSE    ->  VALIDATE   ->  EVOLVE
-  (watch      (recurring    (candidate     (check rules     (failing rules
-   elements    patterns      rules          against            mutate, merge,
-   interact    become       grouped        observed          or are pruned;
-   in the      candidate     into           reality - do     passing rules
-   world)      rules)        grammar        they predict     solidify)
-                            sets)          what happens?)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Emergent Grammar Engine"""
 
 from __future__ import annotations
 
