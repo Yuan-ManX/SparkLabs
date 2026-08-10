@@ -1,25 +1,5 @@
 """
-SparkLabs Engine - Occlusion Culling System
-
-Visibility determination and frustum culling for rendering optimization.
-Reduces draw calls by identifying which scene entities are hidden behind
-occluders or outside the camera frustum, using a combination of spatial
-partitioning, portal culling, and hierarchical depth tests.
-
-Architecture:
-  OcclusionCullingSystem
-    |-- OcclusionVolume (axis-aligned and oriented bounding volumes)
-    |-- CullingCamera (view frustum definition and parameters)
-    |-- VisibilityQuery (per-entity visibility result lookup)
-    |-- CullingStats (performance metrics and culling throughput)
-
-Culling Methods:
-  - Frustum culling: discard objects outside the view frustum planes
-  - Portal culling: visibility through connected room portals
-  - Occlusion query: GPU/CPU query to test if an object is occluded
-  - Hierarchical Z-buffer: depth pyramid for coarse occlusion tests
-  - Potentially Visible Set: precomputed static visibility data
-"""
+SparkLabs Engine - Occlusion Culling System"""
 
 from __future__ import annotations
 

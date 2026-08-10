@@ -2,22 +2,7 @@
 
 Simulates celestial body dynamics, Keplerian orbits, satellite maneuvers,
 Hohmann transfers, and trajectory prediction for space-based gameplay
-including orbital combat, space exploration, and station management.
-
-Core physics implemented:
-  - Newton's law of universal gravitation
-  - Kepler's three laws of planetary motion
-  - Vis-viva equation for orbital velocity
-  - Escape and circular orbit velocity
-  - Hohmann transfer orbits
-  - Sphere of influence (Laplace)
-  - Specific orbital energy
-  - N-body numerical integration (velocity-Verlet)
-  - Tidal forces and delta-v budgeting
-
-The module exposes a thread-safe singleton accessible through the
-``get_orbital_mechanics_system`` factory function.
-"""
+including orbital combat, space exploration, and station management."""
 from __future__ import annotations
 
 import math
@@ -750,7 +735,7 @@ class _OrbitalMechanicsSystem:
         The seed data represents a compact star system with a central star,
         four planets, three moons, three satellites, three asteroids, and
         two space stations. All orbital parameters are computed from
-        physical relationships using Newtonian gravity.
+        physical relationships using classical gravity.
         """
         if self._seeded:
             return

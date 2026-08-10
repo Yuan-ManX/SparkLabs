@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Penumbral Shadow Calibrator
-
-The PenumbralShadowCalibrator calibrates penumbral shadow boundaries during
-eclipse events: partial-shadow intensity measurement, gradient-profile
-balancing, and calibration-offset governance. Each shadow is tracked as a
-penumbral cell with an intensity head, a gradient slope, and a set of
-calibration offsets. The calibrator samples intensities each cycle, balances
-gradient profiles across neighboring shadows, throttles or caps calibration
-offsets to stay within a safe intensity envelope, and emits a consolidated
-shadow gradient map for the editor.
-
-This is original SparkLabs work. Penumbral shadows are first-class calibrated
-entities: their penumbral intensities, gradient imbalances, and calibration
-budgets are computed each cycle, and the editor previews them as a gradient
-heatmap so designers can steer the partial-shadow regime.
-
-Architecture:
-  REGISTER_SHADOW            ->  SAMPLE_PENUMBRAL_INTENSITY  ->  BALANCE_SHADOW_GRADIENT  ->  CALIBRATE_BOUNDARY  ->  EMIT_SHADOW_GRADIENT_MAP
-  (register penumbral           (sample each shadow's          (compute and balance             (throttle or cap        (emit the full shadow
-   shadows with their           penumbral intensity for       gradient profiles between         calibration offsets     gradient map with shadows,
-   gradient slopes and          this cycle, update            neighboring shadows, flag         to stay within the      gradients, and calibration
-   initial intensities)         shadow regime)                overgradient cells)               safe envelope)          budgets)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Penumbral Shadow Calibrator"""
 
 from __future__ import annotations
 

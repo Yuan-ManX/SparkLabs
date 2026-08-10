@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Intelligent Object Pool
-
-Predictive game object pool system with automatic sizing, memory
-optimization, and usage-based demand forecasting. Provides a central
-object lifecycle manager that minimizes garbage collection pressure by
-recycling frequently-used game objects.
-
-Architecture:
-  EngineObjectPool (singleton orchestrator)
-    |-- PoolConfig (per-pool sizing & strategy configuration)
-    |-- PooledObject (tracked lifecycle state for each pooled instance)
-    |-- PoolStats (runtime telemetry & utilization metrics)
-    |-- DemandPredictor (exponential smoothing forecast engine)
-    |-- AllocationEngine (policy-driven borrow/return dispatch)
-
-Features:
-  - Six pool strategies: FIXED_SIZE, DYNAMIC_GROWTH, PREDICTIVE,
-    ADAPTIVE, LAZY, EAGER
-  - Five warmup modes: NONE, INCREMENTAL, BATCH, BACKGROUND, PROACTIVE
-  - Five allocation policies: ROUND_ROBIN, LEAST_USED, MOST_READY,
-    PRIORITY_BASED, RANDOM
-  - Predictive demand smoothing with configurable time windows
-  - Automatic pool resizing based on historical usage patterns
-  - Thread-safe borrow/return with reentrant locking
-"""
+SparkLabs Engine - Intelligent Object Pool"""
 
 from __future__ import annotations
 

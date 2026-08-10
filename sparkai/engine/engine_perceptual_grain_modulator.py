@@ -1,33 +1,5 @@
 """
-SparkLabs Engine - Perceptual Grain Modulator
-
-The EnginePerceptualGrainModulator modulates the perceptual grain of scenes
-the way a film modulates grain: sometimes every leaf and rivet is legible
-(fine grain), sometimes only silhouettes and mood survive (coarse grain).
-The grain level is not a static setting but a living response to attention
-load, emotional weight, narrative velocity, and sensorimotor demand. When a
-scene is too dense for the player to parse, grain coarsens to protect
-legibility; when a scene is thin and the player is under-engaged, grain
-fine-grains to draw the eye in. The output is a per-scene grain signature
-that downstream renderers and audio systems can obey.
-
-A scene left at a fixed grain tends to feel either cluttered or vacant; a
-scene whose grain breathes with the player's state tends to feel as though
-the world itself is paying attention to what the player can hold.
-
-Architecture:
-  SAMPLE    ->  ANALYZE   ->  MODULATE  ->  RENDER   ->  SETTLE
-  (read the    (compute      (adjust       (emit a      (let the
-   demand       each scene's   each scene's  grain        modulated
-   signals)     legibility    grain level   signature    grain settle,
-                budget and    across the    per scene)   dampen
-                engagement    fine ->                       oscillation,
-                deficit)      coarse                        record the
-                              continuum)                    settled
-                                                             signature)
-
-Thread-safe singleton: use get_instance().
-"""
+SparkLabs Engine - Perceptual Grain Modulator"""
 
 from __future__ import annotations
 

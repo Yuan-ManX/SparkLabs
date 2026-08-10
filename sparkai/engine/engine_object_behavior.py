@@ -1,35 +1,5 @@
 """
-SparkLabs Engine - Object Behavior System
-
-An attachable behavior system for game objects that allows modular
-reusable components to be composed into rich interactive entities.
-Each behavior is a self-contained unit with its own lifecycle hooks,
-typed parameters, and event-driven communication.
-
-Architecture:
-  EngineObjectBehavior (Singleton)
-    |-- BehaviorTemplate     — registered blueprint with parameter schema
-    |-- BehaviorParameter    — typed parameter definition with validation
-    |-- BehaviorInstance     — runtime instance attached to a game object
-    |-- BehaviorEvent        — intra-object event message
-    |-- BehaviorBinding      — group binding tying behaviors to an object
-
-Features:
-  - Behavior Registry with template registration and lookup
-  - Full lifecycle: on_attach, on_init, on_update, on_event, on_detach
-  - Typed parameters (float, int, string, bool, enum, color, vector2, object_ref)
-  - Event emission and listening between behaviors on the same object
-  - Priority-based execution ordering
-  - Built-in behavior templates for common game patterns
-  - Behavior composition through events and shared state
-
-Usage:
-    ob = get_engine_object_behavior()
-    ob.register_builtin_templates()
-    instance = ob.attach_behavior("player_1", "platformer_controller",
-        {"move_speed": 300.0, "jump_force": 600.0})
-    ob.emit_behavior_event(instance.instance_id, "on_damage", {"amount": 10})
-"""
+SparkLabs Engine - Object Behavior System"""
 
 from __future__ import annotations
 

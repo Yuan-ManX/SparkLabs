@@ -66,6 +66,46 @@ class WeatherIntensity(Enum):
     EXTREME = "extreme"
 
 
+class ClimateZone(Enum):
+    """Biome-level climate classification for a weather region."""
+    TROPICAL = "tropical"
+    TEMPERATE = "temperate"
+    ARID = "arid"
+    POLAR = "polar"
+    ALPINE = "alpine"
+    COASTAL = "coastal"
+    VOLCANIC = "volcanic"
+
+
+class WeatherEventType(Enum):
+    """Discrete dynamic weather events that can spawn in a region."""
+    LIGHTNING_STRIKE = "lightning_strike"
+    GUST_BURST = "gust_burst"
+    HAIL_STORM = "hail_storm"
+    FLASH_FLOOD = "flash_flood"
+    HEAT_STEAM = "heat_steam"
+    METEOR_IMPACT = "meteor_impact"
+    SNOW_DRIFT = "snow_drift"
+    TORNADO = "tornado"
+
+
+class InfluenceKind(Enum):
+    """Atmospheric parameters that external forces can perturb."""
+    TEMPERATURE = "temperature"
+    HUMIDITY = "humidity"
+    WIND_SPEED = "wind_speed"
+    WIND_DIRECTION = "wind_direction"
+    VISIBILITY = "visibility"
+    PRECIPITATION = "precipitation"
+
+
+class EventStatus(Enum):
+    """Lifecycle status of a spawned weather event."""
+    ACTIVE = "active"
+    EXPIRED = "expired"
+    CANCELLED = "cancelled"
+
+
 # ---------------------------------------------------------------------------
 # Dataclasses
 # ---------------------------------------------------------------------------
@@ -169,6 +209,110 @@ class WeatherEffect:
             "spawn_rate": self.spawn_rate,
             "lifetime": self.lifetime,
             "affected_by_wind": self.affected_by_wind,
+        }
+
+
+@dataclass
+class WeatherRegion:
+    """A spatial zone with its own climate and local weather condition.
+
+    Regions create spatial variety in the world. Each region carries a base
+    climate zone and an optional local weather condition that overrides the
+    global weather inside its bounds. Priority resolves overlaps between
+    regions.
+    """
+    region_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    name: str = "region"
+    climate_zone: ClimateZone = ClimateZone.TEMPERATE
+    bounds: Dict[str, float] = field(default_factory=dict)
+    priority: int = 0
+    local_condition: Optional[WeatherCondition] = None
+    base_temperature: float = 22.0
+    base_humidity: float = 0.45
+
+    def contains(self, position: Tuple[float, float, float]) -> bool:
+        """Check whether a position falls inside this region's bounds."""
+        if not self.bounds:
+            return False
+        cx = self.bounds.get("center_x", 0.0)
+        cy = self.bounds.get("center_y", 0.0)
+        cz = self.bounds.get("center_z", 0.0)
+        rx = self.bounds.get("radius_x", self.bounds.get("radius", 0.0))
+        ry = self.bounds.get("radius_y", rx)
+        rz = self.bounds.get("radius_z", rx)
+        dx = (position[0] - cx) / rx if rx else float("inf")
+        dy = (position[1] - cy) / ry if ry else float("inf")
+        dz = (position[2] - cz) / rz if rz else float("inf")
+        return (dx * dx + dy * dy + dz * dz) <= 1.0
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "region_id": self.region_id,
+            "name": self.name,
+            "climate_zone": self.climate_zone.value,
+            "bounds": self.bounds,
+            "priority": self.priority,
+            "local_condition": self.local_condition.to_dict() if self.local_condition else None,
+            "base_temperature": self.base_temperature,
+            "base_humidity": self.base_humidity,
+        }
+
+
+@dataclass
+class WeatherInfluence:
+    """A transient external force perturbing a region's atmosphere.
+
+    Skills, spells, and world interactions push an atmospheric parameter
+    (temperature, humidity, wind, etc.) by an amount that decays over time,
+    making weather a two-way interactive system rather than a one-way output.
+    """
+    influence_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    source_id: str = ""
+    kind: InfluenceKind = InfluenceKind.TEMPERATURE
+    amount: float = 0.0
+    decay_rate: float = 0.05
+    created_elapsed: float = 0.0
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "influence_id": self.influence_id,
+            "source_id": self.source_id,
+            "kind": self.kind.value,
+            "amount": self.amount,
+            "decay_rate": self.decay_rate,
+            "created_elapsed": self.created_elapsed,
+        }
+
+
+@dataclass
+class WeatherEvent:
+    """A discrete dynamic weather event active in a region.
+
+    Represents transient hazards and phenomena (lightning, gust bursts,
+    hail, floods, meteor impacts, tornadoes) that unfold over a duration
+    at a position with a given radius and magnitude.
+    """
+    event_id: str = field(default_factory=lambda: uuid.uuid4().hex[:12])
+    event_type: WeatherEventType = WeatherEventType.GUST_BURST
+    region_id: str = ""
+    position: Tuple[float, float, float] = (0.0, 0.0, 0.0)
+    radius: float = 5.0
+    magnitude: float = 1.0
+    started_elapsed: float = 0.0
+    duration: float = 10.0
+    status: EventStatus = EventStatus.ACTIVE
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "event_id": self.event_id,
+            "event_type": self.event_type.value,
+            "region_id": self.region_id,
+            "position": list(self.position),
+            "radius": self.radius,
+            "magnitude": self.magnitude,
+            "started_elapsed": self.started_elapsed,
+            "duration": self.duration,
+            "status": self.status.value,
         }
 
 
@@ -344,6 +488,20 @@ _INTENSITY_MULTIPLIERS: Dict[WeatherIntensity, float] = {
 }
 
 # ---------------------------------------------------------------------------
+# Climate Zone Base Presets
+# ---------------------------------------------------------------------------
+
+_CLIMATE_PRESETS: Dict[ClimateZone, Dict[str, Any]] = {
+    ClimateZone.TROPICAL: {"base_temperature": 28.0, "base_humidity": 0.80},
+    ClimateZone.TEMPERATE: {"base_temperature": 18.0, "base_humidity": 0.60},
+    ClimateZone.ARID: {"base_temperature": 34.0, "base_humidity": 0.15},
+    ClimateZone.POLAR: {"base_temperature": -8.0, "base_humidity": 0.55},
+    ClimateZone.ALPINE: {"base_temperature": 6.0, "base_humidity": 0.65},
+    ClimateZone.COASTAL: {"base_temperature": 20.0, "base_humidity": 0.72},
+    ClimateZone.VOLCANIC: {"base_temperature": 32.0, "base_humidity": 0.30},
+}
+
+# ---------------------------------------------------------------------------
 # Day/Night Ambient Light Presets
 # ---------------------------------------------------------------------------
 
@@ -465,6 +623,16 @@ class WeatherSystemEngine:
         # -- Weather effects --
         self._effects: Dict[str, WeatherEffect] = {}
 
+        # -- Regional weather --
+        self._regions: Dict[str, WeatherRegion] = {}
+
+        # -- Bidirectional influences (world -> weather) --
+        self._influences: Dict[str, WeatherInfluence] = {}
+
+        # -- Dynamic events --
+        self._events: List[WeatherEvent] = []
+        self._listeners: List[Any] = []
+
         # -- Statistics --
         self._weather_history: deque = deque(maxlen=200)
         self._total_transitions: int = 0
@@ -481,18 +649,22 @@ class WeatherSystemEngine:
         intensity: WeatherIntensity = WeatherIntensity.MODERATE,
         duration: float = -1.0,
         transition_time: float = 0.0,
+        region_id: str = "",
     ) -> WeatherCondition:
-        """Immediately set the global weather condition.
+        """Immediately set a weather condition globally or for a region.
 
         Cancels any active transition and applies the requested weather
         type with the given intensity immediately. Atmospheric parameters
         are drawn from preset defaults and scaled by the intensity level.
+        When region_id targets a registered region, the condition is applied
+        locally to that region instead of the global weather.
 
         Args:
             weather_type: The target weather type to apply.
             intensity: Severity level of the weather.
             duration: How long this weather persists in seconds (-1 = indefinite).
             transition_time: Not used for immediate set (kept for API symmetry).
+            region_id: Optional id of a registered region to apply weather to.
 
         Returns:
             The newly created WeatherCondition that is now active.
@@ -519,6 +691,11 @@ class WeatherSystemEngine:
                 duration=duration,
                 transition_time=transition_time,
             )
+
+            if region_id and region_id in self._regions:
+                self._regions[region_id].local_condition = condition
+                return condition
+
             self._current_weather = condition
             self._weather_history.append(condition)
             return condition
@@ -584,17 +761,27 @@ class WeatherSystemEngine:
 
             return target
 
-    def get_current_weather(self) -> WeatherCondition:
+    def get_current_weather(self, region_id: str = "") -> WeatherCondition:
         """Get the current effective weather condition.
 
         If a transition is active, returns an interpolated WeatherCondition
         between the origin and target. Otherwise returns the current
-        weather directly.
+        weather directly. When region_id targets a registered region with a
+        local condition, that region's weather is returned.
+
+        Args:
+            region_id: Optional id of a registered region.
 
         Returns:
             The active WeatherCondition, interpolated during transitions.
         """
         with self._lock:
+            region = self._regions.get(region_id)
+            if region is not None and region.local_condition is not None:
+                return self._apply_influences_to_condition(
+                    region.local_condition, region_id,
+                )
+
             if self._transition_from is None or self._transition_to is None:
                 return self._current_weather
 
@@ -692,8 +879,8 @@ class WeatherSystemEngine:
         """Advance the simulation clock by the given delta.
 
         Progresses the day/night cycle, updates the time of day phase,
-        animates active weather transitions, and updates weather
-        condition durations.
+        animates active weather transitions, updates weather condition
+        durations, and ticks regional weather, influences, and dynamic events.
 
         Args:
             delta_seconds: Time to advance in seconds.
@@ -717,7 +904,76 @@ class WeatherSystemEngine:
                     0.0, self._current_weather.duration - dt,
                 )
 
+            # Tick region local weather durations
+            for region in self._regions.values():
+                if region.local_condition is not None and region.local_condition.duration > 0:
+                    region.local_condition.duration = max(
+                        0.0, region.local_condition.duration - dt,
+                    )
+
+            # Tick transient dynamics (influences and events)
+            self._tick_dynamics(dt)
+
             return self._day_night
+
+    def update(self, delta_time_ms: float = 1000.0) -> Dict[str, Any]:
+        """Tick the simulation from a backend request.
+
+        Convenience wrapper over advance_time accepting milliseconds, used by
+        API-driven game loops.
+
+        Args:
+            delta_time_ms: Time to advance in milliseconds.
+
+        Returns:
+            Current weather statistics after the tick.
+        """
+        delta_seconds = max(0.0, float(delta_time_ms)) / 1000.0
+        self.advance_time(delta_seconds)
+        return self.get_stats()
+
+    def transition(
+        self,
+        region_id: str,
+        target_weather: str,
+        duration_ms: float = 5000.0,
+        intensity: str = "moderate",
+    ) -> WeatherCondition:
+        """Transition weather for a region or the global weather.
+
+        Convenience wrapper for API consumers using string weather names and
+        millisecond durations.
+
+        Args:
+            region_id: Target region (empty targets global weather).
+            target_weather: Target weather type name.
+            duration_ms: Transition duration in milliseconds.
+            intensity: Intensity level name for the target weather.
+
+        Returns:
+            The target WeatherCondition the system transitions toward.
+        """
+        wt = self._parse_weather_type(target_weather)
+        iv = self._parse_intensity(intensity)
+        transition_time = max(0.1, float(duration_ms)) / 1000.0
+        target = self.transition_weather(wt, iv, -1.0, transition_time)
+        return target
+
+    @staticmethod
+    def _parse_weather_type(name: str) -> WeatherType:
+        """Parse a weather type name string into a WeatherType enum."""
+        for wt in WeatherType:
+            if wt.value == name or wt.name.lower() == name.lower():
+                return wt
+        return WeatherType.CLEAR
+
+    @staticmethod
+    def _parse_intensity(name: str) -> WeatherIntensity:
+        """Parse an intensity name string into a WeatherIntensity enum."""
+        for iv in WeatherIntensity:
+            if iv.value == name or iv.name.lower() == name.lower():
+                return iv
+        return WeatherIntensity.MODERATE
 
     def _update_time_of_day(self) -> None:
         """Compute the current TimeOfDay phase from cycle parameters."""
@@ -819,21 +1075,491 @@ class WeatherSystemEngine:
             return list(self._effects.values())
 
     # ------------------------------------------------------------------
+    # Regional Weather
+    # ------------------------------------------------------------------
+
+    def register_region(
+        self,
+        name: str,
+        climate_zone: ClimateZone = ClimateZone.TEMPERATE,
+        bounds: Optional[Dict[str, float]] = None,
+        priority: int = 0,
+    ) -> WeatherRegion:
+        """Register a spatial weather region with its own climate.
+
+        Args:
+            name: Human-readable region name.
+            climate_zone: Base climate classification for the region.
+            bounds: Ellipsoid bounds dict with center_x/y/z and radius_x/y/z
+                (or a shared radius). Empty bounds match no positions.
+            priority: Higher priority regions win when bounds overlap.
+
+        Returns:
+            The newly registered WeatherRegion.
+        """
+        with self._lock:
+            preset = _CLIMATE_PRESETS.get(
+                climate_zone, _CLIMATE_PRESETS[ClimateZone.TEMPERATE],
+            )
+            region = WeatherRegion(
+                name=name,
+                climate_zone=climate_zone,
+                bounds=bounds or {},
+                priority=priority,
+                base_temperature=preset["base_temperature"],
+                base_humidity=preset["base_humidity"],
+            )
+            self._regions[region.region_id] = region
+            return region
+
+    def unregister_region(self, region_id: str) -> bool:
+        """Remove a region and its local weather from the simulation."""
+        with self._lock:
+            return self._regions.pop(region_id, None) is not None
+
+    def get_regions(self) -> List[WeatherRegion]:
+        """Get all registered weather regions."""
+        with self._lock:
+            return list(self._regions.values())
+
+    def set_climate(self, region_id: str, climate_zone: ClimateZone) -> WeatherRegion:
+        """Change the climate zone of an existing region."""
+        with self._lock:
+            region = self._regions.get(region_id)
+            if region is None:
+                raise KeyError(f"Region not found: {region_id}")
+            preset = _CLIMATE_PRESETS.get(
+                climate_zone, _CLIMATE_PRESETS[ClimateZone.TEMPERATE],
+            )
+            region.climate_zone = climate_zone
+            region.base_temperature = preset["base_temperature"]
+            region.base_humidity = preset["base_humidity"]
+            return region
+
+    def get_weather_at(self, position: Tuple[float, float, float]) -> Tuple[str, WeatherCondition]:
+        """Resolve the effective weather at a world position.
+
+        Finds the highest-priority region containing the position and returns
+        its weather (region local condition blended with influences), falling
+        back to the global weather when no region contains the position.
+
+        Args:
+            position: World-space coordinates (x, y, z).
+
+        Returns:
+            A tuple of (region_id or "", resolved WeatherCondition).
+        """
+        with self._lock:
+            best_region: Optional[WeatherRegion] = None
+            for region in self._regions.values():
+                if region.contains(position):
+                    if best_region is None or region.priority > best_region.priority:
+                        best_region = region
+            if best_region is not None:
+                if best_region.local_condition is not None:
+                    return best_region.region_id, self._apply_influences_to_condition(
+                        best_region.local_condition, best_region.region_id,
+                    )
+                return best_region.region_id, self._region_derived_condition(best_region)
+            return "", self.get_current_weather()
+
+    def get_current(self, region_id: str = "") -> WeatherCondition:
+        """Alias for get_current_weather with region support."""
+        return self.get_current_weather(region_id)
+
+    def get_forecast(self, region_id: str = "", forecast_seconds: float = 3600.0) -> List[WeatherCondition]:
+        """Produce a weather forecast for a region or the global weather."""
+        with self._lock:
+            if region_id and region_id in self._regions:
+                region = self._regions[region_id]
+                base = region.local_condition or self._region_derived_condition(region)
+                return self._forecast_from(base, forecast_seconds)
+            return self.predict_weather(forecast_seconds)
+
+    def get_particles(self, region_id: str = "") -> List[WeatherEffect]:
+        """Get particle effects matching the active weather of a region."""
+        with self._lock:
+            condition = self.get_current_weather(region_id)
+            return [e for e in self._effects.values() if e.weather_type == condition.weather_type]
+
+    def _region_derived_condition(self, region: WeatherRegion) -> WeatherCondition:
+        """Build a WeatherCondition from a region's base climate and the global weather."""
+        global_cond = self._current_weather
+        temp = region.base_temperature + (global_cond.temperature - 22.0)
+        humidity = max(0.0, min(1.0, region.base_humidity + (global_cond.humidity - 0.45)))
+        return WeatherCondition(
+            weather_type=global_cond.weather_type,
+            intensity=global_cond.intensity,
+            temperature=temp,
+            humidity=humidity,
+            wind_speed=global_cond.wind_speed,
+            wind_direction=global_cond.wind_direction,
+            visibility=global_cond.visibility,
+            particle_density=global_cond.particle_density,
+            duration=global_cond.duration,
+            transition_time=global_cond.transition_time,
+        )
+
+    def _forecast_from(self, base: WeatherCondition, forecast_seconds: float) -> List[WeatherCondition]:
+        """Run the probabilistic forecast seeded from a given condition."""
+        forecast_seconds = max(1.0, forecast_seconds)
+        predictions: List[WeatherCondition] = []
+        time_remaining = forecast_seconds
+        current_wt = base.weather_type
+
+        first_duration = min(
+            base.duration if base.duration > 0 else 120.0, time_remaining,
+        )
+        predictions.append(WeatherCondition(
+            weather_type=current_wt,
+            intensity=base.intensity,
+            temperature=base.temperature,
+            humidity=base.humidity,
+            wind_speed=base.wind_speed,
+            wind_direction=base.wind_direction,
+            visibility=base.visibility,
+            particle_density=base.particle_density,
+            duration=first_duration,
+            transition_time=0.0,
+        ))
+        time_remaining -= first_duration
+
+        max_steps = 20
+        step = 0
+        while time_remaining > 0 and step < max_steps:
+            step += 1
+            candidates = _WEATHER_TRANSITIONS.get(current_wt, [WeatherType.CLEAR])
+            season_weights = _SEASON_WEIGHTS.get(self._season, {})
+            weighted = [
+                (wt_c, max(0.01, season_weights.get(wt_c, 0.02)))
+                for wt_c in candidates
+            ]
+            if not weighted:
+                break
+            weathers, weights = zip(*weighted)
+            total_w = sum(weights)
+            next_wt = random.choices(weathers, weights=[w / total_w for w in weights], k=1)[0]
+            step_duration = min(random.uniform(60.0, 600.0), time_remaining)
+            intensity = random.choices(
+                list(WeatherIntensity), weights=[0.15, 0.40, 0.30, 0.15], k=1,
+            )[0]
+            preset = _WEATHER_PRESETS.get(next_wt, _WEATHER_PRESETS[WeatherType.CLEAR])
+            intensity_mult = _INTENSITY_MULTIPLIERS.get(intensity, 0.70)
+            predictions.append(WeatherCondition(
+                weather_type=next_wt,
+                intensity=intensity,
+                temperature=preset["temperature"],
+                humidity=preset["humidity"],
+                wind_speed=preset["wind_speed"] * intensity_mult,
+                wind_direction=preset["wind_direction"],
+                visibility=preset["visibility"],
+                particle_density=preset["particle_density"] * intensity_mult,
+                duration=step_duration,
+                transition_time=random.uniform(3.0, 15.0),
+            ))
+            time_remaining -= step_duration
+            current_wt = next_wt
+
+        return predictions
+
+    # ------------------------------------------------------------------
+    # Bidirectional Influence (World -> Weather)
+    # ------------------------------------------------------------------
+
+    def apply_weather_influence(
+        self,
+        region_id: str,
+        source_id: str,
+        kind: InfluenceKind,
+        amount: float,
+        decay_rate: float = 0.05,
+    ) -> WeatherInfluence:
+        """Push an atmospheric parameter in a region from a world action.
+
+        Skills, spells, and world events can heat, chill, dampen, or stir the
+        air. The influence accumulates and decays over time, enabling a
+        two-way loop where the world shapes the weather.
+
+        Args:
+            region_id: Target region (empty targets the global weather).
+            source_id: Identifier of the acting entity or skill.
+            kind: The atmospheric parameter to perturb.
+            amount: Signed magnitude of the perturbation.
+            decay_rate: Fraction of the influence lost per second.
+
+        Returns:
+            The registered WeatherInfluence.
+        """
+        with self._lock:
+            influence = WeatherInfluence(
+                source_id=source_id,
+                kind=kind,
+                amount=amount,
+                decay_rate=max(0.0, min(1.0, decay_rate)),
+                created_elapsed=self._total_elapsed,
+            )
+            if region_id not in self._regions:
+                region_id = ""
+            influence.region_id = region_id
+            self._influences[influence.influence_id] = influence
+            return influence
+
+    def get_influences(self, region_id: str = "") -> List[WeatherInfluence]:
+        """Get active influences for a region (or global when empty)."""
+        with self._lock:
+            return [
+                inf for inf in self._influences.values()
+                if (inf.region_id == region_id) or (region_id == "" and inf.region_id == "")
+            ]
+
+    def _apply_influences_to_condition(
+        self, condition: WeatherCondition, region_id: str,
+    ) -> WeatherCondition:
+        """Return a copy of a condition with active influences applied."""
+        influences = [
+            inf for inf in self._influences.values() if inf.region_id == region_id
+        ]
+        if not influences:
+            return condition
+
+        temp = condition.temperature
+        humidity = condition.humidity
+        wind_speed = condition.wind_speed
+        wind_dir = condition.wind_direction
+        visibility = condition.visibility
+        for inf in influences:
+            if inf.kind == InfluenceKind.TEMPERATURE:
+                temp += inf.amount
+            elif inf.kind == InfluenceKind.HUMIDITY:
+                humidity = max(0.0, min(1.0, humidity + inf.amount))
+            elif inf.kind == InfluenceKind.WIND_SPEED:
+                wind_speed = max(0.0, wind_speed + inf.amount)
+            elif inf.kind == InfluenceKind.WIND_DIRECTION:
+                wind_dir = (wind_dir + inf.amount) % 360.0
+            elif inf.kind == InfluenceKind.VISIBILITY:
+                visibility = max(0.0, min(1.0, visibility + inf.amount))
+            elif inf.kind == InfluenceKind.PRECIPITATION:
+                humidity = max(0.0, min(1.0, humidity + inf.amount * 0.5))
+
+        return WeatherCondition(
+            condition_id=condition.condition_id,
+            weather_type=condition.weather_type,
+            intensity=condition.intensity,
+            temperature=temp,
+            humidity=humidity,
+            wind_speed=wind_speed,
+            wind_direction=wind_dir,
+            visibility=visibility,
+            particle_density=condition.particle_density,
+            duration=condition.duration,
+            transition_time=condition.transition_time,
+        )
+
+    def _tick_influences(self, dt: float) -> None:
+        """Decay active influences over time and prune exhausted ones."""
+        expired: List[str] = []
+        for inf_id, inf in self._influences.items():
+            inf.amount *= (1.0 - inf.decay_rate * dt)
+            if abs(inf.amount) < 0.01:
+                expired.append(inf_id)
+        for inf_id in expired:
+            self._influences.pop(inf_id, None)
+
+    # ------------------------------------------------------------------
+    # Dynamic Events & Hazards
+    # ------------------------------------------------------------------
+
+    def spawn_weather_event(
+        self,
+        event_type: WeatherEventType,
+        region_id: str = "",
+        position: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        radius: float = 5.0,
+        magnitude: float = 1.0,
+        duration: float = 10.0,
+    ) -> WeatherEvent:
+        """Spawn a discrete dynamic weather event in a region.
+
+        Emits the event to registered listeners so the game loop can react
+        (e.g. lightning damage, gust knockback, meteor impact).
+
+        Args:
+            event_type: The hazard or phenomenon to spawn.
+            region_id: Region the event belongs to (empty = global).
+            position: World-space origin of the event.
+            radius: Effective radius of the event in world units.
+            magnitude: Severity multiplier for the event.
+            duration: How long the event persists in seconds.
+
+        Returns:
+            The spawned WeatherEvent.
+        """
+        with self._lock:
+            if region_id not in self._regions:
+                region_id = ""
+            event = WeatherEvent(
+                event_type=event_type,
+                region_id=region_id,
+                position=position,
+                radius=radius,
+                magnitude=magnitude,
+                started_elapsed=self._total_elapsed,
+                duration=max(0.1, duration),
+                status=EventStatus.ACTIVE,
+            )
+            self._events.append(event)
+            self._emit_event("weather_event_spawned", event)
+            return event
+
+    def get_active_events(self, region_id: str = "") -> List[WeatherEvent]:
+        """Get active weather events for a region (or globally)."""
+        with self._lock:
+            return [
+                ev for ev in self._events
+                if ev.status == EventStatus.ACTIVE
+                and (not region_id or ev.region_id == region_id)
+            ]
+
+    def cancel_weather_event(self, event_id: str) -> bool:
+        """Cancel an active weather event by id."""
+        with self._lock:
+            for ev in self._events:
+                if ev.event_id == event_id and ev.status == EventStatus.ACTIVE:
+                    ev.status = EventStatus.CANCELLED
+                    return True
+            return False
+
+    def _tick_events(self, dt: float) -> None:
+        """Advance active events and expire completed ones."""
+        elapsed = self._total_elapsed
+        for ev in self._events:
+            if ev.status != EventStatus.ACTIVE:
+                continue
+            if elapsed - ev.started_elapsed >= ev.duration:
+                ev.status = EventStatus.EXPIRED
+                self._emit_event("weather_event_expired", ev)
+
+    def _emit_event(self, kind: str, event: WeatherEvent) -> None:
+        """Broadcast a weather event to registered listeners."""
+        payload = {"kind": kind, "event": event.to_dict()}
+        for listener in list(self._listeners):
+            try:
+                listener(payload)
+            except Exception:
+                continue
+
+    def register_weather_listener(self, listener: Any) -> None:
+        """Register a callable that receives weather event notifications."""
+        self._listeners.append(listener)
+
+    # ------------------------------------------------------------------
+    # Agent / NPC Perception Context
+    # ------------------------------------------------------------------
+
+    def get_perception_context(
+        self,
+        position: Tuple[float, float, float] = (0.0, 0.0, 0.0),
+        agent_id: str = "",
+    ) -> Dict[str, Any]:
+        """Build a weather perception snapshot for an Agent or NPC.
+
+        Combines the local weather, gameplay modifiers, active events, and
+        safety hints into a compact context an Agent can consume to react to
+        the environment.
+
+        Args:
+            position: World-space position of the perceiving entity.
+            agent_id: Identifier of the perceiving entity (for tracking).
+
+        Returns:
+            Dictionary with weather, modifiers, events, and safety hints.
+        """
+        with self._lock:
+            region_id, condition = self.get_weather_at(position)
+            modifiers = self.get_gameplay_modifiers(region_id)
+            events = [
+                ev.to_dict() for ev in self.get_active_events(region_id)
+            ]
+            tod = self._day_night.time_of_day.value
+
+            hazards: List[str] = []
+            for ev in events:
+                if ev["event_type"] in (
+                    "lightning_strike", "tornado", "flash_flood",
+                ):
+                    hazards.append(ev["event_type"])
+            if modifiers["npc_behavior"]["seek_shelter"]:
+                hazards.append("seek_shelter")
+
+            return {
+                "agent_id": agent_id,
+                "region_id": region_id,
+                "weather": condition.to_dict(),
+                "time_of_day": tod,
+                "season": self._season.value,
+                "modifiers": modifiers,
+                "active_events": events,
+                "hazards": hazards,
+            }
+
+    # ------------------------------------------------------------------
+    # Game Logic IR Context
+    # ------------------------------------------------------------------
+
+    def to_condition_context(self, region_id: str = "") -> Dict[str, Any]:
+        """Export weather state as a flat context for Game Logic IR conditions.
+
+        Produces scalar values the Game Logic runtime can reference as
+        condition sources, e.g. weather.visibility, weather.temperature,
+        weather.wind_speed, weather.intensity.
+
+        Args:
+            region_id: Optional region to resolve weather from.
+
+        Returns:
+            Flat dictionary keyed for IR condition evaluation.
+        """
+        with self._lock:
+            condition = self.get_current_weather(region_id)
+            return {
+                "weather.type": condition.weather_type.value,
+                "weather.intensity": condition.intensity.value,
+                "weather.temperature": condition.temperature,
+                "weather.humidity": condition.humidity,
+                "weather.wind_speed": condition.wind_speed,
+                "weather.wind_direction": condition.wind_direction,
+                "weather.visibility": condition.visibility,
+                "weather.particle_density": condition.particle_density,
+                "weather.time_of_day": self._day_night.time_of_day.value,
+                "weather.season": self._season.value,
+                "weather.event_count": len(self.get_active_events(region_id)),
+            }
+
+    def _tick_dynamics(self, dt: float) -> None:
+        """Tick transient dynamics (influences and events)."""
+        self._tick_influences(dt)
+        self._tick_events(dt)
+
+    # ------------------------------------------------------------------
     # Gameplay Modifiers
     # ------------------------------------------------------------------
 
-    def get_gameplay_modifiers(self) -> Dict[str, Any]:
+    def get_gameplay_modifiers(self, region_id: str = "") -> Dict[str, Any]:
         """Compute gameplay-impacting modifiers from current conditions.
 
         Derives movement speed adjustments, visibility penalties, damage
         modifiers, elemental bonuses, and NPC behavior hints based on the
-        active weather, time of day, and season.
+        active weather, time of day, and season. When region_id is provided,
+        modifiers derive from that region's resolved weather.
+
+        Args:
+            region_id: Optional region id to compute modifiers for.
 
         Returns:
             Dictionary of gameplay modifier categories and their values.
         """
         with self._lock:
-            weather = self._current_weather
+            weather = self.get_current_weather(region_id)
             tod = self._day_night.time_of_day
             wt = weather.weather_type
 
@@ -1131,6 +1857,11 @@ class WeatherSystemEngine:
                 for h in list(self._weather_history)[-10:]
             ]
 
+            active_events = [
+                ev.to_dict() for ev in self._events
+                if ev.status == EventStatus.ACTIVE
+            ]
+
             return {
                 "current_weather": current.to_dict(),
                 "day_night": self._day_night.to_dict(),
@@ -1139,6 +1870,11 @@ class WeatherSystemEngine:
                 "total_transitions": self._total_transitions,
                 "total_effects": len(self._effects),
                 "effects_by_weather_type": effects_by_type,
+                "regions": [r.to_dict() for r in self._regions.values()],
+                "total_regions": len(self._regions),
+                "active_influences": [i.to_dict() for i in self._influences.values()],
+                "active_events": active_events,
+                "total_events": len(active_events),
                 "total_elapsed_seconds": round(self._total_elapsed, 2),
                 "update_count": self._update_count,
                 "recent_weather_history": recent_history,

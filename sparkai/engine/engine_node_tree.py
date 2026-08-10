@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Node Tree System
-
-Hierarchical scene node tree system providing parent-child
-spatial transforms, signal propagation with configurable scope, lifecycle
-state management, and flexible tree traversal patterns. Designed as the
-core scene graph backbone for all visual and logical game objects.
-
-Architecture:
-  NodeTreeSystem
-    |-- SceneNode (hierarchical node with transforms and metadata)
-    |-- NodeSignal (event payload with source, name, and data)
-    |-- SignalConnection (registered callback binding between nodes)
-    |-- SceneDefinition (serializable scene blueprint for export/import)
-
-Node Tree Features:
-  - HIERARCHY: parent-child relationships with recursive removal
-  - TRANSFORMS: local and world-space position, scale, and rotation
-  - SIGNALS: node-scoped, upward/downward, group, and scene broadcast
-  - LIFECYCLE: seven-stage state machine from creation to free
-  - TRAVERSAL: pre-order, post-order, and breadth-first ordering
-  - SERIALIZATION: full scene export/import for layout persistence
-"""
+SparkLabs Engine - Node Tree System"""
 
 from __future__ import annotations
 

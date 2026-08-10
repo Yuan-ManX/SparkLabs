@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Level Streaming System
-
-Dynamic level loading and unloading for seamless AI-native
-game worlds. Manages spatial partitioning of game levels
-into streamable chunks with asynchronous loading queues,
-priority-based scheduling, distance culling, and memory
-budget enforcement. Enables large open worlds without
-loading screens through progressive content delivery.
-
-Architecture:
-  LevelStreamingSystem
-    |-- ChunkManager (spatial grid partitioning of world)
-    |-- LoadQueue (priority-ordered async chunk loading)
-    |-- UnloadManager (LRU-based chunk eviction)
-    |-- DistanceCuller (view-frustum and distance-based culling)
-    |-- MemoryBudgeter (enforce max loaded chunk count)
-    |-- PlayerTracker (focal point for streaming radius)
-
-Chunk States:
-  - UNLOADED: not in memory
-  - LOADING: async transfer in progress
-  - LOADED: fully available for rendering
-  - UNLOADING: being evicted from memory
-  - FAILED: loading error occurred
-"""
+SparkLabs Engine - Level Streaming System"""
 
 from __future__ import annotations
 

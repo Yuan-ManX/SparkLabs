@@ -1,40 +1,5 @@
 """
-SparkLabs Engine - Notification System
-
-A queue-managed toast and alert system for the SparkLabs AI-native
-game engine. It manages notification queueing, priority, stacking,
-fade animations, and dismissal rules. The system handles achievement
-popups, quest updates, item pickups, system messages, and any
-transient player-facing communication with consistent visual
-treatment and accessibility support.
-
-Architecture:
-  NotificationSystem (singleton)
-    |-- Notification, NotificationTemplate, NotificationQueue,
-       NotificationStats, NotificationSnapshot, NotificationEvent
-    |-- NotificationUrgency, NotificationKind, NotificationStatus,
-       NotificationEventKind
-
-Core Capabilities:
-  - register_template / get_template / list_templates / remove_template:
-    notification template lifecycle with kind, urgency, and styling.
-  - create_notification / get_notification / list_notifications /
-    remove_notification: notification lifecycle with urgency-based
-    queueing.
-  - enqueue / dequeue: priority-ordered queue management with
-    stacking rules.
-  - dismiss / expire: notification lifecycle transitions.
-  - set_priority: dynamic priority adjustment.
-  - list_active / list_queued / list_history: filtered views into
-    the notification store.
-  - list_events / get_stats / get_status / get_snapshot / reset:
-    observability and state management.
-
-The class implements the singleton pattern with double-checked locking
-using ``threading.RLock``; consumers should obtain the instance through
-:meth:`NotificationSystem.get_instance` or the module-level
-:func:`get_notification_system` factory.
-"""
+SparkLabs Engine - Notification System"""
 
 from __future__ import annotations
 
