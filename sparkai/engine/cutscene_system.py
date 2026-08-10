@@ -1,23 +1,5 @@
 """
-SparkLabs Engine - Cutscene System
-
-Cinematic sequence orchestration for narrative-driven game moments.
-Manages camera movements, character animations, dialogue timing,
-visual effects, and audio cues in synchronized timeline sequences.
-
-Architecture:
-  CutsceneSystem
-    |-- TimelineSequencer (frame-accurate event scheduling)
-    |-- CameraDirector (cinematic camera path interpolation)
-    |-- ActionOrchestrator (character action and animation sync)
-    |-- TransitionLibrary (fade, wipe, and dissolve transitions)
-    |-- SkipManager (player-initiated skip with chapter markers)
-
-Transition Types:
-  - FADE_IN, FADE_OUT, CROSSFADE
-  - WIPE_LEFT, WIPE_RIGHT, WIPE_UP, WIPE_DOWN
-  - DISSOLVE, IRIS_IN, IRIS_OUT
-"""
+SparkLabs Engine - Cutscene System"""
 
 from __future__ import annotations
 

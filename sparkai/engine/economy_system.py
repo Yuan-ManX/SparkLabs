@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - Economy System
-
-Comprehensive in-game economic simulation with dynamic market
-pricing, currency management, trading mechanics, resource
-flow tracking, and inflation control. Models supply-demand
-equilibrium with configurable elasticity curves.
-
-Architecture:
-  EconomySystem
-    |-- CurrencyManager (multi-currency wallet and exchange)
-    |-- MarketPricing (supply-demand-driven price fluctuation)
-    |-- TradeNetwork (vendor inventory and player-to-player trading)
-    |-- ResourceTracker (production, consumption, and scarcity)
-    |-- InflationController (money supply and value stabilization)
-
-Currency Types:
-  - GOLD, SILVER, COPPER (standard)
-  - CRYSTAL, TOKEN, REPUTATION (special)
-  - Custom currencies with exchange rates
-"""
+SparkLabs Engine - Economy System"""
 
 from __future__ import annotations
 

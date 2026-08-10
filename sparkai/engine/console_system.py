@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Console System
-
-In-game developer console for runtime debugging, command
-execution, and live system inspection. Provides an interactive
-command interface with auto-completion, command history,
-variable inspection, and system control during gameplay.
-
-Architecture:
-  ConsoleSystem
-    |-- CommandRegistry (register/unregister console commands)
-    |-- CommandParser (tokenize and validate input strings)
-    |-- HistoryBuffer (navigate previous commands with up/down)
-    |-- AutoComplete (tab-completion for commands and arguments)
-    |-- OutputBuffer (scrollable console output with color tags)
-
-Command Categories:
-  - SYSTEM: engine control (pause, step, quit)
-  - ENTITY: spawn, destroy, list entities
-  - DEBUG: log levels, draw modes, profiling
-  - SCENE: scene switching, loading
-  - PHYSICS: gravity, constraints debug
-  - GRAPHICS: FPS display, wireframe mode
-"""
+SparkLabs Engine - Console System"""
 
 from __future__ import annotations
 

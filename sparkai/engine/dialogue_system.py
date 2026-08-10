@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Dialogue System
-
-Branching dialogue tree engine for AI-native narrative games.
-Supports conditional branching, player choices, state effects,
-character portraits, localization keys, and callback hooks for
-integrating dialogue with gameplay systems.
-
-Architecture:
-  DialogueSystem
-    |-- DialogueTree (node graph with transitions)
-    |-- DialogueNode (text, speaker, choices, effects)
-    |-- ConditionEvaluator (game-state boolean logic)
-    |-- EffectDispatcher (game-state mutations on choice)
-    |-- ChoiceValidator (visibility filtering for options)
-
-Features:
-  - Conditional branching via game state queries
-  - Choice-driven effects (inventory, stats, quests)
-  - Speaker portraits and mood expressions
-  - Localization-ready key-based text lookups
-  - Callback hooks for custom integration
-"""
+SparkLabs Engine - Dialogue System"""
 
 from __future__ import annotations
 

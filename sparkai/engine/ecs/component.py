@@ -1,13 +1,5 @@
 """
-SparkLabs ECS - Component Base and Registry
-
-Components are pure data containers. They define what an entity IS,
-not what it DOES. Systems handle behavior.
-
-Each component type is registered globally so that systems can query
-entities by component type, and AI agents can reason about
-component composition.
-"""
+SparkLabs ECS - Component Base and Registry"""
 
 from __future__ import annotations
 

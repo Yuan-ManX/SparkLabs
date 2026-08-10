@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Difficulty System
-
-Dynamic difficulty adjustment engine for AI-native games.
-Provides tier-based difficulty profiles, adaptive difficulty
-based on player performance, and progressive challenge scaling.
-
-Architecture:
-  DifficultySystem
-    |-- DifficultyProfile (preset difficulty configuration tiers)
-    |-- AdaptiveController (real-time performance-based adjustment)
-    |-- ProgressiveScaling (level-based challenge curves)
-    |-- DifficultyEventBus (difficulty-change notifications)
-    |-- PlayerMetricsTracker (skill estimation from gameplay data)
-
-Difficulty Tiers:
-  - BEGINNER: generous timing, reduced enemy count, extra lives
-  - EASY: forgiving collisions, basic AI patterns
-  - NORMAL: balanced defaults
-  - HARD: tighter timing, advanced AI, fewer resources
-  - EXPERT: minimal margin, perfect precision required
-  - ADAPTIVE: adjusts automatically based on player performance
-"""
+SparkLabs Engine - Difficulty System"""
 
 from __future__ import annotations
 

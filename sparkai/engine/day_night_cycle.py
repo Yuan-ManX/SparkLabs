@@ -1,26 +1,5 @@
 """
-SparkLabs Engine - Day/Night Cycle
-
-Dynamic time-of-day system with smooth phase transitions,
-lighting parameters, scheduled time-based events, and
-game-world state integration. Supports configurable
-day length, phase duration ratios, and custom event
-scheduling tied to specific times or phases.
-
-Architecture:
-  DayNightCycle
-    |-- TimeTracker (accumulated game time with configurable speed)
-    |-- PhaseEngine (dawn/day/dusk/night transition logic)
-    |-- LightingParameters (ambient color, intensity per phase)
-    |-- EventScheduler (time-triggered world state changes)
-    |-- WorldStateBridge (integration with other subsystems)
-
-Phases:
-  - DAWN: sunrise transition, low warm light
-  - DAY: full illumination, neutral white light
-  - DUSK: sunset transition, warm orange dimming
-  - NIGHT: minimal ambient, cool blue moonlight
-"""
+SparkLabs Engine - Day/Night Cycle"""
 
 from __future__ import annotations
 

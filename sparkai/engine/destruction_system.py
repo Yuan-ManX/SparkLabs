@@ -1,28 +1,5 @@
 """
-SparkLabs Engine - Destruction System
-
-Physics-driven destructible environment simulation for
-AI-native game worlds. Manages breakable objects, structural
-integrity, fragmentation patterns, and debris physics across
-multiple destruction tiers. Supports both scripted and
-physics-based destruction with particle effects and audio
-feedback integration.
-
-Architecture:
-  DestructionSystem
-    |-- IntegrityModel (health, damage thresholds, resistance)
-    |-- FragmentGenerator (voronoi-style mesh splitting)
-    |-- DebrisPhysics (impulse-based fragment scattering)
-    |-- DamagePropagator (chain reactions, structural collapse)
-    |-- DestructionTier (partial vs full destruction states)
-
-Destruction Tiers:
-  - UNDAMAGED: no visible damage
-  - CRACKED: surface cracks, minor deformation
-  - DAMAGED: missing chunks, partial structural failure
-  - DESTROYED: fully collapsed, debris generated
-  - VAPORIZED: completely removed, no debris (energy weapons)
-"""
+SparkLabs Engine - Destruction System"""
 
 from __future__ import annotations
 

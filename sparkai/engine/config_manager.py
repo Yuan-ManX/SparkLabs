@@ -1,21 +1,5 @@
 """
-SparkLabs Engine - Configuration Manager
-
-Project and engine configuration system for the SparkLabs
-AI-native game engine. Provides a centralized configuration
-store with schema validation, environment variable resolution,
-hot-reload support, and YAML/JSON serialization. AI agents
-use this to manage game project settings, engine parameters,
-and deployment configurations.
-
-Architecture:
-  ConfigManager
-    |-- ConfigStore (layered key/value store with defaults)
-    |-- ConfigSchema (JSON Schema validation for settings)
-    |-- ConfigWatcher (file-based hot-reload on changes)
-    |-- EnvResolver (${VAR} template substitution)
-    |-- ConfigSection (project, engine, build, deploy)
-"""
+SparkLabs Engine - Configuration Manager"""
 
 from __future__ import annotations
 

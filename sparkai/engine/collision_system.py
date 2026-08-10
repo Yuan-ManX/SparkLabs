@@ -1,24 +1,5 @@
 """
-SparkLabs Engine - Collision System
-
-Spatial collision detection with broad-phase filtering and
-narrow-phase intersection testing. Supports AABB, circle,
-and point primitives. Implements spatial hashing for O(n)
-broad-phase queries on large entity counts.
-
-Architecture:
-  CollisionSystem
-    |-- SpatialHash (uniform grid for broad-phase pairing)
-    |-- CollisionPrimitives (AABB, Circle, Point)
-    |-- IntersectionTests (AABB×AABB, Circle×Circle, etc.)
-    |-- CollisionLayer (filtering by layer masks)
-    |-- TriggerVolume (non-physical overlap detection)
-
-Collision Layers:
-  Each entity belongs to one layer and checks against
-  configurable layer masks. Layers are used for grouping
-  (player vs enemy vs projectile vs terrain).
-"""
+SparkLabs Engine - Collision System"""
 
 from __future__ import annotations
 

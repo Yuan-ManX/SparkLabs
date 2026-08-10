@@ -1,20 +1,5 @@
 """
-SparkLabs Engine - Debug Draw System
-
-Runtime debug visualization system for the SparkLabs AI-native
-game engine. Provides immediate-mode drawing primitives for
-visualizing collision shapes, AI paths, physics forces, spatial
-partitions, and other internal engine state during development.
-Supports wireframe, solid, and text overlays with configurable
-categories and per-category visibility toggles.
-
-Architecture:
-  DebugDrawSystem
-    |-- DebugDrawCommand (single draw instruction)
-    |-- DrawCategory (grouping: physics, ai, rendering, input)
-    |-- DebugTextOverlay (on-screen debug text labels)
-    |-- DrawBatcher (optimizes multiple draw calls per category)
-"""
+SparkLabs Engine - Debug Draw System"""
 
 from __future__ import annotations
 

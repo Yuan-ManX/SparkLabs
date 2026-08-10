@@ -1,32 +1,5 @@
 """
-SparkLabs Engine - Collision Layers
-
-Layer-based collision filtering system that controls which game
-objects can interact with each other. Enables selective physics
-interactions using bitmask-based layer checks, implementing
-industry-standard collision management patterns.
-
-Architecture:
-  CollisionLayerManager
-    |-- LayerDefinition (named layer with unique bit position)
-    |-- LayerMask (bitmask for collision checks)
-    |-- InteractionMatrix (which layers collide with which)
-    |-- LayerAssigner (assign layers to game objects)
-    |-- LayerQuery (find objects on specific layers)
-
-Default Layers (32 available bit positions):
-  - DEFAULT: all-around collision (bit 0, always set)
-  - PLAYER: player character (bit 1)
-  - ENEMY: hostile NPCs (bit 2)
-  - PROJECTILE_PLAYER: player bullets (bit 3)
-  - PROJECTILE_ENEMY: enemy bullets (bit 4)
-  - PICKUP: collectible items (bit 5)
-  - TERRAIN: ground, walls, platforms (bit 6)
-  - TRIGGER: trigger zones (bit 7)
-  - VEHICLE: driveable vehicles (bit 8)
-  - UI: UI hit testing (bit 9)
-  - SENSOR: sensor-only detection (bit 10)
-"""
+SparkLabs Engine - Collision Layers"""
 
 from __future__ import annotations
 

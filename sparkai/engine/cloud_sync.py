@@ -1,18 +1,5 @@
 """
-Cloud Sync - Cloud save synchronization with conflict resolution.
-
-Architecture:
-    CloudSync/
-    |-- SyncState (synchronization lifecycle states)
-    |-- SaveData (serializable save container)
-    |-- SyncOperation (sync direction enumeration)
-    |-- ConflictStrategy (resolution approach enumeration)
-    |-- SyncResult (operation outcome container)
-    |-- CloudSync (unified synchronization orchestrator)
-
-Manages cloud save/load with version tracking, delta synchronization,
-conflict resolution strategies, and retry with exponential backoff.
-"""
+Cloud Sync - Cloud save synchronization with conflict resolution."""
 
 from __future__ import annotations
 

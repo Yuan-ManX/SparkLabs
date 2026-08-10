@@ -1,29 +1,5 @@
 """
-SparkLabs Engine - Dynamic Music System
-
-Adaptive audio layering that responds to gameplay states
-in real-time. Manages multi-track music composition with
-intensity-based crossfading, stem control, tempo modulation,
-and event-driven transitions. Music intensity, instrumentation,
-and rhythm dynamically shift based on player actions, combat
-state, exploration zones, and narrative progression.
-
-Architecture:
-  DynamicMusicSystem
-    |-- TrackLayer (individual instrument/melody stems)
-    |-- IntensityController (gradual intensity modulation)
-    |-- StateTransition (crossfade between musical states)
-    |-- TempoEngine (BPM modulation for pacing)
-    |-- EventTrigger (gameplay event to music effect mapping)
-    |-- StingerQueue (one-shot musical accents)
-
-Music Layers:
-  - AMBIENT: atmospheric pads, environmental sounds
-  - RHYTHM: percussion, bass, rhythmic foundation
-  - MELODY: lead instruments, thematic content
-  - HARMONY: chord progressions, pads, strings
-  - INTENSITY: additional layers for tension/stress
-"""
+SparkLabs Engine - Dynamic Music System"""
 
 from __future__ import annotations
 

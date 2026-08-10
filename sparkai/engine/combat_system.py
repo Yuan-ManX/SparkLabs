@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Combat System
-
-Turn-based and real-time combat resolution engine for
-AI-native games. Manages combat units, status effects,
-action resolution with damage calculations, and victory
-condition evaluation. Supports configurable turn order,
-element-based modifiers, and status effect stacking.
-
-Architecture:
-  CombatSystem
-    |-- CombatUnit (stats, status effects, action pool)
-    |-- CombatAction (action type, target, base power)
-    |-- DamageCalculator (stat-driven with element modifiers)
-    |-- StatusEffectManager (duration, stacking, cleanup)
-    |-- TurnOrderEngine (speed-based initiative sorting)
-
-Action Types:
-  - ATTACK: basic damage based on attack stat
-  - DEFEND: reduce incoming damage for one round
-  - SKILL: special ability with custom effects and cooldown
-  - ITEM: consume inventory item for healing/buffing
-  - FLEE: attempt to escape combat
-"""
+SparkLabs Engine - Combat System"""
 
 from __future__ import annotations
 

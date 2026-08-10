@@ -1,27 +1,5 @@
 """
-SparkLabs Engine - Crafting System
-
-Recipe-based item crafting with ingredient requirements, quality
-tiers, tool dependencies, and discovery mechanics. Supports
-multi-step crafting chains, resource scarcity balancing, and
-specialization bonuses for dedicated crafting characters.
-
-Architecture:
-  CraftingSystem
-    |-- RecipeRegistry (crafting recipe catalog with requirements)
-    |-- IngredientValidator (resource availability and quantity checks)
-    |-- QualityEvaluator (crafting skill-based result quality)
-    |-- DiscoveryEngine (experimental combination uncovering)
-    |-- CraftingStation (station-specific recipe filtering)
-
-Quality Tiers:
-  - CRUDE: basic, minimal stats
-  - STANDARD: baseline quality
-  - FINE: above-average craftsmanship
-  - SUPERIOR: exceptional quality
-  - MASTERWORK: peak craftsmanship
-  - LEGENDARY: perfect, maximum stats
-"""
+SparkLabs Engine - Crafting System"""
 
 from __future__ import annotations
 
